@@ -8,14 +8,18 @@
 
 package org.tridas.schema;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -36,14 +40,20 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *         &lt;element ref="{http://www.tridas.org/1.1}identifier" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.1}createdTimestamp" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.1}lastModifiedTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}pith"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}heartwood"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}sapwood"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}bark"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}azimuth" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}analyst" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}dendrochronologist" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}measuringMethod"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}comments" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}usage" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}usageComments" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;choice minOccurs="0">
+ *           &lt;element ref="{http://www.tridas.org/1.1}interpretation"/>
+ *           &lt;element ref="{http://www.tridas.org/1.1}interpretationUnsolved"/>
+ *         &lt;/choice>
  *         &lt;element ref="{http://www.tridas.org/1.1}genericField" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}measurementSeries" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}values" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -57,33 +67,41 @@ import org.apache.commons.lang.builder.ToStringStyle;
     "identifier",
     "createdTimestamp",
     "lastModifiedTimestamp",
-    "pith",
-    "heartwood",
-    "sapwood",
-    "bark",
-    "azimuth",
+    "analyst",
+    "dendrochronologist",
+    "measuringMethod",
+    "comments",
+    "usage",
+    "usageComments",
+    "interpretation",
+    "interpretationUnsolved",
     "genericField",
-    "measurementSeries"
+    "values"
 })
-@XmlRootElement(name = "radius")
-public class TridasRadius {
+@XmlRootElement(name = "measurementSeriesDeprecated")
+public class TridasMeasurementSeriesDeprecated {
 
     @XmlElement(required = true)
     protected String title;
     protected TridasIdentifier identifier;
     protected DateTime createdTimestamp;
     protected DateTime lastModifiedTimestamp;
+    protected String analyst;
+    protected String dendrochronologist;
     @XmlElement(required = true)
-    protected TridasPith pith;
-    @XmlElement(required = true)
-    protected TridasHeartwood heartwood;
-    @XmlElement(required = true)
-    protected TridasSapwood sapwood;
-    @XmlElement(required = true)
-    protected TridasBark bark;
-    protected BigDecimal azimuth;
+    protected TridasMeasuringMethod measuringMethod;
+    protected String comments;
+    protected String usage;
+    protected List<String> usageComments;
+    protected TridasInterpretation interpretation;
+    protected String interpretationUnsolved;
     protected List<TridasGenericField> genericField;
-    protected List<TridasMeasurementSeries> measurementSeries;
+    protected List<TridasValues> values;
+    @XmlAttribute(name = "id")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlID
+    @XmlSchemaType(name = "ID")
+    protected String id;
 
     /**
      * Gets the value of the title property.
@@ -198,143 +216,236 @@ public class TridasRadius {
     }
 
     /**
-     * Gets the value of the pith property.
+     * Gets the value of the analyst property.
      * 
      * @return
      *     possible object is
-     *     {@link TridasPith }
+     *     {@link String }
      *     
      */
-    public TridasPith getPith() {
-        return pith;
+    public String getAnalyst() {
+        return analyst;
     }
 
     /**
-     * Sets the value of the pith property.
+     * Sets the value of the analyst property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasPith }
+     *     {@link String }
      *     
      */
-    public void setPith(TridasPith value) {
-        this.pith = value;
+    public void setAnalyst(String value) {
+        this.analyst = value;
     }
 
-    public boolean isSetPith() {
-        return (this.pith!= null);
+    public boolean isSetAnalyst() {
+        return (this.analyst!= null);
     }
 
     /**
-     * Gets the value of the heartwood property.
+     * Gets the value of the dendrochronologist property.
      * 
      * @return
      *     possible object is
-     *     {@link TridasHeartwood }
+     *     {@link String }
      *     
      */
-    public TridasHeartwood getHeartwood() {
-        return heartwood;
+    public String getDendrochronologist() {
+        return dendrochronologist;
     }
 
     /**
-     * Sets the value of the heartwood property.
+     * Sets the value of the dendrochronologist property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasHeartwood }
+     *     {@link String }
      *     
      */
-    public void setHeartwood(TridasHeartwood value) {
-        this.heartwood = value;
+    public void setDendrochronologist(String value) {
+        this.dendrochronologist = value;
     }
 
-    public boolean isSetHeartwood() {
-        return (this.heartwood!= null);
+    public boolean isSetDendrochronologist() {
+        return (this.dendrochronologist!= null);
     }
 
     /**
-     * Gets the value of the sapwood property.
+     * Gets the value of the measuringMethod property.
      * 
      * @return
      *     possible object is
-     *     {@link TridasSapwood }
+     *     {@link TridasMeasuringMethod }
      *     
      */
-    public TridasSapwood getSapwood() {
-        return sapwood;
+    public TridasMeasuringMethod getMeasuringMethod() {
+        return measuringMethod;
     }
 
     /**
-     * Sets the value of the sapwood property.
+     * Sets the value of the measuringMethod property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasSapwood }
+     *     {@link TridasMeasuringMethod }
      *     
      */
-    public void setSapwood(TridasSapwood value) {
-        this.sapwood = value;
+    public void setMeasuringMethod(TridasMeasuringMethod value) {
+        this.measuringMethod = value;
     }
 
-    public boolean isSetSapwood() {
-        return (this.sapwood!= null);
+    public boolean isSetMeasuringMethod() {
+        return (this.measuringMethod!= null);
     }
 
     /**
-     * Gets the value of the bark property.
+     * Gets the value of the comments property.
      * 
      * @return
      *     possible object is
-     *     {@link TridasBark }
+     *     {@link String }
      *     
      */
-    public TridasBark getBark() {
-        return bark;
+    public String getComments() {
+        return comments;
     }
 
     /**
-     * Sets the value of the bark property.
+     * Sets the value of the comments property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasBark }
+     *     {@link String }
      *     
      */
-    public void setBark(TridasBark value) {
-        this.bark = value;
+    public void setComments(String value) {
+        this.comments = value;
     }
 
-    public boolean isSetBark() {
-        return (this.bark!= null);
+    public boolean isSetComments() {
+        return (this.comments!= null);
     }
 
     /**
-     * Gets the value of the azimuth property.
+     * Gets the value of the usage property.
      * 
      * @return
      *     possible object is
-     *     {@link BigDecimal }
+     *     {@link String }
      *     
      */
-    public BigDecimal getAzimuth() {
-        return azimuth;
+    public String getUsage() {
+        return usage;
     }
 
     /**
-     * Sets the value of the azimuth property.
+     * Sets the value of the usage property.
      * 
      * @param value
      *     allowed object is
-     *     {@link BigDecimal }
+     *     {@link String }
      *     
      */
-    public void setAzimuth(BigDecimal value) {
-        this.azimuth = value;
+    public void setUsage(String value) {
+        this.usage = value;
     }
 
-    public boolean isSetAzimuth() {
-        return (this.azimuth!= null);
+    public boolean isSetUsage() {
+        return (this.usage!= null);
+    }
+
+    /**
+     * Gets the value of the usageComments property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the usageComments property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getUsageComments().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link String }
+     * 
+     * 
+     */
+    public List<String> getUsageComments() {
+        if (usageComments == null) {
+            usageComments = new ArrayList<String>();
+        }
+        return this.usageComments;
+    }
+
+    public boolean isSetUsageComments() {
+        return ((this.usageComments!= null)&&(!this.usageComments.isEmpty()));
+    }
+
+    public void unsetUsageComments() {
+        this.usageComments = null;
+    }
+
+    /**
+     * Gets the value of the interpretation property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TridasInterpretation }
+     *     
+     */
+    public TridasInterpretation getInterpretation() {
+        return interpretation;
+    }
+
+    /**
+     * Sets the value of the interpretation property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TridasInterpretation }
+     *     
+     */
+    public void setInterpretation(TridasInterpretation value) {
+        this.interpretation = value;
+    }
+
+    public boolean isSetInterpretation() {
+        return (this.interpretation!= null);
+    }
+
+    /**
+     * Gets the value of the interpretationUnsolved property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getInterpretationUnsolved() {
+        return interpretationUnsolved;
+    }
+
+    /**
+     * Sets the value of the interpretationUnsolved property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setInterpretationUnsolved(String value) {
+        this.interpretationUnsolved = value;
+    }
+
+    public boolean isSetInterpretationUnsolved() {
+        return (this.interpretationUnsolved!= null);
     }
 
     /**
@@ -375,40 +486,68 @@ public class TridasRadius {
     }
 
     /**
-     * Gets the value of the measurementSeries property.
+     * Gets the value of the values property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the measurementSeries property.
+     * This is why there is not a <CODE>set</CODE> method for the values property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getMeasurementSeries().add(newItem);
+     *    getValues().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link TridasMeasurementSeries }
+     * {@link TridasValues }
      * 
      * 
      */
-    public List<TridasMeasurementSeries> getMeasurementSeries() {
-        if (measurementSeries == null) {
-            measurementSeries = new ArrayList<TridasMeasurementSeries>();
+    public List<TridasValues> getValues() {
+        if (values == null) {
+            values = new ArrayList<TridasValues>();
         }
-        return this.measurementSeries;
+        return this.values;
     }
 
-    public boolean isSetMeasurementSeries() {
-        return ((this.measurementSeries!= null)&&(!this.measurementSeries.isEmpty()));
+    public boolean isSetValues() {
+        return ((this.values!= null)&&(!this.values.isEmpty()));
     }
 
-    public void unsetMeasurementSeries() {
-        this.measurementSeries = null;
+    public void unsetValues() {
+        this.values = null;
+    }
+
+    /**
+     * Gets the value of the id property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setId(String value) {
+        this.id = value;
+    }
+
+    public boolean isSetId() {
+        return (this.id!= null);
     }
 
     @Override

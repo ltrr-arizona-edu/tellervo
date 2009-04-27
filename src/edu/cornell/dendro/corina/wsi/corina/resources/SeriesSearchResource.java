@@ -31,6 +31,7 @@ public class SeriesSearchResource extends CorinaAssociatedResource<ElementList> 
 
 	@Override
 	protected void populateRequest(WSIRequest request) {
+		request.setFormat("summary");
 		request.setSearchParams(params);
 	}
 

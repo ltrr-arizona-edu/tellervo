@@ -123,7 +123,7 @@ public class TridasWSElement implements SampleLoader {
 	}
 
 	public BaseSample loadBasic() throws IOException {
-		return load();
+		return load();  
 	}
 	
 	public void preload(BaseSample bs) {

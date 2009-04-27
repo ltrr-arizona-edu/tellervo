@@ -12,9 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -35,24 +40,24 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *         &lt;element ref="{http://www.tridas.org/1.1}identifier" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.1}createdTimestamp" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.1}lastModifiedTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}type" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}description" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}linkSeries" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}file" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}taxon"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}shape" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}dimensions" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}authenticity" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}location" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}processing" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}marks" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}altitude" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}slope" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}soil" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}bedrock" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}type"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}linkSeries" maxOccurs="unbounded"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}objective" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}standardizingMethod" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}author" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}version" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}comments" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}usage" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}usageComments" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;choice minOccurs="0">
+ *           &lt;element ref="{http://www.tridas.org/1.1}interpretation"/>
+ *           &lt;element ref="{http://www.tridas.org/1.1}interpretationUnsolved"/>
+ *         &lt;/choice>
+ *         &lt;element ref="{http://www.tridas.org/1.1}extent" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.1}genericField" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.1}sample" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.1}values" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -67,49 +72,49 @@ import org.apache.commons.lang.builder.ToStringStyle;
     "createdTimestamp",
     "lastModifiedTimestamp",
     "type",
-    "description",
     "linkSeries",
-    "file",
-    "taxon",
-    "shape",
-    "dimensions",
-    "authenticity",
-    "location",
-    "processing",
-    "marks",
-    "altitude",
-    "slope",
-    "soil",
-    "bedrock",
+    "objective",
+    "standardizingMethod",
+    "author",
+    "version",
+    "comments",
+    "usage",
+    "usageComments",
+    "interpretation",
+    "interpretationUnsolved",
+    "extent",
     "genericField",
-    "sample"
+    "values"
 })
-@XmlRootElement(name = "element")
-public class TridasElement {
+@XmlRootElement(name = "derivedSeriesDeprecated")
+public class TridasDerivedSeriesDeprecated {
 
     @XmlElement(required = true)
     protected String title;
     protected TridasIdentifier identifier;
     protected DateTime createdTimestamp;
     protected DateTime lastModifiedTimestamp;
-    protected ControlledVoc type;
-    protected String description;
-    protected List<TridasLinkSeries> linkSeries;
-    protected List<TridasFile> file;
     @XmlElement(required = true)
-    protected TridasTaxon taxon;
-    protected TridasShape shape;
-    protected TridasDimensions dimensions;
-    protected String authenticity;
-    protected TridasLocation location;
-    protected String processing;
-    protected String marks;
-    protected Double altitude;
-    protected TridasSlope slope;
-    protected TridasSoil soil;
-    protected TridasBedrock bedrock;
+    protected ControlledVoc type;
+    @XmlElement(required = true)
+    protected List<TridasLinkSeries> linkSeries;
+    protected String objective;
+    protected String standardizingMethod;
+    protected String author;
+    protected String version;
+    protected String comments;
+    protected String usage;
+    protected List<String> usageComments;
+    protected TridasInterpretation interpretation;
+    protected String interpretationUnsolved;
+    protected TridasExtent extent;
     protected List<TridasGenericField> genericField;
-    protected List<TridasSample> sample;
+    protected List<TridasValues> values;
+    @XmlAttribute(name = "id")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlID
+    @XmlSchemaType(name = "ID")
+    protected String id;
 
     /**
      * Gets the value of the title property.
@@ -252,34 +257,6 @@ public class TridasElement {
     }
 
     /**
-     * Gets the value of the description property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets the value of the description property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDescription(String value) {
-        this.description = value;
-    }
-
-    public boolean isSetDescription() {
-        return (this.description!= null);
-    }
-
-    /**
      * Gets the value of the linkSeries property.
      * 
      * <p>
@@ -317,348 +294,292 @@ public class TridasElement {
     }
 
     /**
-     * Gets the value of the file property.
+     * Gets the value of the objective property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getObjective() {
+        return objective;
+    }
+
+    /**
+     * Sets the value of the objective property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setObjective(String value) {
+        this.objective = value;
+    }
+
+    public boolean isSetObjective() {
+        return (this.objective!= null);
+    }
+
+    /**
+     * Gets the value of the standardizingMethod property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getStandardizingMethod() {
+        return standardizingMethod;
+    }
+
+    /**
+     * Sets the value of the standardizingMethod property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setStandardizingMethod(String value) {
+        this.standardizingMethod = value;
+    }
+
+    public boolean isSetStandardizingMethod() {
+        return (this.standardizingMethod!= null);
+    }
+
+    /**
+     * Gets the value of the author property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAuthor() {
+        return author;
+    }
+
+    /**
+     * Sets the value of the author property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAuthor(String value) {
+        this.author = value;
+    }
+
+    public boolean isSetAuthor() {
+        return (this.author!= null);
+    }
+
+    /**
+     * Gets the value of the version property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * Sets the value of the version property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVersion(String value) {
+        this.version = value;
+    }
+
+    public boolean isSetVersion() {
+        return (this.version!= null);
+    }
+
+    /**
+     * Gets the value of the comments property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getComments() {
+        return comments;
+    }
+
+    /**
+     * Sets the value of the comments property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setComments(String value) {
+        this.comments = value;
+    }
+
+    public boolean isSetComments() {
+        return (this.comments!= null);
+    }
+
+    /**
+     * Gets the value of the usage property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUsage() {
+        return usage;
+    }
+
+    /**
+     * Sets the value of the usage property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setUsage(String value) {
+        this.usage = value;
+    }
+
+    public boolean isSetUsage() {
+        return (this.usage!= null);
+    }
+
+    /**
+     * Gets the value of the usageComments property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the file property.
+     * This is why there is not a <CODE>set</CODE> method for the usageComments property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getFile().add(newItem);
+     *    getUsageComments().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link TridasFile }
+     * {@link String }
      * 
      * 
      */
-    public List<TridasFile> getFile() {
-        if (file == null) {
-            file = new ArrayList<TridasFile>();
+    public List<String> getUsageComments() {
+        if (usageComments == null) {
+            usageComments = new ArrayList<String>();
         }
-        return this.file;
+        return this.usageComments;
     }
 
-    public boolean isSetFile() {
-        return ((this.file!= null)&&(!this.file.isEmpty()));
+    public boolean isSetUsageComments() {
+        return ((this.usageComments!= null)&&(!this.usageComments.isEmpty()));
     }
 
-    public void unsetFile() {
-        this.file = null;
+    public void unsetUsageComments() {
+        this.usageComments = null;
     }
 
     /**
-     * Gets the value of the taxon property.
+     * Gets the value of the interpretation property.
      * 
      * @return
      *     possible object is
-     *     {@link TridasTaxon }
+     *     {@link TridasInterpretation }
      *     
      */
-    public TridasTaxon getTaxon() {
-        return taxon;
+    public TridasInterpretation getInterpretation() {
+        return interpretation;
     }
 
     /**
-     * Sets the value of the taxon property.
+     * Sets the value of the interpretation property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasTaxon }
+     *     {@link TridasInterpretation }
      *     
      */
-    public void setTaxon(TridasTaxon value) {
-        this.taxon = value;
+    public void setInterpretation(TridasInterpretation value) {
+        this.interpretation = value;
     }
 
-    public boolean isSetTaxon() {
-        return (this.taxon!= null);
+    public boolean isSetInterpretation() {
+        return (this.interpretation!= null);
     }
 
     /**
-     * Gets the value of the shape property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TridasShape }
-     *     
-     */
-    public TridasShape getShape() {
-        return shape;
-    }
-
-    /**
-     * Sets the value of the shape property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TridasShape }
-     *     
-     */
-    public void setShape(TridasShape value) {
-        this.shape = value;
-    }
-
-    public boolean isSetShape() {
-        return (this.shape!= null);
-    }
-
-    /**
-     * Gets the value of the dimensions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TridasDimensions }
-     *     
-     */
-    public TridasDimensions getDimensions() {
-        return dimensions;
-    }
-
-    /**
-     * Sets the value of the dimensions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TridasDimensions }
-     *     
-     */
-    public void setDimensions(TridasDimensions value) {
-        this.dimensions = value;
-    }
-
-    public boolean isSetDimensions() {
-        return (this.dimensions!= null);
-    }
-
-    /**
-     * Gets the value of the authenticity property.
+     * Gets the value of the interpretationUnsolved property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getAuthenticity() {
-        return authenticity;
+    public String getInterpretationUnsolved() {
+        return interpretationUnsolved;
     }
 
     /**
-     * Sets the value of the authenticity property.
+     * Sets the value of the interpretationUnsolved property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setAuthenticity(String value) {
-        this.authenticity = value;
+    public void setInterpretationUnsolved(String value) {
+        this.interpretationUnsolved = value;
     }
 
-    public boolean isSetAuthenticity() {
-        return (this.authenticity!= null);
+    public boolean isSetInterpretationUnsolved() {
+        return (this.interpretationUnsolved!= null);
     }
 
     /**
-     * Gets the value of the location property.
+     * Gets the value of the extent property.
      * 
      * @return
      *     possible object is
-     *     {@link TridasLocation }
+     *     {@link TridasExtent }
      *     
      */
-    public TridasLocation getLocation() {
-        return location;
+    public TridasExtent getExtent() {
+        return extent;
     }
 
     /**
-     * Sets the value of the location property.
+     * Sets the value of the extent property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasLocation }
+     *     {@link TridasExtent }
      *     
      */
-    public void setLocation(TridasLocation value) {
-        this.location = value;
+    public void setExtent(TridasExtent value) {
+        this.extent = value;
     }
 
-    public boolean isSetLocation() {
-        return (this.location!= null);
-    }
-
-    /**
-     * Gets the value of the processing property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getProcessing() {
-        return processing;
-    }
-
-    /**
-     * Sets the value of the processing property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setProcessing(String value) {
-        this.processing = value;
-    }
-
-    public boolean isSetProcessing() {
-        return (this.processing!= null);
-    }
-
-    /**
-     * Gets the value of the marks property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getMarks() {
-        return marks;
-    }
-
-    /**
-     * Sets the value of the marks property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setMarks(String value) {
-        this.marks = value;
-    }
-
-    public boolean isSetMarks() {
-        return (this.marks!= null);
-    }
-
-    /**
-     * Gets the value of the altitude property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getAltitude() {
-        return altitude;
-    }
-
-    /**
-     * Sets the value of the altitude property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setAltitude(Double value) {
-        this.altitude = value;
-    }
-
-    public boolean isSetAltitude() {
-        return (this.altitude!= null);
-    }
-
-    /**
-     * Gets the value of the slope property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TridasSlope }
-     *     
-     */
-    public TridasSlope getSlope() {
-        return slope;
-    }
-
-    /**
-     * Sets the value of the slope property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TridasSlope }
-     *     
-     */
-    public void setSlope(TridasSlope value) {
-        this.slope = value;
-    }
-
-    public boolean isSetSlope() {
-        return (this.slope!= null);
-    }
-
-    /**
-     * Gets the value of the soil property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TridasSoil }
-     *     
-     */
-    public TridasSoil getSoil() {
-        return soil;
-    }
-
-    /**
-     * Sets the value of the soil property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TridasSoil }
-     *     
-     */
-    public void setSoil(TridasSoil value) {
-        this.soil = value;
-    }
-
-    public boolean isSetSoil() {
-        return (this.soil!= null);
-    }
-
-    /**
-     * Gets the value of the bedrock property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TridasBedrock }
-     *     
-     */
-    public TridasBedrock getBedrock() {
-        return bedrock;
-    }
-
-    /**
-     * Sets the value of the bedrock property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TridasBedrock }
-     *     
-     */
-    public void setBedrock(TridasBedrock value) {
-        this.bedrock = value;
-    }
-
-    public boolean isSetBedrock() {
-        return (this.bedrock!= null);
+    public boolean isSetExtent() {
+        return (this.extent!= null);
     }
 
     /**
@@ -699,40 +620,68 @@ public class TridasElement {
     }
 
     /**
-     * Gets the value of the sample property.
+     * Gets the value of the values property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the sample property.
+     * This is why there is not a <CODE>set</CODE> method for the values property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getSample().add(newItem);
+     *    getValues().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link TridasSample }
+     * {@link TridasValues }
      * 
      * 
      */
-    public List<TridasSample> getSample() {
-        if (sample == null) {
-            sample = new ArrayList<TridasSample>();
+    public List<TridasValues> getValues() {
+        if (values == null) {
+            values = new ArrayList<TridasValues>();
         }
-        return this.sample;
+        return this.values;
     }
 
-    public boolean isSetSample() {
-        return ((this.sample!= null)&&(!this.sample.isEmpty()));
+    public boolean isSetValues() {
+        return ((this.values!= null)&&(!this.values.isEmpty()));
     }
 
-    public void unsetSample() {
-        this.sample = null;
+    public void unsetValues() {
+        this.values = null;
+    }
+
+    /**
+     * Gets the value of the id property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setId(String value) {
+        this.id = value;
+    }
+
+    public boolean isSetId() {
+        return (this.id!= null);
     }
 
     @Override
