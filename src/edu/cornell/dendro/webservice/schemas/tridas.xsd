@@ -711,10 +711,10 @@ more information on http://www.gnu.org/licenses/lgpl.html
 						<xs:element ref="measuringMethod" minOccurs="1"/>
 						<xs:element ref="comments" minOccurs="0"/>
 						<xs:element ref="usage" minOccurs="0"/>
-						<xs:element ref="usageComments" minOccurs="0"/>
+						<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:group ref="interpretationType" minOccurs="0"/>
-						<xs:element ref="genericField" minOccurs="0"/>
-						<xs:element ref="values" minOccurs="0"/>
+						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="values" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 					<xs:attribute name="id" type="xs:ID"/>
 				</xs:restriction>
@@ -821,11 +821,11 @@ more information on http://www.gnu.org/licenses/lgpl.html
 						<xs:element ref="version" minOccurs="0"/>
 						<xs:element ref="comments" minOccurs="0"/>
 						<xs:element ref="usage" minOccurs="0"/>
-						<xs:element ref="usageComments" minOccurs="0"/>
+						<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:group ref="interpretationType" minOccurs="0"/>
 						<xs:element ref="extent" minOccurs="0"/>
-						<xs:element ref="genericField" minOccurs="0"/>
-						<xs:element ref="values" minOccurs="0"/>
+						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="values" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 					<xs:attribute name="id" type="xs:ID"/>
 				</xs:restriction>
