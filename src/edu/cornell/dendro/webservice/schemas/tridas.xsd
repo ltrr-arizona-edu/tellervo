@@ -703,18 +703,18 @@ more information on http://www.gnu.org/licenses/lgpl.html
 				<xs:restriction base="baseSeries">
 					<xs:sequence>
 						<xs:element ref="title"/>
-						<xs:element ref="identifier"/>
-						<xs:element ref="createdTimestamp"/>
-						<xs:element ref="lastModifiedTimestamp"/>
-						<xs:element ref="analyst"/>
-						<xs:element ref="dendrochronologist"/>
+						<xs:element ref="identifier" minOccurs="0"/>
+						<xs:element ref="createdTimestamp" minOccurs="0"/>
+						<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
+						<xs:element ref="analyst" minOccurs="0"/>
+						<xs:element ref="dendrochronologist" minOccurs="0"/>
 						<xs:element ref="measuringMethod" minOccurs="1"/>
-						<xs:element ref="comments"/>
-						<xs:element ref="usage"/>
-						<xs:element ref="usageComments"/>
-						<xs:group ref="interpretationType" />
-						<xs:element ref="genericField"/>
-						<xs:element ref="values"/>
+						<xs:element ref="comments" minOccurs="0"/>
+						<xs:element ref="usage" minOccurs="0"/>
+						<xs:element ref="usageComments" minOccurs="0"/>
+						<xs:group ref="interpretationType" minOccurs="0"/>
+						<xs:element ref="genericField" minOccurs="0"/>
+						<xs:element ref="values" minOccurs="0"/>
 					</xs:sequence>
 					<xs:attribute name="id" type="xs:ID"/>
 				</xs:restriction>
@@ -810,22 +810,22 @@ more information on http://www.gnu.org/licenses/lgpl.html
 				<xs:restriction base="baseSeries">
 					<xs:sequence>
 						<xs:element ref="title"/>
-						<xs:element ref="identifier"/>
-						<xs:element ref="createdTimestamp"/>
-						<xs:element ref="lastModifiedTimestamp"/>
+						<xs:element ref="identifier" minOccurs="0"/>
+						<xs:element ref="createdTimestamp" minOccurs="0"/>
+						<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
 						<xs:element ref="type" minOccurs="1"/>
 						<xs:element ref="linkSeries" minOccurs="1" maxOccurs="unbounded"/>
-						<xs:element ref="objective"/>
-						<xs:element ref="standardizingMethod"/>
-						<xs:element ref="author"/>
-						<xs:element ref="version"/>
-						<xs:element ref="comments"/>
-						<xs:element ref="usage"/>
-						<xs:element ref="usageComments"/>
-						<xs:group ref="interpretationType"/>
-						<xs:element ref="extent"/>
-						<xs:element ref="genericField"/>
-						<xs:element ref="values"/>
+						<xs:element ref="objective" minOccurs="0"/>
+						<xs:element ref="standardizingMethod" minOccurs="0"/>
+						<xs:element ref="author" minOccurs="0"/>
+						<xs:element ref="version" minOccurs="0"/>
+						<xs:element ref="comments" minOccurs="0"/>
+						<xs:element ref="usage" minOccurs="0"/>
+						<xs:element ref="usageComments" minOccurs="0"/>
+						<xs:group ref="interpretationType" minOccurs="0"/>
+						<xs:element ref="extent" minOccurs="0"/>
+						<xs:element ref="genericField" minOccurs="0"/>
+						<xs:element ref="values" minOccurs="0"/>
 					</xs:sequence>
 					<xs:attribute name="id" type="xs:ID"/>
 				</xs:restriction>
