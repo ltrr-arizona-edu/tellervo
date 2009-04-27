@@ -81,6 +81,31 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			<xs:enumeration value=""/>
 		</xs:restriction>
 	</xs:simpleType>
+	<!-- Dating suffix data type-->
+	<xs:simpleType name="datingSuffix">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AD"/>
+			<xs:enumeration value="BC"/>
+			<xs:enumeration value="BP"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Presence/Absence enumeration-->
+	<xs:simpleType name="presenceAbsence">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="present"/>
+			<xs:enumeration value="absent"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Complex presence enumeration-->
+	<xs:simpleType name="complexPresenceAbsence">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="unknown"/>
+			<xs:enumeration value="not applicable"/>
+			<xs:enumeration value="absent"/>
+			<xs:enumeration value="complete"/>
+			<xs:enumeration value="incomplete"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<!-- date and time -->
 	<xs:simpleType name="certainty">
 		<xs:restriction base="xs:string">
@@ -111,15 +136,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 		<xs:simpleContent>
 			<xs:extension base="xs:positiveInteger">
 				<xs:attribute name="certainty" type="certainty" use="optional"/>
-				<xs:attribute name="suffix" use="required">
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:enumeration value="AD"/>
-							<xs:enumeration value="BC"/>
-							<xs:enumeration value="BP"/>
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:attribute>
+				<xs:attribute name="suffix" use="required" type="datingSuffix"/>		
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -590,14 +607,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<!-- RADIUS.pith -->
 	<xs:element name="pith">
 		<xs:complexType>
-			<xs:attribute name="presence" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="present"/>
-						<xs:enumeration value="absent"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="presence" use="required" type="presenceAbsence"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- RADIUS.azimuth -->
@@ -623,17 +633,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 				<xs:element ref="missingSapwoodRingsToBark" minOccurs="0"/>
 				<xs:element ref="missingSapwoodRingsToBarkFoundation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attribute name="presence" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="unknown"/>
-						<xs:enumeration value="not applicable"/>
-						<xs:enumeration value="absent"/>
-						<xs:enumeration value="complete"/>
-						<xs:enumeration value="incomplete"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="presence" use="required" type="complexPresenceAbsence"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="nrOfSapwoodRings" type="xs:string"/>
@@ -643,14 +643,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<!-- RADIUS.bark -->
 	<xs:element name="bark">
 		<xs:complexType>
-			<xs:attribute name="presence" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="present"/>
-						<xs:enumeration value="absent"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="presence" use="required" type="presenceAbsence"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- RADIUS.genericField (global type) -->
