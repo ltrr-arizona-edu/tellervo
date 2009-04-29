@@ -140,6 +140,15 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
+	<!-- tridasEntityBase -->
+	<xs:complexType name="tridasEntity" abstract="true">
+		<xs:sequence>
+			<xs:element ref="title"/>
+			<xs:element ref="identifier" minOccurs="0"/>
+			<xs:element ref="createdTimestamp" minOccurs="0"/>
+			<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
 	<!-- linkSeries -->
 	<xs:element name="linkSeries">
 		<xs:complexType>
@@ -266,26 +275,26 @@ more information on http://www.gnu.org/licenses/lgpl.html
 %%%%%%%%%%%%%% -->
 	<xs:element name="project">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="title"/>
-				<xs:element ref="identifier" minOccurs="0"/>
-				<xs:element ref="createdTimestamp" minOccurs="0"/>
-				<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
-				<xs:element ref="type" maxOccurs="unbounded"/>
-				<xs:element ref="description" minOccurs="0"/>
-				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="laboratory" maxOccurs="unbounded"/>
-				<xs:element ref="category"/>
-				<xs:element ref="investigator"/>
-				<xs:element ref="period"/>
-				<xs:element ref="requestDate" minOccurs="0"/>
-				<xs:element ref="commissioner" minOccurs="0"/>
-				<xs:element ref="reference" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="research" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="object" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
+			<xs:complexContent>
+				<xs:extension base="tridasEntity">
+					<xs:sequence>
+						<xs:element ref="type" maxOccurs="unbounded"/>
+						<xs:element ref="description" minOccurs="0"/>
+						<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="laboratory" maxOccurs="unbounded"/>
+						<xs:element ref="category"/>
+						<xs:element ref="investigator"/>
+						<xs:element ref="period"/>
+						<xs:element ref="requestDate" minOccurs="0"/>
+						<xs:element ref="commissioner" minOccurs="0"/>
+						<xs:element ref="reference" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="research" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="object" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
 	<!-- PROJECT.title (global type)-->
@@ -353,23 +362,23 @@ more information on http://www.gnu.org/licenses/lgpl.html
 %%%%%%%%%%%%%%-->
 	<xs:element name="object">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="title"/>
-				<xs:element ref="identifier" minOccurs="0"/>
-				<xs:element ref="createdTimestamp" minOccurs="0"/>
-				<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
-				<xs:element ref="type"/>
-				<xs:element ref="description" minOccurs="0"/>
-				<xs:element ref="linkSeries" minOccurs="0" maxOccurs="1"/>				
-				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="creator" minOccurs="0"/>
-				<xs:element ref="owner" minOccurs="0"/>
-				<xs:element ref="coverage" minOccurs="0"/>
-				<xs:element ref="location" minOccurs="0"/>
-				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="object" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
+			<xs:complexContent>
+				<xs:extension base="tridasEntity">
+					<xs:sequence>
+						<xs:element ref="type"/>
+						<xs:element ref="description" minOccurs="0"/>
+						<xs:element ref="linkSeries" minOccurs="0" maxOccurs="1"/>
+						<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="creator" minOccurs="0"/>
+						<xs:element ref="owner" minOccurs="0"/>
+						<xs:element ref="coverage" minOccurs="0"/>
+						<xs:element ref="location" minOccurs="0"/>
+						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="object" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
 	<!-- OBJECT.title (global type) -->
@@ -403,29 +412,29 @@ more information on http://www.gnu.org/licenses/lgpl.html
 %%%%%%%%%%%%%%-->
 	<xs:element name="element">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="title"/>
-				<xs:element ref="identifier" minOccurs="0"/>
-				<xs:element ref="createdTimestamp" minOccurs="0"/>
-				<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
-				<xs:element ref="type" minOccurs="0"/>
-				<xs:element ref="description" minOccurs="0"/>
-				<xs:element ref="linkSeries" minOccurs="0" maxOccurs="1"/>		
-				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="taxon"/>
-				<xs:element ref="shape" minOccurs="0"/>
-				<xs:element ref="dimensions" minOccurs="0"/>
-				<xs:element ref="authenticity" minOccurs="0"/>
-				<xs:element ref="location" minOccurs="0"/>
-				<xs:element ref="processing" minOccurs="0"/>
-				<xs:element ref="marks" minOccurs="0"/>
-				<xs:element ref="altitude" minOccurs="0"/>
-				<xs:element ref="slope" minOccurs="0"/>
-				<xs:element ref="soil" minOccurs="0"/>
-				<xs:element ref="bedrock" minOccurs="0"/>
-				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="sample" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
+			<xs:complexContent>
+				<xs:extension base="tridasEntity">
+					<xs:sequence>
+						<xs:element ref="type" minOccurs="0"/>
+						<xs:element ref="description" minOccurs="0"/>
+						<xs:element ref="linkSeries" minOccurs="0" maxOccurs="1"/>		
+						<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="taxon"/>
+						<xs:element ref="shape" minOccurs="0"/>
+						<xs:element ref="dimensions" minOccurs="0"/>
+						<xs:element ref="authenticity" minOccurs="0"/>
+						<xs:element ref="location" minOccurs="0"/>
+						<xs:element ref="processing" minOccurs="0"/>
+						<xs:element ref="marks" minOccurs="0"/>
+						<xs:element ref="altitude" minOccurs="0"/>
+						<xs:element ref="slope" minOccurs="0"/>
+						<xs:element ref="soil" minOccurs="0"/>
+						<xs:element ref="bedrock" minOccurs="0"/>
+						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="sample" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
 	<!-- ELEMENT.title (global type) -->
@@ -529,24 +538,24 @@ more information on http://www.gnu.org/licenses/lgpl.html
 %%%%%%%%%%%%%%-->
 	<xs:element name="sample">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="title"/>
-				<xs:element ref="identifier" minOccurs="0"/>
-				<xs:element ref="createdTimestamp" minOccurs="0"/>
-				<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
-				<xs:element ref="type"/>
-				<xs:element ref="description" minOccurs="0"/>
-				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="samplingDate" minOccurs="0"/>
-				<xs:element ref="position" minOccurs="0"/>
-				<xs:element ref="state" minOccurs="0"/>
-				<xs:element ref="knots" minOccurs="0"/>
-				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:choice>
-					<xs:element ref="radius" minOccurs="0"/>
-					<xs:element ref="radiusPlaceholder" minOccurs="0"/>
-				</xs:choice>
-			</xs:sequence>
+			<xs:complexContent>
+				<xs:extension base="tridasEntity">
+					<xs:sequence>
+						<xs:element ref="type"/>
+						<xs:element ref="description" minOccurs="0"/>
+						<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="samplingDate" minOccurs="0"/>
+						<xs:element ref="position" minOccurs="0"/>
+						<xs:element ref="state" minOccurs="0"/>
+						<xs:element ref="knots" minOccurs="0"/>
+						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:choice>
+							<xs:element ref="radius" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element ref="radiusPlaceholder" minOccurs="0"/>
+						</xs:choice>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
 	<!-- SAMPLE.title (global type) -->
@@ -588,16 +597,20 @@ more information on http://www.gnu.org/licenses/lgpl.html
 %%%%%%%%%%%%%%-->
 	<xs:element name="radius">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="title"/>
-				<xs:element ref="identifier" minOccurs="0"/>
-				<xs:element ref="createdTimestamp" minOccurs="0"/>
-				<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
-				<xs:element ref="pithAndSapwoodInfo" minOccurs="0" maxOccurs="1"/>
-				<xs:element ref="azimuth" minOccurs="0"/>
-				<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
+			<xs:complexContent>
+				<xs:extension base="tridasEntity">
+					<xs:sequence>
+						<xs:element ref="title"/>
+						<xs:element ref="identifier" minOccurs="0"/>
+						<xs:element ref="createdTimestamp" minOccurs="0"/>
+						<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
+						<xs:element ref="pithAndSapwoodInfo" minOccurs="0" maxOccurs="1"/>
+						<xs:element ref="azimuth" minOccurs="0"/>
+						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
 	<!-- RADIUS.title (global type) -->
@@ -667,30 +680,30 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	</xs:group>
 	
 	<xs:complexType name="baseSeries" abstract="true">
-		<xs:sequence>
-			<xs:element ref="title"/>
-			<xs:element ref="identifier" minOccurs="0"/>
-			<xs:element ref="createdTimestamp" minOccurs="0"/>
-			<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
-			<xs:element ref="pithAndSapwoodInfo" minOccurs="0" maxOccurs="1"/>			
-			<xs:element ref="analyst" minOccurs="0"/>
-			<xs:element ref="dendrochronologist" minOccurs="0"/>
-			<xs:element ref="measuringMethod" minOccurs="0" maxOccurs="1"/>
-			<xs:element ref="type" minOccurs="0" maxOccurs="1"/>
-			<xs:element ref="linkSeries" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element ref="objective" minOccurs="0"/>
-			<xs:element ref="standardizingMethod" minOccurs="0"/>
-			<xs:element ref="author" minOccurs="0"/>
-			<xs:element ref="version" minOccurs="0"/>
-			<xs:element ref="comments" minOccurs="0"/>
-			<xs:element ref="usage" minOccurs="0"/>
-			<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:group ref="interpretationType" minOccurs="0"/>
-			<xs:element ref="extent" minOccurs="0"/>
-			<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element ref="values" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-		<xs:attribute name="id" type="xs:ID"/>
+		<xs:complexContent>
+			<xs:extension base="tridasEntity">
+				<xs:sequence>
+					<xs:element ref="pithAndSapwoodInfo" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="analyst" minOccurs="0"/>
+					<xs:element ref="dendrochronologist" minOccurs="0"/>
+					<xs:element ref="measuringMethod" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="type" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="linkSeries" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="objective" minOccurs="0"/>
+					<xs:element ref="standardizingMethod" minOccurs="0"/>
+					<xs:element ref="author" minOccurs="0"/>
+					<xs:element ref="version" minOccurs="0"/>
+					<xs:element ref="comments" minOccurs="0"/>
+					<xs:element ref="usage" minOccurs="0"/>
+					<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:group ref="interpretationType" minOccurs="0"/>
+					<xs:element ref="extent" minOccurs="0"/>
+					<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="values" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="id" type="xs:ID"/>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>	
 		
 	<!--	
