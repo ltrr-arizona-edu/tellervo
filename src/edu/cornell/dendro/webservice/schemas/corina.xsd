@@ -138,7 +138,6 @@
 				<xs:element ref="searchParams" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="authenticate" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="entity" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="parentEntity" minOccurs="0" maxOccurs="1"/>
 				<xs:sequence>
 					<xs:element ref="tridas:project" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
