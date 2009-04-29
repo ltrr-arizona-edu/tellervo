@@ -8,6 +8,199 @@
 	<xs:import namespace="http://www.tridas.org/1.2" schemaLocation="tridas.xsd"/>
 	<!--
 %%%%%%%%%%%%%%
+%		TYPES
+%%%%%%%%%%%%%% -->
+	<xs:simpleType name="searchReturnObject">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="sample" />
+			<xs:enumeration value="object" />
+			<xs:enumeration value="element" />
+			<xs:enumeration value="radius" />
+			<xs:enumeration value="taxon" />
+			<xs:enumeration value="measurementSeries" />
+			<xs:enumeration value="derivedSeries" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="entityType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="project"/>
+			<xs:enumeration value="object"/>
+			<xs:enumeration value="element"/>
+			<xs:enumeration value="sample"/>
+			<xs:enumeration value="radius"/>
+			<xs:enumeration value="measurementSeries"/>
+			<xs:enumeration value="derivedSeries"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="corinaRequestType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="create"/>
+			<xs:enumeration value="read"/>
+			<xs:enumeration value="update"/>
+			<xs:enumeration value="delete"/>
+			<xs:enumeration value="plainlogin"/>
+			<xs:enumeration value="securelogin"/>
+			<xs:enumeration value="nonce"/>
+			<xs:enumeration value="logout"/>
+			<xs:enumeration value="help"/>
+			<xs:enumeration value="search"/>
+			<xs:enumeration value="assign"/>
+			<xs:enumeration value="unassign"/>
+		</xs:restriction>	
+	</xs:simpleType>
+
+	<xs:simpleType name="corinaRequestFormat">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="standard"/>
+			<xs:enumeration value="summary"/>
+			<xs:enumeration value="comprehensive"/>
+			<xs:enumeration value="minimal"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="corinaRequestStatus">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OK"/>
+			<xs:enumeration value="Warning"/>
+			<xs:enumeration value="Notice"/>
+			<xs:enumeration value="Error"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="searchParameterName">
+		<xs:restriction base="xs:string">
+
+			<!-- OBJECT ATTRIBUTES-->
+			<xs:enumeration value="objectid"/>
+			<xs:enumeration value="objectdbid"/>						
+			<xs:enumeration value="objecttitle"/>
+			<xs:enumeration value="objectcreated"/>
+			<xs:enumeration value="objectlastmodified"/>
+			<xs:enumeration value="objectdescription" />
+			<xs:enumeration value="objectcreator" />
+			<xs:enumeration value="objectowner" />
+			<xs:enumeration value="objectfile" />
+			<xs:enumeration value="objectcoverageTemporal" />
+			<xs:enumeration value="objectcoverageTemporalFoundation" />
+			<xs:enumeration value="objectlocationtype"/>
+			<xs:enumeration value="objectlocationprecision" />
+			<xs:enumeration value="objectlocationcomment" />
+			<xs:enumeration value="objecttype" />
+			<xs:enumeration value="objectcode" />
+			<xs:enumeration value="parentobjectid" />
+			<xs:enumeration value="objectlocation" />
+			<xs:enumeration value="countOfChildSeriesOfObject"/>
+			
+			<!-- ELEMENT ATTRIBUTES -->
+			<xs:enumeration value="elementid" />
+			<xs:enumeration value="elementdbid" />
+			<xs:enumeration value="elementoriginaltaxonname"/>
+			<xs:enumeration value="elementphylumname"/>
+			<xs:enumeration value="elementclassname"/>
+			<xs:enumeration value="elementordername"/>
+			<xs:enumeration value="elementfamilyname"/>
+			<xs:enumeration value="elementgenusname"/>
+			<xs:enumeration value="elementspeciesname"/>
+			<xs:enumeration value="elementinfraspeciesname"/>
+			<xs:enumeration value="elementinfraspeciestype"/>
+			<xs:enumeration value="elementauthenticity" />
+			<xs:enumeration value="elementshape" />
+			<xs:enumeration value="elementheight" />
+			<xs:enumeration value="elementwidth" />
+			<xs:enumeration value="elementdepth" />
+			<xs:enumeration value="elementdiameter" />
+			<xs:enumeration value="elementdimensionunits" />
+			<xs:enumeration value="elementdimensionunitspower" />
+			<xs:enumeration value="elementtype" />
+			<xs:enumeration value="elementfile" />
+			<xs:enumeration value="elementlocationtype"/>
+			<xs:enumeration value="elementlocationprecision"/>
+			<xs:enumeration value="elementlocationcomment"/>
+			<xs:enumeration value="elementprocessing"/>
+			<xs:enumeration value="elementmarks"/>
+			<xs:enumeration value="elementdescription"/>
+			<xs:enumeration value="elementcreated" />
+			<xs:enumeration value="elementlastmodified"/>
+			
+			<!-- SAMPLE ATTRIBUTES -->
+			<xs:enumeration value="sampleid"/>
+			<xs:enumeration value="sampledbid"/>
+			<xs:enumeration value="samplingdate"/>
+			<xs:enumeration value="samplefile"/>
+			<xs:enumeration value="sampleposition"/>
+			<xs:enumeration value="samplestate"/>
+			<xs:enumeration value="samplehasknots"/>
+			<xs:enumeration value="sampledescription"/>
+			<xs:enumeration value="samplecreated"/>
+			<xs:enumeration value="samplelastmodified"/>
+			<xs:enumeration value="samplingdatecertainty"/>
+			
+			<!-- RADIUS ATTRIBUTES -->
+			<xs:enumeration value="radiusid"/>
+			<xs:enumeration value="radiusdbid"/>
+			<xs:enumeration value="radiuspith"/>
+			<xs:enumeration value="radiussapwood"/>
+			<xs:enumeration value="radiusheartwood"/>
+			<xs:enumeration value="radiusbark"/>
+			<xs:enumeration value="radiusnumbersapwoodrings"/>
+			<xs:enumeration value="radiuslastringunderbark"/>
+			<xs:enumeration value="radiusmissingheartwoodringstopith"/>
+			<xs:enumeration value="radiusmissingheartwoodringstopithfoundation"/>
+			<xs:enumeration value="radiusmissingsapwoodringstobark"/>
+			<xs:enumeration value="radiusmissingsapwoodringstobarkfoundation"/>
+			<xs:enumeration value="radiuscreated"/>
+			<xs:enumeration value="radiuslastmodified"/>
+			
+			<!-- SERIES ATTRIBUTES -->
+			<xs:enumeration value="seriesid"/>
+			<xs:enumeration value="seriesdbid"/>
+			<xs:enumeration value="seriesmeasuringmethod"/>
+			<xs:enumeration value="seriesvariable"/>
+			<xs:enumeration value="seriesunit"/>
+			<xs:enumeration value="seriespower"/>
+			<xs:enumeration value="seriesmeasuringdate"/>
+			<xs:enumeration value="seriesanalyst"/>
+			<xs:enumeration value="seriesdendrochronologist"/>
+			<xs:enumeration value="seriescomments"/>
+			<xs:enumeration value="seriesusage"/>
+			<xs:enumeration value="seriesusagecomments"/>
+			<xs:enumeration value="seriesfirstyear"/>
+			<xs:enumeration value="seriessproutyear"/>
+			<xs:enumeration value="seriesdeathyear"/>
+			<xs:enumeration value="seriesprovenance"/>
+			<xs:enumeration value="seriestype"/>
+			<xs:enumeration value="seriesstandardizingmethod"/>
+			<xs:enumeration value="seriesauthor"/>
+			<xs:enumeration value="seriesobjective"/>
+			<xs:enumeration value="seriesversion"/>
+			<xs:enumeration value="seriesderivationdate"/>
+			<xs:enumeration value="serieslastmodified"/>
+			<xs:enumeration value="seriesoperatorparameter"/>
+			<xs:enumeration value="seriesisreconciled"/>
+			<xs:enumeration value="seriesdatingtype"/>
+			<xs:enumeration value="seriesdatingerrorpositive"/>
+			<xs:enumeration value="seriesdatingerrornegative"/>
+			<xs:enumeration value="seriesvaluecount"/>
+			<xs:enumeration value="seriescount"/>
+
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="searchOperator">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="&gt;"/>
+			<xs:enumeration value="&lt;"/>
+			<xs:enumeration value="="/>
+			<xs:enumeration value="!="/>
+			<xs:enumeration value="like"/>
+			<xs:enumeration value="is"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<!--
+%%%%%%%%%%%%%%
 %		ROOT
 %%%%%%%%%%%%%% -->
 	<xs:element name="corina">
@@ -41,19 +234,7 @@
 					</xs:element>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name="returnObject">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="sample" />
-						<xs:enumeration value="object" />
-						<xs:enumeration value="element" />
-						<xs:enumeration value="radius" />
-						<xs:enumeration value="taxon" />
-						<xs:enumeration value="measurementSeries" />
-						<xs:enumeration value="derivedSeries" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="returnObject" type="searchReturnObject"/>
 			<xs:attribute name="limit" type="signedInt" />
 			<xs:attribute name="skip" type="signedInt" />
 			<xs:attribute name="includeChildren" type="xs:boolean" />
@@ -79,52 +260,7 @@
 %%%%%%%%%%%%%% -->
 	<xs:element name="entity">
 		<xs:complexType>
-			<xs:attribute name="type">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="project" />
-						<xs:enumeration value="object"></xs:enumeration>
-						<xs:enumeration value="element"></xs:enumeration>
-						<xs:enumeration value="sample"></xs:enumeration>
-						<xs:enumeration value="radius"></xs:enumeration>
-						<xs:enumeration value="measurementSeries"></xs:enumeration>
-						<xs:enumeration value="derivedSeries"></xs:enumeration>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="id" type="signedInt" />
-		</xs:complexType>
-	</xs:element>
-	<!--
-%%%%%%%%%%%%%%
-%		PARENT ENTITY
-%%%%%%%%%%%%%% -->
-	<xs:element name="parentEntity">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="tridas:project" minOccurs="0" maxOccurs="unbounded" />
-				<xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded" />
-				<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded" />
-				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded" />
-				<xs:element ref="tridas:radius" minOccurs="0" maxOccurs="unbounded" />
-				<xs:element ref="tridas:measurementSeries" minOccurs="0"
-					maxOccurs="unbounded" />
-				<xs:element ref="tridas:derivedSeries" minOccurs="0"
-					maxOccurs="unbounded" />
-			</xs:sequence>
-			<xs:attribute name="type">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="project" />
-						<xs:enumeration value="object"></xs:enumeration>
-						<xs:enumeration value="element"></xs:enumeration>
-						<xs:enumeration value="sample"></xs:enumeration>
-						<xs:enumeration value="radius"></xs:enumeration>
-						<xs:enumeration value="measurementSeries"></xs:enumeration>
-						<xs:enumeration value="derivedSeries"></xs:enumeration>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="type" type="entityType" />
 			<xs:attribute name="id" type="signedInt" />
 		</xs:complexType>
 	</xs:element>
@@ -159,34 +295,8 @@
 					</xs:element>
 				</xs:sequence>
 			</xs:choice>
-			<xs:attribute name="type">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="create"/>
-						<xs:enumeration value="read"/>
-						<xs:enumeration value="update"/>
-						<xs:enumeration value="delete"/>
-						<xs:enumeration value="plainlogin"/>
-						<xs:enumeration value="securelogin"/>
-						<xs:enumeration value="nonce"/>
-						<xs:enumeration value="logout"/>
-						<xs:enumeration value="help"/>
-						<xs:enumeration value="search"/>
-						<xs:enumeration value="assign"/>
-						<xs:enumeration value="unassign"/>
-					</xs:restriction>	
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="format">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="standard"/>
-						<xs:enumeration value="summary"/>
-						<xs:enumeration value="comprehensive"/>
-						<xs:enumeration value="minimal"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="type" type="corinaRequestType"/>
+			<xs:attribute name="format" type="corinaRequestFormat"/>
 			<xs:attribute name="parentEntityID" type="signedInt"/>
 		</xs:complexType>
 	</xs:element>
@@ -224,34 +334,8 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="requestUrl" type="xs:string"/>
-				<xs:element name="requestType">
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:enumeration value="search"/>
-							<xs:enumeration value="create"/>
-							<xs:enumeration value="read"/>
-							<xs:enumeration value="update"/>
-							<xs:enumeration value="delete"/>
-							<xs:enumeration value="plainlogin"/>
-							<xs:enumeration value="securelogin"/>
-							<xs:enumeration value="nonce"/>
-							<xs:enumeration value="logout"/>
-							<xs:enumeration value="help"/>
-							<xs:enumeration value="assign"/>
-							<xs:enumeration value="unassign"/>
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:element>
-				<xs:element name="status">
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:enumeration value="OK"/>
-							<xs:enumeration value="Warning"/>
-							<xs:enumeration value="Notice"/>
-							<xs:enumeration value="Error"/>
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:element>
+				<xs:element name="requestType" type="corinaRequestFormat"/>
+				<xs:element name="status" type="corinaRequestStatus"/>
 				<xs:element ref="message" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="timing" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="nonce" minOccurs="0" maxOccurs="1"/>
@@ -493,138 +577,8 @@
 %%%%%%%%%%%%%% -->
 	<xs:element name="param">
 		<xs:complexType>
-			<xs:attribute name="name">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-
-						<!-- OBJECT ATTRIBUTES-->
-						<xs:enumeration value="objectid"/>
-						<xs:enumeration value="objectdbid"/>						
-						<xs:enumeration value="objecttitle"/>
-						<xs:enumeration value="objectcreated"/>
-						<xs:enumeration value="objectlastmodified"/>
-						<xs:enumeration value="objectdescription" />
-						<xs:enumeration value="objectcreator" />
-						<xs:enumeration value="objectowner" />
-						<xs:enumeration value="objectfile" />
-						<xs:enumeration value="objectcoverageTemporal" />
-						<xs:enumeration value="objectcoverageTemporalFoundation" />
-						<xs:enumeration value="objectlocationtype"/>
-						<xs:enumeration value="objectlocationprecision" />
-						<xs:enumeration value="objectlocationcomment" />
-						<xs:enumeration value="objecttype" />
-						<xs:enumeration value="objectcode" />
-						<xs:enumeration value="parentobjectid" />
-						<xs:enumeration value="objectlocation" />
-						<xs:enumeration value="countOfChildSeriesOfObject"/>
-						
-						<!-- ELEMENT ATTRIBUTES -->
-						<xs:enumeration value="elementid" />
-						<xs:enumeration value="elementdbid" />
-						<xs:enumeration value="elementoriginaltaxonname"/>
-						<xs:enumeration value="elementphylumname"/>
-						<xs:enumeration value="elementclassname"/>
-						<xs:enumeration value="elementordername"/>
-						<xs:enumeration value="elementfamilyname"/>
-						<xs:enumeration value="elementgenusname"/>
-						<xs:enumeration value="elementspeciesname"/>
-						<xs:enumeration value="elementinfraspeciesname"/>
-						<xs:enumeration value="elementinfraspeciestype"/>
-						<xs:enumeration value="elementauthenticity" />
-						<xs:enumeration value="elementshape" />
-						<xs:enumeration value="elementheight" />
-						<xs:enumeration value="elementwidth" />
-						<xs:enumeration value="elementdepth" />
-						<xs:enumeration value="elementdiameter" />
-						<xs:enumeration value="elementdimensionunits" />
-						<xs:enumeration value="elementdimensionunitspower" />
-						<xs:enumeration value="elementtype" />
-						<xs:enumeration value="elementfile" />
-						<xs:enumeration value="elementlocationtype"/>
-						<xs:enumeration value="elementlocationprecision"/>
-						<xs:enumeration value="elementlocationcomment"/>
-						<xs:enumeration value="elementprocessing"/>
-						<xs:enumeration value="elementmarks"/>
-						<xs:enumeration value="elementdescription"/>
-						<xs:enumeration value="elementcreated" />
-						<xs:enumeration value="elementlastmodified"/>
-						
-						<!-- SAMPLE ATTRIBUTES -->
-						<xs:enumeration value="sampleid"/>
-						<xs:enumeration value="sampledbid"/>
-						<xs:enumeration value="samplingdate"/>
-						<xs:enumeration value="samplefile"/>
-						<xs:enumeration value="sampleposition"/>
-						<xs:enumeration value="samplestate"/>
-						<xs:enumeration value="samplehasknots"/>
-						<xs:enumeration value="sampledescription"/>
-						<xs:enumeration value="samplecreated"/>
-						<xs:enumeration value="samplelastmodified"/>
-						<xs:enumeration value="samplingdatecertainty"/>
-						
-						<!-- RADIUS ATTRIBUTES -->
-						<xs:enumeration value="radiusid"/>
-						<xs:enumeration value="radiusdbid"/>
-						<xs:enumeration value="radiuspith"/>
-						<xs:enumeration value="radiussapwood"/>
-						<xs:enumeration value="radiusheartwood"/>
-						<xs:enumeration value="radiusbark"/>
-						<xs:enumeration value="radiusnumbersapwoodrings"/>
-						<xs:enumeration value="radiuslastringunderbark"/>
-						<xs:enumeration value="radiusmissingheartwoodringstopith"/>
-						<xs:enumeration value="radiusmissingheartwoodringstopithfoundation"/>
-						<xs:enumeration value="radiusmissingsapwoodringstobark"/>
-						<xs:enumeration value="radiusmissingsapwoodringstobarkfoundation"/>
-						<xs:enumeration value="radiuscreated"/>
-						<xs:enumeration value="radiuslastmodified"/>
-						
-						<!-- SERIES ATTRIBUTES -->
-						<xs:enumeration value="seriesid"/>
-						<xs:enumeration value="seriesdbid"/>
-						<xs:enumeration value="seriesmeasuringmethod"/>
-						<xs:enumeration value="seriesvariable"/>
-						<xs:enumeration value="seriesunit"/>
-						<xs:enumeration value="seriespower"/>
-						<xs:enumeration value="seriesmeasuringdate"/>
-						<xs:enumeration value="seriesanalyst"/>
-						<xs:enumeration value="seriesdendrochronologist"/>
-						<xs:enumeration value="seriescomments"/>
-						<xs:enumeration value="seriesusage"/>
-						<xs:enumeration value="seriesusagecomments"/>
-						<xs:enumeration value="seriesfirstyear"/>
-						<xs:enumeration value="seriessproutyear"/>
-						<xs:enumeration value="seriesdeathyear"/>
-						<xs:enumeration value="seriesprovenance"/>
-						<xs:enumeration value="seriestype"/>
-						<xs:enumeration value="seriesstandardizingmethod"/>
-						<xs:enumeration value="seriesauthor"/>
-						<xs:enumeration value="seriesobjective"/>
-						<xs:enumeration value="seriesversion"/>
-						<xs:enumeration value="seriesderivationdate"/>
-						<xs:enumeration value="serieslastmodified"/>
-						<xs:enumeration value="seriesoperatorparameter"/>
-						<xs:enumeration value="seriesisreconciled"/>
-						<xs:enumeration value="seriesdatingtype"/>
-						<xs:enumeration value="seriesdatingerrorpositive"/>
-						<xs:enumeration value="seriesdatingerrornegative"/>
-						<xs:enumeration value="seriesvaluecount"/>
-						<xs:enumeration value="seriescount"/>
-
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="operator">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="&gt;"/>
-						<xs:enumeration value="&lt;"/>
-						<xs:enumeration value="="/>
-						<xs:enumeration value="!="/>
-						<xs:enumeration value="like"/>
-						<xs:enumeration value="is"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="name" type="searchParameterName"/>
+			<xs:attribute name="operator" type="searchOperator"/>
 			<xs:attribute name="value" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
