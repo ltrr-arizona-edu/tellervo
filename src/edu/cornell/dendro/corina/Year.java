@@ -20,6 +20,10 @@
 
 package edu.cornell.dendro.corina;
 
+import java.math.BigInteger;
+
+import org.tridas.schema.DatingSuffix;
+
 /**
    <p>A calendar year.  It normally acts similar to an integer, but
    skips the mythical "year 0".</p>
@@ -139,6 +143,21 @@ public final class Year implements Comparable {
     public int intValue() {
         // i pity th' fool who tries to use intvalue!
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Retrieve this year as a tridas schema year (incl bc/ad)
+     * @return
+     */
+    public org.tridas.schema.Year tridasYearValue() {
+    	org.tridas.schema.Year tridasYear = new org.tridas.schema.Year();
+    	tridasYear.setValue(BigInteger.valueOf(Math.abs(y)));
+    	if(y < 0)
+    		tridasYear.setSuffix(DatingSuffix.BC);
+    	else if(y > 0)
+    		tridasYear.setSuffix(DatingSuffix.AD);
+    	
+    	return tridasYear;
     }
 
     /**

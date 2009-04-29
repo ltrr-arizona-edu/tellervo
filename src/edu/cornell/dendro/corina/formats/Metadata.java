@@ -38,6 +38,9 @@ public class Metadata {
 	/** A LabCode object */
 	public final static String LABCODE = "::labcode";
 	
+	/** The units */
+	public final static String UNITS = "::units";
+	
 	/** The associated other object types */
 	public final static String OBJECT_ARRAY = "::objectArray";
 	public final static String OBJECT = "::object";

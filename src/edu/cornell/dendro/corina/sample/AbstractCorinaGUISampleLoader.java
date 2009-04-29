@@ -8,7 +8,6 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 
 public abstract class AbstractCorinaGUISampleLoader implements GUIAwareSampleLoader {
-
 	public Sample load(Dialog dialog) throws IOException {
 		CorinaResource resource = getResource();
 		return doLoad(resource, new CorinaResourceAccessDialog(dialog, resource));
@@ -24,7 +23,10 @@ public abstract class AbstractCorinaGUISampleLoader implements GUIAwareSampleLoa
 		return doLoad(resource, new CorinaResourceAccessDialog(resource));
 	}
 	
+	/** For loading */
 	protected abstract CorinaResource getResource();
+	/** For saving */
+	protected abstract CorinaResource getResource(Sample s);
 	protected abstract Sample doLoad(CorinaResource resource, CorinaResourceAccessDialog dialog) throws IOException;
 	protected abstract boolean doSave(Sample s, CorinaResource resource, CorinaResourceAccessDialog dialog) throws IOException;
 	
@@ -41,17 +43,17 @@ public abstract class AbstractCorinaGUISampleLoader implements GUIAwareSampleLoa
 	}
 
 	public boolean save(Sample s, Dialog dialog) throws IOException {
-		CorinaResource resource = getResource();
+		CorinaResource resource = getResource(s);
 		return doSave(s, resource, new CorinaResourceAccessDialog(dialog, resource));
 	}
 
 	public boolean save(Sample s, Frame frame) throws IOException {
-		CorinaResource resource = getResource();
+		CorinaResource resource = getResource(s);
 		return doSave(s, resource, new CorinaResourceAccessDialog(frame, resource));
 	}
 
 	public boolean save(Sample s) throws IOException {
-		CorinaResource resource = getResource();
+		CorinaResource resource = getResource(s);
 		return doSave(s, resource, new CorinaResourceAccessDialog(resource));
 	}
 }

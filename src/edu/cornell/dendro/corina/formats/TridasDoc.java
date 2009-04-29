@@ -355,7 +355,7 @@ public class TridasDoc implements Filetype {
 				firstYear = new Year(y);
 				break;
 			case BC:
-				firstYear = new Year(1 - y);
+				firstYear = new Year(-y);
 				break;
 			case BP: // years before 1950
 				firstYear = new Year(1950 - y);
@@ -380,6 +380,7 @@ public class TridasDoc implements Filetype {
 					if(variable.getNormalTridas() == NormalTridasVariable.RING_WIDTH) {
 						// compute our range!
 						s.setRange(new Range(firstYear, valuesElement.getValue().size()));
+						s.setMeta(Metadata.UNITS, valuesElement.getUnit());
 					}
 				}
 				

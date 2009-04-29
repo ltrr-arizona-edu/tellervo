@@ -26,7 +26,7 @@ public class DummyResource extends CorinaAssociatedResource<Object> {
 	protected void populateRequest(WSIRequest request) {
 		WSIEntity entity = new WSIEntity();
 		
-		entity.setId(1101);
+		entity.setId("1101");
 		entity.setType(EntityType.MEASUREMENT_SERIES);
 		
 		request.getEntity().add(entity);

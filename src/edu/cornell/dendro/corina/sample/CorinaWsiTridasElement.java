@@ -3,9 +3,15 @@ package edu.cornell.dendro.corina.sample;
 import java.io.IOException;
 
 import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasMeasurementSeries;
 
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.EntityType;
+import edu.cornell.dendro.corina.tridasv2.TridasMeasurementSeriesEx;
+import edu.cornell.dendro.corina.wsi.corina.CorinaAssociatedResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.SeriesResource;
 
 /**
  * An implementation of SampleLoader
@@ -30,18 +36,53 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader {
 	@Override
 	protected Sample doLoad(CorinaResource resource,
 			CorinaResourceAccessDialog dialog) throws IOException {
-		return null;
+
+		// start the query
+		resource.query();
+		dialog.setVisible(true);
+		
+		// ok, success?
+		if(!dialog.isSuccessful()) {
+			Exception e = dialog.getFailException();
+			if(e instanceof IOException)
+				throw (IOException) e;
+			else
+				throw new IOException("Error: " + e.toString());
+		}
+		
+		CorinaAssociatedResource<Sample> rsrc = (CorinaAssociatedResource<Sample>)resource;
+		return rsrc.getAssociatedResult();
 	}
 
 	@Override
 	protected boolean doSave(Sample s, CorinaResource resource,
 			CorinaResourceAccessDialog dialog) throws IOException {
-		return false;
+
+		// start the query
+		resource.query();
+		dialog.setVisible(true);
+		
+		// ok, success?
+		if(!dialog.isSuccessful()) {
+			Exception e = dialog.getFailException();
+			if(e instanceof IOException)
+				throw (IOException) e;
+			else
+				throw new IOException("Error: " + e.toString());
+		}
+		else
+			return true;
 	}
 
 	@Override
 	protected CorinaResource getResource() {
-		return null;
+		return new SeriesResource(identifier, EntityType.MEASUREMENT_SERIES, CorinaRequestType.READ);
+	}
+
+	@Override
+	protected CorinaResource getResource(Sample s) {
+		TridasMeasurementSeries series = new TridasMeasurementSeriesEx(s);
+		return new SeriesResource(series, null, CorinaRequestType.UPDATE);
 	}
 
 	public String getName() {
