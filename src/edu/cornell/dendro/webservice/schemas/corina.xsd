@@ -334,7 +334,7 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="requestUrl" type="xs:string"/>
-				<xs:element name="requestType" type="corinaRequestFormat"/>
+				<xs:element name="requestType" type="corinaRequestType"/>
 				<xs:element name="status" type="corinaRequestStatus"/>
 				<xs:element ref="message" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="timing" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
