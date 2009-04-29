@@ -3,7 +3,7 @@
 
 	<!-- Make underscores significant; this fixes *most* of the ObjectFactory name collision errors -->
 	<jaxb:bindings>
-		<jaxb:globalBindings underscoreBinding="asCharInWord" generateIsSetMethod="true" />
+		<jaxb:globalBindings underscoreBinding="asCharInWord" generateIsSetMethod="true" typesafeEnumMemberName="generateName" />
 	</jaxb:bindings> 
 
 	<!-- Tridas schema. Prefix with 'Tridas'! -->
@@ -20,6 +20,40 @@
 			<jaxb:class implClass="edu.cornell.dendro.corina.tridasv2.TridasObjectEx" />
 		</jaxb:bindings>
 		
+		<jaxb:bindings node="//xs:simpleType[@name='normalTridasUnit']">
+			<jaxb:typesafeEnumClass>
+				<jaxb:typesafeEnumMember value="1/100th millimetres" name="HUNDREDTH_MM" />
+				<jaxb:typesafeEnumMember value="1/10th millimetres" name="TENTH_MM" />
+			</jaxb:typesafeEnumClass>
+		</jaxb:bindings>
+
+		<jaxb:bindings node="//xs:simpleType[@name='normalTridasVariable']">
+			<jaxb:typesafeEnumClass>
+				<jaxb:typesafeEnumMember value="Ring width" name="RING_WIDTH" />
+				<jaxb:typesafeEnumMember value="Earlywood width" name="EARLYWOOD_WIDTH" />
+				<jaxb:typesafeEnumMember value="Latewood width" name="LATEWOOD_WIDTH" />
+				<jaxb:typesafeEnumMember value="Ring density" name="RING_DENSITY" />
+				<jaxb:typesafeEnumMember value="Earlywood density" name="EARLYWOOD_DENSITY" />
+				<jaxb:typesafeEnumMember value="Latewood density" name="LATEWOOD_DENSITY" />
+				<jaxb:typesafeEnumMember value="Maximum density" name="MAXIMUM_DENSITY" />
+				<jaxb:typesafeEnumMember value="Latewood percent" name="LATEWOOD_PERCENT" />
+			</jaxb:typesafeEnumClass>
+		</jaxb:bindings>
+
+
+		<jaxb:bindings node="//xs:simpleType[@name='normalTridasRemark']">
+			<jaxb:typesafeEnumClass>
+				<jaxb:typesafeEnumMember value="Fire damage" name="FIRE_DAMAGE" />
+				<jaxb:typesafeEnumMember value="Frost damage" name="FROST_DAMAGE" />
+				<jaxb:typesafeEnumMember value="Crack" name="CRACK" />
+				<jaxb:typesafeEnumMember value="False ring(s)" name="FALSE_RINGS" />
+				<jaxb:typesafeEnumMember value="Compression wood" name="COMPRESSION_WOOD" />
+				<jaxb:typesafeEnumMember value="Tension wood" name="TENSION_WOOD" />
+				<jaxb:typesafeEnumMember value="Traumatic ducts" name="TRAUMATIC_DUCTS" />
+				<jaxb:typesafeEnumMember value="Unspecified injury" name="UNSPECIFIED_INJURY" />
+			</jaxb:typesafeEnumClass>
+		</jaxb:bindings>
+
 	</jaxb:bindings>
 
 	<!-- Corina -->
@@ -43,6 +77,16 @@
 				<jaxb:elementName prefix="WSI" />
 			</jaxb:nameXmlTransform>
 		</jaxb:schemaBindings>
+		
+		<jaxb:bindings node="//xs:simpleType[@name='searchOperator']">
+			<jaxb:typesafeEnumClass>
+				<jaxb:typesafeEnumMember value="&gt;" name="GREATER_THAN" />
+				<jaxb:typesafeEnumMember value="&lt;" name="LESS_THAN" />
+				<jaxb:typesafeEnumMember value="=" name="EQUALS" />
+				<jaxb:typesafeEnumMember value="!=" name="NOT_EQUALS" />
+			</jaxb:typesafeEnumClass>
+		</jaxb:bindings>
+		
 	</jaxb:bindings>
 
 	<!-- GML -->
