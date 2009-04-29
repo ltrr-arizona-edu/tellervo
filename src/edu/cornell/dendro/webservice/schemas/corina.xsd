@@ -261,7 +261,7 @@
 	<xs:element name="entity">
 		<xs:complexType>
 			<xs:attribute name="type" type="entityType" />
-			<xs:attribute name="id" type="signedInt" />
+			<xs:attribute name="id" type="xs:token" />
 		</xs:complexType>
 	</xs:element>
 	<!--
@@ -297,7 +297,7 @@
 			</xs:choice>
 			<xs:attribute name="type" type="corinaRequestType"/>
 			<xs:attribute name="format" type="corinaRequestFormat"/>
-			<xs:attribute name="parentEntityID" type="signedInt"/>
+			<xs:attribute name="parentEntityID" type="xs:token"/>
 		</xs:complexType>
 	</xs:element>
 	<!--
@@ -533,7 +533,7 @@
                             			</xs:complexType>
                             		</xs:element>
                             	</xs:sequence>                                	
-                                <xs:attribute name="id" type="signedInt" use="required"/>
+                                <xs:attribute name="id" type="xs:token" use="required"/>
                                 <xs:attribute name="username" type="xs:string" use="required"/>
                                 <xs:attribute name="firstName" type="xs:string" use="required"/>
                                 <xs:attribute name="lastName" type="xs:string" use="required"/>
@@ -549,7 +549,7 @@
 			<xs:complexType>
 				<xs:simpleContent>
 					<xs:extension base="xs:string">
-						<xs:attribute name="id" type="signedInt" use="required"/>
+						<xs:attribute name="id" type="xs:token" use="required"/>
 						<xs:attribute name="name" type="xs:string" use="required"/>
 						<xs:attribute name="description" type="xs:string" use="required"/>
 						<xs:attribute name="isActive" type="xs:boolean" use="required"/>
@@ -590,7 +590,7 @@
 		<xs:complexType>
 			<xs:attribute name="type" type="xs:string"/>
 			<xs:attribute name="object" type="xs:string"/>
-			<xs:attribute name="id" type="signedInt"/>
+			<xs:attribute name="id" type="xs:token"/>
 			<xs:attribute ref="xlink:href"/>
 		</xs:complexType>
 	</xs:element>	
