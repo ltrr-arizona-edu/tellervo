@@ -14,12 +14,13 @@ import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSIRequest;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
 import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaAssociatedResource;
-import edu.cornell.dendro.corina.wsi.corina.ResourceQueryType;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 
 /**
@@ -35,14 +36,14 @@ public class SeriesSearchResource extends CorinaAssociatedResource<ElementList> 
 	 * @param searchParameters
 	 */
 	public SeriesSearchResource(SearchParameters searchParameters) {
-		super("seriesSearch", ResourceQueryType.SEARCH);
+		super("seriesSearch", CorinaRequestType.SEARCH);
 		
 		this.params = searchParameters;
 	}
 
 	@Override
 	protected void populateRequest(WSIRequest request) {
-		request.setFormat("summary");
+		request.setFormat(CorinaRequestFormat.SUMMARY);
 		request.setSearchParams(params);
 	}
 

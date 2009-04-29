@@ -13,6 +13,13 @@ import org.jdom.input.SAXBuilder;
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
+import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
 import org.tridas.schema.TridasVariable;
@@ -24,155 +31,288 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridas.LabCode;
 import edu.cornell.dendro.corina.tridas.LabCodeFormatter;
-import edu.cornell.dendro.corina.tridas.TridasElement;
-import edu.cornell.dendro.corina.tridas.TridasEntityMap;
-import edu.cornell.dendro.corina.tridas.TridasIdentifier;
-import edu.cornell.dendro.corina.tridas.TridasObject;
-import edu.cornell.dendro.corina.tridas.TridasRadius;
-import edu.cornell.dendro.corina.tridas.TridasSample;
-import edu.cornell.dendro.corina.tridas.TridasSeries;
+import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.webdbi.CorinaXML;
 import edu.cornell.dendro.corina.wsi.corina.TridasGenericFieldMap;
 
 public class TridasDoc implements Filetype {	
 	/**
-	 * Given a root element from an element, load everything below
+	 * Load the data in the 'data' list into wjinc and wjdec
 	 * 
-	 * @param root
-	 * @param samples
-	 * @param objects
+	 * @param data
+	 * @param wjinc
+	 * @param wjdec
+	 * @throws IOException
 	 */
-	private void loadFromElementTree(Element root, List<BaseSample> corinaSamples, TridasObject[] objects) throws InvalidDataException {
-		TridasElement thisElement = new TridasElement(root);
+	private void loadWeiserjahre(List<TridasValue> data, List<Integer> wjinc, List<Integer> wjdec) throws IOException {
+		for(TridasValue v : data) {
+			String strvalue = v.getValue();
+			int slashPos;
 		
-		List<Element> tridasSamples = (List<Element>) root.getChildren("sample", CorinaXML.TRIDAS_NS);
-		for(Element tridasSample : tridasSamples) {
-			TridasSample thisSample = new TridasSample(tridasSample);
-			List<Element> radii = (List<Element>) tridasSample.getChildren("radius", CorinaXML.TRIDAS_NS);
+			if(strvalue == null || (slashPos = strvalue.indexOf('/')) < 1)
+				throw new InvalidDataException("Invalid Weiserjahre Data Format: " + v.toString());
 			
-			for(Element radius : radii) {
-				TridasRadius thisRadius = new TridasRadius(radius);
-				List<Element> serieses = (List<Element>) radius.getChildren("measurementSeries", CorinaXML.TRIDAS_NS);
+			try {
+				Integer inc = Integer.valueOf(strvalue.substring(0, slashPos));
+				Integer dec = Integer.valueOf(strvalue.substring(slashPos + 1));
+			} catch (NumberFormatException nfpe) {
+				throw new InvalidDataException("Invalid Weiserjahre data: " + v.toString());
+			}
+		}
 				
-				for(Element series : serieses) {
-					TridasSeries thisSeries = new TridasSeries(series);
-					BaseSample newSample;
-					
-					// do we have measurements? if yes, we create a 'real' sample
-					if(thisSeries.hasMeasurements()) {
-						newSample = new Sample();
-						thisSeries.copyMeasurementsOntoSample((Sample) newSample);
-					}
-					else
-						newSample = new BaseSample(); // just a placeholder with metadata
+	}
 	
-					// map everything onto the sample
-					thisSeries.mapOntoSample(newSample);
-					thisRadius.mapOntoSample(newSample);
-					thisSample.mapOntoSample(newSample);
-					thisElement.mapOntoSample(newSample);
-					objects[objects.length - 1].mapOntoSample(newSample);
+	/**
+	 * Load the data in the 'data' list as Integers in the values<object> list, and
+	 * the counts in the counts list. Unsets the counts if it's all one.
+	 * @param data
+	 * @param clearCountAllOnes if true, unsets count if it's all ones (should only be true if it's not a sum)
+	 * @param values
+	 * @param counts
+	 * @throws IOException
+	 */
+	private void loadIntegerObjectAndCountList(List<TridasValue> data, boolean clearCountAllOnes,
+			List<Object> values, List<Integer> counts) 
+		throws IOException 
+	{
+		boolean countAllOnes = true;
+		
+		// loop through and simply get the data
+		for(TridasValue v : data) {
+			String strval = v.getValue();
+			Integer countval = v.isSetCount() ? v.getCount().intValue() : 1;
+			Integer ival;
+
+			try {
+				ival = Integer.valueOf(strval);
+			} catch (NumberFormatException nfe) {
+				throw new InvalidDataException("Invalid ring width data: " + strval + " : " + v.toString());
+			}
+			
+			values.add(ival);
+			counts.add(countval);
+
+			// the count isn't just all ones
+			if(countval != 1)
+				countAllOnes = false;
+		}
+		
+		// all ones? clear!
+		if(countAllOnes && clearCountAllOnes)
+			counts.clear();
+	}
+	
+	/**
+	 * Load values into a particular sample
+	 * 
+	 * @param values
+	 * @param s
+	 * @return true if values loaded, false if ignored
+	 * @throws IOException
+	 */
+	private boolean loadValuesIntoSample(TridasValues values, Sample s) throws IOException {
+		TridasVariable variable = values.getVariable();
+		boolean unitless = values.isSetUnitless();
+		TridasUnit units = unitless ? null : values.getUnit();
+		List<TridasValue> dataValues = values.getValue();
+		
+		if(variable.isSetNormalTridas()) {
+			switch(variable.getNormalTridas()) {
+			case RING_WIDTH: {
+				List<Object> ringwidths = new ArrayList<Object>(dataValues.size());
+				List<Integer> counts = new ArrayList<Integer>(dataValues.size());
+				
+				loadIntegerObjectAndCountList(dataValues, s.getSampleType() != SampleType.SUM, 
+						ringwidths, counts);
+				
+				// set our sample data
+				s.setData(ringwidths);
+				
+				// now set counts
+				if(!counts.isEmpty())
+					s.setCount(counts);
+
+				return true;
+			}
+				
+			default:
+				System.out.println("Not handling tridas variable " + variable.getNormalTridas().value());
+				return false;
+			}
+		}
+		// a 'normal' standard is one that's not created
+		else if(variable.isSetNormalStd()) {
+			String standard = variable.getNormalStd();
+			
+			// a corina standard?
+			if("corina".equals(standard)) {
+				if("weiserjahre".equals(variable.getNormal())) {
+					List<Integer> wjinc = new ArrayList<Integer>(dataValues.size());
+					List<Integer> wjdec = new ArrayList<Integer>(dataValues.size());
 					
-					// set the sample's metadata
-					newSample.setMeta(Metadata.OBJECT_ARRAY, objects);
-					newSample.setMeta(Metadata.OBJECT, objects[objects.length - 1]);
-					newSample.setMeta(Metadata.ELEMENT, thisElement);
-					newSample.setMeta(Metadata.SAMPLE, thisSample);
-					newSample.setMeta(Metadata.RADIUS, thisRadius);
+					loadWeiserjahre(dataValues, wjinc, wjdec);
 					
-					corinaSamples.add(newSample);
+					s.setWJIncr(wjinc);
+					s.setWJDecr(wjdec);
+					
+					return true;
+				}
+				else {
+					System.out.println("Unknown corina standard " + variable.getNormal());
+					return false;
+				}
+			}
+			else {
+				System.out.println("Unknown standard " + standard);
+				return false;
+			}
+			
+		} 
+		else {
+			System.err.println("Don't know how to deal with values: " + values.toString());
+			return false;
+		}
+	}
+
+	private void breakUpTridasLinks(TridasObject obj) {
+		// first, disassociate any children of child objects
+		if(obj.isSetObject()) {
+			for(TridasObject childObj : obj.getObject())				
+				breakUpTridasLinks(childObj);
+			
+			obj.unsetObject();
+		}
+		
+		// now, disassociate everything else
+		for(TridasElement element : obj.getElement()) {
+			for(TridasSample sample : element.getSample()) {
+				for(TridasRadius radius : sample.getRadius()) {
+					for(TridasMeasurementSeries series : radius.getMeasurementSeries()) {
+						// do we need to do anything in here?
+					}
+					radius.unsetMeasurementSeries();
+				}
+				sample.unsetRadius();
+			}
+			element.unsetSample();
+		}
+		obj.unsetElement();
+	}
+
+	private void populateLabCode(BaseSample s) {
+		
+	}
+	
+	/**
+	 * Load an object tree!
+	 * 
+	 * @param obj
+	 * @param samples
+	 * @param objectHierarchy
+	 * @throws IOException
+	 */
+	private void loadObjectMeasurementsIntoList(TridasObject obj, List<BaseSample> samples, 
+			List<TridasObject> objectHierarchy) throws IOException {
+
+		// add myself to the hierarchy
+		objectHierarchy.add(obj);
+		
+		// create an array of the hierarchy so far (not modified by next recursive call)
+		TridasObject[] objArray = new TridasObject[objectHierarchy.size()];
+		objArray = objectHierarchy.toArray(objArray);
+		
+		// do child objects first
+		for(TridasObject child : obj.getObject())
+			loadObjectMeasurementsIntoList(child, samples, objectHierarchy);
+		
+		// ok, now load some samples from this tree!
+		for(TridasElement element : obj.getElement()) {
+			for(TridasSample sample : element.getSample()) {
+				for(TridasRadius radius : sample.getRadius()) {
+					for(TridasMeasurementSeries series : radius.getMeasurementSeries()) {
+						BaseSample s = loadFromBaseSeries(series);
+						
+						s.setMeta(Metadata.OBJECT, obj);
+						s.setMeta(Metadata.OBJECT_ARRAY, objArray);
+						s.setMeta(Metadata.ELEMENT, element);
+						s.setMeta(Metadata.SAMPLE, sample);
+						s.setMeta(Metadata.RADIUS, radius);
+						// series is set in loadFromBaseSeries()
+
+						// (re-)populate lab code
+						LabCode labcode = (LabCode) s.getMeta(Metadata.LABCODE);
+						if(labcode == null)
+							labcode = new LabCode();
+						
+						// object codes are more obnoxious
+						labcode.clearSiteCodes();
+						for(TridasObject object : objArray) {
+							for(TridasGenericField f : object.getGenericField()) {
+								if("corina.objectLabCode".equals(f.getName())) {
+									labcode.appendSiteCode(f.getValue());
+									break;
+								}
+							}
+						}
+						
+						// this stuff is easier
+						labcode.setElementCode(element.getTitle());
+						labcode.setSampleCode(sample.getTitle());
+						labcode.setRadiusCode(radius.getTitle());
+						labcode.setSeriesCode(series.getTitle());
+
+						// populate new metadata
+						s.setMeta(Metadata.LABCODE, labcode);
+						s.setMeta(Metadata.TITLE, LabCodeFormatter.getDefaultFormatter().format(labcode));
+
+						// add it to our list
+						samples.add(s);
+					}
 				}
 			}
 		}
 	}
 	
 	/**
-	 * Recursive function to load elements and object tree
+	 * Returns an array of BaseSamples derived from this object
 	 * 
-	 * @param root
-	 * @param samples
-	 * @param objects
+	 * @param obj The base tridas object
+	 * @param appendSamples the list to append new samples onto (must not be null)
+	 * @param disassociate if true, takes the object list given by 'obj' and breaks all
+	 * 		parent->child links (to prevent one sample from holding on to another sample 
+	 * 		in garbage collection, for instance)
+	 * @return
 	 */
-	private void loadFromObjectTree(Element root, List<BaseSample> samples, List<TridasObject> objects) throws InvalidDataException {
-		List<Element> elements = (List<Element>) root.getChildren("element", CorinaXML.TRIDAS_NS);
-		List<Element> deeperObjects = (List<Element>) root.getChildren("object", CorinaXML.TRIDAS_NS);
-		TridasIdentifier identifier = new TridasIdentifier(root.getChild("identifier", CorinaXML.TRIDAS_NS), "object");
-		TridasObject thisObject = (TridasObject) TridasEntityMap.find(identifier);
-	
-		// object didn't exist so far... this probably shouldn't happen unless we're dealing with
-		// a foreign object that's not in our system
-		if(thisObject == null) {
-			thisObject = new TridasObject(root);
-			System.out.println("Object '" + thisObject.toFullString() + "' did not exist in cache!");
-		}
+	public List<BaseSample> loadFromObject(TridasObject obj, List<BaseSample> appendSamples, 
+			boolean disassociate) throws IOException {
+		loadObjectMeasurementsIntoList(obj, appendSamples, new ArrayList<TridasObject>());
 		
-		// add myself to the tail of the objects list
-		objects.add(thisObject);
+		if(disassociate)
+			breakUpTridasLinks(obj);
 		
-		// MUST process elements first!
-		// We do a breadth-first traversal here because 'objects' list represents objects at this depth;
-		// it's not so easy to go back.
-		
-		// get a 'set in stone' copy of the object array, so far
-		TridasObject[] objectArraySoFar = new TridasObject[objects.size()];
-		objects.toArray(objectArraySoFar);
-		
-		// load each element (and everything below it)
-		for(Element element : elements)
-			loadFromElementTree(element, samples, objectArraySoFar);
-		
-		// ok, now recursively process any child objects
-		for(Element childObject : deeperObjects) 
-			loadFromObjectTree(childObject, samples, objects);
+		return appendSamples;
 	}
 	
-	public BaseSample[] loadFromTree(Element treeRoot) throws IOException {
-		List<BaseSample> samples = new ArrayList<BaseSample>();
-		List<Element> treeChildren = (List<Element>) treeRoot.getChildren();
-
-		// loop through every element in 'treeroot,' 
-		// loading samples in order of appearance.
-		
-		for(Element child : treeChildren) {
-			
-			// Only care about tridas objects (ignore sql, etc)
-			if(!child.getNamespace().equals(CorinaXML.TRIDAS_NS))
-				continue;
-
-			String childName = child.getName();
-			if(childName.equals("measurementSeries") || childName.equals("derivedSeries")) {
-				// whew, this is the easy, fun way!
-				TridasSeries series = new TridasSeries(child);
-				BaseSample s;
-				
-				if(series.hasMeasurements()) {
-					s = new Sample();
-					series.copyMeasurementsOntoSample((Sample) s);
-				}
-				else
-					s = new BaseSample();
-
-				series.mapOntoSample(s);
-				samples.add(s);
-			}
-			else if(childName.equals("object")) {
-				// urgh, load an entire tree
-				// pass an empty list: the object tree hasn't been loaded yet,
-				// and loadFromObjectTree is recursive
-				loadFromObjectTree(child, samples, new ArrayList<TridasObject>());
-			}
-			else 
-				System.out.println("Unknown type '" + childName + "' in tridas tree ignored");
-		}
-		
-		// convert to array and leave
-		BaseSample[] sampleArray = new BaseSample[samples.size()];
-		samples.toArray(sampleArray);
-		
-		return sampleArray;
+	/**
+	 * @see loadFromObject(TridasObject, List, boolean)
+	 * @param obj
+	 * @param disassociate
+	 * @return
+	 */
+	public List<BaseSample> loadFromObject(TridasObject obj, boolean disassociate) throws IOException {
+		return loadFromObject(obj, new ArrayList<BaseSample>(), disassociate);
 	}
 
+	
+	/**
+	 * Given a derivedSeries or measurementSeries, load into a BaseSample 
+	 * (or a sample, if the series has values)
+	 * 
+	 * @param series
+	 * @return
+	 * @throws IOException
+	 */
 	public BaseSample loadFromBaseSeries(BaseSeries series) throws IOException {
 		BaseSample s;
 		
@@ -196,10 +336,12 @@ public class TridasDoc implements Filetype {
 		
 		// easy metadata bits
 		s.setMeta(Metadata.NAME, series.getTitle());
+		s.setMeta(Metadata.TRIDAS_IDENTIFIER, series.getIdentifier());
 		s.setMeta(Metadata.CREATED_TIMESTAMP, series.getCreatedTimestamp().
 				getValue().toGregorianCalendar().getTime());
 		s.setMeta(Metadata.MODIFIED_TIMESTAMP, series.getLastModifiedTimestamp().
 				getValue().toGregorianCalendar().getTime());
+		s.setMeta(Metadata.SERIES, series); // hold on to this for later!
 
 		// translate start year
 		Year firstYear;
@@ -219,7 +361,7 @@ public class TridasDoc implements Filetype {
 				firstYear = new Year(1950 - y);
 				break;
 			default:
-				throw new IOException("Invalid year data: Suffix of unknown type.");
+				throw new InvalidDataException("Invalid year data: Suffix of unknown type.");
 			}
 		}
 		else
@@ -228,18 +370,27 @@ public class TridasDoc implements Filetype {
 		// this has values: it's a standard/comprehensive VM
 		if(series.isSetValues()) {
 			Sample fs = (Sample) s;
+			List<TridasValues> removeValues = new ArrayList<TridasValues>();
 			
 			for(TridasValues valuesElement : series.getValues()) {
 				TridasVariable variable = valuesElement.getVariable();
 
-				// it's a tridas normal variable!
+				// seek out tridas normal "ring width," and use the size of that to create our range
 				if(variable.isSetNormalTridas()) {
 					if(variable.getNormalTridas() == NormalTridasVariable.RING_WIDTH) {
 						// compute our range!
 						s.setRange(new Range(firstYear, valuesElement.getValue().size()));
 					}
 				}
+				
+				// load the values into the actual sample
+				// keep a list of things we used (true return)
+				if(loadValuesIntoSample(valuesElement, fs))
+					removeValues.add(valuesElement);
 			}
+			
+			// remove everything that we used
+			series.getValues().removeAll(removeValues);
 		}
 		// no values: summary VM
 		else {
@@ -259,6 +410,7 @@ public class TridasDoc implements Filetype {
 				labcode.appendSiteCode(objectCode);
 			}
 			
+			// ok if these are null
 			labcode.setElementCode(genericFields.getString("corina.elementTitle"));
 			labcode.setRadiusCode(genericFields.getString("corina.radiusTitle"));
 			labcode.setSampleCode(genericFields.getString("corina.sampleTitle"));
@@ -271,37 +423,6 @@ public class TridasDoc implements Filetype {
 		return s;
 	}
 	
-	@Deprecated
-	public void loadBasicSeriesaaaa(BaseSample s, Element root) throws IOException {
-		/*
-		String tmpId = root.getAttributeValue("id");
-		String tmpName = root.getName() + ((tmpId != null) ? ("." + tmpId) : "");
-		
-		s.setMeta(Metadata.TITLE, tmpName);
-		
-		// No filename?
-		if(!s.hasMeta(Metadata.FILENAME))
-			s.setMeta(Metadata.FILENAME, tmpName);
-		
-		// load tridas identifier
-		Element tmp = root.getChild("identifier", CorinaXML.TRIDAS_NS);
-		s.setMeta(Metadata.TRIDAS_IDENTIFIER, new TridasIdentifier(tmp, root.getName()));
-		
-		boolean haveLabCode = false;
-		for(Element e : (List<Element>) root.getChildren()) {
-			if(!e.getNamespace().equals(CorinaXML.TRIDAS_NS)) {
-				// not a tridas object.
-				// Should this happen? Maybe in the future?
-				continue;
-			}
-			
-			loadMetadataElement(s, e, null);			
-		}
-		
-		if(s.getMeta(Metadata.TITLE).equals(tmpName))
-			s.setMeta(Metadata.TITLE, s.getMeta(Metadata.NAME));
-			*/
-	}
 	
 	public void loadSeries(Sample s, Element root) throws IOException {
 		

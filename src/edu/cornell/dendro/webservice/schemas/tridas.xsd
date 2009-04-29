@@ -600,10 +600,6 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			<xs:complexContent>
 				<xs:extension base="tridasEntity">
 					<xs:sequence>
-						<xs:element ref="title"/>
-						<xs:element ref="identifier" minOccurs="0"/>
-						<xs:element ref="createdTimestamp" minOccurs="0"/>
-						<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
 						<xs:element ref="pithAndSapwoodInfo" minOccurs="0" maxOccurs="1"/>
 						<xs:element ref="azimuth" minOccurs="0"/>
 						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>

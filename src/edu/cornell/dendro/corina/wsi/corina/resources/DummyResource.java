@@ -5,19 +5,20 @@ import java.io.IOException;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.schema.WSIRequest;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaAssociatedResource;
-import edu.cornell.dendro.corina.wsi.corina.ResourceQueryType;
 
 public class DummyResource extends CorinaAssociatedResource<Object> {
 	/**
 	 * @param resourceName
 	 * @param queryType
 	 */
-	public DummyResource(ResourceQueryType queryType) {
+	public DummyResource(CorinaRequestType queryType) {
 		super("dummy", queryType);
 	}
 
@@ -26,7 +27,7 @@ public class DummyResource extends CorinaAssociatedResource<Object> {
 		WSIEntity entity = new WSIEntity();
 		
 		entity.setId(1101);
-		entity.setType("measurementSeries");
+		entity.setType(EntityType.MEASUREMENT_SERIES);
 		
 		request.getEntity().add(entity);
 	}
@@ -43,7 +44,7 @@ public class DummyResource extends CorinaAssociatedResource<Object> {
 		App.prefs = new Prefs();
 		App.prefs.init();
 	
-		DummyResource d = new DummyResource(ResourceQueryType.READ);
+		DummyResource d = new DummyResource(CorinaRequestType.READ);
 		
 		d.queryWait();
 	}

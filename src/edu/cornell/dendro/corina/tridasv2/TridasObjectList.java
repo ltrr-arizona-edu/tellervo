@@ -11,13 +11,16 @@ import java.util.TreeMap;
 
 import org.tridas.schema.TridasObject;
 
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.SearchOperator;
+import edu.cornell.dendro.corina.schema.SearchParameterName;
+import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.schema.WSIRequest;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
 import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceCacher;
-import edu.cornell.dendro.corina.wsi.corina.ResourceQueryType;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.TridasGenericFieldMap;
 
@@ -32,7 +35,7 @@ public class TridasObjectList extends CorinaResource {
 	 * @param queryType
 	 */
 	public TridasObjectList() {
-		super("tridas.objects", ResourceQueryType.READ);
+		super("tridas.objects", CorinaRequestType.READ);
 		
 		// ensure our data is all set up
 		data = new ListViews(0);
@@ -46,13 +49,13 @@ public class TridasObjectList extends CorinaResource {
 	 */
 	@Override
 	protected void populateRequest(WSIRequest request) {
-		SearchParameters params = new SearchParameters("object");
+		SearchParameters params = new SearchParameters(SearchReturnObject.OBJECT);
 		
 		params.setIncludeChildren(true);
-		params.addSearchConstraint("parentobjectid", "is", "NULL");
+		params.addSearchConstraint(SearchParameterName.PARENTOBJECTID, SearchOperator.IS, "NULL");
 		
 		request.setSearchParams(params);
-		request.setType("search");
+		request.setType(CorinaRequestType.SEARCH);
 	}
 
 	/* (non-Javadoc)

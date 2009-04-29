@@ -7,6 +7,7 @@ import java.security.MessageDigest;
 import java.util.Random;
 
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSIAuthenticate;
 import edu.cornell.dendro.corina.schema.WSINonce;
 import edu.cornell.dendro.corina.schema.WSIRequest;
@@ -14,7 +15,6 @@ import edu.cornell.dendro.corina.schema.WSIRootElement;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResource;
-import edu.cornell.dendro.corina.wsi.corina.ResourceQueryType;
 
 /**
  * @author Lucas Madar
@@ -36,7 +36,7 @@ public class AuthenticateResource extends CorinaResource {
 	 * @param seq
 	 */
 	public AuthenticateResource(String username, String password, String nonce, String seq) {
-		super("authenticate", ResourceQueryType.SECURELOGIN, BadCredentialsBehavior.JUST_FAIL);
+		super("authenticate", CorinaRequestType.SECURELOGIN, BadCredentialsBehavior.JUST_FAIL);
 			
 		// generate a random client nonce
 		byte[] randomBytes = new byte[10];
@@ -59,7 +59,7 @@ public class AuthenticateResource extends CorinaResource {
 	 * Constructor that provides an authenticate resource intended for retrieving a nonce
 	 */
 	public AuthenticateResource() {
-		super("authenticate", ResourceQueryType.NONCE, BadCredentialsBehavior.JUST_FAIL);
+		super("authenticate", CorinaRequestType.NONCE, BadCredentialsBehavior.JUST_FAIL);
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class AuthenticateResource extends CorinaResource {
 	 */
 	@Override
 	protected void populateRequest(WSIRequest request) {
-		if(getQueryType() == ResourceQueryType.SECURELOGIN) {
+		if(getQueryType() == CorinaRequestType.SECURELOGIN) {
 			WSIAuthenticate auth = new WSIAuthenticate();
 			
 			auth.setUsername(this.username);
@@ -124,7 +124,7 @@ public class AuthenticateResource extends CorinaResource {
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
 		
-		if(getQueryType() == ResourceQueryType.NONCE) {
+		if(getQueryType() == CorinaRequestType.NONCE) {
 			WSINonce nonce = object.getHeader().getNonce();
 			
 			// nonce has to exist...

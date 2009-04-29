@@ -21,6 +21,13 @@ public class LabCode {
 	public List<String> getSiteCodes() {
 		return siteCodes;
 	}
+	
+	/** 
+	 * Clear the list of site codes
+	 */
+	public void clearSiteCodes() {
+		this.siteCodes.clear();
+	}
 
 	/**
 	 * @param siteCode a siteCode to append

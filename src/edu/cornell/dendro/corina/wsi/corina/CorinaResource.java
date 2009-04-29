@@ -5,6 +5,8 @@ import java.awt.Window;
 
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.schema.CorinaRequestStatus;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSIHeader;
 import edu.cornell.dendro.corina.schema.WSIMessage;
 import edu.cornell.dendro.corina.schema.WSINonce;
@@ -27,7 +29,7 @@ public abstract class CorinaResource extends
 	 * @param resourceName
 	 * @param queryType
 	 */
-	public CorinaResource(String resourceName, ResourceQueryType queryType) {
+	public CorinaResource(String resourceName, CorinaRequestType queryType) {
 		this(resourceName, queryType, BadCredentialsBehavior.PROMPT_FOR_LOGIN);
 	}
 
@@ -38,7 +40,7 @@ public abstract class CorinaResource extends
 	 * @param queryType
 	 * @param badCredentialsBehavior
 	 */
-	public CorinaResource(String resourceName, ResourceQueryType queryType,
+	public CorinaResource(String resourceName, CorinaRequestType queryType,
 			BadCredentialsBehavior badCredentialsBehavior) {
 		super(resourceName);
 		this.queryType = queryType;
@@ -46,12 +48,12 @@ public abstract class CorinaResource extends
 	}
 	
 	/** The verb associated with this resource */
-	private ResourceQueryType queryType;
+	private CorinaRequestType queryType;
 	
 	/**
 	 * @return the verb associated with this resource
 	 */
-	public ResourceQueryType getQueryType() {
+	public CorinaRequestType getQueryType() {
 		return queryType;
 	}
 
@@ -60,7 +62,7 @@ public abstract class CorinaResource extends
 	 * 
 	 * @param queryType the queryType to set
 	 */
-	protected void setQueryType(ResourceQueryType queryType) {
+	protected void setQueryType(CorinaRequestType queryType) {
 		this.queryType = queryType;
 	}
 
@@ -93,7 +95,7 @@ public abstract class CorinaResource extends
 		WSIRequest request = new WSIRequest();
 
 		// set the request type
-		request.setType(queryType.getVerb());
+		request.setType(queryType);
 		
 		// populate this request with Corina stuff
 		populateRequest(request);
@@ -167,7 +169,7 @@ public abstract class CorinaResource extends
 			throw new ResourceException("Header is missing in request document");
 
 		// simple enough: did this succeed?
-		if ("ok".equalsIgnoreCase(header.getStatus()))
+		if (header.getStatus() == CorinaRequestStatus.OK)
 			return PreprocessResult.SUCCESS; // whew, that was easy.
 
 		// look for error codes...

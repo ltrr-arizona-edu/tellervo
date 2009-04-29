@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.wsi.corina;
 
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+
 
 /**
  * A resource that wraps a "native" corina type
@@ -13,7 +15,7 @@ public abstract class CorinaAssociatedResource<T> extends CorinaResource {
 	 * @param queryType
 	 */
 	public CorinaAssociatedResource(String resourceName,
-			ResourceQueryType queryType) {
+			CorinaRequestType queryType) {
 		super(resourceName, queryType);
 	}
 
@@ -23,7 +25,7 @@ public abstract class CorinaAssociatedResource<T> extends CorinaResource {
 	 * @param badCredentialsBehavior
 	 */
 	public CorinaAssociatedResource(String resourceName,
-			ResourceQueryType queryType,
+			CorinaRequestType queryType,
 			BadCredentialsBehavior badCredentialsBehavior) {
 		super(resourceName, queryType, badCredentialsBehavior);
 	}

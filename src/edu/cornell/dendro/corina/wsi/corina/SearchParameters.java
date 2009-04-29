@@ -1,5 +1,8 @@
 package edu.cornell.dendro.corina.wsi.corina;
 
+import edu.cornell.dendro.corina.schema.SearchOperator;
+import edu.cornell.dendro.corina.schema.SearchParameterName;
+import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.schema.WSIParam;
 import edu.cornell.dendro.corina.schema.WSISearchParams;
 
@@ -8,7 +11,7 @@ public class SearchParameters extends WSISearchParams {
 	private boolean hasConstraints;
 	private boolean hasAllConstraint;
 	
-	public SearchParameters(String returnObjectType) {
+	public SearchParameters(SearchReturnObject returnObjectType) {
 		setReturnObject(returnObjectType);
 		asText = returnObjectType + ": ";
 		
@@ -28,7 +31,7 @@ public class SearchParameters extends WSISearchParams {
 		hasAllConstraint = true;
 	}
 	
-	public void addSearchConstraint(String name, String comparison, String value) {
+	public void addSearchConstraint(SearchParameterName name, SearchOperator comparison, String value) {
 		if(hasAllConstraint)
 			throw new IllegalArgumentException("Cannot have all constraint AND search constraints");
 
@@ -44,7 +47,7 @@ public class SearchParameters extends WSISearchParams {
 		
 		if(hasConstraints)
 			asText += ",";
-		asText += name + comparison + value;
+		asText += name.value() + comparison.toString() + value;
 
 		hasConstraints = true;
 	}

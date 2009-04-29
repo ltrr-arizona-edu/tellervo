@@ -34,6 +34,9 @@ import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.schema.SearchOperator;
+import edu.cornell.dendro.corina.schema.SearchParameterName;
+import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -436,10 +439,11 @@ public class DBBrowser extends DBBrowser_UI{
 				}
 				
 				// set up our query...
-				SearchParameters search = new SearchParameters("measurementSeries");
+				SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
 				for(int i = 0; i < selected.length; i++) {
 					TridasObjectEx site = (TridasObjectEx) selected[i];
-					search.addSearchConstraint("objectid", "=", site.getIdentifier().getValue());
+					search.addSearchConstraint(SearchParameterName.OBJECTID, 
+							SearchOperator.EQUALS, site.getIdentifier().getValue());
 				}
 
 				SeriesSearchResource searchResource = new SeriesSearchResource(search);
