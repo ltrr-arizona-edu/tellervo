@@ -337,7 +337,15 @@
 				<xs:element name="requestType" type="corinaRequestType"/>
 				<xs:element name="status" type="corinaRequestStatus"/>
 				<xs:element ref="message" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="timing" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                                <xs:element name="timing" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                                <xs:simpleContent>
+                                                        <xs:extension base="xs:string">
+                                                                <xs:attribute name="label" type="xs:string"/>
+                                                        </xs:extension>
+                                                </xs:simpleContent>
+                                        </xs:complexType>
+                                </xs:element>
 				<xs:element ref="nonce" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
 		</xs:complexType>

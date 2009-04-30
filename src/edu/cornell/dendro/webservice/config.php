@@ -25,7 +25,7 @@ $dbName = corina_dev;
 $domain = "dendro.cornell.edu/dev/";
 
 // Whether to display debug messages
-$debugFlag = TRUE; 
+$debugFlag = FALSE; 
 
 // Version number to be displayed in output headers
 $wsversion = "0.2.".exec(svnversion); 
@@ -46,7 +46,7 @@ $tempFolderURL = "http://dendro.cornell.edu/corinaMSTemp/";
 $corinaNS = "http://dendro.cornell.edu/schema/corina/1.0";
 
 // TRiDaS Namespace URL
-$tridasNS = "http://www.tridas.org/1.1";
+$tridasNS = "http://www.tridas.org/1.2";
 
 // TRiDaS Namespace URL
 $gmlNS = "http://www.opengis.net/gml";

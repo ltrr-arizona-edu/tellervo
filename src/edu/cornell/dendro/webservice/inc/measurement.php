@@ -215,7 +215,7 @@ class measurement extends measurementEntity implements IDBAccessor
 				if ($relYearCheck==$row['relyear'])
 				{
 					// Get all reading values to array
-					$this->readingsArray[$row['relyear']] = array('reading' => $row['reading'],
+					$this->readingsArray[$row['relyear']] = array('value' => $row['reading'],
                                                                   'wjinc' => $row['wjinc'], 
                                                                   'wjdec' => $row['wjdec'], 
                                                                   'count' => $row['count'],
@@ -967,7 +967,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		}
 
 		// Standard or Comprehensive format so give the whole lot
-		else
+		else 
 		{
 			$xml.=$this->getValuesXML();
 			$xml.=$this->getValuesXML(true);
@@ -1101,6 +1101,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			$xml.="<tridas:unit/>\n";
 		}
 
+		//print_r($this->readingsArray);
 		foreach($this->readingsArray as $key => $value)
 		{
 			// Calculate absolute year where possible
@@ -1123,7 +1124,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			}
 			else
 			{
-				$xml.= "value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\" ";
+				$xml.= "value=\"".$this->unitsHandler($value['value'], "db-default", "ws-default")."\" ";
 			}
 			 
 			// Add count if appropriate
@@ -1334,6 +1335,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		global $dbconn;
 		global $myAuth;
 
+		
 		//Only attempt to run SQL if there are no errors so far
 		if($this->getLastErrorCode() == NULL)
 		{
@@ -1518,10 +1520,11 @@ class measurement extends measurementEntity implements IDBAccessor
 					// Editing an exisiting record
 					$insertSQL	= NULL;
 					$updateSQL2 = NULL;
+					$deleteSQL = NULL;
 
 					// Update references or readings depending on whether the measurement is direct or not
 
-					if ($this->getVMeasurementOp()!=="Direct")
+					if ($this->vmeasurementOp->getValue()!=="Direct")
 					{
 						// Update references to other vmeasurements
 						$deleteSQL = "DELETE FROM tblvmeasurementgroup WHERE vmeasurementid=".pg_escape_string($this->vmeasurementID)."; ";
@@ -1532,11 +1535,11 @@ class measurement extends measurementEntity implements IDBAccessor
 							$relyear++;
 						}
 					}
-					elseif($this->vmeasurementOp=="Direct")
+					elseif($this->vmeasurementOp->getValue()=="Direct")
 					{
 						// Update the tblmeasurement table
 						$updateSQL2.= "UPDATE tblmeasurement SET ";
-						if($this->parentEntityArray[0]->getID()!=NULL)            	$updateSQL2.= "radiusid = ".pg_escape_string($this->parentEntityArray[0]->getID()).", ";
+						if(isset($this->parentEntityArray[0]))            	$updateSQL2.= "radiusid = ".pg_escape_string($this->parentEntityArray[0]->getID()).", ";
 						if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled='".dbHelper::formatBool($this->getIsReconciled(),'pg')."', ";
 						if($this->getFirstYear()!=NULL)           					$updateSQL2.= "startyear = ".pg_escape_string($this->getFirstYear()).", ";
 						if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".pg_escape_string($this->analyst->getID()).", ";
@@ -1560,7 +1563,7 @@ class measurement extends measurementEntity implements IDBAccessor
 					$updateSQL = "UPDATE tblvmeasurement SET ";
 
 					if($this->getVMeasurementOp()!=NULL)		$updateSQL.= "vmeasurementopid ='".pg_escape_string($this->vmeasurementOp->getID())."', ";
-					if($this->getVMeasurementOpParam()!=NULL)	$updateSQL.= "vmeasurementopparameter ='".pg_escape_string($this->vmeasurementOp->getParamID())."', ";
+					if($this->vmeasurementOp->getParamID()!=NULL)	$updateSQL.= "vmeasurementopparameter ='".pg_escape_string($this->vmeasurementOp->getParamID())."', ";
 					if($this->getCode()!=NULL)               	$updateSQL.= "code = '".pg_escape_string($this->getCode())."', ";
 					if($this->getComments()!=NULL)        		$updateSQL.= "comments = '".pg_escape_string($this->getComments())."', ";
 					if($this->author->getID()!=NULL)			$updateSQL.= "owneruserid = '".pg_escape_string($this->author->getID())."', ";
@@ -1574,18 +1577,20 @@ class measurement extends measurementEntity implements IDBAccessor
 
 					// Perform query using transactions so that if anything goes wrong we can roll back
 					$transaction = array("begin;", $deleteSQL, $insertSQL, $updateSQL2, $updateSQL );
-
+					
 					foreach($transaction as $stmt)
 					{
+						if ($stmt==NULL) continue;
 						$result = pg_query($dbconn, $stmt);
 						//$result = pg_get_result($dbconn);
-						if($result===FALSE)
+						if(!$result)
 						{
 							// All gone badly so throw error and rollback
 							$this->setErrorMessage("002", pg_last_error()."--- SQL was $stmt");
 							pg_query($dbconn, "rollback;");
 							return FALSE;
 						}
+
 					}
 
 					// All gone well so commit transaction to db

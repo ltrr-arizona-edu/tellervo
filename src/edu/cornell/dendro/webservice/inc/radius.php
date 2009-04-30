@@ -346,11 +346,12 @@ class radius extends radiusEntity implements IDBAccessor
             
                 if($format!="minimal")
                 {
-                    																$xml.= "<tridas:pith presence=\"".dbHelper::formatBool($this->getPithPresent(), "presentabsent")."\"></tridas:pith>\n";
-                	if( ($this->getHeartwood()!=NULL)  )	
-					{
-																					$xml.= "<tridas:heartwood presence=\"".$this->getHeartwood()."\">";
-						if($this->getMissingHeartwoodRingsToPith()!=NULL)			$xml.= "<tridas:missingHeartwoodRingsToPith>".$this->getMissingHeartwoodRingsToPith()."</tridas:missingHeartwoodRingsToPith>\n";
+                    $xml.= "<tridas:pithAndSapwoodInfo>\n";
+                    $xml.= "<tridas:pith presence=\"".dbHelper::formatBool($this->getPithPresent(), "presentabsent")."\"></tridas:pith>\n";
+                    if( ($this->getHeartwood()!=NULL)  )    
+                    {
+                        $xml.= "<tridas:heartwood presence=\"".$this->getHeartwood()."\">";
+			if($this->getMissingHeartwoodRingsToPith()!=NULL)			$xml.= "<tridas:missingHeartwoodRingsToPith>".$this->getMissingHeartwoodRingsToPith()."</tridas:missingHeartwoodRingsToPith>\n";
 						if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$xml.= "<tridas:missingHeartwoodRingsToPithFoundation>".$this->getMissingHeartwoodRingsToPithFoundation()."</tridas:missingHeartwoodRingsToPithFoundation>\n";																				
 																					$xml.= "</tridas:heartwood>\n";
 					}
@@ -361,6 +362,7 @@ class radius extends radiusEntity implements IDBAccessor
                     if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)		$xml.= "<tridas:missingSapwoodRingsToBarkFoundation>".$this->getMissingSapwoodRingsToBarkFoundation()."</tridas:missingSapwoodRingsToBarkFoundation>\n";	
                     																$xml.= "</tridas:sapwood>\n";
             																		$xml.= "<tridas:bark presence=\"".dbHelper::formatBool($this->getBarkPresent(), "presentabsent")."\"/>";
+                    $xml.= "</tridas:pithAndSapwoodInfo>\n";
 					if($this->getAzimuth()!=NULL)									$xml.= "<tridas:azimuth>".$this->getAzimuth()."</tridas:azimuth>\n";
                 }
             }
