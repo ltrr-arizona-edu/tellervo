@@ -288,7 +288,7 @@ public class DecadalModel extends AbstractTableModel {
 
 		// if we get a String, make it into an Integer
 		// [Q: what else could it be?]
-		if ((value instanceof String) && ((String) value).length() > 0)
+		if ((value instanceof String) && ((String) value).length() > 0) {
 			try {
 				value = Integer.decode((String) value);
 			} catch (NumberFormatException nfe) {
@@ -296,7 +296,10 @@ public class DecadalModel extends AbstractTableModel {
 			} catch (Exception e) {
 				Bug.bug(e);
 			}
+		}
 
+		System.out.println("Value " + value + ", " + value.getClass().getName());
+			
 		final Year y = (bigger ? s.getRange().getEnd().add(+1) : getYear(row, col));
 		Object tmp = (bigger ? null : s.getData().get(y.diff(s.getRange().getStart())));
 		if (tmp != null && tmp.toString().length() == 0) {
@@ -307,6 +310,11 @@ public class DecadalModel extends AbstractTableModel {
 		final Object oldVal = tmp;
 
 		if (bigger) {
+			
+			// no value just yet, don't change the underlying data model
+			if(value == null || (value instanceof String && ((String)value).length() == 0))
+				return;
+			
 			s.getData().add(value);
 			// s.range.end = s.range.getEnd().add(+1);
 			s.setRange(new Range(s.getRange().getStart(), s.getRange().getEnd().add(+1)));
