@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.gui.Bug;
 
 public class BaseSample {
 
@@ -69,6 +70,24 @@ public class BaseSample {
 
 	public Object getMeta(String key) {
 		return meta.get(key);
+	}
+	
+	/**
+	 * Get meta as a particular class.
+	 * 
+	 * @param key
+	 * @param clazz
+	 * @return 
+	 */
+	public <T> T getMeta(String key, Class<T> clazz) {
+		Object o = meta.get(key);
+		
+		try {
+			return (o != null) ? clazz.cast(o) : null;
+		} catch (ClassCastException cce) {
+			new Bug(cce);
+			return null;
+		}
 	}
 	
 	/**

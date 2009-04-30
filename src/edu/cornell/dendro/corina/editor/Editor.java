@@ -452,7 +452,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	private void initMetaView() {
-		metaView = new MetadataPanel(sample);
+//		metaView = new MetadataPanel(sample);
 	}
 
 	private void initElemPanel() {
@@ -476,7 +476,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		
 		try {
 			mozillaMapPanel = new EditorMozillaMapPanel(link);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			// no mapping? no problem. don't fail violently!
 		}
 	}
@@ -488,7 +488,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// all samples get data, meta
 		dataView = new SampleDataView(sample);
 		rolodex.add(dataView, I18n.getText("tab_data"));
-		rolodex.add(metaView, I18n.getText("tab_metadata"));
+		//rolodex.add(metaView, I18n.getText("tab_metadata"));
 
 		// wj and elements, if it's summed
 		if (sample.hasWeiserjahre())

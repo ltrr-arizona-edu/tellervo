@@ -44,6 +44,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 
 import javax.swing.undo.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 
 /**
    Class representing a reading of a dendro sample.

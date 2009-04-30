@@ -25,7 +25,7 @@ public class ResourceException extends IOException {
 	 * @param cause
 	 */
 	public ResourceException(Throwable cause) {
-		super(cause);
+		super();
 		initCause(cause);
 	}
 

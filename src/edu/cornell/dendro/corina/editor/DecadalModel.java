@@ -311,8 +311,8 @@ public class DecadalModel extends AbstractTableModel {
 
 		if (bigger) {
 			
-			// no value just yet, don't change the underlying data model
-			if(value == null || (value instanceof String && ((String)value).length() == 0))
+			// no legitimate value just yet, don't change the underlying data model
+			if(value == null || value instanceof String)
 				return;
 			
 			s.getData().add(value);

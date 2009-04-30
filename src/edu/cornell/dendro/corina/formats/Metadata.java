@@ -49,6 +49,9 @@ public class Metadata {
 	public final static String RADIUS = "::radius";
 	public final static String SERIES = "::series";
 	
+	/** Measuring method */
+	public final static String MEASURING_METHOD = "::measuringMethod";
+	
 	/**
 	 * Get the class type of the corresponding metadata
 	 * Defaults to String.class!

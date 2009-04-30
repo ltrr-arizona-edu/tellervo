@@ -4,6 +4,7 @@
 package edu.cornell.dendro.corina.tridasv2;
 
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasInterpretation;
 import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasMeasuringMethod;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
@@ -41,7 +43,18 @@ public class TridasMeasurementSeriesEx extends TridasMeasurementSeries {
 		interpretation.setFirstYear(startYear.tridasYearValue());
 		setInterpretation(interpretation);
 		
-		// ring widths
+		// measurement method
+		TridasMeasuringMethod method = s.getMeta(Metadata.MEASURING_METHOD, TridasMeasuringMethod.class);
+		if(method == null) {
+			method = new TridasMeasuringMethod();
+			method.setNormalStd("corina");
+			method.setNormal("hand-carved ivory ruler");
+		}
+		setMeasuringMethod(method);
+		
+		///
+		/// BEGIN ring widths
+		///
 		int sz = s.getData().size();
 		List<Object> data = s.getData();
 		List<Integer> count = s.getCount();
@@ -64,15 +77,31 @@ public class TridasMeasurementSeriesEx extends TridasMeasurementSeries {
 			valueHolder.setUnit(units);
 		}
 
+		// get a decimal formatter for the ring number
+		String maxValue = String.valueOf(sz + 1);
+		StringBuffer formatBuffer = new StringBuffer();
+		for(int i = 0, j = maxValue.length(); i < j; i++) 
+			formatBuffer.append('0');
+		DecimalFormat df = new DecimalFormat(formatBuffer.toString());
+
 		// and make the list...
 		for(int i = 0; i < sz; i++) {
 			TridasValue tv = new TridasValue();
+			
 			tv.setValue(data.get(i).toString());
+			tv.setIndex("ring" + df.format(i+1));
+			
 			if(count != null)
 				tv.setCount(BigInteger.valueOf(count.get(i)));
 			
 			values.add(tv);
 		}
+
+		// add values to this series
+		getValues().add(valueHolder);
+		///
+		/// END RING WIDTHS
+		///
 	}
 
 }

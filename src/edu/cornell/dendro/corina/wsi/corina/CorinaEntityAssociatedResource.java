@@ -39,8 +39,7 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 	 */
 	public CorinaEntityAssociatedResource(TridasEntity entity, String parentEntityID, 
 			CorinaRequestType queryType) {
-		super(entity.getClass().getAnnotation(XmlRootElement.class).name(), 
-				queryType);
+		super(getXMLName(entity), queryType);
 		
 		if(entity == null)
 			throw new NullPointerException("Entity may not be null");
@@ -75,6 +74,24 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		if(queryType == CorinaRequestType.CREATE && parentEntityID == null) {
 			throw new IllegalStateException("CREATE called with ParentObjectID == null!");
 		}
+	}
+	
+	/**
+	 * Get the name value of the XmlRootElement annotation of this object or its superclasses
+	 * @param o
+	 * @return a string containing the name attribute
+	 */
+	private static String getXMLName(Object o) {
+		Class<?> clazz = o.getClass();
+		
+		do {
+			XmlRootElement e = clazz.getAnnotation(XmlRootElement.class);
+			if(e != null && e.name().length() > 0) {
+				return e.name();
+			}
+		} while((clazz = clazz.getSuperclass()) != null);
+		
+		throw new IllegalStateException("No XML name for class or superclasses?");
 	}
 
 	/**

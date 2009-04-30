@@ -182,6 +182,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpUriRequest req;
 		JAXBContext context;
+		Document outDocument = null;
 
 		try {
 			context = getJAXBContext();
@@ -201,9 +202,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 				req = post;	
 				
 				// create an XML document from the given objects
-				Document outDocument = marshallToDocument(context, sendingObject, getNamespacePrefixMapper());
-
-				TransactionDebug.sent(outDocument, noun);
+				outDocument = marshallToDocument(context, sendingObject, getNamespacePrefixMapper());
 				
 				// add it to the http post request
 				XMLBody xmlb = new XMLBody(outDocument, "application/corina+xml", null);				
@@ -217,9 +216,12 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 				// well, that's nice and easy
 				req = new HttpGet(url);
 
-				TransactionDebug.sent(null, noun);
 			}
+
+			// debug this transaction...
+			TransactionDebug.sent(outDocument, noun);
 			
+			// load cookies
 			client.setCookieStore(WSCookieStoreHandler.getCookieStore().toCookieStore());
 			
 			req.setHeader("User-Agent", "Corina WSI " + Build.VERSION + 
@@ -283,7 +285,8 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			Document invalidDoc = rspe.getNonvalidatingDocument();
 			File invalidFile = rspe.getInvalidFile();
 
-			bugs.addDocument("sent.xml", sendingObject);
+			if(outDocument != null)
+				bugs.addDocument("sent.xml", outDocument);
 			if(invalidDoc != null)
 				bugs.addDocument("recv-nonvalid.xml", invalidDoc);
 			if(invalidFile != null)

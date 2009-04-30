@@ -12,8 +12,10 @@ import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
 
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.formats.TridasDoc;
 import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
@@ -82,6 +84,14 @@ public class SeriesResource extends CorinaEntityAssociatedResource<Sample> {
 			
 		} catch(IOException ioe) {
 			throw new ResourceException("Couldn't load series: " + ioe.toString());
+		}
+		
+		for(BaseSample s : samples) {
+			// create a loader and associate it with this sample
+			CorinaWsiTridasElement loader = new CorinaWsiTridasElement(
+					s.getMeta(Metadata.TRIDAS_IDENTIFIER, TridasIdentifier.class));
+			
+			s.setLoader(loader);
 		}
 		
 		this.setAssociatedResult((Sample) samples.get(samples.size() - 1));
