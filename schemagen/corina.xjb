@@ -19,7 +19,8 @@
 		<jaxb:bindings node="//xs:element[@name='object']">
 			<jaxb:class implClass="edu.cornell.dendro.corina.tridasv2.TridasObjectEx" />
 		</jaxb:bindings>
-		
+				
+		<!-- Fix some unconvertable strings -->
 		<jaxb:bindings node="//xs:simpleType[@name='normalTridasUnit']">
 			<jaxb:typesafeEnumClass>
 				<jaxb:typesafeEnumMember value="1/100th millimetres" name="HUNDREDTH_MM" />
