@@ -6,12 +6,37 @@ package edu.cornell.dendro.corina.tridasv2;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Property {
-	public Property() {
-		childProperties = new ArrayList<Property>();
+import com.l2fprod.common.propertysheet.DefaultProperty;
+import com.l2fprod.common.propertysheet.Property;
+
+
+public class EntityProperty extends DefaultProperty {
+	public EntityProperty() {
+		childProperties = new ArrayList<EntityProperty>();
 		nChildProperties = 0;
 		isList = required = false;
 	}
+	
+	public void completeProperty() {
+		String[] pvals = name.split("\\.");
+		setName(pvals[pvals.length - 1]);
+		
+		if (nChildProperties > 0 && !required) {
+			setCategory("Other");
+		}
+		else
+			setCategory("General");
+		
+		setDisplayName(getNiceName());
+		
+		setShortDescription(getNiceName() + ": " + name);
+		
+		setType(clazz);
+		
+		for(Property p : childProperties)
+			addSubProperty(p);
+	}
+		
 	
 	public String getNiceName() {
 		StringBuffer sb = new StringBuffer();
@@ -50,5 +75,5 @@ public class Property {
 	public boolean isList;
 	public boolean required;
 	public int nChildProperties;
-	public List<Property> childProperties;
+	public List<EntityProperty> childProperties;
 }

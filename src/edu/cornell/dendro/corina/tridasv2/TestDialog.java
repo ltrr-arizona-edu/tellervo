@@ -1,7 +1,13 @@
 package edu.cornell.dendro.corina.tridasv2;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.SimpleBeanInfo;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,16 +19,24 @@ import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.jdesktop.layout.GroupLayout.ParallelGroup;
 import org.jdesktop.layout.GroupLayout.SequentialGroup;
-import org.openide.nodes.AbstractNode;
-import org.openide.nodes.BeanNode;
-import org.openide.nodes.Children;
+
+import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasRadius;
 
+import com.l2fprod.common.propertysheet.Property;
+import com.l2fprod.common.propertysheet.PropertySheet;
+import com.l2fprod.common.propertysheet.PropertySheetPanel;
+import com.l2fprod.common.propertysheet.DefaultProperty;
+import com.l2fprod.common.propertysheet.PropertySheetTableModel;
+
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.util.Center;
 
 
 public class TestDialog extends JPanel {
 	public TestDialog() {
+		
 	}
 		
 		/*
@@ -53,26 +67,103 @@ public class TestDialog extends JPanel {
 		layout.setVerticalGroup(vGroup);
 	}*/
 	
+	static class NoReadWriteProperty extends DefaultProperty {
+	      public void readFromObject(Object object) {
+	      }
+	      public void writeToObject(Object object) {
+	      }
+	 }
+	
+	public static class Colorful
+	{
+		private Color color;
+
+		public Color getColor()
+		{
+			return color;
+		}
+		
+		public void setColor( Color color )
+		{
+			this.color = color;
+		}
+
+		public int getRed()
+		{
+			return color.getRed();
+		}
+		
+		public void setRed( int red )
+		{
+			color = new Color( red, getGreen(), getBlue() );
+		}
+		
+		public int getGreen()
+		{
+			return color.getGreen();
+		}
+		
+		public void setGreen( int green )
+		{
+			color = new Color( getRed(), green, getBlue() );
+		}
+		
+		public int getBlue()
+		{
+			return color.getBlue();
+		}
+		
+		public void setBlue( int blue )
+		{
+			color = new Color( getRed(), getGreen(), blue );
+		}
+		
+		public String toString()
+		{
+			return color.toString();
+		}
+	}
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		App.platform = new Platform();
+		App.platform.init();
 		TridasRadius radius = new TridasRadius();
-		AbstractNode node = new AbstractNode(Children.LEAF);
-		/*
+		
+		radius.setAzimuth(BigDecimal.valueOf(12345));
+		radius.setTitle("tiiitle");
+
+		TridasIdentifier identifier = new TridasIdentifier();
+		identifier.setDomain("yargh.com");
+		identifier.setValue("12345");
+		
+		radius.setIdentifier(identifier);
+		
+		PropertySheetPanel panel = new PropertySheetPanel();
+		
+        List<EntityProperty> properties = TridasEntityDeriver.buildDerivationList(radius.getClass());
+        Property[] propArray = new Property[properties.size()];
+        properties.toArray(propArray);
+        
+		panel.setMode(PropertySheet.VIEW_AS_CATEGORIES);
+		panel.setProperties(propArray);
+		panel.readFromObject(radius);
+		
 		JDialog dialog = new JDialog((Frame) null, "Test thingy", true);
 		TestDialog p = new TestDialog();
 		
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
-		dialog.setContentPane(p);
+		dialog.setContentPane(panel);
 		dialog.pack();
 		Center.center(dialog);
 		
 		dialog.setVisible(true);
 		
 		System.exit(0);
-		*/
 	}
 
+	
 }

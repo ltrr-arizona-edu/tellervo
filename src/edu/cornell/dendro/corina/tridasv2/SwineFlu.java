@@ -16,7 +16,13 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.tridas.schema.*;
 
-public class TridasEntityDeriver {
+public class SwineFlu {
+	private static class PropertyData {
+		String name;
+		Class<?> clazz;
+		boolean isList;
+		boolean required;
+	}
 	
 	private static Set<Class<?>> ignoreClasses = new HashSet<Class<?>>();
 	
@@ -28,23 +34,12 @@ public class TridasEntityDeriver {
 		ignoreClasses.add(TridasMeasurementSeries.class);
 		ignoreClasses.add(TridasDerivedSeries.class);
 		ignoreClasses.add(BaseSeries.class);
-		
-		ignoreClasses.add(TridasRadiusPlaceholder.class);
 	}
 	
-	/**
-	 * Builds a PropertyData derivation list
-	 * 
-	 * @param entityName
-	 * @param clazz
-	 * @param propertyList
-	 * @return the number of direct child properties of clazz
-	 */
-	private static int buildDerivationList(String entityName, Class<?> clazz,
-			List<EntityProperty> propertyList) {
-		Map<String, EntityProperty> fieldMap = new HashMap<String, EntityProperty>();
-		int nChildren = 0;
-		
+	private static void buildPropertiesList(String entityName, Class<?> clazz,
+			List<PropertyData> propertyList) {
+		Map<String, PropertyData> fieldMap = new HashMap<String, PropertyData>();
+
 		// get any property names and stick them at the head of the list
 		XmlType type = clazz.getAnnotation(XmlType.class);
 		String[] typeProperties;
@@ -57,28 +52,36 @@ public class TridasEntityDeriver {
 				if (s.length() == 0)
 					continue;
 
-				EntityProperty pd = new EntityProperty();
+				PropertyData pd = new PropertyData();
 				fieldMap.put(s, pd);
 
 				pd.name = entityName + "." + s;
+				pd.required = pd.isList = false;
 			}
 
 			for (Field f : clazz.getDeclaredFields()) {
 				String fieldType = f.getGenericType().toString();
-				EntityProperty pd = fieldMap.get(f.getName());
+				PropertyData pd = fieldMap.get(f.getName());
 				XmlElement xmlElement;
 				XmlAttribute attribute;
 
-				// is it an xml attribute?
+				// is it an XML attribute? Special case!
 				if ((attribute = f.getAnnotation(XmlAttribute.class)) != null) {
+					// shouldn't have been able to find this - attributes aren't
+					// in typeProperties
 					if (pd != null)
-						throw new IllegalStateException("Attribute exists as element?");
-					
-					pd = new EntityProperty();
-					pd.name = entityName + ".@" + f.getName();
+						throw new IllegalStateException();
+
+					pd = new PropertyData();
+					String s = '@' + f.getName();
+
+					pd.name = entityName + "." + s;
+					pd.isList = false; // attributes can't be lists
 					pd.required = attribute.required();
 					pd.clazz = f.getType();
 				} else {
+					// it's NOT an attribute, it's an element
+					
 					// ignore this field if we don't have property data for it
 					if (pd == null) {
 						// System.out.println("No property data for " +
@@ -121,33 +124,29 @@ public class TridasEntityDeriver {
 				
 				// add type to property list
 				propertyList.add(pd);
-				nChildren++;
 
 				if (pd.clazz == null)
 					throw new NullPointerException();
 
 				// don't delve any deeper for enums
-				// only delve deeper if it's an XML-annotated class
-				if (pd.clazz.isEnum() || 
-						pd.clazz.getAnnotation(XmlType.class) == null) {
-					pd.completeProperty();
+				if (pd.clazz.isEnum())
 					continue;
-				}
+
+				// only delve deeper if it's an XML-annotated class
+				if (pd.clazz.getAnnotation(XmlType.class) == null)
+					continue;
 
 				// don't infinitely recurse
 				if (pd.clazz.equals(clazz))
 					continue;
 
-				pd.nChildProperties = buildDerivationList(pd.name, pd.clazz, pd.childProperties);
-				pd.completeProperty();
+				buildPropertiesList(pd.name, pd.clazz, propertyList);
 			}
 		}
-		
-		return nChildren;
 	}
 
-	public static List<EntityProperty> buildDerivationList(Class<?> clazz) {
-		List<EntityProperty> propertyList = new ArrayList<EntityProperty>();
+	public static List<PropertyData> buildPropertiesList(Class<?> clazz) {
+		List<PropertyData> propertyList = new ArrayList<PropertyData>();
 		List<Class<?>> classDerivationTree = new ArrayList<Class<?>>();
 		String rootEntityName = null;
 
@@ -167,34 +166,56 @@ public class TridasEntityDeriver {
 		Collections.reverse(classDerivationTree);
 
 		for (Class<?> myClass : classDerivationTree)
-			buildDerivationList(rootEntityName, myClass, propertyList);
+			buildPropertiesList(rootEntityName, myClass, propertyList);
 
 		return propertyList;
 	}
 	
-	public static void dumpPropertyList(List<EntityProperty> propertyList, int depth) {		
-		for (EntityProperty pd : propertyList) {
-			for(int i = 0; i < depth; i++)
-				System.out.print("   ");
-			//System.out.print(pd.getNiceName() + ": " + pd.clazz.getName());
+	public static String deCamelCase(String str) {
+		StringBuffer sb = new StringBuffer();
+		boolean startingSentence = true;
+		int length = str.length();
+		
+		for(int i = 0; i < length; i++) {
+			char c = str.charAt(i);
+			
+			if(startingSentence) {
+				sb.append(Character.toUpperCase(c));
+				startingSentence = false;
+				continue;
+			}
+			
+			if(c == '.') {
+				sb.append(c);
+				startingSentence = true;
+				continue;
+			}
+			
+			if(Character.isUpperCase(c)) {
+				sb.append(' ');
+				sb.append(Character.toLowerCase(c));
+				continue;
+			}
+			
+			sb.append(c);
+		}
+		
+		return sb.toString();
+	}
+
+	public static void main(String[] args) {
+		List<PropertyData> propertyList = new ArrayList<PropertyData>();
+
+		propertyList = buildPropertiesList(TridasObject.class);
+
+		for (PropertyData pd : propertyList) {
 			System.out.print(pd.name + ": " + pd.clazz.getName());
 			if (pd.required)
 				System.out.print(" [REQUIRED] ");
 			if (pd.isList)
 				System.out.print(" [LIST] ");
-			if (pd.nChildProperties > 0)
-				System.out.print(" " + pd.nChildProperties + " ");
 			System.out.println();
-			
-			dumpPropertyList(pd.childProperties, depth + 1);
 		}
-	}
 
-	public static void main(String[] args) {
-		List<EntityProperty> propertyList = new ArrayList<EntityProperty>();
-
-		propertyList = buildDerivationList(TridasRadius.class);
-		
-		dumpPropertyList(propertyList, 0);
 	}
 }
