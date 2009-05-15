@@ -20,10 +20,13 @@ import org.jdesktop.layout.LayoutStyle;
 import org.jdesktop.layout.GroupLayout.ParallelGroup;
 import org.jdesktop.layout.GroupLayout.SequentialGroup;
 
+import org.tridas.schema.PresenceAbsence;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasRadius;
 
 import com.l2fprod.common.propertysheet.Property;
+import com.l2fprod.common.propertysheet.PropertyRendererFactory;
 import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.l2fprod.common.propertysheet.DefaultProperty;
@@ -130,9 +133,11 @@ public class TestDialog extends JPanel {
 	public static void main(String[] args) {
 		App.platform = new Platform();
 		App.platform.init();
+		
+		////////////////////////////
 		TridasRadius radius = new TridasRadius();
 		
-		radius.setAzimuth(BigDecimal.valueOf(12345));
+		radius.setAzimuth(BigDecimal.valueOf(6.214));
 		radius.setTitle("tiiitle");
 
 		TridasIdentifier identifier = new TridasIdentifier();
@@ -141,7 +146,22 @@ public class TestDialog extends JPanel {
 		
 		radius.setIdentifier(identifier);
 		
+		TridasGenericField gf = new TridasGenericField();
+		gf.setName("abc");
+		gf.setValue("def");
+		radius.getGenericField().add(gf);
+
+		gf = new TridasGenericField();
+		gf.setName("123");
+		gf.setValue("456");
+		radius.getGenericField().add(gf);
+		////////////////////////////
+		
+
 		PropertySheetPanel panel = new PropertySheetPanel();
+		panel.getTable().setRowHeight(24);
+		panel.getTable().setRendererFactory(new TridasPropertyRendererFactory());
+		panel.getTable().setEditorFactory(new TridasPropertyEditorFactory());
 		
         List<EntityProperty> properties = TridasEntityDeriver.buildDerivationList(radius.getClass());
         Property[] propArray = new Property[properties.size()];
@@ -161,6 +181,9 @@ public class TestDialog extends JPanel {
 		Center.center(dialog);
 		
 		dialog.setVisible(true);
+		
+		panel.writeToObject(radius);
+		System.out.println(radius);
 		
 		System.exit(0);
 	}

@@ -37,11 +37,12 @@ public class TridasEntityDeriver {
 	 * 
 	 * @param entityName
 	 * @param clazz
-	 * @param propertyList
+	 * @param parent
 	 * @return the number of direct child properties of clazz
 	 */
 	private static int buildDerivationList(String entityName, Class<?> clazz,
-			List<EntityProperty> propertyList) {
+			EntityProperty parent) {
+		
 		Map<String, EntityProperty> fieldMap = new HashMap<String, EntityProperty>();
 		int nChildren = 0;
 		
@@ -57,10 +58,8 @@ public class TridasEntityDeriver {
 				if (s.length() == 0)
 					continue;
 
-				EntityProperty pd = new EntityProperty();
+				EntityProperty pd = new EntityProperty(entityName + "." + s, s);
 				fieldMap.put(s, pd);
-
-				pd.name = entityName + "." + s;
 			}
 
 			for (Field f : clazz.getDeclaredFields()) {
@@ -74,8 +73,7 @@ public class TridasEntityDeriver {
 					if (pd != null)
 						throw new IllegalStateException("Attribute exists as element?");
 					
-					pd = new EntityProperty();
-					pd.name = entityName + ".@" + f.getName();
+					pd = new EntityProperty(entityName + ".@" + f.getName(), f.getName());
 					pd.required = attribute.required();
 					pd.clazz = f.getType();
 				} else {
@@ -120,7 +118,7 @@ public class TridasEntityDeriver {
 					continue;
 				
 				// add type to property list
-				propertyList.add(pd);
+				parent.addChildProperty(pd);
 				nChildren++;
 
 				if (pd.clazz == null)
@@ -130,7 +128,6 @@ public class TridasEntityDeriver {
 				// only delve deeper if it's an XML-annotated class
 				if (pd.clazz.isEnum() || 
 						pd.clazz.getAnnotation(XmlType.class) == null) {
-					pd.completeProperty();
 					continue;
 				}
 
@@ -138,8 +135,7 @@ public class TridasEntityDeriver {
 				if (pd.clazz.equals(clazz))
 					continue;
 
-				pd.nChildProperties = buildDerivationList(pd.name, pd.clazz, pd.childProperties);
-				pd.completeProperty();
+				buildDerivationList(pd.qname, pd.clazz, pd);
 			}
 		}
 		
@@ -147,7 +143,7 @@ public class TridasEntityDeriver {
 	}
 
 	public static List<EntityProperty> buildDerivationList(Class<?> clazz) {
-		List<EntityProperty> propertyList = new ArrayList<EntityProperty>();
+		EntityProperty rootEntity = new EntityProperty(null, null);
 		List<Class<?>> classDerivationTree = new ArrayList<Class<?>>();
 		String rootEntityName = null;
 
@@ -167,9 +163,9 @@ public class TridasEntityDeriver {
 		Collections.reverse(classDerivationTree);
 
 		for (Class<?> myClass : classDerivationTree)
-			buildDerivationList(rootEntityName, myClass, propertyList);
+			buildDerivationList(rootEntityName, myClass, rootEntity);
 
-		return propertyList;
+		return rootEntity.getChildProperties();
 	}
 	
 	public static void dumpPropertyList(List<EntityProperty> propertyList, int depth) {		
@@ -177,16 +173,16 @@ public class TridasEntityDeriver {
 			for(int i = 0; i < depth; i++)
 				System.out.print("   ");
 			//System.out.print(pd.getNiceName() + ": " + pd.clazz.getName());
-			System.out.print(pd.name + ": " + pd.clazz.getName());
+			System.out.print(pd.qname + ": " + pd.clazz.getName());
 			if (pd.required)
 				System.out.print(" [REQUIRED] ");
 			if (pd.isList)
 				System.out.print(" [LIST] ");
-			if (pd.nChildProperties > 0)
-				System.out.print(" " + pd.nChildProperties + " ");
+			if (pd.getChildProperties().size() > 0)
+				System.out.print(" " + pd.getChildProperties().size() + " ");
 			System.out.println();
 			
-			dumpPropertyList(pd.childProperties, depth + 1);
+			dumpPropertyList(pd.getChildProperties(), depth + 1);
 		}
 	}
 
