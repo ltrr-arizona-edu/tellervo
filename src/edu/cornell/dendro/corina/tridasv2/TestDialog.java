@@ -23,7 +23,9 @@ import org.jdesktop.layout.GroupLayout.SequentialGroup;
 import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
 
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertyRendererFactory;
@@ -38,93 +40,7 @@ import edu.cornell.dendro.corina.util.Center;
 
 
 public class TestDialog extends JPanel {
-	public TestDialog() {
-		
-	}
-		
-		/*
-		GroupLayout layout = new GroupLayout(this);
-		setLayout(layout);
-		
-		layout.setAutocreateContainerGaps(true);
-		layout.setAutocreateGaps(true);
-		
-		List<Property> plist = TridasEntityDeriver.buildDerivationList(TridasRadius.class);	
-		List<Component> components = new ArrayList<Component>();
-		
-		for(Property p : plist) {
-			components.add(new JLabel(p.getNiceName()));
-		}
-		
-		SequentialGroup hGroup = layout.createSequentialGroup();
-		SequentialGroup vGroup = layout.createSequentialGroup();
-		
-		ParallelGroup cg = layout.createParallelGroup();
-		for(Component c : components) {
-			vGroup.add(layout.createParallelGroup().add(c));
-			cg.add(c);
-		}
-		hGroup.add(cg);
-		
-		layout.setHorizontalGroup(hGroup);
-		layout.setVerticalGroup(vGroup);
-	}*/
-	
-	static class NoReadWriteProperty extends DefaultProperty {
-	      public void readFromObject(Object object) {
-	      }
-	      public void writeToObject(Object object) {
-	      }
-	 }
-	
-	public static class Colorful
-	{
-		private Color color;
-
-		public Color getColor()
-		{
-			return color;
-		}
-		
-		public void setColor( Color color )
-		{
-			this.color = color;
-		}
-
-		public int getRed()
-		{
-			return color.getRed();
-		}
-		
-		public void setRed( int red )
-		{
-			color = new Color( red, getGreen(), getBlue() );
-		}
-		
-		public int getGreen()
-		{
-			return color.getGreen();
-		}
-		
-		public void setGreen( int green )
-		{
-			color = new Color( getRed(), green, getBlue() );
-		}
-		
-		public int getBlue()
-		{
-			return color.getBlue();
-		}
-		
-		public void setBlue( int blue )
-		{
-			color = new Color( getRed(), getGreen(), blue );
-		}
-		
-		public String toString()
-		{
-			return color.toString();
-		}
+	public TestDialog() {		
 	}
 	
 	/**
@@ -157,6 +73,8 @@ public class TestDialog extends JPanel {
 		radius.getGenericField().add(gf);
 		////////////////////////////
 		
+		//TridasMeasurementSeries series = new TridasMeasurementSeries();
+		
 
 		PropertySheetPanel panel = new PropertySheetPanel();
 		panel.getTable().setRowHeight(24);
@@ -164,15 +82,14 @@ public class TestDialog extends JPanel {
 		panel.getTable().setEditorFactory(new TridasPropertyEditorFactory());
 		
         List<EntityProperty> properties = TridasEntityDeriver.buildDerivationList(radius.getClass());
-        Property[] propArray = new Property[properties.size()];
-        properties.toArray(propArray);
+        Property[] propArray = properties.toArray(new Property[properties.size()]);
         
 		panel.setMode(PropertySheet.VIEW_AS_CATEGORIES);
 		panel.setProperties(propArray);
 		panel.readFromObject(radius);
 		
 		JDialog dialog = new JDialog((Frame) null, "Test thingy", true);
-		TestDialog p = new TestDialog();
+		//TestDialog p = new TestDialog();
 		
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		

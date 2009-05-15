@@ -136,12 +136,25 @@ public class EntityProperty extends AbstractProperty {
 		}
 	}
 	
+	private boolean isNullOrEmpty(Object o) {
+		if(o == null)
+			return true;
+		
+		if(o instanceof String && ((String)o).length() == 0)
+			return true;
+		
+		return false;
+	}
+	
 	@Override
 	public void setValue(Object value) {
 		super.setValue(value);
 		
 		if (parentProperty != null) {
-			ensureParentValuesExist(parentProperty);
+			
+			// if we have a legitimate value, make sure our structure exists
+			if(!isNullOrEmpty(value))
+				ensureParentValuesExist(parentProperty);
 
 			Object parentValue = parentProperty.getValue();
 			
