@@ -169,6 +169,10 @@ public class EntityProperty extends AbstractProperty {
 			for (EntityProperty child : childProperties)
 				child.readFromObject(value);
 		}
+		else {
+			for (EntityProperty child : childProperties)
+				child.setValue(null);
+		}
 	}
 	
 	@Override

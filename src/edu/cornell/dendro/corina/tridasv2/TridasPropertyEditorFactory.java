@@ -32,7 +32,16 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 			if(ep.clazz.isEnum())
 				return new EnumComboBoxPropertyEditor(ep.clazz);
 		}
-				
-		return super.getEditor(property);
+
+		PropertyEditor defaultEditor = super.getEditor(property);
+
+		if(defaultEditor == null && property instanceof EntityProperty) {
+			EntityProperty ep = (EntityProperty) property;
+			
+			if(ep.getChildProperties().size() > 0)
+				return new TridasDefaultPropertyEditor();
+		}
+		
+		return defaultEditor;
 	}
 }

@@ -18,6 +18,15 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		if(property instanceof EntityProperty && ((EntityProperty)property).clazz.isEnum())
 			return new EnumComboBoxRenderer();
 		
-		return super.getRenderer(property);
+		TableCellRenderer defaultRenderer = super.getRenderer(property);
+		
+		if(defaultRenderer == null && property instanceof EntityProperty) {
+			EntityProperty ep = (EntityProperty) property;
+			
+			if(ep.isEditable() && ep.getChildProperties().size() > 0)
+				return new TridasDefaultPropertyRenderer();			
+		}
+				
+		return defaultRenderer;
 	}
 }
