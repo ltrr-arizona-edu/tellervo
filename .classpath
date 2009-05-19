@@ -35,5 +35,7 @@
 	<classpathentry kind="lib" path="Libraries/commons-lang-2.4-tiny.jar"/>
 	<classpathentry kind="lib" path="Libraries/l2fprod-common-shared.jar" sourcepath="Libraries/src/l2fprod-common-7.3-src.zip"/>
 	<classpathentry kind="lib" path="Libraries/l2fprod-common-sheet.jar" sourcepath="Libraries/src/l2fprod-common-7.3-src.zip"/>
+	<classpathentry kind="lib" path="Libraries/jaxen-1.1.1.jar"/>
+	<classpathentry kind="lib" path="Libraries/l2fprod-common-buttonbar.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
