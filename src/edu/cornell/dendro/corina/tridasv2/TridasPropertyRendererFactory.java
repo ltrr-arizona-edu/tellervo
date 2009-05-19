@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.swing.table.TableCellRenderer;
 
+import org.tridas.schema.ControlledVoc;
+
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertyRendererRegistry;
 
@@ -15,8 +17,15 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {
 		// handle enums nicely
-		if(property instanceof EntityProperty && ((EntityProperty)property).clazz.isEnum())
-			return new EnumComboBoxRenderer();
+		if(property instanceof EntityProperty) {
+			EntityProperty ep = (EntityProperty)property;
+			
+			if(ep.clazz.isEnum())
+				return new EnumComboBoxRenderer();
+			
+			if(ep.isDictionaryAttached())
+				return new ListComboBoxRenderer();
+		}
 		
 		TableCellRenderer defaultRenderer = super.getRenderer(property);
 		

@@ -12,15 +12,17 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+import org.tridas.schema.ControlledVoc;
+
 import com.lowagie.text.Font;
 
 /**
  * @author Lucas Madar
  *
  */
-public class EnumComboBoxItemRenderer extends JLabel implements ListCellRenderer {
+public class ListComboBoxItemRenderer extends JLabel implements ListCellRenderer {
 
-	public EnumComboBoxItemRenderer() {
+	public ListComboBoxItemRenderer() {
 		setOpaque(true);
 		setHorizontalAlignment(LEFT);
 		setVerticalAlignment(CENTER);
@@ -51,14 +53,11 @@ public class EnumComboBoxItemRenderer extends JLabel implements ListCellRenderer
 			setText("");
 		} 
 		else {
-			// try to invoke the class' value() to get a String value
-			try {
-				Method method = value.getClass().getMethod("value", (Class<?>[]) null);
-				setText(method.invoke(value, new Object[] {}).toString());
-			} catch (Exception e) {
-				e.printStackTrace();
-				setText(value.toString());
+			if(value instanceof ControlledVoc) {
+				setText(((ControlledVoc) value).getNormal());
 			}
+			else
+				setText(value.toString());
 		}		
 	}
 

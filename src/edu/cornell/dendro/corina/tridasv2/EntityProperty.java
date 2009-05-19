@@ -10,10 +10,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.tridas.schema.ControlledVoc;
+
 import com.l2fprod.common.beans.BeanUtils;
 import com.l2fprod.common.propertysheet.AbstractProperty;
 import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
+
+import edu.cornell.dendro.corina.tridasv2.doc.Documentation;
 
 
 public class EntityProperty extends AbstractProperty {
@@ -31,6 +35,8 @@ public class EntityProperty extends AbstractProperty {
 		
 		this.qname = qname;
 		this.lname = lname;
+		
+		dictionaryAttached = DictionaryMappings.hasDictionaryMapping(qname);
 	}
 	
 	public void addChildProperty(EntityProperty property) {
@@ -118,6 +124,10 @@ public class EntityProperty extends AbstractProperty {
 		return sb.toString();
 	}
 
+	public boolean isDictionaryAttached() {
+		return dictionaryAttached;
+	}
+	
 	private static void ensureParentValuesExist(EntityProperty ep) {
 		// make sure that all values down the tree exist! 
 		if(ep.parentProperty != null)
@@ -210,12 +220,15 @@ public class EntityProperty extends AbstractProperty {
 	/** Is this a root node? Ignore it as a parent */
 	private boolean isRootNode;
 	
+	/** Is a dictionary attached to this? (if yes, ignore children) */
+	private boolean dictionaryAttached;
+	
 	private int nChildProperties;
 	private List<EntityProperty> childProperties;
 	private EntityProperty parentProperty;
 	
 	public String getCategory() {
-		if (nChildProperties > 0 && !required) {
+		if (nChildProperties > 0 && !dictionaryAttached && !required) {
 			return "Other";
 		}
 		else
@@ -231,7 +244,12 @@ public class EntityProperty extends AbstractProperty {
 	}
 
 	public String getShortDescription() {
-		return getNiceName() + ": " + qname;
+		String docs = Documentation.getDocumentation(qname);
+		
+		if(docs != null)
+			return docs;
+		
+		return "<i>No documentation is available for this entity</i>";
 	}
 
 	public Class getType() {
@@ -249,6 +267,9 @@ public class EntityProperty extends AbstractProperty {
 	}
 		  
 	public Property[] getSubProperties() {
-		return childProperties.toArray(new Property[childProperties.size()]);
-	}
+		if(dictionaryAttached)
+			return null;
+		
+		return childProperties.toArray(new Property[childProperties.size()]);	
+	}	
 }
