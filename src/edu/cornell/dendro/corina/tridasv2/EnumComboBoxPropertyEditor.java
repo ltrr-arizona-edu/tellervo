@@ -25,7 +25,7 @@ public class EnumComboBoxPropertyEditor extends AbstractPropertyEditor {
 	
 		this.enumClass = enumClass;
 		
-		editor = new JComboBox(enumClass.getEnumConstants()) {
+		editor = new ComboBoxFilterable(enumClass.getEnumConstants()) {
 			// Cache the last selected item in case the user hits escape!
 			public void setSelectedItem(Object anObject) {
 				oldValue = getSelectedItem();
@@ -98,7 +98,7 @@ public class EnumComboBoxPropertyEditor extends AbstractPropertyEditor {
 		return editor;
 	}
 	
-	private static class NotPresentItemImpl {
+	private static class NotPresentItemImpl implements NotPresent {
 		public String value() {
 			return "<html><i>Not Present</i>";
 		}

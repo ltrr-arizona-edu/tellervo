@@ -21,7 +21,7 @@ public class ListComboBoxPropertyEditor extends AbstractPropertyEditor {
 	private static final NotPresentItemImpl NOT_PRESENT = new NotPresentItemImpl();
 	
 	public ListComboBoxPropertyEditor(List<?> list) {	
-		editor = new JComboBox(list.toArray()) {
+		editor = new ComboBoxFilterable(list.toArray()) {
 			// Cache the last selected item in case the user hits escape!
 			public void setSelectedItem(Object anObject) {
 				oldValue = getSelectedItem();
@@ -29,7 +29,7 @@ public class ListComboBoxPropertyEditor extends AbstractPropertyEditor {
 			}
 		};
 		
-	    final JComboBox combo = (JComboBox)editor;
+	    final JComboBox combo = ((ComboBoxFilterable)editor);
 	    
 	    // render enum values
 	    combo.setRenderer(new ListComboBoxItemRenderer());
@@ -53,6 +53,8 @@ public class ListComboBoxPropertyEditor extends AbstractPropertyEditor {
 	          ListComboBoxPropertyEditor.this.firePropertyChange(oldValue,
 	            combo.getSelectedItem());          
 	        }
+	        else {
+	        }
 	      }
 	    });
 	    combo.setSelectedIndex(-1);
@@ -60,14 +62,14 @@ public class ListComboBoxPropertyEditor extends AbstractPropertyEditor {
 	
 	@Override
 	public Object getValue() {
-		Object obj = ((JComboBox)editor).getSelectedItem();
+		Object obj = ((ComboBoxFilterable)editor).getSelectedItem();
 		
 		return (obj == NOT_PRESENT) ? null : obj;
 	}
 	
 	@Override
 	public void setValue(Object value) {
-		JComboBox combo = (JComboBox) editor;
+		JComboBox combo = ((ComboBoxFilterable)editor);
 		Object current = null;
 		int index = -1;
 		
@@ -81,7 +83,7 @@ public class ListComboBoxPropertyEditor extends AbstractPropertyEditor {
 				break;
 			}
 		}
-		((JComboBox) editor).setSelectedIndex(index);
+		((ComboBoxFilterable)editor).setSelectedIndex(index);
 	}
 	
 	@Override
@@ -94,7 +96,7 @@ public class ListComboBoxPropertyEditor extends AbstractPropertyEditor {
 		return editor;
 	}
 	
-	private static class NotPresentItemImpl {
+	private static class NotPresentItemImpl implements NotPresent {
 		@Override
 		public String toString() {
 			return "<html><i>Not Present</i>";
