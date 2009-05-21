@@ -1,8 +1,11 @@
 package edu.cornell.dendro.corina.tridasv2;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.IllegalComponentStateException;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Method;
@@ -12,9 +15,13 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
@@ -23,14 +30,16 @@ import javax.swing.event.PopupMenuListener;
 import org.tridas.schema.ControlledVoc;
 
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
-import edu.cornell.dendro.corina.ui.FocusablePopup;
 
+@SuppressWarnings("serial")
 public class ComboBoxFilterable extends JComboBox {
 
-	/** The popup that shows a search box */
-	private FocusablePopup searchPopup;
+	/** The JLayeredPane that contains us */
+	private JLayeredPane windowPane;
+	
 	/** The search panel that holds the text field */
 	private JPanel searchPanel;
+	
 	/** The text field for entering in search data */
 	private ForcableJTextField searchField;
 
@@ -42,7 +51,7 @@ public class ComboBoxFilterable extends JComboBox {
 
 	public ComboBoxFilterable(Object[] data) {
 		super();
-	
+			
 		model = new FilterableComboBoxModel(Arrays.asList(data));
 		setModel(model);
 		
@@ -72,11 +81,11 @@ public class ComboBoxFilterable extends JComboBox {
 		addKeyListener(new KeyAdapter() {
 			
 			public void keyTyped(KeyEvent e) {	
-				
+								
 				// ignore it if the combo popup menu isn't showing
 				if(!isComboPopupShowing)
 					ComboBoxFilterable.this.showPopup();
-				
+								
 				// is control or alt pressed? Ignore anything, then
 				if((e.getModifiers() & (KeyEvent.CTRL_DOWN_MASK|KeyEvent.ALT_DOWN_MASK)) != 0)
 					return;
@@ -105,30 +114,50 @@ public class ComboBoxFilterable extends JComboBox {
 						// component isn't on screen, shouldn't happen??
 						return;
 					}
-
+				
 					initPopup(p);				
+
 					searchField.setText("");
-					searchPopup.show();
+					searchPanel.setVisible(true);
 					searchField.requestFocus(true);
 					isPopupShowing = true;
-				}
-				
+				}				
 				searchField.forceProcessKeyEvent(e);
 			}
 		});
 	}
 	
 	private void initPopup(Point p) {
-		if(searchPopup != null) {
-			isPopupShowing = false;
-			searchPopup.hide();
+		if(searchPanel == null) {
+			initSearchPanel();
+
+			Window containerWindow = SwingUtilities.windowForComponent(this);
+			if(containerWindow instanceof JDialog)
+				windowPane = ((JDialog)containerWindow).getLayeredPane();
+			else if(containerWindow instanceof JFrame)
+				windowPane = ((JFrame)containerWindow).getLayeredPane();
+			else
+				// not a JFrame or JDialog??
+				return;
+					
+			windowPane.add(searchPanel, JLayeredPane.POPUP_LAYER);
 		}
 		
-		if(searchPanel == null)
-			initSearchPanel();
-		
-		searchPopup = FocusablePopup.getPopup(this, 
-				searchPanel, p.x, p.y - (20 + searchPanel.getPreferredSize().height));
+		Dimension panelSize = searchPanel.getPreferredSize();
+		int x = windowPane.getWidth() - panelSize.width;
+		int y = (this.getLocationOnScreen().y - windowPane.getLocationOnScreen().y) -
+				(panelSize.height + 5);
+
+		// too wide?
+		if(x < 0) {
+			panelSize.width += x;
+			x = 0;
+		}
+		// too tall
+		if(y < 0)
+			y = 0;
+		searchPanel.setBounds(x, y, panelSize.width, panelSize.height);
+		searchPanel.validate();
 	}
 	
 	/**
@@ -137,7 +166,7 @@ public class ComboBoxFilterable extends JComboBox {
 	 */
 	private void cleanupPopup(boolean resetFilter) {
 		if(isPopupShowing) {
-			searchPopup.hide();
+			searchPanel.setVisible(false);
 			isPopupShowing = false;
 		}
 		
@@ -160,6 +189,7 @@ public class ComboBoxFilterable extends JComboBox {
 
 		searchField = new ForcableJTextField(20);
 		searchPanel.add(searchField);
+		searchPanel.setVisible(false);
 		
 		// notify when search field contents change
 		searchField.getDocument().addDocumentListener(new DocumentListener() {
@@ -211,8 +241,12 @@ public class ComboBoxFilterable extends JComboBox {
 			super(size);
 		}
 
-		public void forceProcessKeyEvent(KeyEvent k) {
-			super.processKeyEvent(k);
+		public void forceProcessKeyEvent(final KeyEvent k) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					ForcableJTextField.super.processKeyEvent(k);
+				}
+			});
 		}
 	}
 
