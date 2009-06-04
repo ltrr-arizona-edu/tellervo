@@ -66,8 +66,7 @@ class dictionaries
         $xmldata = "";
         
         $dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
-        				  'locationType', 'elementAuthenticity', 'elementShape', 'sapwood', 'heartwood', 'measurementVariable',
-        				  'datingType', 'taxon', 'region', 'readingNote');
+        				  'elementAuthenticity', 'datingType', 'taxon', 'region', 'readingNote');
        
         
 		// Standard dictionar items

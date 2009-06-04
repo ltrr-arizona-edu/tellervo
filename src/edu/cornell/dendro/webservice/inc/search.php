@@ -116,7 +116,7 @@ class search Implements IDBAccessor
         }
 
         // Build return object dependent SQL
-        $returnObjectSQL = $this->tableName($this->returnObject).".* ";
+        $returnObjectSQL = "DISTINCT ON (".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id)". $this->tableName($this->returnObject).".* ";
         //$returnObjectSQL = $this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id as id ";
         $orderBySQL      = "\n ORDER BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id asc ";
         //$groupBySQL      = "\n GROUP BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id" ;
