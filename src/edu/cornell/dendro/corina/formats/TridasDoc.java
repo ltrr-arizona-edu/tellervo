@@ -433,6 +433,8 @@ public class TridasDoc implements Filetype {
 				s.setMeta(Metadata.SUMMARY_SUM_CONSTITUENT_COUNT, genericFields.getInteger("corina.seriesCount"));
 			if(genericFields.containsKey("corina.summaryTaxonName"))
 				s.setMeta(Metadata.SUMMARY_MUTUAL_TAXON, genericFields.getString("corina.summaryTaxonName"));
+			if(genericFields.containsKey("corina.summaryTaxonCount"))
+				s.setMeta(Metadata.SUMMARY_MUTUAL_TAXON_COUNT, genericFields.getInteger("corina.summaryTaxonCount"));
 		}
 		
 		return s;

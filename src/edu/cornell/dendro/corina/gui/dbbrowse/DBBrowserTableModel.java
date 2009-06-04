@@ -25,12 +25,12 @@ public class DBBrowserTableModel extends AbstractTableModel {
     private final String[] columnNames = {
             "Name", 
             "Type", 
-            "Site name", 
+            "Object", 
             "Taxon", 
             "#", 
-            "Modified", 
-            "Begin Date", 
-            "End Date", 
+            "Mod", 
+            "Begin", 
+            "End", 
             "n",
             "Rec"
             //"ID" //useful for debugging
@@ -103,9 +103,16 @@ public class DBBrowserTableModel extends AbstractTableModel {
 		}
 
 		// taxon
-		case 3:
-			return bs.getMeta(Metadata.SUMMARY_MUTUAL_TAXON);
+		case 3: {
+			Integer nTaxa = bs.getMeta(Metadata.SUMMARY_MUTUAL_TAXON_COUNT, Integer.class);
+			String taxon = bs.getMetaString(Metadata.SUMMARY_MUTUAL_TAXON);
 
+			if(nTaxa == null || nTaxa < 2 || taxon == null)
+				return taxon;
+			
+			return nTaxa + " of " + taxon;
+		}
+		
 		// measurement count
 		case 4: 
 			return bs.getMeta(Metadata.SUMMARY_SUM_CONSTITUENT_COUNT);
