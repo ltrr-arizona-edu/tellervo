@@ -110,7 +110,7 @@ public class DBBrowserTableModel extends AbstractTableModel {
 			if(nTaxa == null || nTaxa < 2 || taxon == null)
 				return taxon;
 			
-			return nTaxa + " of " + taxon;
+			return nTaxa + " taxa of " + taxon;
 		}
 		
 		// measurement count
