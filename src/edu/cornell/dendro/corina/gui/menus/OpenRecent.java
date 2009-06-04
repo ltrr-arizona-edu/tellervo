@@ -284,7 +284,7 @@ public class OpenRecent {
 			if(holder.loader instanceof CorinaWsiTridasElement) {
 				CorinaWsiTridasElement cwte = (CorinaWsiTridasElement) holder.loader;
 				
-				return holder.displayName + " (TriDaS), from " + cwte.getTridasIdentifier().getDomain();
+				return holder.displayName + " (Corina/TRiDaS), from " + cwte.getTridasIdentifier().getDomain();
 			}
 			
 			return holder.displayName;
@@ -417,8 +417,8 @@ public class OpenRecent {
 
 			// it's a CorinaWsiTridasElement?
 			if(next.startsWith("cwte:")) {
-				System.out.println("cwte: " + next);
 				String[] parts = next.substring(5).split("\\>", 2);
+				
 				if(parts.length == 2) {
 					String displayName = HTMLEntities.unhtmlentities(parts[0]);
 					String idXML = HTMLEntities.unhtmlentities(parts[1]);

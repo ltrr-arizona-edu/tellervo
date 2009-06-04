@@ -249,13 +249,12 @@ public class TridasDoc implements Filetype {
 						labcode.clearSites();
 						for(TridasObject object : objArray) {
 							for(TridasGenericField f : object.getGenericField()) {
-								if("corina.objectCode".equals(f.getName())) {
+								if("corina.objectLabCode".equals(f.getName())) {
 									labcode.appendSiteCode(f.getValue());
 								}
-								else if("corina.objectTitle".equals(f.getName())) {
-									labcode.appendSiteTitle(f.getValue());
-								}
 							}
+							
+							labcode.appendSiteTitle(object.getTitle());
 						}
 						
 						// this stuff is easier
