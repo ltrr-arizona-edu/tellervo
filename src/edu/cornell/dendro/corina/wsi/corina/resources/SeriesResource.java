@@ -92,6 +92,9 @@ public class SeriesResource extends CorinaEntityAssociatedResource<Sample> {
 					s.getMeta(Metadata.TRIDAS_IDENTIFIER, TridasIdentifier.class));
 			
 			s.setLoader(loader);
+			
+			// don't forget to populate!
+			loader.preload(s);
 		}
 		
 		this.setAssociatedResult((Sample) samples.get(samples.size() - 1));

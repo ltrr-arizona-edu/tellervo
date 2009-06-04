@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.tridasv2.TridasMeasurementSeriesEx;
@@ -33,6 +34,10 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader {
 		name = shortName = identifier.toString();
 	}
 	
+	public TridasIdentifier getTridasIdentifier() {
+		return identifier;
+	}
+	
 	@Override
 	protected Sample doLoad(CorinaResource resource,
 			CorinaResourceAccessDialog dialog) throws IOException {
@@ -51,6 +56,10 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader {
 		}
 		
 		CorinaAssociatedResource<Sample> rsrc = (CorinaAssociatedResource<Sample>)resource;
+		
+		// make sure we load our special info
+		preload(rsrc.getAssociatedResult());
+		
 		return rsrc.getAssociatedResult();
 	}
 
@@ -94,5 +103,6 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader {
 	}
 
 	public void preload(BaseSample bs) {
+		shortName = name = bs.getMetaString(Metadata.TITLE);
 	}
 }

@@ -21,11 +21,10 @@
 package edu.cornell.dendro.corina.gui.menus;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.ref.Reference;
+import java.io.StringWriter;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,24 +35,22 @@ import java.util.StringTokenizer;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.tridas.schema.TridasIdentifier;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.CanOpener;
-import edu.cornell.dendro.corina.sample.CorinaWebElement;
-import edu.cornell.dendro.corina.sample.Element;
-import edu.cornell.dendro.corina.sample.FileElement;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
+import edu.cornell.dendro.corina.util.HTMLEntities;
 
 /**
     A menu which shows recently-opened files.
@@ -155,9 +152,23 @@ public class OpenRecent {
 		lh.loader = sl;
 		lh.displayName = sl.getName();
 		
-		// cache resource ID if possible
-		if(sl instanceof CorinaWebElement)
-			lh.resText = ((CorinaWebElement) sl).getResourceIdentifier().toString();
+		if (sl instanceof CorinaWsiTridasElement) {
+			TridasIdentifier identifier = ((CorinaWsiTridasElement) sl).getTridasIdentifier();
+			
+			// marshall the identifier to XML, escape it
+			try {
+				JAXBContext context = JAXBContext.newInstance(TridasIdentifier.class);
+				Marshaller marshaller = context.createMarshaller();
+				StringWriter writer = new StringWriter();
+
+				marshaller.marshal(identifier, writer);
+								
+				lh.resText = HTMLEntities.htmlentities(writer.toString());
+			} catch (JAXBException e) {
+				e.printStackTrace();
+				return;
+			}
+		}
 
 		// if already in spot #0, don't need to do anything
 		// also make sure their displaynames are the same!
@@ -247,16 +258,10 @@ public class OpenRecent {
 	private static String getSavableName(Object o) {
 		if(o instanceof LoaderHolder) {
 			LoaderHolder holder = (LoaderHolder)o;
-			if(holder.loader instanceof CorinaWebElement) {
-				ResourceIdentifier rid = ((CorinaWebElement)holder.loader).getResourceIdentifier();
-				org.jdom.Element e = rid.asXMLElement();
-
-				// save the display name...
-				e.setText(holder.displayName);
-
-				Format format = Format.getCompactFormat();
-				format.setEncoding("UTF-8");
-				return new XMLOutputter(format).outputString(e);
+			
+			// cwte:Some wonderful &amp; tasty>&gt;xxxxx....&lt
+			if(holder.loader instanceof CorinaWsiTridasElement) {
+				return "cwte:" + HTMLEntities.htmlentities(holder.displayName) + '>' + holder.resText;
 			}
 			
 			// default...?
@@ -275,11 +280,11 @@ public class OpenRecent {
 	private static String getDescription(Object o) {
 		if(o instanceof LoaderHolder) {
 			LoaderHolder holder = (LoaderHolder)o;
-			if(holder.loader instanceof CorinaWebElement) {
-				CorinaWebElement cwe = (CorinaWebElement)holder.loader;
-				ResourceIdentifier rid = cwe.getResourceIdentifier();
 			
-				return holder.displayName + " from " + rid.asXMLElement().getAttributeValue("url");
+			if(holder.loader instanceof CorinaWsiTridasElement) {
+				CorinaWsiTridasElement cwte = (CorinaWsiTridasElement) holder.loader;
+				
+				return holder.displayName + " (TriDaS), from " + cwte.getTridasIdentifier().getDomain();
 			}
 			
 			return holder.displayName;
@@ -410,24 +415,34 @@ public class OpenRecent {
 		while (tok.hasMoreTokens()) {
 			String next = tok.nextToken();
 
-			// is it xml? (kludgy, I know)
-			if(next.charAt(0) == '<') {
-				try {
-					Document doc = new SAXBuilder().build(new StringReader(next));
-					org.jdom.Element e = doc.getRootElement();
-					ResourceIdentifier rid = ResourceIdentifier.fromElement(e);
+			// it's a CorinaWsiTridasElement?
+			if(next.startsWith("cwte:")) {
+				System.out.println("cwte: " + next);
+				String[] parts = next.substring(5).split("\\>", 2);
+				if(parts.length == 2) {
+					String displayName = HTMLEntities.unhtmlentities(parts[0]);
+					String idXML = HTMLEntities.unhtmlentities(parts[1]);
+					TridasIdentifier identifier;
+					
+					try {
+						JAXBContext context = JAXBContext.newInstance(TridasIdentifier.class);
+						Unmarshaller unmarshaler = context.createUnmarshaller();
+						
+						StringReader reader = new StringReader(idXML);
+						identifier = (TridasIdentifier) unmarshaler.unmarshal(reader);
+					} catch (JAXBException e) {
+						e.printStackTrace();
+						continue;
+					}
 					
 					LoaderHolder holder = new LoaderHolder();
-					holder.displayName = e.getText();
-					holder.resText = rid.toString();
-					holder.loader = new CorinaWebElement(rid);
-					
-					recent.add(holder);			
-				} catch (JDOMException jdome) {
-					System.out.println("bad xml element: " + next + ":" + jdome.toString());
-				} catch (IOException ioe) {
-					System.out.println("bad xml element: " + next + ":(ioe)" + ioe.toString());
+					holder.displayName = displayName;
+					holder.resText = idXML;
+					holder.loader = new CorinaWsiTridasElement(identifier);
+					recent.add(holder);
 				}
+				else
+					System.out.println("Bad cwte string: " + next);
 			}
 			else
 				recent.add(next);
@@ -464,36 +479,15 @@ public class OpenRecent {
 			
 			SampleLoader o = ((LoaderHolder)oo).loader;
 
-			// go by resource identifier instead of displayname, if possible
-			boolean usedId = false;
-			if(o instanceof CorinaWebElement && resText != null) {
-				ResourceIdentifier rid = ((CorinaWebElement) o).getResourceIdentifier();
+			// easy if they're both tridas elements! :)
+			if(o instanceof CorinaWsiTridasElement && loader instanceof CorinaWsiTridasElement) {
+				TridasIdentifier id1 = ((CorinaWsiTridasElement)o).getTridasIdentifier();
+				TridasIdentifier id2 = ((CorinaWsiTridasElement)loader).getTridasIdentifier();
 				
-				if(rid.toString().equalsIgnoreCase(resText))
-					usedId = true;
+				return id1.equals(id2);
 			}
-			
-			// are their names equal?
-			if(!usedId && !displayName.equalsIgnoreCase(o.getName())) 
-				return false;
-			
-			// are their loader classes equal?
-			if(!loader.getClass().getName().equals(o.getClass().getName()))
-				return false;
-			
-			// if web elements, are they from the same server URL?
-			// only use if we didn't have a full rid earlier
-			if(!usedId && loader instanceof CorinaWebElement) {
-				CorinaWebElement c1 = (CorinaWebElement) loader;
-				CorinaWebElement c2 = (CorinaWebElement) o;
-				org.jdom.Element rid1 = c1.getResourceIdentifier().asXMLElement();
-				org.jdom.Element rid2 = c2.getResourceIdentifier().asXMLElement();
-				
-				if(!(rid1.getAttribute("url") != null && rid1.getAttributeValue("url").equalsIgnoreCase(rid2.getAttributeValue("url"))))
-					return false;
-			}
-			
-			return true;
+						
+			return false;
 		}
 	}
 }
