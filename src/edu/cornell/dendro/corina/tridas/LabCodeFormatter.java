@@ -56,6 +56,14 @@ public class LabCodeFormatter {
 		String val;
 		StringBuffer sb;
 		
+		// handle completely empty lab codes
+		if(labCode.isEmptyCode()) {
+			if((val = labCode.getSeriesCode()) != null)
+				return val;
+			else
+				return unavailableValue;
+		}
+		
 		if(objects.size() > 0) {
 			StringBuffer objectList = new StringBuffer();
 			

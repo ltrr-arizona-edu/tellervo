@@ -5,6 +5,7 @@ import java.util.List;
 
 public class LabCode {
 	private List<String> siteCodes;
+	private List<String> siteTitles;
 	private String elementCode;
 	private String sampleCode;
 	private String radiusCode;
@@ -12,7 +13,15 @@ public class LabCode {
 	
 	public LabCode() {
 		siteCodes = new ArrayList<String>(1);
+		siteTitles = new ArrayList<String>(1);
 		elementCode = sampleCode = radiusCode = seriesCode = null;
+	}
+	
+	/**
+	 * @return true if this code is empty (not counting series code)
+	 */
+	public boolean isEmptyCode() {
+		return siteCodes.isEmpty() && elementCode == null && sampleCode == null && radiusCode == null;
 	}
 
 	/**
@@ -21,12 +30,20 @@ public class LabCode {
 	public List<String> getSiteCodes() {
 		return siteCodes;
 	}
-	
+
+	/**
+	 * @return the siteTitles
+	 */
+	public List<String> getSiteTitles() {
+		return siteTitles;
+	}
+
 	/** 
 	 * Clear the list of site codes
 	 */
-	public void clearSiteCodes() {
+	public void clearSites() {
 		this.siteCodes.clear();
+		this.siteTitles.clear();
 	}
 
 	/**
@@ -34,6 +51,13 @@ public class LabCode {
 	 */
 	public void appendSiteCode(String siteCode) {
 		this.siteCodes.add(siteCode);
+	}
+
+	/**
+	 * @param siteTitle a siteTitle to append
+	 */
+	public void appendSiteTitle(String siteTitle) {
+		this.siteTitles.add(siteTitle);
 	}
 
 	/**
@@ -47,6 +71,9 @@ public class LabCode {
 	 * @param elementCode the elementCode to set
 	 */
 	public void setElementCode(String elementCode) {
+		if(elementCode.length() == 0)
+			elementCode = null;
+		
 		this.elementCode = elementCode;
 	}
 
@@ -61,6 +88,9 @@ public class LabCode {
 	 * @param sampleCode the sampleCode to set
 	 */
 	public void setSampleCode(String sampleCode) {
+		if(sampleCode.length() == 0)
+			sampleCode = null;
+		
 		this.sampleCode = sampleCode;
 	}
 
@@ -75,6 +105,9 @@ public class LabCode {
 	 * @param radiusCode the radiusCode to set
 	 */
 	public void setRadiusCode(String radiusCode) {
+		if(radiusCode.length() == 0)
+			radiusCode = null;
+		
 		this.radiusCode = radiusCode;
 	}
 
@@ -89,6 +122,9 @@ public class LabCode {
 	 * @param seriesCode the seriesCode to set
 	 */
 	public void setSeriesCode(String seriesCode) {
+		if(seriesCode.length() == 0)
+			seriesCode = null;
+		
 		this.seriesCode = seriesCode;
 	}
 		

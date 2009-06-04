@@ -7,13 +7,18 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.tridas.schema.TridasObject;
+
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.SampleSummary;
+import edu.cornell.dendro.corina.tridas.LabCode;
 
 public class DBBrowserTableModel extends AbstractTableModel {
 	private ElementList elements;
@@ -75,49 +80,57 @@ public class DBBrowserTableModel extends AbstractTableModel {
 		}
 		
 		switch(columnIndex) {
-		case 0: {
-			SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
-
-			if(ss != null)
-				return ss.getLabCode();
-			
+		case 0: 
 			return bs.hasMeta("title") ? bs.getMeta("title") : "[id: " + bs.getMeta("id") + "]";
-		}
 
 		case 1:
 			return bs.getSampleType();
-			
+
+		// site description
 		case 2: {
-			SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
-			return ss == null ? ss : ss.siteDescription();
+			LabCode labcode = bs.getMeta(Metadata.LABCODE, LabCode.class);
+			
+			if(labcode == null)
+				return null;
+			
+			List<String> titles = labcode.getSiteTitles();
+
+			// no titles?
+			if(titles.isEmpty())
+				return null;
+			
+			return titles.get(titles.size() - 1);
 		}
 
-		case 3: {
-			SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
-			return ss == null ? ss : ss.taxonDescription();
-		}
+		// taxon
+		case 3:
+			return bs.getMeta(Metadata.SUMMARY_MUTUAL_TAXON);
 
-		case 4: {
-			SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
-			return ss == null ? ss : ss.getMeasurementCount();
-		}
+		// measurement count
+		case 4: 
+			return bs.getMeta(Metadata.SUMMARY_SUM_CONSTITUENT_COUNT);
 		
+		// modified date
 		case 5: {
-			Date date = (Date) bs.getMeta("::moddate");
+			Date date = bs.getMeta(Metadata.MODIFIED_TIMESTAMP, Date.class);
 			return date != null ? dateFormat.format(date) : date;
 		}
 
+		// start year
 		case 6:
 			return bs.getRange().getStart();
 			
+		// end year
 		case 7:
 			return bs.getRange().getEnd();
 		
+		// number of readings
 		case 8:
 			return bs.getRange().span();
-			
+		
+		// reconciled
 		case 9:
-			return bs.getMeta("isreconciled");
+			return bs.getMeta(Metadata.RECONCILED);
 			
 		default:
 			return null;

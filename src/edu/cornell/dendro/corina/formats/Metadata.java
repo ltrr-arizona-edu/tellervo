@@ -40,6 +40,13 @@ public class Metadata {
 	
 	/** The units */
 	public final static String UNITS = "::units";
+
+	/** boolean: is reconciled? */
+	public final static String RECONCILED = "::reconciled";
+	
+	/** Summary stuff */
+	public final static String SUMMARY_SUM_CONSTITUENT_COUNT = "::summary:seriesCount";
+	public final static String SUMMARY_MUTUAL_TAXON = "::summary:mututalTaxon";
 	
 	/** The associated other object types */
 	public final static String OBJECT_ARRAY = "::objectArray";

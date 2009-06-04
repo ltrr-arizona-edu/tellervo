@@ -246,12 +246,14 @@ public class TridasDoc implements Filetype {
 							labcode = new LabCode();
 						
 						// object codes are more obnoxious
-						labcode.clearSiteCodes();
+						labcode.clearSites();
 						for(TridasObject object : objArray) {
 							for(TridasGenericField f : object.getGenericField()) {
-								if("corina.objectLabCode".equals(f.getName())) {
+								if("corina.objectCode".equals(f.getName())) {
 									labcode.appendSiteCode(f.getValue());
-									break;
+								}
+								else if("corina.objectTitle".equals(f.getName())) {
+									labcode.appendSiteTitle(f.getValue());
 								}
 							}
 						}
@@ -343,6 +345,10 @@ public class TridasDoc implements Filetype {
 				getValue().toGregorianCalendar().getTime());
 		s.setMeta(Metadata.SERIES, series); // hold on to this for later!
 
+		// reconciled only works on Direct VMs
+		if(genericFields.containsKey("corina.isReconciled") && s.getSampleType() == SampleType.DIRECT)
+			s.setMeta(Metadata.RECONCILED, genericFields.getBoolean("corina.isReconciled"));
+		
 		// translate start year
 		Year firstYear;
 		if(series.isSetInterpretation() && series.getInterpretation().isSetFirstYear()) {
@@ -403,12 +409,14 @@ public class TridasDoc implements Filetype {
 			
 			for(int objectIdx = 1;;objectIdx++) {
 				String objectCode = genericFields.getString("corina.objectCode." + objectIdx);
+				String objectTitle = genericFields.getString("corina.objectTitle." + objectIdx);
 				
 				// we're done here!
-				if(objectCode == null)
+				if(objectCode == null || objectTitle == null)
 					break;
 				
 				labcode.appendSiteCode(objectCode);
+				labcode.appendSiteTitle(objectTitle);
 			}
 			
 			// ok if these are null
@@ -417,8 +425,14 @@ public class TridasDoc implements Filetype {
 			labcode.setSampleCode(genericFields.getString("corina.sampleTitle"));
 			labcode.setSeriesCode(series.getTitle());
 			
-			s.setMeta(Metadata.LABCODE, labcode);
+			s.setMeta(Metadata.LABCODE, labcode);			
 			s.setMeta(Metadata.TITLE, LabCodeFormatter.getDefaultFormatter().format(labcode));
+			
+			// set up summary metadata
+			if(genericFields.containsKey("corina.seriesCount") && s.getSampleType() == SampleType.SUM)
+				s.setMeta(Metadata.SUMMARY_SUM_CONSTITUENT_COUNT, genericFields.getInteger("corina.seriesCount"));
+			if(genericFields.containsKey("corina.summaryTaxonName"))
+				s.setMeta(Metadata.SUMMARY_MUTUAL_TAXON, genericFields.getString("corina.summaryTaxonName"));
 		}
 		
 		return s;
