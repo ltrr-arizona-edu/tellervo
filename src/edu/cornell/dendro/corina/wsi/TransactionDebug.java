@@ -15,7 +15,7 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaNamespacePrefixMapper;
 
 public class TransactionDebug {
 	private static boolean isDebuggingEnabled = true;
-	private static boolean isExtremelyVerboseDebuggingEnabled = true;
+	private static boolean isExtremelyVerboseDebuggingEnabled = false;
 	
 	public static void sent(Document doc, String noun) {
 		XMLDebugView.addDocument(doc, noun, false);

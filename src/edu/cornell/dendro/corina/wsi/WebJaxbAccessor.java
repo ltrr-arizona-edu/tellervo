@@ -11,6 +11,7 @@ import edu.cornell.dendro.corina.util.XMLBody;
 import edu.cornell.dendro.corina.util.XMLParsingException;
 import edu.cornell.dendro.corina.webdbi.WSCookieStoreHandler;
 
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -228,22 +229,8 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 					" (" + clientModuleVersion + "; ts " + Build.TIMESTAMP +")");
 
 			// are we using https? should we allow self-signed certs?
-			if(url.getScheme().equals("https")) {
-				try {
-					// make a new SSL context
-					SSLContext sc = SSLContext.getInstance("SSL");
-					sc.init(null, trustAllCerts, new java.security.SecureRandom());
-					
-					// make a new socket factory
-					SSLSocketFactory socketFactory = new SSLSocketFactory(sc);
-					
-					// register the scheme with the connection
-					Scheme scheme = new Scheme("https", socketFactory, 443);
-					client.getConnectionManager().getSchemeRegistry().register(scheme);
-				} catch (Exception e) {
-					// don't do anything; we'll just get errors later.
-				}
-			}
+			if(url.getScheme().equals("https"))
+				setSelfSignableHTTPSScheme(client);
 			
 			// create a responsehandler
 			JaxbResponseHandler<INTYPE> responseHandler = 
@@ -342,6 +329,30 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 		} finally {
 			//?
 		}
+	}
+	
+	/** A https scheme that allows for self-signed https certs */
+	private static Scheme selfSignableHTTPSScheme = null;
+	
+	private static void setSelfSignableHTTPSScheme(HttpClient client) {
+		if(selfSignableHTTPSScheme == null) {
+			try {
+				// make a new SSL context
+				SSLContext sc = SSLContext.getInstance("SSL");
+				sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			
+				// make a new socket factory
+				SSLSocketFactory socketFactory = new SSLSocketFactory(sc);
+			
+				// register the scheme with the connection
+				selfSignableHTTPSScheme = new Scheme("https", socketFactory, 443);
+			} catch (Exception e) {
+				// don't do anything; we'll just get errors later.
+				return;
+			}	
+		}
+		
+		client.getConnectionManager().getSchemeRegistry().register(selfSignableHTTPSScheme);
 	}
 
 	// This allows us to ignore the server certificate chain
