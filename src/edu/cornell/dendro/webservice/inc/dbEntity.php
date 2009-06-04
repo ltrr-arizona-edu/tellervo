@@ -2712,6 +2712,16 @@ class measurementEntity extends dbEntity
 	{
 		$this->summaryRadiusTitle = $title;
 	}
+	
+	function setSummaryTaxonName($taxon)
+	{
+		$this->summaryTaxonName = $taxon;
+	}
+	
+	function setSummaryTaxonCount($count)
+	{
+		$this->summaryTaxonCount = $count;
+	}
 		
 	function setMeasurementCount($count)
 	{

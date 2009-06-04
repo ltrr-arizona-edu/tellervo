@@ -80,6 +80,10 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->setSummaryElementTitle($row['elementcode']);
 		$this->setSummarySampleTitle($row['samplecode']);
 		$this->setSummaryRadiusTitle($row['radiuscode']);
+		$this->setSummaryTaxonName($row['commontaxonname']);
+		$this->setSummaryTaxonCount($row['taxoncount']);
+			
+		$this->setMeasurementCount($row['measurementcount']);
 
 		// Only load summary fields if this is a summary...
 		if($format=='summary') $this->setSummaryObjectArray($row['objectid']);
@@ -904,6 +908,9 @@ class measurement extends measurementEntity implements IDBAccessor
 		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummaryElementTitle())."</tridas:genericField>\n";
 		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummarySampleTitle())."</tridas:genericField>\n";
 		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummaryRadiusTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.seriesCount\" type=\"integer\">".dbHelper::escapeXMLChars($this->getMeasurementCount())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.summaryTaxonName\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummaryTaxonName())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.summaryTaxonCount\" type=\"integer\">".dbHelper::escapeXMLChars($this->getSummaryTaxonCount())."</tridas:genericField>\n";
 		return $tags;
 	}
 
@@ -951,6 +958,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\" type=\"string\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
 		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\" type=\"string\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
 		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"authorID\" type=\"integer\">".$this->author->getID()."</tridas:genericField>\n";
+	    											$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
 		
 		$xml .= $this->getPermissionsXML();
 		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"integer\">".$this->getReadingCount()."</tridas:genericField>\n";
@@ -1008,7 +1016,8 @@ class measurement extends measurementEntity implements IDBAccessor
 			if(isset($this->analyst))					$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"integer\">".$this->analyst->getID()."</tridas:genericField>\n";
 			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"integer\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
 			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"integer\">".$this->getReadingCount()."</tridas:genericField>\n";
-
+														$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
+			
 			// show summary information in standard and summary modes
 			/*if($format=="summary" || $format=="standard") {
 			// Return special summary section
