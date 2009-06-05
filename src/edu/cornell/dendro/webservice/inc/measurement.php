@@ -997,7 +997,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		{
 			if($this->analyst->getFormattedName()!=NULL) $xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
 			if($this->dendrochronologist->getFormattedName()!=NULL) $xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
-			if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod>".$this->measuringMethod->getValue()."</tridas:measuringMethod>\n";
+			if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod normalTridas=\"".$this->measuringMethod->getValue()."\"/>\n";
 			if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
 			if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".$this->getUsage()."</tridas:usage>\n";
 			if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".$this->getUsageComments()."</tridas:usageComments>\n";
