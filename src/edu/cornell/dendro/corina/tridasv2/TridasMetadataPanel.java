@@ -623,8 +623,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 
 		// select what we already have, if it exists
 		TridasEntity selectedEntity = currentMode.getEntity(s);
-		// otherwise, if something's in the list, select the first item
-		if(selectedEntity == null && entityList.size() > 0)
+		// otherwise, if one thing is in the list, select it only
+		if(selectedEntity == null && entityList.size() == 1)
 			selectedEntity = entityList.get(0);
 		selectInCombo(selectedEntity);		
 	}
