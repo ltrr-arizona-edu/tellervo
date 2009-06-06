@@ -63,6 +63,7 @@ import javax.swing.undo.UndoableEditSupport;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.ElementsPanel;
 import edu.cornell.dendro.corina.gui.FileDialog;
@@ -546,25 +547,23 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	 ask.show();
 	 title = ask.getResult();
 	 */
-	private static final String DEMO = "Acemh\u00FCy\u00FCk 36A";
 
 	private static String askTitle() throws UserCancelledException {		
-		JLabel line1 = new JLabel("Enter a title for the new sample.");
-		JLabel line2 = new JLabel("Titles are usually of the form \"" + DEMO
-				+ "\".");
+		JLabel line1 = new JLabel("Enter a name for the new sample.");
+		JLabel line2 = new JLabel("Names are usually in the form of a single capital letter.");
 		JLabel line3 = new JLabel(
-				"(You must include both a letter and a number in the title.)");
+				"(You can easily change this later)");
 		// jmultilinelabel for last 2 lines?
 		line2.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 		line3.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-		JTextField input = new AutoComplete("", 30);
+		JTextField input = new JTextField(); //new AutoComplete("", 30);
 		// defaults to site names -- TODO: pass current site in as initial text?
 
 		final boolean isOk[] = new boolean[1];
 
-		JButton help = Builder.makeButton("help");
-		Help.addToButton(help, "identification");
+		//JButton help = Builder.makeButton("help");
+		//Help.addToButton(help, "identification");
 		JButton cancel = Builder.makeButton("cancel");
 		final JButton ok = Builder.makeButton("ok");
 		ok.setEnabled(false);
@@ -575,23 +574,15 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				try {
 					Document doc = e.getDocument();
 					String text = doc.getText(0, doc.getLength()); // BETTER: why not just input.getText()?
-					ok.setEnabled(containsDigit(text) && containsLetter(text)); // FIXME: combine these!
+					ok.setEnabled(containsLetter(text)); // FIXME: combine these!
 				} catch (BadLocationException ble) {
 					// can't happen
 				}
 			}
 		});
-		/*
-		 how about:
-		 ...addDocumentAdapter(new Runnable() {
-		 public void run() {
-		 ok.setEnabled(containsDigit(text.getDocument().getText()));
-		 });
-		 // unaryop would be better
-		 */
 
 		JPanel text = Layout.boxLayoutY(line1, line2, line3);
-		JPanel buttons = Layout.buttonLayout(help, null, cancel, ok);
+		JPanel buttons = Layout.buttonLayout(cancel, ok);
 		buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 		JPanel content = Layout.borderLayout(text, null, input, null, null);
 		JPanel fixed = Layout.borderLayout(content, null, null, null, buttons);
@@ -686,7 +677,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// make dataset ref, with our title
 		sample = new Sample();
-		sample.setMeta("title", title);
+		sample.setMeta(Metadata.TITLE, "New entry: " + title);
+		sample.setMeta(Metadata.NAME, title);
+		sample.setSampleType(SampleType.DIRECT);
 
 		// pass
 		setup();

@@ -23,6 +23,7 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 	private JList list;
 	private CorinaResource myResource;
 	private boolean success = false;
+	private Boolean completed = false;
 	private Exception failException = null;
 	private JProgressBar progressBar;
 	
@@ -152,6 +153,9 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 	}
 	
 	private void setSuccessful(boolean successful) {
+		synchronized(completed) {
+			completed = true;
+		}
 		this.success = successful;
 		dispose();
 	}
@@ -179,6 +183,18 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 		default:
 			break;
 		}
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		if(visible) {
+			synchronized(completed) {
+				if(completed)
+					return;
+			}
+		}
+		
+		super.setVisible(visible);
 	}
 	
 	public void dispose() {

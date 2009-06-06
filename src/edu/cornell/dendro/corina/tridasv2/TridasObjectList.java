@@ -5,6 +5,7 @@ package edu.cornell.dendro.corina.tridasv2;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -75,6 +76,8 @@ public class TridasObjectList extends CorinaResource {
 		for(TridasObjectEx obj : objects) {
 			recursiveAdd(obj, newData);
 		}
+	
+		Collections.sort(newData.allObjects, new SiteComparator());
 		
 		// move our data over
 		synchronized(data) {
@@ -84,6 +87,39 @@ public class TridasObjectList extends CorinaResource {
 		return true;
 	}
 
+	/**
+	 * Sort objects by # of children, lab code presence, and then lab code or title
+	 */
+	private static class SiteComparator implements Comparator<TridasObjectEx> {
+		public int compare(TridasObjectEx o1, TridasObjectEx o2) {
+			Integer s1 = o1.getSeriesCount();
+			Integer s2 = o2.getSeriesCount();
+			boolean c1 = (s1 != null && s1 > 0);
+			boolean c2 = (s2 != null && s2 > 0);
+			
+			// ones with children first
+			if(c1 && !c2)
+				return -1;
+			else if(!c1 && c2)
+				return 1;
+			
+			c1 = o1.hasLabCode();
+			c2 = o2.hasLabCode();
+
+			// ones with lab codes first
+			if(c1 && !c2)
+				return -1;
+			else if(!c1 && c2)
+				return 1;
+		
+			if(c1 && c2)
+				return o1.getLabCode().compareToIgnoreCase(o2.getLabCode());
+			else
+				return o1.getTitle().compareToIgnoreCase(o2.getTitle());
+		}
+	
+	}
+	
 	/**
 	 * Recursively add all objects to the list
 	 * Deals with the object tree being n-deep

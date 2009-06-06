@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.tridasv2;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -68,8 +70,13 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private JButtonBar buttonBar;
 	/** The current entity selected */
 	private EditType currentMode;
+	
 	/** A copy of the entity that we're currently editing */
-	private TridasEntity temporaryEntity;
+	private TridasEntity temporaryEditingEntity;
+	/** A copy of the entity that we're currently selecting */
+	private TridasEntity temporarySelectingEntity;
+	
+	private TridasEntityListHolder lists;
 	
 	private JPanel topbar;
 	private JPanel bottombar;
@@ -98,7 +105,15 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 
 		// select this in button handling routine
 		currentMode = null;
-		temporaryEntity = null;
+		temporaryEditingEntity = temporarySelectingEntity = null;
+		
+		lists = new TridasEntityListHolder();
+		// later, when we're added to a panel, tell the list holder
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				lists.setParentWindow(SwingUtilities.windowForComponent(TridasMetadataPanel.this));
+			}
+		});
 		
 		initBars();
 		initPropertiesPanel();
@@ -156,15 +171,27 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		propertiesTable.setEditable(enabled);
 
 		editEntityText.setFont(editEntityText.getFont().deriveFont(Font.BOLD));
-		editEntityText.setText(enabled ? "" : "Click the lock to edit this " + currentMode.getTitle());
+		editEntityText.setText(enabled ? "Currently editing this " + currentMode.getTitle() 
+				: "Click the lock to edit this " + currentMode.getTitle());
 		
 		if(enabled) {
-			temporaryEntity = (TridasEntity) TridasCloner.clone(currentMode.getEntity(s));
-			propertiesPanel.readFromObject(temporaryEntity);
+			temporaryEditingEntity = (TridasEntity) TridasCloner.clone(currentMode.getEntity(s));
+
+			// user chose to edit without choosing 'new', so be nice and make a new one for them
+			if(temporaryEditingEntity == null && topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
+				temporaryEditingEntity = currentMode.newInstance();
+			}
+
+			if(temporaryEditingEntity != null)
+				propertiesPanel.readFromObject(temporaryEditingEntity);
 		}
 		else {
-			temporaryEntity = null;
-			propertiesPanel.readFromObject(currentMode.getEntity(s));
+			temporaryEditingEntity = null;
+						
+			// don't display anything if we have nothingk!
+			TridasEntity entity = currentMode.getEntity(s);
+			if(entity != null)
+				propertiesPanel.readFromObject(entity);
 		}
 
 		// disable choosing other stuff while we're editing
@@ -174,7 +201,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		changeButton.setEnabled(!enabled);
 		
 		// show/hide our buttons
-		editEntitySave.setEnabled(false);
+		editEntitySave.setEnabled(true);
 		editEntityCancel.setEnabled(true);
 		editEntitySave.setVisible(enabled);
 		editEntityCancel.setVisible(enabled);
@@ -208,8 +235,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				boolean flaggedAsNew = false;
 				
 				// the user is changing away...
-				if(changingTop && temporaryEntity != null && !temporaryEntity.equals(currentMode.getEntity(s))) {
-					currentMode.setEntity(s, temporaryEntity);
+				if(changingTop && temporarySelectingEntity != null && !temporarySelectingEntity.equals(currentMode.getEntity(s))) {
+					currentMode.setEntity(s, temporarySelectingEntity);
+					temporarySelectingEntity = null;
 					
 					// user selected 'new'
 					if(topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
@@ -235,7 +263,11 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 					}
 				}
 				
-				temporaryEntity = null;
+				// Make sure we populate our combobox with everything from the server
+				if(!changingTop) {
+					populateComboAndSelect(true);
+				}
+				
 				changingTop = !changingTop;
 
 				// now: false if we're done changing
@@ -246,7 +278,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				topChooser.setEnabled(changingTop);
 				changeButton.setText(changingTop ? OK_STATE : CHANGE_STATE);
 				cancelChangeButton.setVisible(changingTop);
-				
+
+				// if it's new, start editing right away
 				if(flaggedAsNew)
 					editEntity.doClick();
 			}
@@ -257,7 +290,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				changingTop = false;
 				
 				// revert back
-				temporaryEntity = null;
+				temporarySelectingEntity = null;
 				// reselect the old thing (this calls topChooser's actionlistener, be careful!)
 				selectInCombo(currentMode.getEntity(s));
 				
@@ -270,21 +303,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		topChooser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Object obj = topChooser.getSelectedItem();
-				
-				// if it's new, create a new, empty instance
-				if(obj == EntityListComboBox.NEW_ITEM) {
-					try {
-						temporaryEntity = (TridasEntity) currentMode.getType().newInstance();
-					} catch (Exception ex) {
-						new Bug(ex);
-						return;
-					}
-				}
-				else if(obj instanceof TridasEntity)
-					temporaryEntity = (TridasEntity) obj;
-				
-				propertiesPanel.readFromObject(temporaryEntity);
+				handleComboSelection(true);
 			}
 		});
 		
@@ -367,8 +386,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 */
 	private boolean warnLosingSelection() {
 		
-		// nothing new has been selected, nothing
-		if(temporaryEntity == null || temporaryEntity.equals(currentMode.getEntity(s)))
+		// nothing new has been selected, nothing to lose
+		if(temporarySelectingEntity == null || temporarySelectingEntity.equals(currentMode.getEntity(s)))
 			return true;
 		
 		int ret = JOptionPane.showConfirmDialog(this, 
@@ -397,47 +416,85 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	}
 	
 	private void doSave() {
-		if(temporaryEntity == null)
+		if(temporaryEditingEntity == null)
 			throw new IllegalStateException();
 		
-		propertiesPanel.writeToObject(temporaryEntity);
+		// if nothing actually changed, just ignore it like a cancel
+		if(!currentMode.hasChanged()) {
+			editEntityCancel.doClick();
+			return;
+		}
+		
+		propertiesPanel.writeToObject(temporaryEditingEntity);
 		
 		// logic for saving...
 		if(currentMode == EditType.DERIVED_SERIES || currentMode == EditType.MEASUREMENT_SERIES) {
 			// nice and easy... save the series directly into the sample, that's it!
-			currentMode.setEntity(s, temporaryEntity);			
+			currentMode.setEntity(s, temporaryEditingEntity);			
 		}
 		else {
 			// save to the server
 			// TODO: Save to the server!
 			
-			currentMode.setEntity(s, temporaryEntity);
+			currentMode.setEntity(s, temporaryEditingEntity);
 		}
 		
 		// on success...
 		currentMode.clearChanged();
 		editEntity.setSelected(false);
 		enableEditing(false);
+		populateComboAndSelect(false);
+		temporaryEditingEntity = null;
 	}
 	
 	/**
-	 * Returns a list to populate the combo box
-	 * 
+	 * Get an entity list for the current mode
+	 * @param goRemote should we try and load from the remote server?
 	 * @return
 	 */
-	private List<? extends TridasEntity> getEntityList() {
-		switch(currentMode) {
+	private List<? extends TridasEntity> getEntityList(boolean goRemote) {
+		return getEntityList(currentMode, goRemote);
+	}
+	
+	/**
+	 * Get an entity list for the given mode
+	 * Returns a list to populate the combo box
+	 * @param mode the mode
+	 * @param goRemote should we try and load from the remote server?
+	 * @return
+	 */
+	private List<? extends TridasEntity> getEntityList(EditType mode, boolean goRemote) {
+		switch(mode) {
 		case OBJECT:
 			return App.tridasObjects.getObjectList();
 		
 		case ELEMENT:
 		case SAMPLE:
 		case RADIUS: {
-	
+			List<TridasEntity> list;
+			
+			try {
+				list = lists.getChildList(currentMode.previous().getEntity(s), goRemote);
+			} catch (Exception e) {
+				new Bug(e);
+				list = null;
+			}
+
+			// get what we already have selected
+			TridasEntity singleton = mode.getEntity(s);
+			
+			// stuff in the list? keep it
+			if(list != null && !list.isEmpty()) {
+				// make sure the currently selected entity is represented in the list
+				if(singleton != null && entityInList(singleton, list) == null)
+					list.add(singleton);
+				
+				return list;
+			}
+			
 			// Ok, there's nothing 
-			TridasEntity singleton = currentMode.getEntity(s);
 			if(singleton != null)
-				return Collections.singletonList(currentMode.getEntity(s));
+				return Collections.singletonList(singleton);
 			else
 				return Collections.emptyList();
 		}
@@ -445,6 +502,85 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		default:
 			return Collections.emptyList();
 		}
+	}
+	
+	/**
+	 * Compare entities based on type, title, and site code (of they're TridasObjectEx)
+	 * @param e1
+	 * @param e2
+	 * @return
+	 */
+	private boolean matchEntities(TridasEntity e1, TridasEntity e2) {
+		// either are null? -> no match
+		if(e1 == null || e2 == null)
+			return false;
+		
+		// easy way out: identity!
+		if(e1 == e2)
+			return true;
+		
+		// they're not related classes -> not equal!
+		if(!(e1.getClass().isAssignableFrom(e2.getClass()) || e2.getClass().isAssignableFrom(e1.getClass())))
+			return false;
+		
+		// compare lab codes for TridasObjectExes
+		if(e1 instanceof TridasObjectEx && e2 instanceof TridasObjectEx) {
+			TridasObjectEx obj1 = (TridasObjectEx) e1;
+			TridasObjectEx obj2 = (TridasObjectEx) e2;
+				
+			// not the same lab code -> not equal
+			if(obj1.hasLabCode() && obj2.hasLabCode() && !obj1.getLabCode().equals(obj2.getLabCode()))
+				return false;
+		}
+			
+		// we found a match!
+		if(e1.getTitle().equals(e2.getTitle()))
+			return true;
+		
+		return false;
+	}
+	
+	/**
+	 * Checks to see if the entity is in the given list
+	 * 
+	 * @param entity
+	 * @param list
+	 * @return The entity in the list (may be another instance) or null
+	 */
+	private TridasEntity entityInList(TridasEntity entity, List<?> list) {
+		for(Object o : list) {
+			if(o instanceof TridasEntity) {
+				TridasEntity otherEntity = (TridasEntity) o;
+				
+				if(matchEntities(entity, otherEntity))
+					return otherEntity;
+			}
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Initialize the state when we:
+	 * a) choose something new in the combo box (load children!)
+	 * b) programmatically set something in the combo box (don't load children!)
+	 */
+	private void handleComboSelection(boolean loadChildren) {
+		Object obj = topChooser.getSelectedItem();
+		
+		// if it's new, create a new, empty instance
+		if(obj == EntityListComboBox.NEW_ITEM) {
+			temporarySelectingEntity = currentMode.newInstance();
+		}
+		else if(obj instanceof TridasEntity) {
+			temporarySelectingEntity = (TridasEntity) obj;
+			
+			// start loading the list of children right away
+			if(loadChildren && currentMode != EditType.RADIUS)
+				lists.prepareChildList(temporarySelectingEntity);
+		}
+		
+		propertiesPanel.readFromObject(temporarySelectingEntity);		
 	}
 	
 	/**
@@ -456,39 +592,41 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private void selectInCombo(TridasEntity entity) {
 		if(entity == null) {
 			topChooser.setSelectedItem(EntityListComboBox.NEW_ITEM);
+			handleComboSelection(false);
 			return;
 		}
 		
 		ArrayListModel<Object> model = ((ArrayListModel<Object>) topChooser.getModel());
-		for(Object o : model) {
-			// they're not related classes -> not equal!
-			if(!(o.getClass().isAssignableFrom(entity.getClass()) || entity.getClass().isAssignableFrom(o.getClass())))
-				continue;
-			
-			if(o instanceof TridasEntity) {
-				TridasEntity e = (TridasEntity) o;
-				
-				// compare lab codes for TridasObjectExes
-				if(e instanceof TridasObjectEx && entity instanceof TridasObjectEx) {
-					TridasObjectEx obj1 = (TridasObjectEx) e;
-					TridasObjectEx obj2 = (TridasObjectEx) entity;
-					
-					// not the same lab code -> not equal
-					if(obj1.hasLabCode() && obj2.hasLabCode() && !obj1.getLabCode().equals(obj2.getLabCode()))
-						continue;
-				}
-				
-				// we found a match!
-				if(e.getTitle().equals(entity.getTitle())) {
-					topChooser.setSelectedItem(e);
-					return;
-				}
-			}			
+	
+		// find it in the list...
+		TridasEntity listEntity;
+		if((listEntity = entityInList(entity, model)) != null) {
+			topChooser.setSelectedItem(listEntity);
+			handleComboSelection(false);
+			return;
 		}
-		
+				
 		// blech, it wasn't in the list -> add it
 		model.add(2, entity);
 		topChooser.setSelectedItem(entity);
+		handleComboSelection(false);
+	}
+
+	/**
+	 * Populate the combo box with a list
+	 * @param goRemote ensure we have remote stuff in the list
+	 */
+	private void populateComboAndSelect(boolean goRemote) {
+		// get the list of stuff that goes in the box
+		List<? extends TridasEntity> entityList = getEntityList(goRemote);
+		topChooser.setList(entityList);
+
+		// select what we already have, if it exists
+		TridasEntity selectedEntity = currentMode.getEntity(s);
+		// otherwise, if something's in the list, select the first item
+		if(selectedEntity == null && entityList.size() > 0)
+			selectedEntity = entityList.get(0);
+		selectInCombo(selectedEntity);		
 	}
 	
 	/**
@@ -528,7 +666,14 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		// load the new current entity
 		currentMode = type;
-		
+
+		// derive a property list
+        List<EntityProperty> properties = TridasEntityDeriver.buildDerivationList(type.getType());
+        Property[] propArray = properties.toArray(new Property[properties.size()]);
+        
+        // set properties and load from entity
+		propertiesPanel.setProperties(propArray);
+
 		// handle top bar
 		if(currentMode == EditType.DERIVED_SERIES || currentMode == EditType.MEASUREMENT_SERIES) {
 			topChooser.setVisible(false);
@@ -540,29 +685,19 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			// metadata for a remote object
 			topChooser.setVisible(true);
 			
-			// get the list of stuff that goes in the box
-			List<? extends TridasEntity> entityList = getEntityList();
-			topChooser.setList(entityList);
-
 			topLabel.setText("Metadata for " + currentMode.getTitle());
 			topLabel.setLabelFor(topChooser);
 			
 			changeButton.setVisible(true);
 			changeButton.setEnabled(true);
 			topChooser.setEnabled(false);				
-
-			selectInCombo(currentMode.getEntity(s));
 			
-			if(topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM)
+			populateComboAndSelect(false);
+			
+			// if don't have this entity, enable the list by default
+			if(currentMode.getEntity(s) == null)
 				changeButton.doClick();
 		}		
-
-		// derive a property list
-        List<EntityProperty> properties = TridasEntityDeriver.buildDerivationList(type.getType());
-        Property[] propArray = properties.toArray(new Property[properties.size()]);
-        
-        // set properties and load from entity
-		propertiesPanel.setProperties(propArray);
 		
 		// by default, disable editing except on series
 		// note that editEntity loads the properties into the panel for us
@@ -664,7 +799,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		SAMPLE(TridasSample.class, "Sample", "tridas/sample.png", Metadata.SAMPLE),
 		RADIUS(TridasRadius.class, "Radius", "tridas/radius.png", Metadata.RADIUS);
 		
-		private Class<?> type;
+		private Class<? extends TridasEntity> type;
 		private String displayTitle;
 		private String iconPath;
 		private String metadataTag;
@@ -674,7 +809,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		/** Has this been edited? */
 		private boolean hasChanged;
 			
-		private EditType(Class<?> type, String displayTitle, String iconPath, String metadataTag) {
+		private EditType(Class<? extends TridasEntity> type, String displayTitle, String iconPath, String metadataTag) {
 			this.type = type;
 			this.displayTitle = displayTitle;
 			this.iconPath = iconPath;
@@ -687,7 +822,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			return metadataTag;
 		}
 		
-		public Class<?> getType() {
+		public Class<? extends TridasEntity> getType() {
 			return type;
 		}
 		
@@ -756,6 +891,42 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			return hasChanged;
 		}
 		
+		public TridasEntity newInstance() {
+			try {
+				TridasEntity entity = type.newInstance();
+				
+				entity.setTitle("New " + displayTitle);
+				
+				return entity;
+			} catch (Exception e) {
+				new Bug(e);
+				return null;
+			}
+		}
+		
+		/**
+		 * Gets the previous EditType in the order
+		 * @return
+		 */
+		public EditType previous() {
+			switch(this) {
+			case ELEMENT:
+				return OBJECT;
+			case SAMPLE:
+				return ELEMENT;
+			case RADIUS:
+				return SAMPLE;
+			case MEASUREMENT_SERIES:
+				return RADIUS;
+			default:
+				return null;
+			}
+		}
+		
+		/**
+		 * Gets the next EditType in the order
+		 * @return
+		 */
 		public EditType next() {
 			switch(this) {
 			case OBJECT:
@@ -781,9 +952,6 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		if(currentMode == null)
 			throw new IllegalStateException("Property changed with null mode??");
 
-		if(!currentMode.hasChanged()) {
-			editEntitySave.setEnabled(true);
-			currentMode.propertyChanged();
-		}
+		currentMode.propertyChanged();
 	}
 }
