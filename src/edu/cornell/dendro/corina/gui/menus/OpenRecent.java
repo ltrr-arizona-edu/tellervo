@@ -163,7 +163,7 @@ public class OpenRecent {
 
 				marshaller.marshal(identifier, writer);
 								
-				lh.resText = HTMLEntities.htmlentities(writer.toString());
+				lh.resText = writer.toString();
 			} catch (JAXBException e) {
 				e.printStackTrace();
 				return;
@@ -261,7 +261,8 @@ public class OpenRecent {
 			
 			// cwte:Some wonderful &amp; tasty>&gt;xxxxx....&lt
 			if(holder.loader instanceof CorinaWsiTridasElement) {
-				return "cwte:" + HTMLEntities.htmlentities(holder.displayName) + '>' + holder.resText;
+				return "cwte:" + HTMLEntities.htmlentities(holder.displayName) + '>' + 
+					HTMLEntities.htmlentities(holder.resText);
 			}
 			
 			// default...?
