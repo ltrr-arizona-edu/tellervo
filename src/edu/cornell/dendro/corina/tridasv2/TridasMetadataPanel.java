@@ -6,6 +6,8 @@ import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
@@ -84,6 +86,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	//// TOP PANEL ITEMS
 	private JLabel topLabel;
 	private EntityListComboBox topChooser;
+	private ChoiceComboBoxActionListener topChooserListener;
 	private JButton changeButton;
 	private JButton cancelChangeButton;
 	private boolean changingTop;
@@ -301,11 +304,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			}			
 		});
 		
-		topChooser.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				handleComboSelection(true);
-			}
-		});
+
+		topChooserListener = new ChoiceComboBoxActionListener(this);
+		topChooser.addActionListener(topChooserListener);
 		
 		////////// BOTTOM BAR
 		editEntity = new JToggleButton();
@@ -590,26 +591,33 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @param entity
 	 */
 	private void selectInCombo(TridasEntity entity) {
-		if(entity == null) {
-			topChooser.setSelectedItem(EntityListComboBox.NEW_ITEM);
-			handleComboSelection(false);
-			return;
-		}
+		// disable actionListener firing when we change combobox selection
+		topChooserListener.setEnabled(false);
 		
-		ArrayListModel<Object> model = ((ArrayListModel<Object>) topChooser.getModel());
-	
-		// find it in the list...
-		TridasEntity listEntity;
-		if((listEntity = entityInList(entity, model)) != null) {
-			topChooser.setSelectedItem(listEntity);
+		try {
+			if (entity == null) {
+				topChooser.setSelectedItem(EntityListComboBox.NEW_ITEM);
+				return;
+			}
+
+			ArrayListModel<Object> model = ((ArrayListModel<Object>) topChooser.getModel());
+
+			// find it in the list...
+			TridasEntity listEntity;
+			if ((listEntity = entityInList(entity, model)) != null) {
+				topChooser.setSelectedItem(listEntity);
+				return;
+			}
+
+			// blech, it wasn't in the list -> add it
+			model.add(2, entity);
+			topChooser.setSelectedItem(entity);
+		} finally {
+			// deal with the selection
 			handleComboSelection(false);
-			return;
+			// re-enable combo box actionlistener firing
+			topChooserListener.setEnabled(true);
 		}
-				
-		// blech, it wasn't in the list -> add it
-		model.add(2, entity);
-		topChooser.setSelectedItem(entity);
-		handleComboSelection(false);
 	}
 
 	/**
@@ -783,7 +791,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			}
 		}
 		
-		buttonBar.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		buttonBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), 
+				BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 	}
 	
 	/**
@@ -938,6 +947,29 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			default:
 				return null;
 			}
+		}
+	}
+	
+	/**
+	 * Silly actionListener class that we can add/remove when we want to programmatically change the combo box
+	 * without triggering side effects
+	 */
+	private class ChoiceComboBoxActionListener implements ActionListener {
+		private final TridasMetadataPanel panel;
+		private boolean enabled;
+		
+		public ChoiceComboBoxActionListener(TridasMetadataPanel panel) {
+			this.panel = panel;
+			this.enabled = true;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			if(enabled)
+				panel.handleComboSelection(true);
 		}
 	}
 
