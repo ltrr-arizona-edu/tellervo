@@ -90,7 +90,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader {
 
 	@Override
 	protected CorinaResource getResource(Sample s) {
-		TridasMeasurementSeries series = new TridasMeasurementSeriesEx(s);
+		TridasMeasurementSeries series = TridasMeasurementSeriesEx.getSeriesFromSample(s);
 		return new SeriesResource(series, null, CorinaRequestType.UPDATE);
 	}
 

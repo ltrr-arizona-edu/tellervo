@@ -30,10 +30,27 @@ import edu.cornell.dendro.corina.sample.SampleType;
  */
 public class TridasMeasurementSeriesEx extends TridasMeasurementSeries {
 
-	public TridasMeasurementSeriesEx(Sample s) {
+	public static TridasMeasurementSeriesEx getSeriesFromSample(Sample s) {
 		if(s.getSampleType() != SampleType.DIRECT)
 			throw new IllegalStateException("Can't map from a derived series to a measurement series!");
-		
+	
+		// if we already have a TridasMeasurementSeriesEx, clone it
+		if(s.getMeta(Metadata.SERIES) instanceof TridasMeasurementSeriesEx) {
+			TridasMeasurementSeriesEx obj = TridasCloner.clone(s.getMeta(Metadata.SERIES, TridasMeasurementSeriesEx.class));
+	
+			obj.setupFromSample(s);
+			
+			return obj;
+		}
+		else
+			return new TridasMeasurementSeriesEx(s);
+	}
+	
+	private TridasMeasurementSeriesEx(Sample s) {
+		setupFromSample(s);
+	}
+	
+	private void setupFromSample(Sample s) {
 		setIdentifier((TridasIdentifier) s.getMeta(Metadata.TRIDAS_IDENTIFIER));
 		setTitle(s.getMetaString(Metadata.NAME));
 		
@@ -103,5 +120,4 @@ public class TridasMeasurementSeriesEx extends TridasMeasurementSeries {
 		/// END RING WIDTHS
 		///
 	}
-
 }

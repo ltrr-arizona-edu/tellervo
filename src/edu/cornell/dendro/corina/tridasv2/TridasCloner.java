@@ -24,7 +24,8 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
  */
 
 public class TridasCloner {
-	public static Object clone(Serializable o) {
+	@SuppressWarnings("unchecked")
+	public static <T> T clone(T o) {
 		if(o == null)
 			return null;
 		
@@ -36,7 +37,7 @@ public class TridasCloner {
 			
 			ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buf.toByteArray()));
 			
-			return in.readObject();
+			return (T) in.readObject();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
