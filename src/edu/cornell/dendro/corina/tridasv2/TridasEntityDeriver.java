@@ -41,7 +41,7 @@ public class TridasEntityDeriver {
 	 * @return the number of direct child properties of clazz
 	 */
 	private static int buildDerivationList(String entityName, Class<?> clazz,
-			EntityProperty parent) {
+			EntityProperty parent, String rootName) {
 		
 		Map<String, EntityProperty> fieldMap = new HashMap<String, EntityProperty>();
 		int nChildren = 0;
@@ -59,6 +59,7 @@ public class TridasEntityDeriver {
 					continue;
 
 				EntityProperty pd = new EntityProperty(entityName + "." + s, s);
+				pd.setCategoryPrefix(rootName);
 				fieldMap.put(s, pd);
 			}
 
@@ -74,6 +75,7 @@ public class TridasEntityDeriver {
 						throw new IllegalStateException("Attribute exists as element?");
 					
 					pd = new EntityProperty(entityName + ".@" + f.getName(), f.getName());
+					pd.setCategoryPrefix(rootName);
 					pd.required = attribute.required();
 					pd.clazz = f.getType();
 				} else {
@@ -135,7 +137,7 @@ public class TridasEntityDeriver {
 				if (pd.clazz.equals(clazz))
 					continue;
 
-				buildDerivationList(pd.qname, pd.clazz, pd);
+				buildDerivationList(pd.qname, pd.clazz, pd, rootName);
 			}
 		}
 		
@@ -163,7 +165,7 @@ public class TridasEntityDeriver {
 		Collections.reverse(classDerivationTree);
 
 		for (Class<?> myClass : classDerivationTree)
-			buildDerivationList(rootEntityName, myClass, rootEntity);
+			buildDerivationList(rootEntityName, myClass, rootEntity, rootEntityName);
 
 		return rootEntity.getChildProperties();
 	}

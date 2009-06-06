@@ -85,6 +85,7 @@ import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridas.LegacySite;
+import edu.cornell.dendro.corina.tridasv2.TridasMetadataPanel;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -452,7 +453,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	private void initMetaView() {
-//		metaView = new MetadataPanel(sample);
+		metaView = new TridasMetadataPanel(sample);
 	}
 
 	private void initElemPanel() {
@@ -488,7 +489,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// all samples get data, meta
 		dataView = new SampleDataView(sample);
 		rolodex.add(dataView, I18n.getText("tab_data"));
-		//rolodex.add(metaView, I18n.getText("tab_metadata"));
+		rolodex.add(metaView, I18n.getText("tab_metadata"));
 
 		// wj and elements, if it's summed
 		if (sample.hasWeiserjahre())

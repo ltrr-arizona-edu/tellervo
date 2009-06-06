@@ -158,6 +158,13 @@ public class EntityProperty extends AbstractProperty {
 	
 	@Override
 	public void setValue(Object value) {
+		// If the old value was null and the new value is empty string, 
+		// keep the old value.
+		if(getValue() == null && value != null) {
+			if(value.toString() == "")
+				value = null;
+		}
+		
 		super.setValue(value);
 		
 		if (parentProperty != null) {
@@ -227,12 +234,18 @@ public class EntityProperty extends AbstractProperty {
 	private List<EntityProperty> childProperties;
 	private EntityProperty parentProperty;
 	
-	public String getCategory() {
+	private String categoryPrefix = "Entity";
+	
+	public void setCategoryPrefix(String categoryPrefix) {
+		this.categoryPrefix = categoryPrefix.substring(0, 1).toUpperCase() + categoryPrefix.substring(1);
+	}
+	
+	public String getCategory() {		
 		if (nChildProperties > 0 && !dictionaryAttached && !required) {
-			return "Other";
+			return categoryPrefix + " Other";
 		}
 		else
-			return "General";
+			return categoryPrefix + " General";
 	}
 
 	public String getDisplayName() {

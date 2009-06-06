@@ -1056,7 +1056,7 @@ supercede those of the radius.
 				<xs:element ref="missingHeartwoodRingsToPith" minOccurs="0"/>
 				<xs:element ref="missingHeartwoodRingsToPithFoundation" minOccurs="0"/>
 			</xs:sequence>
-			<xs:attribute name="presence" use="required" type="presenceAbsence"/>
+			<xs:attribute name="presence" use="required" type="complexPresenceAbsence"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="missingHeartwoodRingsToPith" type="xs:string">

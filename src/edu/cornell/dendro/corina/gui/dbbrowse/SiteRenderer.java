@@ -17,12 +17,30 @@ import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
  */
 public class SiteRenderer implements ListCellRenderer {
 	public SiteRenderer() {
+		panel = new JPanel();
+		lblCode = new JLabel("code");
+		lblName = new JLabel("name");
+
+		BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
+		panel.setLayout(layout);
+		
+		panel.add(lblCode);
+		panel.add(lblName);	
+	}
+	
+	private JPanel panel;
+	private JLabel lblCode;
+	private JLabel lblName;
+	private int maximumTitleLength = -1;
+	
+	public void setMaximumTitleLength(int maximumTitleLength) {
+		this.maximumTitleLength = maximumTitleLength;
 	}
 	
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 
-		JPanel c = new JPanel();
+		JPanel c = panel;
 		
 		if(isSelected)
 			c.setBackground(list.getSelectionBackground());
@@ -33,16 +51,18 @@ public class SiteRenderer implements ListCellRenderer {
 		if(value instanceof TridasObjectEx) {
 			TridasObjectEx site = (TridasObjectEx) value;
 			
-			JLabel lblCode = new JLabel(site.getLabCode());
-			JLabel lblName = new JLabel(site.getTitle());
+			String name = site.getTitle();
 			
-			Font font = lblCode.getFont();
+			if(maximumTitleLength > 0 && name.length() > maximumTitleLength)
+				name = name.substring(0, maximumTitleLength) + "..."; 
+			
+			lblCode.setText(site.getLabCode());
+			lblName.setText(name);
+			
+			Font font = list.getFont();
 			lblCode.setFont(font.deriveFont(Font.BOLD));
-			lblName.setFont(font.deriveFont(font.getSize() - 2.0f));
-			
-			BoxLayout layout = new BoxLayout(c, BoxLayout.Y_AXIS);
-			c.setLayout(layout);
-			
+			lblName.setFont(font.deriveFont(font.getSize() - 2.0f));			
+		
 			Integer seriesCount = site.getSeriesCount();
 			if(seriesCount != null) {
 				String countStr = seriesCount + "/" + site.getChildSeriesCount();
@@ -50,26 +70,17 @@ public class SiteRenderer implements ListCellRenderer {
 
 				lblCode.setText(lblCode.getText() + "   " + countStr);
 			}
-			
-			c.add(lblCode);
-			c.add(lblName);		
 		} else if(value instanceof String) {
-			JLabel lblCode = new JLabel((String) value);
-			JLabel lblName = new JLabel((String) value);
+			lblCode.setText((String)value);
+			lblName.setText((String)value);
 			
 			// yellow background
 			if(!isSelected)
 				c.setBackground(new Color(255, 255, 200));
 			
-			Font font = lblCode.getFont();
+			Font font = list.getFont();
 			lblCode.setFont(font.deriveFont(Font.BOLD));
-			lblName.setFont(font.deriveFont(font.getSize() - 2.0f));
-			
-			BoxLayout layout = new BoxLayout(c, BoxLayout.Y_AXIS);
-			c.setLayout(layout);
-			
-			c.add(lblCode);
-			c.add(lblName);
+			lblName.setFont(font.deriveFont(font.getSize() - 2.0f));			
 		}
 		
 		return c;

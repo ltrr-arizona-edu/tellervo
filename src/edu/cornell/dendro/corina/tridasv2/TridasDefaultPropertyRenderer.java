@@ -30,7 +30,9 @@ public class TridasDefaultPropertyRenderer extends JLabel implements TableCellRe
 			setBackground(table.getBackground());			
 		}
 		
-		if(value == null)
+		if(value == null || 
+				// blank it out if we're not editable, too...
+				(table instanceof CorinaPropertySheetTable && !((CorinaPropertySheetTable)table).isCellEditable(row, column)))
 			setText("");
 		else
 			setText("Click to remove...");

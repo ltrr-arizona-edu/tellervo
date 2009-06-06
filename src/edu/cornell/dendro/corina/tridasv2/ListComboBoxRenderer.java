@@ -45,6 +45,8 @@ public class ListComboBoxRenderer extends JPanel implements
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
 		
+		dropdown.setVisible(table.isCellEditable(row, column));
+
 		renderer.modifyComponent(value);
 		
         if (isSelected) {

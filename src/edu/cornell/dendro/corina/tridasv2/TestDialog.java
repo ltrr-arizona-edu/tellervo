@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -31,7 +32,11 @@ import org.jdesktop.layout.LayoutStyle;
 import org.jdesktop.layout.GroupLayout.ParallelGroup;
 import org.jdesktop.layout.GroupLayout.SequentialGroup;
 
+import org.tridas.schema.BaseSeries;
+import org.tridas.schema.Certainty;
+import org.tridas.schema.DateTime;
 import org.tridas.schema.PresenceAbsence;
+import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
@@ -62,11 +67,12 @@ public class TestDialog extends JPanel {
 	}
 	
 	private static enum EditType {
+		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "tridas/measurementseries.png"),
+		DERIVED_SERIES(TridasMeasurementSeries.class, "Derived Series", "tridas/derivedseries.png"),
 		OBJECT(TridasObject.class, "Object", "tridas/object.png"),
 		ELEMENT(TridasElement.class, "Element", "tridas/element.png"),
 		SAMPLE(TridasSample.class, "Sample", "tridas/sample.png"),
-		RADIUS(TridasRadius.class, "Radius", "tridas/radius.png"),
-		;
+		RADIUS(TridasRadius.class, "Radius", "tridas/radius.png");
 		
 		private Class<?> type;
 		private String displayTitle;
@@ -92,7 +98,10 @@ public class TestDialog extends JPanel {
 	}
 	
 	public static PropertySheetPanel getPropertiesPanel() {
-		PropertySheetPanel panel = new PropertySheetPanel();
+		CorinaPropertySheetTable table = new CorinaPropertySheetTable();
+		PropertySheetPanel panel = new PropertySheetPanel(table);
+		
+		table.setEditable(false);
 		
 		panel.setToolBarVisible(false);
 		panel.setDescriptionVisible(true);
@@ -154,7 +163,7 @@ public class TestDialog extends JPanel {
 		return button;
 	}
 	
-	public static JButtonBar getButtonPanel() {
+	public static JButtonBar getButtonPanel(boolean isDerived) {
 		JButtonBar toolbar = new JButtonBar(JButtonBar.VERTICAL);
 		
 		toolbar.setUI(new BlueishButtonBarUI());
@@ -162,13 +171,26 @@ public class TestDialog extends JPanel {
 		AbstractButton button;
 		ButtonGroup buttons = new ButtonGroup();
 
-		for(EditType t : EditType.values()) {
-			button = addButton(t);
+		// special case for derived series
+		if(isDerived) {
+			button = addButton(EditType.DERIVED_SERIES);
 			buttons.add(button);
 			toolbar.add(button);
+			button.doClick();
+		}
+		else {
+			for(EditType t : EditType.values()) {
+				// skip over these series types if we're not dealing with them
+				if(t == EditType.DERIVED_SERIES)
+					continue;
 			
-			if (buttons.getSelection() == null) {
-				button.doClick();
+				button = addButton(t);
+				buttons.add(button);
+				toolbar.add(button);
+			
+				if (buttons.getSelection() == null) {
+					button.doClick();
+				}
 			}
 		}
 		
@@ -212,6 +234,10 @@ public class TestDialog extends JPanel {
 		radius.getGenericField().add(gf);
 		////////////////////////////
 		
+		DateTime dtv = new DateTime();
+		dtv.setCertainty(Certainty.APPROXIMATELY);
+		tridasSample.setLastModifiedTimestamp(dtv);
+				
 		//TridasMeasurementSeries series = new TridasMeasurementSeries();
 
 		JPanel content = new JPanel();
@@ -233,10 +259,20 @@ public class TestDialog extends JPanel {
 		
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
-		JButtonBar buttonPanel = getButtonPanel();
+		JButtonBar buttonPanel = getButtonPanel(false);
 		
 		content.add(propertySheet, BorderLayout.CENTER);
 		content.add(buttonPanel, BorderLayout.WEST);
+		
+		JButton tmp = new JButton("asdf");
+		tmp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CorinaPropertySheetTable table = (CorinaPropertySheetTable) propertySheet.getTable();
+				
+				table.setEditable(!table.isEditable());
+			}
+		});
+		content.add(tmp, BorderLayout.SOUTH);
 		
 		dialog.setContentPane(content);
 		dialog.pack();

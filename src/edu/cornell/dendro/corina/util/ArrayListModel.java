@@ -5,11 +5,14 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-public class ArrayListModel<E> extends ArrayList<E> implements ListModel {
+public class ArrayListModel<E> extends ArrayList<E> implements ListModel, ComboBoxModel {
+	private Object selectedObject = null;
+	
 	public ArrayListModel() {
 		super();
 	}
@@ -75,6 +78,7 @@ public class ArrayListModel<E> extends ArrayList<E> implements ListModel {
 		int last = size() - 1;
 		
 		super.clear();
+		selectedObject = null;
 		fireIntervalRemoved(0, last);
 	}
 
@@ -82,8 +86,13 @@ public class ArrayListModel<E> extends ArrayList<E> implements ListModel {
 	public E remove(int index) {
 		E ret = super.remove(index);
 		
-		if(ret != null)
+		if(ret != null) {
+			
+			if(ret == selectedObject)
+				selectedObject = null;
+			
 			fireIntervalRemoved(index, index);
+		}
 		
 		return ret;
 	}
@@ -95,18 +104,29 @@ public class ArrayListModel<E> extends ArrayList<E> implements ListModel {
 		
 		if(idx == -1)
 			return false;
+		
+		if(o == selectedObject)
+			selectedObject = null;
+		
 		return (remove(idx) == null) ? false : true;
 	}
 
 	@Override
 	protected void removeRange(int fromIndex, int toIndex) {
 		super.removeRange(fromIndex, toIndex);
+		
+		if(selectedObject != null && indexOf(selectedObject) != -1)
+			selectedObject = null;
+		
 		fireIntervalRemoved(fromIndex, toIndex);
 	}
 
 	@Override
 	public E set(int index, E element) {
 		E ret = super.set(index, element);
+		
+		if(ret == selectedObject)
+			selectedObject = element;
 		
 		fireIntervalChanged(index, index);
 		
@@ -196,4 +216,24 @@ public class ArrayListModel<E> extends ArrayList<E> implements ListModel {
 	}
 	
 	private List<ListDataListener> listDataListeners;
+
+	public Object getSelectedItem() {
+		return selectedObject;
+	}
+
+	public void setSelectedItem(Object anItem) {
+		if(anItem == null) {
+			selectedObject = null;
+			return;
+		}
+		
+		for(Object o : this) {
+			if(anItem.equals(o)) {
+				selectedObject = o;
+				return;
+			}
+		}
+		
+		selectedObject = null;
+	}
 }

@@ -77,7 +77,7 @@ public class EnumComboBoxPropertyEditor extends AbstractPropertyEditor {
 		
 		if(value == null)
 			value = NOT_PRESENT;
-		
+
 		for (int i = 0, c = combo.getModel().getSize(); i < c; i++) {
 			current = combo.getModel().getElementAt(i);
 			if (value == current || (current != null && current.equals(value))) {
