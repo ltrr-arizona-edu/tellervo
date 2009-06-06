@@ -99,6 +99,7 @@ class element extends elementEntity implements IDBAccessor
 
     function setParamsFromDBRow($row, $format="standard")
     {
+        $this->setID($row['elementid']);
         $this->taxon->setParamsFromDB($row['taxonid']);
         $this->taxon->setOriginalTaxon($row['originaltaxonname']);
         $this->taxon->setHigherTaxonomy();
