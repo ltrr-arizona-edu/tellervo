@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-TRiDaS 1.2 dev: Tree-Ring Data Standard for dendrochronology
+TRiDaS 1.2: Tree-Ring Data Standard for dendrochronology
 See http://www.tridas.org/ for:
 - more information
 - contact information 
 - latest version
 
-Version date: 2009-03-17
+Version date: 2009-06-23
 
 This XML Schema is available under LGPLv3 
 more information on http://www.gnu.org/licenses/lgpl.html
@@ -233,12 +233,12 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	</xs:complexType>
 	<xs:element name="createdTimestamp" type="dateTime">
 		<xs:annotation>
-			<xs:documentation xml:lang="EN">Field containing date and time when this record was created</xs:documentation>
+			<xs:documentation xml:lang="EN">Field containing date and time when this record was created.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="lastModifiedTimestamp" type="dateTime">
 		<xs:annotation>
-			<xs:documentation xml:lang="EN">Field containing date and time when this records was last updated</xs:documentation>
+			<xs:documentation xml:lang="EN">Field containing date and time when this records was last updated.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:complexType name="date">
@@ -274,6 +274,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			<xs:element ref="identifier" minOccurs="0"/>
 			<xs:element ref="createdTimestamp" minOccurs="0"/>
 			<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
+			<xs:element ref="comments" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
 	<!-- linkSeries -->
@@ -326,27 +327,27 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<!-- type -->
 	<xs:element name="type" type="controlledVoc">
 		<xs:annotation>
-			<xs:documentation xml:lang="EN">The type of object this is. Preferrably derived from a controlled vocabulary.</xs:documentation>
+			<xs:documentation xml:lang="EN">The type of entity this is. Preferrably derived from a controlled vocabulary.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<!-- description -->
 	<xs:element name="description" type="xs:string">
 		<xs:annotation>
-			<xs:documentation xml:lang="EN">General description of this entity</xs:documentation>
+			<xs:documentation xml:lang="EN">General description of this entity.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<!-- title -->
 	<xs:element name="title" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Title or name of this entity
+				Title or name of this entity.  This should be a 'human readable' name by which the entity is referred.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<!-- identifier -->
 	<xs:element name="identifier">
 		<xs:annotation>
-			<xs:documentation xml:lang="EN">Unique (in combination with domain) identifier for this entity.</xs:documentation>
+			<xs:documentation xml:lang="EN">Identifier for this entity which in combination with the domain should be unique.  This is typically a computer generated code such as a database primary key.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:simpleContent>
@@ -354,7 +355,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 					<xs:attribute name="domain" use="required">
 						<xs:annotation>
 							<xs:documentation xml:lang="EN">
-The domain which this identifier is applicable to. Could be the URL of the organisations server or the 
+The domain which this identifier is applicable to. Could be the URL of the organisation's server or the 
 name of the organisation as long as it is not ambiguous.
 							</xs:documentation>
 						</xs:annotation>
@@ -363,44 +364,11 @@ name of the organisation as long as it is not ambiguous.
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
-	<!-- extent -->
-	<xs:element name="extent">
-		<xs:annotation>
-			<xs:documentation xml:lang="EN">
-				Details about the geographic extent that this entity covers
-			</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="extentGeometry"/>
-				<xs:element ref="extentComment" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="extentGeometry">
-		<xs:annotation>
-			<xs:documentation xml:lang="EN">
-				A GML representation of the extent
-			</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="gml:Polygon"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="extentComment" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="EN">
-				Any useful information about the extent
-			</xs:documentation>
-		</xs:annotation>
-	</xs:element>
 	<!-- location -->
 	<xs:element name="location">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Details about the geographical location of this entity
+				Details about the geographical location of this entity. 
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -415,7 +383,9 @@ name of the organisation as long as it is not ambiguous.
 	<xs:element name="locationGeometry">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				GML representation of a location.  Can be either a point or polygon.
+				GML representation of a location.  Can be either a point to 
+				represent a particular location or a polygon to represent
+				an area or a geographical extent / bounding box.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -425,11 +395,17 @@ name of the organisation as long as it is not ambiguous.
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="locationType" type="normalTridasLocationType"/>	
+	<xs:element name="locationType" type="normalTridasLocationType">
+		<xs:annotation>
+			<xs:documentation>
+				The type of location that the geometry field represents taken from the TRiDaS controlled vocabulary.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>	
 	<xs:element name="locationPrecision" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Stores potential difference; number of meters difference, so 0 is exact
+				Stores potential difference; number of meters difference, so 0 is exact.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -444,7 +420,7 @@ name of the organisation as long as it is not ambiguous.
 	<xs:element name="file">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Filename of a file associated with this entity
+				Filename of a file associated with this entity.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -461,8 +437,31 @@ name of the organisation as long as it is not ambiguous.
 		<xs:complexType>
 			<xs:simpleContent>
 				<xs:extension base="xs:string">
-					<xs:attribute name="name" use="required"/>
-					<xs:attribute name="type" use="optional"/>
+					<xs:attribute name="name" use="required">
+						<xs:annotation>
+							<xs:documentation>
+								Name of the field.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>				
+					<xs:attribute name="type" use="optional">
+						<xs:annotation>
+							<xs:documentation>
+								The data type that this field contains.
+							</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="xs:string"/>
+								<xs:enumeration value="xs:boolean"/>
+								<xs:enumeration value="xs:integer"/>
+								<xs:enumeration value="xs:float"/>
+								<xs:enumeration value="xs:date"/>
+								<xs:enumeration value="xs:dateTime"/>
+								<xs:enumeration value="xs:duration"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
 				</xs:extension>
 			</xs:simpleContent>
 		</xs:complexType>
@@ -525,7 +524,7 @@ Therefore, a project can have one or more objects associated with it.
 	<xs:element name="laboratory">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				The dendrochronological research laboratory where this work was done
+				The dendrochronological research laboratory where this work was done.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -533,7 +532,7 @@ Therefore, a project can have one or more objects associated with it.
 				<xs:element ref="identifier" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation xml:lang="EN">
-							Identifier for the laboratory
+							Identifier for the laboratory.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
@@ -541,12 +540,18 @@ Therefore, a project can have one or more objects associated with it.
 					<xs:complexType>
 						<xs:annotation>
 							<xs:documentation xml:lang="EN">
-								Name of the laboratory
+								Name of the laboratory.
 							</xs:documentation>
 						</xs:annotation>			
 						<xs:simpleContent>
 							<xs:extension base="xs:string">
-								<xs:attribute name="acronym" use="optional"/>
+								<xs:attribute name="acronym" use="optional">
+									<xs:annotation>
+										<xs:documentation>
+											Acronym of the laboratory.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
@@ -554,14 +559,14 @@ Therefore, a project can have one or more objects associated with it.
 				<xs:element name="place" type="xs:string">
 					<xs:annotation>
 						<xs:documentation xml:lang="EN">
-							Town or city where the laboratory is located
+							Town or city where the laboratory is located.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="country" type="xs:string">
 					<xs:annotation>
 						<xs:documentation xml:lang="EN">
-							Country where the laboratory is located
+							Country where the laboratory is located.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>		
@@ -579,7 +584,13 @@ Therefore, a project can have one or more objects associated with it.
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="controlledVoc">
-					<xs:attribute name="normalTridas" type="normalTridasCategory"/>
+					<xs:attribute name="normalTridas" type="normalTridasCategory">
+						<xs:annotation>
+							<xs:documentation>
+								TRiDaS controlled vocabulary of research categories.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -588,7 +599,7 @@ Therefore, a project can have one or more objects associated with it.
 	<xs:element name="investigator" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Principal investigator of this project
+				Principal investigator of this project.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -605,7 +616,7 @@ Therefore, a project can have one or more objects associated with it.
 	<xs:element name="requestDate" type="date">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Date of the request for dendrochronology.  If unknown it should be estimated
+				Date of the request for dendrochronology.  If unknown it should be estimated.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -613,7 +624,7 @@ Therefore, a project can have one or more objects associated with it.
 	<xs:element name="commissioner" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				The person/organisation who commissioned the project
+				The person/organisation who commissioned the project.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -621,7 +632,7 @@ Therefore, a project can have one or more objects associated with it.
 	<xs:element name="reference" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Citations of publications relating to this project
+				Citations of publications relating to this project.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -630,7 +641,7 @@ Therefore, a project can have one or more objects associated with it.
 	<xs:element name="research">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				National/International system in which the research project is registered
+				National/International system in which the research project is registered.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -693,7 +704,7 @@ form of a link to an external database such as a museum catalogue.
 	<xs:element name="creator" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Name of creator, place of the workshop/wharf etc
+				Name of creator, place of the workshop/wharf etc.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -701,7 +712,7 @@ form of a link to an external database such as a museum catalogue.
 	<xs:element name="owner" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Name of the owner of the physical object
+				Name of the owner of the physical object.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -709,7 +720,7 @@ form of a link to an external database such as a museum catalogue.
 	<xs:element name="coverage">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Details on the time period this object covers
+				Details on the time period this object covers.
 			</xs:documentation>
 		</xs:annotation>		
 		<xs:complexType>
@@ -731,7 +742,7 @@ form of a link to an external database such as a museum catalogue.
 				<xs:documentation xml:lang="EN">
 					Method of dating support (e.g. archive sources, inscriptions, 
 					stratigraphic context, associated finds, typology, stylistic aspects, 
-					carpenter marks, radiocarbon, OSL, other methods)
+					carpenter marks, radiocarbon, OSL, other methods).
 				</xs:documentation>
 			</xs:annotation>
 	</xs:element>
@@ -791,12 +802,18 @@ element and an element may be dated using one or more derivedSeries.
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
 The most detailed taxonomic name known for this element (species, genus, family etc).
-Preferably from the Catalogue of Life (www.catalogueoflife.org) controlled vocabulary
+Preferably from the Catalogue of Life (www.catalogueoflife.org) controlled vocabulary.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<!-- ELEMENT.shape -->
 	<xs:element name="shape">
+		<xs:annotation>
+			<xs:documentation>
+The shape of this element, as a free text description, an entry from a specificed 
+controlled vocabulary, or perferably from the TRiDaS controlled vocabulary.			
+			</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="controlledVoc">
@@ -809,20 +826,44 @@ Preferably from the Catalogue of Life (www.catalogueoflife.org) controlled vocab
 	<xs:element name="dimensions">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Physical dimensions of this element, either height and diameter, or height, width and depth.
+				Physical dimensions of this element, either height and diameter, or height, width and depth.  The units of these measurements must also be specified.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="unit"/>
-				<xs:element name="height" type="xs:decimal"/>
+				<xs:element name="height" type="xs:decimal">
+					<xs:annotation>
+						<xs:documentation>
+							Height of this element.  Should be used in combination with either diameter, or width and depth.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:choice>
 					<xs:sequence>
-						<xs:element name="diameter" type="xs:decimal"/>
+						<xs:element name="diameter" type="xs:decimal">
+							<xs:annotation>
+								<xs:documentation>
+									Diameter of this element.  Used in combination with height when the element is a tree.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 					<xs:sequence>
-						<xs:element name="width" type="xs:decimal"/>
-						<xs:element name="depth" type="xs:decimal"/>
+						<xs:element name="width" type="xs:decimal">
+							<xs:annotation>
+								<xs:documentation>
+									Width of the element.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="depth" type="xs:decimal">
+							<xs:annotation>
+								<xs:documentation>
+									Depth of the element.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 				</xs:choice>
 			</xs:sequence>
@@ -842,7 +883,7 @@ Preferably from the Catalogue of Life (www.catalogueoflife.org) controlled vocab
 	<xs:element name="processing" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Processing (carved, sawn etc.) rafting marks etc
+				Processing (carved, sawn etc.) rafting marks etc.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -858,7 +899,7 @@ Preferably from the Catalogue of Life (www.catalogueoflife.org) controlled vocab
 	<xs:element name="altitude" type="xs:double">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Altitude in metres if this element is standing tree in situ
+				Altitude in metres if this element is a standing tree in situ.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -1014,12 +1055,12 @@ from exactly one element and can be represented by one or more radii.
 
 <!-- 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%
-	%		PITHANDSAPWOODINFO 
+	%		WOODCOMPLETENESS 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%-->
-	<xs:element name="pithAndSapwoodInfo">
+	<xs:element name="woodCompleteness">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-Details of the pith and sapwood rings.  This is included under the radius or
+Details of the pith, heartwood, sapwood and last ring under the bark.  This is included under the radius or
 measurementSeries entities.  If present in both, the measurementSeries details
 supercede those of the radius.
 			</xs:documentation>
@@ -1033,7 +1074,7 @@ supercede those of the radius.
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<!-- PITHANDSAPWOODINFO.pith-->
+	<!-- WOODCOMPLETENESS.pith-->
 	<xs:element name="pith">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
@@ -1041,10 +1082,10 @@ supercede those of the radius.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:attribute name="presence" use="required" type="presenceAbsence"/>
+			<xs:attribute name="presence" use="required" type="complexPresenceAbsence"/>
 		</xs:complexType>
 	</xs:element>
-	<!-- PITHANDSAPWOODINFO.heartwood -->
+	<!-- WOODCOMPLETENESS.heartwood -->
 	<xs:element name="heartwood">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
@@ -1073,7 +1114,7 @@ supercede those of the radius.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<!-- PITHANDSAPWOODINFO.sapwood -->
+	<!-- WOODCOMPLETENESS.sapwood -->
 	<xs:element name="sapwood">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
@@ -1103,7 +1144,7 @@ supercede those of the radius.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="lastRingUnderBark" type="xs:string">
+	<xs:element name="lastRingUnderBark">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
 Information about the last rings under the bark. If the last ring is under 
@@ -1111,6 +1152,9 @@ the bark is present, include information about the completeness of this ring
 and/or season of felling. 
 			</xs:documentation>
 		</xs:annotation>
+		<xs:complexType mixed="true">
+			<xs:attribute name="presence" type="presenceAbsence" use="required"/>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="missingSapwoodRingsToBark" type="xs:string">
 		<xs:annotation>
@@ -1126,7 +1170,7 @@ and/or season of felling.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<!-- PITHANDSAPWOODINFO.bark -->
+	<!-- WOODCOMPLETENESS.bark -->
 	<xs:element name="bark">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
@@ -1154,7 +1198,7 @@ resulting in multiple measurementSeries.
 			<xs:complexContent>
 				<xs:extension base="tridasEntity">
 					<xs:sequence>
-						<xs:element ref="pithAndSapwoodInfo" minOccurs="0" maxOccurs="1"/>
+						<xs:element ref="woodCompleteness" minOccurs="0" maxOccurs="1"/>
 						<xs:element ref="azimuth" minOccurs="0"/>
 						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
@@ -1172,7 +1216,7 @@ resulting in multiple measurementSeries.
 	<xs:element name="azimuth" type="xs:decimal">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				Angle in degrees from north along which this radius lies
+				Angle in degrees from north along which this radius lies.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -1203,7 +1247,9 @@ resulting in multiple measurementSeries.
 		<xs:complexContent>
 			<xs:extension base="tridasEntity">
 				<xs:sequence>
-					<xs:element ref="pithAndSapwoodInfo" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="measuringDate" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="derivationDate" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="woodCompleteness" minOccurs="0" maxOccurs="1"/>
 					<xs:element ref="analyst" minOccurs="0"/>
 					<xs:element ref="dendrochronologist" minOccurs="0"/>
 					<xs:element ref="measuringMethod" minOccurs="0" maxOccurs="1"/>
@@ -1213,11 +1259,8 @@ resulting in multiple measurementSeries.
 					<xs:element ref="standardizingMethod" minOccurs="0"/>
 					<xs:element ref="author" minOccurs="0"/>
 					<xs:element ref="version" minOccurs="0"/>
-					<xs:element ref="comments" minOccurs="0"/>
-					<xs:element ref="usage" minOccurs="0"/>
-					<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:group ref="interpretationType" minOccurs="0"/>
-					<xs:element ref="extent" minOccurs="0"/>
+					<xs:element ref="location" minOccurs="0"/>
 					<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="values" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
@@ -1247,12 +1290,13 @@ themselves are stored separately as values.
 						<xs:element ref="identifier" minOccurs="0"/>
 						<xs:element ref="createdTimestamp" minOccurs="0"/>
 						<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
+						<xs:element ref="comments" minOccurs="0"/>
+						<xs:element ref="measuringDate" minOccurs="0" maxOccurs="1"/>
 						<xs:element ref="analyst" minOccurs="0"/>
 						<xs:element ref="dendrochronologist" minOccurs="0"/>
 						<xs:element ref="measuringMethod" minOccurs="1"/>
-						<xs:element ref="comments" minOccurs="0"/>
-						<xs:element ref="usage" minOccurs="0"/>
-						<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
+						<!--<xs:element ref="usage" minOccurs="0"/>
+						<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>-->
 						<xs:group ref="interpretationType" minOccurs="0"/>
 						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="values" minOccurs="0" maxOccurs="unbounded"/>
@@ -1266,6 +1310,14 @@ themselves are stored separately as values.
 	<!-- MEASUREMENTSERIES.identifier (global type) -->
 	<!-- MEASUREMENTSERIES.createdTimestamp (global type) -->
 	<!-- MEASUREMENTSERIES.lastModifiedTimestamp (global type) -->
+	<!-- MEASUREMENTSERIES.measuringDate -->
+	<xs:element name="measuringDate" type="date">
+		<xs:annotation>
+			<xs:documentation>
+				Date that the measurements where made.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<!-- MEASUREMENTSERIES.analyst -->
 	<xs:element name="analyst" type="xs:string">
 		<xs:annotation>
@@ -1292,7 +1344,13 @@ themselves are stored separately as values.
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="controlledVoc">
-					<xs:attribute name="normalTridas" type="normalTridasMeasuringMethod"/>
+					<xs:attribute name="normalTridas" type="normalTridasMeasuringMethod">
+						<xs:annotation>
+							<xs:documentation>
+								TRiDaS controlled vocabulary for the method of measuring.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -1301,23 +1359,7 @@ themselves are stored separately as values.
 	<xs:element name="comments" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				More information about the series
-			</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<!-- MEASUREMENTSERIES.usage -->
-	<xs:element name="usage" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="EN">
-				How the series is used, for instance in which chronology
-			</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<!-- MEASUREMENTSERIES.usageComments -->
-	<xs:element name="usageComments" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="EN">
-				Comments by later users on the quality of the series 
+				More information about this entity.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -1466,17 +1508,16 @@ from one or more measurementSeries and has multiple values associated with it.
 						<xs:element ref="identifier" minOccurs="0"/>
 						<xs:element ref="createdTimestamp" minOccurs="0"/>
 						<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
+						<xs:element ref="comments" minOccurs="0"/>
+						<xs:element ref="derivationDate" minOccurs="0" maxOccurs="1"/>
 						<xs:element ref="type" minOccurs="1"/>
 						<xs:element ref="linkSeries" minOccurs="1" maxOccurs="unbounded"/>
 						<xs:element ref="objective" minOccurs="0"/>
 						<xs:element ref="standardizingMethod" minOccurs="0"/>
 						<xs:element ref="author" minOccurs="0"/>
 						<xs:element ref="version" minOccurs="0"/>
-						<xs:element ref="comments" minOccurs="0"/>
-						<xs:element ref="usage" minOccurs="0"/>
-						<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:group ref="interpretationType" minOccurs="0"/>
-						<xs:element ref="extent" minOccurs="0"/>
+						<xs:element ref="location" minOccurs="0"/>
 						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="values" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
@@ -1485,12 +1526,19 @@ from one or more measurementSeries and has multiple values associated with it.
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
-	
 	<!-- DERIVEDSERIES.title (global type) -->
 	<!-- DERIVEDSERIES.identifier (global type) -->
 	<!-- DERIVEDSERIES.createdTimestamp (global type) -->
 	<!-- DERIVEDSERIES.lastModifiedTimestamp (global type) -->
 	<!-- DERIVEDSERIES.type (global type) -->
+	<!-- DERIVEDSERIES.derivationDate -->
+	<xs:element name="derivationDate" type="date">
+		<xs:annotation>
+			<xs:documentation>
+				The date that this derivedSeries was created.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<!-- DERIVEDSERIES.objective -->
 	<xs:element name="objective" type="xs:string">
 		<xs:annotation>
@@ -1535,10 +1583,9 @@ from one or more measurementSeries and has multiple values associated with it.
 	<xs:element name="values">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-A value is the result of a single ring measurement. Examples include: total ring 
-width; early-wood width; late-wood width. The values are related to a 
-measurementSeries or a derivedSeries. In case of a measurementSeries the variable 
-and its measurement unit (e.g. microns, 1/100th mm etc) are recorded as well.			
+This is a container for a group of actual measurement values.  When appropriate this container 
+includes details on the variable being represented as well as the units used. If the values
+are unitless, then the special &lt;unitless&gt; field is used. 
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -1603,7 +1650,8 @@ units.  Not to be used to denote *unknown* units.
 			<xs:attribute name="value" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation xml:lang="EN">
-						The actual value being recorded
+A value is the result of a single ring measurement. The type of measurement this is along with 
+the units used are recorded in the 'values' container in the associated measurement- or derviedSeries.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
@@ -1635,7 +1683,13 @@ TRiDaS controlled vocabulary.
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="controlledVoc">
-					<xs:attribute name="normalTridas" type="normalTridasRemark"/>
+					<xs:attribute name="normalTridas" type="normalTridasRemark">
+						<xs:annotation>
+							<xs:documentation>
+								TRiDaS controlled vocabulary for specific remarks.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
