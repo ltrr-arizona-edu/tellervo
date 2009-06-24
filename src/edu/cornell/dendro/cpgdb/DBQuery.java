@@ -52,7 +52,7 @@ public class DBQuery {
 		if(debug)
 			beVerbose(queryName, args);
 		
-		CallableStatement q = prepareStatement(queryName, args);
+		PreparedStatement q = prepareStatement(queryName, args);
 
 		try {
 			return q.execute();
@@ -65,7 +65,7 @@ public class DBQuery {
 		if(debug)
 			beVerbose(queryName, args);
 		
-		CallableStatement q = prepareStatement(queryName, args);
+		PreparedStatement q = prepareStatement(queryName, args);
 
 		ResultSet rs = q.executeQuery();
 		CachedRowSet crs = new CachedRowSetImpl();
@@ -78,8 +78,8 @@ public class DBQuery {
 		return crs;
 	}
 	
-	public CallableStatement prepareStatement(String queryName, Object[] args) throws SQLException {
-		CallableStatement stmt = sqlConnection.prepareCall(prepareQueryString(queryName, args.length));
+	public PreparedStatement prepareStatement(String queryName, Object[] args) throws SQLException {
+		PreparedStatement stmt = sqlConnection.prepareStatement(prepareQueryString(queryName, args.length));
 
 		for(int i = 0; i < args.length; i++) {
 			if(args[i] == null)
