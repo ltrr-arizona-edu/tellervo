@@ -1,19 +1,26 @@
 package edu.cornell.dendro.cpgdb;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
+//import java.sql.Connection;
+//import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
+//import java.util.Properties;
+import java.util.UUID;
 
 public class Dispatch {
 
-	public static String GetVMeasurementResult(String VMeasurementID) throws SQLException {
+	public static PgDB_UUID GetVMeasurementResult(String VMeasurementID) throws SQLException {
 		// Simple and clean. Pass in the ID, return the result string.
-try{
-		VMeasurementResult result = new VMeasurementResult(VMeasurementID, false);
-		return result.getResult();
-} catch (Exception e) { e.printStackTrace();  if (e instanceof SQLException) throw (SQLException) e; }		
-return "<error>";
+		try{
+			VMeasurementResult result = new VMeasurementResult(UUID.fromString(VMeasurementID), false);
+			return result.getResult();
+			
+		} catch (Exception e) { 
+			e.printStackTrace();  
+			if (e instanceof SQLException) 
+				throw (SQLException) e; 
+			
+			throw new SQLException("Error: " + e.toString());
+		}		
 	}
 	
 	public static void main(String[] args) {

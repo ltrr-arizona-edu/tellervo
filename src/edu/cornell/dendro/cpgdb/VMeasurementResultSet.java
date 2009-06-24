@@ -4,6 +4,8 @@
 package edu.cornell.dendro.cpgdb;
 
 import java.sql.*;
+import java.util.UUID;
+
 import org.postgresql.pljava.ResultSetHandle;
 
 /**
@@ -15,13 +17,20 @@ import org.postgresql.pljava.ResultSetHandle;
  *
  */
 public class VMeasurementResultSet implements ResultSetHandle {
-        private String VMeasurementID;
+        private UUID VMeasurementID;
         private Statement statement;
 
 	/**
 	 * @param VMeasurementID
 	 */
 	public VMeasurementResultSet(String VMeasurementID) {
+		this.VMeasurementID = UUID.fromString(VMeasurementID);
+	}
+
+	/**
+	 * @param VMeasurementID
+	 */
+	public VMeasurementResultSet(UUID VMeasurementID) {
 		this.VMeasurementID = VMeasurementID;
 	}
 	
@@ -31,7 +40,7 @@ public class VMeasurementResultSet implements ResultSetHandle {
 
 	public ResultSet getResultSet() throws SQLException {
 		VMeasurementResult result = new VMeasurementResult(VMeasurementID, false);
-		String resid = result.getResult();
+		String resid = result.getResult().toString();
 
 		if(resid != null) {
 			statement = DriverManager.getConnection("jdbc:default:connection").createStatement();

@@ -120,11 +120,11 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 		}
 	}
 
-	public void batchAddStatements(PreparedStatement s, String newVMeasurementResultID) throws SQLException {
+	public void batchAddStatements(PreparedStatement s, Object newVMeasurementResultID) throws SQLException {
 		int len = output.size();
 
 		for(int i = 0; i < len; i++) {
-			s.setString(1, newVMeasurementResultID);
+			s.setObject(1, newVMeasurementResultID);
 			s.setInt(2, ((Number) relYear.get(i)).intValue());
 			s.setInt(3, ((Number) output.get(i)).intValue());
 		
