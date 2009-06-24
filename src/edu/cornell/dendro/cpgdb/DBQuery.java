@@ -56,6 +56,7 @@ public class DBQuery {
 
 		try {
 			ResultSet rs = q.executeQuery();
+			rs.next();
 			rs.close();
 			return;
 		} finally {
