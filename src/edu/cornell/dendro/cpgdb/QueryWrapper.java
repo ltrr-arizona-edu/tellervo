@@ -280,16 +280,6 @@ public class QueryWrapper {
 		}		
 	}
 		
-	protected Map<String, StatementQueryHolder> queries;
+	private Map<String, StatementQueryHolder> queries;
 	private Connection sql;
-
-	public static void main(String args[]) throws SQLException {
-		QueryWrapper q = new QueryWrapper(null);
-
-                for(Map.Entry<String, StatementQueryHolder> e : q.queries.entrySet()) {
-                    String query = e.getValue();
-
-                    
-                }
-	}
 }
