@@ -10,8 +10,19 @@
 --                other than SUM and DIRECT, and an array of one or more values for SUM
 -- RETURNS: A new VMeasurementID
 
-CREATE OR REPLACE FUNCTION cpgdb.CreateNewVMeasurement(varchar, integer, integer, varchar, 
-varchar, integer, integer[], varchar, varchar, varchar, varchar)
+CREATE OR REPLACE FUNCTION cpgdb.CreateNewVMeasurement(
+  varchar, -- vmeasurementop
+  integer, -- vmeasurementopparameter
+  integer, -- owner user id
+  varchar, -- code (name)
+  varchar, -- comments
+  integer, -- base measurement (direct)
+  uuid[],  -- constituent measurements (not direct)
+  varchar, -- Usage
+  varchar, -- Usage comments
+  varchar, -- Objective
+  varchar  -- Version
+)
 RETURNS tblVMeasurement.VMeasurementID%TYPE AS $$
 DECLARE
    OP ALIAS FOR $1;
@@ -195,7 +206,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL VOLATILE;
 
-CREATE OR REPLACE FUNCTION cpgdb.VerifySumsAreContiguous(INTEGER[]) 
+CREATE OR REPLACE FUNCTION cpgdb.VerifySumsAreContiguous(uuid[]) 
 RETURNS BOOLEAN AS $$
 DECLARE
    Constituents ALIAS FOR $1;

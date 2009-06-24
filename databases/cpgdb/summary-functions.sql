@@ -2,7 +2,7 @@
 -- param 1: VMeasurementID
 -- Requires that tblvmeasurementderivedcache is populated for this id!
 --
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementSummaryInfo(integer)
+CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementSummaryInfo(tblvmeasurement.vmeasurementid%TYPE)
 RETURNS typVMeasurementSummaryInfo AS $$
 DECLARE
    VMID ALIAS FOR $1;
@@ -117,7 +117,7 @@ LANGUAGE 'SQL' IMMUTABLE;
 -- 2: label id
 -- 3: boolean, true = prefix only (e.g. C-XXX-A-B-1-D), false = full lab code (C-XXX-A-B-1-)
 --
-CREATE OR REPLACE FUNCTION cpgdb.GetLabel(text, integer, boolean)
+CREATE OR REPLACE FUNCTION cpgdb.GetLabel(text, uuid, boolean)
 RETURNS text AS $_$
 DECLARE
    OBJID ALIAS FOR $2;
@@ -252,12 +252,12 @@ END;
 $_$
 LANGUAGE 'PLPGSQL' STABLE;
 
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementLabel(integer)
+CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementLabel(tblvmeasurement.vmeasurementid%TYPE)
 RETURNS text AS $_$
    SELECT cpgdb.GetLabel('vmeasurement', $1, false);
 $_$ LANGUAGE SQL STABLE;
 
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementPrefix(integer)
+CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementPrefix(tblvmeasurement.vmeasurementid%TYPE)
 RETURNS text AS $_$
    SELECT cpgdb.GetLabel('vmeasurement', $1, true);
 $_$ LANGUAGE SQL STABLE;

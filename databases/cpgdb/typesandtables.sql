@@ -1,7 +1,7 @@
 DROP TYPE typVMeasurementSearchResult CASCADE;
 CREATE TYPE typVMeasurementSearchResult AS (
    RecursionLevel integer,
-   VMeasurementID integer,
+   VMeasurementID uuid,
    Op varchar,
    Code varchar,
    StartYear integer,
@@ -13,7 +13,7 @@ CREATE TYPE typVMeasurementSearchResult AS (
 
 DROP TABLE tblVMeasurementMetaCache CASCADE;
 CREATE TABLE tblVMeasurementMetaCache (
-    VMeasurementID integer NOT NULL REFERENCES tblVMeasurement ON DELETE CASCADE ON UPDATE CASCADE,
+    VMeasurementID tblvmeasurement.vmeasurementid%TYPE NOT NULL REFERENCES tblVMeasurement ON DELETE CASCADE ON UPDATE CASCADE,
     StartYear integer NOT NULL,
     ReadingCount integer NOT NULL,
     MeasurementCount integer DEFAULT 1 NOT NULL
@@ -32,7 +32,7 @@ DROP TABLE tblVMeasurementDerivedCache CASCADE;
 CREATE TABLE tblVMeasurementDerivedCache
 (
   derivedCacheID serial NOT NULL,
-  VMeasurementID integer NOT NULL,
+  VMeasurementID uuid NOT NULL,
   MeasurementID integer NOT NULL,
   CONSTRAINT tblvMeasurementderivedcache_pkey PRIMARY KEY (derivedcacheid),
   CONSTRAINT tblvMeasurementderivedcache_Measurementid_fkey FOREIGN KEY (Measurementid)
@@ -59,7 +59,7 @@ CREATE TYPE typPermissionSet AS (
 
 DROP TYPE typVMeasurementSummaryInfo CASCADE;
 CREATE TYPE typVMeasurementSummaryInfo AS (
-   VMeasurementID integer,
+   VMeasurementID uuid,
    objectCode text,
    objectCount integer,   
    commonTaxonName text,

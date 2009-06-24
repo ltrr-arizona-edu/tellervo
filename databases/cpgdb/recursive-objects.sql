@@ -1,7 +1,6 @@
-CREATE OR REPLACE FUNCTION cpgdb.FindObjectTopLevelAncestor(objid integer)
+CREATE OR REPLACE FUNCTION cpgdb.FindObjectTopLevelAncestor(objid tblobject.objectid%TYPE)
 RETURNS tblObject AS $$
 DECLARE
-   parentid integer;
    lastRow tblObject;
 BEGIN
    SELECT * INTO lastRow FROM tblObject WHERE objectId = objid;
@@ -19,12 +18,11 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql' STABLE;
 	
-CREATE OR REPLACE FUNCTION cpgdb.recurseFindObjectAncestors(objid integer, _recursionlevel integer)
+CREATE OR REPLACE FUNCTION cpgdb.recurseFindObjectAncestors(objid tblobject.objectid%TYPE, _recursionlevel integer)
 RETURNS SETOF tblObject AS $$
 DECLARE
-   parentid integer;
+   parentid tblobject.objectid%TYPE;
    lastRow tblObject;
-   lastParent tblObject.parentObjectId%TYPE;
    ref refcursor;
    recursionlevel integer := _recursionlevel;
 BEGIN
@@ -57,10 +55,9 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql' STABLE;
 
-CREATE OR REPLACE FUNCTION cpgdb.recurseFindObjectDescendants(objid integer, _recursionlevel integer)
+CREATE OR REPLACE FUNCTION cpgdb.recurseFindObjectDescendants(objid tblobject.objectid%TYPE, _recursionlevel integer)
 RETURNS SETOF tblObject AS $$
 DECLARE
-   parentid integer;
    lastRow tblObject;
    lastParent tblObject.parentObjectId%TYPE;
    ref refcursor;
