@@ -2,19 +2,19 @@ package edu.cornell.dendro.cpgdb;
 
 import java.sql.*;
 
+import javax.sql.rowset.CachedRowSet;
+
+import com.sun.rowset.CachedRowSetImpl;
+
 public class DBQuery {
 	// our connection via jdbc to the server
 	private Connection sqlConnection;
-
-	// We use the querywrapper to get prepared statements.
-	private QueryWrapper queries;
 	
 	// in debug mode, we print out a bunch of stuff to stdout.
 	private boolean debug = true;
 	
 	public DBQuery(Connection sqlConnection) throws SQLException {
 		this.sqlConnection = sqlConnection;
-		this.queries = new QueryWrapper(sqlConnection);		
 	}
 	
 	// keep around a jdbc connection
@@ -52,22 +52,60 @@ public class DBQuery {
 		if(debug)
 			beVerbose(queryName, args);
 		
-		PreparedStatement q = queries.getQuery(queryName, args);
-		if(q != null)
+		CallableStatement q = prepareStatement(queryName, args);
+
+		try {
 			return q.execute();
-		
-		throw new SQLException("Invalid Query");
+		} finally {
+			q.close();
+		}
 	}
-	
+		
 	public ResultSet query(String queryName, Object ... args) throws SQLException {
 		if(debug)
 			beVerbose(queryName, args);
 		
-		PreparedStatement q = queries.getQuery(queryName, args);
-		if(q != null)
-			return q.executeQuery();
+		CallableStatement q = prepareStatement(queryName, args);
+
+		ResultSet rs = q.executeQuery();
+		CachedRowSet crs = new CachedRowSetImpl();
 		
-		throw new SQLException("Invalid Query");
+		crs.populate(rs);
+		
+		rs.close();
+		q.close();
+		
+		return crs;
+	}
+	
+	public CallableStatement prepareStatement(String queryName, Object[] args) throws SQLException {
+		CallableStatement stmt = sqlConnection.prepareCall(prepareQueryString(queryName, args.length));
+
+		for(int i = 0; i < args.length; i++) {
+			if(args[i] == null)
+				stmt.setString(i+1, null);
+			else
+				stmt.setObject(i+1, args[i]);
+		}
+		
+		return stmt;
+	}
+	
+	public String prepareQueryString(String queryName, int nargs) {
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("SELECT * FROM cpgdbj.");
+		sb.append(queryName);
+		sb.append('(');
+		
+		for(int i = 0; i < nargs; i++) {
+			if(i > 0)
+				sb.append(',');
+			sb.append('?');
+		}
+		sb.append(')');
+		
+		return sb.toString();
 	}
 	
 	public Connection getConnection() {
@@ -77,7 +115,6 @@ public class DBQuery {
 	/** close our connection and clean up our stored queries */
 	public void cleanup() throws SQLException {
 		try {
-			queries.cleanup();
 			sqlConnection.close();
 		} catch (SQLException sqle) {
 			// cleanup failed? oh well.
