@@ -1,5 +1,6 @@
 package edu.cornell.dendro.cpgdb;
 
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.sql.Connection;
@@ -25,8 +26,6 @@ public class QueryWrapper {
 		this.sql = sqlConnection;
 		
 		queries = new HashMap<String, StatementQueryHolder>();
-		
-		addQuery("getuuid", "select uuid()");
 		
 		// Param order:
 		// 1 = VMeasurementID
@@ -281,6 +280,16 @@ public class QueryWrapper {
 		}		
 	}
 		
-	private HashMap<String, StatementQueryHolder> queries;
+	protected Map<String, StatementQueryHolder> queries;
 	private Connection sql;
+
+	public static void main(String args[]) throws SQLException {
+		QueryWrapper q = new QueryWrapper(null);
+
+                for(Map.Entry<String, StatementQueryHolder> e : q.queries.entrySet()) {
+                    String query = e.getValue();
+
+                    
+                }
+	}
 }
