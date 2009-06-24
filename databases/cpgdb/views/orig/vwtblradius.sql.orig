@@ -1,0 +1,9 @@
+ SELECT tblradius.radiusid, tblradius.sampleid, tblradius.code AS radiuscode, tblradius.azimuth, tblradius.createdtimestamp AS radiuscreated, tblradius.lastmodifiedtimestamp AS radiuslastmodified, 
+tblradius.numberofsapwoodrings, tblradius.pithpresent, tblradius.barkpresent, tblradius.lastringunderbark, tblradius.missingheartwoodringstopith, tblradius.missingheartwoodringstopithfoundation, 
+tblradius.missingsapwoodringstobark, tblradius.missingsapwoodringstobarkfoundation, spw.sapwoodid, spw.sapwood, hwd.heartwoodid, hwd.heartwood
+   FROM tblradius
+   LEFT JOIN ( SELECT tlkpsapwood.sapwoodid, tlkpsapwood.sapwood
+           FROM tlkpsapwood) spw ON tblradius.sapwoodid = spw.sapwoodid
+   LEFT JOIN ( SELECT tlkpheartwood.heartwoodid, tlkpheartwood.heartwood
+      FROM tlkpheartwood) hwd ON tblradius.heartwoodid = hwd.heartwoodid;
+
