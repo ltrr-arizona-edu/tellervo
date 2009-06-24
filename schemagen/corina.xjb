@@ -3,7 +3,9 @@
 
 	<!-- Make underscores significant; this fixes *most* of the ObjectFactory name collision errors -->
 	<jaxb:bindings>
-		<jaxb:globalBindings underscoreBinding="asCharInWord" generateIsSetMethod="true" typesafeEnumMemberName="generateName" />
+		<jaxb:globalBindings underscoreBinding="asCharInWord" generateIsSetMethod="true" typesafeEnumMemberName="generateName">
+			<jaxb:serializable />
+		</jaxb:globalBindings>
 	</jaxb:bindings> 
 
 	<!-- Tridas schema. Prefix with 'Tridas'! -->
