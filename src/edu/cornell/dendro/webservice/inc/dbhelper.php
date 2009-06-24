@@ -315,6 +315,10 @@ class dbHelper
 		return date('c', strtotime($datetime));
 	}
 	
+}
+
+class uuid
+{
 	public static function isUUID($uuid)
 	{
 		$pattern = "/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/";
@@ -329,6 +333,20 @@ class dbHelper
 		
 	}
 	
+	public static function getUUID() 
+	{
+		global $dbconn;
+		$sql = "SELECT uuid_generate_v1mc() as uuid";
+        $result = pg_query($dbconn, $sql);
+        while ($row = pg_fetch_array($result))
+        {
+			return $row['uuid'];  
+        }
+        
+        return false;
+		
+		
+	}
 }
 
 ?>

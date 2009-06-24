@@ -416,9 +416,9 @@ class dbEntity
      	// Include permissions details if requested
         if($this->getIncludePermissions()===TRUE) 
         {
-            $xml.= "<tridas:genericField name=\"canCreate\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Create"))."</tridas:genericField ";
-            $xml.= "<tridas:genericField name=\"canUpdate\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Update"))."</tridas:genericField ";
-            $xml.= "<tridas:genericField name=\"canDelete\" type=\"boolean\">".fromPHPtoStringBool($this->getPermission("Delete"))."</tridas:genericField ";
+            $xml.= "<tridas:genericField name=\"canCreate\" type=\"xs:boolean\">".fromPHPtoStringBool($this->getPermission("Create"))."</tridas:genericField ";
+            $xml.= "<tridas:genericField name=\"canUpdate\" type=\"xs:boolean\">".fromPHPtoStringBool($this->getPermission("Update"))."</tridas:genericField ";
+            $xml.= "<tridas:genericField name=\"canDelete\" type=\"xs:boolean\">".fromPHPtoStringBool($this->getPermission("Delete"))."</tridas:genericField ";
         } 
 
         return $xml;
@@ -2429,18 +2429,7 @@ class measurementEntity extends dbEntity
 	 * @var String
 	 */
 	protected $comments = NULL;
-	/**
-	 * How the measurement is used e.g. in which calendar
-	 *
-	 * @var String
-	 */
-	protected $usage = NULL;
-	/**
-	 * Comments by later users on the quality of the series
-	 *
-	 * @var unknown_type
-	 */
-	protected $usageComments = NULL;
+
 	/**
 	 * 	Year of the first measured ring
 	 *
@@ -2604,8 +2593,16 @@ class measurementEntity extends dbEntity
      * @var extent
      */
     protected $extent = NULL;
-      
+
+    /**
+     * Date the measurementSeries was measured or the derivedSeries was created
+     * maps to measurementSeries.measuringDate or derivedSeries.derivationDate
+     *
+     * @var Date
+     */
+    protected $birthDate = NULL;
     
+
     
     function __construct()
     {  
@@ -2674,7 +2671,7 @@ class measurementEntity extends dbEntity
 
 		global $dbconn;
 		
-		$sql = "select vwq.* from cpgdb.findObjectAncestors($juniorObjectID, true) oa JOIN vwTblObject vwq ON oa.objectid=vwq.objectid";
+		$sql = "select vwq.* from cpgdb.findObjectAncestors('$juniorObjectID', true) oa JOIN vwTblObject vwq ON oa.objectid=vwq.objectid";
 		    
 		$dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -2792,14 +2789,24 @@ class measurementEntity extends dbEntity
 		$this->comments = $comments;
 	}
 	
+	/**
+	 * @deprecated 
+	 *
+	 * @param unknown_type $usage
+	 */
 	function setUsage($usage)
 	{
-		$this->usage = $usage;
+	
 	}
 	
+	/**
+	 * @deprecated 
+	 *
+	 * @param unknown_type $comments
+	 */
 	function setUsageComments($comments)
 	{
-		$this->usageComments = $comments;
+		
 	}
 	
 	function setFirstYear($year)
@@ -2915,7 +2922,7 @@ class measurementEntity extends dbEntity
             //Only run if valid parameter has been provided
             global $dbconn;
             
-            $sql  = "select measurementid from tblvmeasurement where vmeasurementid=".$this->getID();
+            $sql  = "select measurementid from tblvmeasurement where vmeasurementid='".$this->getID()."'";
           
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -3018,7 +3025,20 @@ class measurementEntity extends dbEntity
         $this->isPublished = dbHelper::formatBool($isPublished);
     }
 	
-	
+	function setBirthDate($date)
+	{
+		$this->birthDate = $date;
+	}
+    
+   	function setMeasuringDate($date)
+   	{
+   		$this->setBirthDate($date);
+   	}
+   	
+   	function setDerivationDate($date)
+   	{
+   		$this->setBirthDate($date);
+   	}
 	
 	/***********
     /* GETTERS */
@@ -3218,7 +3238,8 @@ class measurementEntity extends dbEntity
     
 	function getMeasuringMethod()
 	{
-		return $this->measuringMethod;
+		
+		return $this->measuringMethod->getValue();
 	}
 	
 	/**
@@ -3243,14 +3264,22 @@ class measurementEntity extends dbEntity
 		return $this->comments;
 	}
 	
+	/**
+	 * @deprecated 
+	 * @return unknown
+	 */
 	function getUsage()
 	{
-		return $this->usage;
+		return null;
 	}
 	
+	/**
+	 * @deprecated 
+	 * @return unknown
+	 */	
 	function getUsageComments()
 	{
-		return $this->usageComments;
+		return $null;
 	}
 	
 	function getFirstYear()
@@ -3303,6 +3332,21 @@ class measurementEntity extends dbEntity
         $length = count($this->readingsArray);
         return $this->startYear + $length;
     }	
+    
+    function getBirthDate()
+    {
+    	return $this->birthDate;
+    }
+    
+    function getMeasuringDate()
+    {
+    	return $this->getBirthDate();
+    }
+    
+    function getDerivationDate()
+    {
+    	return $this->getBirthDate();
+    }
 	
 	
 	/*************/

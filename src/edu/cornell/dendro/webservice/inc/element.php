@@ -191,7 +191,7 @@ class element extends elementEntity implements IDBAccessor
     {
         global $dbconn;
 
-        $sql2 = "select sampleid from tblsample where elementid=".pg_escape_string($this->getID());
+        $sql2 = "select sampleid from tblsample where elementid='".pg_escape_string($this->getID())."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -480,7 +480,7 @@ class element extends elementEntity implements IDBAccessor
 	                $xml .= $this->getPermissionsXML();                      
                     $xml.= $this->taxon->getHigherTaxonomyXML();
         
-                    if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
+                    if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
 
 
                     if($format!="summary")
@@ -577,7 +577,12 @@ class element extends elementEntity implements IDBAccessor
                 if($this->getID() == NULL)
                 {
                     // New Record
+                    
+                	// Generate a new UUID pkey
+                	$this->setID(uuid::getUUID(), $domain);                    
+                	
                     $sql = "insert into tblelement ( ";
+                    															$sql.= "elementid, ";
                     	if (isset($this->parentEntityArray[0]))					$sql.= "objectid, ";
                     	if ($this->getCode()!=NULL)								$sql.= "code, ";
                         if ($this->taxon->getID()!=NULL)                        $sql.= "taxonid, ";
@@ -603,6 +608,7 @@ class element extends elementEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
+                    	if ($this->getID()!=NULL)								$sql.= "'".pg_escape_string($this->getID()). "', ";										
                     	if (isset($this->parentEntityArray[0]))					$sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                    
                     	if ($this->getCode()!=NULL)								$sql.= "'".pg_escape_string($this->getCode()).  "', ";                    
                         if ($this->taxon->getID()!=NULL)                        $sql.= "'".pg_escape_string($this->taxon->getID()).   "', ";
@@ -628,7 +634,7 @@ class element extends elementEntity implements IDBAccessor
                      // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
-                    $sql2 = "select * from tblelement where elementid=currval('tblelement_elementid_seq')";
+                    $sql2 = "select * from tblelement where elementid='".$this->getID()."'";
                 }
                 else
                 {
@@ -691,7 +697,6 @@ class element extends elementEntity implements IDBAccessor
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->setID($row['elementid']);   
                         $this->setCreatedTimestamp($row['createdtimestamp']);   
                         $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);   
                     }

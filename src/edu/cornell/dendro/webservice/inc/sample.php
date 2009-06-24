@@ -249,9 +249,9 @@ class sample extends sampleEntity implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a sample.");
                     return false;
                 }
-                if(!($paramsObj->getID()>0) && !($paramsObj->getID()==NULL))
+                if(!(uuid::isUUID($paramsObj->getID())) && !($paramsObj->getID()==NULL))
                 {
-                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer.");
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a UUID.");
                     return false;
                 }
                 return true;
@@ -467,7 +467,12 @@ class sample extends sampleEntity implements IDBAccessor
                 if($this->getID() == NULL)
                 {
                     // New record
+                    
+                    // Generate a new UUID pkey
+                	$this->setID(uuid::getUUID(), $domain);       
+                	
                     $sql = "INSERT INTO tblsample ( ";
+                    													$sql.="sampleid, ";
                         if($this->getCode()!=NULL)                   	$sql.="code, ";
                         if(isset($this->parentEntityArray[0]))		 	$sql.="elementid, ";
                         if($this->getSamplingDate()!=NULL)           	$sql.="samplingdate, ";
@@ -480,6 +485,7 @@ class sample extends sampleEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") VALUES (";
+                        if($this->getID()!=NULL)                   		$sql.="'".pg_escape_string($this->getID())."', "; 
                         if($this->getCode()!=NULL)                   	$sql.="'".pg_escape_string($this->getCode())."', ";
                         if(isset($this->parentEntityArray[0]))      	$sql.="'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
                         if($this->getSamplingDate()!=NULL)           	$sql.="'".pg_escape_string($this->getSamplingDate())."', ";
@@ -492,7 +498,7 @@ class sample extends sampleEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
-                    $sql2 = "SELECT * FROM tblsample WHERE sampleid=currval('tblsample_sampleid_seq')";
+                    $sql2 = "SELECT * FROM tblsample WHERE sampleid='".$this->getID()."'";
                 }
                 else
                 {
@@ -540,7 +546,6 @@ class sample extends sampleEntity implements IDBAccessor
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->setID($row['sampleid']);   
                         $this->setCreatedTimestamp($row['createdtimestamp']);   
                         $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);   
                     }

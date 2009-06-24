@@ -140,7 +140,7 @@ class radius extends radiusEntity implements IDBAccessor
 
         global $dbconn;
 
-        $sql  = "select measurementid from tblmeasurement where radiusid=".pg_escape_string($this->getID());
+        $sql  = "select measurementid from tblmeasurement where radiusid='".pg_escape_string($this->getID())."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -353,7 +353,7 @@ class radius extends radiusEntity implements IDBAccessor
             
                 if($format!="minimal")
                 {
-                    $xml.= "<tridas:pithAndSapwoodInfo>\n";
+                    $xml.= "<tridas:woodCompleteness>\n";
                     $xml.= "<tridas:pith presence=\"".dbHelper::formatBool($this->getPithPresent(), "presentabsent")."\"></tridas:pith>\n";
                     if( ($this->getHeartwood()!=NULL)  )    
                     {
@@ -369,7 +369,7 @@ class radius extends radiusEntity implements IDBAccessor
                     if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)		$xml.= "<tridas:missingSapwoodRingsToBarkFoundation>".$this->getMissingSapwoodRingsToBarkFoundation()."</tridas:missingSapwoodRingsToBarkFoundation>\n";	
                     																$xml.= "</tridas:sapwood>\n";
             																		$xml.= "<tridas:bark presence=\"".dbHelper::formatBool($this->getBarkPresent(), "presentabsent")."\"/>";
-                    $xml.= "</tridas:pithAndSapwoodInfo>\n";
+                    $xml.= "</tridas:woodCompleteness>\n";
 					if($this->getAzimuth()!=NULL)									$xml.= "<tridas:azimuth>".$this->getAzimuth()."</tridas:azimuth>\n";
                 }
             }
@@ -412,7 +412,12 @@ class radius extends radiusEntity implements IDBAccessor
                 if($this->getID() == NULL)
                 {
                     // New record
+                    
+                    // Generate a new UUID pkey
+                	$this->setID(uuid::getUUID(), $domain);                 	
+                	
                     $sql = "insert into tblradius ( ";
+                    																$sql.="radiusid, ";
                         if($this->getTitle()!=NULL)                   				$sql.="code, ";
                         if(isset($this->parentEntityArray[0]))		 				$sql.="sampleid, ";
                         if($this->getBarkPresent()!=NULL)							$sql.="barkpresent, ";
@@ -428,6 +433,7 @@ class radius extends radiusEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
+                        if($this->getID()!=NULL)                   					$sql.="'".pg_escape_string($this->getID())."', ";
                         if($this->getTitle()!=NULL)                   				$sql.="'".pg_escape_string($this->getTitle())."', ";
                         if(isset($this->parentEntityArray[0]))      				$sql.="'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
                         if($this->getBarkPresent()!=NULL)							$sql.="'".formatBool($this->getBarkPresent(),"pg"). "', ";
@@ -443,7 +449,7 @@ class radius extends radiusEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
-                    $sql2 = "select * from tblradius where radiusid=currval('tblradius_radiusid_seq')";
+                    $sql2 = "select * from tblradius where radiusid='".$this->getID()."'";
                 }
                 else
                 {
@@ -483,8 +489,7 @@ class radius extends radiusEntity implements IDBAccessor
                     // Run SQL
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
-                    {
-                        $this->setID($row['radiusid']);   
+                    {  
                         $this->setCreatedTimestamp($row['createdtimestamp']);   
                         $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);   
                     }

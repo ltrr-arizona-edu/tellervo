@@ -71,8 +71,6 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
 		$this->setExtent($row['extentgeometry']);
 		//$this->setExtentComment($row['extentcomment']);
-		$this->setUsage($row['usage']);
-		$this->setUsageComments($row['usagecomments']);
 		$this->setUnits($row['unitid'], NULL);
 		//$this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
 		if($this->vmeasurementOp=='Index') $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
@@ -82,8 +80,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->setSummaryRadiusTitle($row['radiuscode']);
 		$this->setSummaryTaxonName($row['commontaxonname']);
 		$this->setSummaryTaxonCount($row['taxoncount']);
-			
 		$this->setMeasurementCount($row['measurementcount']);
+		$this->setBirthDate($row['birthdate']);
 
 		// Only load summary fields if this is a summary...
 		if($format=='summary') $this->setSummaryObjectArray($row['objectid']);
@@ -901,28 +899,29 @@ class measurement extends measurementEntity implements IDBAccessor
 		$i = 1;
 		foreach($this->summaryObjectArray as $object)
 		{
-			$tags .= "<tridas:genericField name=\"corina.objectTitle.$i\" type=\"string\">".dbHelper::escapeXMLChars($object->getTitle())."</tridas:genericField>\n";
-			$tags .= "<tridas:genericField name=\"corina.objectCode.$i\" type=\"string\">".dbHelper::escapeXMLChars($object->getCode())."</tridas:genericField>\n";
+			$tags .= "<tridas:genericField name=\"corina.objectTitle.$i\" type=\"xs:string\">".dbHelper::escapeXMLChars($object->getTitle())."</tridas:genericField>\n";
+			$tags .= "<tridas:genericField name=\"corina.objectCode.$i\" type=\"xs:string\">".dbHelper::escapeXMLChars($object->getCode())."</tridas:genericField>\n";
 			$i++;
 		}
-		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummaryElementTitle())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummarySampleTitle())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummaryRadiusTitle())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.seriesCount\" type=\"integer\">".dbHelper::escapeXMLChars($this->getMeasurementCount())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.summaryTaxonName\" type=\"string\">".dbHelper::escapeXMLChars($this->getSummaryTaxonName())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.summaryTaxonCount\" type=\"integer\">".dbHelper::escapeXMLChars($this->getSummaryTaxonCount())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryElementTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummarySampleTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryRadiusTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.seriesCount\" type=\"xs:integer\">".dbHelper::escapeXMLChars($this->getMeasurementCount())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.summaryTaxonName\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryTaxonName())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.summaryTaxonCount\" type=\"xs:integer\">".dbHelper::escapeXMLChars($this->getSummaryTaxonCount())."</tridas:genericField>\n";
 		return $tags;
 	}
 
 	private function getDerivedSeriesXML($format, $parts, $recurseLevel=2)
 	{
-
 		global $domain;
-		$xml = null;
+		$xml = "";
+
 		$xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
 		$xml.= $this->getIdentifierXML();
-
-
+		
+		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".dbHelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
+		if($this->getBirthDate()!=NULL)	$xml.= "<tridas:derivationDate>".dbHelper::escapeXMLChars($this->getBirthDate())."</tridas:derivationDate>\n";	
 
 		if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".$this->vmeasurementOp->getValue()."</tridas:type>\n";
 		if($this->getObjective()!=NULL)				$xml.= "<tridas:objective>".addslashes($this->getObjective())."</tridas:objective>\n";
@@ -941,8 +940,6 @@ class measurement extends measurementEntity implements IDBAccessor
 
 
 		if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".addslashes($this->getComments())."</tridas:comments>\n";
-		if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".addslashes($this->getUsage())."</tridas:usage>\n";
-		if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".addslashes($this->getUsageComments())."</tridas:usageComments>\n";
 		$xml.= "<tridas:interpretation>\n";
 		if($this->getMasterVMeasurementID()!=NULL)	$xml.= "<tridas:datingReference>\n<tridas:linkSeries>\n<tridas:identifier domain=\"$domain\">".$this->getMasterVMeasurementID()."</tridas:identifier>\n</tridas:linkSeries>\n</tridas:datingReference>\n";
 
@@ -954,14 +951,14 @@ class measurement extends measurementEntity implements IDBAccessor
 
 
 		if($this->hasExtent()!=NULL)				$xml.= $this->getExtentAsXML();
-		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"crossdateJustification\" type=\"string\">".$this->getJustification()."</tridas:genericField>\n";
-		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\" type=\"string\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
-		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\" type=\"string\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
-		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"authorID\" type=\"integer\">".$this->author->getID()."</tridas:genericField>\n";
-	    											$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
+		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"crossdateJustification\" type=\"xs:string\">".$this->getJustification()."</tridas:genericField>\n";
+		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\" type=\"xs:string\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
+		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\" type=\"xs:string\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
+		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"authorID\" type=\"xs:integer\">".$this->author->getID()."</tridas:genericField>\n";
+	    											$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
 		
 		$xml .= $this->getPermissionsXML();
-		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"integer\">".$this->getReadingCount()."</tridas:genericField>\n";
+		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:integer\">".$this->getReadingCount()."</tridas:genericField>\n";
 
 
 
@@ -995,12 +992,11 @@ class measurement extends measurementEntity implements IDBAccessor
 		// Only output the remainder of the data if we're not using the 'minimal' format
 		if ($format!="minimal")
 		{
+			if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
+			if($this->getBirthDate()!=NULL)				$xml.= "<tridas:measuringDate>".$this->getMeasuringDate()."</tridas:measuringDate>\n";
 			if($this->analyst->getFormattedName()!=NULL) $xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
 			if($this->dendrochronologist->getFormattedName()!=NULL) $xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
-			if(isset($this->measuringMethod))			$xml.= "<tridas:measuringMethod normalTridas=\"".$this->measuringMethod->getValue()."\"/>\n";
-			if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
-			if($this->getUsage()!=NULL)					$xml.= "<tridas:usage>".$this->getUsage()."</tridas:usage>\n";
-			if($this->getUsageComments()!=NULL)			$xml.= "<tridas:usageComments>".$this->getUsageComments()."</tridas:usageComments>\n";
+			if($this->getMeasuringMethod()!=NULL)		$xml.= "<tridas:measuringMethod normalTridas=\"".$this->measuringMethod->getValue()."\"/>\n";
 
 			$xml.="<tridas:interpretation>\n";
 			if($this->getFirstYear()!=NULL)				$xml.="<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getFirstYear())."\">".$this->getFirstYear()."</tridas:firstYear>\n";
@@ -1011,12 +1007,12 @@ class measurement extends measurementEntity implements IDBAccessor
 
 			// Include permissions details if requested
 			$xml .= $this->getPermissionsXML();
-			if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"corina.isReconciled\" type=\"boolean\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
-			if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\" type=\"boolean\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
-			if(isset($this->analyst))					$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"integer\">".$this->analyst->getID()."</tridas:genericField>\n";
-			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"integer\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
-			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"integer\">".$this->getReadingCount()."</tridas:genericField>\n";
-														$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
+			if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
+			if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\" type=\"xs:boolean\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
+			if(isset($this->analyst))					$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"xs:integer\">".$this->analyst->getID()."</tridas:genericField>\n";
+			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"xs:integer\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
+			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:integer\">".$this->getReadingCount()."</tridas:genericField>\n";
+														$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
 			
 			// show summary information in standard and summary modes
 			/*if($format=="summary" || $format=="standard") {
@@ -1177,7 +1173,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	/**
 	 * Creates the sql for doing a cpgdb.createnewvmeasurement()
 	 *
-	 * @return unknown
+	 * @return UUID
 	 */
 	private function getCreateNewVMeasurementSQL()
 	{
@@ -1189,10 +1185,9 @@ class measurement extends measurementEntity implements IDBAccessor
 		 -- MeasurementID           - Integer - For direct only; the measurement derived from.
 		 -- Constituents            - Array   - Array of VMeasurementID - Must be NULL for DIRECT type, an array of one value for any type
 		 --                                     other than SUM and DIRECT, and an array of one or more values for SUM
-		 -- Usage                   - Varchar -
-		 -- UsageComments           - Varchar -
 		 -- Objective               - Varchar -
 		 -- Version                 - Varchar -
+		 -- Birthdate				- Date    - maps to measuringDate and derivationDate
 		 -- RETURNS: A new VMeasurementID
 		 */
 
@@ -1259,26 +1254,6 @@ class measurement extends measurementEntity implements IDBAccessor
 			$sql.= "NULL, ";
 		}
 
-		// Usage
-		if($this->getUsage()!=NULL)
-		{
-			$sql.= pg_escape_string($this->getUsage()).", ";
-		}
-		else
-		{
-			$sql.="NULL, ";
-		}
-
-		// Usage comments
-		if($this->getUsageComments()!=NULL)
-		{
-			$sql.= pg_escape_string($this->getUsageComments()).", ";
-		}
-		else
-		{
-			$sql.="NULL, ";
-		}
-
 		// Objective
 		if($this->getObjective()!=NULL)
 		{
@@ -1292,13 +1267,24 @@ class measurement extends measurementEntity implements IDBAccessor
 		// Version
 		if($this->getVersion()!=NULL)
 		{
-			$sql.= "'".pg_escape_string($this->getVersion())."')";
+			$sql.= "'".pg_escape_string($this->getVersion())."', ";
+		}
+		else
+		{
+			$sql.= "NULL, ";
+		}
+
+		// Birth (measuring/derivation) Date
+		if($this->getMeasuringDate()!=NULL)
+		{
+			$sql.= "'".pg_escape_string($this->getBirthDate())."')";
 		}
 		else
 		{
 			$sql.= "NULL)";
 		}
-
+		
+		
 		return $sql;
 		 
 	}
@@ -1576,8 +1562,6 @@ class measurement extends measurementEntity implements IDBAccessor
 					if($this->getCode()!=NULL)               	$updateSQL.= "code = '".pg_escape_string($this->getCode())."', ";
 					if($this->getComments()!=NULL)        		$updateSQL.= "comments = '".pg_escape_string($this->getComments())."', ";
 					if($this->author->getID()!=NULL)			$updateSQL.= "owneruserid = '".pg_escape_string($this->author->getID())."', ";
-					if($this->usage!=NULL)						$updateSQL.= "usage = '".pg_escape_string($this->usage)."', ";
-					if($this->usageComments!=NULL)				$updateSQL.= "usagecomments= '".pg_escape_string($this->usageComments)."', ";
 					if($this->objective!=NULL)					$updateSQL.= "objective= '".pg_escape_string($this->objective)."', ";
 					if($this->version!=NULL)					$updateSQL.= "version= '".pg_escape_string($this->version)."', ";
 					$updateSQL = substr($updateSQL, 0 , -2);

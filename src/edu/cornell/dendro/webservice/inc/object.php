@@ -312,9 +312,9 @@ class object extends objectEntity implements IDBAccessor
             		$xml .="</tridas:coverage>";
             	}
             	if($this->hasGeometry()) 			$xml.= $this->location->asXML();
-            	if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
-            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"corina.objectLabCode\">".$this->getCode()."</tridas:genericField>\n";
-            	if($this->getCountOfChildVMeasurements()!=NULL) $xml.="<tridas:genericField name=\"corina.countOfChildSeries\">".$this->getCountOfChildVMeasurements()."</tridas:genericField>\n";
+            	if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
+            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"corina.objectLabCode\" type=\"xs:string\">".$this->getCode()."</tridas:genericField>\n";
+            	if($this->getCountOfChildVMeasurements()!=NULL) $xml.="<tridas:genericField name=\"corina.countOfChildSeries\" type=\"xs:integer\">".$this->getCountOfChildVMeasurements()."</tridas:genericField>\n";
             	
             
             }  
@@ -360,6 +360,7 @@ class object extends objectEntity implements IDBAccessor
         // Write the current object to the database
 
         global $dbconn;
+        global $domain;
         $sql = "";
         $sql2 = "";
 
@@ -386,7 +387,12 @@ class object extends objectEntity implements IDBAccessor
                 if($this->getID() == NULL)
                 {
                     // New Record
+                    
+                	// Generate a new UUID pkey
+                	$this->setID(uuid::getUUID(), $domain);
+                	
                     $sql = "insert into tblobject ( ";
+                    																	$sql.= "objectid, ";
                         if ($this->getTitle()!=NULL)                                    $sql.= "title, ";
                         if ($this->getCode()!=NULL)										$sql.= "code, ";
                         if ($this->getCreator()!=NULL)									$sql.= "creator, ";
@@ -404,6 +410,7 @@ class object extends objectEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
+                        if ($this->getID()!=NULL)                                       $sql.= "'".pg_escape_string($this->getID())."', ";
                         if ($this->getTitle()!=NULL)                                    $sql.= "'".pg_escape_string($this->getTitle())."', ";
                         if ($this->getCode()!=NULL)										$sql.= "'".pg_escape_string($this->getCode())."', ";
                         if ($this->getCreator()!=NULL)									$sql.= "'".pg_escape_string($this->getCreatedTimestamp())."', ";
@@ -421,7 +428,7 @@ class object extends objectEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
-                    $sql2 = "select * from tblobject where objectid=currval('tblobject_objectid_seq')";
+                    $sql2 = "select * from tblobject where objectid='".$this->getID()."'";
                 }
                 else
                 {
@@ -472,7 +479,6 @@ class object extends objectEntity implements IDBAccessor
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->setID($row['objectid']);   
                         $this->setCreatedTimestamp($row['createdtimestamp']);   
                         $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);   
                     }

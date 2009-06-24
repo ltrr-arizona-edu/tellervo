@@ -778,7 +778,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   	case "analyst":				break;
 		   	case "dendrochronologist":	break;
 		   	case "author":				break;
-		   	case "measuringMethod":		$this->setMeasurementMethod(NULL, $child->nodeValue); break;
+		   	case "measuringMethod":		$this->setMeasurementMethod(NULL, $child->getAttribute("normalTridas")); break;
 		   	case "comments":			$this->setComments($child->nodeValue); break;
 		   	case "usage":				$this->setUsage($child->nodeValue); break;
 		   	case "usageComments":		$this->setUsageComments($child->nodeValue); break;
