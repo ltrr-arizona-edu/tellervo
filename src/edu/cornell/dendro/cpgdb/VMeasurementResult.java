@@ -8,7 +8,7 @@ public class VMeasurementResult {
 	private enum VMeasurementOperation { DIRECT, INDEX, CLEAN, REDATE, SUM, CROSSDATE }
 		
 	// This string holds our result, which is a UUID returned by the DB
-	private PgDB_UUID result;
+	private UUID result;
 	
 	// we keep this instantiated for easy access to the db
 	protected DBQuery dbq;
@@ -36,7 +36,7 @@ public class VMeasurementResult {
 	public VMeasurementResult(UUID VMeasurementID, boolean safe, boolean cleanup) throws SQLException {
 		this.dbq = new DBQuery();
 		try {
-			acquireVMeasurementResult(PgDB_UUID.fromUUID(VMeasurementID), safe);
+			acquireVMeasurementResult(VMeasurementID, safe);
 		} finally {
 			if(cleanup)
 				// we created this dbquery object, it's our responsibility to clean it up.
@@ -53,7 +53,7 @@ public class VMeasurementResult {
 	 */
 	public VMeasurementResult(UUID VMeasurementID, boolean safe, DBQuery dbQuery) throws SQLException {
 		this.dbq = dbQuery;		
-		acquireVMeasurementResult(PgDB_UUID.fromUUID(VMeasurementID), safe);
+		acquireVMeasurementResult(VMeasurementID, safe);
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class VMeasurementResult {
 	 * @param safe true if we should attempt to rollback on failure
 	 * @throws SQLException
 	 */
-	private void acquireVMeasurementResult(PgDB_UUID VMeasurementID, boolean safe) throws SQLException {
+	private void acquireVMeasurementResult(UUID VMeasurementID, boolean safe) throws SQLException {
 		if(safe) {
 			// If we have an error, clean up any mess we made, but pass along the exception.
 			Savepoint beforeCreation = dbq.getConnection().setSavepoint();
@@ -92,8 +92,8 @@ public class VMeasurementResult {
 	 * @return A string indicating the UUID of the VMeasurementResult associated with the provided VMeasurementID
 	 * @throws SQLException
 	 */
-	private PgDB_UUID recursiveGetVMeasurementResult(PgDB_UUID VMeasurementID, PgDB_UUID VMeasurementResultGroupID,	
-			PgDB_UUID VMeasurementResultMasterID, int recursionDepth) throws SQLException {
+	private UUID recursiveGetVMeasurementResult(UUID VMeasurementID, UUID VMeasurementResultGroupID,	
+			UUID VMeasurementResultMasterID, int recursionDepth) throws SQLException {
 		
 		ResultSet res;
 		VMeasurementOperation op;
@@ -104,7 +104,7 @@ public class VMeasurementResult {
 			throw new SQLException("VMeasurementResult: Infinite recursion detected!");
 		
 		if(VMeasurementResultMasterID == null)
-			VMeasurementResultMasterID = PgDB_UUID.randomInstance();
+			VMeasurementResultMasterID = UUID.randomUUID();
 		
 		// Figure out what kind of VMeasurement we have to deal with
 		res = dbq.query("qryVMeasurementType", VMeasurementID);
@@ -143,9 +143,9 @@ public class VMeasurementResult {
 		 * The recursive case.
 		 */
 
-		PgDB_UUID newVMeasurementResultID = null;
-		PgDB_UUID newVMeasurementResultGroupID = null;
-		PgDB_UUID lastWorkingVMeasurementResultID = null;
+		UUID newVMeasurementResultID = null;
+		UUID newVMeasurementResultGroupID = null;
+		UUID lastWorkingVMeasurementResultID = null;
 		/*
 		 * The lastWorkingVMeasurementResultID (CurrentVMeasurementResultID in
 		 * Kit's code) is the last VMeasurementResult returned by our recursive
@@ -163,7 +163,7 @@ public class VMeasurementResult {
 			 * group ID.
 			 */
 			if (VMeasurementResultGroupID == null)
-				newVMeasurementResultGroupID = PgDB_UUID.randomInstance();
+				newVMeasurementResultGroupID = UUID.randomUUID();
 			else
 				newVMeasurementResultGroupID = VMeasurementResultGroupID;
 
@@ -178,7 +178,7 @@ public class VMeasurementResult {
 			 * sample underneath a sum, this is so we don't include the original
 			 * sample in the sum as well.
 			 */
-			newVMeasurementResultGroupID = PgDB_UUID.randomInstance();
+			newVMeasurementResultGroupID = UUID.randomUUID();
 
 			break;
 
@@ -192,7 +192,7 @@ public class VMeasurementResult {
 
 		while (res.next()) {
 			lastWorkingVMeasurementResultID = recursiveGetVMeasurementResult(
-					PgDB_UUID.fromString(res.getString("MemberVMeasurementID")),
+					UUID.fromString(res.getString("MemberVMeasurementID")),
 					newVMeasurementResultGroupID, VMeasurementResultMasterID,
 					recursionDepth + 1);
 		}
@@ -206,7 +206,7 @@ public class VMeasurementResult {
 		case INDEX: 
 		{			
 			// First, create a new VMeasurementResult and move our metadata over to it
-			newVMeasurementResultID = PgDB_UUID.randomInstance();
+			newVMeasurementResultID = UUID.randomUUID();
 			dbq.execute("qappVMeasurementResultOpIndex",
 					newVMeasurementResultID, VMeasurementID,
 					VMeasurementResultMasterID,
@@ -232,7 +232,7 @@ public class VMeasurementResult {
 			
 		case SUM: 
 			// create a new VMeasurement, move the metadata
-			newVMeasurementResultID = PgDB_UUID.randomInstance();
+			newVMeasurementResultID = UUID.randomUUID();
 			
 			// create our vmeasurementresult...
 			dbq.execute("qappVMeasurementResultOpSum",
@@ -350,10 +350,10 @@ public class VMeasurementResult {
 	 * Copy measurement into tblVMeasurementResult and tblVMeasurementReadingResult
 	 * Place the result (newVMeasurementResultID) in the result class variable.
 	 */
-	private PgDB_UUID doDirectCase(PgDB_UUID VMeasurementID, PgDB_UUID VMeasurementResultGroupID, 
-			PgDB_UUID VMeasurementResultMasterID, int MeasurementID) throws SQLException {
+	private UUID doDirectCase(UUID VMeasurementID, UUID VMeasurementResultGroupID, 
+			UUID VMeasurementResultMasterID, int MeasurementID) throws SQLException {
 		
-		PgDB_UUID newVMeasurementResultID = PgDB_UUID.randomInstance();
+		UUID newVMeasurementResultID = UUID.randomUUID();
 		
 		// Create a new VMeasurementResult
 		dbq.execute("qappVMeasurementResult", 
@@ -366,5 +366,5 @@ public class VMeasurementResult {
 		return newVMeasurementResultID;		
 	}
 
-	public PgDB_UUID getResult() { return result; }
+	public UUID getResult() { return result; }
 }

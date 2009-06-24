@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class Dispatch {
 
-	public static PgDB_UUID GetVMeasurementResult(String VMeasurementID) throws SQLException {
+	public static UUID GetVMeasurementResult(String VMeasurementID) throws SQLException {
 		// Simple and clean. Pass in the ID, return the result string.
 		try{
 			VMeasurementResult result = new VMeasurementResult(UUID.fromString(VMeasurementID), false);
