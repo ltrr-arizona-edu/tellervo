@@ -3,6 +3,8 @@ package edu.cornell.dendro.cpgdb;
 import java.sql.*;
 import java.util.UUID;
 
+import org.postgresql.pljava.internal.Oid;
+
 public class VMeasurementResult {
 	// Internal values
 	private enum VMeasurementOperation { DIRECT, INDEX, CLEAN, REDATE, SUM, CROSSDATE }
@@ -67,6 +69,7 @@ public class VMeasurementResult {
 	 * @throws SQLException
 	 */
 	private void acquireVMeasurementResult(UUID VMeasurementID, boolean safe) throws SQLException {
+		Oid.registerType(UUID.class, new Oid(2950));
 		if(safe) {
 			// If we have an error, clean up any mess we made, but pass along the exception.
 			Savepoint beforeCreation = dbq.getConnection().setSavepoint();
