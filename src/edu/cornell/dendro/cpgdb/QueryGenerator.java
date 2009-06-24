@@ -149,7 +149,8 @@ public class QueryGenerator {
 				Stability.STABLE,
 				PP.in("paramVMeasurementID", PT.uuid),
 				PP.out("VMeasurementID", PT.uuid),
-				PP.out("MemberVMeasurementID", PT.uuid)
+				PP.out("MemberVMeasurementID", PT.uuid),
+				PP.gen(PD.RETURN, "SETOF record", null)
 				);
 		
 		/*
@@ -272,7 +273,8 @@ public class QueryGenerator {
 				Stability.STABLE,
 				PP.in("paramCurrentVMeasurementResultID", PT.uuid),
 				PP.out("RelYear", PT.integer),
-				PP.out("Reading", PT.integer)
+				PP.out("Reading", PT.integer),
+				PP.gen(PD.RETURN, "SETOF record", null)
 				);
 		
 		/*
