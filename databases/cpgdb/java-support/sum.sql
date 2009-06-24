@@ -1,6 +1,6 @@
 -- First parameter : VMeasurementResultGroupID
 -- Second parameter: newVMeasurementResultID
-CREATE OR REPLACE FUNCTION cpgdb.qappVMeasurementResultReadingOpSum(varchar, varchar) RETURNS integer AS $$
+CREATE OR REPLACE FUNCTION cpgdb.qappVMeasurementResultReadingOpSum(uuid, uuid) RETURNS integer AS $$
 DECLARE
    ref refcursor;
    v_year integer;    -- the record's year

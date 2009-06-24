@@ -1,6 +1,6 @@
 --
 -- CreateNewVMeasurement(VMeasurementOp, VMeasurementOpParameter, OwnerUserID, Code, 
---                       Comments, MeasurementID, Constituents, Usage, UsageComments, Objective, Version)
+--                       Comments, MeasurementID, Constituents, Objective, Version, Date)
 -- VMeasurementOp - Varchar - From tlkpVMeasurementOp 
 -- VMeasurementOpParameter - Integer - Must be specified for REDATE or INDEX; otherwise NULL
 -- Code - Varchar - Must be specified
@@ -18,10 +18,9 @@ CREATE OR REPLACE FUNCTION cpgdb.CreateNewVMeasurement(
   varchar, -- comments
   integer, -- base measurement (direct)
   uuid[],  -- constituent measurements (not direct)
-  varchar, -- Usage
-  varchar, -- Usage comments
   varchar, -- Objective
-  varchar  -- Version
+  varchar,  -- Version
+  date     -- measuringDate or derivationDate
 )
 RETURNS tblVMeasurement.VMeasurementID%TYPE AS $$
 DECLARE
@@ -32,10 +31,9 @@ DECLARE
    V_Comments ALIAS FOR $5;
    BaseMeasurement ALIAS FOR $6;
    Constituents ALIAS FOR $7;
-   V_Usage ALIAS FOR $8;
-   V_UsageComments ALIAS FOR $9;
-   V_Objective ALIAS FOR $10;
-   V_Version ALIAS FOR $11;
+   V_Objective ALIAS FOR $8;
+   V_Version ALIAS FOR $9;
+   V_Birthdate ALIAS FOR $10;
 
    newID tblVMeasurement.VMeasurementID%TYPE;
    OPName VARCHAR;
@@ -83,9 +81,9 @@ BEGIN
 
       -- Our Direct Case is easy; perform it here and leave.
       INSERT INTO tblVMeasurement(VMeasurementID, MeasurementID, VMeasurementOpID, Code, Comments, OwnerUserID, 
- 				  Usage, UsageComments, Objective, Version)
+ 				  Objective, Version, Birthdate)
          VALUES (newID, BaseMeasurement, OpID, V_Code, V_Comments, V_OwnerUserID, 
-		 V_Usage, V_UsageComments, V_Objective, V_Version);
+		 V_Objective, V_Version, V_Birthdate);
 
       RETURN newID;
 
@@ -133,9 +131,9 @@ BEGIN
 
    -- Create the VMeasurement
    INSERT INTO tblVMeasurement(VMeasurementID, VMeasurementOpID, Code, Comments, OwnerUserID, VMeasurementOpParameter, 
-			       isGenerating, Usage, UsageComments, Objective, Version)
+			       isGenerating, Objective, Version, Birthdate)
       VALUES (newID, OpID, V_Code, V_Comments, V_OwnerUserID, OPParam, TRUE,
- 	      V_Usage, V_UsageComments, V_Objective, V_Version);
+ 	      V_Objective, V_Version, V_Birthdate);
 
    -- Create the grouping
    FOR CVMId IN array_lower(Constituents, 1)..array_upper(Constituents,1) LOOP   
