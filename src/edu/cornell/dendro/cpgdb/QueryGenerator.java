@@ -81,7 +81,7 @@ public class QueryGenerator {
 				 */
 		
 		/*
-		 * NOTE: 2 and 6 are dupes, FIXED!
+		 * NOTE: 2 and 7 are dupes, FIXED!
 		 * BE SURE TO FIX IN ACTUAL QUERY!
 		 * 1 = paramvmeasurementresultid
 		 * 2 = paramvmeasurementid

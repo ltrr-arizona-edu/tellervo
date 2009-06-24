@@ -280,7 +280,7 @@ public class VMeasurementResult {
 			 */
 			
 			newVMeasurementResultID = lastWorkingVMeasurementResultID;
-			dbq.execute("qupdVMeasurementResultOpCrossdate", VMeasurementID, VMeasurementID, lastWorkingVMeasurementResultID);
+			dbq.execute("qupdVMeasurementResultOpCrossdate", VMeasurementID, lastWorkingVMeasurementResultID);
 			break;
 		}
 		
@@ -360,7 +360,7 @@ public class VMeasurementResult {
 		// Create a new VMeasurementResult
 		dbq.execute("qappVMeasurementResult", 
 				newVMeasurementResultID, VMeasurementID, VMeasurementResultGroupID, 
-				VMeasurementResultMasterID, ownerUserID, MeasurementID, VMeasurementID);
+				VMeasurementResultMasterID, ownerUserID, MeasurementID);
 		
 		// Create new VMeasurementReadingResults...
 		dbq.execute("qappVMeasurementReadingResult", newVMeasurementResultID, MeasurementID);
