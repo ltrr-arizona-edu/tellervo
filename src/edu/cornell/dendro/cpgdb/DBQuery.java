@@ -48,14 +48,16 @@ public class DBQuery {
 		System.out.println(".");
 	}
 	
-	public boolean execute(String queryName, Object ... args) throws SQLException {
+	public void execute(String queryName, Object ... args) throws SQLException {
 		if(debug)
 			beVerbose(queryName, args);
 		
 		PreparedStatement q = prepareStatement(queryName, args);
 
 		try {
-			return q.execute();
+			ResultSet rs = q.executeQuery();
+			rs.close();
+			return;
 		} finally {
 			q.close();
 		}
