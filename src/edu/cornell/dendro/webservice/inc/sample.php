@@ -54,7 +54,7 @@ class sample extends sampleEntity implements IDBAccessor
         $this->setKnots($row['knots']);
         $this->setDescription($row['description']);
         $this->setTitle($row['code']);
-	$this->setElementID($row['elementid']);
+		$this->setElementID($row['elementid']);
         return true;
     }
     
@@ -66,7 +66,7 @@ class sample extends sampleEntity implements IDBAccessor
         global $domain;    
 
         $this->setID($theID);
-        $sql = "SELECT * FROM vwtblsample WHERE sampleid='".pg_escape_string($theID)."'";
+        $sql = "SELECT * FROM vwtblsample WHERE sampleid='".$theID."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -200,7 +200,7 @@ class sample extends sampleEntity implements IDBAccessor
     	// Find out the parent ID if it's not specified
     	if($parentID==NULL)
     	{
-    		$sql = "SELECT elementid FROM tblsample WHERE sampleid =".pg_escape_string($this->getID());
+    		$sql = "SELECT elementid FROM tblsample WHERE sampleid ='".pg_escape_string($this->getID()."'");
 	    	$dbconnstatus = pg_connection_status($dbconn);
 	        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
 	        {
@@ -215,6 +215,7 @@ class sample extends sampleEntity implements IDBAccessor
 	            }
 	            else
 	            {   
+
 	            	$parentID = $row['elementid'];
 			
 	            }
@@ -342,7 +343,10 @@ class sample extends sampleEntity implements IDBAccessor
 	        // object entities.
 	        
 	        // Make sure the parent entities are set
-	        $this->setParentsFromDB();	        
+	        if($this->setParentsFromDB()===FALSE)
+	        {
+				return FALSE;     
+	        }        
 	        
             // Grab the XML representation of the immediate parent using the 'comprehensive'
             // attribute so that we get all the object ancestors formatted correctly                   

@@ -56,7 +56,7 @@ class element extends elementEntity implements IDBAccessor
 
                 
         // First find the immediate object entity parent
-           $sql = "SELECT * from cpgdb.findelementobjectancestors(".pg_escape_string($this->getID()).")";
+           $sql = "SELECT * from cpgdb.findelementobjectancestors('".pg_escape_string($this->getID())."')";
            $dbconnstatus = pg_connection_status($dbconn);
            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
            {
@@ -121,14 +121,14 @@ class element extends elementEntity implements IDBAccessor
         $this->setBedrockDescription($row['bedrockdescription']);
         $this->setSoilDepth($row['soildepth']);
         $this->setSoilDescription($row['soildescription']);
-	$this->setObjectID($row['objectid']);
+		$this->setObjectID($row['objectid']);
         return true;
     }
    
     /**
      * Set the current element's parameters from the database
      *
-     * @param Integer $theID
+     * @param UUID $theID
      * @param String $format (standard or summary. defaults to standard)
      * @return unknown
      */
@@ -138,7 +138,7 @@ class element extends elementEntity implements IDBAccessor
         
         $this->setID($theID);
         //$sql = "select tblelement.* tlkplocationtype.code as locationtype from tlkplocationtype, tblelement where elementid='".$this->getID()."' and tblelement.locationtypeid=tlkplocationtype.locationtypeid";
-        $sql = "SELECT * from vwtblelement WHERE elementid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * from vwtblelement WHERE elementid='".$this->getID()."'";
 
 
         $dbconnstatus = pg_connection_status($dbconn);
@@ -360,8 +360,11 @@ class element extends elementEntity implements IDBAccessor
 	        // We need to return the comprehensive XML for this element i.e. including all it's ancestral 
 	        // object entities.
 	        
-	        // Make sure the parent entities are set
-	        $this->setParentsFromDB();	        
+        	// Make sure the parent entities are set
+	        if($this->setParentsFromDB()===FALSE)
+	        {
+				return FALSE;     
+	        }        
 	        
             // Grab the XML representation of the immediate parent using the 'comprehensive'
             // attribute so that we get all the object ancestors formatted correctly                   
@@ -472,7 +475,7 @@ class element extends elementEntity implements IDBAccessor
                     }
                     
                     if($this->getFile()!=NULL) $xml.="<tridas:file xlink:href=\"".$this->getFile()."\" />";
-                    if($format=='summary') $xml.="<tridas:genericField name=\"fullLabCode\">".$this->summaryFullLabCode."</tridas:genericField>\n"; 
+                    //if($format=='summary') $xml.="<tridas:genericField name=\"fullLabCode\">".$this->summaryFullLabCode."</tridas:genericField>\n"; 
 	                // Include permissions details if requested            
 	                $xml .= $this->getPermissionsXML();                      
                     $xml.= $this->taxon->getHigherTaxonomyXML();
@@ -655,7 +658,7 @@ class element extends elementEntity implements IDBAccessor
                         if ($this->getDescription()!=NULL)						$sql.= "description='".pg_escape_string($this->getDescription())."', ";	  
                      // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
-                    $sql .= " where elementid=".pg_escape_string($this->getID());
+                    $sql .= " where elementid='".pg_escape_string($this->getID()."'");
                 }
                 //echo $sql;
 

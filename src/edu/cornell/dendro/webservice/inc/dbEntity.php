@@ -44,7 +44,7 @@ class dbEntity
 	/**
 	 * Unique identifier for this entity
 	 *
-	 * @var String
+	 * @var UUID
 	 */
     protected $id = NULL;	
     
@@ -208,7 +208,7 @@ class dbEntity
     /**
      * Set the identifier and from what domain it came
      *
-     * @param String $identifier
+     * @param UUID $identifier
      * @param String $domain
      * @return Boolean
      */
@@ -216,7 +216,7 @@ class dbEntity
     {
     	$this->id = $identifier;
     	$this->identifierDomain = $domain;	
-    	return true;
+    	return true;	
     }
     
 
@@ -330,7 +330,7 @@ class dbEntity
     /**
      * Get the ID number for this database entity
      *
-     * @return Integer
+     * @return UUID
      */
     function getID()
     {
@@ -1267,7 +1267,7 @@ class elementEntity extends dbEntity
 	 */
 	function setObjectID($value)
 	{
-		$this->objectID = (int) $value;
+		$this->objectID = $value;
 		return TRUE;
 	}
 
@@ -1624,12 +1624,12 @@ class sampleEntity extends dbEntity
 	/**
 	 * Set the element ID 
 	 *
-	 * @param Integer $value
+	 * @param UUID $value
 	 * @return Boolean 
 	 */
 	function setElementID($value)
 	{
-		$this->elementID = (int) $value;
+		$this->elementID = $value;
 		return TRUE;
 	}
 	
@@ -1838,7 +1838,7 @@ class radiusEntity extends dbEntity
 	 */
 	function setSampleID($value)
 	{
-		$this->sampleID = (int) $value;
+		$this->sampleID = $value;
 		return TRUE;
 	}
 	

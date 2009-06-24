@@ -390,14 +390,15 @@ class search Implements IDBAccessor
         case "vmeasurementmetacache":
             return "vwcomprehensivevm";
             break;
-//        case "vmeasurementresult":
-//            return "vwtblvmeasurementresult";
-//            break;
+        case "vmeasurement":
+        	return "vwcomprehensivevm";
+        	break;
         case "vmeasurementderivedcache":
             return "vwcomprehensivevm";
             break;
         default:
-            return false;
+        	echo "unable to determine table name.  Fatal error.";
+            die();
         }
 
     }
@@ -491,7 +492,7 @@ class search Implements IDBAccessor
             }
             else
             {
-                $fromSQL .= $this->tableName("vmeasuremnt")." \n";
+                $fromSQL .= $this->tableName("vmeasurement")." \n";
                 $withinJoin = TRUE;
             }
 

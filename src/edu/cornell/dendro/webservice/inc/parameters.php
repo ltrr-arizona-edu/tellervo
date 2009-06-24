@@ -143,7 +143,9 @@ class searchParameters implements IParams
 									'samplelastmodified' => 				array('tbl' => 'vwtblsample', 'field' => 'lastmodifiedtimstamp'),
 									'samplingdatecertainty' => 				array('tbl' => 'vwtblsample', 'field' => 'datecertainty'),
 
-                                                                        'radiusid' =>                                           array('tbl' => 'vwtblradius', 'field' => 'radiusid')
+                                    'radiusid' =>                           array('tbl' => 'vwtblradius', 'field' => 'radiusid'),
+		
+									'seriesid' =>                           array('tbl' => 'vwcomprehensivevm', 'field' => 'vmeasurementid')
 									
 								  );
 		

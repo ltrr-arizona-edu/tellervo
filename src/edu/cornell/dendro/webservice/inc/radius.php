@@ -37,6 +37,7 @@ class radius extends radiusEntity implements IDBAccessor
 
     function setParamsFromDBRow($row, $format="standard")
     {
+	    $this->setID($row['radiusid']);
         $this->setAzimuth($row['azimuth']);
         $this->setTitle($row['radiuscode']);
         $this->setSampleID($row['sampleid']);
@@ -52,6 +53,7 @@ class radius extends radiusEntity implements IDBAccessor
         $this->setMissingSapwoodRingsToBark($row['missingsapwoodringstobark']);
         $this->setMissingSapwoodRingsToBarkFoundation($row['missingsapwoodringstobarkfoundation']);  
         $this->setHeartwood($row['heartwoodid'], $row['heartwood']);
+ 
         return true;
 
     }
@@ -100,33 +102,35 @@ class radius extends radiusEntity implements IDBAccessor
     function setParentsFromDB()
     {
         require_once('sample.php');
+		if($this->sampleID == NULL)
+		{   
+			// No records match the id specified
+			$this->setErrorMessage("903", "There are no samples associated with radius id=".$this->getID());
+			return FALSE;
+		}
+	
+		// Empty array before populating it
+		$this->parentEntityArray = array();
 
-	if($this->sampleID == NULL)
-	{   
-		// No records match the id specified
-		$this->setErrorMessage("903", "There are no samples associated with radius id=".$this->getID());
-		return FALSE;
-	}
 
-	// Empty array before populating it
-	$this->parentEntityArray = array();
-
-	// see if we've cached it already
+		// see if we've cached it already
         if(($mySample = dbEntity::getCachedEntity("sample", $this->sampleID)) != NULL)
         {
-           array_push($this->parentEntityArray, $mySample);
-           return;
+        	array_push($this->parentEntityArray, $mySample);
+            return;
         }
+        
 
-	$mySample = new sample();
-	$success = $mySample->setParamsFromDB($this->sampleID);
-	if($success===FALSE)
-	{
-		trigger_error($mySample->getLastErrorCode().$mySample->getLastErrorMessage());
-	}
+		$mySample = new sample();
+		$success = $mySample->setParamsFromDB($this->sampleID);
+		if($success===FALSE)
+		{
+			trigger_error($mySample->getLastErrorCode().$mySample->getLastErrorMessage());
+		}
+	
+		// Add to the array of parents
+		array_push($this->parentEntityArray,$mySample);
 
-	// Add to the array of parents
-	array_push($this->parentEntityArray,$mySample);
     }      
     
     function setChildParamsFromDB()
@@ -288,8 +292,11 @@ class radius extends radiusEntity implements IDBAccessor
 	        // object entities.
 	        
 	        // Make sure the parent entities are set
-	        $this->setParentsFromDB();	        
-	        
+	        if($this->setParentsFromDB()===FALSE)
+	        {
+				return FALSE;     
+	        }
+
             // Grab the XML representation of the immediate parent using the 'comprehensive'
             // attribute so that we get all the object ancestors formatted correctly                   
             $xml = new DomDocument();   

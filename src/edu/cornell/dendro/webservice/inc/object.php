@@ -49,7 +49,7 @@ class object extends objectEntity implements IDBAccessor
         $this->setCreator($row['creator']);
         $this->setOwner($row['owner']);
         $this->setFile($row['file']);
-        $this->setType($row['type']);
+        $this->setType($row['objecttype']);
         $this->setCoverageTemporal($row['coveragetemporal'], $row['coveragetemporalfoundation']);
         $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
         $this->setCountOfChildVMeasurements($row['countofchildvmeasurements']);
@@ -220,7 +220,7 @@ class object extends objectEntity implements IDBAccessor
     	    $myParentObjectArray = Array();
 	  		array_push($myParentObjectArray, $this);
     		
-            $sql = "SELECT * from cpgdb.findobjectancestors(".$this->getID().", false)";
+            $sql = "SELECT * from cpgdb.findobjectancestors('".$this->getID()."', false)";
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
@@ -443,7 +443,7 @@ class object extends objectEntity implements IDBAccessor
                         if (count($this->parentEntityArray)>0)							$sql.= "parentobject='".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                    
                         // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
-                    $sql .= " where objectid=".$this->getID();
+                    $sql .= " where objectid='".$this->getID()."'";
                 }
                 //echo $sql;
 

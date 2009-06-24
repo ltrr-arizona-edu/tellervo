@@ -315,6 +315,20 @@ class dbHelper
 		return date('c', strtotime($datetime));
 	}
 	
+	public static function isUUID($uuid)
+	{
+		$pattern = "/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/";
+		if(preg_match($pattern, $uuid)==0)
+		{
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+		
+	}
+	
 }
 
 ?>
