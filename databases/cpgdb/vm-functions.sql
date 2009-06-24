@@ -47,7 +47,7 @@ DECLARE
 BEGIN
    -- Get a new sequence number while we're getting the Op
    SELECT 
-      nextval('tblvMeasurement_vMeasurementid_seq'::regclass), VMeasurementOpID, Name
+      uuid_generate_v1mc(), VMeasurementOpID, Name
    INTO 
       newID, OPId, OPName
    FROM tlkpVMeasurementOp WHERE tlkpVMeasurementOp.Name = OP;
