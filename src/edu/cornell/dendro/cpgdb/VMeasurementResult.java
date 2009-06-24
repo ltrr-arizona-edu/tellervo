@@ -69,7 +69,6 @@ public class VMeasurementResult {
 	 * @throws SQLException
 	 */
 	private void acquireVMeasurementResult(UUID VMeasurementID, boolean safe) throws SQLException {
-		Oid.registerType(UUID.class, new Oid(2950));
 		if(safe) {
 			// If we have an error, clean up any mess we made, but pass along the exception.
 			Savepoint beforeCreation = dbq.getConnection().setSavepoint();

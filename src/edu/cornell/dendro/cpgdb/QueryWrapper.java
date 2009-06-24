@@ -3,9 +3,11 @@ package edu.cornell.dendro.cpgdb;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /*
  * This class is a temporary wrapper for SQL statements.
@@ -236,7 +238,9 @@ public class QueryWrapper {
 		
 		for(int i = 0; i < args.length; i++) {
 			if(args[i] == null)
-				statement.setString(i + 1, (String) args[i]);
+				statement.setString(i + 1, null);
+			else if(args[i] instanceof UUID)
+				statement.setString(i + 1, args[i].toString());
 			else
 				statement.setObject(i + 1, args[i]);
 		}
