@@ -15,13 +15,13 @@ import org.postgresql.pljava.ResultSetHandle;
  *
  */
 public class VMeasurementResultSet implements ResultSetHandle {
-        private int VMeasurementID;
+        private String VMeasurementID;
         private Statement statement;
 
 	/**
 	 * @param VMeasurementID
 	 */
-	public VMeasurementResultSet(int VMeasurementID) {
+	public VMeasurementResultSet(String VMeasurementID) {
 		this.VMeasurementID = VMeasurementID;
 	}
 	
@@ -42,7 +42,7 @@ public class VMeasurementResultSet implements ResultSetHandle {
 		return null;
 	}
 	
-	public static ResultSetHandle getVMeasurementResultSet(int VMeasurementID) throws SQLException {
+	public static ResultSetHandle getVMeasurementResultSet(String VMeasurementID) throws SQLException {
 		return new VMeasurementResultSet(VMeasurementID);
 	}
 }

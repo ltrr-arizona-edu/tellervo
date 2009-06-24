@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class Dispatch {
 
-	public static String GetVMeasurementResult(int VMeasurementID) throws SQLException {
+	public static String GetVMeasurementResult(String VMeasurementID) throws SQLException {
 		// Simple and clean. Pass in the ID, return the result string.
 try{
 		VMeasurementResult result = new VMeasurementResult(VMeasurementID, false);
@@ -17,10 +17,9 @@ return "<error>";
 	}
 	
 	public static void main(String[] args) {
-		try {
 			/*
-			 * The following code is for testing purposes.
-			 */
+			 * The following code is for testing purposes. And doesn't currently work.
+		try {
 			try {
 				Class.forName("org.postgresql.Driver");
 			} catch (Exception e) {}
@@ -42,6 +41,7 @@ return "<error>";
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		}
+			 */
 	}
 
 }

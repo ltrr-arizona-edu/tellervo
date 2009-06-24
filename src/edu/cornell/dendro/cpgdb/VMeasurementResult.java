@@ -21,7 +21,7 @@ public class VMeasurementResult {
 	 * @param safe true if we should attempt to rollback on error, false otherwise
 	 * @throws SQLException
 	 */
-	public VMeasurementResult(int VMeasurementID, boolean safe) throws SQLException {
+	public VMeasurementResult(String VMeasurementID, boolean safe) throws SQLException {
 		this(VMeasurementID, safe, true);
 	}
 
@@ -32,7 +32,7 @@ public class VMeasurementResult {
 	 * @param cleanup true if we should close all our queries immediately, false otherwise
 	 * @throws SQLException
 	 */
-	public VMeasurementResult(int VMeasurementID, boolean safe, boolean cleanup) throws SQLException {
+	public VMeasurementResult(String VMeasurementID, boolean safe, boolean cleanup) throws SQLException {
 		this.dbq = new DBQuery();
 		try {
 			acquireVMeasurementResult(VMeasurementID, safe);
@@ -50,7 +50,7 @@ public class VMeasurementResult {
 	 * @param dbQuery
 	 * @throws SQLException
 	 */
-	public VMeasurementResult(int VMeasurementID, boolean safe, DBQuery dbQuery) throws SQLException {
+	public VMeasurementResult(String VMeasurementID, boolean safe, DBQuery dbQuery) throws SQLException {
 		this.dbq = dbQuery;		
 		acquireVMeasurementResult(VMeasurementID, safe);
 	}
@@ -65,7 +65,7 @@ public class VMeasurementResult {
 	 * @param safe true if we should attempt to rollback on failure
 	 * @throws SQLException
 	 */
-	private void acquireVMeasurementResult(int VMeasurementID, boolean safe) throws SQLException {
+	private void acquireVMeasurementResult(String VMeasurementID, boolean safe) throws SQLException {
 		if(safe) {
 			// If we have an error, clean up any mess we made, but pass along the exception.
 			Savepoint beforeCreation = dbq.getConnection().setSavepoint();
@@ -91,7 +91,7 @@ public class VMeasurementResult {
 	 * @return A string indicating the UUID of the VMeasurementResult associated with the provided VMeasurementID
 	 * @throws SQLException
 	 */
-	private String recursiveGetVMeasurementResult(int VMeasurementID, String VMeasurementResultGroupID,	
+	private String recursiveGetVMeasurementResult(String VMeasurementID, String VMeasurementResultGroupID,	
 			String VMeasurementResultMasterID, int recursionDepth) throws SQLException {
 		
 		ResultSet res;
@@ -190,7 +190,7 @@ public class VMeasurementResult {
 		res = dbq.query("qryVMeasurementMembers", VMeasurementID);
 
 		while (res.next()) {
-			lastWorkingVMeasurementResultID = recursiveGetVMeasurementResult(res.getInt("MemberVMeasurementID"),
+			lastWorkingVMeasurementResultID = recursiveGetVMeasurementResult(res.getString("MemberVMeasurementID"),
 					newVMeasurementResultGroupID, VMeasurementResultMasterID,
 					recursionDepth + 1);
 		}
@@ -348,7 +348,7 @@ public class VMeasurementResult {
 	 * Copy measurement into tblVMeasurementResult and tblVMeasurementReadingResult
 	 * Place the result (newVMeasurementResultID) in the result class variable.
 	 */
-	private String doDirectCase(int VMeasurementID, String VMeasurementResultGroupID, 
+	private String doDirectCase(String VMeasurementID, String VMeasurementResultGroupID, 
 			String VMeasurementResultMasterID, int MeasurementID) throws SQLException {
 		
 		String newVMeasurementResultID = dbq.createUUID();
