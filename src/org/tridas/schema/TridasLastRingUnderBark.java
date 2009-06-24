@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -27,53 +28,84 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * 
  * <pre>
  * &lt;complexType>
- *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.tridas.org/1.2>controlledVoc">
- *       &lt;attribute name="normalTridas" type="{http://www.tridas.org/1.2}normalTridasShape" />
- *     &lt;/extension>
- *   &lt;/simpleContent>
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.2}presenceAbsence" />
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
  * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "shape")
-public class TridasShape
-    extends ControlledVoc
+@XmlType(name = "", propOrder = {
+    "content"
+})
+@XmlRootElement(name = "lastRingUnderBark")
+public class TridasLastRingUnderBark
     implements Serializable
 {
 
-    @XmlAttribute(name = "normalTridas")
-    protected NormalTridasShape normalTridas;
+    @XmlValue
+    protected String content;
+    @XmlAttribute(name = "presence", required = true)
+    protected PresenceAbsence presence;
 
     /**
-     * Gets the value of the normalTridas property.
+     * Gets the value of the content property.
      * 
      * @return
      *     possible object is
-     *     {@link NormalTridasShape }
+     *     {@link String }
      *     
      */
-    public NormalTridasShape getNormalTridas() {
-        return normalTridas;
+    public String getContent() {
+        return content;
     }
 
     /**
-     * Sets the value of the normalTridas property.
+     * Sets the value of the content property.
      * 
      * @param value
      *     allowed object is
-     *     {@link NormalTridasShape }
+     *     {@link String }
      *     
      */
-    public void setNormalTridas(NormalTridasShape value) {
-        this.normalTridas = value;
+    public void setContent(String value) {
+        this.content = value;
     }
 
-    public boolean isSetNormalTridas() {
-        return (this.normalTridas!= null);
+    public boolean isSetContent() {
+        return (this.content!= null);
+    }
+
+    /**
+     * Gets the value of the presence property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link PresenceAbsence }
+     *     
+     */
+    public PresenceAbsence getPresence() {
+        return presence;
+    }
+
+    /**
+     * Sets the value of the presence property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link PresenceAbsence }
+     *     
+     */
+    public void setPresence(PresenceAbsence value) {
+        this.presence = value;
+    }
+
+    public boolean isSetPresence() {
+        return (this.presence!= null);
     }
 
     @Override

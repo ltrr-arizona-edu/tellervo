@@ -9,7 +9,6 @@
 package org.tridas.schema;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -31,10 +30,10 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}statValue"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}type"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}significanceLevel" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}usedSoftware"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2}pith"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2}heartwood"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2}sapwood"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2}bark"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -45,134 +44,135 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "statValue",
-    "type",
-    "significanceLevel",
-    "usedSoftware"
+    "pith",
+    "heartwood",
+    "sapwood",
+    "bark"
 })
-@XmlRootElement(name = "statFoundation")
-public class TridasStatFoundation
+@XmlRootElement(name = "woodCompleteness")
+public class TridasWoodCompleteness
     implements Serializable
 {
 
     @XmlElement(required = true)
-    protected BigDecimal statValue;
+    protected TridasPith pith;
     @XmlElement(required = true)
-    protected ControlledVoc type;
-    protected BigDecimal significanceLevel;
+    protected TridasHeartwood heartwood;
     @XmlElement(required = true)
-    protected String usedSoftware;
+    protected TridasSapwood sapwood;
+    @XmlElement(required = true)
+    protected TridasBark bark;
 
     /**
-     * Gets the value of the statValue property.
+     * Gets the value of the pith property.
      * 
      * @return
      *     possible object is
-     *     {@link BigDecimal }
+     *     {@link TridasPith }
      *     
      */
-    public BigDecimal getStatValue() {
-        return statValue;
+    public TridasPith getPith() {
+        return pith;
     }
 
     /**
-     * Sets the value of the statValue property.
+     * Sets the value of the pith property.
      * 
      * @param value
      *     allowed object is
-     *     {@link BigDecimal }
+     *     {@link TridasPith }
      *     
      */
-    public void setStatValue(BigDecimal value) {
-        this.statValue = value;
+    public void setPith(TridasPith value) {
+        this.pith = value;
     }
 
-    public boolean isSetStatValue() {
-        return (this.statValue!= null);
+    public boolean isSetPith() {
+        return (this.pith!= null);
     }
 
     /**
-     * Gets the value of the type property.
+     * Gets the value of the heartwood property.
      * 
      * @return
      *     possible object is
-     *     {@link ControlledVoc }
+     *     {@link TridasHeartwood }
      *     
      */
-    public ControlledVoc getType() {
-        return type;
+    public TridasHeartwood getHeartwood() {
+        return heartwood;
     }
 
     /**
-     * Sets the value of the type property.
+     * Sets the value of the heartwood property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ControlledVoc }
+     *     {@link TridasHeartwood }
      *     
      */
-    public void setType(ControlledVoc value) {
-        this.type = value;
+    public void setHeartwood(TridasHeartwood value) {
+        this.heartwood = value;
     }
 
-    public boolean isSetType() {
-        return (this.type!= null);
+    public boolean isSetHeartwood() {
+        return (this.heartwood!= null);
     }
 
     /**
-     * Gets the value of the significanceLevel property.
+     * Gets the value of the sapwood property.
      * 
      * @return
      *     possible object is
-     *     {@link BigDecimal }
+     *     {@link TridasSapwood }
      *     
      */
-    public BigDecimal getSignificanceLevel() {
-        return significanceLevel;
+    public TridasSapwood getSapwood() {
+        return sapwood;
     }
 
     /**
-     * Sets the value of the significanceLevel property.
+     * Sets the value of the sapwood property.
      * 
      * @param value
      *     allowed object is
-     *     {@link BigDecimal }
+     *     {@link TridasSapwood }
      *     
      */
-    public void setSignificanceLevel(BigDecimal value) {
-        this.significanceLevel = value;
+    public void setSapwood(TridasSapwood value) {
+        this.sapwood = value;
     }
 
-    public boolean isSetSignificanceLevel() {
-        return (this.significanceLevel!= null);
+    public boolean isSetSapwood() {
+        return (this.sapwood!= null);
     }
 
     /**
-     * Gets the value of the usedSoftware property.
+     * Gets the value of the bark property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link TridasBark }
      *     
      */
-    public String getUsedSoftware() {
-        return usedSoftware;
+    public TridasBark getBark() {
+        return bark;
     }
 
     /**
-     * Sets the value of the usedSoftware property.
+     * Sets the value of the bark property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link TridasBark }
      *     
      */
-    public void setUsedSoftware(String value) {
-        this.usedSoftware = value;
+    public void setBark(TridasBark value) {
+        this.bark = value;
     }
 
-    public boolean isSetUsedSoftware() {
-        return (this.usedSoftware!= null);
+    public boolean isSetBark() {
+        return (this.bark!= null);
     }
 
     @Override
