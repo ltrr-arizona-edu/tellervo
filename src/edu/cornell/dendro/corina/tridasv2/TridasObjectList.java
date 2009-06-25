@@ -68,7 +68,7 @@ public class TridasObjectList extends CorinaResource {
 
 		// get a list of only tridas objects
 		List<TridasObjectEx> objects = ListUtil.subListOfType(
-				object.getContent().getSqlOrObjectOrElement(), TridasObjectEx.class);
+				object.getContent().getSqlsAndObjectsAndElements(), TridasObjectEx.class);
 		
 		ListViews newData = new ListViews(objects.size());
 		
@@ -131,7 +131,7 @@ public class TridasObjectList extends CorinaResource {
 		view.bySiteCode.put(obj.getLabCode(), obj);
 		
 		if(obj.hasChildren()) {
-			for(TridasObjectEx child : ListUtil.subListOfType(obj.getObject(), TridasObjectEx.class))
+			for(TridasObjectEx child : ListUtil.subListOfType(obj.getObjects(), TridasObjectEx.class))
 				recursiveAdd(child, view);
 		}
 	}

@@ -173,7 +173,7 @@ public abstract class CorinaResource extends
 			return PreprocessResult.SUCCESS; // whew, that was easy.
 
 		// look for error codes...
-		for (WSIMessage msg : header.getMessage()) {
+		for (WSIMessage msg : header.getMessages()) {
 			// determine the code
 			WebInterfaceCode msgCode = WebInterfaceCode.byNumericCode(msg.getCode());
 			String msgText = WSIMessageAsString(msg);

@@ -27,6 +27,7 @@ import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 
 
 
@@ -137,7 +138,7 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		// force dictionary reload
 		btnReloadDictionary.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PrototypeLoadDialog dlg = new PrototypeLoadDialog(App.dictionary);
+				CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(App.dictionary);
 				
 				App.dictionary.query();
 				dlg.setVisible(true);

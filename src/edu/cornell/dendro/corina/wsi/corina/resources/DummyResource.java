@@ -29,7 +29,7 @@ public class DummyResource extends CorinaAssociatedResource<Object> {
 		entity.setId("1101");
 		entity.setType(EntityType.MEASUREMENT_SERIES);
 		
-		request.getEntity().add(entity);
+		request.getEntities().add(entity);
 	}
 
 	@Override

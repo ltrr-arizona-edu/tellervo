@@ -53,7 +53,7 @@ public class SeriesSearchResource extends CorinaAssociatedResource<ElementList> 
 		
 		// get a list of only the 'series' elements
 		List<BaseSeries> seriesList = ListUtil.subListOfType(
-				object.getContent().getSqlOrObjectOrElement(), BaseSeries.class);
+				object.getContent().getSqlsAndObjectsAndElements(), BaseSeries.class);
 
 		// a list of our elements
 		ElementList elements = new ElementList(seriesList.size());

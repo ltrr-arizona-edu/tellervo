@@ -42,7 +42,7 @@ public class SearchParameters extends WSISearchParams {
 		param.setValue(value);
 		
 		// add this parameter
-		getParam().add(param);
+		getParams().add(param);
 	
 		
 		if(hasConstraints)

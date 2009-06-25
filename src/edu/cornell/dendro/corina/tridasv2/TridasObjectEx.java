@@ -34,7 +34,7 @@ public class TridasObjectEx extends TridasObject {
 	 * @return
 	 */
 	public boolean hasChildren() {
-		return isSetObject();
+		return isSetObjects();
 	}
 	
 	/**
@@ -97,8 +97,8 @@ public class TridasObjectEx extends TridasObject {
 	protected void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
 		// go through our generic fields and populate things...
 		// we check if it exists first because otherwise getGenericField creates a list
-		if (isSetGenericField()) {
-			for (TridasGenericField f : getGenericField()) {
+		if (isSetGenericFields()) {
+			for (TridasGenericField f : getGenericFields()) {
 				String fieldName = f.getName();
 
 				// handle lab code
@@ -116,8 +116,8 @@ public class TridasObjectEx extends TridasObject {
 		// now, build up any object tree counts and set parents
 		// note we only have to do this at depth 1! Our children should have
 		// already had this function called on them!
-		if(isSetObject()) {
-			for(TridasObject o : getObject()) {
+		if(isSetObjects()) {
+			for(TridasObject o : getObjects()) {
 				if(o instanceof TridasObjectEx) {
 					((TridasObjectEx)o).parentObject = this;
 					

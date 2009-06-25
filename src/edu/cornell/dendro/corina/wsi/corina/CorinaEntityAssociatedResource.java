@@ -152,13 +152,13 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 	
 	private void populateAppropriateList(WSIRequest request) {
 		if(createOrUpdateEntity instanceof TridasObject)
-			request.getObject().add((TridasObject) createOrUpdateEntity);
+			request.getObjects().add((TridasObject) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof TridasElement)
-			request.getElement().add((TridasElement) createOrUpdateEntity);
+			request.getElements().add((TridasElement) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof TridasSample)
-			request.getSample().add((TridasSample) createOrUpdateEntity);
+			request.getSamples().add((TridasSample) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof TridasRadius)
-			request.getRadius().add((TridasRadius) createOrUpdateEntity);
+			request.getRadiuses().add((TridasRadius) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof TridasMeasurementSeries)
 			request.getMeasurementSeries().add((TridasMeasurementSeries) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof TridasDerivedSeries)
@@ -173,7 +173,7 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		switch(this.getQueryType()) {
 		case READ:
 		case DELETE:
-			request.getEntity().add(readOrDeleteEntity);
+			request.getEntities().add(readOrDeleteEntity);
 			break;
 			
 		case UPDATE:

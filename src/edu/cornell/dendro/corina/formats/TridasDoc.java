@@ -115,7 +115,7 @@ public class TridasDoc implements Filetype {
 		TridasVariable variable = values.getVariable();
 		boolean unitless = values.isSetUnitless();
 		TridasUnit units = unitless ? null : values.getUnit();
-		List<TridasValue> dataValues = values.getValue();
+		List<TridasValue> dataValues = values.getValues();
 		
 		if(variable.isSetNormalTridas()) {
 			switch(variable.getNormalTridas()) {
@@ -177,27 +177,27 @@ public class TridasDoc implements Filetype {
 
 	private void breakUpTridasLinks(TridasObject obj) {
 		// first, disassociate any children of child objects
-		if(obj.isSetObject()) {
-			for(TridasObject childObj : obj.getObject())				
+		if(obj.isSetObjects()) {
+			for(TridasObject childObj : obj.getObjects())				
 				breakUpTridasLinks(childObj);
 			
-			obj.unsetObject();
+			obj.unsetObjects();
 		}
 		
 		// now, disassociate everything else
-		for(TridasElement element : obj.getElement()) {
-			for(TridasSample sample : element.getSample()) {
-				for(TridasRadius radius : sample.getRadius()) {
+		for(TridasElement element : obj.getElements()) {
+			for(TridasSample sample : element.getSamples()) {
+				for(TridasRadius radius : sample.getRadiuses()) {
 					for(TridasMeasurementSeries series : radius.getMeasurementSeries()) {
 						// do we need to do anything in here?
 					}
 					radius.unsetMeasurementSeries();
 				}
-				sample.unsetRadius();
+				sample.unsetRadiuses();
 			}
-			element.unsetSample();
+			element.unsetSamples();
 		}
-		obj.unsetElement();
+		obj.unsetElements();
 	}
 
 	private void populateLabCode(BaseSample s) {
@@ -223,13 +223,13 @@ public class TridasDoc implements Filetype {
 		objArray = objectHierarchy.toArray(objArray);
 		
 		// do child objects first
-		for(TridasObject child : obj.getObject())
+		for(TridasObject child : obj.getObjects())
 			loadObjectMeasurementsIntoList(child, samples, objectHierarchy);
 		
 		// ok, now load some samples from this tree!
-		for(TridasElement element : obj.getElement()) {
-			for(TridasSample sample : element.getSample()) {
-				for(TridasRadius radius : sample.getRadius()) {
+		for(TridasElement element : obj.getElements()) {
+			for(TridasSample sample : element.getSamples()) {
+				for(TridasRadius radius : sample.getRadiuses()) {
 					for(TridasMeasurementSeries series : radius.getMeasurementSeries()) {
 						BaseSample s = loadFromBaseSeries(series);
 						
@@ -248,7 +248,7 @@ public class TridasDoc implements Filetype {
 						// object codes are more obnoxious
 						labcode.clearSites();
 						for(TridasObject object : objArray) {
-							for(TridasGenericField f : object.getGenericField()) {
+							for(TridasGenericField f : object.getGenericFields()) {
 								if("corina.objectLabCode".equals(f.getName())) {
 									labcode.appendSiteCode(f.getValue());
 								}
@@ -333,7 +333,7 @@ public class TridasDoc implements Filetype {
 			s.setSampleType(SampleType.DIRECT);
 		
 		// prep generic fields
-		TridasGenericFieldMap genericFields = new TridasGenericFieldMap(series.getGenericField());
+		TridasGenericFieldMap genericFields = new TridasGenericFieldMap(series.getGenericFields());
 		
 		// easy metadata bits
 		s.setMeta(Metadata.NAME, series.getTitle());
@@ -384,7 +384,7 @@ public class TridasDoc implements Filetype {
 				if(variable.isSetNormalTridas()) {
 					if(variable.getNormalTridas() == NormalTridasVariable.RING_WIDTH) {
 						// compute our range!
-						s.setRange(new Range(firstYear, valuesElement.getValue().size()));
+						s.setRange(new Range(firstYear, valuesElement.getValues().size()));
 						s.setMeta(Metadata.UNITS, valuesElement.getUnit());
 					}
 				}

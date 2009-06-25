@@ -226,12 +226,12 @@ public class TestDialog extends JPanel {
 		TridasGenericField gf = new TridasGenericField();
 		gf.setName("abc");
 		gf.setValue("def");
-		radius.getGenericField().add(gf);
+		radius.getGenericFields().add(gf);
 
 		gf = new TridasGenericField();
 		gf.setName("123");
 		gf.setValue("456");
-		radius.getGenericField().add(gf);
+		radius.getGenericFields().add(gf);
 		////////////////////////////
 		
 		DateTime dtv = new DateTime();

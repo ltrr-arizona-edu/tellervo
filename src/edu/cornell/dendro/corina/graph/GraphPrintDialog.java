@@ -206,7 +206,7 @@ public class GraphPrintDialog extends JPanel {
 					// do some magic to set up the pdf context
 					PdfContentByte cb = writer.getDirectContent();
 					Graphics2D g = cb.createGraphicsShapes(pageSize
-							.width(), pageSize.height());
+							.getWidth(), pageSize.getHeight());
 
 					plotter.computeRange(pinfo, g);
 					plotter.paintGraph(g, pinfo);

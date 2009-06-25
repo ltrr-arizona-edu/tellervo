@@ -62,7 +62,7 @@ public class SeriesResource extends CorinaEntityAssociatedResource<Sample> {
 	@Override
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
-		List<Object> content = object.getContent().getSqlOrObjectOrElement();
+		List<Object> content = object.getContent().getSqlsAndObjectsAndElements();
 		List<TridasObject> tridasObjects = ListUtil.subListOfType(content, TridasObject.class);
 		List<BaseSeries> tridasSeries = ListUtil.subListOfType(content, BaseSeries.class);
 		List<BaseSample> samples = new ArrayList<BaseSample>();

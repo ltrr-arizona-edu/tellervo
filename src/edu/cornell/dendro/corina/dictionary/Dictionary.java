@@ -34,7 +34,7 @@ public class Dictionary extends CorinaResource {
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
 		
-		List<Object> content = object.getContent().getSqlOrObjectOrElement();
+		List<Object> content = object.getContent().getSqlsAndObjectsAndElements();
 
 		for(Object o : content) {
 			XmlRootElement dict;

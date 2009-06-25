@@ -133,7 +133,7 @@ public class EntitySearchResource<T extends TridasEntity> extends
 			throws ResourceException {
 		
 		// make a list of all of the types we want
-		setAssociatedResult((List<T>) ListUtil.subListOfType(object.getContent().getSqlOrObjectOrElement(), returnType));
+		setAssociatedResult((List<T>) ListUtil.subListOfType(object.getContent().getSqlsAndObjectsAndElements(), returnType));
 		
 		return true;
 	}
