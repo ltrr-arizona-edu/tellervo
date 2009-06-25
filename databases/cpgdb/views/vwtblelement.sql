@@ -13,3 +13,5 @@ CREATE VIEW vwtblelement AS
    LEFT JOIN tlkpelementtype tbltype ON tblelement.elementtypeid = tbltype.elementtypeid
    LEFT JOIN tlkplocationtype loctype ON tblelement.locationtypeid = loctype.locationtypeid;
 
+GRANT ALL on vwtblradius to "Webgroup";
+

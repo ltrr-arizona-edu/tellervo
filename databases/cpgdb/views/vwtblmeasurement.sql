@@ -6,3 +6,5 @@ CREATE VIEW vwtblmeasurement AS
    FROM tblmeasurement, tblsecurityuser, tlkpdatingtype
   WHERE tblmeasurement.measuredbyid = tblsecurityuser.securityuserid AND tblmeasurement.datingtypeid = tlkpdatingtype.datingtypeid;
 
+GRANT ALL on vwtblradius to "Webgroup";
+

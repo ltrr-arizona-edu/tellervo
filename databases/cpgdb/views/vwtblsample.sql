@@ -8,3 +8,5 @@ CREATE VIEW vwtblsample AS
    LEFT JOIN tlkpdatecertainty dc ON s.datecertaintyid = dc.datecertaintyid
    LEFT JOIN tlkpsampletype st ON s.typeid = st.sampletypeid;
 
+GRANT ALL on vwtblradius to "Webgroup";
+

@@ -7,3 +7,5 @@ CREATE VIEW vwtblvmeasurement AS
    FROM tblvmeasurement, tlkpvmeasurementop
   WHERE tblvmeasurement.vmeasurementopid = tlkpvmeasurementop.vmeasurementopid;
 
+GRANT ALL on vwtblradius to "Webgroup";
+

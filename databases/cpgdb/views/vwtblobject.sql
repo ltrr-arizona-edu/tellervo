@@ -18,3 +18,5 @@ CREATE VIEW vwtblObject AS
               GROUP BY e.objectid) cquery 
         ON cquery.masterobjectid = tblobject.objectid;
 
+GRANT ALL on vwtblradius to "Webgroup";
+

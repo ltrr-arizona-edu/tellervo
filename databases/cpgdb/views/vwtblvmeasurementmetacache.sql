@@ -7,4 +7,5 @@ CREATE VIEW vwtblvmeasurementmetacache AS
         x(centroid(tblvmeasurementmetacache.vmextent::box3d::geometry)) AS measurementxcentroid, y(centroid(tblvmeasurementmetacache.vmextent::box3d::geometry)) AS measurementycentroid, 
         tblvmeasurementmetacache.vmextent AS measurementextent
    FROM tblvmeasurementmetacache;
+GRANT ALL on vwtblradius to "Webgroup";
 
