@@ -186,7 +186,6 @@
     <pathelement location="${MozillaInterfaces.jar}"/> 
     <pathelement location="${new-jfontchooser.jar}"/> 
     <pathelement location="${commons-lang.jar}"/> 
-  	<pathelement location="${TridasAnnotations.jar}"/>
   </path>
 
   <path id="xjc.classpath">
