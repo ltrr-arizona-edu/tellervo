@@ -10,19 +10,19 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.tridas.schema.TridasEntity;
+import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasIdentifier;
 
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 
 public class TridasEntityListHolder {
-	private HashMap<String, List<TridasEntity>> listMap;
+	private HashMap<String, List<ITridas>> listMap;
 	private HashMap<String, ListQueryHolder> queryMap;
 	private Window parentWindow;
 	
 	public TridasEntityListHolder() {
-		listMap = new HashMap<String, List<TridasEntity>>();
+		listMap = new HashMap<String, List<ITridas>>();
 		queryMap = new HashMap<String, ListQueryHolder>();
 	}
 	
@@ -35,7 +35,7 @@ public class TridasEntityListHolder {
 	 * 
 	 * @param parentObject
 	 */
-	public synchronized void prepareChildList(TridasEntity parentObject) {
+	public synchronized void prepareChildList(ITridas parentObject) {
 		// no identifier, can't get a list
 		if(!parentObject.isSetIdentifier())
 			return;
@@ -48,11 +48,11 @@ public class TridasEntityListHolder {
 		doPrepareChildList(parentObject, key);
 	}
 	
-	private ListQueryHolder doPrepareChildList(TridasEntity parentObject, String key) {
+	private ListQueryHolder doPrepareChildList(ITridas parentObject, String key) {
 		ListQueryHolder qh = new ListQueryHolder();
 
 		// make the resource (easy)
-		qh.resource = new EntitySearchResource<TridasEntity>(parentObject);
+		qh.resource = new EntitySearchResource<ITridas>(parentObject);
 		
 		// make the dialog
 		if(parentWindow == null || parentWindow instanceof Frame)
@@ -80,7 +80,7 @@ public class TridasEntityListHolder {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<TridasEntity> getChildList(TridasEntity parentObject, boolean goRemote) throws Exception {
+	public List<ITridas> getChildList(ITridas parentObject, boolean goRemote) throws Exception {
 		// no identifier -> no children!
 		if(!parentObject.isSetIdentifier()) {
 			return Collections.emptyList();
@@ -112,7 +112,7 @@ public class TridasEntityListHolder {
 
 		if(qh.dialog.isSuccessful()) {
 			// store the query results
-			List<TridasEntity> entities = new ArrayList<TridasEntity>(qh.resource.getAssociatedResult());
+			List<ITridas> entities = new ArrayList<ITridas>(qh.resource.getAssociatedResult());
 			listMap.put(key, entities);
 			
 			return entities;
@@ -126,7 +126,7 @@ public class TridasEntityListHolder {
 	 * @param parentObject
 	 * @return
 	 */
-	private String getKey(TridasEntity parentObject) {
+	private String getKey(ITridas parentObject) {
 		XmlRootElement root = parentObject.getClass().getAnnotation(XmlRootElement.class);
 		TridasIdentifier identifier = parentObject.getIdentifier();
 			
@@ -137,7 +137,7 @@ public class TridasEntityListHolder {
 	}
 
 	private static class ListQueryHolder {
-		public EntitySearchResource<TridasEntity> resource;
+		public EntitySearchResource<ITridas> resource;
 		public CorinaResourceAccessDialog dialog;
 	}
 

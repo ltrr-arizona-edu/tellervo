@@ -15,7 +15,7 @@ import javax.swing.JSeparator;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 
-import org.tridas.schema.TridasEntity;
+import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
 
 import com.lowagie.text.Font;
@@ -28,7 +28,7 @@ public class EntityListComboBox extends JComboBox {
 	public final static Object NEW_ITEM = new Object();
 	public final static Object SEPARATOR_ITEM = new Object();
 	
-	public EntityListComboBox(List<? extends TridasEntity> entities) {
+	public EntityListComboBox(List<? extends ITridas> entities) {
 		ArrayListModel<Object> model = new ArrayListModel<Object>();
 		
 		model.add(NEW_ITEM);
@@ -49,7 +49,7 @@ public class EntityListComboBox extends JComboBox {
 		finishInit();
 	}
 
-	public void setList(List<? extends TridasEntity> entities) {
+	public void setList(List<? extends ITridas> entities) {
 		ArrayListModel<Object> model = new ArrayListModel<Object>();
 		
 		model.add(NEW_ITEM);
@@ -128,8 +128,8 @@ public class EntityListComboBox extends JComboBox {
 			
 			String str;
 			if(value != null) {
-				if(value instanceof TridasEntity)
-					str = ((TridasEntity)value).getTitle();
+				if(value instanceof ITridas)
+					str = ((ITridas)value).getTitle();
 				else
 					str = value.toString();
 			}

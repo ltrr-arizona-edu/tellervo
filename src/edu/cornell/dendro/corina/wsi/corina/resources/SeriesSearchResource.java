@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.BaseSeries;
 
 import edu.cornell.dendro.corina.formats.TridasDoc;
@@ -52,14 +53,14 @@ public class SeriesSearchResource extends CorinaAssociatedResource<ElementList> 
 			throws ResourceException {
 		
 		// get a list of only the 'series' elements
-		List<BaseSeries> seriesList = ListUtil.subListOfType(
-				object.getContent().getSqlsAndObjectsAndElements(), BaseSeries.class);
+		List<ITridasSeries> seriesList = ListUtil.subListOfType(
+				object.getContent().getSqlsAndObjectsAndElements(), ITridasSeries.class);
 
 		// a list of our elements
 		ElementList elements = new ElementList(seriesList.size());
 		TridasDoc reader = new TridasDoc();
 		
-		for(BaseSeries series : seriesList) {
+		for(ITridasSeries series : seriesList) {
 			BaseSample sample;
 			
 			try {

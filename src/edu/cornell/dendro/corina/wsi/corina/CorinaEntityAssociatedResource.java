@@ -5,6 +5,7 @@ package edu.cornell.dendro.corina.wsi.corina;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasEntity;
@@ -27,7 +28,7 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		CorinaAssociatedResource<T> {
 	
 	private WSIEntity readOrDeleteEntity;
-	private TridasEntity createOrUpdateEntity;
+	private ITridas createOrUpdateEntity;
 	private String parentEntityID;
 
 	/**
@@ -37,7 +38,7 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 	 * @param parentEntityID the parent object id, requred only for create, optional for update
 	 * @param queryType one of create, update, or delete
 	 */
-	public CorinaEntityAssociatedResource(TridasEntity entity, String parentEntityID, 
+	public CorinaEntityAssociatedResource(ITridas entity, String parentEntityID, 
 			CorinaRequestType queryType) {
 		super(getXMLName(entity), queryType);
 		

@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tridas.schema.BaseSeries;
-import org.tridas.schema.TridasEntity;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
 
@@ -46,7 +45,7 @@ public class SeriesResource extends CorinaEntityAssociatedResource<Sample> {
 	 * @param parentEntityID
 	 * @param queryType
 	 */
-	public SeriesResource(TridasEntity entity, String parentEntityID,
+	public SeriesResource(ITridasSeries entity, String parentEntityID,
 			CorinaRequestType queryType) {
 		super(entity, parentEntityID, queryType);
 	}
@@ -64,7 +63,7 @@ public class SeriesResource extends CorinaEntityAssociatedResource<Sample> {
 			throws ResourceException {
 		List<Object> content = object.getContent().getSqlsAndObjectsAndElements();
 		List<TridasObject> tridasObjects = ListUtil.subListOfType(content, TridasObject.class);
-		List<BaseSeries> tridasSeries = ListUtil.subListOfType(content, BaseSeries.class);
+		List<ITridasSeries> tridasSeries = ListUtil.subListOfType(content, ITridasSeries.class);
 		List<BaseSample> samples = new ArrayList<BaseSample>();
 		
 		// init our loader
@@ -77,7 +76,7 @@ public class SeriesResource extends CorinaEntityAssociatedResource<Sample> {
 			}
 			
 			// now load any base series lying around (usually derived series here)
-			for(BaseSeries series : tridasSeries) {
+			for(ITridasSeries series : tridasSeries) {
 				BaseSample bs = doc.loadFromBaseSeries(series);
 				samples.add(bs);
 			}

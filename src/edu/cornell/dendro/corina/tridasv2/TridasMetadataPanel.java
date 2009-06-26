@@ -35,6 +35,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.tridas.interfaces.ITridas;
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -74,9 +75,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private EditType currentMode;
 	
 	/** A copy of the entity that we're currently editing */
-	private TridasEntity temporaryEditingEntity;
+	private ITridas temporaryEditingEntity;
 	/** A copy of the entity that we're currently selecting */
-	private TridasEntity temporarySelectingEntity;
+	private ITridas temporarySelectingEntity;
 	
 	private TridasEntityListHolder lists;
 	
@@ -178,7 +179,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				: "Click the lock to edit this " + currentMode.getTitle());
 		
 		if(enabled) {
-			temporaryEditingEntity = (TridasEntity) TridasCloner.clone(currentMode.getEntity(s));
+			temporaryEditingEntity = (ITridas) TridasCloner.clone(currentMode.getEntity(s));
 
 			// user chose to edit without choosing 'new', so be nice and make a new one for them
 			if(temporaryEditingEntity == null && topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
@@ -192,7 +193,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			temporaryEditingEntity = null;
 						
 			// don't display anything if we have nothingk!
-			TridasEntity entity = currentMode.getEntity(s);
+			ITridas entity = currentMode.getEntity(s);
 			if(entity != null)
 				propertiesPanel.readFromObject(entity);
 		}
@@ -453,7 +454,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @param goRemote should we try and load from the remote server?
 	 * @return
 	 */
-	private List<? extends TridasEntity> getEntityList(boolean goRemote) {
+	private List<? extends ITridas> getEntityList(boolean goRemote) {
 		return getEntityList(currentMode, goRemote);
 	}
 	
@@ -464,7 +465,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @param goRemote should we try and load from the remote server?
 	 * @return
 	 */
-	private List<? extends TridasEntity> getEntityList(EditType mode, boolean goRemote) {
+	private List<? extends ITridas> getEntityList(EditType mode, boolean goRemote) {
 		switch(mode) {
 		case OBJECT:
 			return App.tridasObjects.getObjectList();
@@ -472,7 +473,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		case ELEMENT:
 		case SAMPLE:
 		case RADIUS: {
-			List<TridasEntity> list;
+			List<ITridas> list;
 			
 			try {
 				list = lists.getChildList(currentMode.previous().getEntity(s), goRemote);
@@ -482,7 +483,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			}
 
 			// get what we already have selected
-			TridasEntity singleton = mode.getEntity(s);
+			ITridas singleton = mode.getEntity(s);
 			
 			// stuff in the list? keep it
 			if(list != null && !list.isEmpty()) {
@@ -511,7 +512,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @param e2
 	 * @return
 	 */
-	private boolean matchEntities(TridasEntity e1, TridasEntity e2) {
+	private boolean matchEntities(ITridas e1, ITridas e2) {
 		// either are null? -> no match
 		if(e1 == null || e2 == null)
 			return false;
@@ -548,10 +549,10 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @param list
 	 * @return The entity in the list (may be another instance) or null
 	 */
-	private TridasEntity entityInList(TridasEntity entity, List<?> list) {
+	private ITridas entityInList(ITridas entity, List<?> list) {
 		for(Object o : list) {
-			if(o instanceof TridasEntity) {
-				TridasEntity otherEntity = (TridasEntity) o;
+			if(o instanceof ITridas) {
+				ITridas otherEntity = (ITridas) o;
 				
 				if(matchEntities(entity, otherEntity))
 					return otherEntity;
@@ -573,8 +574,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		if(obj == EntityListComboBox.NEW_ITEM) {
 			temporarySelectingEntity = currentMode.newInstance();
 		}
-		else if(obj instanceof TridasEntity) {
-			temporarySelectingEntity = (TridasEntity) obj;
+		else if(obj instanceof ITridas) {
+			temporarySelectingEntity = (ITridas) obj;
 			
 			// start loading the list of children right away
 			if(loadChildren && currentMode != EditType.RADIUS)
@@ -590,7 +591,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * 
 	 * @param entity
 	 */
-	private void selectInCombo(TridasEntity entity) {
+	private void selectInCombo(ITridas entity) {
 		// disable actionListener firing when we change combobox selection
 		topChooserListener.setEnabled(false);
 		
@@ -603,7 +604,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			ArrayListModel<Object> model = ((ArrayListModel<Object>) topChooser.getModel());
 
 			// find it in the list...
-			TridasEntity listEntity;
+			ITridas listEntity;
 			if ((listEntity = entityInList(entity, model)) != null) {
 				topChooser.setSelectedItem(listEntity);
 				return;
@@ -626,11 +627,11 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 */
 	private void populateComboAndSelect(boolean goRemote) {
 		// get the list of stuff that goes in the box
-		List<? extends TridasEntity> entityList = getEntityList(goRemote);
+		List<? extends ITridas> entityList = getEntityList(goRemote);
 		topChooser.setList(entityList);
 
 		// select what we already have, if it exists
-		TridasEntity selectedEntity = currentMode.getEntity(s);
+		ITridas selectedEntity = currentMode.getEntity(s);
 		// otherwise, if one thing is in the list, select it only
 		if(selectedEntity == null && entityList.size() == 1)
 			selectedEntity = entityList.get(0);
@@ -808,7 +809,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		SAMPLE(TridasSample.class, "Sample", "tridas/sample.png", Metadata.SAMPLE),
 		RADIUS(TridasRadius.class, "Radius", "tridas/radius.png", Metadata.RADIUS);
 		
-		private Class<? extends TridasEntity> type;
+		private Class<? extends ITridas> type;
 		private String displayTitle;
 		private String iconPath;
 		private String metadataTag;
@@ -818,7 +819,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		/** Has this been edited? */
 		private boolean hasChanged;
 			
-		private EditType(Class<? extends TridasEntity> type, String displayTitle, String iconPath, String metadataTag) {
+		private EditType(Class<? extends ITridas> type, String displayTitle, String iconPath, String metadataTag) {
 			this.type = type;
 			this.displayTitle = displayTitle;
 			this.iconPath = iconPath;
@@ -831,7 +832,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			return metadataTag;
 		}
 		
-		public Class<? extends TridasEntity> getType() {
+		public Class<? extends ITridas> getType() {
 			return type;
 		}
 		
@@ -849,8 +850,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		 * @param s
 		 * @return
 		 */
-		public TridasEntity getEntity(Sample s) {
-			return (TridasEntity) s.getMeta(metadataTag);
+		public ITridas getEntity(Sample s) {
+			return (ITridas) s.getMeta(metadataTag);
 		}
 		
 		/**
@@ -859,7 +860,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		 * @param s
 		 * @param entity
 		 */
-		public void setEntity(Sample s, TridasEntity entity) {
+		public void setEntity(Sample s, ITridas entity) {
 			s.setMeta(metadataTag, entity);
 		}
 		
@@ -900,9 +901,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			return hasChanged;
 		}
 		
-		public TridasEntity newInstance() {
+		public ITridas newInstance() {
 			try {
-				TridasEntity entity = type.newInstance();
+				ITridas entity = type.newInstance();
 				
 				entity.setTitle("New " + displayTitle);
 				

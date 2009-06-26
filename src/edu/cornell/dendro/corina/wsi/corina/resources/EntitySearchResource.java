@@ -5,6 +5,7 @@ package edu.cornell.dendro.corina.wsi.corina.resources;
 
 import java.util.List;
 
+import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasEntity;
@@ -17,7 +18,6 @@ import org.tridas.schema.TridasSample;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
-import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
@@ -34,11 +34,11 @@ import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
  * @author Lucas Madar
  *
  */
-public class EntitySearchResource<T extends TridasEntity> extends
+public class EntitySearchResource<T extends ITridas> extends
 		CorinaAssociatedResource<List<T>> {
 	
 	private SearchParameters searchParameters;
-	private Class<? extends TridasEntity> returnType;
+	private Class<? extends ITridas> returnType;
 
 	/**
 	 * Search for all direct children of this entity
@@ -46,7 +46,7 @@ public class EntitySearchResource<T extends TridasEntity> extends
 	 * (children: element, sample, radius)
 	 * @param parent
 	 */
-	public EntitySearchResource(TridasEntity parent) {
+	public EntitySearchResource(ITridas parent) {
 		super(getDirectChildSearchType(parent) + "Search", CorinaRequestType.SEARCH);
 		
 		searchParameters = new SearchParameters(getDirectChildSearchType(parent));
@@ -70,7 +70,7 @@ public class EntitySearchResource<T extends TridasEntity> extends
 	 * @param parent
 	 * @return
 	 */
-	private static SearchReturnObject getDirectChildSearchType(TridasEntity parent) {
+	private static SearchReturnObject getDirectChildSearchType(ITridas parent) {
 		if(parent instanceof TridasObject)
 			return SearchReturnObject.ELEMENT;
 		if(parent instanceof TridasElement)
@@ -86,7 +86,7 @@ public class EntitySearchResource<T extends TridasEntity> extends
 	 * @param parent
 	 * @return
 	 */
-	private static SearchParameterName getIdNameForEntity(TridasEntity parent) {
+	private static SearchParameterName getIdNameForEntity(ITridas parent) {
 		if(parent instanceof TridasObject)
 			return SearchParameterName.OBJECTID;
 		if(parent instanceof TridasElement)
@@ -102,7 +102,7 @@ public class EntitySearchResource<T extends TridasEntity> extends
 	 * @param value
 	 * @return
 	 */
-	private static Class<? extends TridasEntity> entityForSearchReturnObject(SearchReturnObject value) {
+	private static Class<? extends ITridas> entityForSearchReturnObject(SearchReturnObject value) {
 		switch(value) {
 		case OBJECT:
 			return TridasObject.class;

@@ -10,6 +10,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasDerivedSeries;
@@ -230,7 +231,7 @@ public class TridasDoc implements Filetype {
 		for(TridasElement element : obj.getElements()) {
 			for(TridasSample sample : element.getSamples()) {
 				for(TridasRadius radius : sample.getRadiuses()) {
-					for(TridasMeasurementSeries series : radius.getMeasurementSeries()) {
+					for(ITridasSeries series : radius.getMeasurementSeries()) {
 						BaseSample s = loadFromBaseSeries(series);
 						
 						s.setMeta(Metadata.OBJECT, obj);
@@ -314,7 +315,7 @@ public class TridasDoc implements Filetype {
 	 * @return
 	 * @throws IOException
 	 */
-	public BaseSample loadFromBaseSeries(BaseSeries series) throws IOException {
+	public BaseSample loadFromBaseSeries(ITridasSeries series) throws IOException {
 		BaseSample s;
 		
 		// if it has values, it's a sample. Otherwise, it's a basesample.
@@ -327,8 +328,10 @@ public class TridasDoc implements Filetype {
 		s.setMeta(Metadata.TITLE, series.getIdentifier().toString());
 		
 		// set up SampleType
-		if(series instanceof TridasDerivedSeries)
-			s.setSampleType(SampleType.fromString(series.getType().getValue()));
+		if(series instanceof TridasDerivedSeries) {
+			TridasDerivedSeries derived = (TridasDerivedSeries) series;
+			s.setSampleType(SampleType.fromString(derived.getType().getValue()));
+		}
 		else
 			s.setSampleType(SampleType.DIRECT);
 		
