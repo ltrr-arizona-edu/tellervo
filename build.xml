@@ -186,6 +186,7 @@
     <pathelement location="${MozillaInterfaces.jar}"/> 
     <pathelement location="${new-jfontchooser.jar}"/> 
     <pathelement location="${commons-lang.jar}"/> 
+  	<pathelement location="${TridasAnnotations.jar}"/>
   </path>
 
   <path id="xjc.classpath">
@@ -195,6 +196,9 @@
   	<pathelement location="Libraries/annotate-0.4.1.5.jar"/>
   	<pathelement location="Libraries/tools-0.4.1.5.jar"/>
   	<pathelement location="Libraries/annox-0.4.1.jar"/>
+  	<pathelement location="Libraries/xjc-if-ins.jar"/>
+  	<pathelement location="Libraries/TridasAandI.jar"/>
+    <pathelement location="Libraries/TridasAnnotationsPlugin.jar"/>
     <pathelement location="${commons-logging.jar}"/>
   </path>
 	
@@ -432,9 +436,15 @@
 -->
 	<target name="buildschema" description="Rebuild webservice schemas">
 		<!-- Compile the schema into java code -->
-		<xjc binding="schemagen/corina.xjb" destdir="src">
+		<xjc destdir="src">
 			<arg value="-Xcommons-lang" />
 			<arg value="-Xannotate" />
+			<arg value="-Xtridas-annotations" />
+			<arg value="-Xifins" />
+			<arg value="-extension" />
+			<binding dir="schemagen">
+				<include name="*.xjb" />
+			</binding>
 			<schema dir="src/edu/cornell/dendro/webservice/schemas">
 				<include name="corina.xsd" />
 				<include name="tridas.xsd" />
@@ -464,7 +474,7 @@
 	    		<include name="edu/cornell/dendro/corina/tridasv2/TridasObjectEx.java" />
 				<include name="edu/cornell/dendro/schema/**/*.java" />
 				<include name="net/opengis/gml/schema/**/*.java" />
-				<include name="org/tridas/schema/**/*.java" />
+				<include name="org/tridas/**/*.java" />
     		</fileset>
 	    </javadoc>
 	</target>
