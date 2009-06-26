@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+This file is for custom annotations applied to tridas objects
+-->
+<bindings 
+	version="2.1"
+	xmlns="http://java.sun.com/xml/ns/jaxb" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:annox="http://annox.dev.java.net"
+	extensionBindingPrefixes="annox"
+	xmlns:ta="http://annox.dev.java.net/org.tridas.annotations"
+	schemaLocation="../src/edu/cornell/dendro/webservice/schemas/tridas.xsd" node="/xs:schema">
+	
+	<bindings node="//xs:complexType[@name='tridasEntity']/xs:sequence/xs:element[@ref='identifier']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>
+	
+</bindings>

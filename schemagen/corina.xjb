@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0">
+<jaxb:bindings 
+	version="2.1"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	xmlns:ai="http://jaxb.dev.java.net/plugin/if_insertion"
+	extensionBindingPrefixes="xjc ai">
 
 	<!-- Make underscores significant; this fixes *most* of the ObjectFactory name collision errors -->
 	<jaxb:bindings>
-		<jaxb:globalBindings underscoreBinding="asCharInWord" generateIsSetMethod="true" typesafeEnumMemberName="generateName">
-			<jaxb:serializable />
+		<jaxb:globalBindings 
+				underscoreBinding="asCharInWord" 
+				generateIsSetMethod="true" 
+				enableFailFastCheck="true"
+				typesafeEnumMemberName="generateName">
+			<jaxb:serializable uid="1001"/>
+			<xjc:simple />
+			<xjc:treatRestrictionLikeNewType />
 		</jaxb:globalBindings>
 	</jaxb:bindings> 
 
@@ -20,6 +32,19 @@
 		<!-- Rename object element to custom class -->
 		<jaxb:bindings node="//xs:element[@name='object']">
 			<jaxb:class implClass="edu.cornell.dendro.corina.tridasv2.TridasObjectEx" />
+		</jaxb:bindings>
+		
+		<!-- Add ITridas interface to TridasEntity -->
+		<jaxb:bindings node="//xs:complexType[@name='tridasEntity']">
+			<ai:interfaces check="false">org.tridas.interfaces.ITridas</ai:interfaces>
+		</jaxb:bindings>
+
+		<!-- Add ITridasSeries interface to MeasurementSeries and DerivedSeries -->
+		<jaxb:bindings node="//xs:element[@name='measurementSeries']/xs:complexType">
+			<ai:interfaces check="false">org.tridas.interfaces.ITridasSeries</ai:interfaces>
+		</jaxb:bindings>
+		<jaxb:bindings node="//xs:element[@name='derivedSeries']/xs:complexType">
+			<ai:interfaces check="false">org.tridas.interfaces.ITridasSeries</ai:interfaces>
 		</jaxb:bindings>
 				
 		<!-- Fix some unconvertable strings -->
@@ -56,7 +81,6 @@
 				<jaxb:typesafeEnumMember value="Unspecified injury" name="UNSPECIFIED_INJURY" />
 			</jaxb:typesafeEnumClass>
 		</jaxb:bindings>
-
 	</jaxb:bindings>
 
 	<!-- Corina -->
