@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.swing.table.TableCellRenderer;
 
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.Date;
+import org.tridas.schema.DateTime;
 
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertyRendererRegistry;
@@ -13,6 +15,9 @@ import com.l2fprod.common.propertysheet.PropertyRendererRegistry;
 public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 	public TridasPropertyRendererFactory() {
 		super();
+		
+		super.registerRenderer(Date.class, new TridasDateTimeCellRenderer());
+		super.registerRenderer(DateTime.class, new TridasDateTimeCellRenderer());
 	}
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {

@@ -27,7 +27,7 @@ public class EntityProperty extends AbstractProperty {
 	public EntityProperty(String qname, String lname) {
 		childProperties = new ArrayList<EntityProperty>();
 		nChildProperties = 0;
-		isList = required = false;
+		isList = required = readOnly = false;
 		parentProperty = null;
 		
 		// it's a root node if there's no name!
@@ -230,6 +230,9 @@ public class EntityProperty extends AbstractProperty {
 	/** Is a dictionary attached to this? (if yes, ignore children) */
 	private boolean dictionaryAttached;
 	
+	/** Is it read only? */
+	private boolean readOnly;
+	
 	private int nChildProperties;
 	private List<EntityProperty> childProperties;
 	private EntityProperty parentProperty;
@@ -265,12 +268,16 @@ public class EntityProperty extends AbstractProperty {
 		return "<i>No documentation is available for this entity</i>";
 	}
 
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+	
 	public Class getType() {
 		return clazz;
 	}
 
 	public boolean isEditable() {
-		if(isList)
+		if(isList || readOnly)
 			return false;
 		return true;
 	}

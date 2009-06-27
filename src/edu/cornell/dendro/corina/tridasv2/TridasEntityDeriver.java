@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.tridas.annotations.TridasEditProperties;
 import org.tridas.schema.*;
 
 public class TridasEntityDeriver {
@@ -68,6 +69,7 @@ public class TridasEntityDeriver {
 				EntityProperty pd = fieldMap.get(f.getName());
 				XmlElement xmlElement;
 				XmlAttribute attribute;
+				TridasEditProperties fieldprops = f.getAnnotation(TridasEditProperties.class);
 
 				// is it an xml attribute?
 				if ((attribute = f.getAnnotation(XmlAttribute.class)) != null) {
@@ -115,16 +117,31 @@ public class TridasEntityDeriver {
 					}
 				}
 
+				// shouldn't happen...
+				if (pd.clazz == null)
+					throw new NullPointerException();
+
 				// skip things we ignore
 				if (ignoreClasses.contains(pd.clazz))
+					continue;			
+
+				TridasEditProperties classprops = pd.clazz.getAnnotation(TridasEditProperties.class);
+
+				// is it machine only? skip it!
+				if((classprops != null && classprops.machineOnly()) || (fieldprops != null && fieldprops.machineOnly()))
 					continue;
 				
+				// how about read only?
+				if((classprops != null && classprops.readOnly()) || (fieldprops != null && fieldprops.readOnly()))
+					pd.setReadOnly(true);
+
 				// add type to property list
 				parent.addChildProperty(pd);
 				nChildren++;
-
-				if (pd.clazz == null)
-					throw new NullPointerException();
+				
+				// is it marked as editor final?
+				if((classprops != null && classprops.finalType()) || (fieldprops != null && fieldprops.finalType())) 
+					continue;
 
 				// don't delve any deeper for enums
 				// only delve deeper if it's an XML-annotated class
