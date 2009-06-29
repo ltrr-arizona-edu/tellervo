@@ -7,14 +7,58 @@ This file is for custom annotations applied to tridas objects
 	xmlns="http://java.sun.com/xml/ns/jaxb" 
 	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
 	xmlns:annox="http://annox.dev.java.net"
-	extensionBindingPrefixes="annox"
+	extensionBindingPrefixes="annox ls"
 	xmlns:ta="http://annox.dev.java.net/org.tridas.annotations"
+	xmlns:ls="http://www.no0ne.org/xjc/plugin/prop-listener-injector"
 	schemaLocation="../src/edu/cornell/dendro/webservice/schemas/tridas.xsd" node="/xs:schema">
 	
-	<bindings node="//xs:complexType[@name='tridasEntity']/xs:sequence/xs:element[@ref='identifier']">
-  		<annox:annotate target="field">
+	<!-- Disable listener support by default -->	
+	<ls:listener-support type="NONE" />
+	
+	<!-- MACHINE ONLY THINGS -->
+	<bindings node="//xs:element[@name='identifier']/xs:complexType">
+  		<annox:annotate target="class">
 			<ta:TridasEditProperties machineOnly="true" />
 		</annox:annotate>	
 	</bindings>
-	
+
+	<bindings node="//xs:element[@name='genericField']/xs:complexType">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>
+
+	<bindings node="//xs:element[@name='values']/xs:complexType">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>
+		
+		<!-- Add propertychangelistener support -->	
+		<ls:listener-support type="BOUND" />		
+	</bindings>
+
+	<!-- read only -->
+	<bindings node="//xs:complexType[@name='tridasEntity']/xs:sequence/xs:element[@ref='createdTimestamp']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" />
+		</annox:annotate>	
+	</bindings>
+	<bindings node="//xs:complexType[@name='tridasEntity']/xs:sequence/xs:element[@ref='lastModifiedTimestamp']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" />
+		</annox:annotate>	
+	</bindings>
+
+	<!-- End of tree depth notes -->
+	<bindings node="//xs:complexType[@name='date']">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>
+
+	<bindings node="//xs:complexType[@name='dateTime']">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>	
 </bindings>

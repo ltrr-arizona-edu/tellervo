@@ -16,10 +16,10 @@
 				typesafeEnumMemberName="generateName">
 			<jaxb:serializable uid="1001"/>
 			<xjc:simple />
-			<xjc:treatRestrictionLikeNewType />
+			<xjc:treatRestrictionLikeNewType />			
 		</jaxb:globalBindings>
 	</jaxb:bindings> 
-
+	
 	<!-- Tridas schema. Prefix with 'Tridas'! -->
 	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/tridas.xsd" node="/xs:schema">
 		<jaxb:schemaBindings>
@@ -68,7 +68,6 @@
 			</jaxb:typesafeEnumClass>
 		</jaxb:bindings>
 
-
 		<jaxb:bindings node="//xs:simpleType[@name='normalTridasRemark']">
 			<jaxb:typesafeEnumClass>
 				<jaxb:typesafeEnumMember value="Fire damage" name="FIRE_DAMAGE" />
@@ -80,12 +79,12 @@
 				<jaxb:typesafeEnumMember value="Traumatic ducts" name="TRAUMATIC_DUCTS" />
 				<jaxb:typesafeEnumMember value="Unspecified injury" name="UNSPECIFIED_INJURY" />
 			</jaxb:typesafeEnumClass>
-		</jaxb:bindings>
+		</jaxb:bindings>				
 	</jaxb:bindings>
 
 	<!-- Corina -->
 	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/corina.xsd" node="/xs:schema">
-	
+		
 		<!-- Rename Corina root element to WSIRootElement -->
 		<jaxb:bindings node="//xs:element[@name='corina']">
 			<jaxb:class name="WSIRootElement" />
@@ -113,7 +112,7 @@
 				<jaxb:typesafeEnumMember value="!=" name="NOT_EQUALS" />
 			</jaxb:typesafeEnumClass>
 		</jaxb:bindings>
-		
+						
 	</jaxb:bindings>
 
 	<!-- GML -->
@@ -122,6 +121,5 @@
 			<jaxb:package name="net.opengis.gml.schema"/>
 		</jaxb:schemaBindings>
 	</jaxb:bindings>
-
 	
 </jaxb:bindings> 
