@@ -61,4 +61,78 @@ This file is for custom annotations applied to tridas objects
 			<ta:TridasEditProperties finalType="true" />
 		</annox:annotate>	
 	</bindings>	
+
+	<!-- - - - - - - - - - - -->
+	<!-- Dictionary bindings -->	
+	<!-- - - - - - - - - - - -->
+	
+	<!-- measurementSeries.analyst -->
+	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='analyst']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_GENERICID" dictionary="securityUser" identifierField="corina.analystID" />
+		</annox:annotate>
+	</bindings>	
+	
+	<!-- measurementSeries.dendrochronologist -->
+	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='dendrochronologist']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_GENERICID" dictionary="securityUser" identifierField="corina.dendrochronologistID" />
+		</annox:annotate>
+	</bindings>	
+
+	<!-- derivedSeries.author -->
+	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='author']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_GENERICID" dictionary="securityUser" identifierField="corina.authorID" />
+		</annox:annotate>
+	</bindings>	
+	
+	<!-- object.type -->
+	<bindings node="//xs:element[@name='object']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='type']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="objectType" />
+		</annox:annotate>
+	</bindings>	
+
+	<!-- object.coverage.coverageTemporal -->
+	<bindings node="//xs:element[@name='coverage']/xs:complexType/xs:sequence/xs:element[@ref='coverageTemporal']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="coverageTemporal" />
+		</annox:annotate>
+	</bindings>	
+
+	<!-- object.coverage.coverageTemporalFoundation -->
+	<bindings node="//xs:element[@name='coverage']/xs:complexType/xs:sequence/xs:element[@ref='coverageTemporalFoundation']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="coverageTemporalFoundation" />
+		</annox:annotate>
+	</bindings>	
+
+	<!-- element.type -->
+	<bindings node="//xs:element[@name='element']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='type']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="elementType" />
+		</annox:annotate>
+	</bindings>	
+	
+	<!-- element.shape -->
+	<bindings node="//xs:element[@name='element']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='shape']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="elementShape" />
+		</annox:annotate>
+	</bindings>	
+
+	<!-- element.taxon -->
+	<bindings node="//xs:element[@name='element']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='taxon']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="taxon" />
+		</annox:annotate>
+	</bindings>	
+	
+	<!-- sample.type -->
+	<bindings node="//xs:element[@name='sample']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='type']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="sampleType" />
+		</annox:annotate>
+	</bindings>		
 </bindings>

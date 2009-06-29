@@ -23,6 +23,8 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.annotations.TridasCustomDictionary;
+import org.tridas.annotations.TridasCustomDictionaryType;
 
 
 /**
@@ -92,6 +94,7 @@ public class TridasObject
 
     private final static long serialVersionUID = 1001L;
     @XmlElement(required = true)
+    @TridasCustomDictionary(dictionary = "objectType", type = TridasCustomDictionaryType.CORINA_CONTROLLEDVOC)
     protected ControlledVoc type;
     protected String description;
     protected TridasLinkSeries linkSeries;

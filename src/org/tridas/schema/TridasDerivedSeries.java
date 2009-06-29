@@ -27,6 +27,8 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.annotations.TridasCustomDictionary;
+import org.tridas.annotations.TridasCustomDictionaryType;
 import org.tridas.interfaces.ITridasSeries;
 
 
@@ -103,6 +105,7 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
     protected List<TridasLinkSeries> linkSeries;
     protected String objective;
     protected String standardizingMethod;
+    @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.authorID", type = TridasCustomDictionaryType.CORINA_GENERICID)
     protected String author;
     protected String version;
     protected String interpretationUnsolved;

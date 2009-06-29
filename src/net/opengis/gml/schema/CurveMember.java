@@ -67,8 +67,8 @@ public class CurveMember
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link CurveType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractCurveType }{@code >}
      *     {@link JAXBElement }{@code <}{@link LineStringType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractCurveType }{@code >}
      *     
      */
     public JAXBElement<? extends AbstractCurveType> get_Curve() {
@@ -81,8 +81,8 @@ public class CurveMember
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link CurveType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractCurveType }{@code >}
      *     {@link JAXBElement }{@code <}{@link LineStringType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractCurveType }{@code >}
      *     
      */
     public void set_Curve(JAXBElement<? extends AbstractCurveType> value) {

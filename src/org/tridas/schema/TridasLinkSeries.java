@@ -109,9 +109,9 @@ public class TridasLinkSeries
     private final static long serialVersionUID = 1001L;
     protected TridasLinkSeries.PreferredSeries preferredSeries;
     @XmlElements({
+        @XmlElement(name = "idRef", type = TridasLinkSeries.IdRef.class),
         @XmlElement(name = "identifier", type = TridasIdentifier.class),
-        @XmlElement(name = "xLink", type = TridasLinkSeries.XLink.class),
-        @XmlElement(name = "idRef", type = TridasLinkSeries.IdRef.class)
+        @XmlElement(name = "xLink", type = TridasLinkSeries.XLink.class)
     })
     protected List<Object> idRevesAndXLinksAndIdentifiers;
 
@@ -161,9 +161,9 @@ public class TridasLinkSeries
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link TridasLinkSeries.IdRef }
      * {@link TridasIdentifier }
      * {@link TridasLinkSeries.XLink }
-     * {@link TridasLinkSeries.IdRef }
      * 
      * 
      */

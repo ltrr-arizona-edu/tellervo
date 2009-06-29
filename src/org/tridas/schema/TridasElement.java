@@ -22,6 +22,8 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.annotations.TridasCustomDictionary;
+import org.tridas.annotations.TridasCustomDictionaryType;
 
 
 /**
@@ -86,13 +88,16 @@ public class TridasElement
 {
 
     private final static long serialVersionUID = 1001L;
+    @TridasCustomDictionary(dictionary = "elementType", type = TridasCustomDictionaryType.CORINA_CONTROLLEDVOC)
     protected ControlledVoc type;
     protected String description;
     protected TridasLinkSeries linkSeries;
     @XmlElement(name = "file")
     protected List<TridasFile> files;
     @XmlElement(required = true)
+    @TridasCustomDictionary(dictionary = "taxon", type = TridasCustomDictionaryType.CORINA_CONTROLLEDVOC)
     protected ControlledVoc taxon;
+    @TridasCustomDictionary(dictionary = "elementShape", type = TridasCustomDictionaryType.CORINA_CONTROLLEDVOC)
     protected TridasShape shape;
     protected TridasDimensions dimensions;
     protected String authenticity;
