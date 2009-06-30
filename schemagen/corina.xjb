@@ -36,7 +36,10 @@
 		
 		<!-- Add ITridas interface to TridasEntity -->
 		<jaxb:bindings node="//xs:complexType[@name='tridasEntity']">
-			<ai:interfaces check="false">org.tridas.interfaces.ITridas</ai:interfaces>
+			<ai:interfaces check="false">
+				org.tridas.interfaces.ITridas
+				org.tridas.interfaces.ITridasGeneric
+			</ai:interfaces>
 		</jaxb:bindings>
 
 		<!-- Add ITridasSeries interface to MeasurementSeries and DerivedSeries -->
@@ -111,6 +114,13 @@
 				<jaxb:typesafeEnumMember value="=" name="EQUALS" />
 				<jaxb:typesafeEnumMember value="!=" name="NOT_EQUALS" />
 			</jaxb:typesafeEnumClass>
+		</jaxb:bindings>
+		
+		<!-- Add IdAble interface to securityUser -->
+		<jaxb:bindings node="//xs:complexType[@name='securityUser']">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.IdAble
+			</ai:interfaces>
 		</jaxb:bindings>
 						
 	</jaxb:bindings>
