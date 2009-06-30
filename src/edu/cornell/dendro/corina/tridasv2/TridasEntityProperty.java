@@ -30,12 +30,12 @@ import edu.cornell.dendro.corina.tridasv2.doc.Documentation;
 import edu.cornell.dendro.corina.util.ListUtil;
 
 
-public class EntityProperty extends AbstractProperty {
+public class TridasEntityProperty extends AbstractProperty {
 	/**
 	 * Construct a tridas entity property
 	 */
-	public EntityProperty(String qname, String lname) {
-		childProperties = new ArrayList<EntityProperty>();
+	public TridasEntityProperty(String qname, String lname) {
+		childProperties = new ArrayList<TridasEntityProperty>();
 		nChildProperties = 0;
 		isList = required = readOnly = dictionaryAttached = false;
 		parentProperty = null;
@@ -47,7 +47,7 @@ public class EntityProperty extends AbstractProperty {
 		this.lname = lname;
 	}
 	
-	public void addChildProperty(EntityProperty property) {
+	public void addChildProperty(TridasEntityProperty property) {
 		childProperties.add(property);
 		nChildProperties++;
 		
@@ -55,7 +55,7 @@ public class EntityProperty extends AbstractProperty {
 			property.parentProperty = this;
 	}
 	
-	public List<EntityProperty> getChildProperties() {
+	public List<TridasEntityProperty> getChildProperties() {
 		return childProperties;
 	}
 	
@@ -77,7 +77,7 @@ public class EntityProperty extends AbstractProperty {
 				initializeValue(value); // avoid updating parent or firing
 										// property change
 				if (value != null) {
-					for (EntityProperty child : childProperties)
+					for (TridasEntityProperty child : childProperties)
 						child.readFromObject(value);
 				}
 			}
@@ -148,7 +148,7 @@ public class EntityProperty extends AbstractProperty {
 		return Dictionary.getDictionary(dictionary.dictionary() + "Dictionary");
 	}
 	
-	private static void ensureParentValuesExist(EntityProperty ep) {
+	private static void ensureParentValuesExist(TridasEntityProperty ep) {
 		// make sure that all values down the tree exist! 
 		if(ep.parentProperty != null)
 			ensureParentValuesExist(ep.parentProperty);
@@ -341,11 +341,11 @@ public class EntityProperty extends AbstractProperty {
 		
 		// reload any children
 		if (value != null) {
-			for (EntityProperty child : childProperties)
+			for (TridasEntityProperty child : childProperties)
 				child.readFromObject(value);
 		}
 		else {
-			for (EntityProperty child : childProperties)
+			for (TridasEntityProperty child : childProperties)
 				child.setValue(null);
 		}
 	}
@@ -365,7 +365,7 @@ public class EntityProperty extends AbstractProperty {
 			return false;
 		}
 		
-		EntityProperty ep = (EntityProperty) other;
+		TridasEntityProperty ep = (TridasEntityProperty) other;
 		
 		return qname.equals(ep.qname);
 	}
@@ -392,8 +392,8 @@ public class EntityProperty extends AbstractProperty {
 	private boolean readOnly;
 	
 	private int nChildProperties;
-	private List<EntityProperty> childProperties;
-	private EntityProperty parentProperty;
+	private List<TridasEntityProperty> childProperties;
+	private TridasEntityProperty parentProperty;
 	/** The object being acted upon from the root of this tree
 	 * Only valid when parentProperty == null
 	 */

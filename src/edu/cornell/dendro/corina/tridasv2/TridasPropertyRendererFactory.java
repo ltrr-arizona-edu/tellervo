@@ -22,8 +22,8 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {
 		// handle enums nicely
-		if(property instanceof EntityProperty) {
-			EntityProperty ep = (EntityProperty)property;
+		if(property instanceof TridasEntityProperty) {
+			TridasEntityProperty ep = (TridasEntityProperty)property;
 			
 			if(ep.getType().isEnum())
 				return new EnumComboBoxRenderer();
@@ -34,8 +34,8 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		
 		TableCellRenderer defaultRenderer = super.getRenderer(property);
 		
-		if(defaultRenderer == null && property instanceof EntityProperty) {
-			EntityProperty ep = (EntityProperty) property;
+		if(defaultRenderer == null && property instanceof TridasEntityProperty) {
+			TridasEntityProperty ep = (TridasEntityProperty) property;
 			
 			if(ep.isEditable() && ep.getChildProperties().size() > 0)
 				return new TridasDefaultPropertyRenderer();			

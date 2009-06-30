@@ -677,7 +677,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		currentMode = type;
 
 		// derive a property list
-        List<EntityProperty> properties = TridasEntityDeriver.buildDerivationList(type.getType());
+        List<TridasEntityProperty> properties = TridasEntityDeriver.buildDerivationList(type.getType());
         Property[] propArray = properties.toArray(new Property[properties.size()]);
         
         // set properties and load from entity

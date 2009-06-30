@@ -25,8 +25,8 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 	}
 	
 	public synchronized PropertyEditor getEditor(Property property) {
-		if(property instanceof EntityProperty) {
-			EntityProperty ep = (EntityProperty) property;
+		if(property instanceof TridasEntityProperty) {
+			TridasEntityProperty ep = (TridasEntityProperty) property;
 			
 			// Whew, it's an enum! Easy!
 			Class<?> type = ep.getType();
@@ -39,8 +39,8 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 
 		PropertyEditor defaultEditor = super.getEditor(property);
 
-		if(defaultEditor == null && property instanceof EntityProperty) {
-			EntityProperty ep = (EntityProperty) property;
+		if(defaultEditor == null && property instanceof TridasEntityProperty) {
+			TridasEntityProperty ep = (TridasEntityProperty) property;
 			
 			if(ep.getChildProperties().size() > 0)
 				return new TridasDefaultPropertyEditor();

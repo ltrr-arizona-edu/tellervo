@@ -42,9 +42,9 @@ public class TridasEntityDeriver {
 	 * @return the number of direct child properties of clazz
 	 */
 	private static int buildDerivationList(String entityName, Class<?> clazz,
-			EntityProperty parent, String rootName) {
+			TridasEntityProperty parent, String rootName) {
 		
-		Map<String, EntityProperty> fieldMap = new HashMap<String, EntityProperty>();
+		Map<String, TridasEntityProperty> fieldMap = new HashMap<String, TridasEntityProperty>();
 		int nChildren = 0;
 		
 		// get any property names and stick them at the head of the list
@@ -59,14 +59,14 @@ public class TridasEntityDeriver {
 				if (s.length() == 0)
 					continue;
 
-				EntityProperty pd = new EntityProperty(entityName + "." + s, s);
+				TridasEntityProperty pd = new TridasEntityProperty(entityName + "." + s, s);
 				pd.setCategoryPrefix(rootName);
 				fieldMap.put(s, pd);
 			}
 
 			for (Field f : clazz.getDeclaredFields()) {
 				String fieldType = f.getGenericType().toString();
-				EntityProperty pd = fieldMap.get(f.getName());
+				TridasEntityProperty pd = fieldMap.get(f.getName());
 				XmlElement xmlElement;
 				XmlAttribute attribute;
 				TridasEditProperties fieldprops = f.getAnnotation(TridasEditProperties.class);
@@ -76,7 +76,7 @@ public class TridasEntityDeriver {
 					if (pd != null)
 						throw new IllegalStateException("Attribute exists as element?");
 					
-					pd = new EntityProperty(entityName + ".@" + f.getName(), f.getName());
+					pd = new TridasEntityProperty(entityName + ".@" + f.getName(), f.getName());
 					pd.setCategoryPrefix(rootName);
 					pd.required = attribute.required();
 					pd.setType(f.getType(), f);
@@ -163,8 +163,8 @@ public class TridasEntityDeriver {
 		return nChildren;
 	}
 
-	public static List<EntityProperty> buildDerivationList(Class<?> clazz) {
-		EntityProperty rootEntity = new EntityProperty(null, null);
+	public static List<TridasEntityProperty> buildDerivationList(Class<?> clazz) {
+		TridasEntityProperty rootEntity = new TridasEntityProperty(null, null);
 		List<Class<?>> classDerivationTree = new ArrayList<Class<?>>();
 		String rootEntityName = null;
 
@@ -189,8 +189,8 @@ public class TridasEntityDeriver {
 		return rootEntity.getChildProperties();
 	}
 	
-	public static void dumpPropertyList(List<EntityProperty> propertyList, int depth) {		
-		for (EntityProperty pd : propertyList) {
+	public static void dumpPropertyList(List<TridasEntityProperty> propertyList, int depth) {		
+		for (TridasEntityProperty pd : propertyList) {
 			for(int i = 0; i < depth; i++)
 				System.out.print("   ");
 			//System.out.print(pd.getNiceName() + ": " + pd.clazz.getName());
@@ -208,7 +208,7 @@ public class TridasEntityDeriver {
 	}
 
 	public static void main(String[] args) {
-		List<EntityProperty> propertyList = new ArrayList<EntityProperty>();
+		List<TridasEntityProperty> propertyList = new ArrayList<TridasEntityProperty>();
 
 		propertyList = buildDerivationList(TridasRadius.class);
 		

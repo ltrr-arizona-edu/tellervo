@@ -144,7 +144,7 @@ public class TestDialog extends JPanel {
 			return;
 		}
 		
-        List<EntityProperty> properties = TridasEntityDeriver.buildDerivationList(type.getType());
+        List<TridasEntityProperty> properties = TridasEntityDeriver.buildDerivationList(type.getType());
         Property[] propArray = properties.toArray(new Property[properties.size()]);
         
 		propertySheet.setProperties(propArray);
