@@ -16,6 +16,8 @@ import org.tridas.schema.ControlledVoc;
 
 import com.lowagie.text.Font;
 
+import edu.cornell.dendro.corina.schema.SecurityUser;
+
 /**
  * @author Lucas Madar
  *
@@ -54,7 +56,19 @@ public class ListComboBoxItemRenderer extends JLabel implements ListCellRenderer
 		} 
 		else {
 			if(value instanceof ControlledVoc) {
-				setText(((ControlledVoc) value).getNormal());
+				ControlledVoc cv = (ControlledVoc) value;
+				
+				if(cv.isSetNormal())
+					setText(cv.getNormal());
+				else if(cv.isSetValue())
+					setText(cv.getValue());
+				else
+					setText("<invalid controlled vocabulary>");
+			}
+			else if(value instanceof SecurityUser) {
+				SecurityUser u = (SecurityUser) value;
+				
+				setText(u.getLastName() + ", " + u.getFirstName());
 			}
 			else
 				setText(value.toString());

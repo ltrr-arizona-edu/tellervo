@@ -526,46 +526,42 @@
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
-
+        
         <xs:element name="securityUserDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="user" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                            	<xs:sequence>
-                            		<xs:element name="memberOf">
-                            			<xs:complexType>
-                            				<xs:sequence>
-                            					<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded"/>
-                            				</xs:sequence>
-                            			</xs:complexType>
-                            		</xs:element>
-                            	</xs:sequence>                                	
-                                <xs:attribute name="id" type="xs:token" use="required"/>
-                                <xs:attribute name="username" type="xs:string" use="required"/>
-                                <xs:attribute name="firstName" type="xs:string" use="required"/>
-                                <xs:attribute name="lastName" type="xs:string" use="required"/>
-                                <xs:attribute name="isActive" type="xs:boolean" use="required"/>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="user" type="securityUser" minOccurs="0" maxOccurs="unbounded" />
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
 	
+		<xs:complexType name="securityUser">
+			<xs:sequence>
+				<xs:element name="memberOf">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="securityGroup" type="securityGroup" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:token" use="required" />
+			<xs:attribute name="username" type="xs:string" use="required" />
+			<xs:attribute name="firstName" type="xs:string" use="required" />
+			<xs:attribute name="lastName" type="xs:string" use="required" />
+			<xs:attribute name="isActive" type="xs:boolean" use="required" />
+		</xs:complexType>
 
-		<xs:element name="securityGroup">
-			<xs:complexType>
-				<xs:simpleContent>
-					<xs:extension base="xs:string">
-						<xs:attribute name="id" type="xs:token" use="required"/>
-						<xs:attribute name="name" type="xs:string" use="required"/>
-						<xs:attribute name="description" type="xs:string" use="required"/>
-						<xs:attribute name="isActive" type="xs:boolean" use="required"/>
-					</xs:extension>
-				</xs:simpleContent>
-			</xs:complexType>
-		</xs:element>
-
+		<xs:complexType name="securityGroup">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="id" type="xs:token" use="required"/>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute name="description" type="xs:string" use="required"/>
+					<xs:attribute name="isActive" type="xs:boolean" use="required"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
 	
 <!--
 	%%%%%%%%%%%%%%

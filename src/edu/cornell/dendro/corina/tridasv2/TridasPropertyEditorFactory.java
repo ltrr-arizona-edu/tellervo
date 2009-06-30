@@ -29,11 +29,12 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 			EntityProperty ep = (EntityProperty) property;
 			
 			// Whew, it's an enum! Easy!
-			if(ep.clazz.isEnum())
-				return new EnumComboBoxPropertyEditor(ep.clazz);
+			Class<?> type = ep.getType();
+			if(type.isEnum())
+				return new EnumComboBoxPropertyEditor(type);
 			
 			if(ep.isDictionaryAttached())
-				return new ListComboBoxPropertyEditor(DictionaryMappings.getDictionaryList(ep.qname));
+				return new ListComboBoxPropertyEditor(ep.getDictionary());
 		}
 
 		PropertyEditor defaultEditor = super.getEditor(property);

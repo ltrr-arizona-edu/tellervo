@@ -79,7 +79,7 @@ public class TridasEntityDeriver {
 					pd = new EntityProperty(entityName + ".@" + f.getName(), f.getName());
 					pd.setCategoryPrefix(rootName);
 					pd.required = attribute.required();
-					pd.clazz = f.getType();
+					pd.setType(f.getType(), f);
 				} else {
 					// ignore this field if we don't have property data for it
 					if (pd == null) {
@@ -96,7 +96,7 @@ public class TridasEntityDeriver {
 
 					if (fieldType.startsWith("class ")) {
 						// it's a java class, whew
-						pd.clazz = f.getType();
+						pd.setType(f.getType(), f);
 					} else if (fieldType.startsWith("java.util.List<")) {
 						// it's a list of something, yay generics!
 						int a = fieldType.indexOf('<');
@@ -104,7 +104,7 @@ public class TridasEntityDeriver {
 						String listType = fieldType.substring(a + 1, b);
 
 						try {
-							pd.clazz = Class.forName(listType);
+							pd.setType(Class.forName(listType), f);
 							pd.isList = true;
 						} catch (ClassNotFoundException e) {
 							System.out.println("Can't find class for list: "
@@ -117,15 +117,17 @@ public class TridasEntityDeriver {
 					}
 				}
 
+				Class<?> entType = pd.getType();
+				
 				// shouldn't happen...
-				if (pd.clazz == null)
+				if (entType == null)
 					throw new NullPointerException();
 
 				// skip things we ignore
-				if (ignoreClasses.contains(pd.clazz))
+				if (ignoreClasses.contains(entType))
 					continue;			
 
-				TridasEditProperties classprops = pd.clazz.getAnnotation(TridasEditProperties.class);
+				TridasEditProperties classprops = entType.getAnnotation(TridasEditProperties.class);
 
 				// is it machine only? skip it!
 				if((classprops != null && classprops.machineOnly()) || (fieldprops != null && fieldprops.machineOnly()))
@@ -145,16 +147,16 @@ public class TridasEntityDeriver {
 
 				// don't delve any deeper for enums
 				// only delve deeper if it's an XML-annotated class
-				if (pd.clazz.isEnum() || 
-						pd.clazz.getAnnotation(XmlType.class) == null) {
+				if (entType.isEnum() || 
+						entType.getAnnotation(XmlType.class) == null) {
 					continue;
 				}
 
 				// don't infinitely recurse
-				if (pd.clazz.equals(clazz))
+				if (entType.equals(clazz))
 					continue;
 
-				buildDerivationList(pd.qname, pd.clazz, pd, rootName);
+				buildDerivationList(pd.qname, entType, pd, rootName);
 			}
 		}
 		
@@ -192,7 +194,7 @@ public class TridasEntityDeriver {
 			for(int i = 0; i < depth; i++)
 				System.out.print("   ");
 			//System.out.print(pd.getNiceName() + ": " + pd.clazz.getName());
-			System.out.print(pd.qname + ": " + pd.clazz.getName());
+			System.out.print(pd.qname + ": " + pd.getType().getName());
 			if (pd.required)
 				System.out.print(" [REQUIRED] ");
 			if (pd.isList)

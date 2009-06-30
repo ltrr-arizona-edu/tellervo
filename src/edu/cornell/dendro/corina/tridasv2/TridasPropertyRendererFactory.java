@@ -25,7 +25,7 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		if(property instanceof EntityProperty) {
 			EntityProperty ep = (EntityProperty)property;
 			
-			if(ep.clazz.isEnum())
+			if(ep.getType().isEnum())
 				return new EnumComboBoxRenderer();
 			
 			if(ep.isDictionaryAttached())
