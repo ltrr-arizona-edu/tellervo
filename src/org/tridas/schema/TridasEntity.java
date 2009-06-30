@@ -23,6 +23,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.annotations.TridasEditProperties;
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasGeneric;
 
 
 /**
@@ -63,12 +64,12 @@ import org.tridas.interfaces.ITridas;
 @XmlSeeAlso({
     TridasObjectEx.class,
     BaseSeries.class,
-    TridasProject.class,
     TridasRadius.class,
     TridasSample.class,
-    TridasElement.class
+    TridasElement.class,
+    TridasProject.class
 })
-public abstract class TridasEntity implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, ITridas
+public abstract class TridasEntity implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, ITridas, ITridasGeneric
 {
 
     private final static long serialVersionUID = 1001L;

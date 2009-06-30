@@ -24,6 +24,7 @@ import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
 
 import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.schema.SecurityUser;
 import edu.cornell.dendro.corina.schema.WSIRequest.Dictionaries;
 import edu.cornell.dendro.corina.tridasv2.doc.Documentation;
 import edu.cornell.dendro.corina.util.ListUtil;
@@ -64,6 +65,10 @@ public class EntityProperty extends AbstractProperty {
 	 * the capitalized Property name.
 	 */
 	public void readFromObject(Object object) {
+		// memorize our 'root' object so we can make non-obvious changes to it
+		if(parentProperty == null)
+			rootObject = object;
+		
 		try {
 			Method method = BeanUtils.getReadMethod(object.getClass(),
 					getName());
@@ -91,7 +96,7 @@ public class EntityProperty extends AbstractProperty {
 			Method method = BeanUtils.getWriteMethod(object.getClass(),
 					getName(), getType());
 			if (method != null) {
-				method.invoke(object, new Object[] { getValue() });
+				method.invoke(object, new Object[] { getTranslatedValue() });
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -170,10 +175,32 @@ public class EntityProperty extends AbstractProperty {
 		
 		return false;
 	}
-	
-	@Override 
-	public Object getValue() {
-		return super.getValue();
+		
+	private Object getTranslatedValue() {
+		Object value = getValue();
+		
+		if(!dictionaryAttached)
+			return value;
+		
+		switch(dictionary.type()) {
+		case CORINA_GENERICID:
+			if(value instanceof IdAble) {
+				// security user: First Last (it's really just for show)
+				if(value instanceof SecurityUser) {
+					SecurityUser user = (SecurityUser) value;
+					
+					return user.getFirstName() + " " + user.getLastName();
+				}
+				else
+					throw new IllegalStateException("Don't know how to translate for " + value.getClass().getName());
+			}
+			else
+				return value;
+
+		// default case: just return the value
+		default:
+			return value;
+		}
 	}
 
 	private Object transformDictionaryValue(Object value) {
@@ -222,27 +249,33 @@ public class EntityProperty extends AbstractProperty {
 		 * This means this dictionary element ties with a generic field!
 		 */
 		case CORINA_GENERICID: {
-			if(parentProperty == null)
-				throw new IllegalStateException("GenericID dictionary attached, but no parent property for " + this.qname);
+			Object ancestor;
+
+			if(parentProperty == null) {
+				// we're top level, so get our 'root' object
+				if(rootObject == null)
+					throw new IllegalStateException("GenericID dictionary attached to tree root, but no root object for " + this.qname);
+				ancestor = rootObject;
+			}
+			else {
+				// not top level, so get our parent's value
+				ancestor = parentProperty.getValue();
+				
+				if(ancestor == null)
+					throw new IllegalStateException("GenericID dictionary attached to object, but no parent value for " + this.qname);
+			}
 			
-			Object parentValue = parentProperty.getValue();
-			if(!(parentValue instanceof ITridasGeneric))
+			if(!(ancestor instanceof ITridasGeneric))
 				throw new IllegalStateException("GenericID dictionary attached, but parent isn't generic for " + this.qname);
 			
 			// ok, now we have our parent value that has the associated generic fields
-			ITridasGeneric generic = (ITridasGeneric) parentValue;
+			ITridasGeneric generic = (ITridasGeneric) ancestor;
 			
 			// IdAble? Nice, just set the generic fields then
 			if(value instanceof IdAble) {
 				GenericFieldUtils.setField(generic, dictionary.identifierField(), 
 						((IdAble)value).getId());
 				return value;
-			}
-
-			// if it's null or empty string, remove the field (setField does this)
-			if(value == null || "".equals(value.toString())) {
-				GenericFieldUtils.setField(generic, dictionary.identifierField(), null);
-				return null;
 			}
 			
 			// ok, no match then. Let's look by id!
@@ -253,10 +286,15 @@ public class EntityProperty extends AbstractProperty {
 				List<IdAble> vocabulary = ListUtil.subListOfType(getDictionary(), IdAble.class);
 				for(IdAble idable : vocabulary) {
 					if(givenId.equals(idable.getId())) {
-						System.out.println("Found " + value + " by id lookup as " + idable.toString());
 						return idable;
 					}
 				}
+			}
+
+			// if it's null or empty string, remove the field (setField does this)
+			if(value == null || "".equals(value.toString())) {
+				GenericFieldUtils.setField(generic, dictionary.identifierField(), null);
+				return null;
 			}
 
 			// ok then. Give up!
@@ -331,7 +369,6 @@ public class EntityProperty extends AbstractProperty {
 		
 		return qname.equals(ep.qname);
 	}
-	
 
 	/** The fully qualified name of this property (e.g. object.title) */
 	public final String qname;
@@ -357,6 +394,10 @@ public class EntityProperty extends AbstractProperty {
 	private int nChildProperties;
 	private List<EntityProperty> childProperties;
 	private EntityProperty parentProperty;
+	/** The object being acted upon from the root of this tree
+	 * Only valid when parentProperty == null
+	 */
+	private Object rootObject;
 	
 	private String categoryPrefix = "Entity";
 	

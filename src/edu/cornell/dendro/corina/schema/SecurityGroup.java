@@ -1,14 +1,15 @@
 
-package org.tridas.schema;
+package edu.cornell.dendro.corina.schema;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -25,21 +26,18 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 
 
 /**
- * 
- * 				A controlled vocabulary is used to limit users to a pick list of values
- * 			
- * 
- * <p>Java class for controlledVoc complex type.
+ * <p>Java class for securityGroup complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="controlledVoc">
+ * &lt;complexType name="securityGroup">
  *   &lt;simpleContent>
  *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
- *       &lt;attribute name="normalStd" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *       &lt;attribute name="normalId" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *       &lt;attribute name="normal" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}token" />
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="description" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="isActive" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *     &lt;/extension>
  *   &lt;/simpleContent>
  * &lt;/complexType>
@@ -48,33 +46,26 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "controlledVoc", propOrder = {
+@XmlType(name = "securityGroup", propOrder = {
     "value"
 })
-@XmlSeeAlso({
-    TridasMeasuringMethod.class,
-    TridasShape.class,
-    TridasRemark.class,
-    TridasUnit.class,
-    TridasVariable.class,
-    TridasCategory.class
-})
-public class ControlledVoc
+public class SecurityGroup
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
     @XmlValue
     protected String value;
-    @XmlAttribute
-    @XmlSchemaType(name = "anySimpleType")
-    protected String normalStd;
-    @XmlAttribute
-    @XmlSchemaType(name = "anySimpleType")
-    protected String normalId;
-    @XmlAttribute
-    @XmlSchemaType(name = "anySimpleType")
-    protected String normal;
+    @XmlAttribute(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "token")
+    protected String id;
+    @XmlAttribute(required = true)
+    protected String name;
+    @XmlAttribute(required = true)
+    protected String description;
+    @XmlAttribute(name = "isActive", required = true)
+    protected boolean isActive;
 
     /**
      * Gets the value of the value property.
@@ -105,106 +96,127 @@ public class ControlledVoc
     }
 
     /**
-     * Gets the value of the normalStd property.
+     * Gets the value of the id property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getNormalStd() {
-        return normalStd;
+    public String getId() {
+        return id;
     }
 
     /**
-     * Sets the value of the normalStd property.
+     * Sets the value of the id property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setNormalStd(String value) {
-        this.normalStd = value;
+    public void setId(String value) {
+        this.id = value;
     }
 
-    public boolean isSetNormalStd() {
-        return (this.normalStd!= null);
+    public boolean isSetId() {
+        return (this.id!= null);
     }
 
     /**
-     * Gets the value of the normalId property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getNormalId() {
-        return normalId;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the normalId property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setNormalId(String value) {
-        this.normalId = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
-    public boolean isSetNormalId() {
-        return (this.normalId!= null);
+    public boolean isSetName() {
+        return (this.name!= null);
     }
 
     /**
-     * Gets the value of the normal property.
+     * Gets the value of the description property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getNormal() {
-        return normal;
+    public String getDescription() {
+        return description;
     }
 
     /**
-     * Sets the value of the normal property.
+     * Sets the value of the description property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setNormal(String value) {
-        this.normal = value;
+    public void setDescription(String value) {
+        this.description = value;
     }
 
-    public boolean isSetNormal() {
-        return (this.normal!= null);
+    public boolean isSetDescription() {
+        return (this.description!= null);
+    }
+
+    /**
+     * Gets the value of the isActive property.
+     * 
+     */
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    /**
+     * Sets the value of the isActive property.
+     * 
+     */
+    public void setIsActive(boolean value) {
+        this.isActive = value;
+    }
+
+    public boolean isSetIsActive() {
+        return true;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
-        if (!(object instanceof ControlledVoc)) {
+        if (!(object instanceof SecurityGroup)) {
             equalsBuilder.appendSuper(false);
             return ;
         }
         if (this == object) {
             return ;
         }
-        final ControlledVoc that = ((ControlledVoc) object);
+        final SecurityGroup that = ((SecurityGroup) object);
         equalsBuilder.append(this.getValue(), that.getValue());
-        equalsBuilder.append(this.getNormalStd(), that.getNormalStd());
-        equalsBuilder.append(this.getNormalId(), that.getNormalId());
-        equalsBuilder.append(this.getNormal(), that.getNormal());
+        equalsBuilder.append(this.getId(), that.getId());
+        equalsBuilder.append(this.getName(), that.getName());
+        equalsBuilder.append(this.getDescription(), that.getDescription());
+        equalsBuilder.append(this.isIsActive(), that.isIsActive());
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof ControlledVoc)) {
+        if (!(object instanceof SecurityGroup)) {
             return false;
         }
         if (this == object) {
@@ -217,9 +229,10 @@ public class ControlledVoc
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
         hashCodeBuilder.append(this.getValue());
-        hashCodeBuilder.append(this.getNormalStd());
-        hashCodeBuilder.append(this.getNormalId());
-        hashCodeBuilder.append(this.getNormal());
+        hashCodeBuilder.append(this.getId());
+        hashCodeBuilder.append(this.getName());
+        hashCodeBuilder.append(this.getDescription());
+        hashCodeBuilder.append(this.isIsActive());
     }
 
     public int hashCode() {
@@ -235,19 +248,24 @@ public class ControlledVoc
             toStringBuilder.append("value", theValue);
         }
         {
-            String theNormalStd;
-            theNormalStd = this.getNormalStd();
-            toStringBuilder.append("normalStd", theNormalStd);
+            String theId;
+            theId = this.getId();
+            toStringBuilder.append("id", theId);
         }
         {
-            String theNormalId;
-            theNormalId = this.getNormalId();
-            toStringBuilder.append("normalId", theNormalId);
+            String theName;
+            theName = this.getName();
+            toStringBuilder.append("name", theName);
         }
         {
-            String theNormal;
-            theNormal = this.getNormal();
-            toStringBuilder.append("normal", theNormal);
+            String theDescription;
+            theDescription = this.getDescription();
+            toStringBuilder.append("description", theDescription);
+        }
+        {
+            boolean theIsActive;
+            theIsActive = this.isIsActive();
+            toStringBuilder.append("isActive", theIsActive);
         }
     }
 
@@ -258,7 +276,7 @@ public class ControlledVoc
     }
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
-        final ControlledVoc copy = ((target == null)?((ControlledVoc) createCopy()):((ControlledVoc) target));
+        final SecurityGroup copy = ((target == null)?((SecurityGroup) createCopy()):((SecurityGroup) target));
         {
             String sourceValue;
             sourceValue = this.getValue();
@@ -266,22 +284,28 @@ public class ControlledVoc
             copy.setValue(copyValue);
         }
         {
-            String sourceNormalStd;
-            sourceNormalStd = this.getNormalStd();
-            String copyNormalStd = ((String) copyBuilder.copy(sourceNormalStd));
-            copy.setNormalStd(copyNormalStd);
+            String sourceId;
+            sourceId = this.getId();
+            String copyId = ((String) copyBuilder.copy(sourceId));
+            copy.setId(copyId);
         }
         {
-            String sourceNormalId;
-            sourceNormalId = this.getNormalId();
-            String copyNormalId = ((String) copyBuilder.copy(sourceNormalId));
-            copy.setNormalId(copyNormalId);
+            String sourceName;
+            sourceName = this.getName();
+            String copyName = ((String) copyBuilder.copy(sourceName));
+            copy.setName(copyName);
         }
         {
-            String sourceNormal;
-            sourceNormal = this.getNormal();
-            String copyNormal = ((String) copyBuilder.copy(sourceNormal));
-            copy.setNormal(copyNormal);
+            String sourceDescription;
+            sourceDescription = this.getDescription();
+            String copyDescription = ((String) copyBuilder.copy(sourceDescription));
+            copy.setDescription(copyDescription);
+        }
+        {
+            boolean sourceIsActive;
+            sourceIsActive = this.isIsActive();
+            boolean copyIsActive = ((boolean) copyBuilder.copy(sourceIsActive));
+            copy.setIsActive(copyIsActive);
         }
         return copy;
     }
@@ -292,7 +316,7 @@ public class ControlledVoc
     }
 
     public Object createCopy() {
-        return new ControlledVoc();
+        return new SecurityGroup();
     }
 
 }

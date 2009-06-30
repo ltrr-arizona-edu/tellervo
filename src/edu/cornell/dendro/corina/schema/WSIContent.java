@@ -84,29 +84,29 @@ public class WSIContent
 
     private final static long serialVersionUID = 1001L;
     @XmlElements({
-        @XmlElement(name = "elementTypeDictionary", type = WSIElementTypeDictionary.class),
-        @XmlElement(name = "locationTypeDictionary", type = WSILocationTypeDictionary.class),
-        @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.2", type = TridasSample.class),
-        @XmlElement(name = "object", namespace = "http://www.tridas.org/1.2", type = TridasObjectEx.class),
-        @XmlElement(name = "element", namespace = "http://www.tridas.org/1.2", type = TridasElement.class),
-        @XmlElement(name = "coverageTemporalDictionary", type = WSICoverageTemporalDictionary.class),
-        @XmlElement(name = "objectTypeDictionary", type = WSIObjectTypeDictionary.class),
-        @XmlElement(name = "securityUserDictionary", type = WSISecurityUserDictionary.class),
-        @XmlElement(name = "regionDictionary", type = WSIRegionDictionary.class),
         @XmlElement(name = "taxonDictionary", type = WSITaxonDictionary.class),
-        @XmlElement(name = "datingTypeDictionary", type = WSIDatingTypeDictionary.class),
-        @XmlElement(name = "derivedSeries", namespace = "http://www.tridas.org/1.2", type = TridasDerivedSeries.class),
-        @XmlElement(name = "measurementVariableDictionary", type = WSIMeasurementVariableDictionary.class),
-        @XmlElement(name = "sapwoodDictionary", type = WSISapwoodDictionary.class),
-        @XmlElement(name = "radius", namespace = "http://www.tridas.org/1.2", type = TridasRadius.class),
-        @XmlElement(name = "elementShapeDictionary", type = WSIElementShapeDictionary.class),
-        @XmlElement(name = "sampleTypeDictionary", type = WSISampleTypeDictionary.class),
-        @XmlElement(name = "readingNoteDictionary", type = WSIReadingNoteDictionary.class),
-        @XmlElement(name = "elementAuthenticityDictionary", type = WSIElementAuthenticityDictionary.class),
-        @XmlElement(name = "sql"),
         @XmlElement(name = "heartwoodDictionary", type = WSIHeartwoodDictionary.class),
+        @XmlElement(name = "coverageTemporalDictionary", type = WSICoverageTemporalDictionary.class),
+        @XmlElement(name = "measurementVariableDictionary", type = WSIMeasurementVariableDictionary.class),
+        @XmlElement(name = "regionDictionary", type = WSIRegionDictionary.class),
+        @XmlElement(name = "datingTypeDictionary", type = WSIDatingTypeDictionary.class),
+        @XmlElement(name = "securityUserDictionary", type = WSISecurityUserDictionary.class),
+        @XmlElement(name = "elementShapeDictionary", type = WSIElementShapeDictionary.class),
+        @XmlElement(name = "elementAuthenticityDictionary", type = WSIElementAuthenticityDictionary.class),
+        @XmlElement(name = "element", namespace = "http://www.tridas.org/1.2", type = TridasElement.class),
+        @XmlElement(name = "derivedSeries", namespace = "http://www.tridas.org/1.2", type = TridasDerivedSeries.class),
+        @XmlElement(name = "sapwoodDictionary", type = WSISapwoodDictionary.class),
+        @XmlElement(name = "sampleTypeDictionary", type = WSISampleTypeDictionary.class),
         @XmlElement(name = "measurementSeries", namespace = "http://www.tridas.org/1.2", type = TridasMeasurementSeries.class),
-        @XmlElement(name = "coverageTemporalFoundationDictionary", type = WSICoverageTemporalFoundationDictionary.class)
+        @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.2", type = TridasSample.class),
+        @XmlElement(name = "elementTypeDictionary", type = WSIElementTypeDictionary.class),
+        @XmlElement(name = "sql"),
+        @XmlElement(name = "locationTypeDictionary", type = WSILocationTypeDictionary.class),
+        @XmlElement(name = "coverageTemporalFoundationDictionary", type = WSICoverageTemporalFoundationDictionary.class),
+        @XmlElement(name = "object", namespace = "http://www.tridas.org/1.2", type = TridasObjectEx.class),
+        @XmlElement(name = "objectTypeDictionary", type = WSIObjectTypeDictionary.class),
+        @XmlElement(name = "readingNoteDictionary", type = WSIReadingNoteDictionary.class),
+        @XmlElement(name = "radius", namespace = "http://www.tridas.org/1.2", type = TridasRadius.class)
     })
     protected List<Object> sqlsAndObjectsAndElements;
 
@@ -128,29 +128,29 @@ public class WSIContent
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link WSIElementTypeDictionary }
-     * {@link WSILocationTypeDictionary }
-     * {@link TridasSample }
-     * {@link TridasObject }
-     * {@link TridasElement }
-     * {@link WSICoverageTemporalDictionary }
-     * {@link WSIObjectTypeDictionary }
-     * {@link WSISecurityUserDictionary }
-     * {@link WSIRegionDictionary }
      * {@link WSITaxonDictionary }
-     * {@link WSIDatingTypeDictionary }
-     * {@link TridasDerivedSeries }
-     * {@link WSIMeasurementVariableDictionary }
-     * {@link WSISapwoodDictionary }
-     * {@link TridasRadius }
-     * {@link WSIElementShapeDictionary }
-     * {@link WSISampleTypeDictionary }
-     * {@link WSIReadingNoteDictionary }
-     * {@link WSIElementAuthenticityDictionary }
-     * {@link Object }
      * {@link WSIHeartwoodDictionary }
+     * {@link WSICoverageTemporalDictionary }
+     * {@link WSIMeasurementVariableDictionary }
+     * {@link WSIRegionDictionary }
+     * {@link WSIDatingTypeDictionary }
+     * {@link WSISecurityUserDictionary }
+     * {@link WSIElementShapeDictionary }
+     * {@link WSIElementAuthenticityDictionary }
+     * {@link TridasElement }
+     * {@link TridasDerivedSeries }
+     * {@link WSISapwoodDictionary }
+     * {@link WSISampleTypeDictionary }
      * {@link TridasMeasurementSeries }
+     * {@link TridasSample }
+     * {@link WSIElementTypeDictionary }
+     * {@link Object }
+     * {@link WSILocationTypeDictionary }
      * {@link WSICoverageTemporalFoundationDictionary }
+     * {@link TridasObject }
+     * {@link WSIObjectTypeDictionary }
+     * {@link WSIReadingNoteDictionary }
+     * {@link TridasRadius }
      * 
      * 
      */
