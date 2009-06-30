@@ -5,39 +5,59 @@ package edu.cornell.dendro.corina.tridasv2;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import org.tridas.annotations.TridasCustomDictionary;
-import org.tridas.annotations.TridasCustomDictionaryType;
-import org.tridas.interfaces.ITridasGeneric;
-import org.tridas.interfaces.IdAble;
-import org.tridas.schema.ControlledVoc;
-import org.tridas.schema.TridasGenericField;
 
 import com.l2fprod.common.beans.BeanUtils;
 import com.l2fprod.common.propertysheet.AbstractProperty;
-import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
 
-import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.schema.SecurityUser;
-import edu.cornell.dendro.corina.schema.WSIRequest.Dictionaries;
 import edu.cornell.dendro.corina.tridasv2.doc.Documentation;
-import edu.cornell.dendro.corina.util.ListUtil;
 
 
 public class TridasEntityProperty extends AbstractProperty {
+	private static final long serialVersionUID = 1L;
+
+	/** The fully qualified name of this property (e.g. object.title) */
+	public final String qname;
+	
+	/** The local name of this property (e.g. title) */
+	public final String lname;
+	
+	/** The class of this property */
+	protected Class<?> clazz;
+	
+	public boolean isList;
+	
+	public boolean required;
+
+    /** Is this a root node? Ignore it as a parent */
+	protected boolean isRootNode;
+	  	
+	/** Is it read only? */
+	protected boolean readOnly;
+	
+	protected int nChildProperties;
+	
+	protected List<TridasEntityProperty> childProperties;
+		
+	protected TridasEntityProperty parentProperty;
+
+	/** The object being acted upon from the root of this tree
+	 * Only valid when parentProperty == null
+	 */
+	protected Object rootObject;
+	
+	protected String categoryPrefix = "Entity";
+	
 	/**
 	 * Construct a tridas entity property
 	 */
 	public TridasEntityProperty(String qname, String lname) {
 		childProperties = new ArrayList<TridasEntityProperty>();
 		nChildProperties = 0;
-		isList = required = readOnly = dictionaryAttached = false;
+		isList = required = readOnly = false;
 		parentProperty = null;
 		
 		// it's a root node if there's no name!
@@ -47,6 +67,22 @@ public class TridasEntityProperty extends AbstractProperty {
 		this.lname = lname;
 	}
 	
+	public TridasEntityProperty(TridasEntityProperty property) {
+		this.qname = property.qname;
+		this.lname = property.lname;
+		
+		this.clazz = property.clazz;
+		this.isList = property.isList;
+		this.required = property.required;
+		this.isRootNode = property.isRootNode;
+		this.readOnly = property.readOnly;
+		this.nChildProperties = property.nChildProperties;
+		this.childProperties = property.childProperties; // shallow copy!
+		this.parentProperty = property.parentProperty; // dangerous!
+		this.rootObject = property.rootObject;
+		this.categoryPrefix = property.categoryPrefix;
+	}
+
 	public void addChildProperty(TridasEntityProperty property) {
 		childProperties.add(property);
 		nChildProperties++;
@@ -54,56 +90,45 @@ public class TridasEntityProperty extends AbstractProperty {
 		if(!isRootNode)
 			property.parentProperty = this;
 	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == this) {
+			return true;
+		}
+		
+		if (other == null || !(other instanceof TridasEntityProperty)) {
+			return false;
+		}
+		
+		TridasEntityProperty ep = (TridasEntityProperty) other;
+		
+		return qname.equals(ep.qname);
+	}
+	
+	public String getCategory() {		
+		if (nChildProperties > 0 && !required) {
+			return categoryPrefix + " Other";
+		}
+		else
+			return categoryPrefix + " General";
+	}
 	
 	public List<TridasEntityProperty> getChildProperties() {
 		return childProperties;
 	}
 	
-	/**
-	 * Reads the value of this Property from the given object. It uses
-	 * reflection and looks for a method starting with "is" or "get" followed by
-	 * the capitalized Property name.
-	 */
-	public void readFromObject(Object object) {
-		// memorize our 'root' object so we can make non-obvious changes to it
-		if(parentProperty == null)
-			rootObject = object;
-		
-		try {
-			Method method = BeanUtils.getReadMethod(object.getClass(),
-					getName());
-			if (method != null) {
-				Object value = method.invoke(object, (Object[]) null);
-				initializeValue(value); // avoid updating parent or firing
-										// property change
-				if (value != null) {
-					for (TridasEntityProperty child : childProperties)
-						child.readFromObject(value);
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public List<?> getDictionary() {
+		throw new IllegalArgumentException("No dictionary for " + qname);
 	}
-
-    /**
-	 * Writes the value of the Property to the given object. It uses reflection
-	 * and looks for a method starting with "set" followed by the capitalized
-	 * Property name and with one parameter with the same type as the Property.
-	 */
-	public void writeToObject(Object object) {
-		try {
-			Method method = BeanUtils.getWriteMethod(object.getClass(),
-					getName(), getType());
-			if (method != null) {
-				method.invoke(object, new Object[] { getTranslatedValue() });
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	  
 	
+	public String getDisplayName() {
+		return getNiceName();
+	}
+	
+	public String getName() {
+		return lname;
+	}
 	public String getNiceName() {
 		StringBuffer sb = new StringBuffer();
 		String[] nameTokens = qname.split("\\.");
@@ -135,20 +160,145 @@ public class TridasEntityProperty extends AbstractProperty {
 		
 		return sb.toString();
 	}
-
-	public boolean isDictionaryAttached() {
-		return dictionaryAttached;
+	
+	@Override
+	public Property getParentProperty() {
+		return parentProperty;
 	}
 	
-	public List<?> getDictionary() {
-		if(!dictionaryAttached)
-			throw new IllegalArgumentException("Can't get dictionary when it doesn't exist!");
+	public String getShortDescription() {
+		String docs = Documentation.getDocumentation(qname);
 		
-		// get the dictionary based on the available info
-		return Dictionary.getDictionary(dictionary.dictionary() + "Dictionary");
+		if(docs != null)
+			return docs;
+		
+		return "<i>No documentation is available for this entity</i>";
 	}
 	
-	private static void ensureParentValuesExist(TridasEntityProperty ep) {
+	@Override
+	public Property[] getSubProperties() {		
+		return childProperties.toArray(new Property[childProperties.size()]);	
+	}
+	public Class<?> getType() {
+		return clazz;
+	}
+	@Override
+	public int hashCode() {
+		return qname.hashCode();
+	}
+	
+	public boolean isDictionaryAttached() {
+		return false;
+	}
+	
+	public boolean isEditable() {
+		if(isList || readOnly)
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Reads the value of this Property from the given object. It uses
+	 * reflection and looks for a method starting with "is" or "get" followed by
+	 * the capitalized Property name.
+	 */
+	public void readFromObject(Object object) {
+		// memorize our 'root' object so we can make non-obvious changes to it
+		if(parentProperty == null)
+			rootObject = object;
+		
+		try {
+			Method method = BeanUtils.getReadMethod(object.getClass(),
+					getName());
+			if (method != null) {
+				Object value = method.invoke(object, (Object[]) null);
+				initializeValue(value); // avoid updating parent or firing
+										// property change
+				if (value != null) {
+					for (TridasEntityProperty child : childProperties)
+						child.readFromObject(value);
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public void setCategoryPrefix(String categoryPrefix) {
+		this.categoryPrefix = categoryPrefix.substring(0, 1).toUpperCase() + categoryPrefix.substring(1);
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	/**
+	 * Set the type of the class
+	 * 
+	 * Checks to see if we have dictionary mappings and
+	 * other annotations.
+	 * 
+	 * @param clazz
+	 * @param field
+	 */
+	public void setType(Class<?> clazz, Field field) {
+		this.clazz = clazz;		
+	}
+
+	@Override
+	public void setValue(Object value) {
+		// If the old value was null and the new value is empty string, 
+		// keep the old value.
+		if(getValue() == null && value != null) {
+			if(value.toString() == "")
+				value = null;
+		}
+		
+		super.setValue(getInternalTranslatedValue(value));
+		
+		if (parentProperty != null) {
+			
+			// if we have a legitimate value, make sure our structure exists
+			if(!isNullOrEmpty(value))
+				ensureParentValuesExist(parentProperty);
+
+			Object parentValue = parentProperty.getValue();
+			
+			if (parentValue != null) {
+				writeToObject(parentValue);
+				parentProperty.setValue(parentValue);
+			}
+		}
+		
+		// reload any children
+		if (value != null) {
+			for (TridasEntityProperty child : childProperties)
+				child.readFromObject(value);
+		}
+		else {
+			for (TridasEntityProperty child : childProperties)
+				child.setValue(null);
+		}
+	}
+
+	/**
+	 * Writes the value of the Property to the given object. It uses reflection
+	 * and looks for a method starting with "set" followed by the capitalized
+	 * Property name and with one parameter with the same type as the Property.
+	 */
+	public void writeToObject(Object object) {
+		try {
+			Method method = BeanUtils.getWriteMethod(object.getClass(),
+					getName(), getType());
+			if (method != null) {
+				method.invoke(object, new Object[] { getExternalTranslatedValue(getValue()) });
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private void ensureParentValuesExist(TridasEntityProperty ep) {
 		// make sure that all values down the tree exist! 
 		if(ep.parentProperty != null)
 			ensureParentValuesExist(ep.parentProperty);
@@ -175,302 +325,28 @@ public class TridasEntityProperty extends AbstractProperty {
 		
 		return false;
 	}
-		
-	private Object getTranslatedValue() {
-		Object value = getValue();
-		
-		if(!dictionaryAttached)
-			return value;
-		
-		switch(dictionary.type()) {
-		case CORINA_GENERICID:
-			if(value instanceof IdAble) {
-				// security user: First Last (it's really just for show)
-				if(value instanceof SecurityUser) {
-					SecurityUser user = (SecurityUser) value;
-					
-					return user.getFirstName() + " " + user.getLastName();
-				}
-				else
-					throw new IllegalStateException("Don't know how to translate for " + value.getClass().getName());
-			}
-			else
-				return value;
 
-		// default case: just return the value
-		default:
-			return value;
-		}
-	}
-
-	private Object transformDictionaryValue(Object value) {
-		if(!dictionaryAttached)
-			return value;
-
-		switch(dictionary.type()) {
-		/*
-		 * Controlled Vocabulary:
-		 * Simple enough; if given a controlled voc fall through
-		 * If given anything else, try to find it in the dictionary values
-		 * If that doesn't work, create a "dummy" controlled vocabulary
-		 */
-		case CORINA_CONTROLLEDVOC: {
-			// if it's already a controlled vocabulary, nothing to see here...
-			if(value instanceof ControlledVoc)
-				break;
-			
-			// clear the value, sure
-			if(value == null)
-				break;
-			
-			// get the associated dictionary
-			List<ControlledVoc> vocabulary = ListUtil.subListOfType(getDictionary(), ControlledVoc.class);
-
-			for(ControlledVoc voc : vocabulary) {
-				if(voc.getNormal().equalsIgnoreCase(value.toString())) {
-					System.err.println("Mapping given " + value.getClass().getName() + " value of " + value.toString() + 
-							" to " + voc.toString());
-					return voc;
-				}
-			}
-
-			System.err.println("Mapping given " + value.getClass().getName() + " value of " + value.toString() + 
-					" to new controlled vocabulary. Fix this!");
-			
-			ControlledVoc voc = new ControlledVoc();
-			voc.setValue(value.toString());
-			voc.setNormalStd("corina/autogenerated");
-			
-			return voc;
-		}
-
-		/*
-		 * Generic ID
-		 * This means this dictionary element ties with a generic field!
-		 */
-		case CORINA_GENERICID: {
-			Object ancestor;
-
-			if(parentProperty == null) {
-				// we're top level, so get our 'root' object
-				if(rootObject == null)
-					throw new IllegalStateException("GenericID dictionary attached to tree root, but no root object for " + this.qname);
-				ancestor = rootObject;
-			}
-			else {
-				// not top level, so get our parent's value
-				ancestor = parentProperty.getValue();
-				
-				if(ancestor == null)
-					throw new IllegalStateException("GenericID dictionary attached to object, but no parent value for " + this.qname);
-			}
-			
-			if(!(ancestor instanceof ITridasGeneric))
-				throw new IllegalStateException("GenericID dictionary attached, but parent isn't generic for " + this.qname);
-			
-			// ok, now we have our parent value that has the associated generic fields
-			ITridasGeneric generic = (ITridasGeneric) ancestor;
-			
-			// IdAble? Nice, just set the generic fields then
-			if(value instanceof IdAble) {
-				GenericFieldUtils.setField(generic, dictionary.identifierField(), 
-						((IdAble)value).getId());
-				return value;
-			}
-			
-			// ok, no match then. Let's look by id!
-			TridasGenericField idField = GenericFieldUtils.findField(generic, dictionary.identifierField());
-			if(idField != null && idField.isSetValue() && idField.getValue().length() > 0) {
-				String givenId = idField.getValue();
-				
-				List<IdAble> vocabulary = ListUtil.subListOfType(getDictionary(), IdAble.class);
-				for(IdAble idable : vocabulary) {
-					if(givenId.equals(idable.getId())) {
-						return idable;
-					}
-				}
-			}
-
-			// if it's null or empty string, remove the field (setField does this)
-			if(value == null || "".equals(value.toString())) {
-				GenericFieldUtils.setField(generic, dictionary.identifierField(), null);
-				return null;
-			}
-
-			// ok then. Give up!
-			return value;
-		}
-		
-		default:
-			// do nothing special, drop through and ignore
-			break;
-		}
-		
+	/**
+	 * Translate the value for external representation
+	 * (how it's supposed to be represented in the object)
+	 * @return
+	 */
+	protected Object getExternalTranslatedValue(Object value) {
 		return value;
 	}
 	
+	/**
+	 * Translate the value for internal representation
+	 * (how we want to deal with it)
+	 * @param value
+	 * @return
+	 */
+	protected Object getInternalTranslatedValue(Object value) {
+		return value;
+	}
+
 	@Override
 	protected void initializeValue(Object value) {
-		super.initializeValue(transformDictionaryValue(value));
-	}
-	
-	@Override
-	public void setValue(Object value) {
-		// If the old value was null and the new value is empty string, 
-		// keep the old value.
-		if(getValue() == null && value != null) {
-			if(value.toString() == "")
-				value = null;
-		}
-		
-		super.setValue(transformDictionaryValue(value));
-		
-		if (parentProperty != null) {
-			
-			// if we have a legitimate value, make sure our structure exists
-			if(!isNullOrEmpty(value))
-				ensureParentValuesExist(parentProperty);
-
-			Object parentValue = parentProperty.getValue();
-			
-			if (parentValue != null) {
-				writeToObject(parentValue);
-				parentProperty.setValue(parentValue);
-			}
-		}
-		
-		// reload any children
-		if (value != null) {
-			for (TridasEntityProperty child : childProperties)
-				child.readFromObject(value);
-		}
-		else {
-			for (TridasEntityProperty child : childProperties)
-				child.setValue(null);
-		}
-	}
-	
-	@Override
-	public int hashCode() {
-		return qname.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		if (other == this) {
-			return true;
-		}
-		
-		if (other == null || !getClass().equals(other.getClass())) {
-			return false;
-		}
-		
-		TridasEntityProperty ep = (TridasEntityProperty) other;
-		
-		return qname.equals(ep.qname);
-	}
-
-	/** The fully qualified name of this property (e.g. object.title) */
-	public final String qname;
-	
-	/** The local name of this property (e.g. title) */
-	public final String lname;
-	
-	/** The class of this property */
-	private Class<?> clazz;
-	public boolean isList;
-	public boolean required;
-	
-	/** Is this a root node? Ignore it as a parent */
-	private boolean isRootNode;
-	
-	/** Is a dictionary attached to this? (if yes, ignore children) */
-	private boolean dictionaryAttached;
-	private TridasCustomDictionary dictionary;
-	
-	/** Is it read only? */
-	private boolean readOnly;
-	
-	private int nChildProperties;
-	private List<TridasEntityProperty> childProperties;
-	private TridasEntityProperty parentProperty;
-	/** The object being acted upon from the root of this tree
-	 * Only valid when parentProperty == null
-	 */
-	private Object rootObject;
-	
-	private String categoryPrefix = "Entity";
-	
-	public void setCategoryPrefix(String categoryPrefix) {
-		this.categoryPrefix = categoryPrefix.substring(0, 1).toUpperCase() + categoryPrefix.substring(1);
-	}
-	
-	public String getCategory() {		
-		if (nChildProperties > 0 && !dictionaryAttached && !required) {
-			return categoryPrefix + " Other";
-		}
-		else
-			return categoryPrefix + " General";
-	}
-
-	public String getDisplayName() {
-		return getNiceName();
-	}
-
-	public String getName() {
-		return lname;
-	}
-
-	public String getShortDescription() {
-		String docs = Documentation.getDocumentation(qname);
-		
-		if(docs != null)
-			return docs;
-		
-		return "<i>No documentation is available for this entity</i>";
-	}
-
-	public void setReadOnly(boolean readOnly) {
-		this.readOnly = readOnly;
-	}
-	
-	public Class<?> getType() {
-		return clazz;
-	}
-
-	/**
-	 * Set the type of the class
-	 * 
-	 * Checks to see if we have dictionary mappings and
-	 * other annotations.
-	 * 
-	 * @param clazz
-	 * @param field
-	 */
-	public void setType(Class<?> clazz, Field field) {
-		this.clazz = clazz;
-		
-		TridasCustomDictionary dict;
-		if((dict = field.getAnnotation(TridasCustomDictionary.class)) != null) {
-			this.dictionary = dict;
-			this.dictionaryAttached = true;
-		}
-	}
-
-	public boolean isEditable() {
-		if(isList || readOnly)
-			return false;
-		return true;
-	}
-
-	public Property getParentProperty() {
-		return parentProperty;
-	}
-		  
-	public Property[] getSubProperties() {
-		if(dictionaryAttached)
-			return null;
-		
-		return childProperties.toArray(new Property[childProperties.size()]);	
+		super.initializeValue(getInternalTranslatedValue(value));
 	}
 }

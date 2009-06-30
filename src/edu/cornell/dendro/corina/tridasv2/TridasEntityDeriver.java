@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasEditProperties;
 import org.tridas.schema.*;
 
@@ -115,6 +116,11 @@ public class TridasEntityDeriver {
 						System.out.println("Unknown field type: " + fieldType);
 						continue;
 					}
+					
+					// if it's a dictionary element, use our copy constructor and get a different class
+					TridasCustomDictionary dictionary = f.getAnnotation(TridasCustomDictionary.class);
+					if(dictionary != null)
+						pd = new TridasDictionaryEntityProperty(pd, dictionary);
 				}
 
 				Class<?> entType = pd.getType();
