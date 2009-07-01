@@ -34,11 +34,11 @@ public class Truncate {
 
     public void cropTo(Range r) {
 	// make backup space
-	endData = new Stack<Integer>();
+	endData = new Stack<Number>();
 	endCount= new Stack<Integer>();
 	endIncr = new Stack<Integer>();
 	endDecr = new Stack<Integer>();
-	startData = new Stack<Integer>();
+	startData = new Stack<Number>();
 	startCount = new Stack<Integer>();
 	startIncr = new Stack<Integer>();
 	startDecr = new Stack<Integer>();
@@ -85,7 +85,7 @@ public class Truncate {
     private Range oldRange; // redundant, but helpful
     // FIXME: i think i only really need one stack, not 8 (though then
     // i probably need cropStart/cropEnd ints)
-    private Stack<Integer> endData, startData; 
+    private Stack<Number> endData, startData; 
     private Stack<Integer> endCount;
     private Stack<Integer> startIncr, startDecr, endIncr, endDecr;
     private Stack<Integer> startCount;

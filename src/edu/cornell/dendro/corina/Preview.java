@@ -78,14 +78,14 @@ public abstract class Preview {
 
     /** The items for this preview, to display in a list.
         Each item should be a String. */
-    protected List items = new ArrayList();
+    protected List<String> items = new ArrayList<String>();
 
     /**
        Return the list of items.  (The returned List is immutable.)
         
        @return the list of items
     */
-    public final List getItems() {
+    public final List<String> getItems() {
         return Collections.unmodifiableList(items);
     }
 

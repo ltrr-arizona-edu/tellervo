@@ -44,53 +44,14 @@ public class TridasMeasurementSeriesEx extends TridasMeasurementSeries {
 	
 	/**
 	 * Construct a deep copy of this series
-	 * Uses introspection and TridasCloner - yuck!
 	 * 
 	 * @param orig
 	 * @param joinedSample the sample to map with - can be null
 	 */
-	@SuppressWarnings("unchecked")
 	public TridasMeasurementSeriesEx(TridasMeasurementSeries orig, Sample joinedSample) {
 		this.joinedSample = joinedSample;
 		
-		XmlType xml = BaseSeries.class.getAnnotation(XmlType.class);
-		
-		// create a map of methods by name
-		// This is so we don't have to care about setXXX parameter types
-		Method[] methods = BaseSeries.class.getMethods();
-		Map<String, Method> methodMap = new HashMap<String, Method>();
-
-		for(Method method : methods)
-			methodMap.put(method.getName(), method);
-		
-		for(String prop : xml.propOrder()) {
-			String suffix = Character.toUpperCase(prop.charAt(0)) + prop.substring(1);
-			
-			try {
-				Method method = BaseSeries.class.getMethod("isSet" + suffix, (Class[]) null);
-				boolean used = (Boolean) method.invoke(orig, (Object[]) null);
-
-				if(!used)
-					continue;
-				
-				Method getmethod = BaseSeries.class.getMethod("get" + suffix, (Class[]) null);
-				Object value = getmethod.invoke(orig, (Object[]) null);
-				
-				method = methodMap.get("set" + suffix);
-				if(method == null) {
-					if(!getmethod.getReturnType().isAssignableFrom(List.class))
-						throw new IllegalArgumentException("getter/setter nonmatch, not a list??");
-					
-					// value is a list
-					List<Object> myList = (List<Object>) getmethod.invoke(this, (Object[]) null);
-					myList.addAll((List<Object>) TridasCloner.clone(value));
-				}
-				else
-					method.invoke(this, TridasCloner.clone(value));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		orig.copyTo(this);
 	}
 
 	/**
@@ -154,7 +115,7 @@ public class TridasMeasurementSeriesEx extends TridasMeasurementSeries {
 		/// BEGIN ring widths
 		///
 		int sz = s.getData().size();
-		List<Integer> data = s.getData();
+		List<Number> data = s.getData();
 		List<Integer> count = s.getCount();
 		TridasValues valueHolder = new TridasValues();
 		List<TridasValue> values = valueHolder.getValues();

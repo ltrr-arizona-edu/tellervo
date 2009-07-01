@@ -24,16 +24,10 @@ import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.io.Files;
-import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.graph.Graphable;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import edu.cornell.dendro.corina_indexing.Indexable;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -42,11 +36,8 @@ import java.util.Vector;
 import java.util.HashMap;
 
 import java.lang.reflect.Method;
-import java.net.URI;
 
 import javax.swing.undo.*;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasUnit;
@@ -130,7 +121,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * It's not that easy, though;
 	 * We put floats in here occasionally, as well as strings.
 	 */
-	private List<Integer> data;
+	private List<Number> data;
 		
 	/** Number of samples in the sum at any given point. */
 	private List<Integer> count = null;
@@ -186,7 +177,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		repopulateValuesMap();
 		
 		// make defaults: empty
-		data = new ArrayList<Integer>();
+		data = new ArrayList<Number>();
 
 		// store username, if known
 		if (System.getProperty("user.name") != null)
@@ -248,25 +239,6 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 			else
 				otherValuesMap.put(variable, values);
 		}
-	}
-
-	/**
-	 * Creates a new sample from a file on disk
-	 * @param filename
-	 * @throws IOException
-	 * 
-	 * @deprecated use Sample(URI) instead!
-	 */
-	private Sample(String filename) throws IOException {
-		// new @-notation
-		if (filename.startsWith("@"))
-			filename = System.getProperty("corina.dir.data", ".")
-					+ filename.substring(1);
-		// (assumes c.d.r ends with file.sep!)
-
-		Sample s = Files.load(filename);
-		copy(s, this);
-		trimAllToSize();
 	}
 
 	public synchronized void addSampleListener(SampleListener l) {
@@ -364,7 +336,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @see Indexable
 	 * @return data to graph, as a List of Integers 
 	 */
-	public List<Integer> getData() {
+	public List<Number> getData() {
 		return data;
 	}
 
@@ -615,7 +587,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/**
 	 * @param data the data to set
 	 */
-	public void setData(List<Integer> data) {
+	public void setData(List<Number> data) {
 		this.data = data;
 	}
 
@@ -681,6 +653,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	// fireSampleXYZhappened() method is virtually identical, so their
 	// guts were refactored into here.  this makes adding new events
 	// painless.  (this was taken from a web page -- url?)
+	@SuppressWarnings("unchecked")
 	private void fireSampleEvent(String method) {
 		// alert all listeners
 		Vector<SampleListener> l;
@@ -714,16 +687,6 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 			// BUG: these exceptions are caught too coursely!
 
 			// just ignore them all... (?)
-		}
-	}
-
-	private void trimAllToSize() {
-		((ArrayList<Integer>) data).trimToSize();
-		if (count != null)
-			((ArrayList<Integer>) count).trimToSize();
-		if (hasWeiserjahre()) {
-			((ArrayList<Integer>) incr).trimToSize();
-			((ArrayList<Integer>) decr).trimToSize();
 		}
 	}
 }

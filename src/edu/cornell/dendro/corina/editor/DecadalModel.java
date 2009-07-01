@@ -252,7 +252,7 @@ public class DecadalModel extends AbstractTableModel {
 
 	// oldval from /previous/ edit -- because typing into a cell
 	// counts as 2 edits, oldvalue->"", ""->newvalue
-	private Integer lastOldVal = null;
+	private Number lastOldVal = null;
 
 	@Override
 	public void setValueAt(Object value, int row, int col) {
@@ -309,13 +309,13 @@ public class DecadalModel extends AbstractTableModel {
 		final boolean bigger = s.getRange().getEnd().add(+1).equals(
 				getYear(row, col));
 		final Year y = (bigger ? s.getRange().getEnd().add(+1) : getYear(row, col));
-		Integer tmp = (bigger ? null : s.getData().get(y.diff(s.getRange().getStart())));
+		Number tmp = (bigger ? null : s.getData().get(y.diff(s.getRange().getStart())));
 		if (tmp != null && tmp.toString().length() == 0) {
 			tmp = lastOldVal;
 		} else {
 			lastOldVal = tmp;
 		}
-		final Integer oldVal = tmp;
+		final Number oldVal = tmp;
 
 		if (bigger) {	
 			// no legitimate value just yet, don't change the underlying data model
