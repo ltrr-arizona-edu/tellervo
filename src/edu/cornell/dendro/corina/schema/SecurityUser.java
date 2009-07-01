@@ -25,6 +25,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.interfaces.HumanName;
 import org.tridas.interfaces.IdAble;
 
 
@@ -67,7 +68,7 @@ import org.tridas.interfaces.IdAble;
     "memberOf"
 })
 public class SecurityUser
-    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, IdAble
+    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, HumanName, IdAble
 {
 
     private final static long serialVersionUID = 1001L;

@@ -23,4 +23,7 @@ public @interface TridasCustomDictionary {
 	
 	/** The String identifier field name given in a generic field for the computer-based ID */
 	String identifierField() default "";
+	
+	/** The sort method */
+	TridasCustomDictionarySortType sortType() default TridasCustomDictionarySortType.NONE;
 }

@@ -120,6 +120,7 @@
 		<jaxb:bindings node="//xs:complexType[@name='securityUser']">
 			<ai:interfaces check="false">
 				org.tridas.interfaces.IdAble
+				org.tridas.interfaces.HumanName
 			</ai:interfaces>
 		</jaxb:bindings>
 						

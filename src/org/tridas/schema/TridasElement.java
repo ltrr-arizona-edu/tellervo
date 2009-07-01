@@ -23,6 +23,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.annotations.TridasCustomDictionary;
+import org.tridas.annotations.TridasCustomDictionarySortType;
 import org.tridas.annotations.TridasCustomDictionaryType;
 
 
@@ -95,7 +96,7 @@ public class TridasElement
     @XmlElement(name = "file")
     protected List<TridasFile> files;
     @XmlElement(required = true)
-    @TridasCustomDictionary(dictionary = "taxon", type = TridasCustomDictionaryType.CORINA_CONTROLLEDVOC)
+    @TridasCustomDictionary(dictionary = "taxon", sortType = TridasCustomDictionarySortType.NORMAL_OR_VALUE, type = TridasCustomDictionaryType.CORINA_CONTROLLEDVOC)
     protected ControlledVoc taxon;
     @TridasCustomDictionary(dictionary = "elementShape", type = TridasCustomDictionaryType.CORINA_CONTROLLEDVOC)
     protected TridasShape shape;

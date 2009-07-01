@@ -3,9 +3,14 @@
  */
 package edu.cornell.dendro.corina.tridasv2;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.tridas.annotations.TridasCustomDictionary;
+import org.tridas.annotations.TridasCustomDictionarySortType;
+import org.tridas.interfaces.HumanName;
 import org.tridas.interfaces.ITridasGeneric;
 import org.tridas.interfaces.IdAble;
 import org.tridas.schema.ControlledVoc;
@@ -22,6 +27,52 @@ import edu.cornell.dendro.corina.util.ListUtil;
  *
  */
 public class TridasDictionaryEntityProperty extends TridasEntityProperty {
+	public static class ControlledVocComparator implements Comparator<ControlledVoc> {
+		public int compare(ControlledVoc o1, ControlledVoc o2) {
+			String s1 = o1.isSetNormal() ? o1.getNormal() : o1.getValue();
+			String s2 = o2.isSetNormal() ? o2.getNormal() : o2.getValue();
+			
+			if(s1 == null)
+				return 1;
+			if(s2 == null)
+				return -1;
+			
+			return s1.compareToIgnoreCase(s2);
+		}
+	}
+
+	public static class HumanNameComparator implements Comparator<HumanName> {
+		public int compare(HumanName o1, HumanName o2) {
+			boolean b1 = o1.isSetLastName();
+			boolean b2 = o2.isSetLastName();
+			int compare;
+			
+			if(b1 && !b2)
+				return -1;
+			else if(!b1 && b2)
+				return 1;
+			else if(!b1 && !b2)
+				compare = 0;
+			else
+				compare = o1.getLastName().compareToIgnoreCase(o2.getLastName());
+			
+			if(compare != 0)
+				return compare;
+			
+			b1 = o1.isSetFirstName();
+			b2 = o2.isSetFirstName();
+
+			if(b1 && !b2)
+				return -1;
+			else if(!b1 && b2)
+				return 1;
+			else if(!b1 && !b2)
+				return 0;			// exactly the same!!
+			else
+				return o1.getFirstName().compareToIgnoreCase(o2.getFirstName());
+		}
+	}
+	
 	private TridasCustomDictionary dictionary;
 
 	/**
@@ -33,7 +84,7 @@ public class TridasDictionaryEntityProperty extends TridasEntityProperty {
 		
 		this.dictionary = dictionary;
 	}
-	
+		  	
 	/**
 	 * Copy constructor
 	 * @param property
@@ -47,12 +98,12 @@ public class TridasDictionaryEntityProperty extends TridasEntityProperty {
 	@Override
 	public String getCategory() {		
 			return categoryPrefix + " General";
-	}
-		  	
+	}	
+	
 	@Override
 	public List<?> getDictionary() {
 		// get the dictionary based on the available info
-		return Dictionary.getDictionary(dictionary.dictionary() + "Dictionary");
+		return sortedDictionary(Dictionary.getDictionary(dictionary.dictionary() + "Dictionary"));
 	}
 
 	/**
@@ -62,10 +113,39 @@ public class TridasDictionaryEntityProperty extends TridasEntityProperty {
 	public Property[] getSubProperties() {
 		return null;
 	}
-
+	
 	@Override
 	public boolean isDictionaryAttached() {
 		return true;
+	}
+	
+	/**
+	 * Sort a dictionary given a sort type
+	 * If the sort type doesn't apply to the dictionary, returns an empty list!
+	 * @param vocabulary
+	 * @return
+	 */
+	private List<?> sortedDictionary(List<?> vocabulary) {
+		// quick and easy: no sorting, no problem!
+		if(dictionary.sortType() == TridasCustomDictionarySortType.NONE)
+			return vocabulary;
+		
+		switch(dictionary.sortType()) {
+		case LASTNAME_FIRSTNAME: {
+			List<HumanName> list = new ArrayList<HumanName>(ListUtil.subListOfType(vocabulary, HumanName.class)); 
+			Collections.sort(list, new HumanNameComparator());
+			return list;
+		}
+		
+		case NORMAL_OR_VALUE: {
+			List<ControlledVoc> list = new ArrayList<ControlledVoc>(ListUtil.subListOfType(vocabulary, ControlledVoc.class)); 
+			Collections.sort(list, new ControlledVocComparator());
+			return list;
+		}
+		
+		default:
+			return vocabulary;
+		}
 	}
 	
 	@Override

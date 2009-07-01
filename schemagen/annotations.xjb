@@ -69,21 +69,30 @@ This file is for custom annotations applied to tridas objects
 	<!-- measurementSeries.analyst -->
 	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='analyst']">
 		<annox:annotate target="field">
-			<ta:TridasCustomDictionary type="CORINA_GENERICID" dictionary="securityUser" identifierField="corina.analystID" />
+			<ta:TridasCustomDictionary type="CORINA_GENERICID" 
+				dictionary="securityUser" 
+				identifierField="corina.analystID" 
+				sortType="LASTNAME_FIRSTNAME"/>
 		</annox:annotate>
 	</bindings>	
 	
 	<!-- measurementSeries.dendrochronologist -->
 	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='dendrochronologist']">
 		<annox:annotate target="field">
-			<ta:TridasCustomDictionary type="CORINA_GENERICID" dictionary="securityUser" identifierField="corina.dendrochronologistID" />
+			<ta:TridasCustomDictionary type="CORINA_GENERICID" 
+				dictionary="securityUser" 
+				identifierField="corina.dendrochronologistID" 
+				sortType="LASTNAME_FIRSTNAME"/>
 		</annox:annotate>
 	</bindings>	
 
 	<!-- derivedSeries.author -->
 	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='author']">
 		<annox:annotate target="field">
-			<ta:TridasCustomDictionary type="CORINA_GENERICID" dictionary="securityUser" identifierField="corina.authorID" />
+			<ta:TridasCustomDictionary type="CORINA_GENERICID" 
+				dictionary="securityUser" 
+				identifierField="corina.authorID"
+				sortType="LASTNAME_FIRSTNAME"/>
 		</annox:annotate>
 	</bindings>	
 	
@@ -125,7 +134,9 @@ This file is for custom annotations applied to tridas objects
 	<!-- element.taxon -->
 	<bindings node="//xs:element[@name='element']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='taxon']">
 		<annox:annotate target="field">
-			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="taxon" />
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" 
+				dictionary="taxon"
+				sortType="NORMAL_OR_VALUE"/>
 		</annox:annotate>
 	</bindings>	
 	

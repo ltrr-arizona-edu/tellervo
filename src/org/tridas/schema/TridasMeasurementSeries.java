@@ -28,6 +28,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.annotations.TridasCustomDictionary;
+import org.tridas.annotations.TridasCustomDictionarySortType;
 import org.tridas.annotations.TridasCustomDictionaryType;
 import org.tridas.interfaces.ITridasSeries;
 
@@ -91,9 +92,9 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
     protected DateTime lastModifiedTimestamp;
     protected String comments;
     protected Date measuringDate;
-    @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.analystID", type = TridasCustomDictionaryType.CORINA_GENERICID)
+    @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.analystID", sortType = TridasCustomDictionarySortType.LASTNAME_FIRSTNAME, type = TridasCustomDictionaryType.CORINA_GENERICID)
     protected String analyst;
-    @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.dendrochronologistID", type = TridasCustomDictionaryType.CORINA_GENERICID)
+    @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.dendrochronologistID", sortType = TridasCustomDictionarySortType.LASTNAME_FIRSTNAME, type = TridasCustomDictionaryType.CORINA_GENERICID)
     protected String dendrochronologist;
     @XmlElement(required = true)
     protected TridasMeasuringMethod measuringMethod;
