@@ -34,14 +34,14 @@ public class Truncate {
 
     public void cropTo(Range r) {
 	// make backup space
-	endData = new Stack();
-	endCount= new Stack();
-	endIncr = new Stack();
-	endDecr = new Stack();
-	startData = new Stack();
-	startCount = new Stack();
-	startIncr = new Stack();
-	startDecr = new Stack();
+	endData = new Stack<Integer>();
+	endCount= new Stack<Integer>();
+	endIncr = new Stack<Integer>();
+	endDecr = new Stack<Integer>();
+	startData = new Stack<Integer>();
+	startCount = new Stack<Integer>();
+	startIncr = new Stack<Integer>();
+	startDecr = new Stack<Integer>();
 
 	// sapwood
 	if (s.hasMeta("sapwood")) {
@@ -85,7 +85,7 @@ public class Truncate {
     private Range oldRange; // redundant, but helpful
     // FIXME: i think i only really need one stack, not 8 (though then
     // i probably need cropStart/cropEnd ints)
-    private Stack<Object> endData, startData; 
+    private Stack<Integer> endData, startData; 
     private Stack<Integer> endCount;
     private Stack<Integer> startIncr, startDecr, endIncr, endDecr;
     private Stack<Integer> startCount;

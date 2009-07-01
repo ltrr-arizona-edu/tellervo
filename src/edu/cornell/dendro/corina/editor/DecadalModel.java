@@ -252,7 +252,7 @@ public class DecadalModel extends AbstractTableModel {
 
 	// oldval from /previous/ edit -- because typing into a cell
 	// counts as 2 edits, oldvalue->"", ""->newvalue
-	private Object lastOldVal = null;
+	private Integer lastOldVal = null;
 
 	@Override
 	public void setValueAt(Object value, int row, int col) {
@@ -282,46 +282,52 @@ public class DecadalModel extends AbstractTableModel {
 			return;
 		}
 
+		// if we get a String, make it into an Integer
+		// [Q: what else could it be?]
+		Integer intValue;
+		if ((value instanceof String) && ((String) value).length() > 0) {
+			try {
+				intValue = Integer.parseInt((String) value);
+			} catch (NumberFormatException nfe) {
+				return;
+			} catch (Exception e) {
+				Bug.bug(e);
+				return;
+			}
+		}
+		else if(value instanceof Integer) {
+			intValue = (Integer) value;
+		}
+		else if(value == null)
+			intValue = null;
+		else
+			return;
+		
+		// at this point, value is an integer! Guaranteed!
+
 		// if user just typed into end+1, we'll need to increase the size!
 		final boolean bigger = s.getRange().getEnd().add(+1).equals(
 				getYear(row, col));
-
-		// if we get a String, make it into an Integer
-		// [Q: what else could it be?]
-		if ((value instanceof String) && ((String) value).length() > 0) {
-			try {
-				value = Integer.decode((String) value);
-			} catch (NumberFormatException nfe) {
-				value = new Integer(0); // can't parse, give 'em 0
-			} catch (Exception e) {
-				Bug.bug(e);
-			}
-		}
-
-		System.out.println("Value " + value + ", " + value.getClass().getName());
-			
 		final Year y = (bigger ? s.getRange().getEnd().add(+1) : getYear(row, col));
-		Object tmp = (bigger ? null : s.getData().get(y.diff(s.getRange().getStart())));
+		Integer tmp = (bigger ? null : s.getData().get(y.diff(s.getRange().getStart())));
 		if (tmp != null && tmp.toString().length() == 0) {
 			tmp = lastOldVal;
 		} else {
 			lastOldVal = tmp;
 		}
-		final Object oldVal = tmp;
+		final Integer oldVal = tmp;
 
-		if (bigger) {
-			
+		if (bigger) {	
 			// no legitimate value just yet, don't change the underlying data model
-			if(value == null || value instanceof String)
+			if(intValue == null)
 				return;
 			
-			s.getData().add(value);
-			// s.range.end = s.range.getEnd().add(+1);
+			s.getData().add(intValue);
 			s.setRange(new Range(s.getRange().getStart(), s.getRange().getEnd().add(+1)));
 		} else {
 			if(value.equals(oldVal))
 				return;
-			s.getData().set(y.diff(s.getRange().getStart()), value);
+			s.getData().set(y.diff(s.getRange().getStart()), intValue);
 		}
 		fireTableCellUpdated(row, col);
 
@@ -334,10 +340,10 @@ public class DecadalModel extends AbstractTableModel {
 		// add undo-able
 		if (value == null || value.toString().length() == 0)
 			return; // better to use collapsing undo-edits -- solves both problems
-		final Object glue = value;
+		
+		final Integer glue = intValue;
 		s.postEdit(new AbstractUndoableEdit() {
-			private Object newVal = glue;
-
+			private Integer newVal = glue;
 			private boolean grew = bigger; // BIGGER IS ALWAYS FALSE HERE -- LASTVAL PROBLEM!
 
 			@Override

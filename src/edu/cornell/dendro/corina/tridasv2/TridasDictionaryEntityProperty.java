@@ -27,6 +27,11 @@ import edu.cornell.dendro.corina.util.ListUtil;
  *
  */
 public class TridasDictionaryEntityProperty extends TridasEntityProperty {
+	/**
+	 * Sort ControlledVocs by their "normal" or their "value"
+	 * @author Lucas Madar
+	 *
+	 */
 	public static class ControlledVocComparator implements Comparator<ControlledVoc> {
 		public int compare(ControlledVoc o1, ControlledVoc o2) {
 			String s1 = o1.isSetNormal() ? o1.getNormal() : o1.getValue();
@@ -41,6 +46,11 @@ public class TridasDictionaryEntityProperty extends TridasEntityProperty {
 		}
 	}
 
+	/**
+	 * Sort names by last, first
+	 * @author Lucas Madar
+	 *
+	 */
 	public static class HumanNameComparator implements Comparator<HumanName> {
 		public int compare(HumanName o1, HumanName o2) {
 			boolean b1 = o1.isSetLastName();
@@ -73,6 +83,7 @@ public class TridasDictionaryEntityProperty extends TridasEntityProperty {
 		}
 	}
 	
+	/** The annotation on the field I represent */
 	private TridasCustomDictionary dictionary;
 
 	/**

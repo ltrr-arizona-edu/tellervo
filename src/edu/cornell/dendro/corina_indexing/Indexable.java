@@ -17,5 +17,5 @@ public interface Indexable {
 	 * 
 	 * @return A list of data for indexing. The calling function must not modify the list.
 	 */
-	public List getData();
+	public List<? extends Number> getData();
 }

@@ -297,7 +297,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 	// default is an empty string to type in.
 	public void insertYear() {
-		insertYear("", true);
+		insertYear(0, true);
 	}
 
 	// use Sample.MR for now.
@@ -307,7 +307,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		insertYear(new Integer(Sample.MR), true);
 	}
 
-	public void insertYear(Object val, boolean selectAndEdit) {
+	public void insertYear(Integer val, boolean selectAndEdit) {
 		// note: ideally this would never be called for isSummed() or
 		// isIndexed() samples, so these checks will be obselete.
 
@@ -368,7 +368,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		}
 	}
 
-	public void insertYears(Object val, int nYears) {
+	public void insertYears(Integer val, int nYears) {
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
 			Alert.error("Can't Modify Data",

@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -46,6 +47,14 @@ import java.net.URI;
 import javax.swing.undo.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.NormalTridasUnit;
+import org.tridas.schema.NormalTridasVariable;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasUnit;
+import org.tridas.schema.TridasValues;
+import org.tridas.schema.TridasVariable;
 
 /**
    Class representing a reading of a dendro sample.
@@ -101,8 +110,6 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 to this value is considered a MR. */
 	public static final int MR = 2;
 
-	private boolean metadataChanged = true;
-	
 	// copy each part of source to target.  shallow copy, no events, etc.
 	// used only by editor (paste) -- bad interface!
 	public static void copy(Sample source, Sample target) {
@@ -115,18 +122,22 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		target.decr = source.decr;
 		target.elements = source.elements;
 	}
+	
+	private boolean metadataChanged = true;
 		
-	/** Data, as a List of Integers. 
+	/** 
+	 * Data, as a List of Integers. 
 	 * It's not that easy, though;
 	 * We put floats in here occasionally, as well as strings.
 	 */
-	private List<Object> data;
+	private List<Integer> data;
 		
 	/** Number of samples in the sum at any given point. */
 	private List<Integer> count = null;
 	
-	// weiserjahre
+	/** Weiserjahre down */
 	private List<Integer> decr = null;
+	/** Weiserjahre up */
 	private List<Integer> incr = null;
 	
 	/** Elements (in a List) that were put into this sum. */
@@ -144,6 +155,14 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/* FUTURE: */
 	private UndoableEditSupport undoSupport = new UndoableEditSupport();
 
+	/** The underlying series which holds our metadata and data */
+	private ITridasSeries series;
+
+	/** A map from Tridas variable (RING_WIDTH, etc) to values */
+	private EnumMap<NormalTridasVariable, TridasValues> tridasValuesMap;
+	/** A slower hashmap from variable to values */
+	private HashMap<TridasVariable, TridasValues> otherValuesMap;
+	
 	/** Default constructor.  Defaults:
 	 <ul>
 	 <li><code>data</code> and <code>count</code> are initialized but empty
@@ -160,9 +179,14 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 @see #meta */
 	public Sample() {
 		super();
+		initialize();
+		
+		series = new TridasMeasurementSeries();
+		series.getValues().add(createEmptyTridasValues());		
+		repopulateValuesMap();
 		
 		// make defaults: empty
-		data = new ArrayList<Object>();
+		data = new ArrayList<Integer>();
 
 		// store username, if known
 		if (System.getProperty("user.name") != null)
@@ -173,6 +197,57 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 
 		// metadata NOT changed
 		metadataChanged = false;
+	}
+
+	/**
+	 * Common setup
+	 */
+	private void initialize() {
+		otherValuesMap = new HashMap<TridasVariable, TridasValues>();
+		tridasValuesMap = new EnumMap<NormalTridasVariable, TridasValues>(NormalTridasVariable.class);
+	}
+	
+	/**
+	 * Create a default set of TridasValues
+	 * - 1/100th mm
+	 * - Ring widths
+	 * 
+	 * @return a representative TridasValues object
+	 */
+	private TridasValues createEmptyTridasValues() {
+		TridasValues values = new TridasValues();
+		
+		// set default units
+		TridasUnit units = new TridasUnit();		
+		units.setNormalTridas(NormalTridasUnit.HUNDREDTH_MM);
+		values.setUnit(units);
+		
+		// set as ring widths
+		TridasVariable variable = new TridasVariable();
+		variable.setNormalTridas(NormalTridasVariable.RING_WIDTH);
+		values.setVariable(variable);
+
+		// populate the list of values (empty)
+		values.getValues();
+		
+		return values;
+	}
+	
+	/**
+	 * For quick lookups, find TridasVariables via a map
+	 */
+	private void repopulateValuesMap() {
+		tridasValuesMap.clear();
+		otherValuesMap.clear();
+		
+		for(TridasValues values : series.getValues()) {
+			TridasVariable variable = values.getVariable();
+			
+			if(variable.isSetNormalTridas())
+				tridasValuesMap.put(variable.getNormalTridas(), values);
+			else
+				otherValuesMap.put(variable, values);
+		}
 	}
 
 	/**
@@ -268,50 +343,10 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		fireSampleEvent("sampleElementsChanged");
 	}
 
-	// fire an arbitrary sample event called |method|.  each
-	// fireSampleXYZhappened() method is virtually identical, so their
-	// guts were refactored into here.  this makes adding new events
-	// painless.  (this was taken from a web page -- url?)
-	private void fireSampleEvent(String method) {
-		// alert all listeners
-		Vector<SampleListener> l;
-		synchronized (this) {
-			l = (Vector<SampleListener>) listeners.clone();
-		}
-
-		int size = l.size();
-
-		if (size == 0)
-			return;
-
-		SampleEvent e = new SampleEvent(this);
-
-		try {
-
-			// **
-			Class<?> types[] = new Class[] { SampleEvent.class };
-			Method m = SampleListener.class.getMethod(method, types);
-			Object args[] = new Object[] { e };
-
-			for (int i = 0; i < size; i++) {
-				SampleListener listener = (SampleListener) l.elementAt(i);
-
-				// this is like "listener.method(e)" (along with the 2 lines
-				// marked ** above)
-				m.invoke(listener, args);
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			// BUG: these exceptions are caught too coursely!
-
-			// just ignore them all... (?)
-		}
-	}
 	public void fireSampleMetadataChanged() {
 		metadataChanged = true;
 		fireSampleEvent("sampleMetadataChanged");
 	}
-
 	public void fireSampleRedated() {
 		fireSampleEvent("sampleRedated");
 	}
@@ -329,8 +364,15 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @see Indexable
 	 * @return data to graph, as a List of Integers 
 	 */
-	public List<Object> getData() {
+	public List<Integer> getData() {
 		return data;
+	}
+
+	/**
+	 * @return the elements
+	 */
+	public ElementList getElements() {
+		return elements;
 	}
 
 	/*
@@ -354,52 +396,24 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 private static Map samples = new HashMap();
 	 */
 
-	/**
-	 * @return the elements
-	 */
-	public ElementList getElements() {
-		return elements;
-	}
-
-	// get an int field from this sample.
-	// (would be int, but can't return null then -- use exception?)
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	private Integer getInteger(String field) {
-		// TODO: load, if needed.
-
-		Object val = getMeta(field);
-		if (val != null && val instanceof Integer)
-			return (Integer) val;
-
-		return null;
-	}
-
-	// get a list-of-numbers field from this sample.
-	// (what about elements?)
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	private List getList(String field) {
-		// TODO: load, if needed.
-
-		if (field.equals("data"))
-			return data;
-		else if (field.equals("count"))
-			return count;
-		else if (field.equals("incr"))
-			return incr;
-		else if (field.equals("decr"))
-			return decr;
-
-		return null;
-	}
-
 	public Preview getPreview() {
 		return new SamplePreview(this);
+	}
+
+	@Override
+	public SampleType getSampleType() {
+		SampleType known = super.getSampleType();
+		
+		// easy, it was determined for us!
+		if(known != SampleType.UNKNOWN)
+			return known;
+		
+		if(isIndexed())
+			return SampleType.INDEX; // we saved this in IsIndexed()...
+		else if(isSummed())
+			return SampleType.SUM;
+		else // fall back if we can't determine and it hasn't been loaded...
+			return known;
 	}
 
 	/** Return the default scale factor for graphing.
@@ -532,35 +546,15 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		}
 	}
 
-	@Override
-	public SampleType getSampleType() {
-		SampleType known = super.getSampleType();
-		
-		// easy, it was determined for us!
-		if(known != SampleType.UNKNOWN)
-			return known;
-		
-		if(isIndexed())
-			return SampleType.INDEX; // we saved this in IsIndexed()...
-		else if(isSummed())
-			return SampleType.SUM;
-		else // fall back if we can't determine and it hasn't been loaded...
-			return known;
-	}
-	
-	//
-	// load/save
-	//
-
 	/** Return true if the file was modified since last save.
 	 @return if the sample has been modified */
 	public boolean isModified() {
 		return modified;
 	}
 	
-	public boolean wasMetadataChanged() {
-		return metadataChanged;
-	}
+	//
+	// load/save
+	//
 
 	// is this sample oak?  (assumes meta/species is a string, if present)
 	// (FIXME: if it's not a string, it's not oak.)
@@ -572,7 +566,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		species = species.toLowerCase();
 		return (species.indexOf("oak") != -1 || species.indexOf("quercus") != -1);
 	}
-
+	
 	/** <p>Return true if the sample is summed, else false.  Here
 	 "summed" is defined as:</p>
 	 <ul>
@@ -603,10 +597,6 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		undoSupport.postEdit(e);
 	}
 
-	//
-	// event model
-	//
-
 	public synchronized void removeSampleListener(SampleListener l) {
 		listeners.remove(l);
 	}
@@ -618,10 +608,14 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		this.count = count;
 	}
 
+	//
+	// event model
+	//
+
 	/**
 	 * @param data the data to set
 	 */
-	public void setData(List<Object> data) {
+	public void setData(List<Integer> data) {
 		this.data = data;
 	}
 
@@ -661,16 +655,6 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		return name;
 	}
 
-	private void trimAllToSize() {
-		((ArrayList<Object>) data).trimToSize();
-		if (count != null)
-			((ArrayList<Integer>) count).trimToSize();
-		if (hasWeiserjahre()) {
-			((ArrayList<Integer>) incr).trimToSize();
-			((ArrayList<Integer>) decr).trimToSize();
-		}
-	}
-
 	// make sure data/count/wj are the same size as range.span, and
 	// contain all legit Numbers.  turns nulls/non-numbers into 0's.
 	public void verify() {
@@ -687,5 +671,59 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		}
 
 		// TODO: do count, WJ as well
+	}
+
+	public boolean wasMetadataChanged() {
+		return metadataChanged;
+	}
+
+	// fire an arbitrary sample event called |method|.  each
+	// fireSampleXYZhappened() method is virtually identical, so their
+	// guts were refactored into here.  this makes adding new events
+	// painless.  (this was taken from a web page -- url?)
+	private void fireSampleEvent(String method) {
+		// alert all listeners
+		Vector<SampleListener> l;
+		synchronized (this) {
+			l = (Vector<SampleListener>) listeners.clone();
+		}
+
+		int size = l.size();
+
+		if (size == 0)
+			return;
+
+		SampleEvent e = new SampleEvent(this);
+
+		try {
+
+			// **
+			Class<?> types[] = new Class[] { SampleEvent.class };
+			Method m = SampleListener.class.getMethod(method, types);
+			Object args[] = new Object[] { e };
+
+			for (int i = 0; i < size; i++) {
+				SampleListener listener = (SampleListener) l.elementAt(i);
+
+				// this is like "listener.method(e)" (along with the 2 lines
+				// marked ** above)
+				m.invoke(listener, args);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			// BUG: these exceptions are caught too coursely!
+
+			// just ignore them all... (?)
+		}
+	}
+
+	private void trimAllToSize() {
+		((ArrayList<Integer>) data).trimToSize();
+		if (count != null)
+			((ArrayList<Integer>) count).trimToSize();
+		if (hasWeiserjahre()) {
+			((ArrayList<Integer>) incr).trimToSize();
+			((ArrayList<Integer>) decr).trimToSize();
+		}
 	}
 }

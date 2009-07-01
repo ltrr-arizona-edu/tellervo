@@ -14,6 +14,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.jvnet.jaxb2_commons.lang.Copyable;
+import org.tridas.interfaces.ITridas;
+
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
 
@@ -24,6 +27,15 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
  */
 
 public class TridasCloner {
+	@SuppressWarnings("unchecked")
+	public static <T extends Copyable> T clone(T o) {
+		Object copy = o.createCopy();
+		o.copyTo(copy);
+		
+		return (T) copy;
+	}
+	
+	/*
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(T o) {
 		if(o == null)
@@ -42,4 +54,5 @@ public class TridasCloner {
 			throw new RuntimeException(e);
 		}
 	}
+	*/
 }

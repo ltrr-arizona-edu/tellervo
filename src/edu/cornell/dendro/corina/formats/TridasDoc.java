@@ -74,7 +74,7 @@ public class TridasDoc implements Filetype {
 	 * @throws IOException
 	 */
 	private void loadIntegerObjectAndCountList(List<TridasValue> data, boolean clearCountAllOnes,
-			List<Object> values, List<Integer> counts) 
+			List<Integer> values, List<Integer> counts) 
 		throws IOException 
 	{
 		boolean countAllOnes = true;
@@ -121,7 +121,7 @@ public class TridasDoc implements Filetype {
 		if(variable.isSetNormalTridas()) {
 			switch(variable.getNormalTridas()) {
 			case RING_WIDTH: {
-				List<Object> ringwidths = new ArrayList<Object>(dataValues.size());
+				List<Integer> ringwidths = new ArrayList<Integer>(dataValues.size());
 				List<Integer> counts = new ArrayList<Integer>(dataValues.size());
 				
 				loadIntegerObjectAndCountList(dataValues, s.getSampleType() != SampleType.SUM, 

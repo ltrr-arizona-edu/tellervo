@@ -154,7 +154,7 @@ public class TridasMeasurementSeriesEx extends TridasMeasurementSeries {
 		/// BEGIN ring widths
 		///
 		int sz = s.getData().size();
-		List<Object> data = s.getData();
+		List<Integer> data = s.getData();
 		List<Integer> count = s.getCount();
 		TridasValues valueHolder = new TridasValues();
 		List<TridasValue> values = valueHolder.getValues();

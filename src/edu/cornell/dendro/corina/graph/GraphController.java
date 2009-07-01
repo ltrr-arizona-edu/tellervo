@@ -117,12 +117,12 @@ public class GraphController {
 
 			// now, compute mean of sample[current][y] - sample[i][y]
 
-			List<Object> data = samples.get(i).graph.getData();
+			List<? extends Number> data = samples.get(i).graph.getData();
 			int j = overlap.getStart().diff(range.getStart()); // index into
 																// data[i]
 			double dataScale = samples.get(i).scale;
 
-			List<Object> base = ((Graph) samples.get(graph.current)).graph.getData();
+			List<? extends Number> base = ((Graph) samples.get(graph.current)).graph.getData();
 			int k = overlap.getStart().diff(
 					((Graph) samples.get(graph.current)).getRange().getStart()); // graph.getStart());
 																				// //

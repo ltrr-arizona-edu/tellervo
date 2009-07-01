@@ -256,7 +256,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 					
 					switch(ret) {
 					case 0:
-						dataView.insertYears("", value);
+						dataView.insertYears(0, value);
 						break;
 					case 1:
 						dataView.insertYears(new Integer(Sample.MR), value);

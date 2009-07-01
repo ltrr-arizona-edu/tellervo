@@ -155,7 +155,7 @@ public class Sum {
 		if (buf.length == 0) {
 			// "skip to step 6" would be nice...
 			result.setRange(new Range()); // default empty range (1001-1000)
-			result.setData(new ArrayList<Object>());
+			result.setData(new ArrayList<Integer>());
 			result.setCount(new ArrayList<Integer>());
 			result.setWJIncr(new ArrayList<Integer>());
 			result.setWJDecr(new ArrayList<Integer>());
@@ -242,7 +242,7 @@ public class Sum {
 
 		// step 6: set range, and copy array back into (list) result.data
 		result.setRange(range);
-		result.setData(new ArrayList<Object>(n));
+		result.setData(new ArrayList<Integer>(n));
 		result.setCount(new ArrayList<Integer>(n));
 		result.setWJIncr(new ArrayList<Integer>(n));
 		result.setWJDecr(new ArrayList<Integer>(n));
