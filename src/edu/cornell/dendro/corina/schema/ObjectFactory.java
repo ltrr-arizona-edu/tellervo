@@ -38,19 +38,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WSIRootElement }
+     * Create an instance of {@link SecurityGroup }
      * 
      */
-    public WSIRootElement createWSIRootElement() {
-        return new WSIRootElement();
+    public SecurityGroup createSecurityGroup() {
+        return new SecurityGroup();
     }
 
     /**
-     * Create an instance of {@link WSIHeader.Timing }
+     * Create an instance of {@link WSISearchParams.All }
      * 
      */
-    public WSIHeader.Timing createWSIHeaderTiming() {
-        return new WSIHeader.Timing();
+    public WSISearchParams.All createWSISearchParamsAll() {
+        return new WSISearchParams.All();
+    }
+
+    /**
+     * Create an instance of {@link WSIHeader.QueryTime }
+     * 
+     */
+    public WSIHeader.QueryTime createWSIHeaderQueryTime() {
+        return new WSIHeader.QueryTime();
+    }
+
+    /**
+     * Create an instance of {@link WSINonce }
+     * 
+     */
+    public WSINonce createWSINonce() {
+        return new WSINonce();
     }
 
     /**
@@ -62,67 +78,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SecurityUser.MemberOf }
+     * Create an instance of {@link WSIMessage }
      * 
      */
-    public SecurityUser.MemberOf createSecurityUserMemberOf() {
-        return new SecurityUser.MemberOf();
-    }
-
-    /**
-     * Create an instance of {@link WSIHeader }
-     * 
-     */
-    public WSIHeader createWSIHeader() {
-        return new WSIHeader();
-    }
-
-    /**
-     * Create an instance of {@link WSIHeader.User }
-     * 
-     */
-    public WSIHeader.User createWSIHeaderUser() {
-        return new WSIHeader.User();
-    }
-
-    /**
-     * Create an instance of {@link SecurityUser }
-     * 
-     */
-    public SecurityUser createSecurityUser() {
-        return new SecurityUser();
-    }
-
-    /**
-     * Create an instance of {@link WSIParam }
-     * 
-     */
-    public WSIParam createWSIParam() {
-        return new WSIParam();
-    }
-
-    /**
-     * Create an instance of {@link WSIElementShapeDictionary }
-     * 
-     */
-    public WSIElementShapeDictionary createWSIElementShapeDictionary() {
-        return new WSIElementShapeDictionary();
-    }
-
-    /**
-     * Create an instance of {@link WSIHelp }
-     * 
-     */
-    public WSIHelp createWSIHelp() {
-        return new WSIHelp();
-    }
-
-    /**
-     * Create an instance of {@link WSISampleTypeDictionary }
-     * 
-     */
-    public WSISampleTypeDictionary createWSISampleTypeDictionary() {
-        return new WSISampleTypeDictionary();
+    public WSIMessage createWSIMessage() {
+        return new WSIMessage();
     }
 
     /**
@@ -134,11 +94,43 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WSITaxonDictionary }
+     * Create an instance of {@link WSISapwoodDictionary }
      * 
      */
-    public WSITaxonDictionary createWSITaxonDictionary() {
-        return new WSITaxonDictionary();
+    public WSISapwoodDictionary createWSISapwoodDictionary() {
+        return new WSISapwoodDictionary();
+    }
+
+    /**
+     * Create an instance of {@link WSIHeartwoodDictionary }
+     * 
+     */
+    public WSIHeartwoodDictionary createWSIHeartwoodDictionary() {
+        return new WSIHeartwoodDictionary();
+    }
+
+    /**
+     * Create an instance of {@link WSIRootElement }
+     * 
+     */
+    public WSIRootElement createWSIRootElement() {
+        return new WSIRootElement();
+    }
+
+    /**
+     * Create an instance of {@link WSIAuthenticate }
+     * 
+     */
+    public WSIAuthenticate createWSIAuthenticate() {
+        return new WSIAuthenticate();
+    }
+
+    /**
+     * Create an instance of {@link WSIRegionDictionary }
+     * 
+     */
+    public WSIRegionDictionary createWSIRegionDictionary() {
+        return new WSIRegionDictionary();
     }
 
     /**
@@ -158,123 +150,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WSIAuthenticate }
+     * Create an instance of {@link WSIHeader.Timing }
      * 
      */
-    public WSIAuthenticate createWSIAuthenticate() {
-        return new WSIAuthenticate();
-    }
-
-    /**
-     * Create an instance of {@link WSIMessage }
-     * 
-     */
-    public WSIMessage createWSIMessage() {
-        return new WSIMessage();
-    }
-
-    /**
-     * Create an instance of {@link WSIReadingNoteDictionary }
-     * 
-     */
-    public WSIReadingNoteDictionary createWSIReadingNoteDictionary() {
-        return new WSIReadingNoteDictionary();
-    }
-
-    /**
-     * Create an instance of {@link WSIHeartwoodDictionary }
-     * 
-     */
-    public WSIHeartwoodDictionary createWSIHeartwoodDictionary() {
-        return new WSIHeartwoodDictionary();
-    }
-
-    /**
-     * Create an instance of {@link WSISearchParams }
-     * 
-     */
-    public WSISearchParams createWSISearchParams() {
-        return new WSISearchParams();
-    }
-
-    /**
-     * Create an instance of {@link SecurityGroup }
-     * 
-     */
-    public SecurityGroup createSecurityGroup() {
-        return new SecurityGroup();
-    }
-
-    /**
-     * Create an instance of {@link WSIObjectTypeDictionary }
-     * 
-     */
-    public WSIObjectTypeDictionary createWSIObjectTypeDictionary() {
-        return new WSIObjectTypeDictionary();
-    }
-
-    /**
-     * Create an instance of {@link WSIHeader.QueryTime }
-     * 
-     */
-    public WSIHeader.QueryTime createWSIHeaderQueryTime() {
-        return new WSIHeader.QueryTime();
-    }
-
-    /**
-     * Create an instance of {@link WSIElementAuthenticityDictionary }
-     * 
-     */
-    public WSIElementAuthenticityDictionary createWSIElementAuthenticityDictionary() {
-        return new WSIElementAuthenticityDictionary();
-    }
-
-    /**
-     * Create an instance of {@link WSISapwoodDictionary }
-     * 
-     */
-    public WSISapwoodDictionary createWSISapwoodDictionary() {
-        return new WSISapwoodDictionary();
-    }
-
-    /**
-     * Create an instance of {@link WSIMeasurementVariableDictionary }
-     * 
-     */
-    public WSIMeasurementVariableDictionary createWSIMeasurementVariableDictionary() {
-        return new WSIMeasurementVariableDictionary();
-    }
-
-    /**
-     * Create an instance of {@link WSISearchParams.All }
-     * 
-     */
-    public WSISearchParams.All createWSISearchParamsAll() {
-        return new WSISearchParams.All();
-    }
-
-    /**
-     * Create an instance of {@link WSIElementTypeDictionary }
-     * 
-     */
-    public WSIElementTypeDictionary createWSIElementTypeDictionary() {
-        return new WSIElementTypeDictionary();
-    }
-
-    /**
-     * Create an instance of {@link WSIRegionDictionary }
-     * 
-     */
-    public WSIRegionDictionary createWSIRegionDictionary() {
-        return new WSIRegionDictionary();
-    }
-
-    /**
-     * Create an instance of {@link WSIContent }
-     * 
-     */
-    public WSIContent createWSIContent() {
-        return new WSIContent();
+    public WSIHeader.Timing createWSIHeaderTiming() {
+        return new WSIHeader.Timing();
     }
 
     /**
@@ -286,11 +166,91 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WSINonce }
+     * Create an instance of {@link WSISampleTypeDictionary }
      * 
      */
-    public WSINonce createWSINonce() {
-        return new WSINonce();
+    public WSISampleTypeDictionary createWSISampleTypeDictionary() {
+        return new WSISampleTypeDictionary();
+    }
+
+    /**
+     * Create an instance of {@link WSISearchParams }
+     * 
+     */
+    public WSISearchParams createWSISearchParams() {
+        return new WSISearchParams();
+    }
+
+    /**
+     * Create an instance of {@link WSIReadingNoteDictionary }
+     * 
+     */
+    public WSIReadingNoteDictionary createWSIReadingNoteDictionary() {
+        return new WSIReadingNoteDictionary();
+    }
+
+    /**
+     * Create an instance of {@link SecurityUser }
+     * 
+     */
+    public SecurityUser createSecurityUser() {
+        return new SecurityUser();
+    }
+
+    /**
+     * Create an instance of {@link WSIHeader.User }
+     * 
+     */
+    public WSIHeader.User createWSIHeaderUser() {
+        return new WSIHeader.User();
+    }
+
+    /**
+     * Create an instance of {@link WSIParam }
+     * 
+     */
+    public WSIParam createWSIParam() {
+        return new WSIParam();
+    }
+
+    /**
+     * Create an instance of {@link WSIElementTypeDictionary }
+     * 
+     */
+    public WSIElementTypeDictionary createWSIElementTypeDictionary() {
+        return new WSIElementTypeDictionary();
+    }
+
+    /**
+     * Create an instance of {@link WSITaxonDictionary }
+     * 
+     */
+    public WSITaxonDictionary createWSITaxonDictionary() {
+        return new WSITaxonDictionary();
+    }
+
+    /**
+     * Create an instance of {@link WSIHelp }
+     * 
+     */
+    public WSIHelp createWSIHelp() {
+        return new WSIHelp();
+    }
+
+    /**
+     * Create an instance of {@link WSIElementShapeDictionary }
+     * 
+     */
+    public WSIElementShapeDictionary createWSIElementShapeDictionary() {
+        return new WSIElementShapeDictionary();
+    }
+
+    /**
+     * Create an instance of {@link WSIHeader }
+     * 
+     */
+    public WSIHeader createWSIHeader() {
+        return new WSIHeader();
     }
 
     /**
@@ -302,11 +262,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WSIDatingTypeDictionary }
+     * Create an instance of {@link WSIElementAuthenticityDictionary }
      * 
      */
-    public WSIDatingTypeDictionary createWSIDatingTypeDictionary() {
-        return new WSIDatingTypeDictionary();
+    public WSIElementAuthenticityDictionary createWSIElementAuthenticityDictionary() {
+        return new WSIElementAuthenticityDictionary();
     }
 
     /**
@@ -315,6 +275,46 @@ public class ObjectFactory {
      */
     public WSIRequest.Dictionaries createWSIRequestDictionaries() {
         return new WSIRequest.Dictionaries();
+    }
+
+    /**
+     * Create an instance of {@link SecurityUser.MemberOf }
+     * 
+     */
+    public SecurityUser.MemberOf createSecurityUserMemberOf() {
+        return new SecurityUser.MemberOf();
+    }
+
+    /**
+     * Create an instance of {@link WSIContent }
+     * 
+     */
+    public WSIContent createWSIContent() {
+        return new WSIContent();
+    }
+
+    /**
+     * Create an instance of {@link WSIMeasurementVariableDictionary }
+     * 
+     */
+    public WSIMeasurementVariableDictionary createWSIMeasurementVariableDictionary() {
+        return new WSIMeasurementVariableDictionary();
+    }
+
+    /**
+     * Create an instance of {@link WSIObjectTypeDictionary }
+     * 
+     */
+    public WSIObjectTypeDictionary createWSIObjectTypeDictionary() {
+        return new WSIObjectTypeDictionary();
+    }
+
+    /**
+     * Create an instance of {@link WSIDatingTypeDictionary }
+     * 
+     */
+    public WSIDatingTypeDictionary createWSIDatingTypeDictionary() {
+        return new WSIDatingTypeDictionary();
     }
 
 }

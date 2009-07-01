@@ -30,7 +30,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasCustomDictionarySortType;
 import org.tridas.annotations.TridasCustomDictionaryType;
-import org.tridas.interfaces.ITridasSeries;
+import org.tridas.interfaces.ITridasDerivedSeries;
 
 
 /**
@@ -89,7 +89,7 @@ import org.tridas.interfaces.ITridasSeries;
     "values"
 })
 @XmlRootElement(name = "derivedSeries")
-public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, ITridasSeries
+public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, ITridasDerivedSeries
 {
 
     private final static long serialVersionUID = 1001L;

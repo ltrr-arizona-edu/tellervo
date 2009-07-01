@@ -803,7 +803,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 */
 	private static enum EditType {
 		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "tridas/measurementseries.png", Metadata.SERIES),
-		DERIVED_SERIES(TridasMeasurementSeries.class, "Derived Series", "tridas/derivedseries.png", Metadata.SERIES),
+		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "tridas/derivedseries.png", Metadata.SERIES),
 		OBJECT(TridasObject.class, "Object", "tridas/object.png", Metadata.OBJECT),
 		ELEMENT(TridasElement.class, "Element", "tridas/element.png", Metadata.ELEMENT),
 		SAMPLE(TridasSample.class, "Sample", "tridas/sample.png", Metadata.SAMPLE),

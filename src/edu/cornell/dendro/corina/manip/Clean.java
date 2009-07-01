@@ -92,7 +92,8 @@ public class Clean extends AbstractUndoableEdit {
 		wasMod = s.isModified();
 
 		// erase wj, elements, count, filename
-		s.setWJIncr(s.setWJDecr(null));
+		s.setWJIncr(null);
+		s.setWJDecr(null);
 		s.setElements(null);
 		s.setCount(null);
 		s.removeMeta("filename");
@@ -124,7 +125,8 @@ public class Clean extends AbstractUndoableEdit {
 	@Override
 	public void redo() throws CannotRedoException {
 		super.redo();
-		s.setWJIncr(s.setWJDecr(null));
+		s.setWJIncr(null);
+		s.setWJDecr(null);
 		s.setElements(null);
 		s.setCount(null);
 		s.removeMeta("filename");

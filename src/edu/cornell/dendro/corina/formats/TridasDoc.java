@@ -38,147 +38,6 @@ import edu.cornell.dendro.corina.webdbi.CorinaXML;
 import edu.cornell.dendro.corina.wsi.corina.TridasGenericFieldMap;
 
 public class TridasDoc implements Filetype {	
-	/**
-	 * Load the data in the 'data' list into wjinc and wjdec
-	 * 
-	 * @param data
-	 * @param wjinc
-	 * @param wjdec
-	 * @throws IOException
-	 */
-	private void loadWeiserjahre(List<TridasValue> data, List<Integer> wjinc, List<Integer> wjdec) throws IOException {
-		for(TridasValue v : data) {
-			String strvalue = v.getValue();
-			int slashPos;
-		
-			if(strvalue == null || (slashPos = strvalue.indexOf('/')) < 1)
-				throw new InvalidDataException("Invalid Weiserjahre Data Format: " + v.toString());
-			
-			try {
-				Integer inc = Integer.valueOf(strvalue.substring(0, slashPos));
-				Integer dec = Integer.valueOf(strvalue.substring(slashPos + 1));
-			} catch (NumberFormatException nfpe) {
-				throw new InvalidDataException("Invalid Weiserjahre data: " + v.toString());
-			}
-		}
-				
-	}
-	
-	/**
-	 * Load the data in the 'data' list as Integers in the values<object> list, and
-	 * the counts in the counts list. Unsets the counts if it's all one.
-	 * @param data
-	 * @param clearCountAllOnes if true, unsets count if it's all ones (should only be true if it's not a sum)
-	 * @param values
-	 * @param counts
-	 * @throws IOException
-	 */
-	private void loadIntegerObjectAndCountList(List<TridasValue> data, boolean clearCountAllOnes,
-			List<Number> values, List<Integer> counts) 
-		throws IOException 
-	{
-		boolean countAllOnes = true;
-		
-		// loop through and simply get the data
-		for(TridasValue v : data) {
-			String strval = v.getValue();
-			Integer countval = v.isSetCount() ? v.getCount().intValue() : 1;
-			Number nval;
-
-			try {
-				// catch floats, too!
-				if(strval.indexOf('.') < 0)
-					nval = Integer.valueOf(strval);
-				else
-					nval = Float.valueOf(strval);
-			} catch (NumberFormatException nfe) {
-				throw new InvalidDataException("Invalid ring width data: " + strval + " : " + v.toString());
-			}
-			
-			values.add(nval);
-			counts.add(countval);
-
-			// the count isn't just all ones
-			if(countval != 1)
-				countAllOnes = false;
-		}
-		
-		// all ones? clear!
-		if(countAllOnes && clearCountAllOnes)
-			counts.clear();
-	}
-	
-	/**
-	 * Load values into a particular sample
-	 * 
-	 * @param values
-	 * @param s
-	 * @return true if values loaded, false if ignored
-	 * @throws IOException
-	 */
-	private boolean loadValuesIntoSample(TridasValues values, Sample s) throws IOException {
-		TridasVariable variable = values.getVariable();
-		boolean unitless = values.isSetUnitless();
-		TridasUnit units = unitless ? null : values.getUnit();
-		List<TridasValue> dataValues = values.getValues();
-		
-		if(variable.isSetNormalTridas()) {
-			switch(variable.getNormalTridas()) {
-			case RING_WIDTH: {
-				List<Number> ringwidths = new ArrayList<Number>(dataValues.size());
-				List<Integer> counts = new ArrayList<Integer>(dataValues.size());
-				
-				loadIntegerObjectAndCountList(dataValues, s.getSampleType() != SampleType.SUM, 
-						ringwidths, counts);
-				
-				// set our sample data
-				s.setData(ringwidths);
-				
-				// now set counts
-				if(!counts.isEmpty())
-					s.setCount(counts);
-
-				return true;
-			}
-				
-			default:
-				System.out.println("Not handling tridas variable " + variable.getNormalTridas().value());
-				return false;
-			}
-		}
-		// a 'normal' standard is one that's not created
-		else if(variable.isSetNormalStd()) {
-			String standard = variable.getNormalStd();
-			
-			// a corina standard?
-			if("corina".equals(standard)) {
-				if("weiserjahre".equals(variable.getNormal())) {
-					List<Integer> wjinc = new ArrayList<Integer>(dataValues.size());
-					List<Integer> wjdec = new ArrayList<Integer>(dataValues.size());
-					
-					loadWeiserjahre(dataValues, wjinc, wjdec);
-					
-					s.setWJIncr(wjinc);
-					s.setWJDecr(wjdec);
-					
-					return true;
-				}
-				else {
-					System.out.println("Unknown corina standard " + variable.getNormal());
-					return false;
-				}
-			}
-			else {
-				System.out.println("Unknown standard " + standard);
-				return false;
-			}
-			
-		} 
-		else {
-			System.err.println("Don't know how to deal with values: " + values.toString());
-			return false;
-		}
-	}
 
 	private void breakUpTridasLinks(TridasObject obj) {
 		// first, disassociate any children of child objects
@@ -203,10 +62,6 @@ public class TridasDoc implements Filetype {
 			element.unsetSamples();
 		}
 		obj.unsetElements();
-	}
-
-	private void populateLabCode(BaseSample s) {
-		
 	}
 	
 	/**
@@ -324,7 +179,7 @@ public class TridasDoc implements Filetype {
 		
 		// if it has values, it's a sample. Otherwise, it's a basesample.
 		if(series.isSetValues())
-			s = new Sample();
+			s = new Sample(series);
 		else
 			s = new BaseSample();
 		
@@ -381,9 +236,6 @@ public class TridasDoc implements Filetype {
 		
 		// this has values: it's a standard/comprehensive VM
 		if(series.isSetValues()) {
-			Sample fs = (Sample) s;
-			List<TridasValues> removeValues = new ArrayList<TridasValues>();
-			
 			for(TridasValues valuesElement : series.getValues()) {
 				TridasVariable variable = valuesElement.getVariable();
 
@@ -394,16 +246,8 @@ public class TridasDoc implements Filetype {
 						s.setRange(new Range(firstYear, valuesElement.getValues().size()));
 						s.setMeta(Metadata.UNITS, valuesElement.getUnit());
 					}
-				}
-				
-				// load the values into the actual sample
-				// keep a list of things we used (true return)
-				if(loadValuesIntoSample(valuesElement, fs))
-					removeValues.add(valuesElement);
-			}
-			
-			// remove everything that we used
-			series.getValues().removeAll(removeValues);
+				}				
+			}			
 		}
 		// no values: summary VM
 		else {

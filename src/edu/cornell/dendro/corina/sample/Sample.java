@@ -25,13 +25,14 @@ import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.graph.Graphable;
+import edu.cornell.dendro.corina.tridasv2.TridasRingWidthWrapper;
+import edu.cornell.dendro.corina.tridasv2.TridasWeiserjahreWrapper;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import edu.cornell.dendro.corina_indexing.Indexable;
 
 import java.util.EnumMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Vector;
 import java.util.HashMap;
 
@@ -39,11 +40,13 @@ import java.lang.reflect.Method;
 
 import javax.swing.undo.*;
 
+import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasUnit;
+import org.tridas.schema.TridasUnitless;
 import org.tridas.schema.TridasValues;
 import org.tridas.schema.TridasVariable;
 
@@ -106,11 +109,9 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	public static void copy(Sample source, Sample target) {
 		// copy our base data
 		BaseSample.copy(source, target);
-		
-		target.data = source.data;
-		target.count = source.count;
-		target.incr = source.incr;
-		target.decr = source.decr;
+
+		target.ringwidths = source.ringwidths;
+		target.weiserjahre = source.weiserjahre;
 		target.elements = source.elements;
 	}
 	
@@ -121,16 +122,9 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * It's not that easy, though;
 	 * We put floats in here occasionally, as well as strings.
 	 */
-	private List<Number> data;
+	private TridasRingWidthWrapper ringwidths;
+	private TridasWeiserjahreWrapper weiserjahre;
 		
-	/** Number of samples in the sum at any given point. */
-	private List<Integer> count = null;
-	
-	/** Weiserjahre down */
-	private List<Integer> decr = null;
-	/** Weiserjahre up */
-	private List<Integer> incr = null;
-	
 	/** Elements (in a List) that were put into this sum. */
 	private ElementList elements = null;
 	
@@ -151,7 +145,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 
 	/** A map from Tridas variable (RING_WIDTH, etc) to values */
 	private EnumMap<NormalTridasVariable, TridasValues> tridasValuesMap;
-	/** A slower hashmap from variable to values */
+	/** A slower hashmap from Standard/Name to values */
 	private HashMap<TridasVariable, TridasValues> otherValuesMap;
 	
 	/** Default constructor.  Defaults:
@@ -173,12 +167,56 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		initialize();
 		
 		series = new TridasMeasurementSeries();
-		series.getValues().add(createEmptyTridasValues());		
+		series.getValues().add(createEmptyRingWidths());		
 		repopulateValuesMap();
 		
 		// make defaults: empty
-		data = new ArrayList<Number>();
+		ringwidths = new TridasRingWidthWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH), false);
 
+		// store username, if known
+		if (System.getProperty("user.name") != null)
+			setMeta("author", System.getProperty("user.name"));
+
+		// initialize empty metadata with defaults?
+		setMeta("title", I18n.getText("Untitled"));
+
+		// metadata NOT changed
+		metadataChanged = false;
+	}
+	
+	public Sample(ITridasSeries series) {
+		super();
+		initialize();
+		
+		if(series instanceof ITridasDerivedSeries) {
+			ITridasDerivedSeries dseries = (ITridasDerivedSeries) series;
+
+			// try to establish sample type
+			if(!dseries.isSetType() || !dseries.getType().isSetValue())
+				setSampleType(SampleType.UNKNOWN);
+			else
+				setSampleType(SampleType.fromString(dseries.getType().getValue()));
+		}
+		else
+			setSampleType(SampleType.DIRECT);
+		
+		this.series = series;
+		repopulateValuesMap();
+
+		// must have ring widths!
+		if(!tridasValuesMap.containsKey(NormalTridasVariable.RING_WIDTH)) {
+			series.getValues().add(createEmptyRingWidths());
+			repopulateValuesMap(); // be lazy
+		}
+		
+		// make the ring widths wrapper
+		ringwidths = new TridasRingWidthWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH),
+				getSampleType() == SampleType.SUM);
+		
+		// if weiserjahre exists, make the values wrapper for it as well
+		if(otherValuesMap.containsKey(WEISERJAHRE_VARIABLE)) 
+			weiserjahre = new TridasWeiserjahreWrapper(otherValuesMap.get(WEISERJAHRE_VARIABLE));
+		
 		// store username, if known
 		if (System.getProperty("user.name") != null)
 			setMeta("author", System.getProperty("user.name"));
@@ -205,7 +243,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * 
 	 * @return a representative TridasValues object
 	 */
-	private TridasValues createEmptyTridasValues() {
+	private TridasValues createEmptyRingWidths() {
 		TridasValues values = new TridasValues();
 		
 		// set default units
@@ -222,8 +260,29 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		values.getValues();
 		
 		return values;
-	}
-	
+	}	
+
+	/**
+	 * Create a default set of TridasValues
+	 * - 1/100th mm
+	 * - Ring widths
+	 * 
+	 * @return a representative TridasValues object
+	 */
+	private TridasValues createEmptyWeiserjahre() {
+		TridasValues values = new TridasValues();
+		
+		values.setUnitless(new TridasUnitless());
+		
+		// set as Weiserjahre
+		values.setVariable(WEISERJAHRE_VARIABLE);
+
+		// populate the list of values (empty)
+		values.getValues();
+		
+		return values;
+	}	
+
 	/**
 	 * For quick lookups, find TridasVariables via a map
 	 */
@@ -236,8 +295,9 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 			
 			if(variable.isSetNormalTridas())
 				tridasValuesMap.put(variable.getNormalTridas(), values);
-			else
+			else {				
 				otherValuesMap.put(variable, values);
+			}
 		}
 	}
 
@@ -255,6 +315,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	// return 0.0 for indexed sample?  throw ex?)
 	public int computeRadius() {
 		// (apply '+ data)
+		List<Number> data = getData();
 		int n = data.size();
 		int sum = 0;
 		for (int i = 0; i < n; i++)
@@ -265,6 +326,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	// number of intervals with >3 samples
 	public int count3SampleIntervals() {
 		// (count-if #'(lambda (x) (> x 3)) (sample-count s))
+		List<Integer> count = getCount();
 		if (count == null)
 			return 0;
 
@@ -283,6 +345,8 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	public int countRings() {
 		// it's not a sum, so the number of rings is just the length
 		// (if (null count) (length data) ...
+		List<Number> data = getData();
+		List<Integer> count = getCount();
 		if (count == null)
 			return data.size();
 
@@ -300,7 +364,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		if (!hasWeiserjahre())
 			return 0;
 
-		int sig = 0, n = incr.size();
+		int sig = 0, n = getWJIncr().size();
 		for (int i = 0; i < n; i++)
 			if (Weiserjahre.isSignificant(this, i))
 				sig++;
@@ -327,7 +391,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @return the count
 	 */
 	public List<Integer> getCount() {
-		return count;
+		return ringwidths.getCount();
 	}
 
 	/** Return the data for a graph
@@ -337,7 +401,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @return data to graph, as a List of Integers 
 	 */
 	public List<Number> getData() {
-		return data;
+		return ringwidths.getData();
 	}
 
 	/**
@@ -415,14 +479,14 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @return the decr
 	 */
 	public List<Integer> getWJDecr() {
-		return decr;
+		return (weiserjahre != null) ? weiserjahre.getDecr() : null;
 	}
 
 	/**
 	 * @return the incr
 	 */
 	public List<Integer> getWJIncr() {
-		return incr;
+		return (weiserjahre != null) ? weiserjahre.getIncr() : null;
 	}
 
 	/* Determining if a file is indexed: The 800 Rule
@@ -467,12 +531,13 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 summed indexed formats for tucson.  but he wants it back in,
 	 so we give it to him. */
 	public void guessIndexed() {
+		List<Number> data = getData();
 		setMeta("format", computeRadius() / data.size() > 800 ? "I" : "R");
 	}
 
 	// does it have weiserjahre?
 	public boolean hasWeiserjahre() {
-		return (incr != null);
+		return (weiserjahre != null);
 	}
 
 	/** Return true if the sample is absolutely dated, else false.
@@ -553,12 +618,14 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 
 		// we don't know? guess.
 		// why is this "or?"
-		case UNKNOWN:
+		case UNKNOWN: {
+			List<Integer> count = getCount();
 			if (elements != null || count != null) {
 				setSampleType(SampleType.SUM);
 				return true;
 			}
 			return false;
+		}
 			
 		default:
 			return false;
@@ -577,7 +644,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @param count the count to set
 	 */
 	public void setCount(List<Integer> count) {
-		this.count = count;
+		ringwidths.setCount(count);
 	}
 
 	//
@@ -588,7 +655,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @param data the data to set
 	 */
 	public void setData(List<Number> data) {
-		this.data = data;
+		ringwidths.setData(data);
 	}
 
 	/**
@@ -606,15 +673,25 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/**
 	 * @param decr the decr to set
 	 */
-	public List<Integer> setWJDecr(List<Integer> decr) {
-		return this.decr = decr;
+	public void setWJDecr(List<Integer> decr) {
+		if(weiserjahre == null) {
+			series.getValues().add(createEmptyWeiserjahre());
+			repopulateValuesMap();
+			weiserjahre = new TridasWeiserjahreWrapper(otherValuesMap.get(WEISERJAHRE_VARIABLE));
+		}
+		weiserjahre.setDecr(decr);
 	}
 
 	/**
 	 * @param incr the incr to set
 	 */
 	public void setWJIncr(List<Integer> incr) {
-		this.incr = incr;
+		if(weiserjahre == null) {
+			series.getValues().add(createEmptyWeiserjahre());
+			repopulateValuesMap();
+			weiserjahre = new TridasWeiserjahreWrapper(otherValuesMap.get(WEISERJAHRE_VARIABLE));
+		}
+		weiserjahre.setIncr(incr);
 	}
 
 	/** Return the sample's title.
@@ -630,6 +707,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	// make sure data/count/wj are the same size as range.span, and
 	// contain all legit Numbers.  turns nulls/non-numbers into 0's.
 	public void verify() {
+		List<Number> data = getData();
 		int n = getRange().span();
 
 		// what to do if they're the wrong size -- adjust range if the data
@@ -689,4 +767,15 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 			// just ignore them all... (?)
 		}
 	}
+	
+	public final static TridasVariable WEISERJAHRE_VARIABLE = new TridasVariable() {
+		{
+			this.setNormalStd(CORINA_STD);
+			this.setNormal(WEISERJAHRE);
+			this.setValue(""); // this is XML mandatory, as it's a value string
+		}
+	};
+	public final static String CORINA_STD = "Corina";
+	public final static String WEISERJAHRE = "Weiserjahre";
+	
 }

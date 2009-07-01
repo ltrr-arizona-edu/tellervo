@@ -47,7 +47,7 @@
 			<ai:interfaces check="false">org.tridas.interfaces.ITridasSeries</ai:interfaces>
 		</jaxb:bindings>
 		<jaxb:bindings node="//xs:element[@name='derivedSeries']/xs:complexType">
-			<ai:interfaces check="false">org.tridas.interfaces.ITridasSeries</ai:interfaces>
+			<ai:interfaces check="false">org.tridas.interfaces.ITridasDerivedSeries</ai:interfaces>
 		</jaxb:bindings>
 				
 		<!-- Fix some unconvertable strings -->
