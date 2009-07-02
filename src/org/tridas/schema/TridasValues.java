@@ -1,14 +1,13 @@
 
 package org.tridas.schema;
 
-import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -23,8 +22,6 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
-import org.no0ne.collectionprop.ListProperty;
-import org.no0ne.collectionprop.event.PropertyChangeSupportEx;
 import org.tridas.annotations.TridasEditProperties;
 
 
@@ -61,38 +58,17 @@ import org.tridas.annotations.TridasEditProperties;
 })
 @XmlRootElement(name = "values")
 @TridasEditProperties(machineOnly = true)
-public class TridasValues implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
+public class TridasValues
+    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
-    /**
-     * The property name for the variable property.
-     * 
-     */
-    public final static String PNAME_VARIABLE = "variable";
     @XmlElement(required = true)
     protected TridasVariable variable;
-    /**
-     * The property name for the unit property.
-     * 
-     */
-    public final static String PNAME_UNIT = "unit";
     protected TridasUnit unit;
-    /**
-     * The property name for the unitless property.
-     * 
-     */
-    public final static String PNAME_UNITLESS = "unitless";
     protected TridasUnitless unitless;
-    /**
-     * The property name for the values property.
-     * 
-     */
-    public final static String PNAME_VALUES = "values";
     @XmlElement(name = "value", required = true)
     protected List<TridasValue> values;
-    @XmlTransient
-    protected PropertyChangeSupportEx boundSupport = new PropertyChangeSupportEx(this);
 
     /**
      * Gets the value of the variable property.
@@ -116,8 +92,6 @@ public class TridasValues implements Serializable, CopyTo, Copyable, Equals, Has
      */
     public void setVariable(TridasVariable value) {
         this.variable = value;
-        PropertyChangeSupportEx support = this.getBoundSupport();
-        support.firePropertyChange(TridasValues.PNAME_VARIABLE, this.variable, value);
     }
 
     public boolean isSetVariable() {
@@ -146,8 +120,6 @@ public class TridasValues implements Serializable, CopyTo, Copyable, Equals, Has
      */
     public void setUnit(TridasUnit value) {
         this.unit = value;
-        PropertyChangeSupportEx support = this.getBoundSupport();
-        support.firePropertyChange(TridasValues.PNAME_UNIT, this.unit, value);
     }
 
     public boolean isSetUnit() {
@@ -176,8 +148,6 @@ public class TridasValues implements Serializable, CopyTo, Copyable, Equals, Has
      */
     public void setUnitless(TridasUnitless value) {
         this.unitless = value;
-        PropertyChangeSupportEx support = this.getBoundSupport();
-        support.firePropertyChange(TridasValues.PNAME_UNITLESS, this.unitless, value);
     }
 
     public boolean isSetUnitless() {
@@ -186,24 +156,29 @@ public class TridasValues implements Serializable, CopyTo, Copyable, Equals, Has
 
     /**
      * Gets the value of the values property.
-     * <p>This accessor method returns a reference to the live list,
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the values property.
      * 
-     * <p>For example, to add a new item, do as follows:
+     * <p>
+     * For example, to add a new item, do as follows:
      * <pre>
      *    getValues().add(newItem);
      * </pre>
      * 
-     * <p>Objects of the following type(s) are allowed in the list
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
      * {@link TridasValue }
      * 
      * 
      */
     public List<TridasValue> getValues() {
         if (values == null) {
-            values = new ListProperty<TridasValue>(TridasValues.PNAME_VALUES, this.getBoundSupport(), null);
+            values = new ArrayList<TridasValue>();
         }
         return this.values;
     }
@@ -214,26 +189,6 @@ public class TridasValues implements Serializable, CopyTo, Copyable, Equals, Has
 
     public void unsetValues() {
         this.values = null;
-    }
-
-    public void addPropertyChangeListener(PropertyChangeListener param0) {
-        this.boundSupport.addPropertyChangeListener(param0);
-    }
-
-    public void addPropertyChangeListener(String param0, PropertyChangeListener param1) {
-        this.boundSupport.addPropertyChangeListener(param0, param1);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener param0) {
-        this.boundSupport.removePropertyChangeListener(param0);
-    }
-
-    public void removePropertyChangeListener(String param0, PropertyChangeListener param1) {
-        this.boundSupport.removePropertyChangeListener(param0, param1);
-    }
-
-    protected PropertyChangeSupportEx getBoundSupport() {
-        return this.boundSupport;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {

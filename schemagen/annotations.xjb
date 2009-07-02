@@ -34,7 +34,7 @@ This file is for custom annotations applied to tridas objects
 		</annox:annotate>
 		
 		<!-- Add propertychangelistener support -->	
-		<ls:listener-support type="BOUND" />		
+		<!-- <ls:listener-support type="BOUND" /> -->
 	</bindings>
 
 	<!-- read only -->
