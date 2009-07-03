@@ -86,6 +86,6 @@ public class BaseSampleMetadata implements CorinaMetadata {
 	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getTaxon()
 	 */
 	public String getTaxon() {
-		return null;
+		return bs.getMetaString(Metadata.SUMMARY_MUTUAL_TAXON);
 	}
 }

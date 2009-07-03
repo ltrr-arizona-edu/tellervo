@@ -18,6 +18,7 @@ import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.SampleSummary;
+import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridas.LabCode;
 
 public class DBBrowserTableModel extends AbstractTableModel {
@@ -104,13 +105,18 @@ public class DBBrowserTableModel extends AbstractTableModel {
 
 		// taxon
 		case 3: {
-			Integer nTaxa = bs.getMeta(Metadata.SUMMARY_MUTUAL_TAXON_COUNT, Integer.class);
-			String taxon = bs.getMetaString(Metadata.SUMMARY_MUTUAL_TAXON);
+			// sums have special ways of getting taxon info
+			if(bs.getSampleType() == SampleType.SUM) {
+				Integer nTaxa = bs.getMeta(Metadata.SUMMARY_MUTUAL_TAXON_COUNT, Integer.class);
+				String taxon = bs.getMetaString(Metadata.SUMMARY_MUTUAL_TAXON);
 
-			if(nTaxa == null || nTaxa < 2 || taxon == null)
-				return taxon;
+				if(nTaxa == null || nTaxa < 2 || taxon == null)
+					return taxon;
 			
-			return nTaxa + " taxa of " + taxon;
+				return nTaxa + " taxa of " + taxon;
+			}
+			
+			return bs.meta().getTaxon();
 		}
 		
 		// measurement count

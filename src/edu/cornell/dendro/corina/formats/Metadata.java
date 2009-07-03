@@ -55,7 +55,6 @@ public class Metadata {
 	public final static String ELEMENT = "::element";
 	public final static String SAMPLE = "::sample";
 	public final static String RADIUS = "::radius";
-	public final static String SERIES = "::series";
 	
 	/** Measuring method */
 	public final static String MEASURING_METHOD = "::measuringMethod";

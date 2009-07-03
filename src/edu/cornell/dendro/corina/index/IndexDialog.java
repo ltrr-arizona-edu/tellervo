@@ -73,7 +73,6 @@ import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
-import edu.cornell.dendro.corina.sample.CorinaWebElement;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;

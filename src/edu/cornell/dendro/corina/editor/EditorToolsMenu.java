@@ -22,8 +22,6 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.index.IndexDialog;
-import edu.cornell.dendro.corina.manip.Reconcile;
-import edu.cornell.dendro.corina.manip.ReconcileDialog;
 import edu.cornell.dendro.corina.manip.ReconcileWindow;
 import edu.cornell.dendro.corina.manip.RedateDialog;
 import edu.cornell.dendro.corina.manip.Reverse;

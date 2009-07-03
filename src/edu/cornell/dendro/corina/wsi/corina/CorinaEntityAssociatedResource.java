@@ -6,15 +6,17 @@ package edu.cornell.dendro.corina.wsi.corina;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasDerivedSeries;
+import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
+import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIEntity;
@@ -56,10 +58,10 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 			TridasIdentifier identifier = entity.getIdentifier();
 
 			if(parentEntityID != null)
-				throw new IllegalStateException("Delete called with parentObjectID!");
+				throw new IllegalArgumentException("Delete called with parentObjectID!");
 			
 			if(identifier == null)
-				throw new IllegalStateException("Delete called with a tridas entity with no identifier!");
+				throw new IllegalArgumentException("Delete called with a tridas entity with no identifier!");
 			
 			readOrDeleteEntity = new WSIEntity();
 			readOrDeleteEntity.setId(identifier.getValue());
@@ -69,11 +71,25 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		}
 			
 		default:
-			throw new IllegalStateException("Invalid request type: must be one of CREATE, UPDATE or DELETE for this method");
+			throw new IllegalArgumentException("Invalid request type: must be one of CREATE, UPDATE or DELETE for this method");
 		}
 		
-		if(queryType == CorinaRequestType.CREATE && parentEntityID == null) {
-			throw new IllegalStateException("CREATE called with ParentObjectID == null!");
+		if (queryType == CorinaRequestType.CREATE && parentEntityID == null) {
+			if (entity instanceof ITridasDerivedSeries) {
+				ITridasDerivedSeries dentity = (ITridasDerivedSeries) entity;
+				
+				if(!dentity.isSetType())
+					throw new IllegalArgumentException("Derived entity has no type specified!");
+				
+				SampleType stype = SampleType.fromString(dentity.getType().isSetNormal() 
+						? dentity.getType().getNormal()
+						: dentity.getType().getValue());
+
+				if (stype != SampleType.SUM)
+					throw new IllegalArgumentException("CREATE " + stype
+							+ " called with ParentObjectID == null!");
+			} else
+				throw new IllegalArgumentException("CREATE called with ParentObjectID == null!");
 		}
 	}
 	
@@ -115,7 +131,7 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 			break;
 					
 		default:
-			throw new IllegalStateException("Invalid request type: must be one of READ or DELETE for this method");
+			throw new IllegalArgumentException("Invalid request type: must be one of READ or DELETE for this method");
 		}		
 	}
 
@@ -146,7 +162,7 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		}
 					
 		default:
-			throw new IllegalStateException("Invalid request type: must be one of READ or DELETE for this method");
+			throw new IllegalArgumentException("Invalid request type: must be one of READ or DELETE for this method");
 		}		
 	}
 
@@ -165,7 +181,7 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		else if(createOrUpdateEntity instanceof TridasDerivedSeries)
 			request.getDerivedSeries().add((TridasDerivedSeries) createOrUpdateEntity);
 		else 
-			throw new IllegalStateException("Unknown/invalid entity type for update/create: " + 
+			throw new IllegalArgumentException("Unknown/invalid entity type for update/create: " + 
 					createOrUpdateEntity.toString());
 	}
 	

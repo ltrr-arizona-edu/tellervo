@@ -23,11 +23,15 @@ package edu.cornell.dendro.corina.manip;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleType;
 
 import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
+
+import org.tridas.interfaces.ITridasDerivedSeries;
+import org.tridas.schema.TridasDerivedSeries;
 
 /**
  A "sum" of two or more datasets is the average of those datasets.
@@ -148,6 +152,13 @@ public class Sum {
 
 	// load elements, sum them, and store into result (returns result, too)
 	private static Sample sum(Sample result, ElementList elements) throws IOException {
+
+		result.setSampleType(SampleType.SUM);
+
+		// if it's not a derived series, it is now
+		if(!(result.getSeries() instanceof ITridasDerivedSeries))
+			result.setSeries(new TridasDerivedSeries());		
+		
 		// step 0: load all elements, and stuff 'em into a buffer
 		Sample buf[] = loadIntoBuffer(elements);
 

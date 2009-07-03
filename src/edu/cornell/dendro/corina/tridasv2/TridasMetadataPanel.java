@@ -36,6 +36,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -139,14 +140,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		// set up initial state!
 		// first, ensure we have a series
-		if(!s.hasMeta(Metadata.SERIES)) {
-			s.setMeta(Metadata.SERIES, 
-					(s.getSampleType() == SampleType.DIRECT) ? 
-					new TridasMeasurementSeries() : new TridasDerivedSeries());
-			
-			// copy over name if it already exists
-			((BaseSeries)s.getMeta(Metadata.SERIES)).setTitle(s.getMetaString(Metadata.NAME));
-		}
+		// (this shouldn't happen?)
+		if(s.getSeries() == null)
+			throw new IllegalArgumentException("MetadataPanel creation for sample without a series?");
 		
 		// then, make sure we set up our initial button state to make sense
 		for(EditType type : EditType.values()) {
@@ -801,13 +797,16 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * 
 	 * @author Lucas Madar
 	 */
+	private final static String SERIESTAG = "SERIES";
+
 	private static enum EditType {
-		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "tridas/measurementseries.png", Metadata.SERIES),
-		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "tridas/derivedseries.png", Metadata.SERIES),
+		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "tridas/measurementseries.png", null),
+		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "tridas/derivedseries.png", null),
 		OBJECT(TridasObject.class, "Object", "tridas/object.png", Metadata.OBJECT),
 		ELEMENT(TridasElement.class, "Element", "tridas/element.png", Metadata.ELEMENT),
 		SAMPLE(TridasSample.class, "Sample", "tridas/sample.png", Metadata.SAMPLE),
 		RADIUS(TridasRadius.class, "Radius", "tridas/radius.png", Metadata.RADIUS);
+		
 		
 		private Class<? extends ITridas> type;
 		private String displayTitle;
@@ -827,11 +826,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			
 			associatedButton = null;
 		}
-		
-		public String getMetadataTag() {
-			return metadataTag;
-		}
-		
+				
 		public Class<? extends ITridas> getType() {
 			return type;
 		}
@@ -851,6 +846,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		 * @return
 		 */
 		public ITridas getEntity(Sample s) {
+			if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES)
+				return s.getSeries();
+			
 			return (ITridas) s.getMeta(metadataTag);
 		}
 		
@@ -861,7 +859,10 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		 * @param entity
 		 */
 		public void setEntity(Sample s, ITridas entity) {
-			s.setMeta(metadataTag, entity);
+			if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES)
+				s.setSeries((ITridasSeries) entity);
+			else
+				s.setMeta(metadataTag, entity);
 		}
 		
 		/**

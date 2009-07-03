@@ -193,6 +193,14 @@ public class BaseSample {
 	 */
 	public void setSeries(ITridasSeries series) {
 		this.series = series;
+
+		// update our sample type to reflect what's going on
+		if(series instanceof ITridasDerivedSeries) {
+			if(!sampleType.isDerived())
+				sampleType = SampleType.UNKNOWN_DERIVED;
+		}
+		else if(sampleType.isDerived())
+			sampleType = SampleType.UNKNOWN;
 	}
 	
 	/** Our implementation of Metadata */

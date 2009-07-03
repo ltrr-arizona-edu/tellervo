@@ -181,7 +181,7 @@ public class TridasDoc implements Filetype {
 		if(series.isSetValues())
 			s = new Sample(series);
 		else
-			s = new BaseSample();
+			s = new BaseSample(series);
 		
 		// Start with a basic title
 		s.setMeta(Metadata.TITLE, series.getIdentifier().toString());
@@ -204,7 +204,6 @@ public class TridasDoc implements Filetype {
 				getValue().toGregorianCalendar().getTime());
 		s.setMeta(Metadata.MODIFIED_TIMESTAMP, series.getLastModifiedTimestamp().
 				getValue().toGregorianCalendar().getTime());
-		s.setMeta(Metadata.SERIES, series); // hold on to this for later!
 
 		// reconciled only works on Direct VMs
 		if(genericFields.containsKey("corina.isReconciled") && s.getSampleType() == SampleType.DIRECT)

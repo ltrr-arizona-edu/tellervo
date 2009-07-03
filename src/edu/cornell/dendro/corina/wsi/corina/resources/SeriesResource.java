@@ -11,7 +11,6 @@ import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
 
-import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.formats.TridasDoc;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
@@ -28,7 +27,7 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaEntityAssociatedResource;
  * @author Lucas Madar
  *
  */
-public class SeriesResource extends CorinaEntityAssociatedResource<Sample> {
+public class SeriesResource extends CorinaEntityAssociatedResource<List<BaseSample>> {
 
 	/**
 	 * @param identifier
@@ -79,16 +78,15 @@ public class SeriesResource extends CorinaEntityAssociatedResource<Sample> {
 			for(ITridasSeries series : tridasSeries) {
 				BaseSample bs = doc.loadFromBaseSeries(series);
 				samples.add(bs);
-			}
-			
+			}			
 		} catch(IOException ioe) {
 			throw new ResourceException("Couldn't load series: " + ioe.toString());
 		}
 		
 		for(BaseSample s : samples) {
+			ITridasSeries series = s.getSeries();
 			// create a loader and associate it with this sample
-			CorinaWsiTridasElement loader = new CorinaWsiTridasElement(
-					s.getMeta(Metadata.TRIDAS_IDENTIFIER, TridasIdentifier.class));
+			CorinaWsiTridasElement loader = new CorinaWsiTridasElement(series.getIdentifier());
 			
 			s.setLoader(loader);
 			
@@ -96,8 +94,27 @@ public class SeriesResource extends CorinaEntityAssociatedResource<Sample> {
 			loader.preload(s);
 		}
 		
-		this.setAssociatedResult((Sample) samples.get(samples.size() - 1));
+		this.setAssociatedResult(samples);
 		
 		return true;
+	}
+	
+	/**
+	 * Find a sample in our results that matches this identifier
+	 * 
+	 * @param identifier
+	 * @return a sample, or null
+	 */
+	public Sample getSample(TridasIdentifier identifier) {
+		for(BaseSample bs : getAssociatedResult()) {
+			if(bs.getSeries().getIdentifier().equals(identifier)) {
+				if(!(bs instanceof Sample))
+					throw new IllegalStateException("Found identifier but no sample??");
+				
+				return (Sample) bs;
+			}
+		}
+		
+		return null;
 	}
 }

@@ -196,7 +196,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 			super.setSeries(series);
 		
 		repopulateValuesMap();
-
+		
 		// must have ring widths!
 		if(!tridasValuesMap.containsKey(NormalTridasVariable.RING_WIDTH)) {
 			getSeries().getValues().add(createEmptyRingWidths());

@@ -11,30 +11,30 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.jdesktop.layout.GroupLayout;
+import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasLinkSeries;
 
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.GraphDialog;
-import edu.cornell.dendro.corina.graph.GraphWindow;
-import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.BaseSample;
-import edu.cornell.dendro.corina.sample.CorinaWebElement;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
-import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
+import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 
 public class SumCreationDialog {
 	private DBBrowser sum;
 	private String sumName = "New sum";
 
+	@SuppressWarnings("serial")
 	public SumCreationDialog(Frame parent, ElementList el) {
 		
 		// create the db browser, but make it create the sum first before closing
@@ -58,11 +58,10 @@ public class SumCreationDialog {
 			try	{
 				BaseSample bs = e.loadBasic();
 				
-				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
-
-				if(ss != null) {
-					sum.selectSiteByCode(ss.getSiteCode());
-					sumName = "New " + ss.getSiteCode() + " sum";
+				if(bs.meta().hasSiteCode()) {
+					String siteCode = bs.meta().getSiteCode();
+					sum.selectSiteByCode(siteCode);
+					sumName = "New " + siteCode + " sum";
 				}
 			} catch (Exception ex) {
 				// ignore...
@@ -82,25 +81,41 @@ public class SumCreationDialog {
 	private boolean applySum() {
 		// ok, for now this only works for creating *new* sums!
 
-		// create an empty resource identifier and saver
-		ResourceIdentifier rid = new ResourceIdentifier("measurement");
-		CorinaWebElement cwe = new CorinaWebElement(rid);
+		TridasDerivedSeries series = new TridasDerivedSeries();
+		
+		// it's a new series? (to force update, set this to the id of the series to update!)
+		series.setIdentifier(NewTridasIdentifier.getInstance());
+		series.setTitle(sumName);
+
+		// it's a sum
+		ControlledVoc voc = new ControlledVoc();
+		voc.setValue(SampleType.SUM.toString());
+		series.setType(voc);
+		
+		TridasLinkSeries links = new TridasLinkSeries();
+		series.getLinkSeries().add(links);
+
+		// add each sum element to the sample...
+		for(Element sume : sum.getSelectedElements()) {
+			BaseSample bs;
+			
+			try {
+				bs = sume.loadBasic();
+			} catch (IOException ioe) {
+				throw new IllegalStateException("loadBasic() failed on sum element?");
+			}
+			
+			links.getIdRevesAndXLinksAndIdentifiers().add(bs.getSeries().getIdentifier());
+		}
 		
 		// create a new, empty sample
-		Sample tmp = new Sample();
-
-		// set it up
-		tmp.setMeta("name", sumName);
-		tmp.setMeta("title", sumName); // not necessary, but consistent?
-		tmp.setMeta("::saveoperation", SampleType.SUM);
-		tmp.setMeta("::dbparent", rid);
-
-		// add the elements...
-		tmp.setElements(sum.getSelectedElements());
+		Sample tmp = new Sample(series);
 
 		try {
+			CorinaWsiTridasElement cwe = new CorinaWsiTridasElement(NewTridasIdentifier.getInstance());
+			
 			// here's where we do the "meat"
-			if(cwe.save(tmp)) {
+			if(cwe.save(tmp, sum)) {
 				// put it in our menu
 				OpenRecent.sampleOpened(tmp.getLoader());
 								

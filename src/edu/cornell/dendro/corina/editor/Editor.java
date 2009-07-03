@@ -85,7 +85,6 @@ import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.tridasv2.TridasMeasurementSeriesEx;
 import edu.cornell.dendro.corina.tridasv2.TridasMetadataPanel;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -680,7 +679,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		sample.setMeta(Metadata.TITLE, "New entry: " + title);
 		sample.setMeta(Metadata.NAME, title);
 		sample.setSampleType(SampleType.DIRECT);
-		sample.setMeta(Metadata.SERIES, TridasMeasurementSeriesEx.getSeriesFromSample(sample));
 
 		// pass
 		setup();
