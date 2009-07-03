@@ -30,8 +30,6 @@ import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
-import edu.cornell.dendro.corina.gui.datawizard.CreateOrImportWizard;
-import edu.cornell.dendro.corina.gui.datawizard.SiteEditorPanel;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.gui.newui.HierarchyPanel;
 import edu.cornell.dendro.corina.gui.newui.CreateSampleDialog;
@@ -306,12 +304,14 @@ public class FileMenu extends JMenu {
 			Element e = ElementFactory.createElement(filename);
 		    Sample s = e.load();
 		    
+		    /*
 		    CreateOrImportWizard wiz = new CreateOrImportWizard(null, false);
 
 		    // extract info from the sample
 		    wiz.setLegacySample(new LegacySampleExtractor(s));
 
 		    wiz.setVisible(true);
+		    */
 		} catch (UserCancelledException uce) {
 			// do nothing
 		} catch (WrongFiletypeException wfte) {
@@ -328,9 +328,11 @@ public class FileMenu extends JMenu {
 	}
 	
 	public static void newdb() {
+		/*
 		CreateOrImportWizard wizardDialog = new CreateOrImportWizard((JFrame)null, false);
 		
 		wizardDialog.setVisible(true);
+		*/
 	}
 
 	

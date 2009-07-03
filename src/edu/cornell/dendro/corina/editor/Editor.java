@@ -85,7 +85,6 @@ import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.tridas.LegacySite;
 import edu.cornell.dendro.corina.tridasv2.TridasMeasurementSeriesEx;
 import edu.cornell.dendro.corina.tridasv2.TridasMetadataPanel;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -302,7 +301,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				fn = fn.substring(lastSlash + 1);
 			return fn;
 		} else {
-			return (String) sample.getMeta("title");
+			return sample.getDisplayTitle();
 		}
 	}
 	
@@ -682,25 +681,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		sample.setMeta(Metadata.NAME, title);
 		sample.setSampleType(SampleType.DIRECT);
 		sample.setMeta(Metadata.SERIES, TridasMeasurementSeriesEx.getSeriesFromSample(sample));
-
-		// pass
-		setup();
-	}
-
-	// new sample for site -- not used yet
-	public Editor(LegacySite s) {
-		// ask user for title
-		String title;
-		try {
-			title = askTitle(); // WAS: s.getName() + " ");
-		} catch (UserCancelledException uce) {
-			dispose();
-			return;
-		}
-
-		// make dataset ref, with our title
-		sample = new Sample();
-		sample.setMeta("title", title);
 
 		// pass
 		setup();

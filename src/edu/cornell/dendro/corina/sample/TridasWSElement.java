@@ -99,6 +99,7 @@ public class TridasWSElement implements SampleLoader {
 
 		//FIXME: TRIDAS!
 		// get our stored loader for this sample
+		/*
 		if(ns.hasMeta("::dbrid") && ns.getMeta("::dbrid") instanceof ResourceIdentifier) {
 			ns.setLoader(new CorinaWebElement((ResourceIdentifier) ns.getMeta("::dbrid")));
 		}
@@ -111,6 +112,7 @@ public class TridasWSElement implements SampleLoader {
 			new Bug(new IllegalStateException("No way to create a resourceidentifier for saved sample!"));
 			return false;
 		}
+		*/
 			
 		// copy everything over (including the new loader we just made)
 		Sample.copy(ns, s);

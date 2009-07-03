@@ -120,12 +120,11 @@ public class CrossdateDialog extends javax.swing.JDialog {
 		if(e != null) {
 			try	{
 				BaseSample bs = e.loadBasic();
-				
-				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
 
-				if(ss != null) {
-					dbb.selectSiteByCode(ss.getSiteCode());
-				}
+				String siteCode = bs.meta().getSiteCode();
+				if(siteCode != null)
+					dbb.selectSiteByCode(siteCode);
+				
 			} catch (Exception ex) {
 				// ignore...
 			}

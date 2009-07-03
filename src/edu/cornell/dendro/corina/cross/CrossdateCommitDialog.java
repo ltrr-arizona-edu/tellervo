@@ -152,8 +152,8 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		lblCrossdateName.setText(secondary.toString());
 		lblNewDateRange.setText(newRange.toString());
 		
-		txtNewCrossdateName.setText("Cross " + primary.getMeta("name").toString() + 
-				"/" + secondary.getMeta("name").toString());
+		txtNewCrossdateName.setText("Cross " + primary.meta().getName() + 
+				"/" + secondary.meta().getName());
 		
 		txtNewCrossdateName.requestFocus();
 	}

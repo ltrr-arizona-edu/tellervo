@@ -39,7 +39,6 @@ import javax.swing.JScrollPane;
 
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
-import edu.cornell.dendro.corina.cross.legacy.Grid;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -127,6 +126,9 @@ public class SamplePreview extends JPanel implements PropertyChangeListener {
     try {
 			Previewable s = null;
 
+			s = ElementFactory.createElement(file.getPath()).load();
+
+			/*
 			// new: loop to find a Previewable
 			try {
 				log.trace("creating grid");
@@ -141,6 +143,7 @@ public class SamplePreview extends JPanel implements PropertyChangeListener {
 				s = ElementFactory.createElement(file.getPath()).load();
 				//s = new Sample(file.getPath());
 			} // but can't string catches here ... darn
+			*/
 
 			// get preview, and show it.
 			showPreview(s.getPreview());

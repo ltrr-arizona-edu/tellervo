@@ -34,18 +34,7 @@ public class ElementFactory {
 				
 				return spawnElement(clazz, new FileElement(file.getPath()));
 			}
-			
-			if((uri.getScheme().equals("corinaweb") ||
-			   uri.getScheme().equals("http"))
-			   && uri.getPath().startsWith("/measurement/")) {
-				
-				try {
-					return spawnElement(clazz, new CorinaWebElement(filename));
-				} catch (URISyntaxException use) {
-					new Bug(use);
-				}
-			}
-			
+						
 			throw new UnsupportedOperationException("No support for loading URL schema " + uri.toString());
 			// a webpage?
 			//if(uri.getScheme().equals("http")) {	

@@ -16,8 +16,6 @@ import javax.swing.JMenuItem;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.CorinaPermission;
 import edu.cornell.dendro.corina.cross.CrossdateDialog;
-import edu.cornell.dendro.corina.cross.legacy.CrossdateWindow;
-import edu.cornell.dendro.corina.cross.legacy.Sequence;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
@@ -139,6 +137,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		add(crossAgainst);
 
 		// cross all
+		/*
 		crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
 		crossElements.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
@@ -151,6 +150,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		add(crossElements);
 		crossElements.setEnabled(false);
 		crossElements.setVisible(false);
+		*/
 
 		// reconcile
 		JMenuItem reconcile = Builder.makeMenuItem("new_reconcile", true, "reconcile.png");
@@ -159,9 +159,8 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 				DBBrowser browser = new DBBrowser(editor, true, false);
 
 				// select the site we're in
-				SampleSummary ss = (SampleSummary) sample.getMeta("::summary");
-				if(ss != null) 
-					browser.selectSiteByCode(ss.getSiteCode());
+				if(sample.meta().hasSiteCode()) 
+					browser.selectSiteByCode(sample.meta().getSiteCode());
 				
 				browser.setTitle("Choose a reference sample");
 				browser.setVisible(true);
@@ -234,8 +233,10 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		sumMenu.setEnabled(!sample.isSummed());
 	}
 	public void sampleElementsChanged(SampleEvent e) {
+		/*
 		// cross elements: only if elements present, and at least 2 elements
 		crossElements.setEnabled(sample.getElements() != null &&
 				sample.getElements().size() >= 2);
+				*/
 	}
 }

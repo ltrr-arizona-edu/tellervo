@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.tridas.interfaces.ITridasDerivedSeries;
+import org.tridas.interfaces.ITridasSeries;
+
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.gui.Bug;
 
@@ -41,12 +44,14 @@ public class BaseSample {
 	 @see edu.cornell.dendro.corina.formats.Corina */
 
 	private Map<String, Object> meta;
+	private ITridasSeries series;
 
 	public static void copy(BaseSample source, BaseSample target) {
 		target.range = source.range;
 		target.meta = source.meta;
 		target.loader = source.loader;
 		target.sampleType = source.sampleType;
+		target.series = source.series;
 	}
 	
 	public BaseSample() {
@@ -54,6 +59,25 @@ public class BaseSample {
 		range = new Range();
 		loader = null; // no default loader!
 		sampleType = SampleType.UNKNOWN;
+	}
+	
+	public BaseSample(ITridasSeries series) {
+		this();
+		
+		this.series = series;
+
+		// set sampleType based on series
+		if(series instanceof ITridasDerivedSeries) {
+			ITridasDerivedSeries dseries = (ITridasDerivedSeries) series;
+
+			// try to establish sample type
+			if(!dseries.isSetType() || !dseries.getType().isSetValue())
+				setSampleType(SampleType.UNKNOWN);
+			else
+				setSampleType(SampleType.fromString(dseries.getType().getValue()));
+		}
+		else
+			setSampleType(SampleType.DIRECT);
 	}
 	
 	public BaseSample(BaseSample source) {
@@ -154,7 +178,34 @@ public class BaseSample {
 	public void setSampleType(SampleType sampleType) {
 		this.sampleType = sampleType;
 	}
+
+	/**
+	 * Get the attached series
+	 * @return The attached series
+	 */
+	public ITridasSeries getSeries() {
+		return series;
+	}
+
+	/**
+	 * Attach a different series
+	 * @param series
+	 */
+	public void setSeries(ITridasSeries series) {
+		this.series = series;
+	}
 	
+	/** Our implementation of Metadata */
+	private BaseSampleMetadata metadata;
+
+	/** Get the metadata interface */
+	public CorinaMetadata meta() {
+		if(metadata == null)
+			metadata = new BaseSampleMetadata(this);
+		
+		return metadata;
+	}
+
 	// loader
 	private SampleLoader loader;
 	

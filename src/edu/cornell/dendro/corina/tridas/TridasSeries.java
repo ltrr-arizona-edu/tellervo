@@ -90,10 +90,13 @@ public class TridasSeries extends TridasEntityBase {
 		// copy ring width data
 		v = findTridasValuesByName(RING_WIDTH_DATA);
 		for(TridasValuesList vlist : v.valuesList) {
+			/*
 			if(vlist.name.equals(WIDTHS))
 				s.setData(vlist.values);
+				
 			else if(vlist.name.equals(COUNTS))
 				s.setCount((List<Integer>) (List) vlist.values);  // thanks, java generics! :P (type erasure!)
+				*/
 		}
 		
 		// copy wj data

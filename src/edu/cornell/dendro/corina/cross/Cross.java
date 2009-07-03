@@ -303,8 +303,8 @@ public abstract class Cross implements Runnable {
 	@Override
 	public final String toString() {
 		// get filenames of both samples
-		String f = (String) fixed.getMeta("filename");
-		String m = (String) moving.getMeta("filename");
+		String f = fixed.getDisplayTitle();
+		String m = moving.getDisplayTitle();
 
 		// remove folder names
 		f = (new File(f)).getName();

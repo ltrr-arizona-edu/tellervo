@@ -20,8 +20,6 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.cross.legacy.Grid;
-import edu.cornell.dendro.corina.cross.legacy.GridFrame;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.editor.Editor;
@@ -48,6 +46,7 @@ public class CanOpener {
 	    // just need to hop out of that block
 	}
 
+	/*
 	try { // is it a grid?
 	    new GridFrame(new Grid(filename));
 	    OpenRecent.fileOpened(filename);
@@ -55,6 +54,7 @@ public class CanOpener {
 	} catch (WrongFiletypeException wfte) {
 	    // just need to hop out of that block
 	}
+	*/
 
 	try { // is it a plot?
 	    GraphWindow g = new GraphWindow(filename);

@@ -177,7 +177,7 @@ public class Grid implements Runnable, Previewable {
 		public Sample getFixed() { return fixed; }
 		
 		public HeaderCell(Sample fixed) {
-			String name = (String) fixed.getMeta("filename");
+			String name = fixed.getDisplayTitle();
 			
 			// crop directory
 			int index = name.lastIndexOf(File.separatorChar);
@@ -662,7 +662,7 @@ public class Grid implements Runnable, Previewable {
 			Sample fixed = buffer[row];
 
 			// ignore nulls here -- kind of a hack
-			if (fixed == null || fixed.getMeta("filename") == null)
+			if (fixed == null || fixed.getDisplayTitle() == null)
 				continue;
 
 			// set headers -- if you want straight-across headers (as
@@ -680,7 +680,7 @@ public class Grid implements Runnable, Previewable {
 				Sample moving = buffer[col];
 
 				// ignore nulls here -- kind of a hack
-				if (moving == null || moving.getMeta("filename") == null)
+				if (moving == null || moving.getDisplayTitle() == null)
 					continue;
 
 				// run the single cross, and put it in the grid

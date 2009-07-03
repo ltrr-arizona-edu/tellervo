@@ -40,7 +40,6 @@ import java.lang.reflect.Method;
 
 import javax.swing.undo.*;
 
-import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.NormalTridasVariable;
@@ -140,11 +139,9 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/* FUTURE: */
 	private UndoableEditSupport undoSupport = new UndoableEditSupport();
 
-	/** The underlying series which holds our metadata and data */
-	private ITridasSeries series;
-
 	/** A map from Tridas variable (RING_WIDTH, etc) to values */
 	private EnumMap<NormalTridasVariable, TridasValues> tridasValuesMap;
+	
 	/** A slower hashmap from Standard/Name to values */
 	private HashMap<TridasVariable, TridasValues> otherValuesMap;
 	
@@ -163,49 +160,46 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 </ul>
 	 @see #meta */
 	public Sample() {
-		super();
+		super(new TridasMeasurementSeries());
 		initialize();
 		
-		series = new TridasMeasurementSeries();
-		series.getValues().add(createEmptyRingWidths());		
-		repopulateValuesMap();
-		
-		// make defaults: empty
-		ringwidths = new TridasRingWidthWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH), false);
+		// initialize empty metadata with defaults?
+		setMeta("title", I18n.getText("Untitled"));
 
 		// store username, if known
 		if (System.getProperty("user.name") != null)
 			setMeta("author", System.getProperty("user.name"));
-
-		// initialize empty metadata with defaults?
-		setMeta("title", I18n.getText("Untitled"));
+		
+		setSeries(getSeries(), false);
 
 		// metadata NOT changed
 		metadataChanged = false;
 	}
 	
 	public Sample(ITridasSeries series) {
-		super();
+		super(series);
 		initialize();
 		
-		if(series instanceof ITridasDerivedSeries) {
-			ITridasDerivedSeries dseries = (ITridasDerivedSeries) series;
-
-			// try to establish sample type
-			if(!dseries.isSetType() || !dseries.getType().isSetValue())
-				setSampleType(SampleType.UNKNOWN);
-			else
-				setSampleType(SampleType.fromString(dseries.getType().getValue()));
-		}
-		else
-			setSampleType(SampleType.DIRECT);
+		setSeries(getSeries(), false);
 		
-		this.series = series;
+		// metadata NOT changed
+		metadataChanged = false;		
+	}
+	
+	@Override
+	public void setSeries(ITridasSeries series) {
+		setSeries(series, true);
+	}
+	
+	private void setSeries(ITridasSeries series, boolean notifySuper) {
+		if(notifySuper)
+			super.setSeries(series);
+		
 		repopulateValuesMap();
 
 		// must have ring widths!
 		if(!tridasValuesMap.containsKey(NormalTridasVariable.RING_WIDTH)) {
-			series.getValues().add(createEmptyRingWidths());
+			getSeries().getValues().add(createEmptyRingWidths());
 			repopulateValuesMap(); // be lazy
 		}
 		
@@ -216,16 +210,8 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		// if weiserjahre exists, make the values wrapper for it as well
 		if(otherValuesMap.containsKey(WEISERJAHRE_VARIABLE)) 
 			weiserjahre = new TridasWeiserjahreWrapper(otherValuesMap.get(WEISERJAHRE_VARIABLE));
-		
-		// store username, if known
-		if (System.getProperty("user.name") != null)
-			setMeta("author", System.getProperty("user.name"));
-
-		// initialize empty metadata with defaults?
-		setMeta("title", I18n.getText("Untitled"));
-
-		// metadata NOT changed
-		metadataChanged = false;
+		else
+			weiserjahre = null;
 	}
 
 	/**
@@ -290,7 +276,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		tridasValuesMap.clear();
 		otherValuesMap.clear();
 		
-		for(TridasValues values : series.getValues()) {
+		for(TridasValues values : getSeries().getValues()) {
 			TridasVariable variable = values.getVariable();
 			
 			if(variable.isSetNormalTridas())
@@ -675,7 +661,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 */
 	public void setWJDecr(List<Integer> decr) {
 		if(weiserjahre == null) {
-			series.getValues().add(createEmptyWeiserjahre());
+			getSeries().getValues().add(createEmptyWeiserjahre());
 			repopulateValuesMap();
 			weiserjahre = new TridasWeiserjahreWrapper(otherValuesMap.get(WEISERJAHRE_VARIABLE));
 		}
@@ -687,7 +673,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 */
 	public void setWJIncr(List<Integer> incr) {
 		if(weiserjahre == null) {
-			series.getValues().add(createEmptyWeiserjahre());
+			getSeries().getValues().add(createEmptyWeiserjahre());
 			repopulateValuesMap();
 			weiserjahre = new TridasWeiserjahreWrapper(otherValuesMap.get(WEISERJAHRE_VARIABLE));
 		}
@@ -702,6 +688,16 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		if (isModified()) // not aqua-ish, but how to do it the real way?
 			name = "* " + name;
 		return name;
+	}
+	
+	private CorinaMetadata metadataWrapper;
+	
+	@Override
+	public CorinaMetadata meta() {
+		if(metadataWrapper == null)
+			metadataWrapper = new SampleMetadata(this);
+		
+		return metadataWrapper;
 	}
 
 	// make sure data/count/wj are the same size as range.span, and
@@ -777,5 +773,16 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	};
 	public final static String CORINA_STD = "Corina";
 	public final static String WEISERJAHRE = "Weiserjahre";
-	
+
+	/**
+	 * Get the display title of this sample
+	 * Generally, this is the lab code
+	 * 
+	 * For a menubar title, use toString()
+	 * 
+	 * @return a String, probably lab code
+	 */
+	public String getDisplayTitle() {
+		return getMeta("title", String.class);
+	}	
 }
