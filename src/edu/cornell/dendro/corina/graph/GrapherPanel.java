@@ -770,29 +770,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// assign plot agents to all the graphs
 		for (int i = 0; i < graphs.size(); i++) {
 			Graph cg = (Graph) graphs.get(i);
-			// make sure sapwood and unmeas_pre are integers			
-			if (cg.graph instanceof Sample) {
-				Sample s = (Sample) ((Graph) graphs.get(i)).graph;
-				Object sap = s.getMeta("sapwood");
-				Object pre = s.getMeta("unmeas_pre");
-
-				boolean sapBad = (sap != null && !(sap instanceof Integer));
-				boolean preBad = (pre != null && !(pre instanceof Integer));
-
-				if (sapBad || preBad) {
-					Alert
-							.error(
-									"Text found instead of numbers",
-									"One or more metadata fields contained text where a number\n"
-											+ "was expected.  The graph might not display all information\n"
-											+ "(like sapwood count).  Double-check the sample's metadata fields.");
-					// PROBLEM: be more specific -- *which* sample, and *what* value?
-					// plus, let me edit it here (button: "edit sample now", opens metadata view)
-					// better: just don't display it, or ... (?)
-					return;
-				}
-			}
-			
+						
 			// set each graph to have a the default agent; or the density agent.
 			if(cg.graph instanceof DensityGraph)
 				cg.setAgent(agents.acquireDensity());

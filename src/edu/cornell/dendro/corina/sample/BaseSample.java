@@ -205,6 +205,18 @@ public class BaseSample {
 		
 		return metadata;
 	}
+	
+	/**
+	 * Get the display title of this sample
+	 * Generally, this is the lab code
+	 * 
+	 * For a menubar title, use toString()
+	 * 
+	 * @return a String, probably lab code
+	 */
+	public String getDisplayTitle() {
+		return getMeta("title", String.class);
+	}	
 
 	// loader
 	private SampleLoader loader;

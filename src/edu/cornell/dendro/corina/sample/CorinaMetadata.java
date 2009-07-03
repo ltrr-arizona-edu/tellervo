@@ -46,4 +46,11 @@ public interface CorinaMetadata {
 	 * @return true if a site code exists
 	 */
 	public abstract boolean hasSiteCode();
+	
+	/**
+	 * Get the taxonomy of this thing
+	 * 
+	 * @return the taxon, or null
+	 */
+	public abstract String getTaxon();
 }

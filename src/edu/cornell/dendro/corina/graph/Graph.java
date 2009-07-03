@@ -109,7 +109,7 @@ public class Graph {
             return "<!-- not a sample (" + graph + ") -->"; // what to do?
 
         // filename
-        String filename = (String) ((Sample) graph).getMeta("filename");
+        String filename = (String) ((Sample) graph).getDisplayTitle();
 
         // crunch together an XML tag
         return "<graph scale=\"" + scale + "\" " +

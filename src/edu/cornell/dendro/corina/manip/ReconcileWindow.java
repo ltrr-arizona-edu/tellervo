@@ -361,7 +361,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 
 	// SaveableDocument
 	public String getDocumentTitle() {
-		return "reference sample " + (String) s2.getMeta("title");
+		return "reference sample " + s2.getDisplayTitle();
 	}
 
 	public String getFilename() {

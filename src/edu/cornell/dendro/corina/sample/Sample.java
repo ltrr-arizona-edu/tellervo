@@ -684,7 +684,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 @return the "title" tag from meta */
 	@Override
 	public String toString() {
-		String name = getMeta("title") + " " + getRange().toStringWithSpan();
+		String name = getDisplayTitle() + " " + getRange().toStringWithSpan();
 		if (isModified()) // not aqua-ish, but how to do it the real way?
 			name = "* " + name;
 		return name;
@@ -774,15 +774,5 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	public final static String CORINA_STD = "Corina";
 	public final static String WEISERJAHRE = "Weiserjahre";
 
-	/**
-	 * Get the display title of this sample
-	 * Generally, this is the lab code
-	 * 
-	 * For a menubar title, use toString()
-	 * 
-	 * @return a String, probably lab code
-	 */
-	public String getDisplayTitle() {
-		return getMeta("title", String.class);
-	}	
+
 }

@@ -141,25 +141,14 @@ public class StandardPlot implements CorinaGraphPlotter {
 		}
 
 		// compute sapwood
-		int sapwoodIndex, sapwoodCount = 0, unmeasPost = 0;
+		int sapwoodIndex, sapwoodCount = 0;
 		if (g.graph instanceof Sample) {
 			Sample sample = (Sample) g.graph;
-			// PERF: isOak(), counting sapwood, and counting unmeas_post are expensive!
-			// -- do them once, and store that info in the Graph object, perhaps.
-			if (sample.isOak()) {
-				try {
-					if (sample.hasMeta("sapwood"))
-						sapwoodCount = ((Integer) sample.getMeta("sapwood"))
-								.intValue();
-					if (sample.hasMeta("unmeas_post"))
-						unmeasPost = ((Integer) sample.getMeta("unmeas_post"))
-								.intValue();
-				} catch (ClassCastException cce) {
-					// we've already warned the user before, ignore it now.
-				}
-			}
+			
+			if(sample.meta().hasSapwood())
+				sapwoodCount = sample.meta().getNumberOfSapwoodRings();			
 		}
-		sapwoodIndex = g.graph.getData().size() - sapwoodCount + unmeasPost + 1;
+		sapwoodIndex = g.graph.getData().size() - sapwoodCount + 1;
 
 		// my path
 		GeneralPath p = new GeneralPath();

@@ -80,9 +80,7 @@ public class SamplePopupMenu extends JPopupMenu {
         this.s = s;
 
         // update title, range
-        titleItem.setText((String) (s.hasMeta("title") ?
-				    s.getMeta("title") :
-				    s.getMeta("filename")));
+        titleItem.setText(s.getDisplayTitle());
         rangeItem.setText(Builder.INDENT + s.getRange().toStringWithSpan());
         scaleItem.setText("Sample scale: " + String.valueOf(s.getScale()));
     }

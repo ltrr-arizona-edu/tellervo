@@ -81,4 +81,11 @@ public class BaseSampleMetadata implements CorinaMetadata {
 	public boolean hasSapwood() {
 		return false;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getTaxon()
+	 */
+	public String getTaxon() {
+		return null;
+	}
 }

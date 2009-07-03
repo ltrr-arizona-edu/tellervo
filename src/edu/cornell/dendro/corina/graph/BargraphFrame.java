@@ -535,11 +535,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 
 				// label
 				// Maybe this should really be changed? - lucas
-				String barTitle;
-				if (!bs.hasMeta("title"))
-					barTitle = bs.toString(); // this is what it should be, anyway -- title is an ms-dos-ism
-				else
-					barTitle = bs.getMeta("title").toString();
+				String barTitle = bs.getDisplayTitle();
 				// BUG: doesn't this assume the map can't hold nulls?  how do i know that?
 
 				g2.setColor(Color.black); // EXTRACT const!
@@ -634,7 +630,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 	// color, based on species.
 	// REFACTOR: shouldn't this belong in Species.java?
 	private Color speciesToColor(BaseSample s) {
-		Object species = s.getMeta("species");
+		String species = s.meta().getTaxon();
 		if (species == null || !(species instanceof String))
 			return unColor;
 		String str = ((String) species).toUpperCase(); // PERF: allocates new string!

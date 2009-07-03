@@ -1,6 +1,7 @@
 package edu.cornell.dendro.corina.sample;
 
 import org.tridas.schema.Certainty;
+import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
@@ -126,5 +127,18 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 	@Override
 	public final boolean hasSiteCode() {
 		return have(object) && (object instanceof TridasObjectEx) && ((TridasObjectEx)object).hasLabCode();
+	}
+
+	@Override
+	public String getTaxon() {
+		ControlledVoc voc;
+		if(have(element) && (voc = element.getTaxon()) != null) {
+			if(voc.isSetNormal())
+				return voc.getNormal();
+			else if(voc.isSetValue() && voc.getValue().length() > 0)
+				return voc.getValue();
+		}
+		
+		return null;
 	}
 }

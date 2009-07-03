@@ -163,11 +163,8 @@ public class BargraphPager extends Book {
 
 					// the bar, and its title
 					BaseSample bar = bargraph.bars.get(firstBar + i);
-					String title = (String) bar.getMeta("title"); // BUG:
-																		// assumes
-																		// exists,
-																		// nonnull!
-
+					String title = bar.getDisplayTitle();
+					
 					// edges of box
 					int x1 = l + bar.getRange().getStart().diff(firstYear);
 					int x2 = x1 + bar.getRange().span();
