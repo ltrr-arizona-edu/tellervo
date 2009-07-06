@@ -42,9 +42,9 @@ public class Builder {
 		m.setText(I18n.getText(key));
 
 		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
+			Integer mnemonic = I18n.getMnemonic(key);
 			if (mnemonic != null)
-				m.setMnemonic(mnemonic.charValue());
+				m.setMnemonic(mnemonic);
 		}
 
 		return m;
@@ -60,9 +60,9 @@ public class Builder {
 		m.setText(I18n.getText(key));
 
 		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
+			Integer mnemonic = I18n.getMnemonic(key);
 			if (mnemonic != null)
-				m.setMnemonic(mnemonic.charValue());
+				m.setMnemonic(mnemonic);
 		}
 
 		String keystroke = I18n.getKeyStroke(key);
@@ -97,9 +97,9 @@ public class Builder {
 		m.setText(I18n.getText(key));
 
 		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
+			Integer mnemonic = I18n.getMnemonic(key);
 			if (mnemonic != null)
-				m.setMnemonic(mnemonic.charValue());
+				m.setMnemonic(mnemonic);
 		}
 
 		String keystroke = I18n.getKeyStroke(key);
@@ -127,9 +127,9 @@ public class Builder {
 		m.setText(I18n.getText(key));
 
 		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
+			Integer mnemonic = I18n.getMnemonic(key);
 			if (mnemonic != null)
-				m.setMnemonic(mnemonic.charValue());
+				m.setMnemonic(mnemonic);
 		}
 
 		String keystroke = I18n.getKeyStroke(key);
@@ -151,9 +151,9 @@ public class Builder {
 		m.setText(I18n.getText(key));
 
 		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
+			Integer mnemonic = I18n.getMnemonic(key);
 			if (mnemonic != null)
-				m.setMnemonic(mnemonic.charValue());
+				m.setMnemonic(mnemonic);
 		}
 
 		String keystroke = I18n.getKeyStroke(key);
@@ -169,9 +169,9 @@ public class Builder {
 		b.setText(I18n.getText(key));
 
 		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
+			Integer mnemonic = I18n.getMnemonic(key);
 			if (mnemonic != null)
-				b.setMnemonic(mnemonic.charValue());
+				b.setMnemonic(mnemonic);
 		}
 
 		return b;
@@ -191,9 +191,9 @@ public class Builder {
 		r.setText(I18n.getText(key));
 
 		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
+			Integer mnemonic = I18n.getMnemonic(key);
 			if (mnemonic != null)
-				r.setMnemonic(mnemonic.charValue());
+				r.setMnemonic(mnemonic);
 		}
 
 		return r;

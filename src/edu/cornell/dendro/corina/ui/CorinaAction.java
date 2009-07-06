@@ -17,9 +17,9 @@ public abstract class CorinaAction extends AbstractAction {
 		super();
 		putValue(NAME, I18n.getText(key));
 		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
+			Integer mnemonic = I18n.getMnemonic(key);
 			if (mnemonic != null)
-				putValue(MNEMONIC_KEY, new Integer(mnemonic.charValue()));
+				putValue(MNEMONIC_KEY, new Integer(mnemonic));
 		}
 		String keystroke = I18n.getKeyStroke(key);
 		if (keystroke != null)

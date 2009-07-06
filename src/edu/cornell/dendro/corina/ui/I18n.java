@@ -202,9 +202,9 @@ public class I18n {
        returned.</p>
 
        @param key the key to look up in the localization file
-       @return the mnemonic character
+       @return the integer representing the mnemonic character
     */
-    public static Character getMnemonic(String key) {
+    public static Integer getMnemonic(String key) {
 	String value = msg.getString(key);
 
 	int amp = value.indexOf('&');
@@ -212,7 +212,7 @@ public class I18n {
 	if (amp==-1 || amp==value.length()-1)
 	    return null;
 
-	return new Character(Character.toUpperCase(value.charAt(amp+1)));
+	return new Integer(Character.toUpperCase(value.charAt(amp+1)));
     }
 
     // the resource bundle to use

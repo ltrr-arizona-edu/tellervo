@@ -49,8 +49,8 @@ protected void setUp() throws Exception {
 
     public void testGetMnemonic() {
 	// edit should have a mnemonic, and it should be upper-case
-	Character e = I18n.getMnemonic("edit");
+	Integer e = I18n.getMnemonic("edit");
 	assertTrue(e != null);
-	assertTrue(Character.isUpperCase(e.charValue()));
+	assertTrue(e >= 'A' && e <= 'Z');
     }
 }
