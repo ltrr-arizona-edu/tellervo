@@ -210,13 +210,9 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 				postEntity.addPart("xmlrequest", xmlb);
 				postEntity.addPart("traceback", new StringBody(getStackTrace()));
 				post.setEntity(postEntity);
-				
-				// debug
-				XMLDebugView.addDocument(outDocument, noun, false);
 			} else {
 				// well, that's nice and easy
 				req = new HttpGet(url);
-
 			}
 
 			// debug this transaction...

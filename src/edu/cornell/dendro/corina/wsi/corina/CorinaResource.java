@@ -198,6 +198,10 @@ public abstract class CorinaResource extends
 
 			case PERMISSION_DENIED:
 				throw new WebPermissionsException(msgCode, msgText);
+				
+			// ignore PHP warnings?
+			case PHP_WARNING:
+				return PreprocessResult.SUCCESS;
 
 			default:
 				throw new WebInterfaceException(msgCode, msgText);
