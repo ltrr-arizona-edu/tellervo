@@ -23,6 +23,8 @@ package edu.cornell.dendro.corina.ui;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import javax.swing.KeyStroke;
+
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.util.StringUtils;
 
@@ -171,9 +173,9 @@ public class I18n {
        returned.</p>
 
        @param key the key to look up in the localization file
-       @return the keystroke string
+       @return the keystroke
     */
-    public static String getKeyStroke(String key) {
+    public static KeyStroke getKeyStroke(String key) {
 	String value = msg.getString(key);
 
 	int left = value.indexOf('[');
@@ -188,7 +190,7 @@ public class I18n {
 	String accel = (App.platform.isMac() ? "meta" : "control");
 	stroke = StringUtils.substitute(stroke, "accel", accel);
 
-	return stroke;
+	return KeyStroke.getKeyStroke(stroke);
     }
 
     /**

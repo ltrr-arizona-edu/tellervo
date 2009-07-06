@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.ui;
 
+import javax.swing.KeyStroke;
+
 import junit.framework.TestCase;
 import edu.cornell.dendro.corina.core.App;
 
@@ -42,9 +44,9 @@ protected void setUp() throws Exception {
 	assertEquals(I18n.getKeyStroke("file"), null);
 
 	// "save" should, and it should be "<accel> <key>"
-	String save = I18n.getKeyStroke("save");
+	KeyStroke save = I18n.getKeyStroke("save");
 	assertTrue(save != null);
-	assertTrue(save.indexOf(' ') != -1);
+	assertTrue(save.getModifiers() != 0);
     }
 
     public void testGetMnemonic() {

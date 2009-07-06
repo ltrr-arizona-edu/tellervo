@@ -65,9 +65,9 @@ public class Builder {
 				m.setMnemonic(mnemonic);
 		}
 
-		String keystroke = I18n.getKeyStroke(key);
+		KeyStroke keystroke = I18n.getKeyStroke(key);
 		if (keystroke != null)
-			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+			m.setAccelerator(keystroke);
 
 		return m;
 	}
@@ -102,9 +102,9 @@ public class Builder {
 				m.setMnemonic(mnemonic);
 		}
 
-		String keystroke = I18n.getKeyStroke(key);
+		KeyStroke keystroke = I18n.getKeyStroke(key);
 		if (keystroke != null)
-			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+			m.setAccelerator(keystroke);
 		
 		if(action != null)
 			addAction(m, action);
@@ -132,9 +132,9 @@ public class Builder {
 				m.setMnemonic(mnemonic);
 		}
 
-		String keystroke = I18n.getKeyStroke(key);
+		KeyStroke keystroke = I18n.getKeyStroke(key);
 		if (keystroke != null)
-			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+			m.setAccelerator(keystroke);
 		
 		if (iconfilename!=null)	m.setIcon(getIcon(iconfilename, "Icons"));
 
@@ -156,9 +156,9 @@ public class Builder {
 				m.setMnemonic(mnemonic);
 		}
 
-		String keystroke = I18n.getKeyStroke(key);
+		KeyStroke keystroke = I18n.getKeyStroke(key);
 		if (keystroke != null)
-			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+			m.setAccelerator(keystroke);
 
 		return m;
 	}

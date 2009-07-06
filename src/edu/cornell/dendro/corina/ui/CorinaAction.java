@@ -21,9 +21,9 @@ public abstract class CorinaAction extends AbstractAction {
 			if (mnemonic != null)
 				putValue(MNEMONIC_KEY, new Integer(mnemonic));
 		}
-		String keystroke = I18n.getKeyStroke(key);
+		KeyStroke keystroke = I18n.getKeyStroke(key);
 		if (keystroke != null)
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(keystroke));
+			putValue(ACCELERATOR_KEY, keystroke);
 	}
 
 	public void perform(Object source) {
