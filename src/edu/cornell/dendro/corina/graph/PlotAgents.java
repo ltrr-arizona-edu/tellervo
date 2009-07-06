@@ -28,9 +28,9 @@ public class PlotAgents {
 	}
 	
 	private final String[] plotAgentName =   {
-			"Standard Plot", 
-			"Semi-Log Plot",
-			"Toothed Plot"
+			"agent_standard", 
+			"agent_semilog",
+			"agent_toothed"
 	};
 
 	private final int[] plotAgentAxisType =   {

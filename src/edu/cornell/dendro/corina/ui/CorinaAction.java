@@ -1,8 +1,14 @@
 package edu.cornell.dendro.corina.ui;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
@@ -17,13 +23,19 @@ import edu.cornell.dendro.corina.core.App;
 public abstract class CorinaAction extends AbstractAction {
 	private static final long serialVersionUID = 1L;
 
+	/** This allows us to gracefully handle booleans */
+	protected static final String CORINA_SELECTED_KEY = "corina.selected";
+	
+	/** Toggle button adapters associated with this class */
+	protected ArrayList<ButtonSelectionActionAdapter> buttonAdapters;
+		
 	/**
 	 * Construct an action, given an i18n key
 	 * @param key
 	 */
 	public CorinaAction(String key) {
 		super(I18n.getText(key));
-		initializeMnemonics(key);
+		initialize(key);
 	}
 	
 	/**
@@ -33,7 +45,7 @@ public abstract class CorinaAction extends AbstractAction {
 	 */
 	public CorinaAction(String key, Icon icon) {
 		super(I18n.getText(key), icon);
-		initializeMnemonics(key);
+		initialize(key);
 	}
 
 	/**
@@ -43,7 +55,7 @@ public abstract class CorinaAction extends AbstractAction {
 	 * @param iconName
 	 */
 	public CorinaAction(String key, String iconName) {
-		this(I18n.getText(key), Builder.getIcon(iconName));
+		this(key, Builder.getIcon(iconName));
 	}
 	
 	/**
@@ -54,18 +66,24 @@ public abstract class CorinaAction extends AbstractAction {
 	 * @param iconPackageName
 	 */
 	public CorinaAction(String key, String iconName, String iconPackageName) {
-		this(I18n.getText(key), Builder.getIcon(iconName, iconPackageName));
+		this(key, Builder.getIcon(iconName, iconPackageName));
 	}
 	
 	/**
 	 * Initialize the mnemonics for this action 
 	 * @param key
 	 */
-	private final void initializeMnemonics(String key) {
-		if (!App.platform.isMac()) {
+	private final void initialize(String key) {
+		if (!App.platform.isMac()) {			
 			Integer mnemonic = I18n.getMnemonic(key);
-			if (mnemonic != null)
+			
+			if (mnemonic != null) {
 				putValue(MNEMONIC_KEY, new Integer(mnemonic));
+				
+				mnemonic = I18n.getMnemonicPosition(key);
+				if(mnemonic != null)
+					putValue(DISPLAYED_MNEMONIC_INDEX_KEY, mnemonic);
+			}
 		}
 		KeyStroke keystroke = I18n.getKeyStroke(key);
 		if (keystroke != null)
@@ -82,5 +100,87 @@ public abstract class CorinaAction extends AbstractAction {
 				ActionEvent.ACTION_PERFORMED,
 				(String) getValue(Action.ACTION_COMMAND_KEY));
 		actionPerformed(ae);
+	}
+
+	/** Called when our selection state changes */
+	protected void selectionStateChanged(boolean newSelectedState) {
+		// by default, we don't care :)
+	}
+	
+	/**
+	 * Associate a toggleable button with this action's internal toggle state
+	 * 
+	 * @param button the button to associate with
+	 * @param defaultValue the default boolean value, or null if we should try to automatically figure this out
+	 */
+	public void connectToggleableButton(AbstractButton button, Boolean defaultValue) {
+		if(buttonAdapters == null)
+			buttonAdapters = new ArrayList<ButtonSelectionActionAdapter>();
+		
+		buttonAdapters.add(new ButtonSelectionActionAdapter(button, defaultValue));
+	}
+	
+	/**
+	 * Associate a toggleable button with this action's internal toggle state
+	 * (Guess defaults!)
+	 * @param button
+	 */
+	public void connectToggleableButton(AbstractButton button) {
+		connectToggleableButton(button, null);
+	}
+	
+	private class ButtonSelectionActionAdapter implements PropertyChangeListener, ItemListener {
+		private AbstractButton button;
+		private Boolean lastValue;
+		
+		public ButtonSelectionActionAdapter(AbstractButton button, Boolean defaultValue) {
+			this.button = button;
+			
+			// set the default value
+			if(defaultValue != null) {
+				button.setSelected(defaultValue);
+				CorinaAction.this.putValue(CORINA_SELECTED_KEY, defaultValue);
+			}
+			else if((defaultValue = (Boolean) CorinaAction.this.getValue(CORINA_SELECTED_KEY)) == null)
+				// well, use the button's value then
+				CorinaAction.this.putValue(CORINA_SELECTED_KEY, button.isSelected());
+			else
+				// ok, use the action's value then!
+				button.setSelected(defaultValue);
+			
+			// tie listeners in
+			CorinaAction.this.addPropertyChangeListener(this);
+			button.addItemListener(this);
+		}
+
+		// called when the Action's value changes
+		public void propertyChange(PropertyChangeEvent evt) {
+			// only care about our special selection event
+			if(!CORINA_SELECTED_KEY.equals(evt.getPropertyName()))
+				return;
+			
+			Boolean selected = (Boolean) evt.getNewValue();
+			
+			button.setSelected(selected);
+			
+			// notify our superclass
+			if(lastValue != selected) {
+				lastValue = selected;
+				CorinaAction.this.selectionStateChanged(selected);
+			}
+		}
+
+		// called when the button's value changes
+		public void itemStateChanged(ItemEvent e) {
+			Boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
+			
+			CorinaAction.this.putValue(CORINA_SELECTED_KEY, selected);
+			
+			// notify our superclass
+			if(lastValue != selected) {
+				lastValue = selected;
+				CorinaAction.this.selectionStateChanged(selected);
+			}
+		}
 	}
 }

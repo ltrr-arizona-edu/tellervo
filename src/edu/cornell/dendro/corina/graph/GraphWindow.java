@@ -432,9 +432,11 @@ public class GraphWindow extends XFrame implements SampleListener,
 		{
 			JMenuBar menubar = new JMenuBar();
 
+			GraphActions actions = new GraphActions(plot, elemPanel, controller, agents);
+			
 			menubar.add(new GraphFileMenu(this));
 			menubar.add(new GraphEditMenu(this));
-			menubar.add(new GraphViewMenu(this));
+			menubar.add(new GraphViewMenu(this, actions));
 			if (App.platform.isMac())
 				menubar.add(new WindowMenu(this));
 			menubar.add(new HelpMenu());
