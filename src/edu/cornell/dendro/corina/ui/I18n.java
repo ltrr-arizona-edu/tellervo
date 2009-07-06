@@ -230,6 +230,24 @@ public class I18n {
 
 		return new Integer(Character.toUpperCase(value.charAt(amp + 1)));
 	}
+	
+	/**
+	 * Get the position of the mnemonic character in the string
+	 * Used for setDisplayedMnemonicIndex
+	 * @param key
+	 * @return an Integer, or null
+	 */
+	public static Integer getMnemonicPosition(String key) {
+		String value = msg.getString(key);
+
+		int amp = value.indexOf('&');
+
+		if (amp == -1 || amp == value.length() - 1)
+			return null;
+		
+		return amp;
+	}
+
 
 	// the resource bundle to use
 	private final static ResourceBundle msg;
