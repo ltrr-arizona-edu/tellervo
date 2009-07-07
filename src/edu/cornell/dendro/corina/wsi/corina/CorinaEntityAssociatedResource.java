@@ -74,21 +74,9 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 			throw new IllegalArgumentException("Invalid request type: must be one of CREATE, UPDATE or DELETE for this method");
 		}
 		
+		// derived series don't have a parent entity ID
 		if (queryType == CorinaRequestType.CREATE && parentEntityID == null) {
-			if (entity instanceof ITridasDerivedSeries) {
-				ITridasDerivedSeries dentity = (ITridasDerivedSeries) entity;
-				
-				if(!dentity.isSetType())
-					throw new IllegalArgumentException("Derived entity has no type specified!");
-				
-				SampleType stype = SampleType.fromString(dentity.getType().isSetNormal() 
-						? dentity.getType().getNormal()
-						: dentity.getType().getValue());
-
-				if (stype != SampleType.SUM)
-					throw new IllegalArgumentException("CREATE " + stype
-							+ " called with ParentObjectID == null!");
-			} else
+			if (!(entity instanceof ITridasDerivedSeries))
 				throw new IllegalArgumentException("CREATE called with ParentObjectID == null!");
 		}
 	}

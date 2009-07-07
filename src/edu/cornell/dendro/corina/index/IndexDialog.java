@@ -60,19 +60,23 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasLinkSeries;
+
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.graph.GraphInfo;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.graph.Graphable;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
-import edu.cornell.dendro.corina.graph.PlotAgents;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
@@ -85,6 +89,7 @@ import edu.cornell.dendro.corina.util.NoEmptySelection;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.TextClipboard;
 import edu.cornell.dendro.corina.util.UserFriendlyFile;
+import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 
 import edu.cornell.dendro.corina_indexing.Exponential;
 
@@ -338,9 +343,6 @@ public class IndexDialog extends JDialog {
 	}
 	
 	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {
-		// initialize our plotting agents
-		PlotAgents agents = new PlotAgents();
-		
 		// create a new graphinfo structure, so we can tailor it to our needs.
 		GraphInfo gInfo = new GraphInfo();
 		
@@ -348,7 +350,7 @@ public class IndexDialog extends JDialog {
 		gInfo.overrideDrawGraphNames(false);
 		
 		// create a graph panel; put it in a scroll pane
-		graphPanel = new GrapherPanel(graphSamples, agents, null, gInfo) {
+		graphPanel = new GrapherPanel(graphSamples, null, gInfo) {
 			@Override
 			public Dimension getPreferredScrollableViewportSize() {
 				// -10s are for insets set below in the emptyBorder
@@ -496,6 +498,48 @@ public class IndexDialog extends JDialog {
 		sample.fireSampleMetadataChanged();		
 	}
 	
+	private boolean applyCorinaWsiIndex(Index index) {
+		TridasDerivedSeries series = new TridasDerivedSeries();
+		
+		// it's a new series? (to force update, set this to the id of the series to update!)
+		series.setIdentifier(NewTridasIdentifier.getInstance());
+		series.setTitle(indexName.getText());
+
+		// it's an index
+		ControlledVoc voc = new ControlledVoc();
+		voc.setValue(SampleType.INDEX.toString());
+		series.setType(voc);
+
+		// the index type
+		series.setStandardizingMethod(index.getIndexFunction().getDatabaseRepresentation());
+
+		// the sample we're basing this index on
+		TridasLinkSeries links = new TridasLinkSeries();
+		links.getIdRevesAndXLinksAndIdentifiers().add(sample.getSeries().getIdentifier());
+		series.getLinkSeries().add(links);
+		
+		// create a new sample to hold this all
+		Sample tmp = new Sample(series);
+
+		try {
+			CorinaWsiTridasElement cwe = new CorinaWsiTridasElement(NewTridasIdentifier.getInstance());
+			
+			// here's where we do the "meat"
+			if(cwe.save(tmp, this)) {
+				// put it in our menu
+				OpenRecent.sampleOpened(tmp.getLoader());
+								
+				// open a new editor 
+				new Editor(tmp);
+				return true;
+			}
+		} catch (IOException ioe) {
+			Alert.error("Could not create index", "Error: " + ioe.toString());
+		}
+		
+		return false;		
+	}
+	
 	/**
 	 * 
 	 * @return true on success, false on failure
@@ -507,43 +551,9 @@ public class IndexDialog extends JDialog {
 			return false;
 		}
 		
-		if(loader instanceof CorinaWebElement) {
-			// create a new, empty sample
-			Sample tmp = new Sample();
-
-			// set it up
-			tmp.setMeta("name", indexName.getText());
-			tmp.setMeta("title", indexName.getText()); // not necessary, but consistent?
-			tmp.setMeta("::saveoperation", SampleType.INDEX);
-			tmp.setMeta("::indexclass", index);
-			
-			// the new sample's parent is our current sample
-			tmp.setMeta("::dbparent", sample.getMeta("::dbrid"));
-			
-			try {
-				// here's where we do the "meat"
-				if(loader.save(tmp)) {
-					// put it in our menu
-					OpenRecent.sampleOpened(tmp.getLoader());
-					
-					/*
-					// copy it over...
-					Sample.copy(tmp, sample);
-					sample.fireSampleMetadataChanged();
-					sample.clearModified();
-					*/
-					
-					// instead, open a new editor 
-					new Editor(tmp);
-					return true;
-				}
-			} catch (IOException ioe) {
-				Alert.error("Could not create index", "Error: " + ioe.toString());
-			}
-
-			return false;
-		}
-		
+		if(loader instanceof CorinaWsiTridasElement) 
+			return applyCorinaWsiIndex(index);
+				
 		// well, fine then. Just apply the index to the existing sample.
 		legacyApplyIndex(index);
 		return true;

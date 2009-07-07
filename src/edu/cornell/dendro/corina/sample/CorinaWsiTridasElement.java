@@ -6,10 +6,13 @@ import java.util.List;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasLinkSeries;
+import org.tridas.schema.TridasMeasurementSeries;
 
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
+import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.corina.CorinaAssociatedResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -29,7 +32,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SeriesResource;
  *  	identifier = series.identifier = the identifier of the series we're changing
  *  
  *  if CREATING
- *  	identifier = parent identifier (or NewTridasIdentifier if sum)
+ *  	identifier = NewTridasIdentifier
  *  	series.identifier = NewTridasIdentifier
  * 
  * @author Lucas Madar
@@ -70,6 +73,51 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 
 		Sample s = resource.getSample(getTridasIdentifier());
 		
+		// construct the elements of the sample if it's derived
+		ITridasSeries series = s.getSeries();
+		if(series instanceof ITridasDerivedSeries) {
+			ITridasDerivedSeries dseries = (ITridasDerivedSeries) series;
+			ElementList elements = new ElementList();
+			
+			// remove the sample we already have
+			List<BaseSample> bslist = resource.getAssociatedResult();
+			bslist.remove(s);
+			
+			// go through each linkseries and find identifiers
+			List<TridasLinkSeries> links = dseries.getLinkSeries();
+			for(TridasLinkSeries link : links) {
+				List<TridasIdentifier> identifiers = ListUtil.subListOfType(
+						link.getIdRevesAndXLinksAndIdentifiers(), TridasIdentifier.class);
+				
+				for(TridasIdentifier identifier : identifiers) {
+					boolean found = false;
+					
+					for(BaseSample bs : bslist) {
+						if(identifier.equals(bs.getSeries().getIdentifier())) {
+							elements.add(new CachedElement(bs));
+							bslist.remove(bs);
+							found = true;
+							break;
+						}
+					}
+					
+					// if it's not found, kludge a basesample into it
+					if(!found) {
+						TridasMeasurementSeries ms = new TridasMeasurementSeries();
+						ms.setIdentifier(identifier);
+						ms.setTitle("Unknown " + identifier.getValue());
+						
+						BaseSample bs = new BaseSample(ms);
+						bs.setLoader(new CorinaWsiTridasElement(identifier));
+						
+						elements.add(new CachedElement(bs));
+					}
+				}
+			}
+			
+			s.setElements(elements);
+		}
+				
 		// make sure we load our special info
 		preload(s);
 		
@@ -128,28 +176,52 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 			
 			derived.unsetValues();
 			
+			// do some basic error checking
+			if(derived.isSetLinkSeries()) {
+				if(derived.getLinkSeries().size() == 0)
+					throw new IllegalArgumentException("Derived series specified with empty link series");
+				
+				int nSeries = countLinkSeries(derived);
+				if(s.getSampleType() == SampleType.SUM) {
+					if(nSeries < 2)
+						throw new IllegalArgumentException("Sum must have more than 1 linked series");
+				}
+				else if(nSeries != 1) 
+					throw new IllegalArgumentException("Series must be derived from exactly one other series");
+			}
+			else if(NewTridasIdentifier.isNew(seriesIdentifier))
+				throw new IllegalArgumentException("Derived series created with no link series!");
+			
+			// set series to our derived copy
 			series = derived;
 		}
 		
 		if(NewTridasIdentifier.isNew(seriesIdentifier)) {
 			// ok, this is a new series
 			
-			if(s.getSampleType() == SampleType.SUM) {
-				if(!NewTridasIdentifier.isNew(identifier))
-					throw new IllegalArgumentException("Creating a sum must have both identifiers as new");
-				
-				// create a new sum
-				return new SeriesResource(series, null, CorinaRequestType.CREATE);
-			}
+			if(!NewTridasIdentifier.isNew(identifier))
+				throw new IllegalArgumentException("Creating a derived must have both identifiers as new");
 			
-			// create a new series with our given identifier as the parent
-			return new SeriesResource(series, 
-					identifier.getValue(), 
-					CorinaRequestType.CREATE);
+			// create a new series
+			return new SeriesResource(series, null, CorinaRequestType.CREATE);
 		}
 
 		// we're just updating
 		return new SeriesResource(series, null, CorinaRequestType.UPDATE);
+	}
+	
+	private int countLinkSeries(ITridasDerivedSeries series) {
+		List<TridasLinkSeries> links = series.getLinkSeries();
+		int nlinks = 0;
+		
+		for(TridasLinkSeries link : links) {
+			List<TridasIdentifier> identifiers = ListUtil.subListOfType(link.getIdRevesAndXLinksAndIdentifiers(), 
+					TridasIdentifier.class);
+			
+			nlinks += identifiers.size();
+		}
+		
+		return nlinks;
 	}
 
 	public String getName() {
