@@ -26,6 +26,9 @@ public abstract class CorinaAction extends AbstractAction {
 	/** This allows us to gracefully handle booleans */
 	protected static final String CORINA_SELECTED_KEY = "corina.selected";
 	
+	/** This is only available in 1.6, but we want it, so use it in 1.5 where it just gets ignored :) */
+	protected static final String KLUDGE_DISPLAYED_MNEMONIC_INDEX_KEY = "SwingDisplayedMnemonicIndexKey";
+	
 	/** Toggle button adapters associated with this class */
 	protected ArrayList<ButtonSelectionActionAdapter> buttonAdapters;
 		
@@ -82,7 +85,7 @@ public abstract class CorinaAction extends AbstractAction {
 				
 				mnemonic = I18n.getMnemonicPosition(key);
 				if(mnemonic != null)
-					putValue(DISPLAYED_MNEMONIC_INDEX_KEY, mnemonic);
+					putValue(KLUDGE_DISPLAYED_MNEMONIC_INDEX_KEY, mnemonic);
 			}
 		}
 		KeyStroke keystroke = I18n.getKeyStroke(key);
