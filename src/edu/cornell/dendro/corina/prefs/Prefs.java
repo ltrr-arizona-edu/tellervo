@@ -468,8 +468,13 @@ public class Prefs extends AbstractSubsystem {
 
 	// just wrappers, for now
 	public void setPref(String pref, String value) {
-		// System.setProperty(pref, value);
-		prefs.setProperty(pref, value);
+		
+		// support removing via set(null)
+		if(value == null)
+			prefs.remove(pref);
+		else
+			prefs.setProperty(pref, value);
+		
 		save();
 		firePrefChanged(pref);
 	}
@@ -482,6 +487,26 @@ public class Prefs extends AbstractSubsystem {
 		return prefs.getProperty(pref);
 	}
 
+	/**
+	 * Get a preference result as an enum
+	 * 
+	 * @param pref
+	 * @param deflt
+	 * @param enumType
+	 * @return
+	 */
+	public <T extends Enum<T>> T getEnumPref(String pref, T deflt, Class<T> enumType) {
+		String val = getPref(pref, null);
+		if(val == null)
+			return deflt;
+		
+		try {
+			return Enum.valueOf(enumType, val);
+		} catch (Exception e) {
+			return deflt;
+		}
+	}
+	
 	public String getPref(String pref, String deflt) {
 		String value = prefs.getProperty(pref);
 		if (value == null)

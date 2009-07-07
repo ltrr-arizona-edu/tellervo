@@ -69,6 +69,8 @@ public enum PlotAgent {
 		try {
 			return valueOf(defaultType);
 		} catch (Exception e) {
+			// remove the bad pref
+			App.prefs.setPref("corina.graph.defaultagent", null);
 			return STANDARD;
 		}
 	}

@@ -651,7 +651,7 @@ public class GraphPrintDialog extends JPanel {
 				fullscale = scale * zoom;
 				
 				setPreferredSize(new Dimension(
-						(int) (pinfo.getDrawRange().span() * pinfo.getYearSize() * fullscale), 
+						(int) (pinfo.getDrawRange().span() * pinfo.getYearWidth() * fullscale), 
 						(int) (pinfo.getPrintHeight() * fullscale)));
 				revalidate();
 				repaint();				
