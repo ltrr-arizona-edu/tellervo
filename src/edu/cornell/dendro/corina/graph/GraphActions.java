@@ -15,16 +15,16 @@ public class GraphActions {
 	private GrapherPanel graph;
 	private GraphElementsPanel elements;
 	private GraphController controller;
-	private PlotAgents agents;
 		
-	public GraphActions(GrapherPanel graph, GraphElementsPanel elements, GraphController controller, PlotAgents agents) {
+	public GraphActions(GrapherPanel graph, GraphElementsPanel elements, GraphController controller) {
 		this.graph = graph;
 		this.elements = elements;
 		this.controller = controller;
-		this.agents = agents;
 		
 		if(graph != null)
 			createGraphActions();
+		else
+			throw new IllegalArgumentException("Must specify a graph!");
 		
 		if(elements != null)
 			createElementActions();
@@ -32,8 +32,15 @@ public class GraphActions {
 		if(controller != null)
 			createControllerActions();
 		
-		if(agents != null)
-			createAgentActions();
+		createAgentActions();
+	}
+	
+	public boolean hasElements() {
+		return elements != null;
+	}
+	
+	public boolean hasController() {
+		return controller != null;
 	}
 	
 	protected ToggleableAction showVerticalAxis;
@@ -45,14 +52,14 @@ public class GraphActions {
 	@SuppressWarnings("serial")
 	private void createGraphActions() {
 		showVerticalAxis = new ToggleableAction("corina.graph.vertical-axis", true, 
-				"vert_show", "vert_hide", "axisshow.png") {
+				"vert_hide", "vert_show", "axisshow.png") {
 			public void togglePerformed(ActionEvent e, Boolean value) {
 				graph.setAxisVisible(value);
 			}
 		};
 
 		showGridlines = new ToggleableAction("corina.graph.graphpaper", true,
-				"grid_show", "grid_hide", "showgrid.png") {
+				"grid_hide", "grid_show", "showgrid.png") {
 			public void togglePerformed(ActionEvent e, Boolean value) {
 				graph.setGraphPaperVisible(value);
 			}
@@ -66,14 +73,14 @@ public class GraphActions {
 		};
 
 		showComponentNames = new ToggleableAction("corina.graph.componentnames", true, 
-				"compn_show", "compn_hide", "label.png") {
+				"compn_hide", "compn_show", "label.png") {
 			public void togglePerformed(ActionEvent e, Boolean value) {
 				graph.setComponentNamesVisible(value);
 			}
 		};
 		
 		showHundredPercentLines = new ToggleableAction("corina.graph.hundredpercentlines", false, 
-				"compn_show", "compn_hide", "label.png") {
+				"hperc_hide", "hperc_show", null) {
 			public void togglePerformed(ActionEvent e, Boolean value) {
 				graph.setHundredpercentlinesVisible(value);
 			}
@@ -176,16 +183,21 @@ public class GraphActions {
 	
 	@SuppressWarnings("serial")
 	private void createAgentActions() {
-		String[] agentnames = agents.getAgents();
+		PlotAgent[] agents = PlotAgent.values();
+		PlotAgent defaultAgent = PlotAgent.getDefault();
 		
-		plotTypes = new CorinaAction[agentnames.length];
+		// create an array of actions for the agents
+		plotTypes = new CorinaAction[agents.length];
+		
 		ToggleableActionGroup agentGroup = new ToggleableActionGroup();
 
-		for(int i = 0; i < agentnames.length; i++) {
-			final int glue = i;
-			ToggleableAction action = new ToggleableAction(agentnames[i], agents.isDefault(i)) {
+		for(int i = 0; i < agents.length; i++) {
+			final PlotAgent agent = agents[i];
+
+			// on action, set the plot agent and update/redraw the graph
+			ToggleableAction action = new ToggleableAction(agent.getI18nTag(), (agent == defaultAgent)) {
 				public void togglePerformed(ActionEvent ae, Boolean value) {
-					agents.setAgent(glue);
+					graph.setPlotAgent(agent);
 					graph.update();
 				}
 			};

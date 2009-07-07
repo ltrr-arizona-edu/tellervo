@@ -43,6 +43,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -152,7 +153,6 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	// gui
 	public GrapherPanel plot; // the plot area itself
-	public PlotAgents agents;
 	public GraphElementsPanel elemPanel;
 	public GraphController controller;
 
@@ -386,10 +386,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	// construct a GrapherPanel, add a GrapherListener, etc.
 	private void createPanelAndDisplay() {
-		// initialize our plotting agents
-		agents = new PlotAgents();
 		// create a graph panel; put it in a scroll pane
-		plot = new GrapherPanel(samples, agents, this);
+		plot = new GrapherPanel(samples, this);
 		
 		scroller = new JScrollPane(plot,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
@@ -407,6 +405,13 @@ public class GraphWindow extends XFrame implements SampleListener,
 		//content.add(new GraphToolbar(this), BorderLayout.NORTH);
 		
 		elemPanel.setVisible(false);
+		
+		// create actions for toolbar and menubar (below)
+		GraphActions actions = new GraphActions(plot, elemPanel, controller);		
+		
+		// create toolbar
+		JToolBar toolbar = new GraphToolbar(actions);
+		content.add(toolbar, BorderLayout.NORTH);
 				
 		// set initial y-offsets: spread 'em out
 		controller.spreadOut(50);						
@@ -431,8 +436,6 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// ooh, menubar
 		{
 			JMenuBar menubar = new JMenuBar();
-
-			GraphActions actions = new GraphActions(plot, elemPanel, controller, agents);
 			
 			menubar.add(new GraphFileMenu(this));
 			menubar.add(new GraphEditMenu(this));

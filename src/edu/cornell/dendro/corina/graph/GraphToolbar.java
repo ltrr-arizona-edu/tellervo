@@ -3,40 +3,109 @@
  */
 package edu.cornell.dendro.corina.graph;
 
-import java.awt.Image;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.CorinaAction;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  * @author Lucas Madar
  *
  */
-public class GraphToolbar extends JToolBar {
-	private GraphWindow window;
-	
-	private ImageIcon sizedIcon(String icon) {
-		Icon i = Builder.getIcon(icon);
-		return new ImageIcon(((ImageIcon) i).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
+@SuppressWarnings("serial")
+public class GraphToolbar extends JToolBar {	
+	public GraphToolbar(GraphActions actions) {
+		super(SwingConstants.HORIZONTAL);
+		
+
+		if(actions.hasElements()) {
+			addToggle(actions.showElementsPanel, "view_elements");
+			addSeparator();
+		}
+		
+		addToggle(actions.showVerticalAxis, "vert_show");
+		addToggle(actions.showGridlines, "grid_show");
+		addToggle(actions.showComponentNames, "compn_show");
+		
+		addSeparator();
+		
+		if(actions.hasController()) {
+			addButton(actions.squeezeVertically, "baselines_align");
+			addButton(actions.fitHorizontally, "fit_horiz");
+		
+			addSeparator();
+		
+			addButton(actions.zoomIn, "escale_double");
+			addButton(actions.zoomOut, "escale_halve");
+		}
 	}
 	
-	public GraphToolbar(GraphWindow window) {
-		super(SwingConstants.HORIZONTAL);
-		this.window = window;
-		
-		// oh god, this is annoying!
-		setFloatable(false);
-		
-		// initialize the menu bar...
-		ImageIcon i;
-		i = sizedIcon("arrow.png");
-		
-		JButton button = new JButton(i);
+	private void addToggle(CorinaAction action, String key) {
+		AbstractButton button = new TitlelessToggleButton(action);
+		action.connectToggleableButton(button);
+
+		button.setToolTipText(getToolTip(key));
+
 		add(button);
+	}
+	
+	private void addButton(CorinaAction action, String key) {
+		AbstractButton button = new TitlelessButton(action);
+
+		button.setToolTipText(getToolTip(key));
+
+		add(button);
+	}
+	
+	private String getToolTip(String key) {
+		try {
+			return (key == null) ? null : I18n.getText(key);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+
+	/**
+	 * A JButton with no text content
+	 */
+	private static class TitlelessButton extends JButton {
+		public TitlelessButton(Action action) {
+			super(action);
+		}
+		
+		@Override
+		public void setText(String text) {
+			super.setText(null);
+		}
+		
+		@Override
+		public String getText() {
+			return null;
+		}
+	}
+
+	/**
+	 * A JToggleButton with no text content
+	 */
+	private static class TitlelessToggleButton extends JToggleButton {
+		public TitlelessToggleButton(Action action) {
+			super(action);
+		}
+		
+		@Override
+		public void setText(String text) {
+			super.setText(null);
+		}
+		
+		@Override
+		public String getText() {
+			return null;
+		}
 	}
 }

@@ -2,13 +2,9 @@ package edu.cornell.dendro.corina.cross;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,32 +13,26 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableColumnModel;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.graph.GraphActions;
 import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
+import edu.cornell.dendro.corina.graph.GraphToolbar;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
-import edu.cornell.dendro.corina.graph.PlotAgents;
 import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
-import edu.cornell.dendro.corina.index.DecimalRenderer;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleSummary;
-/*
- * CrossDatingWizard.java
- *
- * Created on June 11, 2008, 10:35 AM
- */
 import edu.cornell.dendro.corina.util.Center;
 
 /**
@@ -57,6 +47,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
 	private AllScoresTableModel allScoresModel;
 	private HistogramTableModel histogramModel;
 
+	private GraphActions actions;
 	private GrapherPanel graph;
 	private GraphController graphController;
 	private List<Graph> graphSamples;
@@ -354,10 +345,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
        	});
 }
     
-    private void setupGraph() {
-		// initialize our plotting agents
-		PlotAgents agents = new PlotAgents();
-		
+    private void setupGraph() {	
 		// create a new graphinfo structure, so we can tailor it to our needs.
 		GraphInfo gInfo = new GraphInfo();
 		
@@ -367,19 +355,11 @@ public class CrossdateDialog extends javax.swing.JDialog {
 		
 		// set up our samples
 		graphSamples = new ArrayList<Graph>(2);
-		
-		// *grumble* we need a graph for GrapherPanel to init...
-		try {
-			Sample s = crossdatingElements.get(0).load();
-			graphSamples.add(new Graph(s));
-		} catch (Exception e) {
-			// shouldn't happen at all.
-			return;
-		}
-		
+				
 		// create a graph panel; put it in a scroll pane
-		graph = new GrapherPanel(graphSamples, agents, null, gInfo);
+		graph = new GrapherPanel(graphSamples, null, gInfo);
 		graph.setUseVerticalScrollbar(true);
+		graph.setEmptyGraphText("Choose a crossdate");
 		
 		graphScroller = new JScrollPane(graph,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -387,12 +367,17 @@ public class CrossdateDialog extends javax.swing.JDialog {
 		graphScroller.setVerticalScrollBar(new ReverseScrollBar());
 
 		graphController = new GraphController(graph, graphScroller);
-
+		
 		// get our JLabel set up
 		updateGraph(null);
 		
 		panelChart.setLayout(new BorderLayout());
 		panelChart.add(graphScroller, BorderLayout.CENTER);
+		
+		// add a toolbar
+    	actions = new GraphActions(graph, null, graphController);
+    	JToolBar toolbar = new GraphToolbar(actions);
+    	panelChart.add(toolbar, BorderLayout.NORTH);
     }
     
     private void setupLists() {
@@ -457,34 +442,18 @@ public class CrossdateDialog extends javax.swing.JDialog {
     }
     
     private void updateGraph(List<Graph> newGraphs) {    	
-    	if(newGraphs == null || newGraphs.size() != 2) {
-    		JLabel invalid = new JLabel("Choose a valid crossdate");
-    		invalid.setAlignmentX(CENTER_ALIGNMENT);
-    		invalid.setHorizontalAlignment(SwingConstants.CENTER);
-
-    		graphScroller.setRowHeader(null);
-    		graphScroller.setViewportView(invalid);
-    		
-    		btnOK.setEnabled(false);
-    		return;
-    	}
-
-    	// copy the graphs over
-    	if(graphSamples.size() == 1) {
-    		graphSamples.set(0, newGraphs.get(0));
+   		graphSamples.clear();
+   		
+    	if(!(newGraphs == null || newGraphs.size() != 2)) {
+    		// copy the graphs over
+    		graphSamples.add(newGraphs.get(0));
     		graphSamples.add(newGraphs.get(1));
-    	}
-    	else {
-    		graphSamples.set(0, newGraphs.get(0));
-    		graphSamples.set(1, newGraphs.get(1));
     	}
     	
     	graph.update(false);
     	graphController.scaleToFitHeight(); // calls graph.update(true) for us
-    	graphScroller.setViewportView(graph);
 		graph.setAxisVisible(true, true);
-		panelChart.revalidate();
-		btnOK.setEnabled(true);
+		btnOK.setEnabled(graphSamples.size() == 2);
     }
     
     /** This method is called from within the constructor to

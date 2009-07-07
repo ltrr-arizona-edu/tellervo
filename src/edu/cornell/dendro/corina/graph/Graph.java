@@ -53,6 +53,9 @@ public class Graph {
 
     // scaling
     public float scale=1.0f;
+    
+    /** Can the graph agent be changed? */
+    private boolean canChangeAgent = true;
 
     /** Create a graph from a Graphable object.
         @param g the Graphable object */
@@ -65,6 +68,13 @@ public class Graph {
         
         // save name...
         graphName = g.toString();
+        
+        if(graph instanceof DensityGraph) {
+        	setAgent(PlotAgent.TOOTHED);
+        	canChangeAgent = false;
+        }
+        else
+        	setAgent(PlotAgent.getDefault());
     }
 
     // an arbitrary List of Numbers, starting at a Year.  (used for graphing density of masters.)
@@ -76,7 +86,10 @@ public class Graph {
         scale = graph.getScale();
         
         // save name...
-        graphName = graph.toString();        
+        graphName = graph.toString();
+        
+        setAgent(PlotAgent.TOOTHED);
+        canChangeAgent = false;
     }
 
     // meaning, 25%, but (fixme) i should just say that
@@ -149,6 +162,10 @@ public class Graph {
     	return mainColor;
     }
     
+    public boolean hasColor() {
+    	return mainColor != null;
+    }
+    
     // default line thickness
     int lineThickness = 1;
     int printerlineThickness = 1;
@@ -172,11 +189,27 @@ public class Graph {
     public String getGraphName() { return graphName; }
     public void setGraphName(String name) { graphName = name; }
     
-    private CorinaGraphPlotter graphingAgent;
-    public void setAgent(CorinaGraphPlotter agent) { graphingAgent = agent; }
-    public CorinaGraphPlotter getAgent() { return graphingAgent; }
+    /** The Plot Agent that holds the plotter that draws this graph */
+    private PlotAgent graphAgent;
+    
+    /**
+     * Set the plotting agent
+     * @param agent
+     */
+    public void setAgent(PlotAgent agent) { 
+    	if(canChangeAgent)
+    		graphAgent = agent; 
+    }
+    
+    /**
+     * Get the plotter
+     * @return The plotter used to graph this
+     */
+    public CorinaGraphPlotter getPlotter() {
+    	return graphAgent.getPlotter();
+    }
     
     public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, int thickness, int xscroll) {
-    	graphingAgent.draw(gInfo, g2, bottom, this, thickness, xscroll);
+    	graphAgent.getPlotter().draw(gInfo, g2, bottom, this, thickness, xscroll);
     }
 }

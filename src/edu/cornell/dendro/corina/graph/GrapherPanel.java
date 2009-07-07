@@ -20,9 +20,10 @@
 
 package edu.cornell.dendro.corina.graph;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -43,6 +44,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -58,10 +60,8 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.ui.Alert;
 
 public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		MouseMotionListener, AdjustmentListener, Scrollable {
@@ -83,8 +83,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private Font tickFont = new Font("Dialog", Font.PLAIN, 11);	
 
 	private String scorePostpend = "";
-		
-	private PlotAgents agents;
+	
+	/** The plot agent used to obtain the plotter to plot the graphs */
+	private PlotAgent plotAgent;
+	
+	private String emptyGraphText = "Nothing to graph";
 	
 	// compute the initial range of the year-axis
 	// (union of all graph ranges)
@@ -100,18 +103,19 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private final int yearsBeforeLabel = 0;
 	private final int yearsAfterLabel = 5;
 	public void computeRange(GraphInfo info, Graphics graphics) {
-		Range boundsr = null, emptyr = null;
+		// special case: empty graph
 		if (graphs.isEmpty()) {
-			// can't happen
-			Bug.bug(new IllegalArgumentException("no graphs!"));
-			// bounds = new Range();
-		} else {
-			Graph g0 = (Graph) graphs.get(0);
-			boundsr = g0.getRange();
-			for (int i = 1; i < graphs.size(); i++) { // this looks familiar ... yes, i do believe it's (reduce), again, just like in sum.  ick.
-				Graph g = (Graph) graphs.get(i);
-				boundsr = boundsr.union(g.getRange());
-			}
+			info.setDrawRange(new Range(new Year(0), 100));
+			info.setEmptyRange(new Range(new Year(0), 1));
+			return;
+		}
+		
+		Range boundsr = null, emptyr = null;
+		Graph g0 = graphs.get(0);
+		boundsr = g0.getRange();
+		for (int i = 1; i < graphs.size(); i++) { // this looks familiar ... yes, i do believe it's (reduce), again, just like in sum.  ick.
+			Graph g = graphs.get(i);
+			boundsr = boundsr.union(g.getRange());
 		}
 		
 		if(info.drawGraphNames()) {
@@ -144,7 +148,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		}
 
 		for(int i = 0; i < graphs.size(); i++) {
-			Graph gr = (Graph) graphs.get(i);
+			Graph gr = graphs.get(i);
 			int w = fontmetrics.stringWidth(gr.getGraphName());
 			if(w > mw)
 				mw = w;
@@ -178,12 +182,18 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			return;
 		
 		// current graph, and its title
-		Graph g = (Graph) graphs.get(current);
-		String title = g.graph.toString();
+		String title;
+		if(graphs.size() > 0) {
+			Graph g = graphs.get(current);
+			title = g.graph.toString();
+			
+			// if offset, use "title (at ...)"
+			if (g.xoffset != 0)
+				title += " (at " + g.getRange() + ")";
+		}
+		else
+			title = "Empty graph";
 
-		// if offset, use "title (at ...)"
-		if (g.xoffset != 0)
-			title += " (at " + g.getRange() + ")";
 
 		// set title
 		myFrame.setTitle(title + scorePostpend + " - " + Build.VERSION + " " + Build.TIMESTAMP);
@@ -294,7 +304,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		ensureScrollerExists();
 
 		if (gInfo.drawVertAxis()) {
-			vertaxis = new Axis(gInfo, agents.acquireDefaultAxisType(), this);
+			vertaxis = new Axis(gInfo, PlotAgent.getDefault().getAxisType(), this);
 			scroller.setRowHeaderView(vertaxis);
 			repaint();
 		} else {
@@ -311,10 +321,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int bottom = gInfo.getHeight(this) - GrapherPanel.AXIS_HEIGHT;
 		for (int i = 0; i < graphs.size(); i++) {
 			// get graph
-			Graph gg = (Graph) graphs.get(i);
+			Graph gg = graphs.get(i);
 
 			// hit?
-			if (gg.getAgent().contact(gInfo, gg, p, bottom))
+			if (gg.getPlotter().contact(gInfo, gg, p, bottom))
 				return i;
 		}
 
@@ -347,15 +357,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 			// yes, store
 			dragStart = (Point) e.getPoint().clone();
-			dragStart.y += ((Graph) graphs.get(n)).yoffset;
-			startX = ((Graph) graphs.get(n)).xoffset;
+			dragStart.y += (graphs.get(n)).yoffset;
+			startX = (graphs.get(n)).xoffset;
 
 			// select it, too, while we're at it
 			current = n;
 		}
 
 		// change yoffset[n]
-		((Graph) graphs.get(current)).yoffset = (int) dragStart.getY()
+		(graphs.get(current)).yoffset = (int) dragStart.getY()
 				- e.getY();
 
 		// change xoffset[n], but only if no shift
@@ -364,7 +374,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			dx = (int) (e.getX() - dragStart.getX());
 			dx -= dx % gInfo.getYearWidth();
 		}
-		((Graph) graphs.get(current)).xoffset = startX + dx / gInfo.getYearWidth();
+		(graphs.get(current)).xoffset = startX + dx / gInfo.getYearWidth();
 		//        recomputeDrops(); -- writeme?
 
 		// repaint
@@ -448,7 +458,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		boolean unknown = false;
 
 		// graph
-		Graph g = (Graph) graphs.get(current);
+		Graph g = graphs.get(current);
 
 		// IDEA: if i had some way of saying "shift tab" => { block }
 		// then i wouldn't need these nested if/case statements.
@@ -717,7 +727,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int i;
 		
 		for(i = 0; i < graphs.size(); i++) {
-			Graph g = (Graph) graphs.get(i);
+			Graph g = graphs.get(i);
 			
 			g.setColor(GraphInfo.screenColors[i % GraphInfo.screenColors.length].getColor(),
 					GraphInfo.printerColors[i % GraphInfo.printerColors.length].getColor());
@@ -728,17 +738,16 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		new GraphPrintDialog(myFrame, graphs, this, printStyle);
 	}
 
-	public GrapherPanel(List<Graph> graphs, PlotAgents agents, final JFrame myFrame) {
+	public GrapherPanel(List<Graph> graphs, final JFrame myFrame) {
 		// set up the graph info, which loads a lot of default preferences.	
-		this(graphs, agents, myFrame, new GraphInfo());
+		this(graphs, myFrame, new GraphInfo());
 	}
 	
 	// graphs = List of Graph.
 	// frame = window; (used for: title set to current graph, closed when ESC pressed.)
-	public GrapherPanel(List<Graph> graphs, PlotAgents agents, final JFrame myFrame, GraphInfo graphInfo) {		
+	public GrapherPanel(List<Graph> graphs, final JFrame myFrame, GraphInfo graphInfo) {		
 		// my frame
 		this.myFrame = myFrame;
-		this.agents = agents;
 
 		// cursor: a crosshair.
 		// note: (mac crosshair doesn't invert on 10.[01], so it's invisible on black)
@@ -746,6 +755,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// use the passed graphinfo
 		gInfo = graphInfo;
+		
+		// set up the default plotagent
+		this.plotAgent = PlotAgent.getDefault();
 
 		// key listener -- apparently the focus gets screwed up and
 		// keys stop responding if I don't add a key listener to both
@@ -769,13 +781,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		
 		// assign plot agents to all the graphs
 		for (int i = 0; i < graphs.size(); i++) {
-			Graph cg = (Graph) graphs.get(i);
-						
-			// set each graph to have a the default agent; or the density agent.
-			if(cg.graph instanceof DensityGraph)
-				cg.setAgent(agents.acquireDensity());
-			else
-				cg.setAgent(agents.acquireDefault());
+			Graph cg = graphs.get(i);
+
+			// assign each graph a plotting agent
+			cg.setAgent(plotAgent);
 		}
 
 		// set default scrolly window size
@@ -1042,7 +1051,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int lineHeight = g2.getFontMetrics().getHeight();		
 		int halflineHeight = lineHeight / 2;
 		for(int i = 0; i < graphs.size(); i++) {
-			Graph gr = (Graph) graphs.get(i);
+			Graph gr = graphs.get(i);
 			String gn = gr.getGraphName();
 			int stringWidth = g2.getFontMetrics().stringWidth(gn);
 			
@@ -1108,6 +1117,39 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		paintVertbar(g, gInfo);
 	}
 
+	/**
+	 * Change the message when the graph is empty
+	 * @param emptyGraphText
+	 */
+	public void setEmptyGraphText(String emptyGraphText) {
+		this.emptyGraphText = emptyGraphText;
+	}
+	
+	/**
+	 * Paint a "Nothing to graph" when there's nothing available
+	 * @param g
+	 */
+	private void paintNoGraphs(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+
+		Composite oldComposite = g2.getComposite();
+		Font oldFont = g2.getFont();
+		
+		g2.setColor(Color.blue.darker());
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
+		g2.setFont(g2.getFont().deriveFont(72.0f));
+		
+		int width = g2.getFontMetrics().stringWidth(emptyGraphText);
+		
+		float x = (float)((getWidth() / 2) - (width / 2)); 
+		float y = (float)(getHeight() / 2);
+
+		g2.drawString(emptyGraphText, x, y);
+		
+		g2.setComposite(oldComposite);
+		g2.setFont(oldFont);
+	}
+	
 	/** Paint this panel.  Draws a horizontal axis in white (on a
 	 black background), then draws each graph in a different color.
 	 @param g the Graphics to draw this panel onto */
@@ -1167,11 +1209,19 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// and everybody's computer is fast enough for it these days
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
-				
+		
+		int nGraphs = graphs.size();
+		
+		// no graphs? mention it
+		if(nGraphs < 1) {
+			paintNoGraphs(g2);
+			return;
+		}
+		
 		// draw graphs
-		for (int i = 0; i < graphs.size(); i++) {
+		for (int i = 0; i < nGraphs; i++) {
 			// get graph
-			Graph graph = (Graph) graphs.get(i);
+			Graph graph = graphs.get(i);
 		
 			// draw it
 			if(info.isPrinting()) {
@@ -1305,6 +1355,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public void update() {
 		update(true);
 	}
+		
+	/**
+	 * Sets the graph plot agent for all non-density graphs
+	 * Must call update(true) for graphs to be redrawn
+	 * @param agent
+	 */
+	public void setPlotAgent(PlotAgent agent) {
+		this.plotAgent = agent;
+	}
 	
 	/**
 	 * Update the graph
@@ -1314,29 +1373,22 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public void update(boolean redraw) {
 		// notification that a preference or the sample list has changed.
 		for (int i = 0; i < graphs.size(); i++) {
-			Graph cg = (Graph) graphs.get(i);
-			boolean newgraph = false;
-
-			if(cg.getAgent() == null) 
-				newgraph = true;
+			Graph cg = graphs.get(i);
 			
-			// set each graph to have a the default agent; or the density agent.
-			if(cg.graph instanceof DensityGraph)
-				cg.setAgent(agents.acquireDensity());
-			else
-				cg.setAgent(agents.acquireDefault());
+			// set each graph to have a the default agent
+			cg.setAgent(plotAgent);
 						
 			// assign the new graph a color
-			if(newgraph)
+			if(!cg.hasColor())
 				cg.setColor(GraphInfo.screenColors[i % GraphInfo.screenColors.length].getColor(),
 				 		GraphInfo.printerColors[i % GraphInfo.printerColors.length].getColor());	
 		}
 		
-		if(vertaxis != null)
-			vertaxis.setAxisType(agents.acquireDefaultAxisType());
-
 		// recompute range
 		computeRange();
+
+		if(vertaxis != null)
+			vertaxis.setAxisType(PlotAgent.getDefault().getAxisType());
 		
 		if(!redraw)
 			return;
@@ -1471,10 +1523,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	
 	public int getMaxPixelHeight() {
 		int maxh = 0;
+		int nGraphs = graphs.size();
 		
-		for (int i = 0; i < graphs.size(); i++) {
-			Graph cg = (Graph) graphs.get(i);
-			int val = cg.getAgent().getYRange(gInfo, cg);
+		// kludge! no graphs, 1000 height
+		if(nGraphs == 0)
+			return 1000;
+		
+		for (int i = 0; i < nGraphs; i++) {
+			Graph cg = graphs.get(i);
+			int val = cg.getPlotter().getYRange(gInfo, cg);
 			if(val > maxh)
 				maxh = val;
 		}
@@ -1541,8 +1598,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		Graph g1, g2;
 		
 		try {
-			g1 = (Graph) graphs.get(current);
-			g2 = (Graph) graphs.get(next);
+			g1 = graphs.get(current);
+			g2 = graphs.get(next);
 			s1 = (Sample) g1.graph;
 			s2 = (Sample) g2.graph;
 		} catch (java.lang.ClassCastException ce) {
