@@ -1,8 +1,8 @@
 DROP VIEW vwtblObject CASCADE;
 
 CREATE VIEW vwtblObject AS
-  SELECT cquery.countofchildvmeasurements, tblobject.objectid, tblobject.title, tblobject.code, tblobject.createdtimestamp, tblobject.lastmodifiedtimestamp, tblobject.locationgeometry, 
-       tblobject.locationtypeid, tblobject.locationprecision, tblobject.locationcomment, tblobject.file, tblobject.creator, tblobject.owner, tblobject.parentobjectid, tblobject.description, 
+  SELECT cquery.countofchildvmeasurements, tblobject.comments, tblobject.objectid, tblobject.title, tblobject.code, tblobject.createdtimestamp, tblobject.lastmodifiedtimestamp, tblobject.locationgeometry, 
+       tblobject.locationtypeid, tblobject.locationprecision, tblobject.locationcomment, array_to_string(tblobject.file, '><') as file, tblobject.creator, tblobject.owner, tblobject.parentobjectid, tblobject.description, 
        tblobject.objecttypeid, loctype.locationtype, objtype.objecttype, covtemp.coveragetemporal, covtempfound.coveragetemporalfoundation
    FROM tblobject
    LEFT JOIN tlkplocationtype loctype ON tblobject.locationtypeid = loctype.locationtypeid
@@ -18,5 +18,5 @@ CREATE VIEW vwtblObject AS
               GROUP BY e.objectid) cquery 
         ON cquery.masterobjectid = tblobject.objectid;
 
-GRANT ALL on vwtblradius to "Webgroup";
+GRANT ALL on vwtblobject to "Webgroup";
 
