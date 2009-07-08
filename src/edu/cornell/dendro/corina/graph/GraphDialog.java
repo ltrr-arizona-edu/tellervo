@@ -107,7 +107,7 @@ public class GraphDialog extends JDialog {
 		GraphInfo gInfo = new GraphInfo();
 		
 		// force no drawing of graph names
-		gInfo.overrideDrawGraphNames(false);
+		gInfo.setShowGraphNames(false);
 		
 		// create a graph panel; put it in a scroll pane
 		final JDialog glue = this;

@@ -59,27 +59,14 @@ public enum PlotAgent {
 	 * @return the default plot agent, usually "STANDARD"
 	 */
 	public static PlotAgent getDefault() {
-		String defaultType = App.prefs.getPref("corina.graph.defaultagent", null);
-
-		// no default, so go with standard
-		if(defaultType == null)
-			return STANDARD;
-		
-		// go with standard if anything fails
-		try {
-			return valueOf(defaultType);
-		} catch (Exception e) {
-			// remove the bad pref
-			App.prefs.setPref("corina.graph.defaultagent", null);
-			return STANDARD;
-		}
+		return GraphPrefs.PLOT_AGENT.get();
 	}
 
 	/**
 	 * Set this as the default
 	 */
 	public void setDefault() {
-		App.prefs.setPref("corina.graph.defaultagent", this.toString());
+		GraphPrefs.PLOT_AGENT.set(this);
 	}
 	
 	/**

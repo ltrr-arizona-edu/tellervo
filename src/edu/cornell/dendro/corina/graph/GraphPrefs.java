@@ -5,9 +5,7 @@ package edu.cornell.dendro.corina.graph;
 
 import java.awt.Color;
 import java.awt.Toolkit;
-import java.util.Collections;
 
-import edu.cornell.dendro.corina.prefs.EnumPrefHandle;
 import edu.cornell.dendro.corina.prefs.PrefHandle;
 import edu.cornell.dendro.corina.prefs.PrefHolder;
 

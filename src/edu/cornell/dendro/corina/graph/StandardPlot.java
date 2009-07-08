@@ -65,7 +65,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 
 	// returns the maximum size, in pixels, that the graph will take up.
 	public int getYRange(GraphInfo gInfo, Graph g) {
-		float unitScale = gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		float unitScale = gInfo.getTenUnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
 		int miny = 0; // minimum always starts at zero...
 		int maxy = -100000;
 		int value;
@@ -93,10 +93,10 @@ public class StandardPlot implements CorinaGraphPlotter {
 	public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
-		float unitScale = gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		float unitScale = gInfo.getTenUnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
 		
 		// set pen
-		boolean dotted = (gInfo.indexesDotted() && (g.graph instanceof Index));
+		boolean dotted = (gInfo.isDottedIndexes() && (g.graph instanceof Index));
 		g2.setStroke(makeStroke(thickness, dotted));
 
 		// left/right
@@ -104,19 +104,19 @@ public class StandardPlot implements CorinaGraphPlotter {
 		int r = l + g2.getClipBounds().width;
 
 		// baseline
-		if (gInfo.drawBaselines()) {
+		if (gInfo.isShowBaselines()) {
 			int y = bottom - (int) (g.yoffset * unitScale);
 			g2.drawLine(xscroll, y, xscroll + 10 * yearWidth, y); // 1 decade wide -- ok?
 		}
 		
 		// hundred percent line
-		if (gInfo.drawHundredpercentlines() && (g.graph instanceof Sample) && ((Sample) g.graph).isIndexed()) {
+		if (gInfo.isShowHundredpercentlines() && (g.graph instanceof Sample) && ((Sample) g.graph).isIndexed()) {
 			Color oldcolor = g2.getColor();
 			g2.setColor(ColorUtils.blend(oldcolor, gInfo.getBackgroundColor()));
 		
 			// x is 0 if we aren't drawing graph names...
 			// x is the pixel at the end of the empty range if we are.
-			int x = (gInfo.drawGraphNames()) ? yearWidth * (gInfo.getEmptyRange().span() - 1) : 0;			
+			int x = (gInfo.isShowGraphNames()) ? yearWidth * (gInfo.getEmptyBounds().span() - 1) : 0;			
 			int y = bottom - (int) (yTransform(1000 * g.scale) * unitScale) - (int) (g.yoffset * unitScale);
 			g2.drawLine((x > xscroll) ? x : xscroll, y, r, y);
 						
@@ -129,7 +129,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 
 		// compare g.getClipBounds() to [x,0]..[x+yearSize*data.size(),bottom]
 		tempRect.x = yearWidth
-				* (g.graph.getStart().diff(gInfo.getDrawRange().getStart()) + g.xoffset); // REDUNDANT! see x later
+				* (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset); // REDUNDANT! see x later
 		tempRect.y = 0; // - g.yoffset, IF you're sure there are no negative values (but there are)
 		tempRect.width = yearWidth * (g.graph.getData().size() - 1);
 		tempRect.height = bottom;
@@ -155,7 +155,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 
 		// x-position
 		int x = yearWidth
-				* (g.graph.getStart().diff(gInfo.getDrawRange().getStart()) + g.xoffset);
+				* (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset);
 
 		// move to the first point -- THIS IS NOT REALLY A SPECIAL CASE!
 		int value;
@@ -190,11 +190,11 @@ public class StandardPlot implements CorinaGraphPlotter {
 
 			// sapwood?  draw what we've got, and start a new (thicker) path
 			// but only do it if sapwoodThicker() is enabled!
-			if (gInfo.sapwoodThicker() && i == sapwoodIndex) {
+			if (gInfo.isThickerSapwood() && i == sapwoodIndex) {
 				g2.draw(p);
 				g2.setStroke(makeStroke(2 * thickness, false));
 				p = new GeneralPath();
-				p.moveTo(yearWidth * (i - 1 + g.graph.getStart().diff(gInfo.getDrawRange().getStart()) + g.xoffset),
+				p.moveTo(yearWidth * (i - 1 + g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset),
 						 bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale));
 			}
 
@@ -240,7 +240,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 		float f = (p.x - x1) / (float) (x2 - x1);
 
 		// get year of click
-		Year y1 = gInfo.getDrawRange().getStart().add(x1 / yearWidth); // REFACTOR: does this look like yearForPosition()?
+		Year y1 = gInfo.getDrawBounds().getStart().add(x1 / yearWidth); // REFACTOR: does this look like yearForPosition()?
 		Year y2 = y1.add(1);
 
 		// --- everything above this is independent of graph ---
@@ -268,7 +268,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 	}
 
 	private int getYValue(GraphInfo gInfo, Graph g, int value, int bottom) {
-		float unitScale = gInfo.get10UnitHeight() / 10.0f;
+		float unitScale = gInfo.getTenUnitHeight() / 10.0f;
 		return bottom - (int) (yTransform(value * g.scale) * unitScale) - 
 						(int) (g.yoffset * unitScale); // DUPLICATE: this line appears above 3 times
 	}

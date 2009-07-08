@@ -8,12 +8,14 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 
 public class GraphController {
+	private GraphInfo info;
 	public GrapherPanel graph;
 	public List<Graph> samples;
 	public JScrollPane scroller;
 	
 	public GraphController(GrapherPanel graph, JScrollPane scroller) {
 		this.graph = graph;
+		this.info = graph.getGraphInfo();
 		this.samples = graph.getSamples();
 		this.scroller = scroller;
 	}
@@ -62,8 +64,7 @@ public class GraphController {
 		// viewportSize is the number of pixels.
 		// nyears = 
 		int ppy = viewportSize / nYears;
-		graph.forceYearWidth(ppy);
-		graph.update();
+		info.setYearWidth(ppy);
 		scrollTo(graph.getGraphingRange().getStart());
 	}
 	
@@ -72,14 +73,14 @@ public class GraphController {
 		int viewHeight = viewportSize - GrapherPanel.AXIS_HEIGHT;
 
 		// force default height
-		graph.forceUnitHeight(10);
+		info.setTenUnitHeight(10);
 		
 		// now, calculate height based on that
 		int maxheight = graph.getMaxPixelHeight();
 		int uph = (int) (10.0f * (float) viewHeight / (float) maxheight);
 
 		// reset the scaled height...
-		graph.forceUnitHeight(uph);
+		info.setTenUnitHeight(uph);
 		graph.update();
 	}
 	

@@ -45,7 +45,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -75,7 +81,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private JScrollPane scroller = null;
 	private JFrame myFrame; // for setTitle(), dispose()
 
-	private GraphInfo gInfo;
+	private final GraphInfo gInfo;
+	private final GraphManager manager;
 	
 	private JPopupMenu popup = new JPopupMenu("Save");
 	
@@ -105,8 +112,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public void computeRange(GraphInfo info, Graphics graphics) {
 		// special case: empty graph
 		if (graphs.isEmpty()) {
-			info.setDrawRange(new Range(new Year(0), 100));
-			info.setEmptyRange(new Range(new Year(0), 1));
+			info.setDrawBounds(new Range(new Year(0), 100));
+			info.setEmptyBounds(new Range(new Year(0), 1));
 			return;
 		}
 		
@@ -118,7 +125,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			boundsr = boundsr.union(g.getRange());
 		}
 		
-		if(info.drawGraphNames()) {
+		if(info.isShowGraphNames()) {
 			int mgw = calculateMaxGraphNameWidth(info, graphics) + 
 						yearsBeforeLabel + yearsAfterLabel;
 			Range strange = new Range(boundsr.getStart().add(-mgw), 1);
@@ -127,8 +134,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			boundsr = boundsr.union(strange);		
 		}
 	
-		info.setDrawRange(boundsr);
-		info.setEmptyRange(emptyr);
+		info.setDrawBounds(boundsr);
+		info.setEmptyBounds(emptyr);
 	}
 	
 	// somewhat obvious, calculates the maximum graph name width.
@@ -213,7 +220,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		scroller = h;
 
 		// add update listener, required for keeping baselines drawn
-		if (gInfo.drawBaselines())
+		if (gInfo.isShowBaselines())
 			scroller.getHorizontalScrollBar().addAdjustmentListener(this);
 	}
 
@@ -228,97 +235,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		}
 	}
 	
-	public void setGraphPaperVisible(boolean visible) {
-		// set the preference...
-		App.prefs.setPref("corina.graph.graphpaper", Boolean.toString(visible));
-
-		// reload the prefs into the graphInfo
-		gInfo.reloadPrefs();
-		
-		// redraw
-		repaint();
-	}
-
-	public void setBaselinesVisible(boolean visible) {
-		// set the preference...
-		App.prefs.setPref("corina.graph.baselines", Boolean.toString(visible));
-
-		// reload the prefs into the graphInfo
-		gInfo.reloadPrefs();
-		
-		ensureScrollerExists();		
-		
-		// add/remove listener so they get updated properly
-		if (!gInfo.drawBaselines())
-			scroller.getHorizontalScrollBar().removeAdjustmentListener(this);
-		else
-			scroller.getHorizontalScrollBar().addAdjustmentListener(this);
-
-		// redraw
-		repaint();
-	}
-
-	public void setHundredpercentlinesVisible(boolean visible) {
-		// set the preference...
-		App.prefs.setPref("corina.graph.hundredpercentlines", Boolean.toString(visible));
-
-		// reload the prefs into the graphInfo
-		gInfo.reloadPrefs();
-		
-		// redraw
-		repaint();
-	}
-
-	public void setComponentNamesVisible(boolean visible) {
-		// set the preference...
-		App.prefs.setPref("corina.graph.componentnames", Boolean.toString(visible));
-
-		// reload the prefs into the graphInfo
-		gInfo.reloadPrefs();
-
-		// recompute the range...
-		computeRange();
-
-		// messy redrawing...
-		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), getGraphHeight()));
-		revalidate();					
-		repaint();
-	}
 	
 	// stuff for dealing with the vertical axis
 	private Axis vertaxis = null;
-
-	public void setAxisVisible(boolean visible) {
-		setAxisVisible(visible, false);
-	}
-	
-	public void setAxisVisible(boolean visible, boolean override) {
-		// set the preference...
-		if(!override) {
-			App.prefs.setPref("corina.graph.vertical-axis", Boolean.toString(visible));
-
-			// reload the prefs into the graphInfo
-			gInfo.reloadPrefs();
-		}
 		
-		ensureScrollerExists();
-
-		if (gInfo.drawVertAxis()) {
-			vertaxis = new Axis(gInfo, PlotAgent.getDefault().getAxisType(), this);
-			scroller.setRowHeaderView(vertaxis);
-			repaint();
-		} else {
-			scroller.setRowHeaderView(null);
-			repaint();
-		}
-	}
-	
-	
 
 	// used for clickers and draggers: get graph nr at point
 	public int getGraphAt(Point p) {
 		// try each sample...
-		int bottom = gInfo.getHeight(this) - GrapherPanel.AXIS_HEIGHT;
+		int bottom = gInfo.getGraphHeight(this) - GrapherPanel.AXIS_HEIGHT;
 		for (int i = 0; i < graphs.size(); i++) {
 			// get graph
 			Graph gg = graphs.get(i);
@@ -442,7 +367,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		ensureScrollerExists();
 		
 		JScrollBar horiz = scroller.getHorizontalScrollBar();
-		Range bounds = gInfo.getDrawRange();
+		Range bounds = gInfo.getDrawBounds();
 
 		// extract some info once so i don't have to do it later
 		int m = e.getModifiers();
@@ -489,10 +414,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			switch (k) {
 			// change the graph scale!
 			case KeyEvent.VK_W: {
-				int curheight = gInfo.get10UnitHeight();
+				int curheight = gInfo.getTenUnitHeight();
 				if(--curheight < 2)
 					curheight = 2;
-				gInfo.set10UnitHeight(curheight);
+				gInfo.setTenUnitHeight(curheight);
 				revalidate();
 				if(vertaxis != null)
 					vertaxis.repaint();
@@ -500,9 +425,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				break;
 			}
 			case KeyEvent.VK_S: {
-				int curheight = gInfo.get10UnitHeight();
+				int curheight = gInfo.getTenUnitHeight();
 				curheight++;
-				gInfo.set10UnitHeight(curheight);
+				gInfo.setTenUnitHeight(curheight);
 				revalidate();
 				if(vertaxis != null)
 					vertaxis.repaint();				
@@ -544,7 +469,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				boolean endBoundChanged = false;
 				
 				computeRange();
-				bounds = gInfo.getDrawRange();
+				bounds = gInfo.getDrawBounds();
 				if(!bounds.getEnd().equals(y2))
 					endBoundChanged = true;
 				if(!bounds.getStart().equals(y1) || endBoundChanged)
@@ -569,7 +494,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				boolean startBoundChanged = false;
 				
 				computeRange();
-				bounds = gInfo.getDrawRange();
+				bounds = gInfo.getDrawBounds();
 				if(!bounds.getStart().equals(y1))
 					startBoundChanged = true;
 				if(!bounds.getEnd().equals(y2) || startBoundChanged)
@@ -755,6 +680,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// use the passed graphinfo
 		gInfo = graphInfo;
+		// create a new manager that listens to changes in the graphInfo
+		
+		manager = new GraphManager();
 		
 		// set up the default plotagent
 		this.plotAgent = PlotAgent.getDefault();
@@ -788,7 +716,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		}
 
 		// set default scrolly window size
-		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), getGraphHeight()));
+		setPreferredSize(new Dimension(gInfo.getDrawBounds().span() * gInfo.getYearWidth(), getGraphHeight()));
 		
 		// background -- default is black
 		setBackground(gInfo.getBackgroundColor());
@@ -812,10 +740,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// calculate our initial scores, and set the initial title...
 		calculateScores();
 		updateTitle();
-		
-		setBaselinesVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.baselines")).booleanValue());
-		setHundredpercentlinesVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.hundredpercentlines")).booleanValue());
-		setAxisVisible(Boolean.valueOf(App.prefs.getPref("corina.graph.vertical-axis")).booleanValue());
+
+		// add our axis / baselines, etc
+		manager.horizontalScrollbarStatusChanged();
+		manager.verticalAxisStatusChanged();		
 	}
 
 	/** Colors to use for graphs: blue, green, red, cyan, yellow, magenta. */
@@ -840,18 +768,18 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int l = g2.getClipBounds().x;
 		int r = l + g2.getClipBounds().width;
 		int origl = l;
-		Range bounds = info.getDrawRange();
+		Range bounds = info.getDrawBounds();
 		
-		if(info.drawGraphNames()) {
+		if(info.isShowGraphNames()) {
 			int yeardiff = yearForPosition(info, l).
-							compareTo(info.getEmptyRange().getEnd());
+							compareTo(info.getEmptyBounds().getEnd());
 
 			if(yeardiff < 0)
 				l += -yeardiff * info.getYearWidth();
 		}
 
 		// bottom
-		int bottom = info.getHeight(this) - AXIS_HEIGHT;
+		int bottom = info.getGraphHeight(this) - AXIS_HEIGHT;
 
 		// draw horizontal lines
 		// (would it help if everything was a big generalpath?  it appears not.)
@@ -859,7 +787,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		Color mid = info.getMidLineColor();
 		Color minor = info.getMinorLineColor();
 		int yearWidth = info.getYearWidth();
-		int unitHeight = info.get10UnitHeight();
+		int unitHeight = info.getTenUnitHeight();
 		
 		// be sure to draw all the way to our first vert. line....
 		Year leftYear = yearForPosition(info, l);
@@ -945,7 +873,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	 -- well, is it correct, or off-by-one?  i think it's correct...
 	 */
 	private Year yearForPosition(GraphInfo info, int x) {
-		return info.getDrawRange().getStart().add(x / info.getYearWidth());
+		return info.getDrawBounds().getStart().add(x / info.getYearWidth());
 	}
 	
 	public int getYearWidth() {
@@ -962,9 +890,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		int l = g2.getClipBounds().x;
 		int r = l + g2.getClipBounds().width;
-		int bottom = info.getHeight(this) - AXIS_HEIGHT;
+		int bottom = info.getGraphHeight(this) - AXIS_HEIGHT;
 		int yearWidth = info.getYearWidth();
-		Range bounds = info.getDrawRange();
+		Range bounds = info.getDrawBounds();
 
 		Year startYear = yearForPosition(info, l).add(-5); // go one further, just to be sure
 		// actually, go 5 further; i need to make sure to draw the text, even if it's
@@ -978,8 +906,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				break;
 
 			// don't draw years or ticks in the empty part of the graph
-			if(info.drawGraphNames() && 
-					y.compareTo(info.getEmptyRange().getEnd()) < -5) {
+			if(info.isShowGraphNames() && 
+					y.compareTo(info.getEmptyBounds().getEnd()) < -5) {
 				x += yearWidth;
 				continue;
 			}
@@ -1026,16 +954,16 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 	public void drawGraphNames(Graphics g, GraphInfo info) {
 		Graphics2D g2 = (Graphics2D) g;
-		int bottom = info.getHeight(this) - GrapherPanel.AXIS_HEIGHT;
+		int bottom = info.getGraphHeight(this) - GrapherPanel.AXIS_HEIGHT;
 		int yearWidth = info.getYearWidth();
-		Rectangle temprect = new Rectangle(0, 0, info.getEmptyRange().span() * yearWidth, bottom);
+		Rectangle temprect = new Rectangle(0, 0, info.getEmptyBounds().span() * yearWidth, bottom);
 		
 		// we're not on the screen, don't draw this...
 		if(!temprect.intersects(g2.getClipBounds()))
 			return;
 		
 		int[] overlaps = new int[graphs.size()];		
-		float unitScale = info.get10UnitHeight() / 10.0f;			
+		float unitScale = info.getTenUnitHeight() / 10.0f;			
 		Stroke oldstroke;
 		Font oldfont;
 		BasicStroke connectorLine = new BasicStroke(1, BasicStroke.CAP_BUTT,
@@ -1056,7 +984,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			int stringWidth = g2.getFontMetrics().stringWidth(gn);
 			
 			// gnw = x coordinate for start of string
-			int gnw = ((info.getEmptyRange().span() * yearWidth) - stringWidth) - 
+			int gnw = ((info.getEmptyBounds().span() * yearWidth) - stringWidth) - 
 			          (yearWidth * yearsAfterLabel);
 			
 			// if this is an indexed sample, set this to be at the 100% line
@@ -1156,14 +1084,14 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private static final BasicStroke BLCENTER_STROKE = new BasicStroke(1);
 	public void paintGraph(Graphics g, GraphInfo info) {
 		Graphics2D g2 = (Graphics2D) g;
-		int bottom = info.getHeight(this) - GrapherPanel.AXIS_HEIGHT;
+		int bottom = info.getGraphHeight(this) - GrapherPanel.AXIS_HEIGHT;
 
 		// from here down, everything is drawn in order.  this
 		// means that the first thing drawn (the graphpaper) is
 		// the bottommost layer, on up to the vertical-bar on top.
 		
 		// draw graphpaper
-		if (info.drawGraphPaper())
+		if (info.isShowGraphPaper())
 			paintGraphPaper(g2, info);
 
 		/* TODO: Draw a harsh line every 4??
@@ -1172,11 +1100,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			int r = l + g2.getClipBounds().width;
 			float unitScale = (float) info.getYearSize() / 10.0f;			
 			int yeardiff = yearForPosition(info, l).
-							compareTo(info.getEmptyRange().getEnd());
+							compareTo(info.getEmptyBounds().getEnd());
 
 			if(yeardiff < 0) {
 				Year leftYear = yearForPosition(info, l);
-				l = leftYear.diff(info.getDrawRange().getStart()) * 
+				l = leftYear.diff(info.getDrawBounds().getStart()) * 
 								  info.getYearSize();				
 			}
 			
@@ -1237,7 +1165,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		}
 		
 		// draw component names, if applicable...
-		if(info.drawGraphNames()) {
+		if(info.isShowGraphNames()) {
 			drawGraphNames(g2, info);						
 		}				
 
@@ -1394,7 +1322,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			return;
 		
 		// change size
-		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * gInfo.getYearWidth(), getGraphHeight()));
+		setPreferredSize(new Dimension(gInfo.getDrawBounds().span() * gInfo.getYearWidth(), getGraphHeight()));
 		// and redo ourselves!
 		revalidate();
 		// redraw
@@ -1420,7 +1348,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public int getScrollableUnitIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
 		if(orientation == SwingConstants.VERTICAL)
-			return gInfo.get10UnitHeight() * 10; // 100 (?)
+			return gInfo.getTenUnitHeight() * 10; // 100 (?)
 		else
 			return gInfo.getYearWidth() * 10; // one decade (?)
 	}
@@ -1463,14 +1391,14 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	}
 	
 	public Range getRange() {
-		return gInfo.getDrawRange();
+		return gInfo.getDrawBounds();
 	}
 	
 	/**
 	 * @return the width of this graph in its current state, in pixels
 	 */
 	public int getGraphPixelWidth() {
-		return gInfo.getDrawRange().span() * gInfo.getYearWidth();
+		return gInfo.getDrawBounds().span() * gInfo.getYearWidth();
 	}
 	
 	/**
@@ -1481,31 +1409,14 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	}
 	
 	public Range getGraphingRange() {
-		if(!gInfo.drawGraphNames())
-			return gInfo.getDrawRange();
+		if(!gInfo.isShowGraphNames())
+			return gInfo.getDrawBounds();
 		
-		return new Range(gInfo.getEmptyRange().getEnd(), gInfo.getDrawRange().getEnd());
+		return new Range(gInfo.getEmptyBounds().getEnd(), gInfo.getDrawBounds().getEnd());
 	}
-	
-	public void forceYearWidth(int width) {
-		if(width < 1)
-			width = 1;
 		
-		gInfo.setYearWidth(width);
-		computeRange();				
-		setPreferredSize(new Dimension(gInfo.getDrawRange().span() * width, getGraphHeight()));
-		revalidate();							
-	}
-	
-	public void forceUnitHeight(int height) {
-		if(height < 1)
-			height = 1;
-		
-		gInfo.set10UnitHeight(height);
-	}
-	
 	public int getGraphHeight() {
-		return getMaxPixelHeight() + GrapherPanel.AXIS_HEIGHT + gInfo.get10UnitHeight();
+		return getMaxPixelHeight() + GrapherPanel.AXIS_HEIGHT + gInfo.getTenUnitHeight();
 	}
 	
 	@Override
@@ -1629,5 +1540,125 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		return graphs;
 	}
 	
+	/**
+	 * A class to 'manage' the graph panel
+	 * Listens for property changes in GraphInfo and updates the graph accordingly
+	 * @author Lucas Madar
+	 *
+	 */
+	private class GraphManager implements PropertyChangeListener, AdjustmentListener {				
+		public GraphManager() {
+			gInfo.addPropertyChangeListener(this);
+		}
+		
+		public void remove() {
+			gInfo.removePropertyChangeListener(this);
+		}
+		
+		public void propertyChange(PropertyChangeEvent evt) {
+			if(evt.getSource() != gInfo)
+				return;
+			
+			System.out.println("Property: " + evt.getPropertyName());
+
+			Set<UpdateAction> actions = updateActions.get(evt.getPropertyName());
+			if(actions == null)
+				return;
+
+			System.out.print("Actions: ");
+			for(UpdateAction a : actions) {
+				System.out.print(a + ", ");
+			}
+			System.out.println();
+			
+			// baselines were added or removed
+			if(actions.contains(UpdateAction.BASELINES_SCROLLBAR_UPDATE))
+				horizontalScrollbarStatusChanged();
+
+			// vertical axis added or removed
+			if(actions.contains(UpdateAction.VERTICAL_AXIS_SCROLLBAR_UPDATE))
+				verticalAxisStatusChanged();
+			
+			// recompute the range
+			if(actions.contains(UpdateAction.RECOMPUTE_RANGE))
+				computeRange();
+			
+			// graph size changed
+			if(actions.contains(UpdateAction.UPDATE_SIZE)) 
+				setPreferredSize(new Dimension(gInfo.getDrawBounds().span() * gInfo.getYearWidth(), getGraphHeight()));
+			
+			// revalidate - is this necessary?
+			if(actions.contains(UpdateAction.REVALIDATE))
+				revalidate();
+			
+			// repaint the graph
+			if(actions.contains(UpdateAction.REPAINT))
+				repaint();
+		}
+
+		/**
+		 * Called when the status of the horizontal scrollbar chaged
+		 */
+		public void horizontalScrollbarStatusChanged() {
+			ensureScrollerExists();
+			
+			if (!gInfo.isShowBaselines())
+				scroller.getHorizontalScrollBar().removeAdjustmentListener(this);
+			else
+				scroller.getHorizontalScrollBar().addAdjustmentListener(this);			
+		}
+		
+		/**
+		 * Called when the status of the vertical axis changed
+		 */
+		public void verticalAxisStatusChanged() {
+			ensureScrollerExists();
+
+			if (gInfo.isShowVertAxis()) {
+				vertaxis = new Axis(gInfo, PlotAgent.getDefault().getAxisType(), GrapherPanel.this);
+				scroller.setRowHeaderView(vertaxis);
+			} else {
+				scroller.setRowHeaderView(null);
+			}			
+		}
+		
+		// the horizontal scrollbar changed
+		public void adjustmentValueChanged(AdjustmentEvent e) {
+			repaint();
+		}		
+	}
 	
+	private static Map<String, Set<UpdateAction>> updateActions = new HashMap<String, Set<UpdateAction>>();
+	static {
+		updateActions.put(GraphInfo.SHOW_GRAPH_PAPER_PROPERTY, 
+				EnumSet.of(UpdateAction.REPAINT));
+		
+		updateActions.put(GraphInfo.SHOW_BASELINES_PROPERTY, 
+				EnumSet.of(UpdateAction.REPAINT, UpdateAction.BASELINES_SCROLLBAR_UPDATE));
+		
+		updateActions.put(GraphInfo.SHOW_HUNDREDPERCENTLINES_PROPERTY, 
+				EnumSet.of(UpdateAction.REPAINT));
+		
+		updateActions.put(GraphInfo.SHOW_GRAPH_NAMES_PROPERTY,
+				EnumSet.of(UpdateAction.RECOMPUTE_RANGE, UpdateAction.UPDATE_SIZE,
+						UpdateAction.REVALIDATE, UpdateAction.REPAINT));
+		
+		updateActions.put(GraphInfo.SHOW_VERT_AXIS_PROPERTY, 
+				EnumSet.of(UpdateAction.VERTICAL_AXIS_SCROLLBAR_UPDATE, UpdateAction.REPAINT));
+		
+		updateActions.put(GraphInfo.YEAR_WIDTH_PROPERTY, 
+				EnumSet.of(UpdateAction.RECOMPUTE_RANGE, UpdateAction.UPDATE_SIZE, UpdateAction.REVALIDATE, UpdateAction.REPAINT));
+
+		updateActions.put(GraphInfo.TEN_UNIT_HEIGHT_PROPERTY, 
+				EnumSet.of(UpdateAction.REPAINT));
+	};
+	
+	private static enum UpdateAction {
+		REPAINT,
+		BASELINES_SCROLLBAR_UPDATE,
+		RECOMPUTE_RANGE,
+		UPDATE_SIZE,
+		REVALIDATE,
+		VERTICAL_AXIS_SCROLLBAR_UPDATE;
+	}
 }

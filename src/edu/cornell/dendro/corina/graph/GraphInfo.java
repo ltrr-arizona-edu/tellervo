@@ -4,17 +4,19 @@
 package edu.cornell.dendro.corina.graph;
 
 import java.awt.Color;
-import java.awt.Toolkit;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.lang.reflect.Field;
 
 import javax.swing.JPanel;
 
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.util.ColorUtils;
 
 /**
- * @author Lucas Madar
+ * This class describes the settings of a graph
  * 
+ * @author Lucas Madar
  */
 public class GraphInfo {
 
@@ -43,6 +45,9 @@ public class GraphInfo {
 	/** True when printing, false otherwise */
 	private boolean printing;
 
+	/** For handling property changes */
+	private PropertyChangeSupport changes = new PropertyChangeSupport(this);
+	
 	// color settings
 	/** The graph's foreground color */
 	private Color foreColor;
@@ -81,7 +86,7 @@ public class GraphInfo {
 	/** Width of one year */
 	private int yearWidth;
 	/** Height of 10 graph units */
-	private int unitHeight;
+	private int tenUnitHeight;
 
 	/** The height of what we're printing (only used when printing) */
 	private int printHeight = 0;
@@ -156,99 +161,16 @@ public class GraphInfo {
 		this.showVertAxis = src.showVertAxis;
 		
 		this.yearWidth = src.yearWidth;
-		this.unitHeight = src.unitHeight;
+		this.tenUnitHeight = src.tenUnitHeight;
 	}
 
-	public boolean drawBaselines() {
-		return showBaselines;
-	}
-
-	public boolean drawGraphNames() {
-		return showGraphNames;
-	}
-
-	public boolean drawGraphPaper() {
-		return showGraphPaper;
-	}
-
-	public boolean drawHundredpercentlines() {
-		return showHundredpercentlines;
-	}
-
-	public boolean drawVertAxis() {
-		return showVertAxis;
-	}
-
-	public int get10UnitHeight() {
-		return unitHeight;
-	}
-
-	public Color getBackgroundColor() {
-		return backgroundColor;
-	}
-
-	public Color getBLCenterColor() {
-		return ColorUtils.blend(minorLineColor, foreColor);
-	}
-
-	public Range getDrawRange() {
-		return drawBounds;
-	}
-
-	public Range getEmptyRange() {
-		return emptyBounds;
-	}
-
-	public Color getForeColor() {
-		return foreColor;
-	}
-
-	public int getHeight(JPanel panel) {
-		if (printing)
-			return printHeight;
-		return panel.getHeight();
-	}
-
-	public Color getMajorLineColor() {
-		return majorLineColor;
-	}
-
-	public Color getMidLineColor() {
-		return midLineColor;
-	}
-
-	public Color getMinorLineColor() {
-		return minorLineColor;
-	}
-
-	// gets a printing version of this...
-	// a method here in case it gets more complicated than just constructing it
-	// with printing on
+	/**
+	 * Acquire a printing version of this graphInfo
+	 * 
+	 * @return a GraphInfo copy for printing
+	 */
 	public GraphInfo getPrinter() {
 		return new GraphInfo(this, true);
-	}
-
-	public int getPrintHeight() {
-		return printHeight;
-	}
-
-	public int getYearWidth() {
-		return yearWidth;
-	}
-
-	public boolean indexesDotted() {
-		return dottedIndexes;
-	}
-
-	// OVERRIDES
-	// These are to be used ONLY by utilites that draw graphs
-	// They allow changes to the graphInfo without saving preferences!
-	public void overrideDrawGraphNames(boolean value) {
-		showGraphNames = value;
-	}
-
-	public void overrideShowVertAxis(boolean value) {
-		showVertAxis = value;
 	}
 
 	/**
@@ -269,7 +191,7 @@ public class GraphInfo {
 			midLineColor = ColorUtils.blend(majorLineColor, minorLineColor);			
 		}
 	}
-
+	
 	/** 
 	 * Set up the default values from prefs
 	 */
@@ -284,50 +206,363 @@ public class GraphInfo {
 		dottedIndexes = GraphPrefs.INDEXES_DOTTED.get();
 
 		yearWidth = GraphPrefs.YEAR_WIDTH.get();
-		unitHeight = GraphPrefs.TENUNIT_HEIGHT.get();
+		tenUnitHeight = GraphPrefs.TENUNIT_HEIGHT.get();
 	}
 
-	public boolean sapwoodThicker() {
+	/**
+	 * 
+	 * @return true if this is a printing graphinfo
+	 */
+	public boolean isPrinting() {
+		return printing;
+	}
+	
+	/**
+	 * @return the foreColor
+	 */
+	public Color getForeColor() {
+		return foreColor;
+	}
+
+	/**
+	 * @param foreColor the foreColor to set
+	 */
+	public void setForeColor(Color foreColor) {
+		Color oldValue = this.foreColor;
+		this.foreColor = foreColor;
+		changes.firePropertyChange(FORE_COLOR_PROPERTY, oldValue, foreColor);
+	}
+
+	/**
+	 * @return the majorLineColor
+	 */
+	public Color getMajorLineColor() {
+		return majorLineColor;
+	}
+
+	/**
+	 * @param majorLineColor the majorLineColor to set
+	 */
+	public void setMajorLineColor(Color majorLineColor) {
+		Color oldValue = this.majorLineColor;
+		this.majorLineColor = majorLineColor;
+		changes.firePropertyChange(MAJOR_LINE_COLOR_PROPERTY, oldValue, majorLineColor);	
+	}
+
+	/**
+	 * @return the midLineColor
+	 */
+	public Color getMidLineColor() {
+		return midLineColor;
+	}
+
+	/**
+	 * @param midLineColor the midLineColor to set
+	 */
+	public void setMidLineColor(Color midLineColor) {
+		Color oldValue = this.midLineColor;
+		this.midLineColor = midLineColor;
+		changes.firePropertyChange(MID_LINE_COLOR_PROPERTY, oldValue, midLineColor);	
+	}
+
+	/**
+	 * @return the minorLineColor
+	 */
+	public Color getMinorLineColor() {
+		return minorLineColor;
+	}
+
+	/**
+	 * @param minorLineColor the minorLineColor to set
+	 */
+	public void setMinorLineColor(Color minorLineColor) {
+		Color oldValue = this.minorLineColor;
+		this.minorLineColor = minorLineColor;
+		changes.firePropertyChange(MINOR_LINE_COLOR_PROPERTY, oldValue, minorLineColor);
+	}
+
+	/**
+	 * @return the backgroundColor
+	 */
+	public Color getBackgroundColor() {
+		return backgroundColor;
+	}
+
+	/**
+	 * @param backgroundColor the backgroundColor to set
+	 */
+	public void setBackgroundColor(Color backgroundColor) {
+		Color oldValue = this.backgroundColor;
+		this.backgroundColor = backgroundColor;
+		changes.firePropertyChange(BACKGROUND_COLOR_PROPERTY, oldValue, backgroundColor);
+	}
+
+	/**
+	 * @return the drawBounds
+	 */
+	public Range getDrawBounds() {
+		return drawBounds;
+	}
+
+	/**
+	 * @param drawBounds the drawBounds to set
+	 */
+	public void setDrawBounds(Range drawBounds) {
+		Range oldValue = this.drawBounds;
+		this.drawBounds = drawBounds;
+		changes.firePropertyChange(DRAW_BOUNDS_PROPERTY, oldValue, drawBounds);	
+	}
+
+	/**
+	 * @return the emptyBounds
+	 */
+	public Range getEmptyBounds() {
+		return emptyBounds;
+	}
+
+	/**
+	 * @param emptyBounds the emptyBounds to set
+	 */
+	public void setEmptyBounds(Range emptyBounds) {
+		Range oldValue = this.emptyBounds;
+		this.emptyBounds = emptyBounds;
+		changes.firePropertyChange(EMPTY_BOUNDS_PROPERTY, oldValue, emptyBounds);	
+	}
+
+	/**
+	 * @return the dottedIndexes
+	 */
+	public boolean isDottedIndexes() {
+		return dottedIndexes;
+	}
+
+	/**
+	 * @param dottedIndexes the dottedIndexes to set
+	 */
+	public void setDottedIndexes(boolean dottedIndexes) {
+		boolean oldValue = this.dottedIndexes;
+		this.dottedIndexes = dottedIndexes;
+		changes.firePropertyChange(DOTTED_INDEXES_PROPERTY, oldValue, dottedIndexes);
+	}
+
+	/**
+	 * @return the thickerSapwood
+	 */
+	public boolean isThickerSapwood() {
 		return thickerSapwood;
 	}
 
-	public void set10UnitHeight(int size) {
-		unitHeight = size;
+	/**
+	 * @param thickerSapwood the thickerSapwood to set
+	 */
+	public void setThickerSapwood(boolean thickerSapwood) {
+		boolean oldValue = this.thickerSapwood;
+		this.thickerSapwood = thickerSapwood;
+		changes.firePropertyChange(THICKER_SAPWOOD_PROPERTY, oldValue, thickerSapwood);
 	}
 
-	public void setDrawRange(Range r) {
-		drawBounds = r;
+	/**
+	 * @return the showGraphPaper
+	 */
+	public boolean isShowGraphPaper() {
+		return showGraphPaper;
 	}
 
-	public void setEmptyRange(Range r) {
-		emptyBounds = r;
+	/**
+	 * @param showGraphPaper the showGraphPaper to set
+	 */
+	public void setShowGraphPaper(boolean showGraphPaper) {
+		boolean oldValue = this.showGraphPaper;
+		this.showGraphPaper = showGraphPaper;
+		changes.firePropertyChange(SHOW_GRAPH_PAPER_PROPERTY, oldValue, showGraphPaper);
 	}
 
-	public void setForeColor(Color c) {
-		foreColor = c;
+	/**
+	 * @return the showBaselines
+	 */
+	public boolean isShowBaselines() {
+		return showBaselines;
 	}
 
-	public void setMajorLineColor(Color c) {
-		majorLineColor = c;
+	/**
+	 * @param showBaselines the showBaselines to set
+	 */
+	public void setShowBaselines(boolean showBaselines) {
+		boolean oldValue = this.showBaselines;
+		this.showBaselines = showBaselines;
+		changes.firePropertyChange(SHOW_BASELINES_PROPERTY, oldValue, showBaselines);
 	}
 
-	public void setMinorLineColor(Color c) {
-		minorLineColor = c;
+	/**
+	 * @return the showHundredpercentlines
+	 */
+	public boolean isShowHundredpercentlines() {
+		return showHundredpercentlines;
 	}
 
-	public void setPrintHeight(int h) {
-		printHeight = h;
+	/**
+	 * @param showHundredpercentlines the showHundredpercentlines to set
+	 */
+	public void setShowHundredpercentlines(boolean showHundredpercentlines) {
+		boolean oldValue = this.showHundredpercentlines;
+		this.showHundredpercentlines = showHundredpercentlines;
+		changes.firePropertyChange(SHOW_HUNDREDPERCENTLINES_PROPERTY, oldValue, showHundredpercentlines);
 	}
 
-	public void setYearWidth(int size) {
-		yearWidth = size;
+	/**
+	 * @return the showGraphNames
+	 */
+	public boolean isShowGraphNames() {
+		return showGraphNames;
 	}
 
-	boolean isPrinting() {
-		return printing;
+	/**
+	 * @param showGraphNames the showGraphNames to set
+	 */
+	public void setShowGraphNames(boolean showGraphNames) {
+		boolean oldValue = this.showGraphNames;
+		this.showGraphNames = showGraphNames;
+		changes.firePropertyChange(SHOW_GRAPH_NAMES_PROPERTY, oldValue, showGraphNames);
 	}
 
-	void setPrinting(boolean isprinting) {
-		printing = isprinting;
+	/**
+	 * @return the showVertAxis
+	 */
+	public boolean isShowVertAxis() {
+		return showVertAxis;
 	}
+
+	/**
+	 * @param showVertAxis the showVertAxis to set
+	 */
+	public void setShowVertAxis(boolean showVertAxis) {
+		boolean oldValue = this.showVertAxis;
+		this.showVertAxis = showVertAxis;
+		changes.firePropertyChange(SHOW_VERT_AXIS_PROPERTY, oldValue, showVertAxis);
+	}
+
+	/**
+	 * @return the yearWidth
+	 */
+	public int getYearWidth() {
+		return yearWidth;
+	}
+
+	/**
+	 * @param yearWidth the yearWidth to set
+	 */
+	public void setYearWidth(int yearWidth) {
+		int oldValue = this.yearWidth;
+		this.yearWidth = yearWidth;
+		changes.firePropertyChange(YEAR_WIDTH_PROPERTY, oldValue, yearWidth);
+	}
+
+	/**
+	 * @return the unitHeight
+	 */
+	public int getTenUnitHeight() {
+		return tenUnitHeight;
+	}
+
+	/**
+	 * @param unitHeight the unitHeight to set
+	 */
+	public void setTenUnitHeight(int tenUnitHeight) {
+		int oldValue = this.tenUnitHeight;
+		this.tenUnitHeight = tenUnitHeight;
+		changes.firePropertyChange(TEN_UNIT_HEIGHT_PROPERTY, oldValue, tenUnitHeight);
+	}
+
+	/**
+	 * @return the printHeight
+	 */
+	public int getPrintHeight() {
+		return printHeight;
+	}
+
+	/**
+	 * @param printHeight the printHeight to set
+	 */
+	public void setPrintHeight(int printHeight) {
+		int oldValue = this.printHeight;
+		this.printHeight = printHeight;
+		changes.firePropertyChange(PRINT_HEIGHT_PROPERTY, oldValue, printHeight);
+	}
+
+	/**
+	 * Get the graph height (via the panel, or the printHeight if printing)
+	 * @param panel
+	 * @return the height, in pixels
+	 */
+	public int getGraphHeight(JPanel panel) {
+		return printing ? this.printHeight : panel.getHeight();
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		changes.addPropertyChangeListener(listener);
+	}
+	
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		changes.removePropertyChangeListener(listener);
+	}
+	
+	/** The property name for printing */
+	public static final String PRINTING_PROPERTY = "graphInfo.printing";
+
+	/** The property name for foreColor */
+	public static final String FORE_COLOR_PROPERTY = "graphInfo.foreColor";
+
+	/** The property name for majorLineColor */
+	public static final String MAJOR_LINE_COLOR_PROPERTY = "graphInfo.majorLineColor";
+
+	/** The property name for midLineColor */
+	public static final String MID_LINE_COLOR_PROPERTY = "graphInfo.midLineColor";
+
+	/** The property name for minorLineColor */
+	public static final String MINOR_LINE_COLOR_PROPERTY = "graphInfo.minorLineColor";
+
+	/** The property name for backgroundColor */
+	public static final String BACKGROUND_COLOR_PROPERTY = "graphInfo.backgroundColor";
+
+	/** The property name for drawBounds */
+	public static final String DRAW_BOUNDS_PROPERTY = "graphInfo.drawBounds";
+
+	/** The property name for emptyBounds */
+	public static final String EMPTY_BOUNDS_PROPERTY = "graphInfo.emptyBounds";
+
+	/** The property name for dottedIndexes */
+	public static final String DOTTED_INDEXES_PROPERTY = "graphInfo.dottedIndexes";
+
+	/** The property name for thickerSapwood */
+	public static final String THICKER_SAPWOOD_PROPERTY = "graphInfo.thickerSapwood";
+
+	/** The property name for showGraphPaper */
+	public static final String SHOW_GRAPH_PAPER_PROPERTY = "graphInfo.showGraphPaper";
+
+	/** The property name for showBaselines */
+	public static final String SHOW_BASELINES_PROPERTY = "graphInfo.showBaselines";
+
+	/** The property name for showHundredpercentlines */
+	public static final String SHOW_HUNDREDPERCENTLINES_PROPERTY = "graphInfo.showHundredpercentlines";
+
+	/** The property name for showGraphNames */
+	public static final String SHOW_GRAPH_NAMES_PROPERTY = "graphInfo.showGraphNames";
+
+	/** The property name for showVertAxis */
+	public static final String SHOW_VERT_AXIS_PROPERTY = "graphInfo.showVertAxis";
+
+	/** The property name for yearWidth */
+	public static final String YEAR_WIDTH_PROPERTY = "graphInfo.yearWidth";
+
+	/** The property name for tenUnitHeight */
+	public static final String TEN_UNIT_HEIGHT_PROPERTY = "graphInfo.tenUnitHeight";
+
+	/** The property name for printHeight */
+	public static final String PRINT_HEIGHT_PROPERTY = "graphInfo.printHeight";
+
+	/** The property name for printerColors */
+	public static final String PRINTER_COLORS_PROPERTY = "graphInfo.printerColors";
+
+	/** The property name for screenColors */
+	public static final String SCREEN_COLORS_PROPERTY = "graphInfo.screenColors";	
 }

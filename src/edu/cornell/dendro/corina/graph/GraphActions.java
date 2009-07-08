@@ -13,6 +13,7 @@ import edu.cornell.dendro.corina.ui.ToggleableActionGroup;
  */
 public class GraphActions {
 	private GrapherPanel graph;
+	private GraphInfo info;
 	private GraphElementsPanel elements;
 	private GraphController controller;
 		
@@ -21,10 +22,12 @@ public class GraphActions {
 		this.elements = elements;
 		this.controller = controller;
 		
-		if(graph != null)
+		if(graph != null) {
+			this.info = graph.getGraphInfo();
 			createGraphActions();
+		}
 		else
-			throw new IllegalArgumentException("Must specify a graph!");
+			throw new IllegalArgumentException("Must specify a graph and graphInfo!");
 		
 		if(elements != null)
 			createElementActions();
@@ -54,35 +57,35 @@ public class GraphActions {
 		showVerticalAxis = new ToggleableAction("corina.graph.vertical-axis", true, 
 				"vert_hide", "vert_show", "axisshow.png") {
 			public void togglePerformed(ActionEvent e, Boolean value) {
-				graph.setAxisVisible(value);
+				info.setShowVertAxis(value);
 			}
 		};
 
 		showGridlines = new ToggleableAction("corina.graph.graphpaper", true,
 				"grid_hide", "grid_show", "showgrid.png") {
 			public void togglePerformed(ActionEvent e, Boolean value) {
-				graph.setGraphPaperVisible(value);
+				info.setShowGraphPaper(value);
 			}
 		};
 
 		showBaselines = new ToggleableAction("corina.graph.baselines", true,
 				"base_hide", "base_show", null) {
 			public void togglePerformed(ActionEvent e, Boolean value) {
-				graph.setBaselinesVisible(value);
+				info.setShowBaselines(value);
 			}
 		};
 
 		showComponentNames = new ToggleableAction("corina.graph.componentnames", true, 
 				"compn_hide", "compn_show", "label.png") {
 			public void togglePerformed(ActionEvent e, Boolean value) {
-				graph.setComponentNamesVisible(value);
+				info.setShowGraphNames(value);
 			}
 		};
 		
 		showHundredPercentLines = new ToggleableAction("corina.graph.hundredpercentlines", false, 
 				"hperc_hide", "hperc_show", null) {
 			public void togglePerformed(ActionEvent e, Boolean value) {
-				graph.setHundredpercentlinesVisible(value);
+				info.setShowHundredpercentlines(value);
 			}
 		};
 	}

@@ -42,7 +42,7 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 	public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
-		float unitScale = gInfo.get10UnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		float unitScale = gInfo.getTenUnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
 												   // using another var in case these become independent
 		
 		// set pen
@@ -53,7 +53,7 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 		int r = l + g2.getClipBounds().width;
 
 		// baseline
-		if (gInfo.drawBaselines()) {
+		if (gInfo.isShowBaselines()) {
 			int y = bottom - (int) (g.yoffset * unitScale);
 			g2.drawLine(xscroll, y, xscroll + 10 * yearWidth, y); // 1 decade wide -- ok?
 		}
@@ -64,7 +64,7 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 
 		// compare g.getClipBounds() to [x,0]..[x+yearSize*data.size(),bottom]
 		tempRect.x = yearWidth
-				* (g.graph.getStart().diff(gInfo.getDrawRange().getStart()) + g.xoffset); // REDUNDANT! see x later
+				* (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset); // REDUNDANT! see x later
 		tempRect.y = 0; // - g.yoffset, IF you're sure there are no negative values (but there are)
 		tempRect.width = yearWidth * (g.graph.getData().size() - 1);
 		tempRect.height = bottom;
@@ -80,7 +80,7 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 
 		// x-position
 		int x = yearWidth
-				* (g.graph.getStart().diff(gInfo.getDrawRange().getStart()) + g.xoffset);
+				* (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset);
 
 		// move to the first point -- THIS IS NOT REALLY A SPECIAL CASE!
 		int value;
