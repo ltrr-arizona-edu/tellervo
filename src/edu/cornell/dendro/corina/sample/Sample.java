@@ -69,6 +69,7 @@ import org.tridas.schema.TridasVariable;
 // the same object.  better yet, an editor factory so a second
 // editor(sample) bringstofront the existing editor.
 
+@SuppressWarnings("serial")
 public class Sample extends BaseSample implements Previewable, Graphable, Indexable {
 
 	private static class SamplePreview extends Preview {
@@ -112,6 +113,9 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		target.ringwidths = source.ringwidths;
 		target.weiserjahre = source.weiserjahre;
 		target.elements = source.elements;
+
+		// rebuild the target's tables
+		target.setSeries(target.getSeries(), false);
 	}
 	
 	private boolean metadataChanged = true;

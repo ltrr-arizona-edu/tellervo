@@ -26,7 +26,6 @@ import java.awt.FontMetrics;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +48,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.text.JTextComponent;
 
 import org.tridas.schema.ControlledVoc;
@@ -83,103 +81,30 @@ import edu.cornell.dendro.corina_indexing.Exponential;
 /**
  * Indexing dialog. Lets the user choose an indexing algorithm to use.
  * 
- * <pre>
- * NOTE: the proper order of buttons is:
- *  (help) --- (alternative) (cancel) ((ok))
- * </pre>
+ * Shows them a graph of the index in the same dialog.
  * 
- * @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i
- *         style="color: gray">dot</i> edu&gt;
+ * @author Ken Harris 
+ * @author Lucas Madar
+ * 
  * @version $Id$
  */
 @SuppressWarnings("serial")
 public class IndexDialog extends JDialog {
-	// table model -- (could be static but for i18n)
-	private static class IndexTableModel extends AbstractTableModel {
-		private DecimalFormat fmtChi2 = new DecimalFormat(CHI2_FORMAT);
-		private DecimalFormat fmtR = new DecimalFormat(RHO_FORMAT);
-		private IndexSet iset;
-
-		public IndexTableModel(IndexSet iset) {
-			this.iset = iset;
-		}
-
-		public int getColumnCount() {
-			return 3;
-		}
-
-		@Override
-		public String getColumnName(int col) {
-			switch (col) {
-			case 0:
-				return I18n.getText("algorithm");
-			case 1:
-				return "\u03C7\u00B2"; // should be "Chi\overline^2" =
-										// \u03C7\u0304\u00B2
-				// unfortunately, Mac OS X (at least -- so probably others)
-				// apparently doesn't
-				// combine combining diacritics after greek letters, so it looks
-				// just plain bad.
-				// (but a\u0304\u00B2 looks fine, so it's not completely
-				// ignorant of combining diacritics)
-				// (actually, a\u0304 looks fine in window titles, but not
-				// tables headers, so ... yeah. ick.)
-				// Windows 2000 report: swing labels can do the greek but not
-				// the diacritic (chi, followed
-				// by a box), window titles can do the diacritic but not the
-				// greek (box, with an overline).
-
-			case 2:
-				return "\u03C1"; // "rho"
-			default:
-				throw new IllegalArgumentException(); // can't happen
-			}
-		}
-
-		public int getRowCount() {
-			return iset.indexes.size();
-		}
-
-		public Object getValueAt(int row, int col) {
-			Index i = iset.indexes.get(row);
-			switch (col) {
-			case 0:
-				return i.getName();
-			case 1:
-				return fmtChi2.format(i.getChi2()); // (is defined, as long as
-													// N!=0)
-			case 2:
-				if (Double.isNaN(i.getR())) // can happen
-					return "-";
-				else
-					return fmtR.format(i.getR());
-			default:
-				throw new IllegalArgumentException(); // can't happen
-			}
-		}
-
-		public void setIndexSet(IndexSet iset) {
-			this.iset = iset;
-			fireTableDataChanged();
-		}
-	}
-	// formatting for decimals
-	private static final String CHI2_FORMAT = "#,##0.0";
-
-	private static final String RHO_FORMAT = "0.000";
 	private GrapherPanel graphPanel;
 
 	private List<Graph> graphSamples;
 	private JTextComponent indexName;
-
+	
 	private IndexSet iset;
-
 	private IndexTableModel model;
 
 	private JButton okButton;
 
-	// data
+	// source data
 	private Sample sample;
+
+	// table
+	private JTable table;
 
 	/* 
 	 * This isn't used at all, but I'm keeping it in case it proves useful in the future.
@@ -218,8 +143,6 @@ public class IndexDialog extends JDialog {
 	}
 	*/
 
-	// table
-	private JTable table;
 	
 	/**
 	 * Create a new indexing dialog for the given sample.
@@ -459,12 +382,14 @@ public class IndexDialog extends JDialog {
 		});
 		return cancel;
 	}
+	
 	// label, aligned
 	private JComponent makeLabel() {
 		JLabel l = new JLabel(I18n.getText("choose_index"));
 		l.setAlignmentX(RIGHT_ALIGNMENT);
 		return l;
 	}
+	
 	// flow containing name: and box
 	private JComponent makeNameBox() {
 		JPanel p = new JPanel();
@@ -473,21 +398,22 @@ public class IndexDialog extends JDialog {
 		
 		JLabel l = new JLabel("Series code:  " + sample.getMetaString("title"));
 		
-		indexName = new JTextField("index");
+		JTextField name = new JTextField("Index");
+		name.setColumns(20);
+		
+		indexName = name;
 		l.setLabelFor(indexName);
 		
 		p.add(l);
 		p.add(Box.createHorizontalStrut(5));
 		p.add(indexName);
 		
-		JPanel outer = new JPanel();
-		outer.setLayout(new BoxLayout(outer, BoxLayout.Y_AXIS));
-		outer.add(p);
-		outer.add(new JTextField("wtfz"));
-		outer.add(Box.createVerticalGlue());
+		JPanel outer = new JPanel(new BorderLayout());
+		outer.add(p, BorderLayout.NORTH);
 		
 		return outer;
 	}
+	
 	private JComponent makeTable() {
 		iset = new IndexSet(sample);
 
@@ -502,8 +428,8 @@ public class IndexDialog extends JDialog {
 		// scroller.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 14));
 
 		// use decimal renderers for chi^2 and rho
-		table.getColumnModel().getColumn(1).setCellRenderer(new DecimalRenderer(CHI2_FORMAT.replace('#', '0')));
-		table.getColumnModel().getColumn(2).setCellRenderer(new DecimalRenderer(RHO_FORMAT.replace('#', '0')));
+		table.getColumnModel().getColumn(1).setCellRenderer(new DecimalRenderer(IndexTableModel.CHI2_FORMAT.replace('#', '0')));
+		table.getColumnModel().getColumn(2).setCellRenderer(new DecimalRenderer(IndexTableModel.RHO_FORMAT.replace('#', '0')));
 		
 		// calculate the maximum string width for the first column
 		int maxWidth = -1;

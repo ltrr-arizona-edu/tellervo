@@ -4,11 +4,9 @@
 package edu.cornell.dendro.corina.wsi.corina.resources;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.BaseSeries;
 
 import edu.cornell.dendro.corina.formats.TridasDoc;
 import edu.cornell.dendro.corina.sample.BaseSample;
@@ -19,6 +17,7 @@ import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSIRequest;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
+import edu.cornell.dendro.corina.tridasv2.TridasIdentifierMap;
 import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaAssociatedResource;
@@ -59,12 +58,13 @@ public class SeriesSearchResource extends CorinaAssociatedResource<ElementList> 
 		// a list of our elements
 		ElementList elements = new ElementList(seriesList.size());
 		TridasDoc reader = new TridasDoc();
+		TridasIdentifierMap<BaseSample> refmap = new TridasIdentifierMap<BaseSample>();
 		
 		for(ITridasSeries series : seriesList) {
 			BaseSample sample;
 			
 			try {
-				sample = reader.loadFromBaseSeries(series);
+				sample = reader.loadFromBaseSeries(series, refmap);
 			} catch (IOException e) {
 				System.err.println("Couldn't loadFromBaseSeries: " + e.toString());
 				continue;

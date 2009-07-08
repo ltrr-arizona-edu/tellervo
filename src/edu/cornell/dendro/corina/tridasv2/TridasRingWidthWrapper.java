@@ -13,6 +13,12 @@ public class TridasRingWidthWrapper implements DumbArrayListHook {
 	private HookableDumbArrayList<Number> data;
 	private HookableDumbArrayList<Integer> count;
 
+	/**
+	 * Create a new ring width wrapper around these values
+	 * 
+	 * @param tridasValues
+	 * @param usesCounts
+	 */
 	public TridasRingWidthWrapper(TridasValues tridasValues, boolean usesCounts) {
 		// sanity check
 		if(!tridasValues.getVariable().isSetNormalTridas() ||

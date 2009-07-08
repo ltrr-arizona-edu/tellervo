@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLinkSeries;
 
 import edu.cornell.dendro.corina.editor.Editor;
@@ -24,7 +25,6 @@ import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
@@ -41,7 +41,13 @@ public class SumCreationDialog {
 		sum = new DBBrowser(parent, true, true) {
 			@Override
 			protected boolean finish() {
-				return (applySum() && super.finish());
+				try {
+					return (applySum() && super.finish());
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(this, "Error: " + e, "Failed to create sum", 
+							JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
 			}
 		};
 		
@@ -84,7 +90,9 @@ public class SumCreationDialog {
 		TridasDerivedSeries series = new TridasDerivedSeries();
 		
 		// it's a new series? (to force update, set this to the id of the series to update!)
-		series.setIdentifier(NewTridasIdentifier.getInstance());
+		TridasIdentifier identifier = null;
+		String domainTag = null;
+		
 		series.setTitle(sumName);
 
 		// it's a sum
@@ -105,14 +113,25 @@ public class SumCreationDialog {
 				throw new IllegalStateException("loadBasic() failed on sum element?");
 			}
 			
-			links.getIdRevesAndXLinksAndIdentifiers().add(bs.getSeries().getIdentifier());
+			TridasIdentifier sumElementId = bs.getSeries().getIdentifier();
+			
+			if(domainTag == null)
+				domainTag = sumElementId.getDomain();
+			else if(!domainTag.equals(sumElementId.getDomain())) {
+				throw new IllegalArgumentException("Creating a sum from multiple domains is not permitted at this time");
+			}
+			
+			links.getIdRevesAndXLinksAndIdentifiers().add(sumElementId);
 		}
+		
+		// create a new identifier based on the domain tag
+		series.setIdentifier(identifier == null ? NewTridasIdentifier.getInstance(domainTag) : identifier);
 		
 		// create a new, empty sample
 		Sample tmp = new Sample(series);
 
 		try {
-			CorinaWsiTridasElement cwe = new CorinaWsiTridasElement(NewTridasIdentifier.getInstance());
+			CorinaWsiTridasElement cwe = new CorinaWsiTridasElement(NewTridasIdentifier.getInstance(domainTag));
 			
 			// here's where we do the "meat"
 			if(cwe.save(tmp, sum)) {

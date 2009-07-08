@@ -19,6 +19,7 @@ import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
+import edu.cornell.dendro.corina.tridasv2.TridasIdentifierMap;
 import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaEntityAssociatedResource;
@@ -64,6 +65,9 @@ public class SeriesResource extends CorinaEntityAssociatedResource<List<BaseSamp
 		List<TridasObject> tridasObjects = ListUtil.subListOfType(content, TridasObject.class);
 		List<ITridasSeries> tridasSeries = ListUtil.subListOfType(content, ITridasSeries.class);
 		List<BaseSample> samples = new ArrayList<BaseSample>();
+
+		// create a map for references
+		TridasIdentifierMap<BaseSample> refmap = new TridasIdentifierMap<BaseSample>();
 		
 		// init our loader
 		TridasDoc doc = new TridasDoc();
@@ -71,14 +75,15 @@ public class SeriesResource extends CorinaEntityAssociatedResource<List<BaseSamp
 		try {
 			// load the tridas object tree first
 			for(TridasObject obj : tridasObjects) {
-				doc.loadFromObject(obj, samples, true);
+				doc.loadFromObject(obj, samples, refmap, true);
 			}
 			
 			// now load any base series lying around (usually derived series here)
 			for(ITridasSeries series : tridasSeries) {
-				BaseSample bs = doc.loadFromBaseSeries(series);
+				BaseSample bs = doc.loadFromBaseSeries(series, refmap);
 				samples.add(bs);
-			}			
+			}
+			
 		} catch(IOException ioe) {
 			throw new ResourceException("Couldn't load series: " + ioe.toString());
 		}
@@ -92,6 +97,10 @@ public class SeriesResource extends CorinaEntityAssociatedResource<List<BaseSamp
 			
 			// don't forget to populate!
 			loader.preload(s);
+			
+			// populate references if it's a derived sample
+			if(s instanceof Sample && s.getSampleType().isDerived())
+				doc.loadReferencesIntoSample((Sample) s, refmap);
 		}
 		
 		this.setAssociatedResult(samples);

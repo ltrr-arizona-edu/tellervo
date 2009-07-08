@@ -72,52 +72,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 		}
 
 		Sample s = resource.getSample(getTridasIdentifier());
-		
-		// construct the elements of the sample if it's derived
-		ITridasSeries series = s.getSeries();
-		if(series instanceof ITridasDerivedSeries) {
-			ITridasDerivedSeries dseries = (ITridasDerivedSeries) series;
-			ElementList elements = new ElementList();
-			
-			// remove the sample we already have
-			List<BaseSample> bslist = resource.getAssociatedResult();
-			bslist.remove(s);
-			
-			// go through each linkseries and find identifiers
-			List<TridasLinkSeries> links = dseries.getLinkSeries();
-			for(TridasLinkSeries link : links) {
-				List<TridasIdentifier> identifiers = ListUtil.subListOfType(
-						link.getIdRevesAndXLinksAndIdentifiers(), TridasIdentifier.class);
-				
-				for(TridasIdentifier identifier : identifiers) {
-					boolean found = false;
 					
-					for(BaseSample bs : bslist) {
-						if(identifier.equals(bs.getSeries().getIdentifier())) {
-							elements.add(new CachedElement(bs));
-							bslist.remove(bs);
-							found = true;
-							break;
-						}
-					}
-					
-					// if it's not found, kludge a basesample into it
-					if(!found) {
-						TridasMeasurementSeries ms = new TridasMeasurementSeries();
-						ms.setIdentifier(identifier);
-						ms.setTitle("Unknown " + identifier.getValue());
-						
-						BaseSample bs = new BaseSample(ms);
-						bs.setLoader(new CorinaWsiTridasElement(identifier));
-						
-						elements.add(new CachedElement(bs));
-					}
-				}
-			}
-			
-			s.setElements(elements);
-		}
-				
 		// make sure we load our special info
 		preload(s);
 		
@@ -147,10 +102,12 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 			throw new IllegalStateException("Save returned no samples?");
 		
 		// Get the last given series
-		ITridasSeries series = bslist.get(bslist.size() - 1).getSeries();
+		BaseSample newSample = bslist.get(bslist.size() - 1);
 		
-		// assign the sample to represent this series
-		s.setSeries(series);
+		// Copy its values over
+		Sample.copy((Sample) newSample, s);
+		preload(s);
+		
 		return true;
 	}
 

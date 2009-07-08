@@ -4,7 +4,7 @@ import org.jvnet.jaxb2_commons.lang.Copyable;
 import org.tridas.schema.DateTime;
 import org.tridas.schema.TridasIdentifier;
 
-public interface ITridas extends Copyable {
+public interface ITridas extends Copyable, TridasIdentifiable {
    /**
      * Gets the value of the title property.
      * 
@@ -35,7 +35,8 @@ public interface ITridas extends Copyable {
      *     {@link TridasIdentifier }
      *     
      */
-    public TridasIdentifier getIdentifier();
+    // set in TridasIdentifiable
+    //public TridasIdentifier getIdentifier();
 
     /**
      * Sets the value of the identifier property.

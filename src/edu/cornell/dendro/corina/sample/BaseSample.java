@@ -6,11 +6,13 @@ import java.util.TreeMap;
 
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.interfaces.TridasIdentifiable;
+import org.tridas.schema.TridasIdentifier;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.gui.Bug;
 
-public class BaseSample {
+public class BaseSample implements TridasIdentifiable {
 
 	/** Sample metadata, as a (String, Object) Map.  The following
 	 table lists the standard keys, their data types, and valid values:
@@ -235,5 +237,12 @@ public class BaseSample {
 	
 	public void setLoader(SampleLoader loader) {
 		this.loader = loader;
+	}
+
+	/**
+	 * Get the associated tridas identifier
+	 */
+	public TridasIdentifier getIdentifier() {
+		return (series != null) ? series.getIdentifier() : null;
 	}
 }

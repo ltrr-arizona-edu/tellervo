@@ -4,37 +4,41 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.BaseSeries;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
+import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasLinkSeries;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
-import org.tridas.schema.TridasUnit;
-import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
 import org.tridas.schema.TridasVariable;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.CachedElement;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
+import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridas.LabCode;
 import edu.cornell.dendro.corina.tridas.LabCodeFormatter;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
+import edu.cornell.dendro.corina.tridasv2.TridasIdentifierMap;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.webdbi.CorinaXML;
+import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.corina.TridasGenericFieldMap;
 
 public class TridasDoc implements Filetype {	
@@ -52,9 +56,9 @@ public class TridasDoc implements Filetype {
 		for(TridasElement element : obj.getElements()) {
 			for(TridasSample sample : element.getSamples()) {
 				for(TridasRadius radius : sample.getRadiuses()) {
-					for(TridasMeasurementSeries series : radius.getMeasurementSeries()) {
+					//for(TridasMeasurementSeries series : radius.getMeasurementSeries()) {
 						// do we need to do anything in here?
-					}
+					//}
 					radius.unsetMeasurementSeries();
 				}
 				sample.unsetRadiuses();
@@ -68,31 +72,37 @@ public class TridasDoc implements Filetype {
 	 * Load an object tree!
 	 * 
 	 * @param obj
+	 * 		the base object from which to start loading
 	 * @param samples
+	 * 		a list of basesamples we've loaded
+	 * @param references
+	 * 		a map from identifier->sample for samples we've already loaded
 	 * @param objectHierarchy
+	 * 		the hierarchy of objects at this depth (starts as an empty list)
 	 * @throws IOException
 	 */
-	private void loadObjectMeasurementsIntoList(TridasObject obj, List<BaseSample> samples, 
+	private void loadObjectMeasurementsIntoList(TridasObject obj, 
+			List<BaseSample> samples,
+			TridasIdentifierMap<BaseSample> references,
 			List<TridasObject> objectHierarchy) throws IOException {
 
 		// add myself to the hierarchy
 		objectHierarchy.add(obj);
 		
 		// create an array of the hierarchy so far (not modified by next recursive call)
-		TridasObject[] objArray = new TridasObject[objectHierarchy.size()];
-		objArray = objectHierarchy.toArray(objArray);
+		TridasObject[] objArray = objectHierarchy.toArray(new TridasObject[0]);
 		
 		// do child objects first
 		for(TridasObject child : obj.getObjects())
-			loadObjectMeasurementsIntoList(child, samples, objectHierarchy);
+			loadObjectMeasurementsIntoList(child, samples, references, objectHierarchy);
 		
 		// ok, now load some samples from this tree!
 		for(TridasElement element : obj.getElements()) {
 			for(TridasSample sample : element.getSamples()) {
 				for(TridasRadius radius : sample.getRadiuses()) {
 					for(ITridasSeries series : radius.getMeasurementSeries()) {
-						BaseSample s = loadFromBaseSeries(series);
-						
+						BaseSample s = loadFromBaseSeries(series, references);
+												
 						s.setMeta(Metadata.OBJECT, obj);
 						s.setMeta(Metadata.OBJECT_ARRAY, objArray);
 						s.setMeta(Metadata.ELEMENT, element);
@@ -140,14 +150,18 @@ public class TridasDoc implements Filetype {
 	 * 
 	 * @param obj The base tridas object
 	 * @param appendSamples the list to append new samples onto (must not be null)
+	 * @param references a map from identifier->sample for each already loaded object
 	 * @param disassociate if true, takes the object list given by 'obj' and breaks all
 	 * 		parent->child links (to prevent one sample from holding on to another sample 
 	 * 		in garbage collection, for instance)
 	 * @return
 	 */
-	public List<BaseSample> loadFromObject(TridasObject obj, List<BaseSample> appendSamples, 
+	public List<BaseSample> loadFromObject(TridasObject obj, 
+			List<BaseSample> appendSamples, 
+			TridasIdentifierMap<BaseSample> references,
 			boolean disassociate) throws IOException {
-		loadObjectMeasurementsIntoList(obj, appendSamples, new ArrayList<TridasObject>());
+		
+		loadObjectMeasurementsIntoList(obj, appendSamples, references, new ArrayList<TridasObject>());
 		
 		if(disassociate)
 			breakUpTridasLinks(obj);
@@ -162,19 +176,61 @@ public class TridasDoc implements Filetype {
 	 * @return
 	 */
 	public List<BaseSample> loadFromObject(TridasObject obj, boolean disassociate) throws IOException {
-		return loadFromObject(obj, new ArrayList<BaseSample>(), disassociate);
+		return loadFromObject(obj, new ArrayList<BaseSample>(), 
+				new TridasIdentifierMap<BaseSample>(), disassociate);
 	}
 
+	/**
+	 * Loads elements into a sample for a derived series
+	 * @param s
+	 * @param series
+	 * @param references
+	 */
+	public void loadReferencesIntoSample(Sample s, 
+			TridasIdentifierMap<BaseSample> references) {
+		
+		if(!(s.getSeries() instanceof TridasDerivedSeries))
+			throw new IllegalArgumentException("loadReferences requires derived series!");
+		
+		// only works with a derived series
+		TridasDerivedSeries series = (TridasDerivedSeries) s.getSeries();
+		
+		// the list of elements
+		ElementList elements = new ElementList();
+		
+		// go through each linkseries and find identifiers
+		List<TridasLinkSeries> links = series.getLinkSeries();
+		for(TridasLinkSeries link : links) {
+			List<TridasIdentifier> identifiers = ListUtil.subListOfType(
+					link.getIdRevesAndXLinksAndIdentifiers(), TridasIdentifier.class);
+			
+			for(TridasIdentifier identifier : identifiers) {
+				BaseSample ref = references.get(identifier);
+				
+				if(ref != null) {
+					// easy enough, found the reference
+					elements.add(new CachedElement(ref));
+				}
+				else {
+					System.out.println("Sample " + s + " references unknown element: " + identifier);
+				}
+			}
+		}
+		
+		s.setElements(elements);
+	}
 	
 	/**
 	 * Given a derivedSeries or measurementSeries, load into a BaseSample 
 	 * (or a sample, if the series has values)
 	 * 
-	 * @param series
-	 * @return
+	 * @param series The series to generate this BaseSample/Sample from
+	 * @param references A list of samples appearing before this in xml which this sample can reference in loading (can be null)
+	 * @return a BaseSample or Sample encapsulating this series
 	 * @throws IOException
 	 */
-	public BaseSample loadFromBaseSeries(ITridasSeries series) throws IOException {
+	public BaseSample loadFromBaseSeries(ITridasSeries series, 
+			TridasIdentifierMap<BaseSample> references) throws IOException {
 		BaseSample s;
 		
 		// if it has values, it's a sample. Otherwise, it's a basesample.
@@ -182,6 +238,9 @@ public class TridasDoc implements Filetype {
 			s = new Sample(series);
 		else
 			s = new BaseSample(series);
+		
+		// add to references
+		references.put(s);
 		
 		// Start with a basic title
 		s.setMeta(Metadata.TITLE, series.getIdentifier().toString());

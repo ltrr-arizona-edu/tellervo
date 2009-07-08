@@ -42,7 +42,7 @@ public class ColorComboBox extends JComboBox {
 		private final static int SPACER = 3;
 
 		public int getIconHeight() {
-			return HEIGHT;
+			return HEIGHT + 2 * SPACER;
 		}
 
 		public int getIconWidth() {
@@ -51,9 +51,9 @@ public class ColorComboBox extends JComboBox {
 
 		public void paintIcon(Component c, Graphics g, int x, int y) {
 			g.setColor(color.darker());
-			g.drawRect(x + SPACER, y, WIDTH, HEIGHT);
+			g.drawRect(x + SPACER, y + SPACER, WIDTH, HEIGHT);
 			g.setColor(color);
-			g.fillRect(x + SPACER + 1, y + 1, WIDTH - 1, HEIGHT - 1);
+			g.fillRect(x + SPACER + 1, y + SPACER + 1, WIDTH - 1, HEIGHT - 1);
 		}
 
 		public void setColor(Color color) {
