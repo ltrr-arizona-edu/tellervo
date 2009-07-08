@@ -48,7 +48,7 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
 &lt;corina xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:tridas="http://www.tridas.org/1.2"&gt;
   &lt;request type="search"&gt;
      &lt;searchParams returnObject="measurementSeries" limit="5"&gt;
-        &lt;param name="objectid" operator="&gt;" value="136a70a6-566b-546b-a3ae-c48cb046e4cd" /&gt;
+        &lt;param name="objectid" operator="=" value="136a70a6-566b-546b-a3ae-c48cb046e4cd" /&gt;
      &lt;/searchParams&gt;
   &lt;/request&gt;
 &lt;/corina&gt;
