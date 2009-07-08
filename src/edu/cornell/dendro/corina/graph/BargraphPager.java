@@ -1,17 +1,19 @@
 package edu.cornell.dendro.corina.graph;
 
-import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Range; // ...
-import edu.cornell.dendro.corina.sample.BaseSample;
-
-import java.util.List;
-
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.BasicStroke;
-import java.awt.print.*;
+import java.awt.Rectangle;
+import java.awt.print.Book;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.util.List;
+
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.sample.BaseSample;
 
 // (Book is-a Pageable)
 public class BargraphPager extends Book {

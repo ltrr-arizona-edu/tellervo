@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 
-
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.ui.Builder;
 

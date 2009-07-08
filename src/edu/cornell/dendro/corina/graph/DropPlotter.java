@@ -20,16 +20,19 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import edu.cornell.dendro.corina.sample.FileElement;
-import edu.cornell.dendro.corina.sample.Sample;
-
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.io.File;
 import java.io.IOException;
-
 import java.util.List;
 
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
+import edu.cornell.dendro.corina.sample.FileElement;
 
 public final class DropPlotter implements DropTargetListener {
     private GraphWindow _g;

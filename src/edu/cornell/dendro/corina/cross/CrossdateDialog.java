@@ -10,13 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -39,6 +37,7 @@ import edu.cornell.dendro.corina.util.Center;
  *
  * @author  peterbrewer
  */
+@SuppressWarnings("serial")
 public class CrossdateDialog extends javax.swing.JDialog {
 	private ElementList crossdatingElements;
 	private CrossdateCollection crossdates;
@@ -49,6 +48,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
 
 	private GraphActions actions;
 	private GrapherPanel graph;
+	private GraphInfo graphInfo;
 	private GraphController graphController;
 	private List<Graph> graphSamples;
 	private JScrollPane graphScroller;
@@ -347,17 +347,17 @@ public class CrossdateDialog extends javax.swing.JDialog {
     
     private void setupGraph() {	
 		// create a new graphinfo structure, so we can tailor it to our needs.
-		GraphInfo gInfo = new GraphInfo();
+		graphInfo = new GraphInfo();
 		
 		// force no drawing of graph names and drawing of vertical axis
-		gInfo.overrideDrawGraphNames(false);
-		gInfo.overrideShowVertAxis(true);
+		graphInfo.setShowGraphNames(false);
+		graphInfo.setShowVertAxis(true);
 		
 		// set up our samples
 		graphSamples = new ArrayList<Graph>(2);
 				
 		// create a graph panel; put it in a scroll pane
-		graph = new GrapherPanel(graphSamples, null, gInfo);
+		graph = new GrapherPanel(graphSamples, null, graphInfo);
 		graph.setUseVerticalScrollbar(true);
 		graph.setEmptyGraphText("Choose a crossdate");
 		
@@ -452,7 +452,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	
     	graph.update(false);
     	graphController.scaleToFitHeight(); // calls graph.update(true) for us
-		graph.setAxisVisible(true, true);
+		graphInfo.setShowVertAxis(true);
 		btnOK.setEnabled(graphSamples.size() == 2);
     }
     

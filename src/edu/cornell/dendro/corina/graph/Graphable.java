@@ -20,9 +20,9 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import edu.cornell.dendro.corina.Year;
-
 import java.util.List;
+
+import edu.cornell.dendro.corina.Year;
 
 /**
    An interface for classes that can be graphed.  To be

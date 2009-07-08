@@ -5,6 +5,7 @@ package edu.cornell.dendro.corina.graph;
  */
 
 import java.util.List;
+
 import edu.cornell.dendro.corina.Year;
 
 public class DensityGraph implements Graphable {

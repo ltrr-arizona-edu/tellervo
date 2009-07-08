@@ -27,24 +27,25 @@ import java.awt.Composite;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.Toolkit;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.EnumSet;
@@ -64,11 +65,10 @@ import javax.swing.SwingConstants;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.sample.Sample;
 
+@SuppressWarnings("serial")
 public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		MouseMotionListener, AdjustmentListener, Scrollable {
 
@@ -319,7 +319,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	// position of the mouse.
 	public void mouseMoved(MouseEvent e) {
 		// old cursorX
-		int old = cursorX;
+		int oldX = cursorX;
 		int yearWidth = gInfo.getYearWidth();
 
 		// update cursorX
@@ -331,15 +331,15 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		cursorX -= distanceLeftToGridline;
 		if (roundRight)
 			cursorX += yearWidth;
-
+		
 		// refresh, but only if necessary
-		if (cursorX != old) {
+		if (cursorX != oldX) {
 			// OLD: repaint();
 
 			// only update part of display that's needed!
 
 			// vertical line
-			repaint(old - 1, 0, 3, getHeight() - AXIS_HEIGHT);
+			repaint(oldX - 1, 0, 3, getHeight() - AXIS_HEIGHT);
 			repaint(cursorX - 1, 0, 3, getHeight() - AXIS_HEIGHT);
 
 			// text
@@ -348,7 +348,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			// HACK: this assumes something about the text size.
 			// also, FIXME: in the future i'll draw text on either side of the line.
 			// almost-as-bad new version:
-			repaint(old - 50, 0, 100, 15);
+			repaint(oldX - 50, 0, 100, 15);
 			repaint(cursorX - 50, 0, 100, 15);
 		}
 
@@ -418,20 +418,18 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				if(--curheight < 2)
 					curheight = 2;
 				gInfo.setTenUnitHeight(curheight);
-				revalidate();
 				if(vertaxis != null)
 					vertaxis.repaint();
-				repaint = true;
+				repaint = false;
 				break;
 			}
 			case KeyEvent.VK_S: {
 				int curheight = gInfo.getTenUnitHeight();
 				curheight++;
 				gInfo.setTenUnitHeight(curheight);
-				revalidate();
 				if(vertaxis != null)
 					vertaxis.repaint();				
-				repaint = true;
+				repaint = false;
 				break;
 			}
 			case KeyEvent.VK_A: {
@@ -441,11 +439,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					curwidth = 2;
 				gInfo.setYearWidth(curwidth);
 				
-				computeRange();				
-				setPreferredSize(new Dimension(bounds.span() * curwidth, getGraphHeight()));
-				revalidate();					
 				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());				
-				repaint = true;
+				repaint = false;
 				break;
 			}
 			case KeyEvent.VK_D: {
@@ -454,11 +449,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				curwidth++;
 				gInfo.setYearWidth(curwidth);
 				
-				computeRange();
-				setPreferredSize(new Dimension(bounds.span() * curwidth, getGraphHeight()));
-				revalidate();					
 				horiz.setValue(Math.abs(y.diff(getRange().getStart())) * gInfo.getYearWidth());								
-				repaint = true;
+				repaint = false;
 				break;
 			}
 			case KeyEvent.VK_LEFT: {
@@ -734,13 +726,22 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		 popup.show(GrapherPanel.this, e.getX(), e.getY());
 		 }  
 		 });*/
+		
+		// when we're put in a scrollpane, update accordingly
+		addHierarchyListener(new HierarchyListener() {
+			public void hierarchyChanged(HierarchyEvent e) {		
+				if(e.getChanged() instanceof JScrollPane) {
+					postScrollpanedInit();
+				}
+			}			
+		});
 	}
 	
-	public void postScrollpanedInit() {
+	private void postScrollpanedInit() {
 		// calculate our initial scores, and set the initial title...
 		calculateScores();
 		updateTitle();
-
+		
 		// add our axis / baselines, etc
 		manager.horizontalScrollbarStatusChanged();
 		manager.verticalAxisStatusChanged();		
@@ -1081,7 +1082,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	/** Paint this panel.  Draws a horizontal axis in white (on a
 	 black background), then draws each graph in a different color.
 	 @param g the Graphics to draw this panel onto */
-	private static final BasicStroke BLCENTER_STROKE = new BasicStroke(1);
+	//private static final BasicStroke BLCENTER_STROKE = new BasicStroke(1);
 	public void paintGraph(Graphics g, GraphInfo info) {
 		Graphics2D g2 = (Graphics2D) g;
 		int bottom = info.getGraphHeight(this) - GrapherPanel.AXIS_HEIGHT;
@@ -1245,7 +1246,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_OFF);
 			g2.drawLine(cursorX, 0, cursorX, getHeight() - AXIS_HEIGHT);
-
+									
 			// if near the right side, it's invisible.
 			// so: if on the right half of the (vis)screen, draw on the left side.
 
@@ -1354,7 +1355,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	}
 
 	public Dimension getPreferredScrollableViewportSize() {
-		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width - 40; // Magic number!
 		int frames = (myFrame != null) ? myFrame.getInsets().left + myFrame.getInsets().right : 0;
 
 		// actually, this should be the amount of border, but
@@ -1402,9 +1403,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	}
 	
 	/**
+	 * Package scope only - get the graph's info!
 	 * @return our graphInfo structure - use sparingly!
 	 */
-	public GraphInfo getGraphInfo() {
+	GraphInfo getGraphInfo() {
 		return gInfo;
 	}
 	
@@ -1457,33 +1459,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	 */
 
 	QuickScorer scoreCalculator = new QuickScorer();
-
-	private class QuickScorer {
-		public QuickScorer() {}
-
-		private class graphTScore extends edu.cornell.dendro.corina.cross.TScore {
-			public graphTScore(Sample s1, Sample s2) {
-				super(s1, s2);
-				preamble();
-			}
-		}
-		
-		public void calculate(Sample s1, Sample s2, int o1, int o2) {			
-			if(sample1 != s1 || sample2 != s2) {
-				p_tscore = new graphTScore(s1, s2);
-				sample1 = s1;
-				sample2 = s2;
-			}
-			
-			tscore = p_tscore.compute(o1, o2);
-			rvalue = p_tscore.rval;
-		}
-		
-		public float tscore, rvalue;
-
-		private Sample sample1 = null, sample2 = null;
-		private graphTScore p_tscore;
-	}
 
 	/*
 	 * calculateScores()

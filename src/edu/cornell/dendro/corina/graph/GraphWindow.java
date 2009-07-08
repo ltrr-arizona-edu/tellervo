@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina.graph;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -42,18 +43,16 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
 
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
-import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.cross.Cross;
@@ -73,7 +72,6 @@ import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
-import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Overwrite;
@@ -418,13 +416,9 @@ public class GraphWindow extends XFrame implements SampleListener,
 		
 		// corner!
 		JLabel black = new JLabel();
-		black.setBackground(Color.getColor("corina.graph.background",
-				Color.black));
+		black.setBackground(GraphPrefs.BACKGROUND.get());
 		black.setOpaque(true);
 		scroller.setCorner(ScrollPaneConstants.LOWER_LEFT_CORNER, black);
-
-		// to turn on baselines and vert axis, if enabled...
-		plot.postScrollpanedInit();		
 
 		// special case: if there's an Index, align baselines (ugly test!)
 		// REFACTOR: this doesn't do anything, does it?

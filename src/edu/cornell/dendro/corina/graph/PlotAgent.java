@@ -2,8 +2,6 @@ package edu.cornell.dendro.corina.graph;
 
 import java.lang.ref.WeakReference;
 
-import edu.cornell.dendro.corina.core.App;
-
 /**
  * A list of plotting agents!
  * 

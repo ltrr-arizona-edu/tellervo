@@ -20,15 +20,15 @@
 
 package edu.cornell.dendro.corina.graph;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+
 import edu.cornell.dendro.corina.editor.Editor;
-import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
-
-import java.awt.event.ActionEvent;
-import javax.swing.JPopupMenu;
-import javax.swing.JMenuItem;
-import javax.swing.AbstractAction;
 
 // used by: GraphWindow, BargraphFrame
 public class SamplePopupMenu extends JPopupMenu {

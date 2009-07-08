@@ -3,27 +3,27 @@
  */
 package edu.cornell.dendro.corina.graph;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.List;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import edu.cornell.dendro.corina.util.ColorPair;
-
-import java.util.List;
-import javax.swing.table.AbstractTableModel;
-import java.awt.Dimension;
-import java.awt.Color;
-import javax.swing.table.TableCellRenderer;
-import java.awt.Component;
-import javax.swing.ListCellRenderer;
-import javax.swing.JList;
-import javax.swing.JLabel;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.BasicStroke;
 
 /**
  * @author Lucas

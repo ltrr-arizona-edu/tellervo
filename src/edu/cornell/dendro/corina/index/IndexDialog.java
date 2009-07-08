@@ -21,29 +21,21 @@
 package edu.cornell.dendro.corina.index;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -55,7 +47,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -66,18 +57,16 @@ import org.tridas.schema.TridasLinkSeries;
 
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.graph.GraphActions;
+import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
-import edu.cornell.dendro.corina.graph.GraphWindow;
-import edu.cornell.dendro.corina.graph.Graphable;
+import edu.cornell.dendro.corina.graph.GraphToolbar;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
-import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
-import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
@@ -87,10 +76,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.NoEmptySelection;
 import edu.cornell.dendro.corina.util.OKCancel;
-import edu.cornell.dendro.corina.util.TextClipboard;
-import edu.cornell.dendro.corina.util.UserFriendlyFile;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
-
 import edu.cornell.dendro.corina_indexing.Exponential;
 
 /**
@@ -105,6 +91,7 @@ import edu.cornell.dendro.corina_indexing.Exponential;
  *         style="color: gray">dot</i> edu&gt;
  * @version $Id$
  */
+@SuppressWarnings("serial")
 public class IndexDialog extends JDialog {
 	// data
 	private Sample sample;
@@ -347,7 +334,7 @@ public class IndexDialog extends JDialog {
 		GraphInfo gInfo = new GraphInfo();
 		
 		// force no drawing of graph names
-		gInfo.overrideDrawGraphNames(false);
+		gInfo.setShowGraphNames(false);
 		
 		// create a graph panel; put it in a scroll pane
 		graphPanel = new GrapherPanel(graphSamples, null, gInfo) {
@@ -359,12 +346,20 @@ public class IndexDialog extends JDialog {
 				return new Dimension((graphWidth < screenWidth) ? graphWidth : screenWidth, otherPanelDim.height);
 			}
 		};
-
+	
 		JScrollPane scroller = new JScrollPane(graphPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
-		return scroller;
+		GraphActions actions = new GraphActions(graphPanel, null, new GraphController(graphPanel, scroller));
+		GraphToolbar toolbar = new GraphToolbar(actions);
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(scroller, BorderLayout.CENTER);
+		panel.add(toolbar, BorderLayout.NORTH);
+		
+		return panel;
 	}
 	
 	private JPanel createTableAndButtons() {

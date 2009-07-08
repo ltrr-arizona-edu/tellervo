@@ -20,13 +20,13 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.sample.Sample;
-
-import java.util.List;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.List;
+
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.sample.Sample;
 
 /*
   the purpose of this class is:
