@@ -109,11 +109,11 @@ public class TridasLinkSeries
     private final static long serialVersionUID = 1001L;
     protected TridasLinkSeries.PreferredSeries preferredSeries;
     @XmlElements({
+        @XmlElement(name = "identifier", type = TridasIdentifier.class),
         @XmlElement(name = "idRef", type = TridasLinkSeries.IdRef.class),
-        @XmlElement(name = "xLink", type = TridasLinkSeries.XLink.class),
-        @XmlElement(name = "identifier", type = TridasIdentifier.class)
+        @XmlElement(name = "xLink", type = TridasLinkSeries.XLink.class)
     })
-    protected List<Serializable> idRevesAndXLinksAndIdentifiers;
+    protected List<Object> idRevesAndXLinksAndIdentifiers;
 
     /**
      * Gets the value of the preferredSeries property.
@@ -161,15 +161,15 @@ public class TridasLinkSeries
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link TridasIdentifier }
      * {@link TridasLinkSeries.IdRef }
      * {@link TridasLinkSeries.XLink }
-     * {@link TridasIdentifier }
      * 
      * 
      */
-    public List<Serializable> getIdRevesAndXLinksAndIdentifiers() {
+    public List<Object> getIdRevesAndXLinksAndIdentifiers() {
         if (idRevesAndXLinksAndIdentifiers == null) {
-            idRevesAndXLinksAndIdentifiers = new ArrayList<Serializable>();
+            idRevesAndXLinksAndIdentifiers = new ArrayList<Object>();
         }
         return this.idRevesAndXLinksAndIdentifiers;
     }
@@ -225,7 +225,7 @@ public class TridasLinkSeries
             toStringBuilder.append("preferredSeries", thePreferredSeries);
         }
         {
-            List<Serializable> theIdRevesAndXLinksAndIdentifiers;
+            List<Object> theIdRevesAndXLinksAndIdentifiers;
             theIdRevesAndXLinksAndIdentifiers = this.getIdRevesAndXLinksAndIdentifiers();
             toStringBuilder.append("idRevesAndXLinksAndIdentifiers", theIdRevesAndXLinksAndIdentifiers);
         }
@@ -246,11 +246,11 @@ public class TridasLinkSeries
             copy.setPreferredSeries(copyPreferredSeries);
         }
         {
-            List<Serializable> sourceIdRevesAndXLinksAndIdentifiers;
+            List<Object> sourceIdRevesAndXLinksAndIdentifiers;
             sourceIdRevesAndXLinksAndIdentifiers = this.getIdRevesAndXLinksAndIdentifiers();
-            List<Serializable> copyIdRevesAndXLinksAndIdentifiers = ((List<Serializable> ) copyBuilder.copy(sourceIdRevesAndXLinksAndIdentifiers));
+            List<Object> copyIdRevesAndXLinksAndIdentifiers = ((List<Object> ) copyBuilder.copy(sourceIdRevesAndXLinksAndIdentifiers));
             copy.unsetIdRevesAndXLinksAndIdentifiers();
-            List<Serializable> uniqueIdRevesAndXLinksAndIdentifiersl = copy.getIdRevesAndXLinksAndIdentifiers();
+            List<Object> uniqueIdRevesAndXLinksAndIdentifiersl = copy.getIdRevesAndXLinksAndIdentifiers();
             uniqueIdRevesAndXLinksAndIdentifiersl.addAll(copyIdRevesAndXLinksAndIdentifiers);
         }
         return copy;

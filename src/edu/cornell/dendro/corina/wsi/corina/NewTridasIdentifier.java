@@ -4,22 +4,35 @@ import org.tridas.schema.TridasIdentifier;
 
 public class NewTridasIdentifier extends TridasIdentifier {
 	private static final long serialVersionUID = 1L;
+	
+	private static final String newSeriesIdentifier = "newSeries";
 
-	private NewTridasIdentifier() {
-		this.domain = "local";
-		this.value = "new";
+	private NewTridasIdentifier(String domain) {
+		this.domain = domain;
+		this.value = newSeriesIdentifier;
 	}
 	
-	private static final NewTridasIdentifier instance = new NewTridasIdentifier();
+	/**
+	 * @return a new tridas identifier with the given domain
+	 */
+	public static final TridasIdentifier getInstance(String domain) {
+		return new NewTridasIdentifier(domain);
+	}
+	
+	/**
+	 * @return a new tridas identifier with the domain of the source identifier
+	 */
+	public static final TridasIdentifier getInstance(TridasIdentifier sourceIdentifier) {
+		return getInstance(sourceIdentifier.getDomain());
+	}
 
 	/**
-	 * @return the 
+	 * Checks if this series is new
+	 * 
+	 * @param identifier
+	 * @return
 	 */
-	public static final TridasIdentifier getInstance() {
-		return instance;
-	}
-	
 	public static final boolean isNew(final TridasIdentifier identifier) {
-		return instance.equals(identifier);
+		return newSeriesIdentifier.equals(identifier.getValue());
 	}
 }
