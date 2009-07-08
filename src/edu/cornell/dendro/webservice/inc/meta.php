@@ -235,7 +235,7 @@ class meta
     {
         foreach($item as $code => $message)
         {
-          $xml.="<message code=\"".$code."\">".$message."</message>\n";
+          $xml.="<message code=\"".$code."\">".dbhelper::escapeXMLChars($message)."</message>\n";
         }
     }
 

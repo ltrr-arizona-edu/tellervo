@@ -94,6 +94,7 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
     global $corinaNS;
     global $tridasNS;
     global $gmlNS;
+    global $xlinkNS;
 
     $outputStr ="";
     $outputStr.="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -111,7 +112,7 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
     }
     else
     {
-    	$outputStr.= "\n<corina xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">\n";
+    	$outputStr.= "\n<corina xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\">\n";
     }
     
     

@@ -99,29 +99,31 @@ class element extends elementEntity implements IDBAccessor
 
     function setParamsFromDBRow($row, $format="standard")
     {
+        $this->setTitle($row['title']);    	
         $this->setID($row['elementid']);
+        $this->setCreatedTimestamp($row['createdtimestamp']);       
+        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+        $this->setComments($row['comments']);        
+        $this->setType($row['elementtypeid'], $row['elementtype']);
+        $this->setDescription($row['description']);
+        $this->setFiles($row['file']);    
         $this->taxon->setParamsFromDB($row['taxonid']);
         $this->taxon->setOriginalTaxon($row['originaltaxonname']);
         $this->taxon->setHigherTaxonomy();
-        $this->setCode($row['code']);
-        $this->setTitle($row['code']);
-        $this->setCreatedTimestamp($row['createdtimestamp']);
-        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+        $this->setShape($row['elementshapeid'], $row['elementshape']);        
+        $this->setDimensions($row['units'],$row['height'], $row['width'], $row['depth']);       
+        $this->setDiameter($row['diameter']);        
         $this->setAuthenticity($row['elementauthenticity']);
-        $this->setShape($row['elementshape']);
-        $this->setDimensions($row['units'],$row['height'], $row['width'], $row['depth']);
-        $this->setDiameter($row['diameter']);
-        $this->setType($row['elementtype']);
         $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
         $this->setProcessing($row['processing']);
-        $this->setMarks($row['marks']);
-        $this->setDescription($row['description']);
+        $this->setMarks($row['marks']);     
         $this->setAltitude($row['altitude']);
         $this->setSlope($row['slopeangle'], $row['slopeazimuth']);
-        $this->setBedrockDescription($row['bedrockdescription']);
         $this->setSoilDepth($row['soildepth']);
         $this->setSoilDescription($row['soildescription']);
-		$this->setObjectID($row['objectid']);
+        $this->setBedrockDescription($row['bedrockdescription']);                      
+        $this->setCode($row['code']);
+        $this->setObjectID($row['objectid']);
         return true;
     }
    
@@ -221,30 +223,34 @@ class element extends elementEntity implements IDBAccessor
     function setParamsFromParamsClass($paramsClass)
     {    	    	    	
         // Alter the parameter values based upon values supplied by the user and passed as a parameters class
-        if ($paramsClass->getCode()!=NULL)             		$this->setCode($paramsClass->getCode());
-        if ($paramsClass->getAuthenticity()!=NULL)			$this->setAuthenticity($paramsClass->getAuthenticity());
+        if ($paramsClass->getTitle()!=NULL)             	$this->setTitle($paramsClass->getTitle());
+        if ($paramsClass->getComments()!=NULL)             	$this->setComments($paramsClass->getComments());
+        if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
         if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
-        if ($paramsClass->getDiameter()!=NULL)				$this->setDiameter($paramsClass->getDiameter());
+        if ($paramsClass->getFile()!=NULL)					$this->setFiles($paramsClass->getFile());  
+		if ($paramsClass->taxon->getOriginalTaxon()!=NULL)	$this->taxon->setOriginalTaxon($paramsClass->taxon->getOriginalTaxon());
+		if ($paramsClass->taxon->getCoLID()!=NULL)			$this->taxon->setParamsFromCoL($paramsClass->taxon->getCoLID(), $paramsClass->taxon->getLabel());
+		if ($paramsClass->getShape()!=NULL)					$this->setShape($paramsClass->getShape());
         if ($paramsClass->hasDimensions())   				$this->setDimensions($paramsClass->getDimensionUnits(), 
         																		 $paramsClass->getDimension('height'), 
         																		 $paramsClass->getDimension('width'), 
         																		 $paramsClass->getDimension('depth'));
-		if ($paramsClass->getDimensionUnits()!=NULL)		$this->setDimensionUnits($paramsClass->getDimensionUnits());
-		if ($paramsClass->getFile()!=NULL)					$this->setFile($paramsClass->getFile());
-		if ($paramsClass->getMarks()!=NULL)					$this->setMarks($paramsClass->getMarks());
-		if ($paramsClass->taxon->getOriginalTaxon()!=NULL)	$this->taxon->setOriginalTaxon($paramsClass->taxon->getOriginalTaxon());
-		if ($paramsClass->taxon->getCoLID()!=NULL)			$this->taxon->setParamsFromCoL($paramsClass->taxon->getCoLID(), $paramsClass->taxon->getLabel());
-
-
-		if ($paramsClass->getProcessing()!=NULL)			$this->setProcessing($paramsClass->getProcessing());
-		if ($paramsClass->getShape()!=NULL)					$this->setShape($paramsClass->getShape());
-		if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
+		if ($paramsClass->getDimensionUnits()!=NULL)		$this->setDimensionUnits($paramsClass->getDimensionUnits());       
+        if ($paramsClass->getDiameter()!=NULL)				$this->setDiameter($paramsClass->getDiameter());
+        if ($paramsClass->getAuthenticity()!=NULL)			$this->setAuthenticity($paramsClass->getAuthenticity());
 		if ($paramsClass->hasGeometry())					$this->location->setGeometry($paramsClass->location->getLocationGeometry(),
 																						 $paramsClass->location->getType(),
 																						 $paramsClass->location->getPrecision(),
-																						 $paramsClass->location->getComment());
-		
-																						 
+																						 $paramsClass->location->getComment());        
+        if ($paramsClass->getProcessing()!=NULL)			$this->setProcessing($paramsClass->getProcessing());
+		if ($paramsClass->getMarks()!=NULL)					$this->setMarks($paramsClass->getMarks());
+        if ($paramsClass->getAltitude()!=NULL)				$this->setAltitude($paramsClass->getAltitude());
+        if ($paramsClass->getSlopeAngle()!=NULL)			$this->setSlopeAngle($paramsClass->getSlopeAngle());
+        if ($paramsClass->getSlopeAzimuth()!=NULL)			$this->setSlopeAzimuth($paramsClass->getSlopeAzimuth());
+        if ($paramsClass->getSoilDepth()!=NULL)				$this->setSoilDepth($paramsClass->getSoilDepth());
+        if ($paramsClass->getSoilDescription()!=NULL)		$this->setSoilDescription($paramsClass->getSoilDescription());
+        if ($paramsClass->getBedrockDescription()!=NULL)	$this->getBedrockDescription($paramsClass->getBedrockDescription());
+        if ($paramsClass->getCode()!=NULL)             		$this->setCode($paramsClass->getCode());																				 
         if ($paramsClass->parentID!=NULL)
         {
         	$parentObj = new object();
@@ -432,13 +438,14 @@ class element extends elementEntity implements IDBAccessor
                 // Only return XML when there are no errors.
                 $xml = "<tridas:element>";
                 $xml.= $this->getIdentifierXML();   
-                $xml.="<tridas:type>".$this->getType()."</tridas:type>\n";
+                if($this->getComments()!=NULL)					$xml.="<tridas:comments>".$this->getComments()."</tridas:comments>\n";
+                $xml.="<tridas:type normal=\"".$this->getType()."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\"/>\n";
                 if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>\n";
                 if($format!="minimal")
                 {
-                	
+                	$xml.= $this->getFileXML();
                     $xml.= $this->taxon->asXML();  
-                    if($this->getShape()!=NULL)             $xml.= "<tridas:shape>".$this->getShape()."</tridas:shape>\n";
+                    if($this->getShape()!=NULL)             $xml.= "<tridas:shape normalTridas=\"".$this->getShape()."\" normalId=\"".$this->getShape(TRUE)."\" />\n";
                     if($this->hasDimensions())
                     {
                     	$xml.="<tridas:dimensions>";
@@ -474,14 +481,13 @@ class element extends elementEntity implements IDBAccessor
                     	$xml.="<tridas:soil>\n";
                     }
                     
-                    if($this->getFile()!=NULL) $xml.="<tridas:file xlink:href=\"".$this->getFile()."\" />";
-                    //if($format=='summary') $xml.="<tridas:genericField name=\"fullLabCode\">".$this->summaryFullLabCode."</tridas:genericField>\n"; 
+                    if($this->getBedrockDescription()!=NULL)	$xml.= "<tridas:bedrock>\n<tridas:description>".$this->getBedrockDescription()."</tridas:description>\n</tridas:bedrock>\n";
+                    
 	                // Include permissions details if requested            
 	                $xml .= $this->getPermissionsXML();                      
                     $xml.= $this->taxon->getHigherTaxonomyXML();
         
                     if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
-
 
                     if($format!="summary")
                     {
@@ -583,10 +589,12 @@ class element extends elementEntity implements IDBAccessor
                 	
                     $sql = "insert into tblelement ( ";
                     															$sql.= "elementid, ";
-                    	if (isset($this->parentEntityArray[0]))					$sql.= "objectid, ";
-                    	if ($this->getCode()!=NULL)								$sql.= "code, ";
+                    	if ($this->getTitle()!=NULL)							$sql.= "code, ";
+                    	if ($this->getComments()!=NULL)							$sql.= "comments, ";                    	
+                    	if ($this->getType()!=NULL)								$sql.= "elementtypeid, ";
+                        if ($this->getDescription()!=NULL)						$sql.= "description, ";	
+                        if ($this->getFile()!=NULL)								$sql.= "file, ";                    	
                         if ($this->taxon->getID()!=NULL)                        $sql.= "taxonid, ";
-                        if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid, ";
                         if ($this->getShape()!=NULL)							$sql.= "elementshapeid, ";
                         if ($this->hasDimensions())								
 	                    {
@@ -596,23 +604,30 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "depth, ";
 	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter, ";              	
 	                    }
-                        if ($this->getType()!=NULL)								$sql.= "elementtypeid, ";
-                        if ($this->getFile()!=NULL)								$sql.= "file, ";
+                        if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid, ";	                    
                         if ($this->location->getLocationType()!=NULL)			$sql.= "locationtype, ";
                         if ($this->location->getLocationPrecision()!=NULL)		$sql.= "locationprecision, ";
                         if ($this->location->getLocationComment()!=NULL)		$sql.= "locationcomment, ";
                         if ($this->location->getLocationGeometry()!=NULL)		$sql.= "locationgeometry, ";
                         if ($this->getProcessing()!=NULL)						$sql.= "processing, ";
                         if ($this->getMarks()!=NULL)							$sql.= "marks, ";
-                        if ($this->getDescription()!=NULL)						$sql.= "description, ";	                            
+                        if ($this->getAltitude()!=NULL)							$sql.= "altitude, ";                        
+                        if ($this->getSlopeAngle()!=NULL)						$sql.= "slopeangle, "; 
+                        if ($this->getSlopeAzimuth()!=NULL)						$sql.= "slopeazimuth, ";    
+                        if ($this->getSoilDepth()!=NULL)						$sql.= "soildepth, ";    
+						if ($this->getSoilDescription()!=NULL)					$sql.= "soildescription, ";                                            
+						if ($this->getBedrockDescription()!=NULL)				$sql.= "bedrockdescription, ";      
+                    	if (isset($this->parentEntityArray[0]))					$sql.= "objectid, ";                                                    
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
                     	if ($this->getID()!=NULL)								$sql.= "'".pg_escape_string($this->getID()). "', ";										
-                    	if (isset($this->parentEntityArray[0]))					$sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                    
-                    	if ($this->getCode()!=NULL)								$sql.= "'".pg_escape_string($this->getCode()).  "', ";                    
+                    	if ($this->getTitle()!=NULL)							$sql.= "'".pg_escape_string($this->getTitle()).  "', ";                    
+                    	if ($this->getComments()!=NULL)							$sql.= "'".pg_escape_string($this->getComments()).  "', ";                    
+                        if ($this->getType()!=NULL)								$sql.= "'".pg_escape_string($this->getType(true))."', ";
+                        if ($this->getDescription()!=NULL)						$sql.= "'".pg_escape_string($this->getDescription())."', ";                     
+                        if ($this->getFile()!=NULL)								$sql.= "'".dbHelper::phpArrayToPGStrArray($this->getFile())."', ";
                         if ($this->taxon->getID()!=NULL)                        $sql.= "'".pg_escape_string($this->taxon->getID()).   "', ";
-                        if ($this->getAuthenticity()!=NULL)						$sql.= "'".pg_escape_string($this->getAuthenticity(true))."', ";
                         if ($this->getShape()!=NULL)							$sql.= "'".pg_escape_string($this->getShape(true))."', ";
                         if ($this->hasDimensions())								
 	                    {
@@ -621,16 +636,22 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('width')!=NULL)    			$sql.= "'".pg_escape_string($this->getDimension('width'))."', ";
 	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "'".pg_escape_string($this->getDimension('depth'))."', ";
 	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "'".pg_escape_string($this->getDimension('diameter'))."', ";;              	
-	                    }
-                        if ($this->getType()!=NULL)								$sql.= "'".pg_escape_string($this->getType(true))."', ";
-                        if ($this->getFile()!=NULL)								$sql.= "'".pg_escape_string($this->getFile())."', ";
+	                    }                        
+                        if ($this->getAuthenticity()!=NULL)						$sql.= "'".pg_escape_string($this->getAuthenticity(true))."', ";
                         if ($this->location->getLocationType()!=NULL)			$sql.= "'".pg_escape_string($this->location->getLocationType())."', ";
                         if ($this->location->getLocationPrecision()!=NULL)		$sql.= "'".pg_escape_string($this->location->getLocationPrecision())."', ";
                         if ($this->location->getLocationComment()!=NULL)		$sql.= "'".pg_escape_string($this->location->getLocationComment())."', ";
                         if ($this->location->getLocationGeometry()!=NULL)		$sql.= "'".pg_escape_string($this->location->getLocationGeometry())."', ";
                         if ($this->getProcessing()!=NULL)						$sql.= "'".pg_escape_string($this->getProcessing())."', ";
                         if ($this->getMarks()!=NULL)							$sql.= "'".pg_escape_string($this->getMarks())."', ";
-                        if ($this->getDescription()!=NULL)						$sql.= "'".pg_escape_string($this->getDescription())."', ";                     
+                        if ($this->getAltitude()!=NULL)							$sql.= "'".pg_escape_string($this->getAltitude())."', ";
+                        if ($this->getSlopeAngle()!=NULL)						$sql.= "'".pg_escape_string($this->getSlopeAngle())."', ";
+                        if ($this->getSlopeAzimuth()!=NULL)						$sql.= "'".pg_escape_string($this->getSlopeAzimuth())."', ";
+                        if ($this->getSoilDepth()!=NULL)						$sql.= "'".pg_escape_string($this->getSoilDepth())."', ";
+                        if ($this->getSoilDescription()!=NULL)					$sql.= "'".pg_escape_string($this->getSoilDescription())."', ";
+                        if ($this->getBedrockDescription()!=NULL)				$sql.= "'".pg_escape_string($this->getBedrockDescription())."', ";
+                        if (isset($this->parentEntityArray[0]))					$sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                    
+                        
                      // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -640,10 +661,12 @@ class element extends elementEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql = "update tblelement set ";
-                    	if (isset($this->parentEntityArray[0]))					$sql.= "objectid='".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
-                    	if ($this->getCode()!=NULL)								$sql.= "code='".pg_escape_string($this->getCode())."', ";
-                        if ($this->taxon->getID()!=NULL)                        $sql.= "taxonid='".pg_escape_string($this->taxon->getID())."', ";
-                        if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid='".pg_escape_string($this->getAuthenticity(true))."', ";
+                    	if ($this->getTitle()!=NULL)							$sql.= "code='".pg_escape_string($this->getTitle())."', ";
+                    	if ($this->getComments()!=NULL)							$sql.= "comments='".pg_escape_string($this->getComments())."', ";
+                        if ($this->getType()!=NULL)								$sql.= "elementtypeid='".pg_escape_string($this->getType(true))."', ";
+                        if ($this->getDescription()!=NULL)						$sql.= "description='".pg_escape_string($this->getDescription())."', ";	  
+                        if ($this->getFile()!=NULL)								$sql.= "file='".dbHelper::phpArrayToPGStrArray($this->getFile())."', ";
+                    	if ($this->taxon->getID()!=NULL)                        $sql.= "taxonid='".pg_escape_string($this->taxon->getID())."', ";
                         if ($this->getShape()!=NULL)							$sql.= "elementshapeid='".pg_escape_string($this->getShape(true))."', ";
                         if ($this->hasDimensions())								
 	                    {
@@ -652,16 +675,22 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('width')!=NULL)    			$sql.= "width='".pg_escape_string($this->getDimension('width'))."', ";
 	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "depth='".pg_escape_string($this->getDimension('depth'))."', ";
 	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter=".pg_escape_string($this->getDimension('diameter'))."', ";            	
-	                    }
-                        if ($this->getType()!=NULL)								$sql.= "elementtypeid='".pg_escape_string($this->getType(true))."', ";
-                        if ($this->getFile()!=NULL)								$sql.= "file='".pg_escape_string($this->getFile())."', ";
+	                    }                    	
+                    	if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid='".pg_escape_string($this->getAuthenticity(true))."', ";
                         if ($this->location->getType()!=NULL)					$sql.= "locationtype='".pg_escape_string($this->location->getType())."', ";
                         if ($this->location->getPrecision()!=NULL)				$sql.= "locationprecision='".pg_escape_string($this->location->getPrecision())."', ";
                         if ($this->location->getComment()!=NULL)				$sql.= "locationcomment='".pg_escape_string($this->location->getComment())."', ";
                         if ($this->location->getGeometry()!=NULL)				$sql.= "locationgeometry='".pg_escape_string($this->location->getGeometry())."', ";
                         if ($this->getProcessing()!=NULL)						$sql.= "processing='".pg_escape_string($this->getProcessing()).", ";
                         if ($this->getMarks()!=NULL)							$sql.= "marks='".pg_escape_string($this->getMarks())."', ";
-                        if ($this->getDescription()!=NULL)						$sql.= "description='".pg_escape_string($this->getDescription())."', ";	  
+                        if ($this->getAltitude()!=NULL)							$sql.= "altitude='".pg_escape_string($this->getAltitude())."', ";
+                        if ($this->getSlopeAngle()!=NULL)						$sql.= "slopeangle='".pg_escape_string($this->getSlopeAngle())."', ";
+                        if ($this->getSlopeAzimuth()!=NULL)						$sql.= "slopeazimuth='".pg_escape_string($this->getSlopeAzimuth())."', ";
+                        if ($this->getSoilDepth()!=NULL)						$sql.= "soildepth='".pg_escape_string($this->getSoilDepth())."', ";
+                        if ($this->getSoilDescription()!=NULL)					$sql.= "soildescription='".pg_escape_string($this->getSoilDescription())."', ";
+                        if ($this->getBedrockDescription()!=NULL)				$sql.= "bedrockdescription='".pg_escape_string($this->getBedrockDescription())."', ";
+                        if (isset($this->parentEntityArray[0]))					$sql.= "objectid='".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
+                        
                      // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql .= " where elementid='".pg_escape_string($this->getID()."'");

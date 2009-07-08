@@ -41,20 +41,23 @@ class object extends objectEntity implements IDBAccessor
         global $debugFlag;
         global $myMetaHeader;
         if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting object parameters for objectid ".$row['objectid']);                 
+               
         // Set parameters from db
-        $this->setID($row['objectid']);
-        $this->setCode($row['code']);
-        $this->setDescription($row['description']);
         $this->setTitle($row['title']);
+        $this->setID($row['objectid']);
+        $this->setCreatedTimestamp($row['createdtimestamp']);
+        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+        $this->setComments($row['comments']);
+        $this->setType($row['objecttypeid'], $row['objecttype']);
+        $this->setDescription($row['description']);
+        $this->setFilesFromStrArray($row['file']);
         $this->setCreator($row['creator']);
         $this->setOwner($row['owner']);
-        $this->setFile($row['file']);
-        $this->setType($row['objecttype']);
         $this->setCoverageTemporal($row['coveragetemporal'], $row['coveragetemporalfoundation']);
         $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
         $this->setCountOfChildVMeasurements($row['countofchildvmeasurements']);
-        $this->setCreatedTimestamp($row['createdtimestamp']);
-        $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+		$this->setCode($row['code']);
+
         return true;
     }    
     
@@ -161,17 +164,19 @@ class object extends objectEntity implements IDBAccessor
      */
     function setParamsFromParamsClass($paramsClass)
     {
-        if ($paramsClass->getCode()!=NULL)             		$this->setCode($paramsClass->getCode());
+    	if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());
+    	if ($paramsClass->getComments()!=NULL)				$this->setComments($paramsClass->getComments());
+    	if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
+    	if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
+    	if ($paramsClass->getFile()!=NULL)					$this->setFiles($paramsClass->getFile());      
         if ($paramsClass->getCreator()!=NULL)		  		$this->setCreator($paramsClass->getCreator());
-        if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
-        if ($paramsClass->getFile()!=NULL)					$this->setFile($paramsClass->getFile());
         if ($paramsClass->getOwner()!=NULL)					$this->setOwner($paramsClass->getOwner());
         if ($paramsClass->getTemporalCoverage()!=NULL)		$this->setCoverageTemporal($paramsClass->getTemporalCoverage(), $paramsClass->getTemporalCoverageFoundation());
-        if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());
-        if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
         if ($paramsClass->location->getGeometry()!=NULL)	$this->location->setGeometry($paramsClass->location->getGeometry());
+        if ($paramsClass->location->getType()!=NULL)		$this->location->setType($paramsClass->location->getType());
         if ($paramsClass->location->getPrecision()!=NULL)	$this->location->setPrecision($paramsClass->location->getPrecision());
-        if ($paramsClass->location->getComment()!=NULL)		$this->location->setComment($paramsClass->location->getComment());
+        if ($paramsClass->location->getComment()!=NULL)		$this->location->setComment($paramsClass->location->getComment());      
+        if ($paramsClass->getCode()!=NULL)             		$this->setCode($paramsClass->getCode());
         
         if ($paramsClass->parentID!=NULL)
         {
@@ -294,15 +299,15 @@ class object extends objectEntity implements IDBAccessor
         {
             if(($parts=="all") || ($parts=="beginning"))
             { 
-            	//if ($this->hasGeometry())			$xml.="<gml:featureMember>\n";
-            	//$xml.= "<tridas:object fid=\"".$this->getID()."\">";
             	$xml.= "<tridas:object>\n";
-                $xml.= $this->getIdentifierXML();     
-                if($this->getType()!=NULL)     		$xml.= "<tridas:type>".$this->getType()."</tridas:type>";        	
+                $xml.= $this->getIdentifierXML(); 
+                if($this->getComments()!=NULL)		$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";    
+                if($this->getType()!=NULL)     		$xml.= "<tridas:type normal=\"".$this->getType()."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\" />\n";        	
             	if($this->getDescription()!=NULL)	$xml.= "<tridas:description>".dbHelper::escapeXMLChars($this->getDescription())."</tridas:description>";
                	if($this->getCreator()!=NULL)		$xml.= "<tridas:creator>".dbHelper::escapeXMLChars($this->getCreator())."</tridas:creator>";
-            	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".dbHelper::escapeXMLChars($this->getOwner())."</tridas:owner>";
-            	if($this->getFile()!=NULL)			$xml.= "<tridas:file xlink:href=\"".$this->getFile()."\" />";
+            	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".dbHelper::escapeXMLChars($this->getOwner())."</tridas:owner>";         	
+            	
+				$xml.= $this->getFileXML();
             	
             	if($this->getTemporalCoverage()!=NULL)
             	{
@@ -392,38 +397,40 @@ class object extends objectEntity implements IDBAccessor
                 	$this->setID(uuid::getUUID(), $domain);
                 	
                     $sql = "insert into tblobject ( ";
-                    																	$sql.= "objectid, ";
                         if ($this->getTitle()!=NULL)                                    $sql.= "title, ";
-                        if ($this->getCode()!=NULL)										$sql.= "code, ";
+																	                    $sql.= "objectid, ";
+                        if ($this->getComments()!=NULL)									$sql.= "comments, ";
+                        if ($this->getType()!=NULL)										$sql.= "objecttypeid, ";                        
+                        if ($this->getDescription()!=NULL)								$sql.= "description, ";
+                        if ($this->getFile()!=NULL)										$sql.= "file, ";
                         if ($this->getCreator()!=NULL)									$sql.= "creator, ";
                         if ($this->getOwner()!=NULL)									$sql.= "owner, ";
-                        if ($this->getType()!=NULL)										$sql.= "objecttypeid, ";
-                        if ($this->getDescription()!=NULL)								$sql.= "description, ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal, ";
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation, ";
                         if ($this->location->getGeometry()!=NULL)						$sql.= "locationgeometry, ";
                         if ($this->location->getComment()!=NULL)						$sql.= "locationcomment, ";
                         if ($this->location->getType()!=NULL)							$sql.= "locationtype, ";
                         if ($this->location->getPrecision()!=NULL)						$sql.= "locationprecision, ";
-                        if ($this->getFile()!=NULL)										$sql.= "file, ";
+                        if ($this->getCode()!=NULL)										$sql.= "code, ";
                         if (count($this->parentEntityArray)>0)							$sql.= "parentobjectid, ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if ($this->getID()!=NULL)                                       $sql.= "'".pg_escape_string($this->getID())."', ";
                         if ($this->getTitle()!=NULL)                                    $sql.= "'".pg_escape_string($this->getTitle())."', ";
-                        if ($this->getCode()!=NULL)										$sql.= "'".pg_escape_string($this->getCode())."', ";
-                        if ($this->getCreator()!=NULL)									$sql.= "'".pg_escape_string($this->getCreatedTimestamp())."', ";
-                        if ($this->getOwner()!=NULL)									$sql.= "'".pg_escape_string($this->getOwner())."', ";
+	                    if ($this->getID()!=NULL)                                       $sql.= "'".pg_escape_string($this->getID())."', ";
+                        if ($this->getComments()!=NULL)                                 $sql.= "'".pg_escape_string($this->getComments())."', ";
                         if ($this->getType()!=NULL)										$sql.= "'".pg_escape_string($this->getType(true))."', ";
                         if ($this->getDescription()!=NULL)								$sql.= "'".pg_escape_string($this->getDescription())."', ";
+                        if ($this->getFile()!=NULL)										$sql.= "'".dbHelper::phpArrayToPGStrArray($this->getFile())."', ";
+                        if ($this->getCreator()!=NULL)									$sql.= "'".pg_escape_string($this->getCreatedTimestamp())."', ";
+                        if ($this->getOwner()!=NULL)									$sql.= "'".pg_escape_string($this->getOwner())."', ";     
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "'".pg_escape_string($this->getTemporalCoverage())."', ";
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "'".pg_escape_string($this->getTemporalCoverageFoundation())."', ";
                         if ($this->location->getGeometry()!=NULL)						$sql.= "'".$this->location->getGeometry()."', ";
                         if ($this->location->getComment()!=NULL)						$sql.= "'".pg_escape_string($this->location->getComment())."', ";
                         if ($this->location->getType()!=NULL)							$sql.= "'".pg_escape_string($this->location->getType())."', ";
                         if ($this->location->getPrecision()!=NULL)						$sql.= "'".pg_escape_string($this->location->getPrecision())."', ";
-                        if ($this->getFile()!=NULL)										$sql.= "'".pg_escape_string($this->getFile())."', ";
+                        if ($this->getCode()!=NULL)										$sql.= "'".pg_escape_string($this->getCode())."', ";      
                         if (count($this->parentEntityArray)>0)							$sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
@@ -435,18 +442,19 @@ class object extends objectEntity implements IDBAccessor
                     // Updating DB
                     $sql = "update tblobject set ";
                         if ($this->getTitle()!=NULL)                                    $sql.= "title='".pg_escape_string($this->getTitle())."', ";
-                        if ($this->getCode()!=NULL)										$sql.= "code='".pg_escape_string($this->getCode())."', ";
-                        if ($this->getCreator()!=NULL)									$sql.= "creator='".pg_escape_string($this->getCreator())."', ";
-                        if ($this->getOwner()!=NULL)									$sql.= "owner='".pg_escape_string($this->getOwner())."', ";
+                        if ($this->getComments()!=NULL)                                 $sql.= "comments='".pg_escape_string($this->getComments())."', ";
                         if ($this->getType()!=NULL)										$sql.= "objecttypeid='".pg_escape_string($this->getType(true))."', ";
                         if ($this->getDescription()!=NULL)								$sql.= "description='".pg_escape_string($this->getDescription())."', ";
+                        if ($this->getFile()!=NULL)										$sql.= "file='".dbHelper::phpArrayToPGStrArray($this->getFile())."', ";
+                        if ($this->getCreator()!=NULL)									$sql.= "creator='".pg_escape_string($this->getCreator())."', ";
+                        if ($this->getOwner()!=NULL)									$sql.= "owner='".pg_escape_string($this->getOwner())."', ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal='".pg_escape_string($this->getTemporalCoverage())."', ";
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation='".pg_escape_string($this->getTemporalCoverageFoundation())."', ";
                         if ($this->location->getGeometry()!=NULL)						$sql.= "locationgeometry='".$this->location->getGeometry()."', ";
                         if ($this->location->getComment()!=NULL)						$sql.= "locationcomment='".pg_escape_string($this->location->getComment())."', ";
                         if ($this->location->getType()!=NULL)							$sql.= "locationtypeid='".$this->location->getTypeID()."', ";
                         if ($this->location->getPrecision()!=NULL)						$sql.= "locationprecision='".pg_escape_string($this->location->getPrecision())."', ";
-                        if ($this->getFile()!=NULL)										$sql.= "file='".pg_escape_string($this->getFile())."', ";
+                        if ($this->getCode()!=NULL)										$sql.= "code='".pg_escape_string($this->getCode())."', ";             
                         if (count($this->parentEntityArray)>0)							$sql.= "parentobject='".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                    
                         // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);

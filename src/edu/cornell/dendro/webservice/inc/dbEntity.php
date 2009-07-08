@@ -42,6 +42,13 @@ class dbEntity
 {
 
 	/**
+	 * URL's of associated files
+	 *
+	 * @var Array
+	 */
+	protected $files = NULL;
+	
+	/**
 	 * Unique identifier for this entity
 	 *
 	 * @var UUID
@@ -75,6 +82,13 @@ class dbEntity
      * @var String
      */
     protected $description = NULL;
+    
+    /**
+     * Comments about this entity
+     *
+     * @var unknown_type
+     */
+    protected $comments = NULL;
     
     /**
      * Name of this entity
@@ -175,6 +189,43 @@ class dbEntity
     /***********/   
     
 	/**
+	 * Set an array of associated file urls
+	 *
+	 * @param Array $array
+	 * @return true;
+	 */
+	function setFiles($array)
+	{
+		$this->file = $array;
+
+		return true;
+	}	
+	
+	/**
+	 * Set an array of associated file urls using a string representation of a PG array delimited with ><
+	 *
+	 * @param String $pgstrarray
+	 * @return true;
+	 */
+	function setFilesFromStrArray($pgstrarray)
+	{
+		$this->files = dbHelper::pgStrArrayToPHPArray($pgstrarray);		
+		return true;
+	}	    
+    
+	/**
+	 * Add an associated file url 
+	 *
+	 * @param String $value
+	 * @return true;
+	 */
+	function addFile($value)
+	{
+		array_push($this->file, $value);
+		return true;
+	}
+	    
+	/**
      * Set the error message
      * 
      * @param Integer $theCode
@@ -233,11 +284,30 @@ class dbEntity
         return true;
     }
     
+    /**
+     * Set the title of this entity
+     *
+     * @param String $title
+     * @return Boolean
+     */
     protected function setTitle($title)
     {
     	$this->title=$title;
     	return true;
     }
+    
+    /**
+     * Set the comments for this entity
+     *
+     * @param String $comments
+     * @return Boolean
+     */
+    protected function setComments($comments)
+    {
+    	$this->comments = $comments;
+    	return true;
+    }
+    
     
 	/**
 	 * Set the timestamp for when this entity was created
@@ -267,6 +337,16 @@ class dbEntity
     /***********/
     /* GETTERS */
     /***********/    
+    
+	/**
+	 * Get the array of associated files of this entity
+	 *
+	 * @return array
+	 */
+	function getFile()
+	{
+		return $this->files;
+	}    
     
     /**
      * Get the open parent XML tag 
@@ -328,6 +408,16 @@ class dbEntity
     }
     
     /**
+     * Get the comments for this entity
+     *
+     * @return String
+     */
+    function getComments()
+    {
+    	return $this->comments;
+    }
+    
+    /**
      * Get the ID number for this database entity
      *
      * @return UUID
@@ -359,9 +449,6 @@ class dbEntity
                "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n".
         	   "<tridas:createdTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getCreatedTimestamp())."</tridas:createdTimestamp>\n".
 		       "<tridas:lastModifiedTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getLastModifiedTimestamp())."</tridas:lastModifiedTimestamp>\n";
-         	   //"<tridas:createdTimestamp>".$this->getCreatedTimestamp()."</tridas:createdTimestamp>\n".
-		       //"<tridas:lastModifiedTimestamp>".$this->getLastModifiedTimestamp()."</tridas:lastModifiedTimestamp>\n";
-        		
     }
     
     function getDBIDXML()
@@ -369,6 +456,18 @@ class dbEntity
     	return "<tridas:genericField name=\"corinaDBID\" type=\"integer\">".$this->getID()."</tridas:genericField>\n";
     }
     
+    function getFileXML()
+    {
+    	$xml = NULL;
+       	if(($this->getFile()!=NULL) && (count($this->getFile())>0))
+       	{
+        	foreach($this->getFile() as $myFile)	
+        	{
+        		$xml.= "<tridas:file xlink:href=\"".$myFile."\" />\n";
+        	}
+       	}
+       	return $xml;
+    }
     
     /**
      * Get the most recent error code for this database entity
@@ -568,7 +667,7 @@ class objectEntity extends dbEntity
 	 * Functional description: building (church, house etc) water well, painting,
 	 * musical instrucment, ship, type of forest
 	 *
-	 * @var String
+	 * @var objectType
 	 */
 	protected $type = NULL;
 	
@@ -585,14 +684,7 @@ class objectEntity extends dbEntity
 	 * @var String
 	 */
 	protected $owner = NULL;
-	
-	/**
-	 * URL's of associated files
-	 *
-	 * @var String
-	 */
-	protected $file = NULL;
-	
+		
 	/**
 	 * Geometry object representing the location 
 	 *
@@ -645,6 +737,8 @@ class objectEntity extends dbEntity
     function __construct()
     {  
     	$this->location = new location();
+    	$this->object = new objectType();
+    	$this->file = array();
         $groupXMLTag = "objects";
         parent::__construct($groupXMLTag);  	
 	}
@@ -657,18 +751,22 @@ class objectEntity extends dbEntity
 	{
 		$this->countOfChildVMeasurements = (int) $count;
 	}
-	
-	/**
-	 * Set the type of object
+        
+        /**
+	 * Set the object type
 	 *
+	 * @param Integer $id
 	 * @param String $value
 	 * @return Boolean
 	 */
-	function setType($value)
+	function setType($id, $value)
 	{
+		if(!isset($this->type))
+		{
+			$this->type = new objectType();
+		}
 		
-		$this->type = $value;
-		return true;
+		return $this->type->setObjectType($id, $value);
 	}
 	
 	/**
@@ -714,16 +812,15 @@ class objectEntity extends dbEntity
 		$this->owner = $value;
 		return true;
 	}
-	
+			
 	/**
-	 * Set the url of an associated file
-	 *
-	 * @param String $value
-	 * @return true;
+	 * Empty the file array
+	 * 
+	 * @return Boolean
 	 */
-	function setFile($value)
+	function clearFiles()
 	{
-		$this->file = $value;
+		$this->file = array();
 		return true;
 	}
 	
@@ -769,11 +866,11 @@ class objectEntity extends dbEntity
 	{
 		if($asKey)
 		{
-			return dbHelper::getKeyFromValue("objecttype", $this->type);
+			return $this->type->getID();
 		}
 		else
 		{
-			return $this->type;
+			return $this->type->getValue();
 		}
 	}
 		
@@ -817,15 +914,7 @@ class objectEntity extends dbEntity
 		return $this->owner;
 	}
 	
-	/**
-	 * Get the URL of the associated file of this object
-	 *
-	 * @return unknown
-	 */
-	function getFile()
-	{
-		return $this->file;
-	}
+
 
 	/**
 	 * Get the broad historical period this object covers
@@ -892,7 +981,7 @@ class elementEntity extends dbEntity
 	/**
 	 * Shape of this element
 	 *
-	 * @var String
+	 * @var elementShape
 	 */
 	protected $shape = NULL;
 	/**
@@ -928,7 +1017,7 @@ class elementEntity extends dbEntity
 	/**
 	 * Type of element
 	 *
-	 * @var String
+	 * @var ElementType
 	 */
 	protected $type = NULL;
 	/**
@@ -936,7 +1025,7 @@ class elementEntity extends dbEntity
 	 *
 	 * @var String
 	 */
-	protected $file = NULL;
+	protected $files = NULL;
 	/**
 	 * Geometry object representing the location 
 	 *
@@ -1006,6 +1095,7 @@ class elementEntity extends dbEntity
 		parent::__construct("");
 		$this->location = new location();	
 		$this->taxon = new taxon(); 	
+		$this->type = new elementType(); 	
 	}
 
 	/***********/
@@ -1075,13 +1165,18 @@ class elementEntity extends dbEntity
 	/**
 	 * Set the shape of this element
 	 *
+	 * @param Integer $id
 	 * @param String $value
 	 * @return Boolean
 	 */
-	function setShape($value)
+	function setShape($id, $value)
 	{
-		$this->shape = $value;
-		return true;
+		if(!isset($this->shape))
+		{
+			$this->shape = new elementShape();
+		}
+		
+		return $this->shape->setElementShape($id, $value);
 	}
 	
 	/**
@@ -1154,15 +1249,20 @@ class elementEntity extends dbEntity
 	}
 	
 	/**
-	 * Set the type of this element
+	 * Set the element type
 	 *
-	 * @param String $type
+	 * @param Integer $id
+	 * @param String $value
 	 * @return Boolean
 	 */
-	function setType($type)
+	function setType($id, $value)
 	{
-		$this->type = $type;
-		return true;
+		if(!isset($this->type))
+		{
+			$this->type = new elementType();
+		}
+		
+		return $this->type->setElementType($id, $value);
 	}
 	
 	/**
@@ -1173,7 +1273,7 @@ class elementEntity extends dbEntity
 	 */
 	function setFile($value)
 	{
-		$this->file = $file;
+		$this->files = $file;
 		return true;
 	}
 
@@ -1351,11 +1451,11 @@ class elementEntity extends dbEntity
 	{
 		if($asKey)
 		{
-			return dbHelper::getKeyFromValue("elementshape", $this->shape);
+			return  $this->shape->getID();
 		}
 		else
 		{
-			return $this->shape;
+			return $this->shape->getValue();
 		}
 	}
 	
@@ -1409,14 +1509,14 @@ class elementEntity extends dbEntity
 	 */
 	function getType($asKey=false)
 	{
-		if($asKey)
-		{
-			return dbHelper::getKeyFromValue("elementtype", $this->type);
-		}
-		else
-		{
-			return $this->type;
-		}
+            if($asKey===FALSE)
+            {
+		return $this->type->getValue();	
+            }
+            else
+            {
+		return $this->type->getID();	
+            }
 	}
 	
 	/**
@@ -1426,7 +1526,7 @@ class elementEntity extends dbEntity
 	 */
 	function getFile()
 	{
-		return $this->file;
+		return $this->files;
 	}
 	
 	/**
@@ -1607,7 +1707,7 @@ class sampleEntity extends dbEntity
 	
 	function setFile($file)
 	{
-		$this->file == $file;
+		$this->files == $file;
 	}
 	
 	/**
@@ -1642,9 +1742,16 @@ class sampleEntity extends dbEntity
 	 *
 	 * @return String
 	 */
-	function getType()
-	{
+	function getType($askey=false)
+        {
+            if($askey)
+            {
+                return $this->type->getID();
+            }
+            else
+            {
 		return $this->type->getValue();	
+            }
 	}
 	
 	/**
@@ -1714,23 +1821,23 @@ class radiusEntity extends dbEntity
     protected $measurementArray = array();
  
     /**
-     * Whether pith is present or absent 
+     * Whether pith is present - complexPresenceAbsence 
      *
-     * @var Boolean
+     * @var complexPresenceAbsence
      */
-    protected $pithPresent = NULL;
+    protected $pith = NULL;
     
     /**
-     * One of n/a; absent; complete; incomplete
+     * Is sapwood present?
      *
-     * @var sapwood
+     * @var complexPresenceAbsence
      */
     protected $sapwood = NULL;
     
     /**
-     * One of n/a; absent; complete; incomplete
+     * Is heartwood present?
      *
-     * @var heartwood	
+     * @var complexPresenceAbsence	
      */
     protected $heartwood = NULL;
     
@@ -1811,23 +1918,16 @@ class radiusEntity extends dbEntity
 	}
 	
 	/**
-	 * Set whether the pith is present or not
+	 * Set whether the pith is present
 	 *
-	 * @param Boolean $value
-	 * 
+	 * @param String $value
+	 * @param Integer $id
+	 * @return Boolean
 	 */
-	function setPithPresent($value)
+	function setPith($id, $value)
 	{
-		$value = dbHelper::formatBool($value);
-		if($value!=='error')
-		{
-			$this->pithPresent = $value;
-			return TRUE;		
-		}
-		else
-		{
-			return FALSE;
-		}
+		$this->pith = new complexPresenceAbsence();
+		return $this->pith->setComplexPresenceAbsence($id, $value);
 	}
 	
 	/**
@@ -1847,12 +1947,12 @@ class radiusEntity extends dbEntity
 	 *
 	 * @param String $value
 	 * @param Integer $id
-	 * @retun Boolean
+	 * @return Boolean
 	 */
 	function setSapwood($id, $value)
 	{
-		$this->sapwood = new sapwood();
-		return $this->sapwood->setSapwood($id, $value);
+		$this->sapwood = new complexPresenceAbsence();
+		return $this->sapwood->setComplexPresenceAbsence($id, $value);
 	}
 	
 	/**
@@ -1884,8 +1984,8 @@ class radiusEntity extends dbEntity
 	 */
 	function setHeartwood($id, $value)
 	{
-		$this->heartwood = new heartwood();
-		return $this->heartwood->setHeartwood($id, $value);
+		$this->heartwood = new complexPresenceAbsence();
+		return $this->heartwood->setComplexPresenceAbsence($id, $value);
 	}
 	
 	/**
@@ -1980,11 +2080,18 @@ class radiusEntity extends dbEntity
 	/**
 	 * Get whether the pith is present
 	 *
-	 * @return Boolean
+	 * @return String
 	 */
-	function getPithPresent()
+	function getPith($asKey=false)
 	{
-		return $this->pithPresent;		
+		if($asKey)
+		{
+			return $this->pith->getID();
+		}
+		else
+		{
+			return $this->pith->getValue();
+		}
 	}
 	
 	function getSampleID()
@@ -1993,7 +2100,7 @@ class radiusEntity extends dbEntity
 	}
 	
 	/**
-	 * Get whether the sapwood is n/a, absent, complete or incomplete
+	 * Get whether the sapwood present
 	 *
 	 * @return String
 	 */
@@ -2020,7 +2127,7 @@ class radiusEntity extends dbEntity
 	}
 	
 	/**
-	 * Get whether the heartwood is n/a, absent, complete or incomplete
+	 * Get whether the heartwood is present
 	 *
 	 * @return String
 	 */
@@ -2590,9 +2697,9 @@ class measurementEntity extends dbEntity
     /**
      * The geographical extent covered by this series
      *
-     * @var extent
+     * @var Location
      */
-    protected $extent = NULL;
+    protected $location = NULL;
 
     /**
      * Date the measurementSeries was measured or the derivedSeries was created
@@ -2608,7 +2715,7 @@ class measurementEntity extends dbEntity
     {  
         $groupXMLTag = "elements";
         parent::__construct($groupXMLTag); 
-		$this->extent = new extent();	
+		$this->location = new location();	
 		$this->taxon = new taxon(); 	
 		$this->dendrochronologist = new securityUser();
 		$this->analyst = new securityUser();
@@ -2619,22 +2726,7 @@ class measurementEntity extends dbEntity
 	/***********/
     /* SETTERS */
     /***********/ 	
-	
-	function setExtent($extent)
-	{
-		$this->extent->setGeometry($extent);
-	}
-	
-	function setExtentFromGML($gml)
-	{
-		$this->extent->setGeometryFromGML($gml);
-	}
-	
-	function setExtentComment($comment)
-	{
-		$this->extent->setComment($comment);
-	}
-	
+		
 	function setVMeasurementOp($id, $value)
 	{
 		$this->vmeasurementOp->setVMeasurementOp($id, $value);
@@ -2736,7 +2828,7 @@ class measurementEntity extends dbEntity
 	 * @param Integer $id
 	 * @param String $value
 	 */
-	function setMeasurementMethod($id, $value)
+	function setMeasuringMethod($id, $value)
 	{
 		
 		$this->measuringMethod = new measuringMethod();
@@ -2779,9 +2871,10 @@ class measurementEntity extends dbEntity
 		$this->analyst->setParamsFromDB($id);
 	}
 	
-	function setDendrochronologist($name)
+	function setDendrochronologist($id)
 	{
-		$this->dendrochronologist = $name;
+		$this->dendrochronologist = new securityUser();
+		$this->dendrochronologist->setParamsFromDB($id);
 	}
 	
 	function setComments($comments)
@@ -3047,12 +3140,12 @@ class measurementEntity extends dbEntity
     
     function hasExtent()
     {
-        return $this->extent->getGeometry()!=NULL;
+        return $this->location->getGeometry()!=NULL;
     }
     
-    function getExtentAsXML()
+    function getLocationAsXML()
     {
-    	return $this->extent->asXML();
+    	return $this->location->asXML();
     }
     
     function getTridasSeriesType()
@@ -3236,10 +3329,16 @@ class measurementEntity extends dbEntity
     	return $this->vmeasurementResultID;
     }
     
-	function getMeasuringMethod()
+	function getMeasuringMethod($asKey=false)
 	{
-		
-		return $this->measuringMethod->getValue();
+		if($asKey)
+		{
+			return $this->measuringMethod->getID();
+		}
+		else
+		{
+			return $this->measuringMethod->getValue();
+		}
 	}
 	
 	/**
@@ -3312,9 +3411,40 @@ class measurementEntity extends dbEntity
 		return $this->vmeasurementOp->getValue();
 	}
 		
-	function getAuthor()
+	function getAuthor($asKey=false)
 	{
-		return $this->author->getFormattedName();
+		if($asKey)
+		{
+			return $this->author->getID();
+		}
+		else
+		{
+			return $this->author->getFormattedName();
+		}
+	}
+	
+	function getAnalyst($asKey=false)
+	{
+		if($asKey)
+		{
+			return $this->analyst->getID();
+		}
+		else
+		{
+			return $this->analyst->getFormattedName();	
+		}
+	}
+	
+	function getDendrochronologist($asKey=false)
+	{
+		if($asKey)
+		{
+			return $this->dendrochronologist->getID();
+		}
+		else
+		{
+			return $this->dendrochronologist->getFormattedName();
+		}
 	}
 	
 	function getObjective()

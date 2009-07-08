@@ -300,6 +300,32 @@ class standardizingMethod extends lookupEntity
 	
 }
 
+class elementType extends lookupEntity
+{
+	function __construct()
+	{
+		parent::__construct("tlkpelementtype", "elementtype");
+	}
+	
+	function setElementType($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+}
+
+class elementShape extends lookupEntity
+{
+	function __construct()
+	{
+		parent::__construct("tlkpelementshape", "elementshape");
+	}
+	
+	function setElementShape($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+}
+
 
 class variable extends lookupEntity
 {
@@ -314,27 +340,14 @@ class variable extends lookupEntity
 	}
 }
 
-class sapwood extends lookupEntity
+class complexPresenceAbsence extends lookupEntity
 {
 	function __construct()
 	{
-		parent::__construct("tlkpsapwood","sapwood", "sapwoodid");
+		parent::__construct("tlkpcomplexpresenceabsence", "complexpresenceabsence", "complexpresenceabsenceid");
 	}
 	
-	function setSapwood($id, $value)
-	{
-		return $this->setLookupEntity($id, $value);
-	}
-}
-
-class heartwood extends lookupEntity
-{
-	function __construct()
-	{
-		parent::__construct("tlkpheartwood", "heartwood", "heartwoodid");
-	}
-	
-	function setHeartwood($id, $value)
+	function setComplexPresenceAbsence($id, $value)
 	{
 		return $this->setLookupEntity($id, $value);
 	}
@@ -352,6 +365,20 @@ class sampleType extends lookupEntity
 		return $this->setLookupEntity($id, $value);
 	}
 }
+
+class objectType extends lookupEntity
+{
+	function __construct()
+	{
+		parent::__construct("tlkpobjecttype", "objecttype", "objecttypeid");
+	}
+	
+	function setObjectType($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+}
+
 
 class locationType extends lookupEntity
 {

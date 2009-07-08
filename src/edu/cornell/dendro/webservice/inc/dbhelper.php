@@ -315,6 +315,45 @@ class dbHelper
 		return date('c', strtotime($datetime));
 	}
 	
+	/**
+	 * Convert a string representation of a PG array delimited with ><
+	 * into a proper PHP array
+	 *
+	 * @param String $strarray
+	 */
+	public static function pgStrArrayToPHPArray($strarray)
+	{
+
+		$myArray = explode('><', $strarray);
+		
+		if(count($myArray)>1)
+		{
+			return $myArray;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Convert a PHP array into a >< delimited string for insertion
+	 * into PG using string_to_array()
+	 *
+	 * @param unknown_type $array
+	 */
+	public static function phpArrayToPGStrArray($array)
+	{
+		if(count($array)>1)
+		{
+			return implode('><', $array);
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 }
 
 class uuid

@@ -112,7 +112,7 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
     // Other unusual PHP errors
     else 
     {
-        $myMetaHeader->setMessage("P".$errno, wordwrap("PHP ".$errortype[$errno]." - ".$errmsg.". \n See line $linenum \n in file $filename", $wrapwidth), "Warning");
+        $myMetaHeader->setMessage("99".$errno, wordwrap("PHP ".$errortype[$errno]." - ".$errmsg.". \n See line $linenum \n in file $filename", $wrapwidth), "Warning");
     }
     
 }

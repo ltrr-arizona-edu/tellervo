@@ -116,7 +116,7 @@ class request
     	global $myAuth;         
 
         $origErrorLevel = error_reporting(E_ERROR);
-        $xmlrequest = dbHelper::xmlSpecialCharReplace($xmlrequest);
+        $xmlrequest = trim(dbHelper::xmlSpecialCharReplace($xmlrequest));
         $doc = new DomDocument;
         $doc->loadXML($xmlrequest);
         
