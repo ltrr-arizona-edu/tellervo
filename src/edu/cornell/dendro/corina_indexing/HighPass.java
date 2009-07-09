@@ -71,9 +71,9 @@ public class HighPass extends IndexFunction {
 	// used by: highpass.run(), floating.run(), tscore.preamble()
 	// -- array/list dichotomy problem?  no, seems ok.
 	// -- implement special case for w[i]==1?  (floating and t-score use it this way.)
-	public static List filter(List input, int[] w) {
+	public static <T extends Number> List<Double> filter(List<T> input, int[] w) {
 		int n = input.size();
-		List output = new ArrayList(n);
+		List<Double> output = new ArrayList<Double>(n);
 		int nw = (w.length - 1) / 2;
 
 		// sum the weights -- (extract method?)
@@ -86,7 +86,7 @@ public class HighPass extends IndexFunction {
 			int j = -nw;
 			do {
 				if (i + j >= 0 && i + j < n)
-					x += ((Number) input.get(i + j)).doubleValue() * w[nw + j]; // add value, weighted, or ...
+					x += (input.get(i + j)).doubleValue() * w[nw + j]; // add value, weighted, or ...
 				else
 					adj += w[nw + j]; // ... discount weights by that amount
 				j++;

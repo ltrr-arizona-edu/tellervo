@@ -3,6 +3,7 @@
  */
 package edu.cornell.dendro.corina.graph;
 
+import edu.cornell.dendro.corina.cross.TScore;
 import edu.cornell.dendro.corina.sample.Sample;
 
 public class QuickScorer {
@@ -22,8 +23,9 @@ public class QuickScorer {
 			sample2 = s2;
 		}
 		
-		tscore = p_tscore.compute(o1, o2);
-		rvalue = p_tscore.rval;
+		TScore.TScoreBundle scores = p_tscore.compute(o1, o2, new TScore.TScoreBundle());
+		tscore = scores.tscore;
+		rvalue = scores.rval;
 	}
 	
 	public float tscore, rvalue;

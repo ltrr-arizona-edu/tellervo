@@ -18,6 +18,19 @@ public class LabCode {
 	}
 	
 	/**
+	 * Copy constructor
+	 * @param src
+	 */
+	public LabCode(LabCode src) {
+		siteCodes = new ArrayList<String>(src.siteCodes);
+		siteTitles = new ArrayList<String>(src.siteTitles);
+		elementCode = src.elementCode;
+		sampleCode = src.sampleCode;
+		radiusCode = src.radiusCode;
+		seriesCode = src.seriesCode;
+	}
+	
+	/**
 	 * @return true if this code is empty (not counting series code)
 	 */
 	public boolean isEmptyCode() {

@@ -181,12 +181,14 @@ public class TridasDoc implements Filetype {
 	}
 
 	/**
-	 * Loads elements into a sample for a derived series
+	 * "Finishes" a derived sample
+	 * - Loads elements into a sample for a derived series
+	 * - Creates labcodes where applicable
 	 * @param s
 	 * @param series
 	 * @param references
 	 */
-	public void loadReferencesIntoSample(Sample s, 
+	public void finishDerivedSample(Sample s, 
 			TridasIdentifierMap<BaseSample> references) {
 		
 		if(!(s.getSeries() instanceof TridasDerivedSeries))
@@ -218,6 +220,30 @@ public class TridasDoc implements Filetype {
 		}
 		
 		s.setElements(elements);
+		
+		LabCode labcode = null;
+		
+		// if it's derived from one thing, try to get its lab code and change it for our purposes
+		if(elements.size() == 1) {
+			try {
+				BaseSample ref = elements.get(0).loadBasic();
+				if(ref.hasMeta(Metadata.LABCODE)) {
+					labcode = new LabCode(ref.getMeta(Metadata.LABCODE, LabCode.class));
+					labcode.setSeriesCode(series.getTitle());
+				}
+			} catch (IOException e) {
+				// oh well
+			}
+		}
+		
+		// no lab code? make a sad one
+		if(labcode == null) {
+			labcode = new LabCode();
+			labcode.setSeriesCode(series.getTitle());
+		}
+		
+		s.setMeta(Metadata.LABCODE, labcode);
+		s.setMeta(Metadata.TITLE, LabCodeFormatter.getDefaultFormatter().format(labcode));
 	}
 	
 	/**
@@ -243,7 +269,9 @@ public class TridasDoc implements Filetype {
 		references.put(s);
 		
 		// Start with a basic title
-		s.setMeta(Metadata.TITLE, series.getIdentifier().toString());
+		s.setMeta(Metadata.TITLE, series.isSetTitle() 
+				? series.getTitle() 
+				: series.getIdentifier().toString());
 		
 		// set up SampleType
 		if(series instanceof TridasDerivedSeries) {

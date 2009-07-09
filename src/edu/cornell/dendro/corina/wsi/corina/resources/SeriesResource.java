@@ -90,17 +90,17 @@ public class SeriesResource extends CorinaEntityAssociatedResource<List<BaseSamp
 		
 		for(BaseSample s : samples) {
 			ITridasSeries series = s.getSeries();
+						
+			// populate references if it's a derived sample
+			if(s instanceof Sample && s.getSampleType().isDerived())
+				doc.finishDerivedSample((Sample) s, refmap);
+
 			// create a loader and associate it with this sample
 			CorinaWsiTridasElement loader = new CorinaWsiTridasElement(series.getIdentifier());
-			
 			s.setLoader(loader);
 			
 			// don't forget to populate!
 			loader.preload(s);
-			
-			// populate references if it's a derived sample
-			if(s instanceof Sample && s.getSampleType().isDerived())
-				doc.loadReferencesIntoSample((Sample) s, refmap);
 		}
 		
 		this.setAssociatedResult(samples);
