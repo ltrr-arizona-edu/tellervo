@@ -451,6 +451,10 @@ public class GraphInfo {
 	 * @param yearWidth the yearWidth to set
 	 */
 	public void setYearWidth(int yearWidth) {
+		// force > 0
+		if(yearWidth < 1)
+			yearWidth = 1;
+		
 		int oldValue = this.yearWidth;
 		this.yearWidth = yearWidth;
 		changes.firePropertyChange(YEAR_WIDTH_PROPERTY, oldValue, yearWidth);
@@ -467,6 +471,10 @@ public class GraphInfo {
 	 * @param unitHeight the unitHeight to set
 	 */
 	public void setTenUnitHeight(int tenUnitHeight) {
+		// force > 0!
+		if(tenUnitHeight < 1)
+			tenUnitHeight = 1;
+		
 		int oldValue = this.tenUnitHeight;
 		this.tenUnitHeight = tenUnitHeight;
 		changes.firePropertyChange(TEN_UNIT_HEIGHT_PROPERTY, oldValue, tenUnitHeight);
