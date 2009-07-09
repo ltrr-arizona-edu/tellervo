@@ -197,11 +197,11 @@ public class TScore extends RValue {
 		// t = r * sqrt(n-2)/sqrt(1-r^2)
 		float num = (float) Math.sqrt(overlap - 2);
 		float den = (float) Math.sqrt(1 - scores.rval * scores.rval);
-		float t = scores.rval * num / den;
+		scores.tscore = scores.rval * num / den;
 
 		// if overlap=1 or some other silliness, make it zero.
-		if (Float.isNaN(t))
-			t = 0;
+		if (Float.isNaN(scores.tscore))
+			scores.tscore = 0;
 
 		return scores;
 	}
