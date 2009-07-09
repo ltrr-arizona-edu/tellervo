@@ -5,21 +5,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.batik.dom.util.HashTable;
-
 import edu.cornell.dendro.corina.gui.ProgressMeter;
-import edu.cornell.dendro.corina.gui.Splash;
 import edu.cornell.dendro.corina.gui.SplashDialog;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 
+/**
+ * This class does the "meat" of the crossdating dialog - it prepares all the crosses into pairs
+ * 
+ * @author Lucas Madar
+ */
+
 public class CrossdateCollection {
 	public static class Pairing {
 		private Sample primary;
 		private Sample secondary;
-		private Map<Class<?>, Cross> crosses;
+		private Map<Class<? extends Cross>, Cross> crosses;
 		
 		public Pairing(Sample primary, Sample secondary) {
 			if(primary == null || secondary == null) 
@@ -52,7 +55,8 @@ public class CrossdateCollection {
 		}
 	}
 	
-	public static class NoSuchPairingException extends Throwable {
+	@SuppressWarnings("serial")
+	public static class NoSuchPairingException extends Exception {
 		public NoSuchPairingException(int row, int col) {
 			super("No such pairing (" + row + ", " + col + ")");
 		}
@@ -160,7 +164,7 @@ public class CrossdateCollection {
 						newPairings.put(keyForRowCol(i, j), pairing);
 
 						// make a new hashmap for the crosses
-						pairing.crosses = new HashMap<Class<?>, Cross>();
+						pairing.crosses = new HashMap<Class<? extends Cross>, Cross>();
 
 						// now, do the crossings!
 						for(int k = 0; k < Cross.ALL_CROSSDATES.length; k++) {

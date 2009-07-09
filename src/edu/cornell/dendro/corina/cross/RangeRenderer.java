@@ -24,16 +24,19 @@ import edu.cornell.dendro.corina.Range;
  * they'd need to watch the font for changes, anyway.
  */
 public class RangeRenderer extends DefaultTableCellRenderer {
-  private final static String DASH = " - ";
+private static final long serialVersionUID = 1L;
+private final static String DASH = " - ";
   // use Browser.oddRowColor
-  private boolean colorOddRows = false;
+  //private boolean colorOddRows = false;
   private Range range;
 
   public RangeRenderer() {}
 
+  /*
   public RangeRenderer(boolean colorOddRows) {
     this.colorOddRows = colorOddRows;
   }
+  */
 
   private int preferredWidth;
 

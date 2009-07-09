@@ -157,6 +157,9 @@ public class TScore extends RValue {
 		return 2.55f;
 	}
 
+	/** A scorebundle - saves us from tons of new() */
+	private final TScoreBundle scores = new TScoreBundle();
+	
 	/**
 	 Given offsets into the fixed and moving data, compute a single
 	 T-score for that position.
@@ -165,31 +168,51 @@ public class TScore extends RValue {
 	 */
 	@Override
 	public float compute(int offsetFixed, int offsetMoving) {
+		return compute(offsetFixed, offsetMoving, scores).tscore;
+	}
 
+	/**
+	 * Allows an easy way to get tscore and rscore
+	 * 
+	 * @param offsetFixed
+	 * @param offsetMoving
+	 * @param scores a TScoreBundle to populate
+	 * @return the populated TScoreBundle
+	 */
+	public TScoreBundle compute(int offsetFixed, int offsetMoving, TScoreBundle scores) {
 		int overlap = Math.min(getFixed().getData().size() - offsetFixed,
 				getMoving().getData().size() - offsetMoving);
 
 		// already know how to compute r
-		rval = super.compute(offsetFixed, offsetMoving);
-		// FIXME: get rid of cast!
+		scores.rval = super.compute(offsetFixed, offsetMoving);
 
 		// if r is negative, t is zero.
 		// (baillie & pilcher caught this earlier, at r's z3, but this
 		// way is more convenient for me, and gives the same result.)
-		if (rval < 0)
-			return 0;
+		if (scores.rval < 0) {
+			scores.tscore = 0;
+			return scores;
+		}
 
 		// t = r * sqrt(n-2)/sqrt(1-r^2)
 		float num = (float) Math.sqrt(overlap - 2);
-		float den = (float) Math.sqrt(1 - rval * rval);
-		float t = rval * num / den;
+		float den = (float) Math.sqrt(1 - scores.rval * scores.rval);
+		float t = scores.rval * num / den;
 
 		// if overlap=1 or some other silliness, make it zero.
 		if (Float.isNaN(t))
 			t = 0;
 
-		return t;
+		return scores;
 	}
 	
-	public float rval = 0.0f;
+	/**
+	 * A small structure holding both values calculated by this class
+	 * @author Lucas Madar
+	 *
+	 */
+	public static class TScoreBundle {
+		public float rval;
+		public float tscore;
+	}
 }

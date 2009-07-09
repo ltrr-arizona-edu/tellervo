@@ -592,6 +592,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
         splitCrossDates.setOneTouchExpandable(true);
         splitCrossDates.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
+        /*
         tableSignificantScores.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
@@ -618,6 +619,8 @@ public class CrossdateDialog extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        */
+        
         tableSignificantScores.setColumnSelectionAllowed(true);
         jScrollPane1.setViewportView(tableSignificantScores);
         tableSignificantScores.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
