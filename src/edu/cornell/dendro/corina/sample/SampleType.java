@@ -42,9 +42,9 @@ public enum SampleType {
 		case REDATE:
 			return "Redate";
 		case LEGACYCLEAN:
-			return "Legacy";
+			return "LegacyClean";
 		case CROSSDATE:
-			return "Cross";
+			return "Crossdate";
 		default:
 			return "";
 		}
@@ -54,6 +54,13 @@ public enum SampleType {
 		try {
 			return valueOf(name.toUpperCase());
 		} catch (IllegalArgumentException ie) {
+			
+			// some of them aren't clean... ugh.
+			for(SampleType v : SampleType.values()) {
+				if(v.toString().equalsIgnoreCase(name))
+					return v;
+			}
+			
 			return UNKNOWN;
 		}
 	}

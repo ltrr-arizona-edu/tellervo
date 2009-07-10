@@ -73,13 +73,43 @@ public class GenericFieldUtils {
 	 * @param fieldName
 	 * @param value
 	 */
-	public static void setField(ITridasGeneric parent, String fieldName, Object value) {
+	public static TridasGenericField setField(ITridasGeneric parent, String fieldName, Object value) {
 		// if we're setting the value to null or empty string, remove it
 		if(value == null || "".equals(value.toString())) {
 			removeField(parent, fieldName);
-			return;
+			return null;
 		}
 		
+		TridasGenericField field = findOrAddField(parent, fieldName);
+		setFieldValue(field, value);
+		
+		return field;
+	}
+
+	/**
+	 * Adds the specified field directly to the parent
+	 * @param parent
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 */
+	public static TridasGenericField addField(ITridasGeneric parent, String fieldName, Object value) {
+		TridasGenericField field = new TridasGenericField();
+		field.setName(fieldName);
+		parent.getGenericFields().add(field);
+
+		setFieldValue(field, value);
+		
+		return field;
+	}
+	
+	/**
+	 * Sets the specific field to the given value
+	 * 
+	 * @param field The TridasGenericField to modify
+	 * @param value
+	 */
+	public static void setFieldValue(TridasGenericField field, Object value) {
 		String fieldValue = value.toString();
 		String fieldValueType;
 		
@@ -91,8 +121,7 @@ public class GenericFieldUtils {
 			fieldValueType = "xs:float";
 		else
 			fieldValueType = "xs:string";
-		
-		TridasGenericField field = findOrAddField(parent, fieldName);
+
 		field.setType(fieldValueType);
 		field.setValue(fieldValue);
 	}

@@ -3,10 +3,9 @@ package edu.cornell.dendro.corina.gui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Frame;
-import java.util.LinkedList;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JList;
@@ -15,6 +14,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import jsyntaxpane.DefaultSyntaxKit;
+
 import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -22,9 +23,9 @@ import org.jdom.output.XMLOutputter;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
 
-import jsyntaxpane.DefaultSyntaxKit;
-
 public class XMLDebugView extends JDialog {
+	private static final long serialVersionUID = 4595090349265992055L;
+	
 	public static XMLDebugView singleton = new XMLDebugView(null);
 	/** if not enabled, we ignore any add events */
 	private static final boolean enabled = true;
@@ -126,18 +127,25 @@ public class XMLDebugView extends JDialog {
 		Center.center(this);
 	}
 	
-	public static void addDocument(Object doc, String title, boolean isIncoming) {
+	public static void addDocument(final Object doc, final String title, final boolean isIncoming) {
 		if(!enabled)
 			return;
 		
-		ArrayListModel<DocumentHolder> model = (ArrayListModel<DocumentHolder>) singleton.docsView.getModel();
+		// make sure we run this on the swing thread
+		EventQueue.invokeLater(new Runnable() {
+			@SuppressWarnings("unchecked")
+			public void run() {
+				ArrayListModel<DocumentHolder> model = (ArrayListModel<DocumentHolder>) singleton.docsView.getModel();
+				
+				// add the new document to the tail of the list
+				model.add(new DocumentHolder(doc, title, isIncoming));
+				
+				// chop off the top of the list if it's too big
+				if(model.getSize() > maxDocuments)
+					model.remove(0);
+			}		
+		});
 		
-		// add the new document to the tail of the list
-		model.add(new DocumentHolder(doc, title, isIncoming));
-		
-		// chop off the top of the list if it's too big
-		if(model.getSize() > maxDocuments)
-			model.remove(0);
 	}
 	
 	public static void showDialog() {

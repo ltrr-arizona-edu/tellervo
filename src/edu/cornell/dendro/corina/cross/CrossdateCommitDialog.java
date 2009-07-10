@@ -9,9 +9,9 @@ import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -19,21 +19,31 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 
+import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.TridasDatingReference;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasInterpretation;
+import org.tridas.schema.TridasLinkSeries;
+
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 
 
 /**
  *
  * @author  Lucas Madar
  */
-public class CrossdateCommitDialog extends javax.swing.JDialog {
+@SuppressWarnings("serial")
+public class CrossdateCommitDialog extends JDialog {
 	private Sample primary;
 	private Sample secondary;
 	private Range range;
@@ -106,28 +116,63 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		
 		SampleLoader loader = secondary.getLoader();
 		if(loader == null) {
-			new Bug(new Exception("Attempting to apply an index to a sample without a loader. Shouldn't be possible!"));
+			new Bug(new Exception("Attempting to apply an crossdate to a sample without a loader. Shouldn't be possible!"));
 			return false;
 		}
 		
+		/*
+		 * a crossdate has
+		 * 	- parent - the secondary sample
+		 * 	- master - the master sample we crossdated against
+		 *  - start year - a dating range
+		 * 	- name - easy -> title
+		 * 	- certainty - this is a number from 1 to 5, I think
+		 * 	- justification - freeform text
+		*/
+
+		TridasDerivedSeries series = new TridasDerivedSeries();
+		series.setTitle(txtNewCrossdateName.getText());
+		// the identifier is based on the domain from the secondary
+		series.setIdentifier(NewTridasIdentifier.getInstance(secondary.getSeries().getIdentifier()));
+		
+		// this is a crossdate
+		ControlledVoc voc = new ControlledVoc();
+		voc.setValue(SampleType.CROSSDATE.toString());
+		series.setType(voc);
+		
+		// set certainty and justification
+		GenericFieldUtils.addField(series, "corina.crossdateConfidenceLevel", cboCertainty.getSelectedItem());		
+		GenericFieldUtils.addField(series, "corina.crossdateJustification", txtJustification.getText());
+		
+		// set the parent
+		TridasLinkSeries linkParent = new TridasLinkSeries();
+		linkParent.getIdRevesAndXLinksAndIdentifiers().add(secondary.getSeries().getIdentifier());
+		series.getLinkSeries().add(linkParent);
+		
+		// create an interpretation for master and first year
+		TridasInterpretation interpretation = new TridasInterpretation();
+		
+		// set first year
+		interpretation.setFirstYear(range.getStart().tridasYearValue());
+
+		// get linkseries for master
+		TridasLinkSeries linkMaster = new TridasLinkSeries();
+		linkMaster.getIdRevesAndXLinksAndIdentifiers().add(primary.getSeries().getIdentifier());
+		// make dating reference for master
+		TridasDatingReference master = new TridasDatingReference();
+		
+		// tie together the hierarchy
+		master.setLinkSeries(linkMaster);
+		interpretation.setDatingReference(master);
+		series.setInterpretation(interpretation);
 		
 		// make a new 'crossdate' dummy sample for saving
-		Sample tmp = new Sample();
-		
-		tmp.setMeta("name", txtNewCrossdateName.getText());
-		tmp.setMeta("title", txtNewCrossdateName.getText()); // unnecessary, but consistent
-		tmp.setRange(range);
-		tmp.setMeta("::saveoperation", SampleType.CROSSDATE);
-
-		// the new sample's parent is our secondary sample
-		tmp.setMeta("::dbparent", secondary.getMeta("::dbrid"));		
-		tmp.setMeta("::crossdatemaster", primary.getMeta("::dbrid"));
-		tmp.setMeta("::crossdatecertainty", cboCertainty.getSelectedItem());
-		tmp.setMeta("::crossdatejustification", txtJustification.getText());
+		Sample tmp = new Sample(series);		
 
 		try {
+			CorinaWsiTridasElement saver = new CorinaWsiTridasElement(series.getIdentifier());
 			// here's where we do the "meat"
-			if(loader.save(tmp)) {
+			if(saver.save(tmp)) {
 				// put it in our menu
 				OpenRecent.sampleOpened(tmp.getLoader());
 				
@@ -137,7 +182,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 				return true;
 			}
 		} catch (IOException ioe) {
-			Alert.error("Could not create index", "Error: " + ioe.toString());
+			Alert.error("Could not create crossdate", "Error: " + ioe.toString());
 		}
 		
 		return false;
@@ -206,7 +251,6 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
