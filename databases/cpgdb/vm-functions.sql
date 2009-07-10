@@ -116,6 +116,10 @@ BEGIN
       END IF;
 
    ELSIF OPName = 'Crossdate' THEN
+      IF OPParam IS NULL THEN
+         RAISE EXCEPTION 'Crossdates must have a redate parameter';
+      END IF;
+
       IF ConstituentSize <> 1 THEN
          RAISE EXCEPTION 'Crossdates may only be comprised of one constituent';
       END IF;
