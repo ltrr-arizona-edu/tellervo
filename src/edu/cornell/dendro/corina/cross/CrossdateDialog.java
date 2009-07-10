@@ -28,6 +28,7 @@ import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -153,7 +154,7 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
     	setupTables();
     	setupGraph();
     	setupListeners();
-    	setupLists(firstSecondary);
+    	setupLists(null, firstSecondary);
 
     	Center.center(this);
     	setVisible(true);
@@ -316,8 +317,12 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
     	    	// start our new crossdates
     	    	crossdates = new CrossdateCollection();
     	    	crossdatingElements = crossdates.setElements(crossdatingElements);   	
-    	    	
-    	    	setupLists(null);
+
+    	    	// try to keep our settings where they were
+    	    	Object o1 = cboPrimary.getSelectedItem();
+    	    	Object o2 = cboSecondary.getSelectedItem();
+    	    	setupLists(((o1 instanceof Sample) ? new CachedElement((Sample)o1) : (Element) o1),
+    	    			((o2 instanceof Sample) ? new CachedElement((Sample)o2) : (Element) o2));
     		}
     	});
     	
@@ -387,7 +392,7 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
     	panelChart.add(toolbar, BorderLayout.NORTH);
     }
     
-    private void setupLists(Element firstSecondary) {
+    private void setupLists(Element firstPrimary, Element firstSecondary) {
     	ArrayList<Object> samples = new ArrayList<Object>();
     	List<Element> myElements = crossdatingElements.toActiveList();
 
@@ -405,7 +410,8 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
     	cboSecondary.setModel(new DefaultComboBoxModel(samples.toArray()));
     	
     	// choose what shows up by default in our combos
-    	if(firstSecondary == null) {
+    	if(firstSecondary == null && firstPrimary == null) {
+    		// easy case
     		cboPrimary.setSelectedIndex(0);
     		cboSecondary.setSelectedIndex(1);
     	}
@@ -417,11 +423,11 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
     		for(int i = 0; (i < myElements.size()) && !(havePrimary && haveSecondary); i++) {
     			Element e = myElements.get(i);
     			
-    			if(!haveSecondary && e.equals(firstSecondary)) {
+    			if(!haveSecondary && ((firstSecondary == null && !e.equals(firstPrimary)) || e.equals(firstSecondary))) {
     				cboSecondary.setSelectedIndex(i);
     				haveSecondary = true;
-    			}
-    			else if(!havePrimary) {
+    			}    			
+    			else if(!havePrimary && (firstPrimary == null || e.equals(firstPrimary))) {
     				cboPrimary.setSelectedIndex(i);
     				havePrimary = true;
     			}    			

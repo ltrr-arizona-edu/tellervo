@@ -18,6 +18,9 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
     public Ui_CrossdateDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        lblPrimary.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblSecondary.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
     }
     
     /** This method is called from within the constructor to
@@ -64,7 +67,7 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
         panelMeasurements.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measurements"));
 
         lblPrimary.setLabelFor(cboPrimary);
-        lblPrimary.setText("Primary:");
+        lblPrimary.setText("Fixed:");
 
         cboPrimary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "C-ABC-1-4-1", "C-ABC-1-4-2" }));
         cboPrimary.addActionListener(new java.awt.event.ActionListener() {
@@ -74,7 +77,7 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
         });
 
         lblSecondary.setLabelFor(cboSecondary);
-        lblSecondary.setText("Secondary:");
+        lblSecondary.setText("Moving:");
 
         cboSecondary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "C-ABC-1-4-2", "C-ABC-1-4-1" }));
         cboSecondary.addActionListener(new java.awt.event.ActionListener() {
@@ -91,7 +94,10 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
         panelSwap.setLayout(panelSwapLayout);
         panelSwapLayout.setHorizontalGroup(
             panelSwapLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(btnSwap)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelSwapLayout.createSequentialGroup()
+                .addContainerGap(17, Short.MAX_VALUE)
+                .add(btnSwap)
+                .addContainerGap())
         );
         panelSwapLayout.setVerticalGroup(
             panelSwapLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -120,8 +126,8 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
                         .add(btnResetMeasurements))
                     .add(panelMeasurementsLayout.createSequentialGroup()
                         .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(cboSecondary, 0, 482, Short.MAX_VALUE)
-                            .add(cboPrimary, 0, 482, Short.MAX_VALUE))
+                            .add(cboSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(cboPrimary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -136,11 +142,10 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
                             .add(lblPrimary)
                             .add(cboPrimary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(panelMeasurementsLayout.createSequentialGroup()
-                                .add(lblSecondary)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 13, Short.MAX_VALUE))
-                            .add(cboSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 29, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                        .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(lblSecondary)
+                            .add(cboSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)))
                 .add(18, 18, 18)
                 .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnAddMeasurement)
