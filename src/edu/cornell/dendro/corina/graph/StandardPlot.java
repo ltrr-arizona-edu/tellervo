@@ -259,7 +259,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 		int yloc = (int) (yloc1 + (yloc2 - yloc1) * f);
 
 		// hit?
-		return (Math.abs(yloc - p.y) < NEAR);
+		return (Math.abs(yloc - p.y) < Math.max(NEAR, gInfo.getTenUnitHeight() / 2));
 	}
 
 	private int getDataValue(Graph g, Year y) {

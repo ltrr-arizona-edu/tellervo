@@ -46,7 +46,7 @@ public class Graph {
     // very cool.  [what did i mean by that?]
 
     // the thing-to-graph
-    public Graphable graph;
+    public final Graphable graph;
 
     // offsets
     public int xoffset=0, yoffset=0;
@@ -56,6 +56,9 @@ public class Graph {
     
     /** Can the graph agent be changed? */
     private boolean canChangeAgent = true;
+    
+    /** Can this graph be dragged? */
+    private boolean draggable = true;
 
     /** Create a graph from a Graphable object.
         @param g the Graphable object */
@@ -78,7 +81,7 @@ public class Graph {
     }
 
     // an arbitrary List of Numbers, starting at a Year.  (used for graphing density of masters.)
-    public Graph(List l, Year y, String n) {
+    public Graph(List<Integer> l, Year y, String n) {
         // create graph
         graph = new DensityGraph(l, y, n);
         
@@ -200,6 +203,19 @@ public class Graph {
     	if(canChangeAgent)
     		graphAgent = agent; 
     }
+
+    /**
+     * Set whether or not the user can click on this graph and drag it
+     * @param draggable
+     */
+    public void setDraggable(boolean draggable) {
+    	this.draggable = draggable;
+    }
+    
+    public boolean isDraggable() {
+    	return draggable;
+    }
+
     
     /**
      * Get the plotter

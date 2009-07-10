@@ -483,6 +483,9 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
     		// copy the graphs over
     		graphSamples.add(newGraphs.get(0));
     		graphSamples.add(newGraphs.get(1));
+    		
+    		// make sure we can't drag our fixed graph
+    		newGraphs.get(0).setDraggable(false);
     	}
     	
     	graph.update(false);

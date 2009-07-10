@@ -277,8 +277,16 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			int n = getGraphAt(e.getPoint());
 
 			// nope, ignore
+			// also ignore if it's not graphable
 			if (n == -1)
 				return;
+
+			// also ignore if it's not graphable
+			if (!graphs.get(n).isDraggable()) {
+				// complain!
+				Toolkit.getDefaultToolkit().beep();
+				return;
+			}
 
 			// yes, store
 			dragStart = (Point) e.getPoint().clone();
@@ -302,9 +310,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		(graphs.get(current)).xoffset = startX + dx / gInfo.getYearWidth();
 		//        recomputeDrops(); -- writeme?
 
-		// repaint
 		calculateScores();
 		updateTitle();
+		
 		repaint();
 	}
 
@@ -627,7 +635,38 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 	public void mouseReleased(MouseEvent e) {
 		// reset drag?  that seems awkward
-		dragStart = null;
+		if(dragStart != null) {
+			dragStart = null;
+			
+			// see if any bounds changed and update accordingly
+			Range bounds = gInfo.getDrawBounds();
+			Year start = bounds.getStart();
+			Year end = bounds.getEnd();
+			boolean endBoundChanged = false;
+			boolean startBoundChanged = false;
+			
+			computeRange();
+			bounds = gInfo.getDrawBounds();
+			if(!bounds.getEnd().equals(end))
+				endBoundChanged = true;
+			if(!bounds.getStart().equals(start))
+				startBoundChanged = true;
+			
+			if(startBoundChanged || endBoundChanged){
+				int yearWidth = gInfo.getYearWidth();
+				setPreferredSize(new Dimension(bounds.span() * yearWidth, getGraphHeight()));
+				revalidate();					
+				
+				JScrollBar horiz = scroller.getHorizontalScrollBar();
+				
+				if(!(endBoundChanged && horiz.getValue() == horiz.getMinimum()))
+					horiz.setValue(horiz.getValue() - yearWidth);
+				
+				if(!(startBoundChanged && horiz.getValue() == horiz.getMinimum()))
+					horiz.setValue(horiz.getValue() + yearWidth);				
+
+			}
+		}
 		clicked = -1;
 		System.out.println(e);
 		if (e.isPopupTrigger()) {
@@ -1526,6 +1565,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			gInfo.addPropertyChangeListener(this);
 		}
 		
+		@SuppressWarnings("unused")
 		public void remove() {
 			gInfo.removePropertyChangeListener(this);
 		}
