@@ -116,8 +116,8 @@ BEGIN
       END IF;
 
    ELSIF OPName = 'Crossdate' THEN
-      IF OPParam IS NULL THEN
-         RAISE EXCEPTION 'Crossdates must have a redate parameter';
+      IF OPParam IS NOT NULL THEN
+         RAISE EXCEPTION 'Crossdates must not have a redate parameter - specify in finishCrossdate!';
       END IF;
 
       IF ConstituentSize <> 1 THEN
@@ -131,6 +131,8 @@ BEGIN
          RAISE EXCEPTION 'Cleans may only be comprised of one constituent';
       END IF;
 
+   ELSE
+      RAISE EXCEPTION 'Unsupported vmeasurement type / internal error: %', OPName;
    END IF;
 
    -- Create the VMeasurement
