@@ -2,23 +2,16 @@ package edu.cornell.dendro.corina.editor;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.io.FileNotFoundException;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.security.AccessControlException;
 import java.security.AccessController;
-import java.util.Collections;
-import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.CorinaPermission;
 import edu.cornell.dendro.corina.cross.CrossdateDialog;
-import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.FileDialog;
-import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.index.IndexDialog;
@@ -29,12 +22,10 @@ import edu.cornell.dendro.corina.manip.SumCreationDialog;
 import edu.cornell.dendro.corina.manip.TruncateDialog;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
-import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
-import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -44,7 +35,8 @@ import edu.cornell.dendro.corina.util.Center;
 // REFACTOR: this class needs refactoring.  there's IOEs and FNFEs in here!
 
 public class EditorToolsMenu extends JMenu implements SampleListener {
-
+	private static final long serialVersionUID = 1L;
+	
 	private Sample sample;
 	private Editor editor;
 
@@ -58,7 +50,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 
 		// redate
 		JMenuItem redate = Builder.makeMenuItem("redate...", true, "redate.png");
-		redate.addActionListener(new AbstractAction() {
+		redate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				new RedateDialog(sample, editor);
 			}
@@ -78,7 +70,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 
 		// index
 		indexMenu = Builder.makeMenuItem("index...", true, "index.png");
-		indexMenu.addActionListener(new AbstractAction() {
+		indexMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// PERF: for big samples, it can take a couple
 				// seconds for the dialog to appear.  not enough
@@ -92,7 +84,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 
 		// sum
 		sumMenu = Builder.makeMenuItem("sum...", true, "sum.png");
-		sumMenu.addActionListener(new AbstractAction() {
+		sumMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
 			}
@@ -102,7 +94,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 
 		// truncate
 		JMenuItem truncate = Builder.makeMenuItem("truncate...");
-		truncate.addActionListener(new AbstractAction() {
+		truncate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				new TruncateDialog(sample, editor);
 			}
@@ -112,7 +104,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 
 		// reverse
 		JMenuItem reverseMenu = Builder.makeMenuItem("reverse", true, "reverse.png");
-		reverseMenu.addActionListener(new AbstractAction() {
+		reverseMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// reverse, and add to the undo-stack
 				editor.postEdit(Reverse.reverse(sample));
@@ -127,9 +119,10 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		// cross against
 		// HACK: just disable this if the sample isn't saved?
 		JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...", true, "crossdate.png");
-		crossAgainst.addActionListener(new AbstractAction() {
+		crossAgainst.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				new CrossdateDialog(editor, false, ElementList.singletonList(new CachedElement(sample)));
+				Element secondary = new CachedElement(sample); 
+				new CrossdateDialog(editor, false, ElementList.singletonList(secondary), secondary);
 			}
 		});
 		add(crossAgainst);
@@ -137,7 +130,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		// cross all
 		/*
 		crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
-		crossElements.addActionListener(new AbstractAction() {
+		crossElements.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// n-by-n cross
 				Sequence seq = new Sequence(sample.getElements(),
@@ -152,7 +145,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 
 		// reconcile
 		JMenuItem reconcile = Builder.makeMenuItem("new_reconcile", true, "reconcile.png");
-		reconcile.addActionListener(new AbstractAction() {
+		reconcile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DBBrowser browser = new DBBrowser(editor, true, false);
 
