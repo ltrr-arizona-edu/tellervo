@@ -78,7 +78,7 @@ public class Tridas implements Filetype {
 	 * Given a root element from an element, load everything below
 	 * 
 	 * @param root
-	 * @param samples
+	 * @param graphs
 	 * @param objects
 	 */
 	private void loadFromElementTree(Element root, List<BaseSample> corinaSamples, TridasObject[] objects) throws InvalidDataException {

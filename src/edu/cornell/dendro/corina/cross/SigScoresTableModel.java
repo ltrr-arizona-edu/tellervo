@@ -33,7 +33,7 @@ public class SigScoresTableModel extends AbstractTableModel {
 	 *
 	 * @param <T> cross type of the column
 	 */
-	private static class ScoreColumn<T extends Cross> {
+	protected static class ScoreColumn<T extends Cross> {
 		private final static String DEFAULT_FORMATTING = "00.00";
 
 		public final String heading;
@@ -184,7 +184,7 @@ public class SigScoresTableModel extends AbstractTableModel {
 	}
 	
 	// initialize the score columns
-	private final static List<ScoreColumn<? extends Cross>> columns = new ArrayList<ScoreColumn<? extends Cross>>();
+	protected final static List<ScoreColumn<? extends Cross>> columns = new ArrayList<ScoreColumn<? extends Cross>>();
 	
 	static {
 		columns.add(new ScoreColumn<Trend>(Trend.getNameStatic(), Trend.class, "0.0%"));

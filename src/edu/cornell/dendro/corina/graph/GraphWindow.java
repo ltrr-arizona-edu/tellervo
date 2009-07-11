@@ -751,7 +751,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 			
 			Graph g = (Graph) samples.get(plot.current);
 			Color gcolor = g.getColor(false);			
-			elemPanel.setColor(gcolor);			
+			elemPanel.setColor(gcolor);	
 		}
 	}
 	

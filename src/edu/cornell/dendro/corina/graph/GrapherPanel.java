@@ -48,6 +48,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +62,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
+import javax.swing.event.EventListenerList;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Range;
@@ -277,11 +279,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			int n = getGraphAt(e.getPoint());
 
 			// nope, ignore
-			// also ignore if it's not graphable
 			if (n == -1)
 				return;
 
-			// also ignore if it's not graphable
+			// also ignore if it's not draggable
 			if (!graphs.get(n).isDraggable()) {
 				// complain!
 				Toolkit.getDefaultToolkit().beep();
@@ -307,11 +308,16 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			dx = (int) (e.getX() - dragStart.getX());
 			dx -= dx % gInfo.getYearWidth();
 		}
-		(graphs.get(current)).xoffset = startX + dx / gInfo.getYearWidth();
-		//        recomputeDrops(); -- writeme?
+		graphs.get(current).xoffset = startX + dx / gInfo.getYearWidth();
 
-		calculateScores();
-		updateTitle();
+		// data changed, so update
+		if(startX != graphs.get(current).xoffset) {
+			fireGrapherEvent(new GrapherEvent(this, graphs.get(current), GrapherEvent.Type.XOFFSET_CHANGED));
+			calculateScores();
+			updateTitle();
+		}
+		
+		//        recomputeDrops(); -- writeme?
 		
 		repaint();
 	}
@@ -368,6 +374,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 	// ------------------------------------------------------------
 
+	private final static List<Integer> emptyIntegerList = Collections.emptyList();
+	private final static Graph emptyGraph = new Graph(emptyIntegerList, new Year(1000), "empty");
+	
 	// KeyListener ------------------------------------------------------------
 	/** Deal with key-pressed events, as described above.
 	 @param e the event to process */
@@ -389,10 +398,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		
 		// unknown key?
 		boolean unknown = false;
-
+		
 		// graph
-		Graph g = graphs.get(current);
-
+		Graph g = (graphs.size() > 0) ? graphs.get(current) : emptyGraph;
+		
 		// IDEA: if i had some way of saying "shift tab" => { block }
 		// then i wouldn't need these nested if/case statements.
 
@@ -405,14 +414,20 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				break;
 			case KeyEvent.VK_PERIOD:
 				g.bigger();
+				fireGrapherEvent(new GrapherEvent(this, g, GrapherEvent.Type.SCALE_CHANGED));
+
 				repaint = true;
 				break;
 			case KeyEvent.VK_COMMA:
 				g.smaller();
+				fireGrapherEvent(new GrapherEvent(this, g, GrapherEvent.Type.SCALE_CHANGED));
+				
 				repaint = true;
 				break;
 			case KeyEvent.VK_EQUALS:
 				g.slide(1);
+				fireGrapherEvent(new GrapherEvent(this, g, GrapherEvent.Type.YOFFSET_CHANGED));
+
 				repaint = true;
 				break;
 			default:
@@ -463,6 +478,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			}
 			case KeyEvent.VK_LEFT: {
 				g.left();
+				fireGrapherEvent(new GrapherEvent(this, g, GrapherEvent.Type.XOFFSET_CHANGED));
+
 				// see if our graph bounds changed at all. 
 				Year y1 = bounds.getStart();
 				Year y2 = bounds.getEnd();
@@ -487,6 +504,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			}
 			case KeyEvent.VK_RIGHT: {
 				g.right();
+				fireGrapherEvent(new GrapherEvent(this, g, GrapherEvent.Type.XOFFSET_CHANGED));
 
 				// see if our graph bounds changed at all. 
 				Year y1 = bounds.getStart();
@@ -518,18 +536,22 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			switch (k) {
 			case KeyEvent.VK_UP:
 				g.slide(10);
+				fireGrapherEvent(new GrapherEvent(this, g, GrapherEvent.Type.YOFFSET_CHANGED));
 				repaint = true;
 				break;
 			case KeyEvent.VK_DOWN:
 				g.slide(-10);
+				fireGrapherEvent(new GrapherEvent(this, g, GrapherEvent.Type.YOFFSET_CHANGED));
 				repaint = true;
 				break;
 			case KeyEvent.VK_MINUS:
 				g.slide(-1);
+				fireGrapherEvent(new GrapherEvent(this, g, GrapherEvent.Type.YOFFSET_CHANGED));
 				repaint = true;
 				break;
 			case KeyEvent.VK_EQUALS: // unshifted equals == plus
 				g.slide(1);
+				fireGrapherEvent(new GrapherEvent(this, g, GrapherEvent.Type.YOFFSET_CHANGED));
 				repaint = true;
 				break;
 			case KeyEvent.VK_LEFT:
@@ -1460,17 +1482,30 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		return getMaxPixelHeight() + GrapherPanel.AXIS_HEIGHT + gInfo.getTenUnitHeight();
 	}
 	
+	/**
+	 * Override getPreferredSize(Dimension) instead
+	 */
 	@Override
 	public Dimension getPreferredSize() {
-		Dimension d = super.getPreferredSize();
-		
 		ensureScrollerExists();
+
+		Dimension parentPreferredDimensions = super.getPreferredSize();
+		return getPreferredSize(parentPreferredDimensions,
+				(scroller != null) ? scroller.getViewport().getExtentSize()
+						: parentPreferredDimensions);
+	}
+	
+	/**
+	 * Meant to be overridden:
+	 * 
+	 * @param parentPreferredDimensions JPanel's idea of what our size should be
+	 * @param scrollExtentDimensions our parent JScrollPane viewport's size
+	 * @return our preferred dimensions
+	 */
+	public Dimension getPreferredSize(Dimension parentPreferredDimensions, Dimension scrollExtentDimensions) {
+		parentPreferredDimensions.height = scrollExtentDimensions.height;
 		
-		if(scroller != null) {
-			d.height = scroller.getHeight();
-		}
-		
-		return d;
+		return parentPreferredDimensions;		
 	}
 	
 	public int getMaxPixelHeight() {
@@ -1479,7 +1514,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		
 		// kludge! no graphs, 1000 height
 		if(nGraphs == 0)
-			return 1000;
+			return 100;
 		
 		for (int i = 0; i < nGraphs; i++) {
 			Graph cg = graphs.get(i);
@@ -1488,6 +1523,34 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				maxh = val;
 		}
 		return maxh;
+	}
+	
+	/**
+	 * Get the values of max and min
+	 * @return an array - v[0] = min, v[1] = max
+	 */
+	public int[] getMinMaxGraphValue() {
+		int max = Integer.MIN_VALUE;
+		int min = Integer.MAX_VALUE;
+		
+		// no graphs? nice, small height 
+		if(graphs.size() == 0) {
+			return new int[] { 0, 100 };
+		}
+		
+		for(Graph g : graphs) {
+			for(Number v : g.graph.getData()) {
+				int val = v.intValue();
+				
+				if(max < val)
+					max = val;
+				
+				if(min > val)
+					min = val;
+			}
+		}
+
+		return new int[] { min, max };
 	}
 	
 	/*
@@ -1675,5 +1738,32 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		UPDATE_SIZE,
 		REVALIDATE,
 		VERTICAL_AXIS_SCROLLBAR_UPDATE;
+	}
+	
+	private EventListenerList grapherListeners = new EventListenerList();
+
+	/**
+	 * Add a grapher listener to this graph
+	 * @param listener
+	 */
+	public void addGrapherListener(GrapherListener listener) {
+		grapherListeners.add(GrapherListener.class, listener);
+	}
+	
+	/**
+	 * Remove a grapher listener from this graph
+	 * @param listener
+	 */
+	public void removeGrapherListner(GrapherListener listener) {
+		grapherListeners.remove(GrapherListener.class, listener);
+	}
+	
+	protected void fireGrapherEvent(GrapherEvent evt) {
+		Object[] listeners = grapherListeners.getListenerList();
+		
+		for(int i = 0; i < listeners.length; i+=2) {
+			if(listeners[i] == GrapherListener.class)
+				((GrapherListener)listeners[i+1]).graphChanged(evt);
+		}
 	}
 }

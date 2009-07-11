@@ -2,17 +2,24 @@ package edu.cornell.dendro.corina.cross;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
+import javax.swing.JSeparator;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -24,6 +31,8 @@ import edu.cornell.dendro.corina.graph.GraphActions;
 import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
 import edu.cornell.dendro.corina.graph.GraphToolbar;
+import edu.cornell.dendro.corina.graph.GrapherEvent;
+import edu.cornell.dendro.corina.graph.GrapherListener;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
@@ -39,7 +48,7 @@ import edu.cornell.dendro.corina.util.Center;
  * @author  peterbrewer
  */
 @SuppressWarnings("serial")
-public class CrossdateDialog extends Ui_CrossdateDialog {
+public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListener {
 	private ElementList crossdatingElements;
 	private CrossdateCollection crossdates;
 	
@@ -54,7 +63,9 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
 	private List<Graph> graphSamples;
 	private JScrollPane graphScroller;
 	private Range newCrossdateRange;
-    
+
+	private CrossdateStatusBar status;
+	
     /** Creates new form CrossDatingWizard */
     public CrossdateDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -151,6 +162,8 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
     	crossdates = new CrossdateCollection();
     	crossdatingElements = crossdates.setElements(crossdatingElements);   	
      	
+    	status = new CrossdateStatusBar();
+    	
     	setupTables();
     	setupGraph();
     	setupListeners();
@@ -206,19 +219,23 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
     			int col = cboSecondary.getSelectedIndex();
     			
     			// make a nice title?
-    			glue.setTitle("Crossdating: " + cboPrimary.getSelectedItem().toString());
+    			glue.setTitle("Crossdating: " + cboSecondary.getSelectedItem().toString());
     			
     			try {
     				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
+    				status.setPairing(pairing);
     				sigScoresModel.setCrossdates(pairing);
     				allScoresModel.setCrossdates(pairing);
     				histogramModel.setCrossdates(pairing);
     			} catch (CrossdateCollection.NoSuchPairingException nspe) {
+    				status.setPairing(null);
     				sigScoresModel.clearCrossdates();
     				allScoresModel.clearCrossdates();
     				histogramModel.clearCrossdates();
     				newCrossdateRange = null;
     			}
+    			
+				updateGraph(null);
     		}
     	};
     	
@@ -369,7 +386,14 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
 		graphSamples = new ArrayList<Graph>(2);
 				
 		// create a graph panel; put it in a scroll pane
-		graph = new GrapherPanel(graphSamples, null, graphInfo);
+		graph = new GrapherPanel(graphSamples, null, graphInfo) {
+			@Override
+			public Dimension getPreferredSize(Dimension parent, Dimension scroll) {
+				// our height is the size of the graph or the size of the viewport
+				// whichever is greater
+				return new Dimension(parent.width, Math.max(getGraphHeight(), scroll.height));
+			}
+		};
 		graph.setUseVerticalScrollbar(true);
 		graph.setEmptyGraphText("Choose a crossdate");
 		
@@ -379,17 +403,23 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
 		graphScroller.setVerticalScrollBar(new ReverseScrollBar());
 
 		graphController = new GraphController(graph, graphScroller);
-		
-		// get our JLabel set up
-		updateGraph(null);
-		
+				
 		panelChart.setLayout(new BorderLayout());
 		panelChart.add(graphScroller, BorderLayout.CENTER);
 		
 		// add a toolbar
     	actions = new GraphActions(graph, null, graphController);
-    	JToolBar toolbar = new GraphToolbar(actions);
-    	panelChart.add(toolbar, BorderLayout.NORTH);
+    	GraphToolbar graphToolbar = new GraphToolbar(actions);
+    	panelChart.add(graphToolbar, BorderLayout.NORTH);
+    	
+    	// add a status bar
+    	panelChart.add(status, BorderLayout.SOUTH);
+    	
+    	// listen to this graph
+    	graph.addGrapherListener(this);
+    	
+		// get our basic graph set up
+		updateGraph(null);
     }
     
     private void setupLists(Element firstPrimary, Element firstSecondary) {
@@ -486,12 +516,115 @@ public class CrossdateDialog extends Ui_CrossdateDialog {
     		
     		// make sure we can't drag our fixed graph
     		newGraphs.get(0).setDraggable(false);
+    		
+    		// also, display the moving range
+    		status.setMovingRange(newGraphs.get(1).getRange());
+    		
+    		// fit the height of the graph
+        	graphController.scaleToFitHeight(5);
     	}
+    	else
+    		status.setMovingRange(null);
     	
-    	graph.update(false);
-    	graphController.scaleToFitHeight(); // calls graph.update(true) for us
 		graphInfo.setShowVertAxis(true);
+    	graph.update(true);
 		btnOK.setEnabled(graphSamples.size() == 2);
     }
 
+    /** Get notified when the graph changes */
+	public void graphChanged(GrapherEvent evt) {
+		if(evt.getEventType() == GrapherEvent.Type.XOFFSET_CHANGED) {
+			if(graphSamples.size() == 2)
+				status.setMovingRange(graphSamples.get(1).getRange());
+		}
+	}
+	
+	/**
+	 * A status bar that works with the graph
+	 * Shows all the scores, offset, moving range
+	 * 
+	 * @author Lucas Madar
+	 */
+	public static class CrossdateStatusBar extends JPanel {
+		private JLabel range;
+		private JLabel overlap;
+		private JLabel[] contentHeading;
+		private JLabel[] content;
+		private CrossdateCollection.Pairing pairing;
+		
+		public CrossdateStatusBar() {			
+			range = new JLabel();
+			overlap = new JLabel();
+			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+			add(range);
+			add(Box.createHorizontalStrut(8));
+			add(new JSeparator(JSeparator.VERTICAL));
+			add(Box.createHorizontalStrut(4));
+			add(overlap);
+			add(Box.createHorizontalStrut(8));
+			add(new JSeparator(JSeparator.VERTICAL));
+			add(Box.createHorizontalGlue());
+
+			// create a bunch of JLabels...
+			int n = SigScoresTableModel.columns.size();
+			contentHeading = new JLabel[n];
+			content = new JLabel[n];
+			for(int i = 0; i < n; i++) {
+				if(i > 0) {
+					add(Box.createHorizontalStrut(8));
+					add(new JSeparator(JSeparator.VERTICAL));
+					add(Box.createHorizontalStrut(4));
+				}
+				contentHeading[i] = new JLabel(SigScoresTableModel.columns.get(i).heading);
+				add(contentHeading[i]);
+				add(Box.createHorizontalStrut(4));
+				content[i] = new JLabel("     ");
+				add(content[i]);
+			}
+			
+			setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
+		}
+		
+		private void clearContent() {
+			range.setText("");
+			overlap.setText("");
+			for(int i = 0; i < content.length; i++) {
+				content[i].setText("     ");
+			}
+		}
+		
+		public void setPairing(CrossdateCollection.Pairing pairing) {
+			this.pairing = pairing;
+			clearContent();
+		}
+		
+		public void setMovingRange(Range mRange) {
+			if(mRange == null) {
+				clearContent();
+				return;
+			}
+			
+			range.setText("Moving range: " + mRange);
+			overlap.setText("Overlap: " + mRange.overlap(pairing.getPrimary().getRange()));
+			
+			for(int i = 0; i < SigScoresTableModel.columns.size(); i++) {
+				// score type for this column
+				Class<?> scoreClass = SigScoresTableModel.columns.get(i).scoreType;
+				Cross cross = pairing.getCrossForClass(scoreClass);
+
+				contentHeading[i].setEnabled(cross != null);
+				content[i].setEnabled(cross != null);
+				
+				if(cross == null) {
+					content[i].setText("n/a");
+					return;
+				}
+				
+				DecimalFormat df = new DecimalFormat(cross.getFormat());				
+				float val = cross.getScore(mRange.getEnd());
+				
+				content[i].setText(df.format(val));
+			}			
+		}
+	}
 }
