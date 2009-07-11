@@ -36,6 +36,15 @@ public abstract class ToggleablePreferenceAction extends ToggleableAction {
 	private String keyFalse;
 	private String prefName;
 
+	/**
+	 * 
+	 * @param boolPrefName the name of the preference
+	 * @param boolValue the current value
+	 * @param defaultValue the value to use if it doesn't exist (NOT USED!)
+	 * @param keyTrue the i18n key to use for name on true
+	 * @param keyFalse the i18n key to use on false
+	 * @param iconName the name of the icon
+	 */
 	private ToggleablePreferenceAction(String boolPrefName, boolean boolValue, boolean defaultValue,
 			String keyTrue, String keyFalse, String iconName) {
 		super(boolValue ? keyTrue : keyFalse, boolValue, iconName, "Icons");

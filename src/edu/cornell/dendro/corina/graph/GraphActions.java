@@ -1,10 +1,11 @@
 package edu.cornell.dendro.corina.graph;
 
-import java.awt.event.ActionEvent;
+ import java.awt.event.ActionEvent;
+import java.beans.IntrospectionException;
 
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.ToggleableAction;
-import edu.cornell.dendro.corina.ui.ToggleablePreferenceAction;
+import edu.cornell.dendro.corina.ui.ToggleableBoundAction;
 import edu.cornell.dendro.corina.ui.ToggleableActionGroup;
 
 /**
@@ -25,7 +26,12 @@ public class GraphActions {
 		
 		if(graph != null) {
 			this.info = graph.getGraphInfo();
-			createGraphActions();
+			try {
+				createGraphActions();
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new IllegalStateException("Broken graphinfo structure?");
+			}
 		}
 		else
 			throw new IllegalArgumentException("Must specify a graph and graphInfo!");
@@ -47,48 +53,27 @@ public class GraphActions {
 		return controller != null;
 	}
 	
-	protected ToggleablePreferenceAction showVerticalAxis;
-	protected ToggleablePreferenceAction showGridlines;
-	protected ToggleablePreferenceAction showBaselines;
-	protected ToggleablePreferenceAction showHundredPercentLines;
-	protected ToggleablePreferenceAction showComponentNames;
+	protected ToggleableAction showVerticalAxis;
+	protected ToggleableAction showGridlines;
+	protected ToggleableAction showBaselines;
+	protected ToggleableAction showHundredPercentLines;
+	protected ToggleableAction showComponentNames;
 	
-	@SuppressWarnings("serial")
-	private void createGraphActions() {
-		showVerticalAxis = new ToggleablePreferenceAction("corina.graph.vertical-axis", true, 
-				"vert_hide", "vert_show", "axisshow.png") {
-			public void togglePerformed(ActionEvent e, Boolean value) {
-				info.setShowVertAxis(value);
-			}
-		};
+	private void createGraphActions() throws IntrospectionException {
+		showVerticalAxis = new ToggleableBoundAction<GraphInfo>("vert_hide", "vert_show", 
+				info, GraphInfo.class, GraphInfo.SHOW_VERT_AXIS_PROPERTY, "axisshow.png", "Icons");
 
-		showGridlines = new ToggleablePreferenceAction("corina.graph.graphpaper", true,
-				"grid_hide", "grid_show", "showgrid.png") {
-			public void togglePerformed(ActionEvent e, Boolean value) {
-				info.setShowGraphPaper(value);
-			}
-		};
+		showGridlines = new ToggleableBoundAction<GraphInfo>("grid_hide", "grid_show",
+				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_PAPER_PROPERTY, "showgrid.png", "Icons");
 
-		showBaselines = new ToggleablePreferenceAction("corina.graph.baselines", true,
-				"base_hide", "base_show", null) {
-			public void togglePerformed(ActionEvent e, Boolean value) {
-				info.setShowBaselines(value);
-			}
-		};
+		showBaselines = new ToggleableBoundAction<GraphInfo>("base_hide", "base_show", 
+				info, GraphInfo.class, GraphInfo.SHOW_BASELINES_PROPERTY);
 
-		showComponentNames = new ToggleablePreferenceAction("corina.graph.componentnames", true, 
-				"compn_hide", "compn_show", "label.png") {
-			public void togglePerformed(ActionEvent e, Boolean value) {
-				info.setShowGraphNames(value);
-			}
-		};
-		
-		showHundredPercentLines = new ToggleablePreferenceAction("corina.graph.hundredpercentlines", false, 
-				"hperc_hide", "hperc_show", null) {
-			public void togglePerformed(ActionEvent e, Boolean value) {
-				info.setShowHundredpercentlines(value);
-			}
-		};
+		showComponentNames = new ToggleableBoundAction<GraphInfo>("compn_hide", "compn_show",
+				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_NAMES_PROPERTY, "label.png", "Icons");
+
+		showHundredPercentLines = new ToggleableBoundAction<GraphInfo>("hperc_hide", "hperc_show", 
+				info, GraphInfo.class, GraphInfo.SHOW_HUNDREDPERCENTLINES_PROPERTY);
 	}
 	
 	protected ToggleableAction showElementsPanel;

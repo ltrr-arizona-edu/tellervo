@@ -514,62 +514,62 @@ public class GraphInfo {
 	}
 	
 	/** The property name for printing */
-	public static final String PRINTING_PROPERTY = "graphInfo.printing";
+	public static final String PRINTING_PROPERTY = "printing";
 
 	/** The property name for foreColor */
-	public static final String FORE_COLOR_PROPERTY = "graphInfo.foreColor";
+	public static final String FORE_COLOR_PROPERTY = "foreColor";
 
 	/** The property name for majorLineColor */
-	public static final String MAJOR_LINE_COLOR_PROPERTY = "graphInfo.majorLineColor";
+	public static final String MAJOR_LINE_COLOR_PROPERTY = "majorLineColor";
 
 	/** The property name for midLineColor */
-	public static final String MID_LINE_COLOR_PROPERTY = "graphInfo.midLineColor";
+	public static final String MID_LINE_COLOR_PROPERTY = "midLineColor";
 
 	/** The property name for minorLineColor */
-	public static final String MINOR_LINE_COLOR_PROPERTY = "graphInfo.minorLineColor";
+	public static final String MINOR_LINE_COLOR_PROPERTY = "minorLineColor";
 
 	/** The property name for backgroundColor */
-	public static final String BACKGROUND_COLOR_PROPERTY = "graphInfo.backgroundColor";
+	public static final String BACKGROUND_COLOR_PROPERTY = "backgroundColor";
 
 	/** The property name for drawBounds */
-	public static final String DRAW_BOUNDS_PROPERTY = "graphInfo.drawBounds";
+	public static final String DRAW_BOUNDS_PROPERTY = "drawBounds";
 
 	/** The property name for emptyBounds */
-	public static final String EMPTY_BOUNDS_PROPERTY = "graphInfo.emptyBounds";
+	public static final String EMPTY_BOUNDS_PROPERTY = "emptyBounds";
 
 	/** The property name for dottedIndexes */
-	public static final String DOTTED_INDEXES_PROPERTY = "graphInfo.dottedIndexes";
+	public static final String DOTTED_INDEXES_PROPERTY = "dottedIndexes";
 
 	/** The property name for thickerSapwood */
-	public static final String THICKER_SAPWOOD_PROPERTY = "graphInfo.thickerSapwood";
+	public static final String THICKER_SAPWOOD_PROPERTY = "thickerSapwood";
 
 	/** The property name for showGraphPaper */
-	public static final String SHOW_GRAPH_PAPER_PROPERTY = "graphInfo.showGraphPaper";
+	public static final String SHOW_GRAPH_PAPER_PROPERTY = "showGraphPaper";
 
 	/** The property name for showBaselines */
-	public static final String SHOW_BASELINES_PROPERTY = "graphInfo.showBaselines";
+	public static final String SHOW_BASELINES_PROPERTY = "showBaselines";
 
 	/** The property name for showHundredpercentlines */
-	public static final String SHOW_HUNDREDPERCENTLINES_PROPERTY = "graphInfo.showHundredpercentlines";
+	public static final String SHOW_HUNDREDPERCENTLINES_PROPERTY = "showHundredpercentlines";
 
 	/** The property name for showGraphNames */
-	public static final String SHOW_GRAPH_NAMES_PROPERTY = "graphInfo.showGraphNames";
+	public static final String SHOW_GRAPH_NAMES_PROPERTY = "showGraphNames";
 
 	/** The property name for showVertAxis */
-	public static final String SHOW_VERT_AXIS_PROPERTY = "graphInfo.showVertAxis";
+	public static final String SHOW_VERT_AXIS_PROPERTY = "showVertAxis";
 
 	/** The property name for yearWidth */
-	public static final String YEAR_WIDTH_PROPERTY = "graphInfo.yearWidth";
+	public static final String YEAR_WIDTH_PROPERTY = "yearWidth";
 
 	/** The property name for tenUnitHeight */
-	public static final String TEN_UNIT_HEIGHT_PROPERTY = "graphInfo.tenUnitHeight";
+	public static final String TEN_UNIT_HEIGHT_PROPERTY = "tenUnitHeight";
 
 	/** The property name for printHeight */
-	public static final String PRINT_HEIGHT_PROPERTY = "graphInfo.printHeight";
+	public static final String PRINT_HEIGHT_PROPERTY = "printHeight";
 
 	/** The property name for printerColors */
-	public static final String PRINTER_COLORS_PROPERTY = "graphInfo.printerColors";
+	public static final String PRINTER_COLORS_PROPERTY = "printerColors";
 
 	/** The property name for screenColors */
-	public static final String SCREEN_COLORS_PROPERTY = "graphInfo.screenColors";	
+	public static final String SCREEN_COLORS_PROPERTY = "screenColors";	
 }
