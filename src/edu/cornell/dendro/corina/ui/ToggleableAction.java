@@ -1,90 +1,56 @@
-/**
- * 
- */
 package edu.cornell.dendro.corina.ui;
 
 import java.awt.event.ActionEvent;
 
-import edu.cornell.dendro.corina.core.App;
+import javax.swing.Icon;
 
-/**
- * An action that wraps a boolean application preference and two I18n key values
- * Used to make nice toggle buttons!
- * 
- * @author Lucas Madar
- *
- */
+public abstract class ToggleableAction extends CorinaAction {
+	private static final long serialVersionUID = 1L;
 
-@SuppressWarnings("serial")
-public abstract class ToggleableAction extends CorinaAction {	
 	/**
-	 * 
-	 * @param boolPrefName The name of the boolean preference we wrap
-	 * @param defaultValue The default value to use if the preference doesn't exist
-	 * @param keyTrue The I18n key to use if the value is true
-	 * @param keyFalse The I18n key to use if false
-	 * @param iconName The name of the icon
+	 * @param key
+	 * @param icon
+	 * @param toggleValue
 	 */
-	public ToggleableAction(String boolPrefName, boolean defaultValue,
-			String keyTrue, String keyFalse, String iconName) {
-		this(boolPrefName, App.prefs.getBooleanPref(boolPrefName, defaultValue),  
-				defaultValue, keyTrue, keyFalse, iconName);
+	public ToggleableAction(String key, boolean toggleValue, Icon icon) {
+		super(key, icon);
+		
+		putValue(CORINA_SELECTED_KEY, toggleValue);
 	}
 
 	/**
-	 * 
 	 * @param key
-	 * @param defaultValue
 	 * @param iconName
+	 * @param iconPackageName
+	 * @param toggleValue
 	 */
-	public ToggleableAction(String key, boolean defaultValue, String iconName) {
-		super(key, iconName, "Icons");
-		usePref = false;
+	public ToggleableAction(String key, boolean toggleValue, String iconName, String iconPackageName) {
+		super(key, iconName, iconPackageName);
 		
-		putValue(CORINA_SELECTED_KEY, defaultValue);
+		putValue(CORINA_SELECTED_KEY, toggleValue);
 	}
 
 	/**
-	 * 
 	 * @param key
-	 * @param defaultValue
+	 * @param iconName
+	 * @param toggleValue
 	 */
-	public ToggleableAction(String key, boolean defaultValue) {
+	public ToggleableAction(String key, boolean toggleValue, String iconName) {
+		super(key, iconName);
+		
+		putValue(CORINA_SELECTED_KEY, toggleValue);
+	}
+
+	/**
+	 * @param key
+	 * @param toggleValue
+	 */
+	public ToggleableAction(String key, boolean toggleValue) {
 		super(key);
-		usePref = false;
 		
-		putValue(CORINA_SELECTED_KEY, defaultValue);
+		putValue(CORINA_SELECTED_KEY, toggleValue);
 	}
 
-	private final boolean usePref;
-	private String keyTrue;
-	private String keyFalse;
-	private String prefName;
-
-	private ToggleableAction(String boolPrefName, boolean boolValue, boolean defaultValue,
-			String keyTrue, String keyFalse, String iconName) {
-		super(boolValue ? keyTrue : keyFalse, iconName, "Icons");
-		
-		this.prefName = boolPrefName;
-		this.keyTrue = keyTrue;
-		this.keyFalse = keyFalse;
-		
-		usePref = true;
-		
-		putValue(CORINA_SELECTED_KEY, boolValue);
-	}
-	
-	@Override
-	protected void selectionStateChanged(boolean newSelectedState) {
-		if(usePref) {
-			// change our name
-			putValue(NAME, newSelectedState ? I18n.getText(keyTrue) : I18n.getText(keyFalse));
-			
-			// change the pref
-			App.prefs.setBooleanPref(prefName, newSelectedState);
-		}
-	}
-	
 	/**
 	 * Override and force actionPerformed to use togglePerformed instead
 	 */
