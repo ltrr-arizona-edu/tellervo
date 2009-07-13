@@ -97,6 +97,10 @@ public class GraphActions {
 	protected CorinaAction fitHorizontally;
 	protected CorinaAction fitBoth;
 	
+	protected CorinaAction scaleUp;
+	protected CorinaAction scaleDown;
+	protected CorinaAction scaleReset;
+	
 	protected CorinaAction zoomIn;
 	protected CorinaAction zoomOut;
 	protected CorinaAction zoomReset;
@@ -151,21 +155,45 @@ public class GraphActions {
 			}
 		};
 		
-		zoomOut = new CorinaAction("escale_halve", "axiszoomout.png", "Icons"){
+		scaleDown = new CorinaAction("escale_halve"){
 			public void actionPerformed(ActionEvent e) {
 				controller.halveScale();
 			}
 		};
-		zoomIn = new CorinaAction("escale_double", "axiszoomin.png", "Icons"){
+		scaleUp = new CorinaAction("escale_double"){
 			public void actionPerformed(ActionEvent e) {
 				controller.doubleScale();
 			}
 		};
-		zoomReset = new CorinaAction("escale_reset"){
+		scaleReset = new CorinaAction("escale_reset"){
 			public void actionPerformed(ActionEvent e) {
 				controller.resetScaling();
 			}
 		};
+		
+		zoomIn = new CorinaAction("zoom_out", "axiszoomout.png", "Icons"){
+			public void actionPerformed(ActionEvent e) {
+				int height = info.getTenUnitHeight();
+				float fheight = ((float) height) / 1.25f;
+				
+				info.setTenUnitHeight((height == (int) fheight) ? height - 1 : (int) fheight);
+			}
+		};
+		zoomOut = new CorinaAction("zoom_in", "axiszoomin.png", "Icons"){
+			public void actionPerformed(ActionEvent e) {
+				int height = info.getTenUnitHeight();
+				float fheight = ((float) height) * 1.25f;
+				
+				info.setTenUnitHeight((height == (int) fheight) ? height + 1 : (int) fheight);
+			}
+		};
+		zoomReset = new CorinaAction("zoom_reset"){
+			public void actionPerformed(ActionEvent e) {
+				// reload pref
+				info.setTenUnitHeight(GraphPrefs.TENUNIT_HEIGHT.get());
+			}
+		};
+
 	}
 
 	protected CorinaAction[] plotTypes;

@@ -449,8 +449,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				if(--curheight < 2)
 					curheight = 2;
 				gInfo.setTenUnitHeight(curheight);
-				if(vertaxis != null)
-					vertaxis.repaint();
 				repaint = false;
 				break;
 			}
@@ -458,8 +456,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				int curheight = gInfo.getTenUnitHeight();
 				curheight++;
 				gInfo.setTenUnitHeight(curheight);
-				if(vertaxis != null)
-					vertaxis.repaint();				
 				repaint = false;
 				break;
 			}
@@ -1676,6 +1672,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			// revalidate - is this necessary?
 			if(actions.contains(UpdateAction.REVALIDATE))
 				revalidate();
+
+			// repaint the vertical axis
+			if(actions.contains(UpdateAction.VERTICAL_AXIS_REPAINT) && vertaxis != null) {
+				vertaxis.repaint();
+			}
 			
 			// repaint the graph
 			if(actions.contains(UpdateAction.REPAINT))
@@ -1736,7 +1737,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				EnumSet.of(UpdateAction.RECOMPUTE_RANGE, UpdateAction.UPDATE_SIZE, UpdateAction.REVALIDATE, UpdateAction.REPAINT));
 
 		updateActions.put(GraphInfo.TEN_UNIT_HEIGHT_PROPERTY, 
-				EnumSet.of(UpdateAction.REPAINT));
+				EnumSet.of(UpdateAction.REPAINT, UpdateAction.VERTICAL_AXIS_REPAINT));
 	};
 	
 	private static enum UpdateAction {
@@ -1745,7 +1746,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		RECOMPUTE_RANGE,
 		UPDATE_SIZE,
 		REVALIDATE,
-		VERTICAL_AXIS_SCROLLBAR_UPDATE;
+		VERTICAL_AXIS_SCROLLBAR_UPDATE,
+		VERTICAL_AXIS_REPAINT;
 	}
 	
 	private EventListenerList grapherListeners = new EventListenerList();

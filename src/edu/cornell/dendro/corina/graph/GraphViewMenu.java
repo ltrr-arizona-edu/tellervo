@@ -91,15 +91,15 @@ class GraphViewMenu extends JMenu {
 		this.addSeparator();
 		
 		// scaling... half scale
-		JMenuItem halvescale = new JMenuItem(actions.zoomOut);
+		JMenuItem halvescale = new JMenuItem(actions.scaleDown);
 		this.add(halvescale);			
 		
 		// scaling... double scale
-		JMenuItem doublescale = new JMenuItem(actions.zoomIn);
+		JMenuItem doublescale = new JMenuItem(actions.scaleUp);
 		this.add(doublescale);			
 
 		// scaling... reset scale
-		JMenuItem resetscale = new JMenuItem(actions.zoomReset);
+		JMenuItem resetscale = new JMenuItem(actions.scaleReset);
 		this.add(resetscale);			
 
 		this.addSeparator();

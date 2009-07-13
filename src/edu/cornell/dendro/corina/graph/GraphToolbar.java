@@ -40,8 +40,8 @@ public class GraphToolbar extends JToolBar {
 		
 			addSeparator();
 		
-			addButton(actions.zoomIn, "escale_double");
-			addButton(actions.zoomOut, "escale_halve");
+			addButton(actions.zoomIn, "zoom_in");
+			addButton(actions.zoomOut, "zoom_out");
 		}
 	}
 	
