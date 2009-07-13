@@ -1,7 +1,6 @@
 package edu.cornell.dendro.corina.cross;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -15,6 +14,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,10 +26,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.cross.gui.Ui_CrossdatePanel;
 import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.graph.GraphActions;
 import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
+import edu.cornell.dendro.corina.graph.GraphPrefs;
 import edu.cornell.dendro.corina.graph.GraphToolbar;
 import edu.cornell.dendro.corina.graph.GrapherEvent;
 import edu.cornell.dendro.corina.graph.GrapherListener;
@@ -46,9 +48,12 @@ import edu.cornell.dendro.corina.util.Center;
 /**
  *
  * @author  peterbrewer
+ * @author Lucas Madar
  */
 @SuppressWarnings("serial")
-public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListener {
+public class Crossdater extends Ui_CrossdatePanel implements GrapherListener {
+	private JFrame window;
+	
 	private ElementList crossdatingElements;
 	private CrossdateCollection crossdates;
 	
@@ -67,8 +72,10 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
 	private CrossdateStatusBar status;
 	
     /** Creates new form CrossDatingWizard */
-    public CrossdateDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public Crossdater(java.awt.Frame parent) {
+    	super();
+
+    	window = new JFrame();
      
         initialize(parent, null, null);
     }
@@ -77,13 +84,14 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
      * Creates a new CrossDatingWizaard with the Element specified selected as the secondary
      * 
      * @param parent
-     * @param modal
      * @param preexistingElements
      * @param firstSecondary
      */
-    public CrossdateDialog(java.awt.Frame parent, boolean modal, 
+    public Crossdater(java.awt.Frame parent,
     		ElementList preexistingElements, Element firstSecondary) {
-        super(parent, modal);
+    	super();
+    	
+    	window = new JFrame();
         
         initialize(parent, preexistingElements, firstSecondary);
     }
@@ -99,22 +107,6 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
 			protected boolean finish() {
 				return (loadAllElements() && super.finish());
 			}
-		};
-		
-		return doOpenDialog(dbb, preexistingElements);
-    }
-
-    /**
-     * Show an open dialog as a child of another dialog
-     * @param parent
-     * @param preexistingElements
-     */
-    private ElementList showOpenDialog(Dialog parent, ElementList preexistingElements) {
-    	DBBrowser dbb = new DBBrowser(parent, true, true) {
-			@Override
-			protected boolean finish() {
-				return (loadAllElements() && super.finish());
-			}			
 		};
 		
 		return doOpenDialog(dbb, preexistingElements);
@@ -151,10 +143,10 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
     	return dbb.getSelectedElements();
     }
 
-    private void initialize(Frame parent, ElementList preElements, Element firstSecondary) {
+    private void initialize(Frame parent, ElementList preElements, Element firstSecondary) {  	
     	// let user choose crossdates, exit if they close quietly
     	if((crossdatingElements = showOpenDialog(parent, true, preElements)) == null) {
-    		dispose();
+    		window.dispose();
     		return;
     	}
     	
@@ -168,17 +160,21 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
     	setupGraph();
     	setupListeners();
     	setupLists(null, firstSecondary);
+    	
+    	// add ourself to the window...
+    	window.setContentPane(this);
+    	window.pack();
+    	
+    	window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-    	Center.center(this);
-    	setVisible(true);
+    	// first, center it for it current size
+    	Center.center(window);
+    	// then maximize the window
+    	window.setExtendedState(window.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+    	window.setVisible(true);
     }
     
     private void setupTables() {
-    	// all windows need a vertical scroll bar!
-    	jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-    	jScrollPane2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-    	jScrollPane3.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
     	// sig scores table
        	sigScoresModel = new SigScoresTableModel(tableSignificantScores);
     	tableSignificantScores.setModel(sigScoresModel);
@@ -190,27 +186,26 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
     	tableSignificantScores.setColumnSelectionAllowed(false);
     	
     	// all scores table
-    	allScoresModel = new AllScoresTableModel(tableAllScores);
-    	tableAllScores.setModel(allScoresModel);
+    	allScoresModel = new AllScoresTableModel(tblAllScores);
+    	tblAllScores.setModel(allScoresModel);
     	allScoresModel.applyFormatting();
     	
-    	tableAllScores.getTableHeader().setReorderingAllowed(false);
-    	tableAllScores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    	tableAllScores.setCellSelectionEnabled(true);
+    	tblAllScores.getTableHeader().setReorderingAllowed(false);
+    	tblAllScores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    	tblAllScores.setCellSelectionEnabled(true);
     	
     	// histogram table
-    	histogramModel = new HistogramTableModel(tableHistogram);
-    	tableHistogram.setModel(histogramModel);
+    	histogramModel = new HistogramTableModel(tblHistogram);
+    	tblHistogram.setModel(histogramModel);
     	histogramModel.applyFormatting();
     	
-    	tableHistogram.getTableHeader().setReorderingAllowed(false);    	
-    	tableHistogram.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    	tableHistogram.setRowSelectionAllowed(false);
-    	tableHistogram.setColumnSelectionAllowed(false);
+    	tblHistogram.getTableHeader().setReorderingAllowed(false);    	
+    	tblHistogram.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    	tblHistogram.setRowSelectionAllowed(false);
+    	tblHistogram.setColumnSelectionAllowed(false);
     }
     
     private void setupListeners() {    	
-    	final CrossdateDialog glue = this;
 
     	// whenever one of our combo boxes change...
     	ActionListener listChanged = new ActionListener() {
@@ -219,7 +214,7 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
     			int col = cboSecondary.getSelectedIndex();
     			
     			// make a nice title?
-    			glue.setTitle("Crossdating: " + cboSecondary.getSelectedItem().toString());
+    			window.setTitle("Crossdating: " + cboSecondary.getSelectedItem().toString());
     			
     			try {
     				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
@@ -249,7 +244,7 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
 					return;
 				
 				// deselect anything in tblAllScores
-				tableAllScores.clearSelection();
+				tblAllScores.clearSelection();
 
 				int row = tableSignificantScores.getSelectedRow();
 				
@@ -266,15 +261,15 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
 			public void valueChanged(ListSelectionEvent lse) {
 				// don't fire if we're deselecting
 				if(lse.getValueIsAdjusting() || 
-						tableAllScores.getSelectedColumn() == -1 || 
-						tableAllScores.getSelectedRow() == -1)
+						tblAllScores.getSelectedColumn() == -1 || 
+						tblAllScores.getSelectedRow() == -1)
 					return;
 				
 				// unset any selections in sig scores
 				tableSignificantScores.clearSelection();
 			
-				int row = tableAllScores.getSelectedRow();
-				int col = tableAllScores.getSelectedColumn();
+				int row = tblAllScores.getSelectedRow();
+				int col = tblAllScores.getSelectedColumn();
 				
 				// make our new range
 				newCrossdateRange = allScoresModel.getSecondaryRangeForCell(row, col); 
@@ -283,8 +278,8 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
 				updateGraph(allScoresModel.getGraphForCell(row, col));
 			}
     	};
-    	tableAllScores.getSelectionModel().addListSelectionListener(allScoresSelectionListener);
-    	tableAllScores.getColumnModel().getSelectionModel().addListSelectionListener(allScoresSelectionListener);
+    	tblAllScores.getSelectionModel().addListSelectionListener(allScoresSelectionListener);
+    	tblAllScores.getColumnModel().getSelectionModel().addListSelectionListener(allScoresSelectionListener);
     	
     	// when the score type selected on our all scores table changes
     	cboDisplayStats.addActionListener(new ActionListener() {
@@ -319,14 +314,11 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
     		}
     	});
 
-    	// modify and reset button
-    	btnResetMeasurements.setVisible(false);
-    	btnAddMeasurement.setText("Modify");
     	btnAddMeasurement.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     	    	// let user choose crossdates, exit if they close quietly
     			ElementList tmpElements;
-    	    	if((tmpElements = showOpenDialog(glue, crossdatingElements)) == null)
+    	    	if((tmpElements = showOpenDialog(window, true, crossdatingElements)) == null)
     	    		return; // user cancelled
     	    	
     	    	crossdatingElements = tmpElements;
@@ -342,9 +334,8 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
     	    			((o2 instanceof Sample) ? new CachedElement((Sample)o2) : (Element) o2));
     		}
     	});
-    	
-    	btnOK.setText("Apply");
-       	btnOK.addActionListener(new ActionListener() {
+
+       	btnOk.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			int row = cboPrimary.getSelectedIndex();
     			int col = cboSecondary.getSelectedIndex();
@@ -352,16 +343,16 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
     			try {
     				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
     				
-    				CrossdateCommitDialog commit = new CrossdateCommitDialog(glue);
-    				Center.center(commit, glue);
+    				CrossdateCommitDialog commit = new CrossdateCommitDialog(window, true);
+    				Center.center(commit, window);
     				
     				commit.setup(pairing.getPrimary(), pairing.getSecondary(), newCrossdateRange);
     				commit.setVisible(true);
     				
     				if(commit.didSave())
-    					dispose();
+    					window.dispose();
     			} catch (CrossdateCollection.NoSuchPairingException nspe) {
-    				JOptionPane.showMessageDialog(glue, "Choose a valid crossdate", 
+    				JOptionPane.showMessageDialog(window, "Choose a valid crossdate", 
     						"Can't crossdate", JOptionPane.ERROR_MESSAGE);
     			}
     		}
@@ -369,12 +360,12 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
 
        	btnCancel.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {   
-    			dispose();
+    			window.dispose();
     		}
        	});
 }
     
-    private void setupGraph() {	
+    private void setupGraph() {	    	
 		// create a new graphinfo structure, so we can tailor it to our needs.
 		graphInfo = new GraphInfo();
 		
@@ -402,6 +393,9 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		graphScroller.setVerticalScrollBar(new ReverseScrollBar());
 
+		// make the default viewport background the same color as the graph
+		graphScroller.getViewport().setBackground(graphInfo.getBackgroundColor());
+		
 		graphController = new GraphController(graph, graphScroller);
 				
 		panelChart.setLayout(new BorderLayout());
@@ -528,7 +522,7 @@ public class CrossdateDialog extends Ui_CrossdateDialog implements GrapherListen
     	
 		graphInfo.setShowVertAxis(true);
     	graph.update(true);
-		btnOK.setEnabled(graphSamples.size() == 2);
+		btnOk.setEnabled(graphSamples.size() == 2);
     }
 
     /** Get notified when the graph changes */
