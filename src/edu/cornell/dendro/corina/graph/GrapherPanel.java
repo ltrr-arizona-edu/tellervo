@@ -263,6 +263,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private Point dragStart = null;
 
 	private int startX; // initial xoff
+	private Integer lastX; // last xoffset
 
 	public void mouseDragged(MouseEvent e) {
 		// FIXME: move all the dragStart code into mousePressed
@@ -273,6 +274,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		if (clicked == -1)
 			return;
 
+		Graph dragGraph;
+		
 		// just starting a drag?
 		if (dragStart == null) {
 			// dragging something?
@@ -283,7 +286,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				return;
 
 			// also ignore if it's not draggable
-			if (!graphs.get(n).isDraggable()) {
+			// store graph as g
+			if (!(dragGraph = graphs.get(n)).isDraggable()) {
 				// complain!
 				Toolkit.getDefaultToolkit().beep();
 				return;
@@ -291,16 +295,20 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 			// yes, store
 			dragStart = (Point) e.getPoint().clone();
-			dragStart.y += (graphs.get(n)).yoffset;
-			startX = (graphs.get(n)).xoffset;
+			dragStart.y += dragGraph.yoffset;
+			startX = dragGraph.xoffset;
+			lastX = null;
 
 			// select it, too, while we're at it
 			current = n;
 		}
+		else
+			// populate g with the current graph
+			dragGraph = graphs.get(current);
 
-		// change yoffset[n]
-		(graphs.get(current)).yoffset = (int) dragStart.getY()
-				- e.getY();
+		// change yoffset[n], but only if no ctrl
+		if(!e.isControlDown())
+			dragGraph.yoffset = (int) dragStart.getY() - e.getY();
 
 		// change xoffset[n], but only if no shift
 		int dx = 0;
@@ -308,16 +316,16 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			dx = (int) (e.getX() - dragStart.getX());
 			dx -= dx % gInfo.getYearWidth();
 		}
-		graphs.get(current).xoffset = startX + dx / gInfo.getYearWidth();
+		
+		dragGraph.xoffset = startX + dx / gInfo.getYearWidth();
 
 		// data changed, so update
-		if(startX != graphs.get(current).xoffset) {
-			fireGrapherEvent(new GrapherEvent(this, graphs.get(current), GrapherEvent.Type.XOFFSET_CHANGED));
+		if(lastX == null || dragGraph.xoffset != lastX) {
+			lastX = dragGraph.xoffset;
+			fireGrapherEvent(new GrapherEvent(this, dragGraph, GrapherEvent.Type.XOFFSET_CHANGED));
 			calculateScores();
 			updateTitle();
 		}
-		
-		//        recomputeDrops(); -- writeme?
 		
 		repaint();
 	}
