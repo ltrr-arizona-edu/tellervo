@@ -31,7 +31,6 @@ import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.graph.GraphActions;
 import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
-import edu.cornell.dendro.corina.graph.GraphPrefs;
 import edu.cornell.dendro.corina.graph.GraphToolbar;
 import edu.cornell.dendro.corina.graph.GrapherEvent;
 import edu.cornell.dendro.corina.graph.GrapherListener;

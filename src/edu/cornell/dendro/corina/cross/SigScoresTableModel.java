@@ -148,6 +148,20 @@ public class SigScoresTableModel extends AbstractTableModel {
 			this.model = model;
 			this.table = table;
 		}
+
+		public void sort(int col, boolean forceReverse) {
+			Collections.sort(model.scores, new ScoreInfoComparator(col));
+			
+			if(forceReverse)
+				Collections.reverse(model.scores);
+			
+			this.lastSortedCol = col;
+			model.headerRenderer.setSortColumn(col);
+			model.headerRenderer.setReversed(!forceReverse); // we default to reversed!
+			
+			// make the table header repaint (for new arrows)
+			table.getTableHeader().repaint();
+		}
 		
 		@Override
 		public void mouseClicked(MouseEvent me) {
@@ -155,27 +169,22 @@ public class SigScoresTableModel extends AbstractTableModel {
 			
 			// sanity check
 			if(col < 0)
-				return;
-			
+				return;			
 			
 			if(col == lastSortedCol) {
 				Collections.reverse(model.scores);
-				
+
+				// reverse and repaint arrows
 				model.headerRenderer.setReversed(!model.headerRenderer.isReversed());
+				table.getTableHeader().repaint();
 			}
 			else {
-				Collections.sort(model.scores, new ScoreInfoComparator(col));
-				model.headerRenderer.setSortColumn(col);
-				model.headerRenderer.setReversed(true); // we default to reversed!
-
-				lastSortedCol = col;
+				sort(col, false);
 			}
 			
 			// notify the table
 			model.fireTableDataChanged();
 			
-			// make the table header repaint (for new arrows)
-			table.getTableHeader().repaint();
 		}
 
 		public void setUnsorted() {
@@ -340,8 +349,9 @@ public class SigScoresTableModel extends AbstractTableModel {
 		this.pairing = pairing;
 		calculateScores();
 
+		// unsorted by default
 		sorter.setUnsorted();
-		headerRenderer.setReversed(true); // we default to reversed
+		headerRenderer.setReversed(false);
 		headerRenderer.setSortColumn(-1);
 		
 		fireTableDataChanged();
