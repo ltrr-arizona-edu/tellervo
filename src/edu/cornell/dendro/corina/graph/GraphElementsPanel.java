@@ -3,7 +3,9 @@ package edu.cornell.dendro.corina.graph;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -16,9 +18,15 @@ import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 
 public class GraphElementsPanel extends JPanel {
@@ -31,7 +39,7 @@ public class GraphElementsPanel extends JPanel {
 		
 		listmodel = new DefaultListModel();
 		list = new JList(listmodel);
-		list.setBorder(BorderFactory.createTitledBorder("Elements list"));
+		list.setBorder(BorderFactory.createTitledBorder("Components"));
 		topPanel.add(list);
 		
 		list.addListSelectionListener(new ListSelectionListener() {
@@ -46,7 +54,7 @@ public class GraphElementsPanel extends JPanel {
 		});
 		
 		colorselect = new ColorComboBox();
-		colorselect.setBorder(BorderFactory.createTitledBorder("Selected Element Color"));
+		colorselect.setBorder(BorderFactory.createTitledBorder("Selected component color"));
 		topPanel.add(colorselect);
 		
 		colorselect.addActionListener(new AbstractAction() {
@@ -65,14 +73,42 @@ public class GraphElementsPanel extends JPanel {
 	    addButtonContainer.add(addButton);
 	    addButton.addActionListener(new AbstractAction() {
 	    	public void actionPerformed(ActionEvent ae) {
-	    		ElementList ss = null;
+/**	    		ElementList ss = null;
 	    		try {
 	    			ss = FileDialog.showMulti(I18n.getText("plot"));
 	    		} catch (UserCancelledException uce) {
 	    			return;
 	    		}
+*/
+	    		
+	    		
+				DBBrowser browser = new DBBrowser((Frame) null, true, false);
+	    		
+	    		browser.setVisible(true);
+	    		
+	    		if(browser.getReturnStatus() == DBBrowser.RET_OK) {
+	    			ElementList ss = browser.getSelectedElements();
+	    			
+	    			for(Element e : ss) {
+	    				// load it
+	    				Sample s;
+	    				try {
+	    					s = e.load();
+	    				} catch (IOException ioe) {
+	    					Alert.error("Error Loading Sample",
+	    							"Can't open this file: " + ioe.getMessage());
+	    					continue;
+	    				}
 
-	    		window.add(ss);
+	    				OpenRecent.sampleOpened(s.getLoader());
+	    				
+	    				// add it to graph
+	    				window.add(ss);
+	    			}
+	    			
+	    		}
+	    		
+	    		
 	    	}
 	    });
 
