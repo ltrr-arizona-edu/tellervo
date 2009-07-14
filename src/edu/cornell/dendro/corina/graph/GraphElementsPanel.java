@@ -13,8 +13,10 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -37,10 +39,17 @@ public class GraphElementsPanel extends JPanel {
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
 		
+		// Create panel to hold legend
+		JPanel legendPanel = new JPanel();
+		legendPanel.setLayout(new BoxLayout(legendPanel, BoxLayout.Y_AXIS));
+		legendPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Components"));
+		topPanel.add(legendPanel);
+		
+		// Create list of series
 		listmodel = new DefaultListModel();
 		list = new JList(listmodel);
-		list.setBorder(BorderFactory.createTitledBorder("Components"));
-		topPanel.add(list);
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		legendPanel.add(list);
 		
 		list.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
@@ -53,9 +62,14 @@ public class GraphElementsPanel extends JPanel {
 			}
 		});
 		
+		JPanel colorSelectorPanel = new JPanel();
+		colorSelectorPanel.setLayout(new BoxLayout(colorSelectorPanel, BoxLayout.X_AXIS));
+		JLabel lblColor = new JLabel();
+		lblColor.setText("Selected color:");
 		colorselect = new ColorComboBox();
-		colorselect.setBorder(BorderFactory.createTitledBorder("Selected component color"));
-		topPanel.add(colorselect);
+		colorSelectorPanel.add(lblColor);
+		colorSelectorPanel.add(colorselect);
+		legendPanel.add(colorSelectorPanel);
 		
 		colorselect.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
@@ -73,16 +87,7 @@ public class GraphElementsPanel extends JPanel {
 	    addButtonContainer.add(addButton);
 	    addButton.addActionListener(new AbstractAction() {
 	    	public void actionPerformed(ActionEvent ae) {
-/**	    		ElementList ss = null;
-	    		try {
-	    			ss = FileDialog.showMulti(I18n.getText("plot"));
-	    		} catch (UserCancelledException uce) {
-	    			return;
-	    		}
-*/
-	    		
-	    		
-				DBBrowser browser = new DBBrowser((Frame) null, true, false);
+				DBBrowser browser = new DBBrowser((Frame) null, true, true);
 	    		
 	    		browser.setVisible(true);
 	    		
@@ -105,10 +110,7 @@ public class GraphElementsPanel extends JPanel {
 	    				// add it to graph
 	    				window.add(ss);
 	    			}
-	    			
-	    		}
-	    		
-	    		
+	    		}	
 	    	}
 	    });
 
