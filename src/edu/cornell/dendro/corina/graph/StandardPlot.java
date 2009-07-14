@@ -26,7 +26,12 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
+import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -67,21 +72,14 @@ public class StandardPlot implements CorinaGraphPlotter {
 	public int getYRange(GraphInfo gInfo, Graph g) {
 		float unitScale = gInfo.getTenUnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
 		int miny = 0; // minimum always starts at zero...
-		int maxy = -100000;
+		int maxy = Integer.MIN_VALUE;
 		int value;
 		
 		int n = g.graph.getData().size(); 
 		for (int i = 0; i < n; i++) {
-			try {
-				value = yTransform(((Number) g.graph.getData().get(i)).intValue() * g.scale);
-			} catch (ClassCastException cce) {
-				value = yTransform(0); // e.g., if it's being edited, it's still a string
-				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.
-				// -- try to parse String as an integer?
-			}
-			int y = (int) (yTransform(value * g.scale) * unitScale) - 
-				(int) (g.yoffset * unitScale); // DUPLICATE: this line appears above 3 times
-			//int y = value - g.yoffset;//bottom - (int) (value * g.scale * unitScale) - (int) (g.yoffset * unitScale);			
+			value = yTransform(g.graph.getData().get(i).intValue() * g.scale);
+			int y = (int) (value * unitScale) -	(int) (g.yoffset * unitScale);
+			
 			if(y < miny)
 				miny = y;
 			if(y > maxy)
@@ -90,6 +88,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 		
 		return maxy - miny;
 	}
+	
 	public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
@@ -229,52 +228,82 @@ public class StandardPlot implements CorinaGraphPlotter {
 	// if it's within this many pixels, it's considered a hit (see "correct?" comment)
 	private final static int NEAR = 5;
 
-	// BUG: if you click exactly on the rightmost pixel of a graph, it doesn't hit
 	public boolean contact(GraphInfo gInfo, Graph g, Point p, int bottom) {
 		// snap to year
 		int yearWidth = gInfo.getYearWidth();
-		int x1 = p.x - p.x % yearWidth;
-		int x2 = x1 + yearWidth;
+		int firstYearIdx = (p.x / yearWidth) - 1;
+		int nYears = 3;
+		
+		// Check three years' worth of data: the year prior to and after the year the mouse is inside
+		Year startYear = gInfo.getDrawBounds().getStart().add(firstYearIdx);
+		List<Point2D> points = this.getPointsFrom(gInfo, g, startYear, nYears, bottom);
 
-		// fraction of the way between x1 and x2
-		float f = (p.x - x1) / (float) (x2 - x1);
-
-		// get year of click
-		Year y1 = gInfo.getDrawBounds().getStart().add(x1 / yearWidth); // REFACTOR: does this look like yearForPosition()?
-		Year y2 = y1.add(1);
-
-		// --- everything above this is independent of graph ---
-
-		// not in range?  no hit.
-		if (!g.getRange().contains(y1))
-			return false;
-		if (!g.getRange().contains(y2)) // correct?
-			return false;
-
-		// get expected y-locs
-		int yloc1 = getPosition(gInfo, g, y1, bottom);
-		int yloc2 = getPosition(gInfo, g, y2, bottom);
-
-		// get adjusted expected y-loc
-		int yloc = (int) (yloc1 + (yloc2 - yloc1) * f);
-
-		// hit?
-		return (Math.abs(yloc - p.y) < Math.max(NEAR, gInfo.getTenUnitHeight() / 2));
+		int nLines = points.size() - 1;
+		for(int i = 0; i < nLines; i++) {
+			Line2D line = new Line2D.Float(points.get(i), points.get(i+1));
+			
+			int distance = Math.round((float) line.ptSegDist(p));
+			if(distance <= NEAR)
+				return true;
+		}
+		
+		return false;
 	}
-
-	private int getDataValue(Graph g, Year y) {
+	
+	private final int getDataValue(Graph g, Year y) {
 		int i = y.diff(g.graph.getStart().add(g.xoffset));
-		return ((Number) g.graph.getData().get(i)).intValue();
+		return g.graph.getData().get(i).intValue();
 	}
 
-	private int getYValue(GraphInfo gInfo, Graph g, int value, int bottom) {
-		float unitScale = gInfo.getTenUnitHeight() / 10.0f;
+	private final int getYValue(Graph g, float unitScale, int value, int bottom) {
 		return bottom - (int) (yTransform(value * g.scale) * unitScale) - 
 						(int) (g.yoffset * unitScale); // DUPLICATE: this line appears above 3 times
 	}
+	
+	/**
+	 * Get the X value of a year
+	 * @param g the graph
+	 * @param plotStartYear the start year of the entire plot
+	 * @param yearWidth the width of a year, in pixels
+	 * @paran n the number of years into the graph
+	 * @return
+	 */
+	private final int getXValue(Graph g, Year plotStartYear, int yearWidth, int n) {
+		return yearWidth * (g.graph.getStart().diff(plotStartYear) + g.xoffset + n);
+	}
+	
+	private final List<Point2D> getPointsFrom(GraphInfo gInfo, Graph g, Year startYear, int nYears, int bottom) {
+		// index into our data values for this particular year
+		int idx = startYear.diff(g.graph.getStart().add(g.xoffset));
 
-	private int getPosition(GraphInfo gInfo, Graph g, Year y, int bottom) {
-		return getYValue(gInfo, g, getDataValue(g, y), bottom);
+		// make a list of points
+		// this is ok, because we know points are continuous
+		List<Point2D> points = new ArrayList<Point2D>(nYears);
+		
+		// the year the plot starts
+		Year plotStartYear = gInfo.getDrawBounds().getStart();
+		// the adjusted range of this graph
+		Range graphRange = g.getRange();
+		int yearWidth = gInfo.getYearWidth();
+		float unitScale = gInfo.getTenUnitHeight() / 10.0f;
+		
+		for(int i = 0; i <= nYears; i++) {
+			// skip points that don't exist
+			if(!graphRange.contains(startYear.add(i)))
+				continue;
+			
+			int value = g.graph.getData().get(idx + i).intValue();
+			int x = getXValue(g, plotStartYear, yearWidth, idx + i);
+			int y = getYValue(g, unitScale, value, bottom);
+			
+			points.add(new Point2D.Float(x, y));
+		}
+		
+		return points;
+	}
+
+	protected final int getPosition(GraphInfo gInfo, Graph g, Year y, int bottom) {
+		return getYValue(g, gInfo.getTenUnitHeight() / 10.0f, getDataValue(g, y), bottom);
 	}
 
 	// REFACTOR: use this same method above when actually drawing it

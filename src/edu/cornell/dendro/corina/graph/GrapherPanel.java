@@ -69,6 +69,7 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.util.ColorUtils;
 
 @SuppressWarnings("serial")
 public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
@@ -292,6 +293,13 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				Toolkit.getDefaultToolkit().beep();
 				return;
 			}
+			
+			// unhighlight anything
+			if(highlightedGraph >= 0) {
+				graphs.get(highlightedGraph).setHighlighted(false);
+				highlightedGraph = -1;
+				// we repaint below
+			}
 
 			// yes, store
 			dragStart = (Point) e.getPoint().clone();
@@ -311,13 +319,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			dragGraph.yoffset = (int) dragStart.getY() - e.getY();
 
 		// change xoffset[n], but only if no shift
-		int dx = 0;
 		if (!e.isShiftDown()) {
-			dx = (int) (e.getX() - dragStart.getX());
+			int dx = (int) (e.getX() - dragStart.getX());
 			dx -= dx % gInfo.getYearWidth();
-		}
-		
-		dragGraph.xoffset = startX + dx / gInfo.getYearWidth();
+			dragGraph.xoffset = startX + dx / gInfo.getYearWidth();
+		}		
 
 		// data changed, so update
 		if(lastX == null || dragGraph.xoffset != lastX) {
@@ -331,6 +337,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	}
 
 	private int cursorX = 0;
+	private int highlightedGraph = -1;
 
 	// this is BUG #199, because mouseMoved events stop being
 	// generated as soon as a mouseExited event is fired.  idea:
@@ -374,11 +381,49 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			repaint(cursorX - 50, 0, 100, 15);
 		}
 
-		// crosshair cursor
-		setCursor(crosshair); // PERF: is setCursor() expensive?
+		if(dragStart == null) {
+			int over = getGraphAt(e.getPoint());
+			if(over >= 0) {
+				if(curCursor != hand)
+					setCursor(hand);
+				
+				// highlight it?
+				if(highlightedGraph != over) {
+					// unhighlight old graph
+					if(highlightedGraph >= 0)
+						graphs.get(highlightedGraph).setHighlighted(false);
+					highlightedGraph = over;
+					
+					// highlight new graph if it's draggable
+					Graph highlighted = graphs.get(highlightedGraph);
+					if(highlighted.isDraggable()) {
+						graphs.get(highlightedGraph).setHighlighted(true);
+						repaint();
+					}
+				}
+			}
+			else {
+				// unhighlight anything
+				if(highlightedGraph >= 0) {
+					Graph highlighted = graphs.get(highlightedGraph);
+					if(highlighted.isHighlighted()) {
+						highlighted.setHighlighted(false);
+						repaint();
+					}
+					
+					highlightedGraph = -1;
+				}
+				
+				// crosshair cursor
+				if(curCursor != crosshair)
+					setCursor(crosshair); 
+			}
+		}
 	}
 
-	private Cursor crosshair = new Cursor(Cursor.CROSSHAIR_CURSOR);
+	private Cursor curCursor = null;
+	private final Cursor hand = new Cursor(Cursor.HAND_CURSOR);
+	private final Cursor crosshair = new Cursor(Cursor.CROSSHAIR_CURSOR);
 
 	// ------------------------------------------------------------
 
@@ -692,6 +737,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					horiz.setValue(horiz.getValue() + yearWidth);				
 
 			}
+
+			// don't forget to repaint it all
+			repaint();
 		}
 		clicked = -1;
 		System.out.println(e);
@@ -1225,6 +1273,13 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			} else {
 				// use the thickness we have on our local graph...
 				int thickness = graph.getThickness(false) * ((current == i) ? 2 : 1);
+				
+				// highlighted graph?
+				if(graph.isHighlighted()) {
+					g2.setColor(ColorUtils.addAlpha(graph.getColor(false), 0.5f));
+					graph.draw(info, g2, bottom, thickness + 4, scroller.getHorizontalScrollBar().getValue());
+				}
+				
 				g2.setColor(graph.getColor(false));				
 				graph.draw(info, g2, bottom, thickness, scroller.getHorizontalScrollBar().getValue());
 			}			

@@ -39,7 +39,7 @@ import edu.cornell.dendro.corina.sample.Sample;
   for DP addicts, i believe it's a decorator.
 */
 
-public class Graph {
+public final class Graph {
 
     // should these members be public?  or private, with getters and
     // setters?  that way it could extend Observable, which would be
@@ -60,6 +60,9 @@ public class Graph {
     /** Can this graph be dragged? */
     private boolean draggable = true;
 
+    /** Is this graph selection-highlighted? */
+    private boolean highlighted = false;
+    
     /** Create a graph from a Graphable object.
         @param g the Graphable object */
     public Graph(Graphable g) {
@@ -79,7 +82,7 @@ public class Graph {
         else
         	setAgent(PlotAgent.getDefault());
     }
-
+    
     // an arbitrary List of Numbers, starting at a Year.  (used for graphing density of masters.)
     public Graph(List<Integer> l, Year y, String n) {
         // create graph
@@ -216,6 +219,21 @@ public class Graph {
     	return draggable;
     }
 
+    /**
+     * Set the highlighted state of this graph
+     * @param highlighted
+     */
+    public void setHighlighted(boolean highlighted) {
+    	this.highlighted = highlighted;
+    }
+    
+    /**
+     * Is this graph mouseover highlighted
+     * @return true on highlgiht
+     */
+    public boolean isHighlighted() {
+    	return highlighted;
+    }
     
     /**
      * Get the plotter

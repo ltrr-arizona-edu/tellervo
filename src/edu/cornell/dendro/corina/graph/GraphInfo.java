@@ -17,7 +17,7 @@ import edu.cornell.dendro.corina.util.ColorUtils;
  * 
  * @author Lucas Madar
  */
-public class GraphInfo {
+public final class GraphInfo {
 
 	public final static class colorPair {
 		private String colorName;
