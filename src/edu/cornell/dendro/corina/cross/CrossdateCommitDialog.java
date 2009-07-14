@@ -273,11 +273,11 @@ public class CrossdateCommitDialog extends JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("Sample being crossdated:");
+        jLabel1.setText("Series being crossdated:");
 
         jLabel2.setText("New date range:");
 
-        jLabel3.setText("Master sample:");
+        jLabel3.setText("Master series:");
 
         lblCrossdateName.setText("C-XXX-XX-XX-X (1234-2345)");
 
@@ -285,7 +285,7 @@ public class CrossdateCommitDialog extends JDialog {
 
         lblMasterSampleName.setText("C-XXX-XX-XX-X (1432-5431)");
 
-        jLabel7.setText("Crossdate name:");
+        jLabel7.setText("New series name:");
 
         jLabel8.setText("Certainty:");
 

@@ -264,7 +264,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			else if (elemPanel == null)
 			{
 				initElemPanel();
-				rolodex.add(elemPanel, I18n.getText("tab_elements"));
+				rolodex.add(elemPanel, I18n.getText("tab_components"));
 				editorViewMenu.setElementsPanel(elemPanel);
 				editorSumMenu.setElementsPanel(elemPanel);				
 			}
@@ -495,7 +495,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		if (sample.hasWeiserjahre())
 			rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
 		if (sample.getElements() != null)
-			rolodex.add(elemPanel, I18n.getText("tab_elements"));
+			rolodex.add(elemPanel, I18n.getText("tab_components"));
 		
 		if(mozillaMapPanel != null)
 			rolodex.add(mozillaMapPanel, "Map");
@@ -901,7 +901,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				def == 1);
 		final JCheckBox s3 = new JCheckBox(I18n.getText("tab_weiserjahre"),
 				def == 2);
-		final JCheckBox s4 = new JCheckBox(I18n.getText("tab_elements"),
+		final JCheckBox s4 = new JCheckBox(I18n.getText("tab_components"),
 				def == 3);
 		// dim sections which aren't available
 		s3.setEnabled(s.hasWeiserjahre());
