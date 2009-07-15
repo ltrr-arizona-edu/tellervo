@@ -60,6 +60,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JToolTip;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.event.EventListenerList;
@@ -384,9 +385,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		if(dragStart == null) {
 			int over = getGraphAt(e.getPoint());
 			if(over >= 0) {
-				if(curCursor != hand)
-					setCursor(hand);
-				
+			
 				// highlight it?
 				if(highlightedGraph != over) {
 					// unhighlight old graph
@@ -395,8 +394,10 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					highlightedGraph = over;
 					
 					// highlight new graph if it's draggable
-					Graph highlighted = graphs.get(highlightedGraph);
+					Graph highlighted = graphs.get(highlightedGraph);	        		
 					if(highlighted.isDraggable()) {
+						if(curCursor != hand)
+							setCursor(hand);
 						graphs.get(highlightedGraph).setHighlighted(true);
 						repaint();
 					}

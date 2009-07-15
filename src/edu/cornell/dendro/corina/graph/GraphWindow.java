@@ -447,7 +447,6 @@ public class GraphWindow extends XFrame implements SampleListener,
 		DropTarget t3 = new DropTarget(plot, dtl); // on the plot!
 
 		// context menu
-		final SamplePopupMenu popup = new SamplePopupMenu();
 		plot.addMouseListener(new PopupListener() {
 			@Override
 			public void showPopup(MouseEvent e) {
@@ -455,9 +454,16 @@ public class GraphWindow extends XFrame implements SampleListener,
 				int n = plot.getGraphAt(e.getPoint());
 
 				// not on a graph? bail.
-				if (n == -1)
+				if (n == -1){
+					final GraphBGPopupMenu bgpopup = new GraphBGPopupMenu();
+					bgpopup.show(e.getComponent(), e.getX(), e.getY());
 					return;
+				}
 
+				
+				// Create sample popup menu
+				final SamplePopupMenu popup = new SamplePopupMenu(plot);
+				
 				// select it
 				plot.current = n;
 				plot.repaint();
