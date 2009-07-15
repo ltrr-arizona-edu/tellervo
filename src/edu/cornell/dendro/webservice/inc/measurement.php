@@ -208,6 +208,13 @@ class measurement extends measurementEntity implements IDBAccessor
 		pg_send_query($dbconn, $sql2);
 		$result2 = pg_get_result($dbconn);
 		$row2 = pg_fetch_array($result2);
+		
+		if (pg_result_error($result2))
+		{
+			$this->setErrorMessage("701", pg_result_error($result2));
+			return FALSE;
+		}
+		
 		$this->vmeasurementResultID = $row2['vmeasurementresultid'];
 
 		// Call getVMeasurementReadingResult()
@@ -263,11 +270,38 @@ class measurement extends measurementEntity implements IDBAccessor
 		return TRUE;
 	}
 
+	/**
+	 * Get the number of series that depend of this series
+	 *
+	 * @return Integer
+	 */
+	private function countOfDependentSeries()
+	{
+		global $dbconn;
+		$sql = "select * from cpgdb.findvmchildren('".pg_escape_string($this->getID())."', 'false')";
+		$dbconnstatus = pg_connection_status($dbconn);
+		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+		{
+			$result = pg_query($dbconn, $sql);
+			$count = pg_num_rows($result);
+			if($count > 0) return $count;
+			return 0;
+		}
+		else
+		{
+			// Connection bad
+			$this->setErrorMessage("001", "Error connecting to database");
+			return FALSE;
+		}
+		
+		return false;		
+		
+	}
+	
 	private function setReferencesFromDB()
 	{
 		// Add any vmeasurements that the current measurement has been made from
 		global $dbconn;
-
 
 		$sql  = "select * from cpgdb.findvmparents('".pg_escape_string($this->getID())."', 'false') where recursionlevel=0";
 
@@ -288,7 +322,6 @@ class measurement extends measurementEntity implements IDBAccessor
 			$this->setErrorMessage("001", "Error connecting to database");
 			return FALSE;
 		}
-
 		return TRUE;
 	}
 
@@ -331,7 +364,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		{
 			$this->setDendrochronologist($auth->getID());
 		}		
-		if ($paramsClass->getMeasuringMethod()!=NULL)		$this->setMeasuringMethod($paramsClass->getMeasuringMethod(TRUE));		
+		if ($paramsClass->getMeasuringMethod()!=NULL)		$this->setMeasuringMethod($paramsClass->getMeasuringMethod(TRUE), NULL);		
 		if ($paramsClass->getDerivationDate()!=NULL)		$this->setDerivationDate($paramsClass->getDerivationDate());
 		if (isset($paramsClass->vmeasurementOp))
 		{
@@ -354,10 +387,11 @@ class measurement extends measurementEntity implements IDBAccessor
 		
 		// Corina specific genericFields
 		if ($paramsClass->getIsReconciled()!=NULL)         	$this->setIsReconciled($paramsClass->getIsReconciled());
-		//if (isset($paramsClass->masterVMeasurementID)) $this->setMasterVMeasurementID($paramsClass->masterVMeasurementID);
-		//if (isset($paramsClass->justification))        $this->setJustification($paramsClass->justification);
-		//if (isset($paramsClass->certaintyLevel))       $this->setCertaintyLevel($paramsClass->certaintyLevel);
-		//if (isset($paramsClass->newStartYear))         $this->setNewStartYear($paramsClass->newStartYear);
+		if ($paramsClass->getMasterVMeasurementID()!=NULL)  $this->setMasterVMeasurementID($paramsClass->getMasterVMeasurementID());
+		if ($paramsClass->getJustification()!=NULL)			$this->setJustification($paramsClass->getJustification());
+		if ($paramsClass->getConfidenceLevel()!=NULL)		$this->setConfidenceLevel($paramsClass->getConfidenceLevel());
+		if ($paramsClass->getNewStartYear()!=NULL)			$this->setNewStartYear($paramsClass->getNewStartYear());
+
 		
 		if (isset($paramsClass->dating))
 		{
@@ -843,7 +877,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	{
 		$kml = "<Placemark><name>".$this->getSummaryObjectCode()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name><description><![CDATA[<br><b>Type</b>: ".$this->getType()."<br><b>Description</b>: ]]></description>";
 		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
-		$kml .= $this->extent->asKML();
+		$kml .= $this->location->asKML();
 		$kml .= "</Placemark>";
 		return $kml;
 	}
@@ -947,20 +981,18 @@ class measurement extends measurementEntity implements IDBAccessor
 		if($this->getAuthor()!=NULL)				$xml.= "<tridas:author>".addslashes($this->getAuthor())."</tridas:author>\n";
 		if($this->getVersion()!=NULL)				$xml.= "<tridas:version>".addslashes($this->getVersion())."</tridas:version>\n";
 
-
-		
 		$xml .= $this->getInterpretationXML();
 		
-
-		if($this->hasExtent()!=NULL)				$xml.= $this->getExtentAsXML();
-		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"crossdateJustification\" type=\"xs:string\">".$this->getJustification()."</tridas:genericField>\n";
-		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"crossdateConfidenceLevel\" type=\"xs:string\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
-		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"operationParameter\" type=\"xs:string\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
-		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"authorID\" type=\"xs:integer\">".$this->author->getID()."</tridas:genericField>\n";
+		if($this->hasGeometry())				$xml.= $this->location->asGML()."\n<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
+		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"corina.crossdateJustification\" type=\"xs:string\">".$this->getJustification()."</tridas:genericField>\n";
+		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"corina.crossdateConfidenceLevel\" type=\"xs:string\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
+		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"corina.operationParameter\" type=\"xs:string\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
+		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"corina.authorID\" type=\"xs:integer\">".$this->author->getID()."</tridas:genericField>\n";
 	    											$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
 		
 		$xml .= $this->getPermissionsXML();
 		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:integer\">".$this->getReadingCount()."</tridas:genericField>\n";
+		$xml.= "<tridas:genericField name=\"corina.countOfDependentSeries\" type=\"xs:integer\">".$this->countOfDependentSeries()."</tridas:genericField>\n";
 
 
 
@@ -977,7 +1009,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		else 
 		{
 			$xml.=$this->getValuesXML();
-			$xml.=$this->getValuesXML(true);
+			
+			if ($this->getMeasurementCount()>1) $xml.=$this->getValuesXML(true);
 			$xml.= "</tridas:".$this->getTridasSeriesType().">";
 			return $xml;
 		}
@@ -998,19 +1031,25 @@ class measurement extends measurementEntity implements IDBAccessor
 			if($this->getBirthDate()!=NULL)				$xml.= "<tridas:measuringDate>".$this->getMeasuringDate()."</tridas:measuringDate>\n";
 			if($this->analyst->getFormattedName()!=NULL) $xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
 			if($this->dendrochronologist->getFormattedName()!=NULL) $xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
-			if($this->getMeasuringMethod()!=NULL)		$xml.= "<tridas:measuringMethod normalTridas=\"".$this->measuringMethod->getValue()."\"/>\n";
-
+		}
+		
+		$xml.= "<tridas:measuringMethod normalTridas=\"".$this->measuringMethod->getValue()."\"/>\n";
+		
+		if ($format!="minimal")
+		{		
 			$xml .= $this->getInterpretationXML();
-
+			if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
+			
 			// Include permissions details if requested
 			$xml .= $this->getPermissionsXML();
 			if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
 			if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\" type=\"xs:boolean\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
-			if(isset($this->analyst))					$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"xs:integer\">".$this->analyst->getID()."</tridas:genericField>\n";
+			if($this->analyst->getID()!=NULL)			$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"xs:integer\">".$this->analyst->getID()."</tridas:genericField>\n";
 			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"xs:integer\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
 			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:integer\">".$this->getReadingCount()."</tridas:genericField>\n";
 														$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
-			
+					$xml.= "<tridas:genericField name=\"corina.countOfDependentSeries\" type=\"xs:integer\">".$this->countOfDependentSeries()."</tridas:genericField>\n";
+														
 			// show summary information in standard and summary modes
 			/*if($format=="summary" || $format=="standard") {
 			// Return special summary section
@@ -1045,15 +1084,16 @@ class measurement extends measurementEntity implements IDBAccessor
 	
 	private function getInterpretationXML()
 	{
+		global $domain;
+		
 		$xml = NULL;
 		if(($this->getFirstYear()!=NULL) || ($this->getSproutYear()!=NULL) || ($this->getDeathYear()!=NULL) || ($this->getProvenance()!=NULL))
 		{
-			$xml.= "<tridas:interpretation>\n";
-			if($this->getMasterVMeasurementID()!=NULL)	$xml.= "<tridas:datingReference>\n<tridas:linkSeries>\n<tridas:identifier domain=\"$domain\">".$this->getMasterVMeasurementID()."</tridas:identifier>\n</tridas:linkSeries>\n</tridas:datingReference>\n";
-	
+			$xml.= "<tridas:interpretation>\n";	
 			if($this->getFirstYear()!=NULL)				$xml.= "<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getFirstYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getFirstYear())."</tridas:firstYear>\n";
-			if($this->getSproutYear()!=NULL)			$xml.= "<tridas:sproutYear>".$this->getSproutYear()."</tridas:sproutYear>\n";
-			if($this->getDeathYear()!=NULL)				$xml.= "<tridas:deathYear>".$this->getDeathYear()."</tridas:deathYear>\n";
+			if($this->getMasterVMeasurementID()!=NULL)	$xml.= "<tridas:datingReference>\n<tridas:linkSeries>\n<tridas:identifier domain=\"$domain\">".$this->getMasterVMeasurementID()."</tridas:identifier>\n</tridas:linkSeries>\n</tridas:datingReference>\n";
+			if($this->getSproutYear()!=NULL)			$xml.= "<tridas:sproutYear certainty=\"".$this->getSproutYearCertainty()."\" suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getSproutYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getSproutYear())."</tridas:sproutYear>\n";
+			if($this->getDeathYear()!=NULL)				$xml.= "<tridas:deathYear certainty=\"".$this->getDeathYearCertainty()."\" suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getDeathYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getDeathYear())."</tridas:deathYear>\n";
 			if($this->getProvenance()!=NULL)			$xml.= "<tridas:provenance>".addslashes($this->getProvenance())."</tridas:provenance>\n";
 			$xml.= "</tridas:interpretation>\n";
 		}
@@ -1236,7 +1276,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		}
 
 		// Code
-		$sql.= "'".pg_escape_string($this->getCode())."', ";
+		$sql.= "'".pg_escape_string($this->getTitle())."', ";
 
 		// Comments
 		if($this->getComments()!=NULL)
@@ -1264,7 +1304,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			$sql.= "ARRAY[";
 			foreach($this->referencesArray as $value)
 			{
-				$sql.= pg_escape_string($value).", ";
+				$sql.= "'".pg_escape_string($value)."', ";
 			}
 			$sql = substr($sql, 0, -2)."], ";
 		}
@@ -1303,7 +1343,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			$sql.= "NULL)";
 		}
 		
-		
+		//echo $sql;
 		return $sql;
 		 
 	}
@@ -1503,18 +1543,20 @@ class measurement extends measurementEntity implements IDBAccessor
 						while ($row = pg_fetch_array($result))
 						{
 							$localVMID = $row['createnewvmeasurement'];
-							$this->setParamsFromDB($row['createnewvmeasurement']);
+							//$this->setParamsFromDB($row['createnewvmeasurement']);
 						}
 					}
-
+					
+					
 					// This extra SQL query is needed to finish off a crossdate
-					if($this->vmeasurementOp=='Crossdate')
+					if($this->getVMeasurementOp()=='Crossdate')
 					{
-						$sql = "select cpgdb.finishCrossdate(".pg_escape_string($localVMID).", ".
-						pg_escape_string($this->newStartYear).", ".
-						pg_escape_string($this->masterVMeasurementID).", '".
-						pg_escape_string($this->justification)."', ".
-						pg_escape_string($this->certaintyLevel).")";
+						$sql = "select cpgdb.finishCrossdate('".pg_escape_string($localVMID)."', ".
+						"'".pg_escape_string($this->getNewStartYear())."', ".
+						"'".pg_escape_string($this->getMasterVMeasurementID())."', ".
+						"'".pg_escape_string($this->getJustification())."', ".
+						"'".pg_escape_string($this->getConfidenceLevel())."')";
+						
 						pg_send_query($dbconn, $sql);
 						$result = pg_get_result($dbconn);
 						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
@@ -1584,7 +1626,7 @@ class measurement extends measurementEntity implements IDBAccessor
 					if($this->objective!=NULL)					$updateSQL.= "objective= '".pg_escape_string($this->objective)."', ";
 					if($this->version!=NULL)					$updateSQL.= "version= '".pg_escape_string($this->version)."', ";
 					$updateSQL = substr($updateSQL, 0 , -2);
-					$updateSQL.= " WHERE vmeasurementid=".$this->getID()."; ";
+					$updateSQL.= " WHERE vmeasurementid='".$this->getID()."'; ";
 
 
 					// Perform query using transactions so that if anything goes wrong we can roll back

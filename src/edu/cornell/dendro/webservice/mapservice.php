@@ -36,7 +36,7 @@ $reqEntity = $_GET['entity'];
 $reqID = $_GET['id'];
 $format = $_GET['format'];
 
-if($format==NULL) $format = "kml";
+if($format==NULL) $format = "gmap";
 
 // Extract the type of request from XML doc
 $myMetaHeader->setRequestType('read');
@@ -78,10 +78,77 @@ $xmldata .= "<Style id=\"corinaDefault\">
            </Style>";
 $xmldata.= "<name>Corina Map Data</name>\n";
 
-if($reqID=="all")
+if(($reqID=="all") || ($reqID==NULL) || ($reqID==""))
 {
-	echo "not supported yet";
-	die();
+
+		global $dbconn;
+		$deniedRecArray = array();
+        // Do SQL Query
+        switch ($reqEntity)
+        {
+        	case "object": 		$fullSQL = "select * from vwtblobject where locationgeometry is not null"; break;
+        	case "series":		$fullSQL = "select * from vwcomprehensivevm where extentgeometry is not null"; break;
+        	default:	"unsupported entity type."; die();
+        	
+        }
+        
+                    
+    	$result = pg_query($dbconn, $fullSQL);
+
+        while ($row = pg_fetch_array($result))
+        {
+                     	
+            // Check user has permission to read then create a new object
+            if($reqEntity=="object") 
+            {
+                $myReturnObject = new object();
+                $hasPermission = $myAuth->getPermission("read", "object", $row['objectid']);
+            }
+            elseif($reqEntity=="element")
+            {
+                $myReturnObject = new element();
+                $hasPermission = $myAuth->getPermission("read", "element", $row['elementid']);
+            }
+            elseif($reqEntity=="sample") 
+            {
+                $myReturnObject = new sample();
+                $hasPermission = $myAuth->getPermission("read", "sample", $row['sampleid']);
+            }
+            elseif($reqEntity=="radius") 
+            {
+                $myReturnObject = new radius();
+                $hasPermission = $myAuth->getPermission("read", "radius", $row['radiusid']);
+            }
+            elseif($reqEntity=="series")
+            {
+                $myReturnObject = new measurement();
+                $hasPermission = $myAuth->getPermission("read", "measurement", $row['vmeasurementid']);
+            }
+            else
+            {
+                echo "Invalid return object ".$reqEntity." specified.";
+            }
+    
+            if($hasPermission===FALSE)
+            {
+                array_push($deniedRecArray, $row['id']); 
+                continue;
+            }
+
+            // Set parameters on new object and return XML
+            $success = $myReturnObject->setParamsFromDBRow($row);
+
+            if($success)
+            {
+                $xmldata.=$myReturnObject->asKML($format);
+            }
+            else
+            {
+                echo $myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage();
+                die();
+            }
+        }
+	
 	
 }
 else
@@ -92,7 +159,7 @@ else
 	    case "element": 			$myEntity = new element(); break;   
 	    case "measurementSeries" :	$myEntity = new measurement(); break;
 	    case "derivedSeries" :  	$myEntity = new measurement(); break;	    
-	     
+	    case "series":				$myEntity = new measurement(); break;
 	
 	    default:
 	    	echo "Unknown entity $reqEntity";
@@ -122,7 +189,10 @@ $xmldata .= "</kml>";
 
 switch($format)
 {
-	case "kml": echo $xmldata; die();
+	case "kml": 
+		header('Content-Type: application/xhtml+xml; charset=utf-8');
+		echo $xmldata; 
+		die();
 	
 	case "gmap": 
 		global $tempFolder;

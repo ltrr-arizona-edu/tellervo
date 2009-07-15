@@ -630,8 +630,13 @@ class dbEntity
    function getMapLink()
    {
    		global $domain;
-   		
-   		return "https://".$domain."mapservice.php?format=gmap&entity=".$this->getEntityType()."&id=".$this->getID();
+   		$entityType = NULL;
+   		switch($this->getEntityType())
+   		{
+   			case "measurement": $entityType = 'series'; break;
+   			default : $entityType = $this->getEntityType(); break;
+   		}
+   		return "https://".$domain."mapservice.php?format=gmap&entity=".$entityType."&id=".$this->getID();
    }
     
    static function getCachedEntity($entityType, $id, $format='standard') 
@@ -2626,6 +2631,14 @@ class measurementEntity extends dbEntity
 	 */
 	protected $dating = NULL;
 	
+	/**
+	 * New start year when redating/crossdating
+	 *
+	 * @var Integer 
+	 */
+	protected $newStartYear = NULL;
+	
+	
     /**
      * Array of readings/values
      *
@@ -2718,9 +2731,12 @@ class measurementEntity extends dbEntity
 		$this->location = new location();	
 		$this->taxon = new taxon(); 	
 		$this->dendrochronologist = new securityUser();
+		$this->author = new securityUser();
 		$this->analyst = new securityUser();
 		$this->dating = new dating();
 		$this->vmeasurementOp = new vmeasurementOp();
+		$this->measuringMethod = new measuringMethod();
+		$this->units = new unit();
 	}
 
 	/***********/
@@ -3004,7 +3020,7 @@ class measurementEntity extends dbEntity
     
     function setMasterVMeasurementID($id)
     {
-    	$this->masterVMeasurementID = (integer) $id;
+    	$this->masterVMeasurementID = $id;
     }
 
     
@@ -3138,7 +3154,7 @@ class measurementEntity extends dbEntity
     /***********/
 
     
-    function hasExtent()
+    function hasGeometry()
     {
         return $this->location->getGeometry()!=NULL;
     }
@@ -3168,15 +3184,42 @@ class measurementEntity extends dbEntity
 	 */
     function getSproutYear()
     { 
-    	if (isset($this->parantEntityArray[0]))
+    	if(isset($this->parentEntityArray[0])) 
     	{
-    		return $this->getFirstYear() - $this->parentEntityArray[0]->getMissingHeartwoodRingsToPith();
+    		$radiusObj = $this->parentEntityArray[0];
+		
+	    	if ($radiusObj==NULL)
+	    	{
+	    		return $this->getFirstYear() - $radiusObj->getMissingHeartwoodRingsToPith();
+	    	}
+	    	else
+	    	{    	
+				return $this->getFirstYear();  		
+	    	}   
     	}
-    	else
+    	return false;	
+    }
+    
+    /**
+     * Get the certainty of the sprout year provided by getSproutYear()
+     *
+     * @return String
+     */
+    function getSproutYearCertainty()
+    {
+    	if(isset($this->parentEntityArray[0])) 
     	{
-    		//trigger_error('666'.'Unable to obtain estimate of missing heartwood rings for this measurement', E_USER_NOTICE);
-    		return false;
+			$radiusObj = $this->parentEntityArray[0];	
+	
+			if ($radiusObj==NULL) return "unknown";
+			
+	        if( ($radiusObj->getPith()=="complete") || ($radiusObj->getPith()=="incomplete")  )
+	    	{
+	    		return "exact";
+	    	}
     	}
+    	
+    	return "approximately";
     }
     
     /**
@@ -3186,15 +3229,37 @@ class measurementEntity extends dbEntity
      */
     function getDeathYear()
     {
-    	if (isset($this->parantEntityArray[0]))
+    	if(isset($this->parentEntityArray[0])) 
     	{
-    		return $this->getFirstYear() + $this->getReadingCount() + $this->parentEntityArray[0]->getMissingSapwoodRingsToBark();
+			$radiusObj = $this->parentEntityArray[0];	
+	    	if ($radiusObj==NULL)
+	    	{
+	    		return $this->getFirstYear() + $this->getReadingCount() + $radiusObj->getMissingSapwoodRingsToBark();
+	    	}
+	    	else
+	    	{    	
+				return $this->getFirstYear() + $this->getReadingCount();   		
+	    	}
     	}
-    	else
-    	{    	
-    		//trigger_error('666'.'Unable to obtain estimate of missing sapwood rings for this measurement', E_USER_NOTICE);
-    		return false;    		
+    	return false;
+    }
+    
+    /**
+     * Get the certainty of the death year provided by getDeathYear()
+     *
+     * @return String
+     */
+    function getDeathYearCertainty()
+    {
+    	$radiusObj = $this->parentEntityArray[0];
+    	
+    	if ($radiusObj==NULL) return "unknown";
+    	if($radiusObj->getBarkPresent())
+    	{
+    		return "exact";  		
     	}
+    		 	
+    	return "approximately";
     }
     
     /**
@@ -3384,6 +3449,11 @@ class measurementEntity extends dbEntity
 	function getFirstYear()
 	{
 		return $this->firstYear;
+	}
+	
+	function getNewStartYear()
+	{
+		return $this->newStartYear;
 	}
 	
 	function getStatType()

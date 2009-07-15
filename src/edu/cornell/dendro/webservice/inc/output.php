@@ -277,7 +277,7 @@ function writeGMapOutput($xmldata)
       function finishedLoadingXml()
       {   	
       	geoXml.gotoDefaultViewport(map); 
-      	map.setZoom(9);
+      	map.setZoom(5);
 	  }
 	  
 	  

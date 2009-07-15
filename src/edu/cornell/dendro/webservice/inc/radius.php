@@ -362,7 +362,7 @@ class radius extends radiusEntity implements IDBAccessor
 					{
 																						$xml.= "<tridas:sapwood presence=\"".$this->getSapwood()."\">";
 	                    if($this->getNumberOfSapwoodRings()!=NULL)						$xml.= "<tridas:nrOfSapwoodRings>".$this->getNumberOfSapwoodRings()."</tridas:nrOfSapwoodRings>\n";
-	                    if($this->getLastRingUnderBark()!=NULL)							$xml.= "<tridas:lastRingUnderBark>".$this->getLastRingUnderBark()."</tridas:lastRingUnderBark>\n";
+	                    if($this->getLastRingUnderBark()!=NULL)							$xml.= "<tridas:lastRingUnderBark presence=\"present\">".$this->getLastRingUnderBark()."</tridas:lastRingUnderBark>\n";
 	                    if($this->getMissingSapwoodRingsToBark()!=NULL)					$xml.= "<tridas:missingSapwoodRingsToBark>".$this->getMissingSapwoodRingsToBark()."</tridas:missingSapwoodRingsToBark>\n";
 	                    if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)		$xml.= "<tridas:missingSapwoodRingsToBarkFoundation>".$this->getMissingSapwoodRingsToBarkFoundation()."</tridas:missingSapwoodRingsToBarkFoundation>\n";	
 	                    																$xml.= "</tridas:sapwood>\n";

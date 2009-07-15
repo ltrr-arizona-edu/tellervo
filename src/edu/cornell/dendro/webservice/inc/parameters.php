@@ -862,7 +862,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   	case "analyst":				break;
 		   	case "dendrochronologist":	break;
 		   	case "author":				break;
-		   	case "measuringMethod":		$this->setMeasurementMethod(NULL, $child->getAttribute("normalTridas")); break;
+		   	case "measuringMethod":		$this->setMeasuringMethod(NULL, $child->getAttribute("normalTridas")); break;
 		   	case "version":				$this->setVersion($child->nodeValue); break;
 		   	case "interpretation":
 		   		$interpTags = $child->childNodes;
@@ -872,11 +872,29 @@ class measurementParameters extends measurementEntity implements IParams
 		   			switch($interpTag->nodeName)
 		   			{
 		   				case "firstYear":
-		   					$this->setFirstYear($interpTag->nodeValue);
+		   					$this->setNewStartYear($interpTag->nodeValue);
 		   					break;
 		   				case "datingReference":
-		   					$this->setMasterVMeasurementID($interpTag->nodeValue);
-		   					break;
+		   					$datingRefTags = $interpTag->childNodes;
+					   		foreach($datingRefTags as $datingRefTag)
+		   					{	
+		   						if($datingRefTag->nodeType != XML_ELEMENT_NODE) continue;		 
+		   			   			switch($datingRefTag->nodeName)
+		   						{		
+		   							
+						   			case "linkSeries":
+						   				$seriesTags = $datingRefTag->childNodes;
+						   				foreach($seriesTags as $series)
+						   				{
+						   					if($series->nodeType != XML_ELEMENT_NODE) continue;
+						   					if($series->nodeName=='identifier')
+						   					{						   
+						   						$this->setMasterVMeasurementID($series->nodeValue);  		
+						   					}
+						   				}
+						   				break;
+		   						}
+		   					}
 		   					
 		   				default:
 		   					break;
@@ -912,10 +930,11 @@ class measurementParameters extends measurementEntity implements IParams
 		   				$this->setConfidenceLevel($value);
 		   				break;
 		   				
-		   			case "corina.isReconcilded":
+		   			case "corina.isReconciled":		   				
 		   				$this->setIsReconciled($value);
 		   				break;
-
+		   				
+		   			case "corina.mapLink":				break;
 		   			case "corina.isPublished":			break;
 		   			case "corina.readingCount":			break;		   			
 		   			
