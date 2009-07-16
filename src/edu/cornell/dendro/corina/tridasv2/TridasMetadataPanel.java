@@ -1,20 +1,14 @@
 package edu.cornell.dendro.corina.tridasv2;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -26,21 +20,16 @@ import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -95,7 +84,6 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private static final String CHANGE_STATE = "Change...";
 	private static final String OK_STATE = "Choose";
 	
-	//// BOTTOM PANEL BUTTONS
 	/** The lock/unlock button for making changes to the currently selected entity */
 	private JToggleButton editEntity;
 	/** Text associated with lock/unlock button */
@@ -104,7 +92,12 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private JButton editEntitySave;
 	/** The cancel button when unlocked */
 	private JButton editEntityCancel;
-	
+
+	/**
+	 * Constructor: Wrap around the given sample
+	 * 
+	 * @param s
+	 */
 	public TridasMetadataPanel(Sample s) {
 		this.s = s;	
 
@@ -588,6 +581,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * 
 	 * @param entity
 	 */
+	@SuppressWarnings("unchecked")
 	private void selectInCombo(ITridas entity) {
 		// disable actionListener firing when we change combobox selection
 		topChooserListener.setEnabled(false);
@@ -782,10 +776,10 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				button = addButton(t);
 				buttons.add(button);
 				buttonBar.add(button);
-			
-				if (buttons.getSelection() == null) {
+
+				// start on measurement series
+				if (t == EditType.MEASUREMENT_SERIES)
 					button.doClick();
-				}
 			}
 		}
 		
@@ -798,7 +792,6 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * 
 	 * @author Lucas Madar
 	 */
-	private final static String SERIESTAG = "SERIES";
 
 	private static enum EditType {
 		OBJECT(TridasObject.class, "Object", "tridas/object.png", Metadata.OBJECT),
@@ -882,7 +875,15 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			return associatedButton;
 		}
 		
+		/**
+		 * Enable or disable the associated button
+		 * Has no effect on series
+		 * @param enabled
+		 */
 		public void enableAssociatedButton(boolean enabled) {
+			if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES)
+				return;
+			
 			if(associatedButton != null) {
 				associatedButton.setEnabled(enabled);
 			}
