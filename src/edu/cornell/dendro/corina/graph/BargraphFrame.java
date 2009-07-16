@@ -839,6 +839,10 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		getContentPane().add(tb, BorderLayout.NORTH);
 
 		// create popup
+		/*
+		 * TODO: Fix the popup menu on the bar graph
+		 * Will do when GANTT charting is made to work nicely
+		 * 
 		popup = new SamplePopupMenu();
 		bgp.addMouseListener(new PopupListener() {
 			@Override
@@ -869,6 +873,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		});
+		*/
 
 		/*
 		    // enable drop-loading for panel
