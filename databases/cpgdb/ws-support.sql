@@ -1,6 +1,7 @@
 DROP VIEW vwDerivedCount CASCADE;
 DROP VIEW vwDerivedTitles CASCADE;
 DROP VIEW vwComprehensiveVM CASCADE;
+DROP VIEW vwDirectChildCount CASCADE;
 
 CREATE VIEW vwDerivedCount AS
     SELECT vmeasurementid,COUNT(measurementid) as count,FIRST(measurementid) as firstMeasurementID FROM tblVMeasurementDerivedCache GROUP BY vmeasurementid;
