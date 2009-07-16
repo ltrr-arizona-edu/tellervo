@@ -68,6 +68,7 @@ import org.tridas.interfaces.ITridasDerivedSeries;
  * 
  * 
  */
+HI MOM!
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "title",
