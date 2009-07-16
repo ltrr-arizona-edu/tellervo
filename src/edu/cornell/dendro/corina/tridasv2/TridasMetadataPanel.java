@@ -372,6 +372,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		propertiesPanel.setToolBarVisible(false);
 		propertiesPanel.setDescriptionVisible(true);
+		
 		propertiesPanel.setMode(PropertySheet.VIEW_AS_CATEGORIES);
 		
 		propertiesPanel.getTable().setRowHeight(24);
@@ -800,12 +801,12 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private final static String SERIESTAG = "SERIES";
 
 	private static enum EditType {
-		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "tridas/measurementseries.png", null),
-		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "tridas/derivedseries.png", null),
 		OBJECT(TridasObject.class, "Object", "tridas/object.png", Metadata.OBJECT),
 		ELEMENT(TridasElement.class, "Element", "tridas/element.png", Metadata.ELEMENT),
 		SAMPLE(TridasSample.class, "Sample", "tridas/sample.png", Metadata.SAMPLE),
-		RADIUS(TridasRadius.class, "Radius", "tridas/radius.png", Metadata.RADIUS);
+		RADIUS(TridasRadius.class, "Radius", "tridas/radius.png", Metadata.RADIUS),
+		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "tridas/measurementseries.png", null),
+		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "tridas/derivedseries.png", null);
 		
 		
 		private Class<? extends ITridas> type;
