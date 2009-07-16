@@ -39,23 +39,34 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	private Reconciler reconciler;
 	private ReconcileNotifier notifier;
 	private TableSelectionChangeListener tableSelectionMonitor;
+	private Color greenColor;
+	private Color redColor;
+
 	
-	public ReconcileDataView(Sample newSample, Sample reference) {
+	public ReconcileDataView(Sample newSample, Sample reference, Boolean showInfo) {
 		super(newSample);		
+		
+		greenColor = Color.getHSBColor(0.305f, 0.23f, 0.89f);
+		redColor = Color.getHSBColor(0f, 0.41f, 0.89f);
 		
 		this.newSample = newSample;
 		this.reference = reference;
 		
 		// create the reconciler
 		reconciler = new Reconciler(newSample, reference);
-		
+
 		// create the place where we check our stuffs
 		reconcileInfo = new JEditorPane();
 		reconcileInfo.setContentType("text/html");
 		reconcileInfo.setEditable(false);
-		reconcileInfo.setPreferredSize(new Dimension(140, 100));
+		reconcileInfo.setPreferredSize(new Dimension(140, 400));
+		reconcileInfo.setMinimumSize(new Dimension(140, 40));		
+		reconcileInfo.setMaximumSize(new Dimension(140, 99999));
 		reconcileInfo.setText(reconcileIntro);
-
+		
+		reconcileInfo.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+			
+		
 		// reconcile...
 		doReconciliation();
 
@@ -73,7 +84,14 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	    // this column is useless in this case and just takes up space!
 	    myTable.getColumnModel().removeColumn(myTable.getColumnModel().getColumn(11));
 		
-		add(reconcileInfo, BorderLayout.EAST);
+	    if(showInfo) add(this.getReconcileInfoPanel(), BorderLayout.WEST);
+	}
+	
+	
+	public JEditorPane getReconcileInfoPanel(){
+		
+		return reconcileInfo;
+
 	}
 	
 	private void doReconciliation() {
@@ -124,7 +142,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				selectionInfo.append("<br><b><u>Details for year " + y.toString() + "</u></b><br><br>");
 			
 				// just some info
-				selectionInfo.append("Current value : " + newSample.getData().get(idx) + "<br>");
+				selectionInfo.append("Primary value : " + newSample.getData().get(idx) + "<br>");
 				selectionInfo.append("Reference value : " + 
 						((reference.getData().size() > idx) ? reference.getData().get(idx) : "<n/a>") + 
 						"<br><br>");
@@ -296,14 +314,14 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				// There are failures
 				
 				Integer  borderWidth = 1;
-				Color myBorderColor = Color.RED;
+				Color myBorderColor = redColor;
 				// Enhance border width if cell is also selected
 				if (isSelected)	borderWidth = 2;
 				
 				if(failures.contains(Reconciler.FailureType.THREEPERCENT)) {
 					// 3% error so paint cell red 
 					cell.setForeground(Color.WHITE);
-					cell.setBackground(Color.RED);
+					cell.setBackground(redColor);
 					
 					// Overide border color if selected otherwise it is invisible
 					if (isSelected) myBorderColor = Color.BLACK;
@@ -331,7 +349,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 			} else {
 				// No errors so paint green
 				cell.setForeground(Color.BLACK);
-				cell.setBackground(Color.GREEN);
+				cell.setBackground(greenColor);
 			}
 			
 

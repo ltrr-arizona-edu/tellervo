@@ -694,6 +694,16 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		return name;
 	}
 	
+	/** Return a short version of the sample's title (without range info).
+	 @return the "title" tag from meta */
+	public String toSimpleString() {
+		String name = getDisplayTitle();
+		if (isModified()) // not aqua-ish, but how to do it the real way?
+			name = "* " + name;
+		return name;
+	}
+		
+	
 	private CorinaMetadata metadataWrapper;
 	
 	@Override

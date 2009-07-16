@@ -1,11 +1,13 @@
 package edu.cornell.dendro.corina.manip;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -13,12 +15,23 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.table.DefaultTableModel;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.DecadalModel;
+import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.graph.GraphActions;
+import edu.cornell.dendro.corina.graph.GraphController;
+import edu.cornell.dendro.corina.graph.GraphInfo;
+import edu.cornell.dendro.corina.graph.GraphToolbar;
+import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -39,6 +52,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	private JButton btnRemeasure;
 	private JPanel refPanel; // the panel with the reference measurement
 	private JSeparator sepLine;
+
 	
 	private boolean extraIsShown = false;
 	private final static String EXPAND = "Show reference";
@@ -46,8 +60,8 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	
 	public ReconcileWindow(Sample s1, Sample s2) {
 		JPanel content = new JPanel(new BorderLayout());
-		
-		setTitle("Reconciliation: " + s1.toString());
+				
+		setTitle("Reconciling " + s1.toSimpleString());
 
 		// create a copy of our samples before we even touch them
 		// we keep s2 now for future compatibility, when we might have multiple
@@ -59,25 +73,48 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 
 		this.s1 = s1;
 		this.s2 = s2;
-		dv1 = new ReconcileDataView(s1, s2);
-		dv2 = new ReconcileDataView(s2, s1);
+		dv1 = new ReconcileDataView(s1, s2, false);
+		dv2 = new ReconcileDataView(s2, s1, false);
 		
 		dv1.setReconcileNotifier(this);
 		dv2.setReconcileNotifier(this);
+			
+		// Create split pane to hold two series
+		JPanel seriesHolder = new JPanel();
+		seriesHolder.setLayout(new BoxLayout(seriesHolder, BoxLayout.X_AXIS));
 		
+		// Create panel for primary series
 		JPanel reconcilePanel = new JPanel();
 		reconcilePanel.setLayout(new BoxLayout(reconcilePanel, BoxLayout.Y_AXIS));
+		reconcilePanel.add(createReconcilePane(s1, dv1, "Primary series: "));
 		
-		refPanel = new JPanel(new BorderLayout());
-		refPanel.add(createReconcilePane(s2, dv2), BorderLayout.CENTER);
-		refPanel.setVisible(extraIsShown);
+		// Create panel for reference series
+		JPanel refPanel = new JPanel();
+		refPanel.setLayout(new BoxLayout(refPanel, BoxLayout.Y_AXIS));
+		refPanel.add(createReconcilePane(s2, dv2, "Reference series: "));
 		
+		//JPanel refPanel = new JPanel(new BorderLayout());
+		//refPanel.add(createReconcilePane(s2, dv2), BorderLayout.CENTER);
+		//refPanel.setVisible(extraIsShown);
 		
-		reconcilePanel.add(createReconcilePane(s1, dv1));
-		reconcilePanel.add(createButtonPanel());
-		reconcilePanel.add(refPanel);
+		// Graph panel
+		JPanel graphPanel = new JPanel();
+
+		// Create split pane to hold tab pane and graph pane
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);	
+		splitPane.setTopComponent(seriesHolder);
+		splitPane.setBottomComponent(graphPanel);
 		
-		content.add(reconcilePanel, BorderLayout.CENTER);
+		// Add series panels to seriesHolder panel
+		seriesHolder.add(dv1.getReconcileInfoPanel());
+		seriesHolder.add(reconcilePanel);
+		seriesHolder.add(refPanel);
+		
+		// Add panels to main panel
+		content.add(splitPane, BorderLayout.CENTER);
+		content.add(createButtonPanel(), BorderLayout.SOUTH);
+		//reconcilePanel.add(refPanel);
 		
 		setContentPane(content);
 		
@@ -94,6 +131,8 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		btnCancel = new JButton("Cancel");
 		btnViewType = new JButton("Graph");
 		sepLine = new javax.swing.JSeparator();
+		
+		btnShowHideRef.setVisible(false);
 		
 		// TODO - hide until implemented
 		btnViewType.setVisible(false);
@@ -314,15 +353,15 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		return buttonPanel;
 	}
 	
-	private JPanel createReconcilePane(Sample s, ReconcileDataView dv) {
+	
+	private JPanel createReconcilePane(Sample s, ReconcileDataView dv, String titlePrefix) {
 		JPanel p = new JPanel();
 		
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		
-		p.setBorder(BorderFactory.createTitledBorder(s.toString()));
+		p.setBorder(BorderFactory.createTitledBorder(titlePrefix + s.toSimpleString()));
 		
-		p.add(dv);
-		
+		p.add(dv);	
 		return p;
 	}
 
@@ -358,7 +397,8 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		// enable our apply button?
 		if(s1.isModified() || s2.isModified()) btnFinish.setEnabled(true);
 	}
-
+	
+	
 	// SaveableDocument
 	public String getDocumentTitle() {
 		return "reference sample " + s2.getDisplayTitle();
