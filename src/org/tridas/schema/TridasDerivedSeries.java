@@ -89,7 +89,7 @@ import org.tridas.interfaces.ITridasDerivedSeries;
     "values"
 })
 @XmlRootElement(name = "derivedSeries")
-public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, ITridasDerivedSeries
+public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, ITridasDerivedSeries<Integer>
 {
 
     private final static long serialVersionUID = 1001L;
