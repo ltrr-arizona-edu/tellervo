@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+This file is for custom interfaces applied to tridas objects
+-->
+<bindings 
+	version="2.1"
+	xmlns="http://java.sun.com/xml/ns/jaxb" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:ai="http://jaxb.dev.java.net/plugin/if_insertion"
+	extensionBindingPrefixes="ai"
+	schemaLocation="../src/edu/cornell/dendro/webservice/schemas/tridas.xsd" node="/xs:schema">
+	
+	<!-- Add ITridas interface to TridasEntity -->
+	<bindings node="//xs:complexType[@name='tridasEntity']">
+		<ai:interfaces check="false">
+			org.tridas.interfaces.ITridas
+			org.tridas.interfaces.ITridasGeneric
+		</ai:interfaces>
+	</bindings>
+
+	<!-- Add ITridasSeries interface to MeasurementSeries and DerivedSeries -->
+	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType">
+		<ai:interfaces check="false">org.tridas.interfaces.ITridasSeries</ai:interfaces>
+	</bindings>
+	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType">
+		<ai:interfaces check="false">org.tridas.interfaces.ITridasDerivedSeries</ai:interfaces>
+	</bindings>
+	
+	
+</bindings>

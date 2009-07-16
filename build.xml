@@ -200,7 +200,7 @@
   	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-tools-0.5.0.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-runtime-0.5.0.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/annox-0.4.2.jar"/>
-  	<pathelement location="Libraries/jaxb/plugin/xjc-if-ins.jar"/>
+  	<pathelement location="Libraries/jaxb/plugin/xjc-if-ins+generics.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/proplistplugin.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/TridasAandI.jar"/>
     <pathelement location="Libraries/jaxb/plugin/TridasAnnotationsPlugin.jar"/>

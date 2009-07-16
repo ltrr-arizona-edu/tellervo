@@ -33,23 +33,7 @@
 		<jaxb:bindings node="//xs:element[@name='object']">
 			<jaxb:class implClass="edu.cornell.dendro.corina.tridasv2.TridasObjectEx" />
 		</jaxb:bindings>
-		
-		<!-- Add ITridas interface to TridasEntity -->
-		<jaxb:bindings node="//xs:complexType[@name='tridasEntity']">
-			<ai:interfaces check="false">
-				org.tridas.interfaces.ITridas
-				org.tridas.interfaces.ITridasGeneric
-			</ai:interfaces>
-		</jaxb:bindings>
-
-		<!-- Add ITridasSeries interface to MeasurementSeries and DerivedSeries -->
-		<jaxb:bindings node="//xs:element[@name='measurementSeries']/xs:complexType">
-			<ai:interfaces check="false">org.tridas.interfaces.ITridasSeries</ai:interfaces>
-		</jaxb:bindings>
-		<jaxb:bindings node="//xs:element[@name='derivedSeries']/xs:complexType">
-			<ai:interfaces check="false">org.tridas.interfaces.ITridasDerivedSeries</ai:interfaces>
-		</jaxb:bindings>
-				
+						
 		<!-- Fix some unconvertable strings -->
 		<jaxb:bindings node="//xs:simpleType[@name='normalTridasUnit']">
 			<jaxb:typesafeEnumClass>
