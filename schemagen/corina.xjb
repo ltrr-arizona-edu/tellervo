@@ -13,6 +13,7 @@
 				underscoreBinding="asCharInWord" 
 				generateIsSetMethod="true" 
 				enableFailFastCheck="true"
+				typesafeEnumBase="xs:string xs:int xs:long xs:short xs:double xs:float"
 				typesafeEnumMemberName="generateName">
 			<jaxb:serializable uid="1001"/>
 			<xjc:simple />

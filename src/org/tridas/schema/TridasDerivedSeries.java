@@ -68,7 +68,6 @@ import org.tridas.interfaces.ITridasDerivedSeries;
  * 
  * 
  */
-HI MOM!
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "title",
@@ -90,7 +89,7 @@ HI MOM!
     "values"
 })
 @XmlRootElement(name = "derivedSeries")
-public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, ITridasDerivedSeries<Integer>
+public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, ITridasDerivedSeries
 {
 
     private final static long serialVersionUID = 1001L;

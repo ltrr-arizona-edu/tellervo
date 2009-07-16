@@ -25,6 +25,35 @@ This file is for custom interfaces applied to tridas objects
 	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType">
 		<ai:interfaces check="false">org.tridas.interfaces.ITridasDerivedSeries</ai:interfaces>
 	</bindings>
+
+	<!-- - - - - - - - - - - - - -->
+	<!-- NORMAL TRIDAS BINDINGS  -->
+	<!-- - - - - - - - - - - - - -->
+	<bindings node="//xs:element[@name='category']/xs:complexType">
+		<ai:interfaces check="false" genericType="NormalTridasCategory">org.tridas.interfaces.NormalTridasVoc</ai:interfaces>
+	</bindings>
 	
+	<bindings node="//xs:element[@name='measuringMethod']/xs:complexType">
+		<ai:interfaces check="false" genericType="NormalTridasMeasuringMethod">org.tridas.interfaces.NormalTridasVoc</ai:interfaces>
+	</bindings>
+
+	<bindings node="//xs:element[@name='remark']/xs:complexType">
+		<ai:interfaces check="false" genericType="NormalTridasRemark">org.tridas.interfaces.NormalTridasVoc</ai:interfaces>
+	</bindings>
+
+	<bindings node="//xs:element[@name='remark']/xs:complexType">
+		<ai:interfaces check="false" genericType="NormalTridasRemark">org.tridas.interfaces.NormalTridasVoc</ai:interfaces>
+	</bindings>
 	
+	<bindings node="//xs:element[@name='shape']/xs:complexType">
+		<ai:interfaces check="false" genericType="NormalTridasShape">org.tridas.interfaces.NormalTridasVoc</ai:interfaces>
+	</bindings>	
+	
+	<bindings node="//xs:element[@name='unit']/xs:complexType">
+		<ai:interfaces check="false" genericType="NormalTridasUnit">org.tridas.interfaces.NormalTridasVoc</ai:interfaces>
+	</bindings>	
+
+	<bindings node="//xs:element[@name='variable']/xs:complexType">
+		<ai:interfaces check="false" genericType="NormalTridasVariable">org.tridas.interfaces.NormalTridasVoc</ai:interfaces>
+	</bindings>	
 </bindings>

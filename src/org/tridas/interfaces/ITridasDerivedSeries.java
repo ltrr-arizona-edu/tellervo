@@ -1,6 +1,5 @@
 package org.tridas.interfaces;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.tridas.schema.ControlledVoc;
