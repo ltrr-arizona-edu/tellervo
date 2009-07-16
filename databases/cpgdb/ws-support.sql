@@ -5,6 +5,12 @@ DROP VIEW vwComprehensiveVM CASCADE;
 CREATE VIEW vwDerivedCount AS
     SELECT vmeasurementid,COUNT(measurementid) as count,FIRST(measurementid) as firstMeasurementID FROM tblVMeasurementDerivedCache GROUP BY vmeasurementid;
 
+CREATE VIEW vwDirectChildCount AS
+	SELECT membervmeasurementid AS vmeasurementid, 
+		COUNT(tblvmeasurementgroup.vmeasurementid) as directChildCount 
+	FROM tblVMeasurementGroup 
+	GROUP BY tblvmeasurementGroup.membervmeasurementid;
+    
 CREATE VIEW vwDerivedTitles AS
     SELECT dc.vmeasurementid, dc.count as derivedCount, dc.firstMeasurementID,
     (CASE WHEN dc.count = 1 THEN o.objectID ELSE NULL END) as objectID,
@@ -30,10 +36,11 @@ CREATE VIEW vwComprehensiveVM AS
 	su.username, op.name as opname, dt.datingtype, 
 	mc.vmextent AS extentgeometry,
 	cd.crossdateid, cd.mastervmeasurementid, cd.startyear AS newstartyear, cd.justification, cd.confidence,
-        der.objectID, der.objectTitle, der.objectCode, der.elementCode, der.sampleCode, der.radiusCode
+        der.objectID, der.objectTitle, der.objectCode, der.elementCode, der.sampleCode, der.radiusCode, dcc.directChildCount
     FROM tblvmeasurement vm
 	INNER JOIN tlkpvmeasurementop op ON vm.vmeasurementopid=op.vmeasurementopid
 	LEFT JOIN vwDerivedTitles der ON vm.vmeasurementid=der.vmeasurementid
+	LEFT JOIN vwDirectChildCount dcc ON vm.vmeasurementid=dcc.vmeasurementid
 	LEFT JOIN tblmeasurement m ON vm.measurementid=m.measurementid
 	LEFT JOIN tblvmeasurementmetacache mc ON vm.vmeasurementid=mc.vmeasurementid
 	LEFT JOIN tlkpdatingtype dt ON m.datingtypeid=dt.datingtypeid
