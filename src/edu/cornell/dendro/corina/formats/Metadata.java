@@ -20,8 +20,6 @@ public class Metadata {
 	public final static String TITLE = "title";
 	/** The filename (mostly obselete, irrelevant for "web" files, etc */
 	public final static String FILENAME = "filename";
-	/** The name of the sample. Usually something like 'A', 'C', etc */
-	public final static String NAME = "name";
 	
 	/* Timestamps */
 	public final static String CREATED_TIMESTAMP = "createdTimestamp";
@@ -90,7 +88,6 @@ public class Metadata {
 		addType(LEGACY_CLEANED, Boolean.class);
 
 		// now, add mappings.
-		addMapping(Tridas.TITLE, Metadata.NAME);
 	}
 	
 	/**

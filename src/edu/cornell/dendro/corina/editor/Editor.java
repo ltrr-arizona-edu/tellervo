@@ -33,6 +33,7 @@ import java.awt.print.PageFormat;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -61,13 +62,18 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
+import org.tridas.schema.Certainty;
+import org.tridas.schema.NormalTridasMeasuringMethod;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasMeasuringMethod;
+
 import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.ElementsPanel;
 import edu.cornell.dendro.corina.gui.FileDialog;
-import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
@@ -75,10 +81,13 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.io.CorinaMeasuringDevice;
+import edu.cornell.dendro.corina.io.SerialSampleIO;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
@@ -86,6 +95,7 @@ import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridasv2.TridasMetadataPanel;
+import edu.cornell.dendro.corina.tridasv2.XMLDateUtils;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -94,9 +104,6 @@ import edu.cornell.dendro.corina.util.DocumentListener2;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.webdbi.MapLink;
-import edu.cornell.dendro.corina.io.CorinaMeasuringDevice;
-import edu.cornell.dendro.corina.io.SerialSampleIO;
-import edu.cornell.dendro.corina.Year;
 
 /*
  left to do:
@@ -323,23 +330,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		dataView.stopEditing(false);
 		
 		// make sure they're all numbers -- no nulls, strings, etc.
-		// abstract this out as "boolean verifyOnlyNumbers()" or something?
-		for (int i = 0; i < sample.getData().size(); i++) {
-			Object o = sample.getData().get(i);
-			if (o == null || !(o instanceof Integer)) { // integer?  or number?
-				// BUT: didn't i used to pass in |this| as the owner?  is this worse?
-				Alert.error("Bad Data",
-						"One or more years had bad (non-numeric) data, or no data:\n"
-								+ "- year " + sample.getRange().getStart().add(i)
-								+ " has "
-								+ (o == null ? "no value" : "value " + o));
-				return;
-				// BUG: return failure.  how?  (UserCancelled?)
-				// NO, DESIGN BUG: this shouldn't ever be allowed to happen.  why does it?
-			}
-			// REPLACE WITH: call to method ensureNumbersOnly()
-			// -- why not simply disallow non-numbers to begin with?
-		}
+		// we don't have to do this anymore!
 		
 		// get filename from sample; fall back to user's choice
 		if (sample.getLoader() == null) {
@@ -383,6 +374,15 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			sample.setLoader(new FileElement(filename));
 		}
 
+		// it's not complete yet
+		if(!sample.hasMeta(Metadata.RADIUS)) {
+			JOptionPane.showMessageDialog(this,
+					"Metadata not complete. You must choose a radius.",
+					"Save error", JOptionPane.ERROR_MESSAGE);
+			rolodex.setSelectedIndex(1);
+			return;
+		}
+		
 		// now, actually try and save the sample
 		try {
 			sample.getLoader().save(sample);
@@ -674,11 +674,25 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			return;
 		}
 
-		// make dataset ref, with our title
-		sample = new Sample();
+		// make a new measurement series
+		TridasMeasurementSeries series = new TridasMeasurementSeries();
+		series.setTitle(title);
+		
+		// set up the new measuring method
+		TridasMeasuringMethod method = new TridasMeasuringMethod();
+		method.setNormalTridas(NormalTridasMeasuringMethod.MEASURING___PLATFORM);
+		series.setMeasuringMethod(method);
+	
+		// set the measuring date to today
+		series.setMeasuringDate(XMLDateUtils.toDate(new Date(), null));
+				
+		// make dataset ref, based on our series
+		sample = new Sample(series);
+		
+		// setup our loader and series identifier
+		CorinaWsiTridasElement.attachNewSample(sample);
+		
 		sample.setMeta(Metadata.TITLE, "New entry: " + title);
-		sample.setMeta(Metadata.NAME, title);
-		sample.setSampleType(SampleType.DIRECT);
 
 		// pass
 		setup();

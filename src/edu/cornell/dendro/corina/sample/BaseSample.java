@@ -58,9 +58,11 @@ public class BaseSample implements TridasIdentifiable {
 	
 	public BaseSample() {
 		meta = new HashMap<String, Object>();
-		range = new Range();
-		loader = null; // no default loader!
-		sampleType = SampleType.UNKNOWN;
+		
+		// call these so anyone overloading us can handle properly
+		setRange(new Range());
+		setLoader(null); // start with no loader
+		setSampleType(SampleType.UNKNOWN);
 	}
 	
 	public BaseSample(ITridasSeries series) {
@@ -159,6 +161,7 @@ public class BaseSample implements TridasIdentifiable {
 	 */
 	public void setRange(Range range) {
 		this.range = range;
+		System.out.println("Range: " + range);
 	}
 
 	/**

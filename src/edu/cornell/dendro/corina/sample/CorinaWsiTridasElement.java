@@ -7,14 +7,12 @@ import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLinkSeries;
-import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasRadius;
 
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.util.ListUtil;
-import edu.cornell.dendro.corina.wsi.corina.CorinaAssociatedResource;
-import edu.cornell.dendro.corina.wsi.corina.CorinaResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesResource;
@@ -48,6 +46,24 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 		this.identifier = identifier;
 		
 		name = shortName = identifier.toString();
+	}
+
+	/**
+	 * Make a new CorinaWsiTridasElement and attach it to this sample
+	 * 
+	 * TODO: Make this work for different domains!
+	 * 
+	 * @param s
+	 * @return the CorinaWsiTridasElement (same as s.getLoader())
+	 */
+	public static CorinaWsiTridasElement attachNewSample(Sample s) {
+		TridasIdentifier newid = NewTridasIdentifier.getInstance("unknown");
+		CorinaWsiTridasElement element = new CorinaWsiTridasElement(newid);
+		
+		s.setLoader(element);
+		s.getSeries().setIdentifier(newid);
+		
+		return element;
 	}
 	
 	public TridasIdentifier getTridasIdentifier() {
@@ -153,14 +169,26 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 			series = derived;
 		}
 		
+		// creating a new series?
 		if(NewTridasIdentifier.isNew(seriesIdentifier)) {
 			// ok, this is a new series
 			
 			if(!NewTridasIdentifier.isNew(identifier))
-				throw new IllegalArgumentException("Creating a derived must have both identifiers as new");
+				throw new IllegalArgumentException("Creating a new series must have both identifiers as new");
 			
-			// create a new series
-			return new SeriesResource(series, null, CorinaRequestType.CREATE);
+			if(series instanceof ITridasDerivedSeries) {			
+				// create a new derived series - parent is null
+				return new SeriesResource(series, null, CorinaRequestType.CREATE);
+			}
+			
+			// ok, series isn't derived; make sure it's got the right information in radius
+			TridasRadius radius;
+			if ((radius = s.getMeta(Metadata.RADIUS, TridasRadius.class)) == null
+					|| !radius.isSetIdentifier()
+					|| NewTridasIdentifier.isNew(radius.getIdentifier()))
+				throw new IllegalArgumentException("Creating a new series without a radius that has an identifier?");
+			
+			return new SeriesResource(series, radius.getIdentifier().getValue(), CorinaRequestType.CREATE);
 		}
 
 		// we're just updating

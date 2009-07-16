@@ -285,7 +285,6 @@ public class TridasDoc implements Filetype {
 		TridasGenericFieldMap genericFields = new TridasGenericFieldMap(series.getGenericFields());
 		
 		// easy metadata bits
-		s.setMeta(Metadata.NAME, series.getTitle());
 		s.setMeta(Metadata.TRIDAS_IDENTIFIER, series.getIdentifier());
 		s.setMeta(Metadata.CREATED_TIMESTAMP, series.getCreatedTimestamp().
 				getValue().toGregorianCalendar().getTime());
