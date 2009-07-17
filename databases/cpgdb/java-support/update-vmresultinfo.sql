@@ -1,5 +1,5 @@
 -- First parameter: VMeasurementResultID
-CREATE OR REPLACE FUNCTION cpgdb.qupdVMeasurementResultInfo(uuid) RETURNS boolean AS $$
+CREATE OR REPLACE FUNCTION cpgdbj.qupdVMeasurementResultInfo(uuid) RETURNS boolean AS $$
 DECLARE
    ResultID ALIAS FOR $1;
    vmid tblVMeasurement.VMeasurementID%TYPE;

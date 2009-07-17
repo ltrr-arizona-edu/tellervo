@@ -74,8 +74,8 @@ CREATE OR REPLACE FUNCTION cpgdbj.qappVMeasurementReadingResult(
   IN paramMeasurementID integer
 ) RETURNS void AS $$
 
-  INSERT INTO tblVMeasurementReadingResult ( RelYear, Reading, VMeasurementResultID ) 
-  SELECT tblReading.RelYear, tblReading.Reading, $1 AS Expr1 
+  INSERT INTO tblVMeasurementReadingResult ( RelYear, Reading, VMeasurementResultID, ReadingID ) 
+  SELECT tblReading.RelYear, tblReading.Reading, $1 AS Expr1, tblReading.readingID 
    FROM tblReading 
    WHERE tblReading.MeasurementID=$2
 
@@ -316,16 +316,21 @@ CREATE OR REPLACE FUNCTION cpgdbj.qappVMeasurementResultReadingOpSum(
 $$ LANGUAGE SQL VOLATILE;
 
 --
--- cpgdbj.qupdVMeasurementResultInfo
+-- cpgdbj.qappVMeasurementReadingNoteResult
 --
 -- IN PARAMETERS
 ---- paramVMeasurementResultID(uuid) 
--- RETURNS boolean
+-- RETURNS void
 
-CREATE OR REPLACE FUNCTION cpgdbj.qupdVMeasurementResultInfo( 
+CREATE OR REPLACE FUNCTION cpgdbj.qappVMeasurementReadingNoteResult( 
   IN paramVMeasurementResultID uuid
-) RETURNS boolean AS $$
+) RETURNS void AS $$
 
-  SELECT * from cpgdb.qupdVMeasurementResultInfo($1)
+  INSERT INTO tblVMeasurementReadingNoteResult ( VMeasurementResultID, RelYear, ReadingNoteID ) 
+  SELECT vmrr.VMeasurementResultID, vmrr.RelYear, rrn.ReadingNoteID 
+   FROM tblVMeasurementReadingResult vmrr 
+   INNER JOIN tblReadingReadingNote rrn 
+      ON vmrr.readingID=rrn.readingID 
+   WHERE vmrr.vMeasurementResultID=$1;
 
 $$ LANGUAGE SQL VOLATILE;
