@@ -549,12 +549,12 @@ class vmeasurementNote extends note
 
 }
 
-class readingNote extends note
+/**class readingNote extends note
 {
     function __construct()
     {
         parent::__construct('reading'); 
     }
 
-}
+}**/
 ?>

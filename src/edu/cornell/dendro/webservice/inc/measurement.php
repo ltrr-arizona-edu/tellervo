@@ -297,6 +297,37 @@ class measurement extends measurementEntity implements IDBAccessor
 		}
 		return TRUE;
 	}
+	
+	private function setReadingNotes($vmresultid)
+	{
+		global $dbconn;
+
+		$sql  = "select * from ? where vmeasurementresultid=$vmresultid";
+
+		$dbconnstatus = pg_connection_status($dbconn);
+		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+		{
+			$result = pg_query($dbconn, $sql);
+			while ($row = pg_fetch_array($result))
+			{
+				$currReadingNote = new readingNote();
+				$currReadingNote->setID($row['readingnoteid']);
+				$currReadingNote->setNote($row['note']);
+				$currReadingNote->setInheritedCount($row['inheritedCount']);
+				$currReadingNote->setControlledVoc($row['vocabid'], $row['vocabname']);				
+				
+				// All note to the readingsArray
+				array_push($this->readingsArray[$row['relyear']]['notesArray'], $currReadingNote); 
+			}
+		}
+		else
+		{
+			// Connection bad
+			$this->setErrorMessage("001", "Error connecting to database");
+			return FALSE;
+		}
+		return TRUE;		
+	}
 
 
 	/**
@@ -1175,19 +1206,9 @@ class measurement extends measurementEntity implements IDBAccessor
 			// Add any notes that are in the notesArray subarray
 			if(count($value['notesArray']) > 0)
 			{
-				foreach($value['notesArray'] as $notevalue)
+				foreach($value['notesArray'] as $myReadingNote)
 				{
-					$myReadingNote = new readingNote;
-					$success = $myReadingNote->setParamsFromDB($notevalue);
-
-					if($success)
-					{
 						$xml.=$myReadingNote->asXML();
-					}
-					else
-					{
-						$this->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
-					}
 				}
 			}
 

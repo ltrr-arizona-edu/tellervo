@@ -967,10 +967,25 @@ class measurementParameters extends measurementEntity implements IParams
 			   			foreach($valuechildren as $valuechild)
 			   			{
 			   				if($valuechild->nodeType != XML_ELEMENT_NODE) continue;
-			   				if($valuechild->tagName == 'note')
+			   				if($valuechild->tagName == 'remark')
 			   				{
 			   					// Add notes in a notes array
-			   					array_push($myNotesArray, $valuechild->nodeValue);
+			   					$currReadingNote = new readingNote();
+			   					
+			   					$currReadingNote->setID($valuechild->getAttribute("normalId"));
+			   					$currReadingNote->setInheritedCount($valuechild->getAttribute("inheritedCount"));
+			   					$currReadingNote->setControlledVoc(null, $valuechild->getAttribute("normalStd"));
+			   					
+			   					if($valueChild->hasAttribute("normal"))
+			   					{
+			   						$currReadingNote->setNote($valueChild->getAttribute("normal"));
+			   					}
+			   					else
+			   					{  		
+			   						$currReadingNote->setNote($valueChild->nodeValue);			
+			   						
+			   					}
+			   					array_push($myNotesArray, $currReadingNote);
 			   				}
 			   				
 			   			}

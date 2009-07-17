@@ -395,4 +395,19 @@ class locationType extends lookupEntity
 	
 }
 
+class controlledVoc extends lookupEntity
+{
+
+	function __construct()
+	{
+		parent::__construct("tlkpvocabulary", "name", "vocabularyid");
+	}
+	
+	function setControlledVoc($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+	
+}
+
 ?>
