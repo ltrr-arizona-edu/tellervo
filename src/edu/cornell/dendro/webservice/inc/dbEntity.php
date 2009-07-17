@@ -2722,7 +2722,12 @@ class measurementEntity extends dbEntity
      */
     protected $birthDate = NULL;
     
-
+    /**
+     * Count of the number of immediate child series (not including descendents of descendants)
+     *
+     * @var Integer
+     */
+	protected $directChildCount = NULL;
     
     function __construct()
     {  
@@ -2743,6 +2748,11 @@ class measurementEntity extends dbEntity
     /* SETTERS */
     /***********/ 	
 		
+	function setDirectChildCount($count)
+	{
+		$this->directChildCount = (int) $count;
+	}
+	
 	function setVMeasurementOp($id, $value)
 	{
 		$this->vmeasurementOp->setVMeasurementOp($id, $value);
@@ -3153,7 +3163,16 @@ class measurementEntity extends dbEntity
     /* GETTERS */
     /***********/
 
-    
+    /**
+     * Get the number of immediate child series associated with this series.  Does not include descendants of descendants
+     *
+     * @return Integer
+     */
+   	function getDirectChildCount()
+   	{
+   		return $this->directChildCount;
+   	}
+   	
     function hasGeometry()
     {
         return $this->location->getGeometry()!=NULL;

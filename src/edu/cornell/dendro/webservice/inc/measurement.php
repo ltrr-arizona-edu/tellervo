@@ -84,6 +84,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		//$this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
 		$this->setMeasurementCount($row['measurementcount']);
 		$this->setReadingCount($row['readingcount']);	
+		$this->setDirectChildCount($row['directchildcount']);
 		
 		// Corina specific backend fields
 		$this->setMasterVMeasurementID($row['mastervmeasurementid']);
@@ -268,34 +269,6 @@ class measurement extends measurementEntity implements IDBAccessor
 		}
 
 		return TRUE;
-	}
-
-	/**
-	 * Get the number of series that depend of this series
-	 *
-	 * @return Integer
-	 */
-	private function countOfDependentSeries()
-	{
-		global $dbconn;
-		$sql = "select * from cpgdb.findvmchildren('".pg_escape_string($this->getID())."', 'false')";
-		$dbconnstatus = pg_connection_status($dbconn);
-		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-		{
-			$result = pg_query($dbconn, $sql);
-			$count = pg_num_rows($result);
-			if($count > 0) return $count;
-			return 0;
-		}
-		else
-		{
-			// Connection bad
-			$this->setErrorMessage("001", "Error connecting to database");
-			return FALSE;
-		}
-		
-		return false;		
-		
 	}
 	
 	private function setReferencesFromDB()
@@ -482,7 +455,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 				// Only allow update on a measurement which is not used by other vm's downstream
 				global $dbconn;
-				$sql = "select cpgdb.findvmchildren(".$paramsObj->getID().", false)";
+				$sql = "select cpgdb.findvmchildren('".pg_escape_string($paramsObj->getID())."', false)";
 				$dbconnstatus = pg_connection_status($dbconn);
 				if ($dbconnstatus ===PGSQL_CONNECTION_OK)
 				{
@@ -992,7 +965,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		
 		$xml .= $this->getPermissionsXML();
 		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:integer\">".$this->getReadingCount()."</tridas:genericField>\n";
-		$xml.= "<tridas:genericField name=\"corina.countOfDependentSeries\" type=\"xs:integer\">".$this->countOfDependentSeries()."</tridas:genericField>\n";
+		$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:integer\">".$this->getDirectChildCount()."</tridas:genericField>\n";
 
 
 
@@ -1048,7 +1021,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"xs:integer\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
 			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:integer\">".$this->getReadingCount()."</tridas:genericField>\n";
 														$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
-					$xml.= "<tridas:genericField name=\"corina.countOfDependentSeries\" type=\"xs:integer\">".$this->countOfDependentSeries()."</tridas:genericField>\n";
+					$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:integer\">".$this->getDirectChildCount()."</tridas:genericField>\n";
 														
 			// show summary information in standard and summary modes
 			/*if($format=="summary" || $format=="standard") {
