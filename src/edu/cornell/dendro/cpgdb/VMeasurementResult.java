@@ -1,9 +1,10 @@
 package edu.cornell.dendro.cpgdb;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.util.UUID;
-
-import org.postgresql.pljava.internal.Oid;
 
 public class VMeasurementResult {
 	// Internal values
@@ -283,6 +284,38 @@ public class VMeasurementResult {
 			dbq.execute("qupdVMeasurementResultOpCrossdate", VMeasurementID, lastWorkingVMeasurementResultID);
 			break;
 		}
+		
+		/*
+		 * Now, migrate over or aggregate any reading notes
+		 * Then apply our own vmeasurement-derived notes
+		 */
+		switch(op) {
+		case INDEX:
+			// steal lastWorkingVMeasurementResultID's notes
+			res = dbq.query("applyDerivedReadingNotes", VMeasurementID, newVMeasurementResultID, 
+					lastWorkingVMeasurementResultID, null);
+			break;
+		
+		case SUM:
+			// aggregate all notes from newVMeasurementResultGroupID
+			res = dbq.query("applyDerivedReadingNotes", VMeasurementID, newVMeasurementResultID, 
+					null, newVMeasurementResultGroupID);
+			break;
+		
+		case CLEAN:
+		case REDATE:
+		case CROSSDATE:
+			// just mark the notes as inherited
+			res = dbq.query("applyDerivedReadingNotes", VMeasurementID, newVMeasurementResultID, null, null);
+			break;
+		
+		default:
+			throw new SQLException("Reading notes not handled by type " + op);
+		}
+		
+		// force above query to execute and clean up
+		res.next();
+		res.close();
 		
 		/*
 		 * Now, we clean the data for explicit cases (CLEAN)

@@ -317,15 +317,18 @@ public class QueryGenerator {
 				PP.gen(PD.RETURN, "integer", null)
 				);
 		
+		
 		/*
 		 * 1 = VMeasurementResultID
 		 */
+		/* Wrapper???
 		addQuery("qupdVMeasurementResultInfo", 
 				"SELECT * from cpgdb.qupdVMeasurementResultInfo($1)",
 				Stability.VOLATILE,
 				PP.in("paramVMeasurementResultID", PT.uuid),
 				PP.gen(PD.RETURN, "boolean", null)
-				);				
+				);		
+		*/
 		
 		/*
 		 * New queries for dealing with NOTES
@@ -341,10 +344,6 @@ public class QueryGenerator {
 				PP.in("paramVMeasurementResultID", PT.uuid),
 				PP.voidreturn()
 				);
-	}
-
-	
-	private void addQuery(String queryName, String SQLStatement) {
 	}
 	
 	private void addQuery(String queryName, String SQLStatement, Stability stability, PP ... paramlist) {
