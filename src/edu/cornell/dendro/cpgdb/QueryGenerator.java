@@ -128,8 +128,8 @@ public class QueryGenerator {
 		 * 2 = paramMeasurementID
 		 */
 		addQuery("qappVMeasurementReadingResult",
-				"INSERT INTO tblVMeasurementReadingResult ( RelYear, Reading, VMeasurementResultID ) " +
-				"SELECT tblReading.RelYear, tblReading.Reading, $1 AS Expr1 " +
+				"INSERT INTO tblVMeasurementReadingResult ( RelYear, Reading, VMeasurementResultID, ReadingID ) " +
+				"SELECT tblReading.RelYear, tblReading.Reading, $1 AS Expr1, tblReading.readingID " +
 				"FROM tblReading " +
 				"WHERE tblReading.MeasurementID=$2",
 				Stability.VOLATILE,
@@ -326,6 +326,21 @@ public class QueryGenerator {
 				PP.in("paramVMeasurementResultID", PT.uuid),
 				PP.gen(PD.RETURN, "boolean", null)
 				);				
+		
+		/*
+		 * New queries for dealing with NOTES
+		 */
+		// Copy notes over from a DIRECT measurement
+		addQuery("qappVMeasurementReadingNoteResult",
+				"INSERT INTO tblVMeasurementReadingNoteResult ( VMeasurementResultID, RelYear, ReadingNoteID ) " +
+				"SELECT vmrr.VMeasurementResultID, vmrr.RelYear, rrn.ReadingNoteID " +
+				"FROM tblVMeasurementReadingResult vmrr " +
+				"INNER JOIN tblReadingReadingNote rrn ON vmrr.readingID=rrn.readingID " +
+				"WHERE vmrr.vMeasurementResultID=$1;",
+				Stability.VOLATILE,
+				PP.in("paramVMeasurementResultID", PT.uuid),
+				PP.voidreturn()
+				);
 	}
 
 	

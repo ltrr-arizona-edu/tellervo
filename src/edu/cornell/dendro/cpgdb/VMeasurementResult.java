@@ -365,6 +365,9 @@ public class VMeasurementResult {
 		// Create new VMeasurementReadingResults...
 		dbq.execute("qappVMeasurementReadingResult", newVMeasurementResultID, MeasurementID);
 		
+		// Copy over any ReadingNotes
+		dbq.execute("qappVMeasurementReadingNoteResult", newVMeasurementResultID);
+		
 		return newVMeasurementResultID;		
 	}
 
