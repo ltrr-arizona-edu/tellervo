@@ -27,7 +27,7 @@ BEGIN
 		-- Aggregate everything in this group, setting derivedCount properly
 		
 		INSERT INTO tblVMeasurementReadingNoteResult ( VMeasurementResultID, RelYear, ReadingNoteID, InheritedCount )
-		SELECT inVMeasurementResultID AS VMeasurementResultID, RelYear, ReadingNoteID, COUNT(note.VMeasurementID)
+		SELECT inVMeasurementResultID AS VMeasurementResultID, RelYear, ReadingNoteID, COUNT(note.VMeasurementResultID)
 			FROM tblVMeasurementResult res
 			INNER JOIN tblVMeasurementReadingNoteResult note ON res.VMeasurementResultID=note.VMeasurementResultID
 			WHERE VMeasurementResultGroupID=inVMeasurementResultGroupID
