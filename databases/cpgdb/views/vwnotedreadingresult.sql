@@ -83,4 +83,4 @@ BEGIN
 
    return '[' || array_to_string(outnote, ',') || ']';
 END;
-$$ LANGUAGE PLPGSQL IMMUTABLE;
+$$ LANGUAGE PLPGSQL STABLE;
