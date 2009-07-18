@@ -66,8 +66,11 @@ BEGIN
       END IF;
 
       o := o || '{' || '"note":"' || note || '"';
+
       IF stdid IS NOT NULL THEN
          o := o || ',"stdid":' || stdid;
+      ELSE
+         o := o || ',"stdid":null';
       END IF;
 
       o := o || ',"std":"' || vocname || '"';
