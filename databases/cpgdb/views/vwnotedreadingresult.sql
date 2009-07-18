@@ -30,11 +30,15 @@ DECLARE
    ids ALIAS FOR $1;
    counts ALIAS FOR $2;
 
-   o text;
    idx integer;
    id integer;
    count integer;
-   total integer := 0;
+
+   outnote text[];
+   v1 text;
+   v2 text;
+   v3 text;
+   v4 text;
 
    note text;
    stdid integer;
@@ -45,13 +49,14 @@ BEGIN
       RETURN NULL;
    END IF;
 
-   o := '[';
-
    FOR idx in array_lower(ids, 1)..array_upper(ids, 1) LOOP
       id := ids[idx];
       count := counts[idx];
 
-      SELECT rnote.note,rnote.standardisedid,voc.name INTO note,stdid,vocname
+      SELECT replace(rnote.note, '"', E'\\"'),
+             rnote.standardisedid,
+             replace(voc.name, '"', E'\\"') 
+          INTO note,stdid,vocname
           FROM tlkpReadingNote rnote
           INNER JOIN tlkpVocabulary voc ON rnote.vocabularyid=voc.vocabularyid
           WHERE rnote.readingnoteid=id;
@@ -61,28 +66,21 @@ BEGIN
          CONTINUE;
       END IF;
 
-      IF total > 0 THEN
-         o := o || ',';
-      END IF;
-
-      o := o || '{' || '"note":"' || note || '"';
+      v1 := '"note":"' || note || '"';
 
       IF stdid IS NOT NULL THEN
-         o := o || ',"stdid":' || stdid;
+         v2 := '"stdid":' || stdid;
       ELSE
-         o := o || ',"stdid":null';
+         v2 := '"stdid":null';
       END IF;
 
-      o := o || ',"std":"' || vocname || '"';
+      v3 := '"std":"' || vocname || '"';
 
-      o := o || ',"icnt":' || count;
+      v4 := '"icnt":' || count;
 
-      o := o || '}';
-
-      total := total + 1;
+      outnote := array_append(outnote, '{' || array_to_string(ARRAY[v1, v2, v3, v4], ',') || '}');
    END LOOP;
 
-   o := o || ']';
-   return o;
+   return '[' || array_to_string(outnote, ',') || ']';
 END;
 $$ LANGUAGE PLPGSQL IMMUTABLE;
