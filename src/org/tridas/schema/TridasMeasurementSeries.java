@@ -30,6 +30,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasCustomDictionarySortType;
 import org.tridas.annotations.TridasCustomDictionaryType;
+import org.tridas.annotations.TridasEditProperties;
 import org.tridas.interfaces.ITridasSeries;
 
 
@@ -41,20 +42,21 @@ import org.tridas.interfaces.ITridasSeries;
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.tridas.org/1.2}baseSeries">
+ *     &lt;restriction base="{http://www.tridas.org/1.3}baseSeries">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}title"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}identifier" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}createdTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}lastModifiedTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}comments" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}measuringDate" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}analyst" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}dendrochronologist" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}measuringMethod"/>
- *         &lt;group ref="{http://www.tridas.org/1.2}interpretationType" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}genericField" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}values" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}title"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}identifier" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}createdTimestamp" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}lastModifiedTimestamp" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}comments" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}measuringDate" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}woodCompleteness" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}analyst" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}dendrochronologist" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}measuringMethod"/>
+ *         &lt;group ref="{http://www.tridas.org/1.3}interpretationType" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}genericField" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}values" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *     &lt;/restriction>
@@ -72,6 +74,7 @@ import org.tridas.interfaces.ITridasSeries;
     "lastModifiedTimestamp",
     "comments",
     "measuringDate",
+    "woodCompleteness",
     "analyst",
     "dendrochronologist",
     "measuringMethod",
@@ -92,13 +95,15 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
     protected DateTime lastModifiedTimestamp;
     protected String comments;
     protected Date measuringDate;
+    protected TridasWoodCompleteness woodCompleteness;
     @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.analystID", sortType = TridasCustomDictionarySortType.LASTNAME_FIRSTNAME, type = TridasCustomDictionaryType.CORINA_GENERICID)
     protected String analyst;
     @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.dendrochronologistID", sortType = TridasCustomDictionarySortType.LASTNAME_FIRSTNAME, type = TridasCustomDictionaryType.CORINA_GENERICID)
     protected String dendrochronologist;
     @XmlElement(required = true)
     protected TridasMeasuringMethod measuringMethod;
-    protected String interpretationUnsolved;
+    @TridasEditProperties(machineOnly = true)
+    protected TridasInterpretationUnsolved interpretationUnsolved;
     protected TridasInterpretation interpretation;
     @XmlElement(name = "genericField")
     protected List<TridasGenericField> genericFields;
@@ -107,6 +112,7 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")
+    @TridasEditProperties(machineOnly = true)
     protected String id;
 
     /**
@@ -278,6 +284,34 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
     }
 
     /**
+     * Gets the value of the woodCompleteness property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TridasWoodCompleteness }
+     *     
+     */
+    public TridasWoodCompleteness getWoodCompleteness() {
+        return woodCompleteness;
+    }
+
+    /**
+     * Sets the value of the woodCompleteness property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TridasWoodCompleteness }
+     *     
+     */
+    public void setWoodCompleteness(TridasWoodCompleteness value) {
+        this.woodCompleteness = value;
+    }
+
+    public boolean isSetWoodCompleteness() {
+        return (this.woodCompleteness!= null);
+    }
+
+    /**
      * Gets the value of the analyst property.
      * 
      * @return
@@ -366,10 +400,10 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link TridasInterpretationUnsolved }
      *     
      */
-    public String getInterpretationUnsolved() {
+    public TridasInterpretationUnsolved getInterpretationUnsolved() {
         return interpretationUnsolved;
     }
 
@@ -378,10 +412,10 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link TridasInterpretationUnsolved }
      *     
      */
-    public void setInterpretationUnsolved(String value) {
+    public void setInterpretationUnsolved(TridasInterpretationUnsolved value) {
         this.interpretationUnsolved = value;
     }
 
@@ -534,6 +568,7 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
         equalsBuilder.append(this.getLastModifiedTimestamp(), that.getLastModifiedTimestamp());
         equalsBuilder.append(this.getComments(), that.getComments());
         equalsBuilder.append(this.getMeasuringDate(), that.getMeasuringDate());
+        equalsBuilder.append(this.getWoodCompleteness(), that.getWoodCompleteness());
         equalsBuilder.append(this.getAnalyst(), that.getAnalyst());
         equalsBuilder.append(this.getDendrochronologist(), that.getDendrochronologist());
         equalsBuilder.append(this.getMeasuringMethod(), that.getMeasuringMethod());
@@ -563,6 +598,7 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
         hashCodeBuilder.append(this.getLastModifiedTimestamp());
         hashCodeBuilder.append(this.getComments());
         hashCodeBuilder.append(this.getMeasuringDate());
+        hashCodeBuilder.append(this.getWoodCompleteness());
         hashCodeBuilder.append(this.getAnalyst());
         hashCodeBuilder.append(this.getDendrochronologist());
         hashCodeBuilder.append(this.getMeasuringMethod());
@@ -611,6 +647,11 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
             toStringBuilder.append("measuringDate", theMeasuringDate);
         }
         {
+            TridasWoodCompleteness theWoodCompleteness;
+            theWoodCompleteness = this.getWoodCompleteness();
+            toStringBuilder.append("woodCompleteness", theWoodCompleteness);
+        }
+        {
             String theAnalyst;
             theAnalyst = this.getAnalyst();
             toStringBuilder.append("analyst", theAnalyst);
@@ -626,7 +667,7 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
             toStringBuilder.append("measuringMethod", theMeasuringMethod);
         }
         {
-            String theInterpretationUnsolved;
+            TridasInterpretationUnsolved theInterpretationUnsolved;
             theInterpretationUnsolved = this.getInterpretationUnsolved();
             toStringBuilder.append("interpretationUnsolved", theInterpretationUnsolved);
         }
@@ -697,6 +738,12 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
             copy.setMeasuringDate(copyMeasuringDate);
         }
         {
+            TridasWoodCompleteness sourceWoodCompleteness;
+            sourceWoodCompleteness = this.getWoodCompleteness();
+            TridasWoodCompleteness copyWoodCompleteness = ((TridasWoodCompleteness) copyBuilder.copy(sourceWoodCompleteness));
+            copy.setWoodCompleteness(copyWoodCompleteness);
+        }
+        {
             String sourceAnalyst;
             sourceAnalyst = this.getAnalyst();
             String copyAnalyst = ((String) copyBuilder.copy(sourceAnalyst));
@@ -715,9 +762,9 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
             copy.setMeasuringMethod(copyMeasuringMethod);
         }
         {
-            String sourceInterpretationUnsolved;
+            TridasInterpretationUnsolved sourceInterpretationUnsolved;
             sourceInterpretationUnsolved = this.getInterpretationUnsolved();
-            String copyInterpretationUnsolved = ((String) copyBuilder.copy(sourceInterpretationUnsolved));
+            TridasInterpretationUnsolved copyInterpretationUnsolved = ((TridasInterpretationUnsolved) copyBuilder.copy(sourceInterpretationUnsolved));
             copy.setInterpretationUnsolved(copyInterpretationUnsolved);
         }
         {

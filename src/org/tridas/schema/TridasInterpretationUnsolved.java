@@ -2,11 +2,8 @@
 package org.tridas.schema;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -33,9 +30,6 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}project" maxOccurs="unbounded"/>
- *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -44,69 +38,27 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "projects"
-})
-@XmlRootElement(name = "tridas")
-public class TridasTridas
+@XmlType(name = "")
+@XmlRootElement(name = "interpretationUnsolved")
+public class TridasInterpretationUnsolved
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlElement(name = "project", required = true)
-    protected List<TridasProject> projects;
-
-    /**
-     * Gets the value of the projects property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the projects property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getProjects().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link TridasProject }
-     * 
-     * 
-     */
-    public List<TridasProject> getProjects() {
-        if (projects == null) {
-            projects = new ArrayList<TridasProject>();
-        }
-        return this.projects;
-    }
-
-    public boolean isSetProjects() {
-        return ((this.projects!= null)&&(!this.projects.isEmpty()));
-    }
-
-    public void unsetProjects() {
-        this.projects = null;
-    }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
-        if (!(object instanceof TridasTridas)) {
+        if (!(object instanceof TridasInterpretationUnsolved)) {
             equalsBuilder.appendSuper(false);
             return ;
         }
         if (this == object) {
             return ;
         }
-        final TridasTridas that = ((TridasTridas) object);
-        equalsBuilder.append(this.getProjects(), that.getProjects());
+        final TridasInterpretationUnsolved that = ((TridasInterpretationUnsolved) object);
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof TridasTridas)) {
+        if (!(object instanceof TridasInterpretationUnsolved)) {
             return false;
         }
         if (this == object) {
@@ -118,7 +70,6 @@ public class TridasTridas
     }
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
-        hashCodeBuilder.append(this.getProjects());
     }
 
     public int hashCode() {
@@ -128,11 +79,6 @@ public class TridasTridas
     }
 
     public void toString(ToStringBuilder toStringBuilder) {
-        {
-            List<TridasProject> theProjects;
-            theProjects = this.getProjects();
-            toStringBuilder.append("projects", theProjects);
-        }
     }
 
     public String toString() {
@@ -142,15 +88,7 @@ public class TridasTridas
     }
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
-        final TridasTridas copy = ((target == null)?((TridasTridas) createCopy()):((TridasTridas) target));
-        {
-            List<TridasProject> sourceProjects;
-            sourceProjects = this.getProjects();
-            List<TridasProject> copyProjects = ((List<TridasProject> ) copyBuilder.copy(sourceProjects));
-            copy.unsetProjects();
-            List<TridasProject> uniqueProjectsl = copy.getProjects();
-            uniqueProjectsl.addAll(copyProjects);
-        }
+        final TridasInterpretationUnsolved copy = ((target == null)?((TridasInterpretationUnsolved) createCopy()):((TridasInterpretationUnsolved) target));
         return copy;
     }
 
@@ -160,7 +98,7 @@ public class TridasTridas
     }
 
     public Object createCopy() {
-        return new TridasTridas();
+        return new TridasInterpretationUnsolved();
     }
 
 }

@@ -25,6 +25,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasCustomDictionarySortType;
 import org.tridas.annotations.TridasCustomDictionaryType;
+import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -35,25 +36,25 @@ import org.tridas.annotations.TridasCustomDictionaryType;
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.tridas.org/1.2}tridasEntity">
+ *     &lt;extension base="{http://www.tridas.org/1.3}tridasEntity">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}type" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}description" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}linkSeries" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}file" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}taxon"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}shape" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}dimensions" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}authenticity" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}location" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}processing" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}marks" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}altitude" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}slope" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}soil" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}bedrock" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}genericField" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}sample" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}type" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}description" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}linkSeries" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}file" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}taxon"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}shape" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}dimensions" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}authenticity" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}location" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}processing" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}marks" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}altitude" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}slope" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}soil" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}bedrock" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}genericField" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}sample" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -92,6 +93,7 @@ public class TridasElement
     @TridasCustomDictionary(dictionary = "elementType", type = TridasCustomDictionaryType.CORINA_CONTROLLEDVOC)
     protected ControlledVoc type;
     protected String description;
+    @TridasEditProperties(machineOnly = true)
     protected TridasLinkSeries linkSeries;
     @XmlElement(name = "file")
     protected List<TridasFile> files;

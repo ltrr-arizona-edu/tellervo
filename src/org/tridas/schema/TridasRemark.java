@@ -31,8 +31,9 @@ import org.tridas.interfaces.NormalTridasVoc;
  * <pre>
  * &lt;complexType>
  *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.tridas.org/1.2>controlledVoc">
- *       &lt;attribute name="normalTridas" type="{http://www.tridas.org/1.2}normalTridasRemark" />
+ *     &lt;extension base="&lt;http://www.tridas.org/1.3>controlledVoc">
+ *       &lt;attribute name="normalTridas" type="{http://www.tridas.org/1.3}normalTridasRemark" />
+ *       &lt;attribute name="inheritedCount" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/extension>
  *   &lt;/simpleContent>
  * &lt;/complexType>
@@ -51,6 +52,8 @@ public class TridasRemark
     private final static long serialVersionUID = 1001L;
     @XmlAttribute
     protected NormalTridasRemark normalTridas;
+    @XmlAttribute(name = "inheritedCount")
+    protected Integer inheritedCount;
 
     /**
      * Gets the value of the normalTridas property.
@@ -80,6 +83,38 @@ public class TridasRemark
         return (this.normalTridas!= null);
     }
 
+    /**
+     * Gets the value of the inheritedCount property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public int getInheritedCount() {
+        return inheritedCount;
+    }
+
+    /**
+     * Sets the value of the inheritedCount property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setInheritedCount(int value) {
+        this.inheritedCount = value;
+    }
+
+    public boolean isSetInheritedCount() {
+        return (this.inheritedCount!= null);
+    }
+
+    public void unsetInheritedCount() {
+        this.inheritedCount = null;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasRemark)) {
             equalsBuilder.appendSuper(false);
@@ -91,6 +126,7 @@ public class TridasRemark
         super.equals(object, equalsBuilder);
         final TridasRemark that = ((TridasRemark) object);
         equalsBuilder.append(this.getNormalTridas(), that.getNormalTridas());
+        equalsBuilder.append(this.getInheritedCount(), that.getInheritedCount());
     }
 
     public boolean equals(Object object) {
@@ -108,6 +144,7 @@ public class TridasRemark
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
         super.hashCode(hashCodeBuilder);
         hashCodeBuilder.append(this.getNormalTridas());
+        hashCodeBuilder.append(this.getInheritedCount());
     }
 
     public int hashCode() {
@@ -122,6 +159,11 @@ public class TridasRemark
             NormalTridasRemark theNormalTridas;
             theNormalTridas = this.getNormalTridas();
             toStringBuilder.append("normalTridas", theNormalTridas);
+        }
+        {
+            Integer theInheritedCount;
+            theInheritedCount = this.getInheritedCount();
+            toStringBuilder.append("inheritedCount", theInheritedCount);
         }
     }
 
@@ -139,6 +181,12 @@ public class TridasRemark
             sourceNormalTridas = this.getNormalTridas();
             NormalTridasRemark copyNormalTridas = ((NormalTridasRemark) copyBuilder.copy(sourceNormalTridas));
             copy.setNormalTridas(copyNormalTridas);
+        }
+        {
+            Integer sourceInheritedCount;
+            sourceInheritedCount = this.getInheritedCount();
+            Integer copyInheritedCount = ((Integer) copyBuilder.copy(sourceInheritedCount));
+            copy.setInheritedCount(copyInheritedCount);
         }
         return copy;
     }

@@ -32,10 +32,10 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}locationGeometry"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}locationType" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}locationPrecision" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}locationComment" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}locationGeometry"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}locationType" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}locationPrecision" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}locationComment" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

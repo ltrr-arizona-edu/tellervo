@@ -30,6 +30,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasCustomDictionarySortType;
 import org.tridas.annotations.TridasCustomDictionaryType;
+import org.tridas.annotations.TridasEditProperties;
 import org.tridas.interfaces.ITridasDerivedSeries;
 
 
@@ -41,24 +42,24 @@ import org.tridas.interfaces.ITridasDerivedSeries;
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.tridas.org/1.2}baseSeries">
+ *     &lt;restriction base="{http://www.tridas.org/1.3}baseSeries">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}title"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}identifier" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}createdTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}lastModifiedTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}comments" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}derivationDate" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}type"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}linkSeries" maxOccurs="unbounded"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}objective" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}standardizingMethod" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}author" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}version" minOccurs="0"/>
- *         &lt;group ref="{http://www.tridas.org/1.2}interpretationType" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}location" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}genericField" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}values" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}title"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}identifier" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}createdTimestamp" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}lastModifiedTimestamp" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}comments" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}derivationDate" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}type"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}linkSeries"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}objective" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}standardizingMethod" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}author" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}version" minOccurs="0"/>
+ *         &lt;group ref="{http://www.tridas.org/1.3}interpretationType" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}location" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}genericField" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}values" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *     &lt;/restriction>
@@ -103,13 +104,14 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
     @XmlElement(required = true)
     protected ControlledVoc type;
     @XmlElement(required = true)
-    protected List<TridasLinkSeries> linkSeries;
+    protected TridasLinkSeries linkSeries;
     protected String objective;
     protected String standardizingMethod;
     @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.authorID", sortType = TridasCustomDictionarySortType.LASTNAME_FIRSTNAME, type = TridasCustomDictionaryType.CORINA_GENERICID)
     protected String author;
     protected String version;
-    protected String interpretationUnsolved;
+    @TridasEditProperties(machineOnly = true)
+    protected TridasInterpretationUnsolved interpretationUnsolved;
     protected TridasInterpretation interpretation;
     protected TridasLocation location;
     @XmlElement(name = "genericField")
@@ -119,6 +121,7 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")
+    @TridasEditProperties(machineOnly = true)
     protected String id;
 
     /**
@@ -320,38 +323,29 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
     /**
      * Gets the value of the linkSeries property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the linkSeries property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getLinkSeries().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link TridasLinkSeries }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link TridasLinkSeries }
+     *     
      */
-    public List<TridasLinkSeries> getLinkSeries() {
-        if (linkSeries == null) {
-            linkSeries = new ArrayList<TridasLinkSeries>();
-        }
-        return this.linkSeries;
+    public TridasLinkSeries getLinkSeries() {
+        return linkSeries;
+    }
+
+    /**
+     * Sets the value of the linkSeries property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TridasLinkSeries }
+     *     
+     */
+    public void setLinkSeries(TridasLinkSeries value) {
+        this.linkSeries = value;
     }
 
     public boolean isSetLinkSeries() {
-        return ((this.linkSeries!= null)&&(!this.linkSeries.isEmpty()));
-    }
-
-    public void unsetLinkSeries() {
-        this.linkSeries = null;
+        return (this.linkSeries!= null);
     }
 
     /**
@@ -471,10 +465,10 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link TridasInterpretationUnsolved }
      *     
      */
-    public String getInterpretationUnsolved() {
+    public TridasInterpretationUnsolved getInterpretationUnsolved() {
         return interpretationUnsolved;
     }
 
@@ -483,10 +477,10 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link TridasInterpretationUnsolved }
      *     
      */
-    public void setInterpretationUnsolved(String value) {
+    public void setInterpretationUnsolved(TridasInterpretationUnsolved value) {
         this.interpretationUnsolved = value;
     }
 
@@ -757,7 +751,7 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
             toStringBuilder.append("type", theType);
         }
         {
-            List<TridasLinkSeries> theLinkSeries;
+            TridasLinkSeries theLinkSeries;
             theLinkSeries = this.getLinkSeries();
             toStringBuilder.append("linkSeries", theLinkSeries);
         }
@@ -782,7 +776,7 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
             toStringBuilder.append("version", theVersion);
         }
         {
-            String theInterpretationUnsolved;
+            TridasInterpretationUnsolved theInterpretationUnsolved;
             theInterpretationUnsolved = this.getInterpretationUnsolved();
             toStringBuilder.append("interpretationUnsolved", theInterpretationUnsolved);
         }
@@ -864,12 +858,10 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
             copy.setType(copyType);
         }
         {
-            List<TridasLinkSeries> sourceLinkSeries;
+            TridasLinkSeries sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
-            List<TridasLinkSeries> copyLinkSeries = ((List<TridasLinkSeries> ) copyBuilder.copy(sourceLinkSeries));
-            copy.unsetLinkSeries();
-            List<TridasLinkSeries> uniqueLinkSeriesl = copy.getLinkSeries();
-            uniqueLinkSeriesl.addAll(copyLinkSeries);
+            TridasLinkSeries copyLinkSeries = ((TridasLinkSeries) copyBuilder.copy(sourceLinkSeries));
+            copy.setLinkSeries(copyLinkSeries);
         }
         {
             String sourceObjective;
@@ -896,9 +888,9 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
             copy.setVersion(copyVersion);
         }
         {
-            String sourceInterpretationUnsolved;
+            TridasInterpretationUnsolved sourceInterpretationUnsolved;
             sourceInterpretationUnsolved = this.getInterpretationUnsolved();
-            String copyInterpretationUnsolved = ((String) copyBuilder.copy(sourceInterpretationUnsolved));
+            TridasInterpretationUnsolved copyInterpretationUnsolved = ((TridasInterpretationUnsolved) copyBuilder.copy(sourceInterpretationUnsolved));
             copy.setInterpretationUnsolved(copyInterpretationUnsolved);
         }
         {

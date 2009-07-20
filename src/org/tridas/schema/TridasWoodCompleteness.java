@@ -32,10 +32,10 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}pith"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}heartwood"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}sapwood"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}bark"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}pith"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}heartwood"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}sapwood"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}bark"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

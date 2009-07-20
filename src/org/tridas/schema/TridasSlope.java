@@ -2,7 +2,6 @@
 package org.tridas.schema;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,8 +31,8 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="angle" type="{http://www.w3.org/2001/XMLSchema}integer" minOccurs="0"/>
- *         &lt;element name="azimuth" type="{http://www.w3.org/2001/XMLSchema}integer" minOccurs="0"/>
+ *         &lt;element name="angle" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         &lt;element name="azimuth" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -53,18 +52,18 @@ public class TridasSlope
 {
 
     private final static long serialVersionUID = 1001L;
-    protected BigInteger angle;
-    protected BigInteger azimuth;
+    protected Integer angle;
+    protected Integer azimuth;
 
     /**
      * Gets the value of the angle property.
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public BigInteger getAngle() {
+    public Integer getAngle() {
         return angle;
     }
 
@@ -73,10 +72,10 @@ public class TridasSlope
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public void setAngle(BigInteger value) {
+    public void setAngle(Integer value) {
         this.angle = value;
     }
 
@@ -89,10 +88,10 @@ public class TridasSlope
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public BigInteger getAzimuth() {
+    public Integer getAzimuth() {
         return azimuth;
     }
 
@@ -101,10 +100,10 @@ public class TridasSlope
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public void setAzimuth(BigInteger value) {
+    public void setAzimuth(Integer value) {
         this.azimuth = value;
     }
 
@@ -150,12 +149,12 @@ public class TridasSlope
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            BigInteger theAngle;
+            Integer theAngle;
             theAngle = this.getAngle();
             toStringBuilder.append("angle", theAngle);
         }
         {
-            BigInteger theAzimuth;
+            Integer theAzimuth;
             theAzimuth = this.getAzimuth();
             toStringBuilder.append("azimuth", theAzimuth);
         }
@@ -170,15 +169,15 @@ public class TridasSlope
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasSlope copy = ((target == null)?((TridasSlope) createCopy()):((TridasSlope) target));
         {
-            BigInteger sourceAngle;
+            Integer sourceAngle;
             sourceAngle = this.getAngle();
-            BigInteger copyAngle = ((BigInteger) copyBuilder.copy(sourceAngle));
+            Integer copyAngle = ((Integer) copyBuilder.copy(sourceAngle));
             copy.setAngle(copyAngle);
         }
         {
-            BigInteger sourceAzimuth;
+            Integer sourceAzimuth;
             sourceAzimuth = this.getAzimuth();
-            BigInteger copyAzimuth = ((BigInteger) copyBuilder.copy(sourceAzimuth));
+            Integer copyAzimuth = ((Integer) copyBuilder.copy(sourceAzimuth));
             copy.setAzimuth(copyAzimuth);
         }
         return copy;

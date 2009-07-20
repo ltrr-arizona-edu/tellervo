@@ -61,7 +61,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *                       &lt;/complexContent>
  *                     &lt;/complexType>
  *                   &lt;/element>
- *                   &lt;element ref="{http://www.tridas.org/1.2}identifier"/>
+ *                   &lt;element ref="{http://www.tridas.org/1.3}identifier"/>
  *                 &lt;/choice>
  *               &lt;/restriction>
  *             &lt;/complexContent>
@@ -86,7 +86,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *               &lt;/complexContent>
  *             &lt;/complexType>
  *           &lt;/element>
- *           &lt;element ref="{http://www.tridas.org/1.2}identifier"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}identifier"/>
  *         &lt;/choice>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -109,9 +109,9 @@ public class TridasLinkSeries
     private final static long serialVersionUID = 1001L;
     protected TridasLinkSeries.PreferredSeries preferredSeries;
     @XmlElements({
+        @XmlElement(name = "identifier", type = TridasIdentifier.class),
         @XmlElement(name = "xLink", type = TridasLinkSeries.XLink.class),
-        @XmlElement(name = "idRef", type = TridasLinkSeries.IdRef.class),
-        @XmlElement(name = "identifier", type = TridasIdentifier.class)
+        @XmlElement(name = "idRef", type = TridasLinkSeries.IdRef.class)
     })
     protected List<Object> idRevesAndXLinksAndIdentifiers;
 
@@ -161,9 +161,9 @@ public class TridasLinkSeries
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link TridasIdentifier }
      * {@link TridasLinkSeries.XLink }
      * {@link TridasLinkSeries.IdRef }
-     * {@link TridasIdentifier }
      * 
      * 
      */
@@ -421,7 +421,7 @@ public class TridasLinkSeries
      *             &lt;/complexContent>
      *           &lt;/complexType>
      *         &lt;/element>
-     *         &lt;element ref="{http://www.tridas.org/1.2}identifier"/>
+     *         &lt;element ref="{http://www.tridas.org/1.3}identifier"/>
      *       &lt;/choice>
      *     &lt;/restriction>
      *   &lt;/complexContent>

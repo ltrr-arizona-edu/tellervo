@@ -6,6 +6,7 @@ package org.tridas.interfaces;
 import java.util.List;
 
 import org.tridas.schema.TridasInterpretation;
+import org.tridas.schema.TridasInterpretationUnsolved;
 import org.tridas.schema.TridasValues;
 
 /**
@@ -18,20 +19,20 @@ public interface ITridasSeries extends ITridas, ITridasGeneric {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link TridasInterpretationUnsolved }
      *     
      */
-    public String getInterpretationUnsolved();
+    public TridasInterpretationUnsolved getInterpretationUnsolved();
 
     /**
      * Sets the value of the interpretationUnsolved property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link TridasInterpretationUnsolved }
      *     
      */
-    public void setInterpretationUnsolved(String value);
+    public void setInterpretationUnsolved(TridasInterpretationUnsolved value);
 
     public boolean isSetInterpretationUnsolved();
 

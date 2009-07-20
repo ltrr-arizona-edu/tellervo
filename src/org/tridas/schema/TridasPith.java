@@ -31,7 +31,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.2}complexPresenceAbsence" />
+ *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.3}complexPresenceAbsence" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>

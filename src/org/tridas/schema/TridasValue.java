@@ -2,7 +2,6 @@
 package org.tridas.schema;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -36,11 +35,11 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}remark" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}remark" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="index" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="count" type="{http://www.w3.org/2001/XMLSchema}integer" />
+ *       &lt;attribute name="count" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -64,8 +63,8 @@ public class TridasValue
     protected String value;
     @XmlAttribute(required = true)
     protected String index;
-    @XmlAttribute
-    protected BigInteger count;
+    @XmlAttribute(name = "count")
+    protected Integer count;
 
     /**
      * Gets the value of the remarks property.
@@ -165,10 +164,10 @@ public class TridasValue
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public BigInteger getCount() {
+    public int getCount() {
         return count;
     }
 
@@ -177,15 +176,19 @@ public class TridasValue
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public void setCount(BigInteger value) {
+    public void setCount(int value) {
         this.count = value;
     }
 
     public boolean isSetCount() {
         return (this.count!= null);
+    }
+
+    public void unsetCount() {
+        this.count = null;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
@@ -245,7 +248,7 @@ public class TridasValue
             toStringBuilder.append("index", theIndex);
         }
         {
-            BigInteger theCount;
+            Integer theCount;
             theCount = this.getCount();
             toStringBuilder.append("count", theCount);
         }
@@ -280,9 +283,9 @@ public class TridasValue
             copy.setIndex(copyIndex);
         }
         {
-            BigInteger sourceCount;
+            Integer sourceCount;
             sourceCount = this.getCount();
-            BigInteger copyCount = ((BigInteger) copyBuilder.copy(sourceCount));
+            Integer copyCount = ((Integer) copyBuilder.copy(sourceCount));
             copy.setCount(copyCount);
         }
         return copy;

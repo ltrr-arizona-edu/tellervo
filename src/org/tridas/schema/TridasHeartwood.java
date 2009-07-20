@@ -32,10 +32,10 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}missingHeartwoodRingsToPith" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}missingHeartwoodRingsToPithFoundation" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}missingHeartwoodRingsToPith" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}missingHeartwoodRingsToPithFoundation" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.2}complexPresenceAbsence" />
+ *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.3}complexPresenceAbsence" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>

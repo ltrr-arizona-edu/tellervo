@@ -34,19 +34,19 @@ import org.tridas.annotations.TridasCustomDictionaryType;
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.tridas.org/1.2}tridasEntity">
+ *     &lt;extension base="{http://www.tridas.org/1.3}tridasEntity">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}type"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}description" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}file" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}samplingDate" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}position" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}state" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}knots" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}genericField" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}type"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}description" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}file" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}samplingDate" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}position" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}state" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}knots" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}genericField" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;choice>
- *           &lt;element ref="{http://www.tridas.org/1.2}radius" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}radiusPlaceholder" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}radius" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}radiusPlaceholder" minOccurs="0"/>
  *         &lt;/choice>
  *       &lt;/sequence>
  *     &lt;/extension>

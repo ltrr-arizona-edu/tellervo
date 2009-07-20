@@ -35,7 +35,7 @@ import org.tridas.schema.ControlledVoc;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}taxon" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}taxon" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -53,7 +53,7 @@ public class WSITaxonDictionary implements Serializable, CopyTo, Copyable, Equal
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlElement(name = "taxon", namespace = "http://www.tridas.org/1.2")
+    @XmlElement(name = "taxon", namespace = "http://www.tridas.org/1.3")
     protected List<ControlledVoc> taxons;
 
     /**

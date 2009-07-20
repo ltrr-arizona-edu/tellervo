@@ -32,7 +32,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.2}presenceAbsence" />
+ *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.3}presenceAbsence" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>

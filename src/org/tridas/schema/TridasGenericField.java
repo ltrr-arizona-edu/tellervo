@@ -40,7 +40,7 @@ import org.tridas.annotations.TridasEditProperties;
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *             &lt;enumeration value="xs:string"/>
  *             &lt;enumeration value="xs:boolean"/>
- *             &lt;enumeration value="xs:integer"/>
+ *             &lt;enumeration value="xs:int"/>
  *             &lt;enumeration value="xs:float"/>
  *             &lt;enumeration value="xs:date"/>
  *             &lt;enumeration value="xs:dateTime"/>

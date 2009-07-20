@@ -40,11 +40,11 @@ import org.tridas.interfaces.ITridasGeneric;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}title"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}identifier" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}createdTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}lastModifiedTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}comments" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}title"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}identifier" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}createdTimestamp" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}lastModifiedTimestamp" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}comments" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

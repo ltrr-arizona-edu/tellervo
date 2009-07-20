@@ -35,12 +35,12 @@ import org.tridas.annotations.TridasEditProperties;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}variable"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}variable"/>
  *         &lt;choice>
- *           &lt;element ref="{http://www.tridas.org/1.2}unitless"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}unit"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}unitless"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}unit"/>
  *         &lt;/choice>
- *         &lt;element ref="{http://www.tridas.org/1.2}value" maxOccurs="unbounded"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}value" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

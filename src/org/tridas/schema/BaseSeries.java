@@ -26,6 +26,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -40,24 +41,24 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * <pre>
  * &lt;complexType name="baseSeries">
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.tridas.org/1.2}tridasEntity">
+ *     &lt;extension base="{http://www.tridas.org/1.3}tridasEntity">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}measuringDate" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}derivationDate" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}woodCompleteness" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}analyst" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}dendrochronologist" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}measuringMethod" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}type" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}linkSeries" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}objective" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}standardizingMethod" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}author" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}version" minOccurs="0"/>
- *         &lt;group ref="{http://www.tridas.org/1.2}interpretationType" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}location" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}genericField" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}values" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}measuringDate" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}derivationDate" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}woodCompleteness" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}analyst" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}dendrochronologist" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}measuringMethod" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}type" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}linkSeries" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}objective" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}standardizingMethod" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}author" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}version" minOccurs="0"/>
+ *         &lt;group ref="{http://www.tridas.org/1.3}interpretationType" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}location" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}genericField" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}values" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *     &lt;/extension>
@@ -100,12 +101,13 @@ public abstract class BaseSeries
     protected String dendrochronologist;
     protected TridasMeasuringMethod measuringMethod;
     protected ControlledVoc type;
-    protected List<TridasLinkSeries> linkSeries;
+    protected TridasLinkSeries linkSeries;
     protected String objective;
     protected String standardizingMethod;
     protected String author;
     protected String version;
-    protected String interpretationUnsolved;
+    @TridasEditProperties(machineOnly = true)
+    protected TridasInterpretationUnsolved interpretationUnsolved;
     protected TridasInterpretation interpretation;
     protected TridasLocation location;
     @XmlElement(name = "genericField")
@@ -316,38 +318,29 @@ public abstract class BaseSeries
     /**
      * Gets the value of the linkSeries property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the linkSeries property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getLinkSeries().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link TridasLinkSeries }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link TridasLinkSeries }
+     *     
      */
-    public List<TridasLinkSeries> getLinkSeries() {
-        if (linkSeries == null) {
-            linkSeries = new ArrayList<TridasLinkSeries>();
-        }
-        return this.linkSeries;
+    public TridasLinkSeries getLinkSeries() {
+        return linkSeries;
+    }
+
+    /**
+     * Sets the value of the linkSeries property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TridasLinkSeries }
+     *     
+     */
+    public void setLinkSeries(TridasLinkSeries value) {
+        this.linkSeries = value;
     }
 
     public boolean isSetLinkSeries() {
-        return ((this.linkSeries!= null)&&(!this.linkSeries.isEmpty()));
-    }
-
-    public void unsetLinkSeries() {
-        this.linkSeries = null;
+        return (this.linkSeries!= null);
     }
 
     /**
@@ -467,10 +460,10 @@ public abstract class BaseSeries
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link TridasInterpretationUnsolved }
      *     
      */
-    public String getInterpretationUnsolved() {
+    public TridasInterpretationUnsolved getInterpretationUnsolved() {
         return interpretationUnsolved;
     }
 
@@ -479,10 +472,10 @@ public abstract class BaseSeries
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link TridasInterpretationUnsolved }
      *     
      */
-    public void setInterpretationUnsolved(String value) {
+    public void setInterpretationUnsolved(TridasInterpretationUnsolved value) {
         this.interpretationUnsolved = value;
     }
 
@@ -756,7 +749,7 @@ public abstract class BaseSeries
             toStringBuilder.append("type", theType);
         }
         {
-            List<TridasLinkSeries> theLinkSeries;
+            TridasLinkSeries theLinkSeries;
             theLinkSeries = this.getLinkSeries();
             toStringBuilder.append("linkSeries", theLinkSeries);
         }
@@ -781,7 +774,7 @@ public abstract class BaseSeries
             toStringBuilder.append("version", theVersion);
         }
         {
-            String theInterpretationUnsolved;
+            TridasInterpretationUnsolved theInterpretationUnsolved;
             theInterpretationUnsolved = this.getInterpretationUnsolved();
             toStringBuilder.append("interpretationUnsolved", theInterpretationUnsolved);
         }
@@ -867,12 +860,10 @@ public abstract class BaseSeries
             copy.setType(copyType);
         }
         {
-            List<TridasLinkSeries> sourceLinkSeries;
+            TridasLinkSeries sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
-            List<TridasLinkSeries> copyLinkSeries = ((List<TridasLinkSeries> ) copyBuilder.copy(sourceLinkSeries));
-            copy.unsetLinkSeries();
-            List<TridasLinkSeries> uniqueLinkSeriesl = copy.getLinkSeries();
-            uniqueLinkSeriesl.addAll(copyLinkSeries);
+            TridasLinkSeries copyLinkSeries = ((TridasLinkSeries) copyBuilder.copy(sourceLinkSeries));
+            copy.setLinkSeries(copyLinkSeries);
         }
         {
             String sourceObjective;
@@ -899,9 +890,9 @@ public abstract class BaseSeries
             copy.setVersion(copyVersion);
         }
         {
-            String sourceInterpretationUnsolved;
+            TridasInterpretationUnsolved sourceInterpretationUnsolved;
             sourceInterpretationUnsolved = this.getInterpretationUnsolved();
-            String copyInterpretationUnsolved = ((String) copyBuilder.copy(sourceInterpretationUnsolved));
+            TridasInterpretationUnsolved copyInterpretationUnsolved = ((TridasInterpretationUnsolved) copyBuilder.copy(sourceInterpretationUnsolved));
             copy.setInterpretationUnsolved(copyInterpretationUnsolved);
         }
         {

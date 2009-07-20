@@ -50,19 +50,19 @@ import org.tridas.annotations.TridasCustomDictionaryType;
  * &lt;element name="object">
  *   &lt;complexType>
  *     &lt;complexContent>
- *       &lt;extension base="{http://www.tridas.org/1.2}tridasEntity">
+ *       &lt;extension base="{http://www.tridas.org/1.3}tridasEntity">
  *         &lt;sequence>
- *           &lt;element ref="{http://www.tridas.org/1.2}type"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}description" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}linkSeries" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}file" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}creator" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}owner" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}coverage" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}location" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}genericField" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}object" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2}element" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}type"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}description" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}linkSeries" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}file" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}creator" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}owner" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}coverage" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}location" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}genericField" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}object" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.3}element" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;/sequence>
  *       &lt;/extension>
  *     &lt;/complexContent>

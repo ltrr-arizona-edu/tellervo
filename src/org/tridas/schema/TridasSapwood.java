@@ -32,12 +32,12 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}nrOfSapwoodRings" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}lastRingUnderBark" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}missingSapwoodRingsToBark" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}missingSapwoodRingsToBarkFoundation" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}nrOfSapwoodRings" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}lastRingUnderBark" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}missingSapwoodRingsToBark" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}missingSapwoodRingsToBarkFoundation" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.2}complexPresenceAbsence" />
+ *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.3}complexPresenceAbsence" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -58,7 +58,7 @@ public class TridasSapwood
 {
 
     private final static long serialVersionUID = 1001L;
-    protected String nrOfSapwoodRings;
+    protected Integer nrOfSapwoodRings;
     protected TridasLastRingUnderBark lastRingUnderBark;
     protected String missingSapwoodRingsToBark;
     protected String missingSapwoodRingsToBarkFoundation;
@@ -70,10 +70,10 @@ public class TridasSapwood
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Integer }
      *     
      */
-    public String getNrOfSapwoodRings() {
+    public Integer getNrOfSapwoodRings() {
         return nrOfSapwoodRings;
     }
 
@@ -82,10 +82,10 @@ public class TridasSapwood
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Integer }
      *     
      */
-    public void setNrOfSapwoodRings(String value) {
+    public void setNrOfSapwoodRings(Integer value) {
         this.nrOfSapwoodRings = value;
     }
 
@@ -249,7 +249,7 @@ public class TridasSapwood
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            String theNrOfSapwoodRings;
+            Integer theNrOfSapwoodRings;
             theNrOfSapwoodRings = this.getNrOfSapwoodRings();
             toStringBuilder.append("nrOfSapwoodRings", theNrOfSapwoodRings);
         }
@@ -284,9 +284,9 @@ public class TridasSapwood
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasSapwood copy = ((target == null)?((TridasSapwood) createCopy()):((TridasSapwood) target));
         {
-            String sourceNrOfSapwoodRings;
+            Integer sourceNrOfSapwoodRings;
             sourceNrOfSapwoodRings = this.getNrOfSapwoodRings();
-            String copyNrOfSapwoodRings = ((String) copyBuilder.copy(sourceNrOfSapwoodRings));
+            Integer copyNrOfSapwoodRings = ((Integer) copyBuilder.copy(sourceNrOfSapwoodRings));
             copy.setNrOfSapwoodRings(copyNrOfSapwoodRings);
         }
         {

@@ -34,13 +34,12 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.2}firstYear" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}datingReference" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}statFoundation" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}sproutYear" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}usedSoftware" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}deathYear" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.2}provenance" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}firstYear" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}datingReference" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}statFoundation" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}sproutYear" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}deathYear" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}provenance" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -55,7 +54,6 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
     "datingReference",
     "statFoundations",
     "sproutYear",
-    "usedSoftware",
     "deathYear",
     "provenance"
 })
@@ -70,7 +68,6 @@ public class TridasInterpretation
     @XmlElement(name = "statFoundation")
     protected List<TridasStatFoundation> statFoundations;
     protected Year sproutYear;
-    protected String usedSoftware;
     protected Year deathYear;
     protected String provenance;
 
@@ -196,34 +193,6 @@ public class TridasInterpretation
     }
 
     /**
-     * Gets the value of the usedSoftware property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getUsedSoftware() {
-        return usedSoftware;
-    }
-
-    /**
-     * Sets the value of the usedSoftware property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setUsedSoftware(String value) {
-        this.usedSoftware = value;
-    }
-
-    public boolean isSetUsedSoftware() {
-        return (this.usedSoftware!= null);
-    }
-
-    /**
      * Gets the value of the deathYear property.
      * 
      * @return
@@ -292,7 +261,6 @@ public class TridasInterpretation
         equalsBuilder.append(this.getDatingReference(), that.getDatingReference());
         equalsBuilder.append(this.getStatFoundations(), that.getStatFoundations());
         equalsBuilder.append(this.getSproutYear(), that.getSproutYear());
-        equalsBuilder.append(this.getUsedSoftware(), that.getUsedSoftware());
         equalsBuilder.append(this.getDeathYear(), that.getDeathYear());
         equalsBuilder.append(this.getProvenance(), that.getProvenance());
     }
@@ -314,7 +282,6 @@ public class TridasInterpretation
         hashCodeBuilder.append(this.getDatingReference());
         hashCodeBuilder.append(this.getStatFoundations());
         hashCodeBuilder.append(this.getSproutYear());
-        hashCodeBuilder.append(this.getUsedSoftware());
         hashCodeBuilder.append(this.getDeathYear());
         hashCodeBuilder.append(this.getProvenance());
     }
@@ -345,11 +312,6 @@ public class TridasInterpretation
             Year theSproutYear;
             theSproutYear = this.getSproutYear();
             toStringBuilder.append("sproutYear", theSproutYear);
-        }
-        {
-            String theUsedSoftware;
-            theUsedSoftware = this.getUsedSoftware();
-            toStringBuilder.append("usedSoftware", theUsedSoftware);
         }
         {
             Year theDeathYear;
@@ -396,12 +358,6 @@ public class TridasInterpretation
             sourceSproutYear = this.getSproutYear();
             Year copySproutYear = ((Year) copyBuilder.copy(sourceSproutYear));
             copy.setSproutYear(copySproutYear);
-        }
-        {
-            String sourceUsedSoftware;
-            sourceUsedSoftware = this.getUsedSoftware();
-            String copyUsedSoftware = ((String) copyBuilder.copy(sourceUsedSoftware));
-            copy.setUsedSoftware(copyUsedSoftware);
         }
         {
             Year sourceDeathYear;
