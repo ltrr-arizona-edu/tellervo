@@ -13,7 +13,7 @@
 require_once('dbhelper.php');
 require_once('inc/dbEntity.php');
 
-require_once("inc/note.php");
+require_once("inc/readingNote.php");
 require_once("inc/taxon.php");
 require_once("inc/region.php");
 require_once("inc/securityUser.php");
@@ -66,7 +66,7 @@ class dictionaries
         $xmldata = "";
         
         $dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
-        				  'elementAuthenticity', 'datingType', 'taxon', 'region', 'readingNote');
+        				  'elementAuthenticity', 'datingType', 'taxon', 'region');
        
         
 		// Standard dictionar items
@@ -79,11 +79,6 @@ class dictionaries
                 {
                 	// Unique case
                     $sql="select distinct(tblobjectregion.regionid) as id, tblregion.regionname as value from tblobjectregion, tblregion where tblobjectregion.regionid=tblregion.regionid";
-                }
-                elseif($item=="readingNote")
-                {
-                	// Unique case
-                	$sql="select readingnoteid as id, note as value from tlkpreadingnote where isstandard='t'";
                 }
                 elseif($item=="securityUser")
                 {
@@ -142,7 +137,11 @@ class dictionaries
             		case "securityUser": 
             			$sql="select securityuserid as id from tblsecurityuser";
             			$myObj = new securityUser();
-            			break;
+            			break;     
+            		case "readingNote": 
+            			$sql="select readingnoteid as id from tlkpreadingnote";
+            			$myObj = new readingNote();
+            			break;              			     			
             		case "taxon":
                        	$sql="select taxonid as id, label as value from tlkptaxon order by taxonid";
                        	$myObj = new taxon();

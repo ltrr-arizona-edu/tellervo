@@ -122,6 +122,8 @@ class securityUser
 
         return TRUE;
     }  
+    
+    
 
     function setChildParamsFromDB()
     {

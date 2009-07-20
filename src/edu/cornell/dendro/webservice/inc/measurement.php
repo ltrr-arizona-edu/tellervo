@@ -1043,7 +1043,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"xs:int\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
 			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
 														$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
-					$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:integer\">".$this->getDirectChildCount()."</tridas:genericField>\n";
+					$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
 														
 			// show summary information in standard and summary modes
 			/*if($format=="summary" || $format=="standard") {

@@ -41,6 +41,49 @@ class readingNote
 	/* SETTERS */
 	/***********/
 
+	function setErrorMessage()
+	{
+		return false;
+	}
+	
+	function setParamsFromDB($theID)
+	{
+        global $dbconn;
+        
+        $this->id=$theID;
+        $sql = "select * from tlkpreadingnote where readingnoteid=$theID";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the id specified
+                $this->setErrorMessage("903", "No records match the specified id");
+                return FALSE;
+            }
+            else
+            {
+                // Set parameters from db
+                $row = pg_fetch_array($result);
+                $this->setID($row['readingnoteid']);
+                $this->setNote($row['note']);
+                $this->controlledVoc->setControlledVoc($row['vocabularyid'], null);
+                
+
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+
+        return TRUE;
+	}
+	
 	function setID($id)
 	{
 		$this->id = $id;
