@@ -1,6 +1,5 @@
 package edu.cornell.dendro.corina.tridasv2;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import org.tridas.schema.NormalTridasVariable;
@@ -55,7 +54,7 @@ public class TridasRingWidthWrapper implements DumbArrayListHook {
 			 */
 			ValueTranslator<TridasValue, Integer> countTranslator = new ValueTranslator<TridasValue, Integer>() {
 				public final Integer translate(TridasValue o) {
-					BigInteger count = o.getCount();
+					Integer count = o.getCount();
 					
 					return (count != null) ? count.intValue() : 1;
 				}
@@ -146,12 +145,12 @@ public class TridasRingWidthWrapper implements DumbArrayListHook {
 
 	private final void copyOverCounts() {
 		for(int i = 0, len = values.size(); i < len; i++)
-			values.get(i).setCount(BigInteger.valueOf(count.get(i)));
+			values.get(i).setCount(count.get(i));
 	}
 	
 	private final void clearCounts() {	
 		for(int i = 0, len = values.size(); i < len; i++)
-			values.get(i).setCount(null);
+			values.get(i).setCount(1);
 	}
 
 	private boolean usesCounts;
@@ -170,7 +169,7 @@ public class TridasRingWidthWrapper implements DumbArrayListHook {
 			
 			tv.setIndex(Integer.toString(index));
 			tv.setValue(e.toString());
-			tv.setCount(BigInteger.valueOf(1));
+			tv.setCount(1);
 			
 			values.add(tv);
 						
@@ -204,7 +203,7 @@ public class TridasRingWidthWrapper implements DumbArrayListHook {
 			values.get(index).setValue(e.toString());
 		}
 		else if(list == count) {
-			values.get(index).setCount(BigInteger.valueOf(e.intValue()));
+			values.get(index).setCount(e.intValue());
 		}
 	}
 
