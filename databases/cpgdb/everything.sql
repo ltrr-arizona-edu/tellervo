@@ -15,6 +15,7 @@
 -- Now, our cache functions
 \i vmeasurementmetacache.sql
 \i trigger-tblvmeasurementmetacache.sql
+\i trigger-default_standardisedid.sql
 
 -- Now, our functions for creating and changing vmeasurements
 \i vm-functions.sql
