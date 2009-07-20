@@ -440,6 +440,7 @@ class measurement extends measurementEntity implements IDBAccessor
 					$this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a measurement.");
 					return false;
 				}
+				return true;
 				 
 			case "update":
 				if($paramsObj->getID()==NULL)
@@ -474,6 +475,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						}
 					}
 				}
+				
 
 				// Only allow update on a measurement which is not used by other vm's downstream
 				global $dbconn;
