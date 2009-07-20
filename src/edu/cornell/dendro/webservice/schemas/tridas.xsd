@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-TRiDaS 1.2: Tree-Ring Data Standard for dendrochronology
+TRiDaS 1.3 dev: Tree-Ring Data Standard for dendrochronology
 See http://www.tridas.org/ for:
 - more information
-- contact information 
+- contact information  
 - latest version
 
-Version date: 2009-06-23
+Version date: 2009-XX-XX
 
 This XML Schema is available under LGPLv3 
 more information on http://www.gnu.org/licenses/lgpl.html
 
 ***********************************************-->
-<xs:schema xmlns="http://www.tridas.org/1.2" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.tridas.org/1.2" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns="http://www.tridas.org/1.3" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.tridas.org/1.3" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!--
 %%%%%%%%%%%%%%
 %		EXTERNAL SCHEMAS	
@@ -364,6 +364,39 @@ name of the organisation as long as it is not ambiguous.
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
+	<!-- extent -->
+	<!--<xs:element name="extent">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Details about the geographic extent that this entity covers
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="extentGeometry"/>
+				<xs:element ref="extentComment" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="extentGeometry">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				A GML representation of the extent
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="gml:Polygon"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="extentComment" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Any useful information about the extent
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>-->
 	<!-- location -->
 	<xs:element name="location">
 		<xs:annotation>
@@ -454,7 +487,7 @@ name of the organisation as long as it is not ambiguous.
 							<xs:restriction base="xs:string">
 								<xs:enumeration value="xs:string"/>
 								<xs:enumeration value="xs:boolean"/>
-								<xs:enumeration value="xs:integer"/>
+								<xs:enumeration value="xs:int"/>
 								<xs:enumeration value="xs:float"/>
 								<xs:enumeration value="xs:date"/>
 								<xs:enumeration value="xs:dateTime"/>
@@ -912,14 +945,14 @@ controlled vocabulary, or perferably from the TRiDaS controlled vocabulary.
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="angle" type="xs:integer" minOccurs="0">
+				<xs:element name="angle" type="xs:int" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation xml:lang="EN">
 							Angle of slope from horizontal in degrees
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="azimuth" type="xs:integer" minOccurs="0">
+				<xs:element name="azimuth" type="xs:int" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation xml:lang="EN">
 							Angle in degrees from north along which the slope lies
@@ -1137,7 +1170,7 @@ supercede those of the radius.
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="nrOfSapwoodRings" type="xs:string">
+	<xs:element name="nrOfSapwoodRings" type="xs:int">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
 				Number of sapwood rings measured
@@ -1254,7 +1287,7 @@ resulting in multiple measurementSeries.
 					<xs:element ref="dendrochronologist" minOccurs="0"/>
 					<xs:element ref="measuringMethod" minOccurs="0" maxOccurs="1"/>
 					<xs:element ref="type" minOccurs="0" maxOccurs="1"/>
-					<xs:element ref="linkSeries" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="linkSeries" minOccurs="0" maxOccurs="1"/>
 					<xs:element ref="objective" minOccurs="0"/>
 					<xs:element ref="standardizingMethod" minOccurs="0"/>
 					<xs:element ref="author" minOccurs="0"/>
@@ -1291,12 +1324,11 @@ themselves are stored separately as values.
 						<xs:element ref="createdTimestamp" minOccurs="0"/>
 						<xs:element ref="lastModifiedTimestamp" minOccurs="0"/>
 						<xs:element ref="comments" minOccurs="0"/>
-						<xs:element ref="measuringDate" minOccurs="0" maxOccurs="1"/>
+                        <xs:element ref="measuringDate" minOccurs="0" maxOccurs="1"/>
+						<xs:element ref="woodCompleteness" minOccurs="0" maxOccurs="1"/>
 						<xs:element ref="analyst" minOccurs="0"/>
 						<xs:element ref="dendrochronologist" minOccurs="0"/>
 						<xs:element ref="measuringMethod" minOccurs="1"/>
-						<!--<xs:element ref="usage" minOccurs="0"/>
-						<xs:element ref="usageComments" minOccurs="0" maxOccurs="unbounded"/>-->
 						<xs:group ref="interpretationType" minOccurs="0"/>
 						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="values" minOccurs="0" maxOccurs="unbounded"/>
@@ -1389,7 +1421,6 @@ themselves are stored separately as values.
 				<xs:element ref="datingReference" minOccurs="0"/>
 				<xs:element ref="statFoundation" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="sproutYear" minOccurs="0"/>
-				<xs:element ref="usedSoftware" minOccurs="0"/>
 				<xs:element ref="deathYear" minOccurs="0"/>
 				<xs:element ref="provenance" minOccurs="0"/>
 			</xs:sequence>
@@ -1418,7 +1449,7 @@ was used to date this series.  It is not to be confused with sproutYear.
 	<xs:element name="statFoundation">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				
+Container for fields that describe the statistical method used for crossdating
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -1473,7 +1504,9 @@ was used to date this series.  It is not to be confused with sproutYear.
 		</xs:annotation>
 	</xs:element>
 	<!-- MEASUREMENTSERIES.interpretationUnsolved -->
-	<xs:element name="interpretationUnsolved" type="xs:string"/>
+	<xs:element name="interpretationUnsolved">
+		<xs:complexType/>
+	</xs:element>
 	<!-- MEASUREMENTSSERIES-PLACEHOLDER -->
 	<xs:element name="measurementSeriesPlaceholder">
 		<xs:annotation>
@@ -1511,7 +1544,7 @@ from one or more measurementSeries and has multiple values associated with it.
 						<xs:element ref="comments" minOccurs="0"/>
 						<xs:element ref="derivationDate" minOccurs="0" maxOccurs="1"/>
 						<xs:element ref="type" minOccurs="1"/>
-						<xs:element ref="linkSeries" minOccurs="1" maxOccurs="unbounded"/>
+						<xs:element ref="linkSeries" minOccurs="1" maxOccurs="1"/>
 						<xs:element ref="objective" minOccurs="0"/>
 						<xs:element ref="standardizingMethod" minOccurs="0"/>
 						<xs:element ref="author" minOccurs="0"/>
@@ -1526,6 +1559,7 @@ from one or more measurementSeries and has multiple values associated with it.
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
+	
 	<!-- DERIVEDSERIES.title (global type) -->
 	<!-- DERIVEDSERIES.identifier (global type) -->
 	<!-- DERIVEDSERIES.createdTimestamp (global type) -->
@@ -1662,7 +1696,7 @@ the units used are recorded in the 'values' container in the associated measurem
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="count" type="xs:integer" use="optional">
+			<xs:attribute name="count" type="xs:int" use="optional">
 				<xs:annotation>
 					<xs:documentation xml:lang="EN">
 						Optional field to denote how many underlying values went to create this value in a derivedSeries
@@ -1687,6 +1721,13 @@ TRiDaS controlled vocabulary.
 						<xs:annotation>
 							<xs:documentation>
 								TRiDaS controlled vocabulary for specific remarks.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="inheritedCount" type="xs:int">
+						<xs:annotation>
+							<xs:documentation>
+								In derivedSeries this shows the number of constituent measurementSeries that this remark is found in.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
