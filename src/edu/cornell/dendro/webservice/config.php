@@ -46,7 +46,7 @@ $tempFolderURL = "http://dendro.cornell.edu/corinaMSTemp/";
 $corinaNS = "http://dendro.cornell.edu/schema/corina/1.0";
 
 // TRiDaS Namespace URL
-$tridasNS = "http://www.tridas.org/1.2";
+$tridasNS = "http://www.tridas.org/1.3";
 
 // XLink Namespace URL
 $xlinkNS = "http://www.w3.org/1999/xlink";
