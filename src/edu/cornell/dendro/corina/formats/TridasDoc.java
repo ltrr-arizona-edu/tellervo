@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -19,7 +17,6 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLinkSeries;
-import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
@@ -30,7 +27,6 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
-import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
@@ -200,22 +196,20 @@ public class TridasDoc implements Filetype {
 		// the list of elements
 		ElementList elements = new ElementList();
 		
-		// go through each linkseries and find identifiers
-		List<TridasLinkSeries> links = series.getLinkSeries();
-		for(TridasLinkSeries link : links) {
-			List<TridasIdentifier> identifiers = ListUtil.subListOfType(
-					link.getIdRevesAndXLinksAndIdentifiers(), TridasIdentifier.class);
+		// go through the linkseries and use the identifiers
+		TridasLinkSeries link = series.getLinkSeries();
+		List<TridasIdentifier> identifiers = ListUtil.subListOfType(
+				link.getIdRevesAndXLinksAndIdentifiers(), TridasIdentifier.class);
 			
-			for(TridasIdentifier identifier : identifiers) {
-				BaseSample ref = references.get(identifier);
-				
-				if(ref != null) {
-					// easy enough, found the reference
-					elements.add(new CachedElement(ref));
-				}
-				else {
-					System.out.println("Sample " + s + " references unknown element: " + identifier);
-				}
+		for(TridasIdentifier identifier : identifiers) {
+			BaseSample ref = references.get(identifier);
+			
+			if(ref != null) {
+				// easy enough, found the reference
+				elements.add(new CachedElement(ref));
+			}
+			else {
+				System.out.println("Sample " + s + " references unknown element: " + identifier);
 			}
 		}
 		

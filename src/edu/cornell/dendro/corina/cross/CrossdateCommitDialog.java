@@ -147,7 +147,7 @@ public class CrossdateCommitDialog extends JDialog {
 		// set the parent
 		TridasLinkSeries linkParent = new TridasLinkSeries();
 		linkParent.getIdRevesAndXLinksAndIdentifiers().add(secondary.getSeries().getIdentifier());
-		series.getLinkSeries().add(linkParent);
+		series.setLinkSeries(linkParent);
 		
 		// create an interpretation for master and first year
 		TridasInterpretation interpretation = new TridasInterpretation();

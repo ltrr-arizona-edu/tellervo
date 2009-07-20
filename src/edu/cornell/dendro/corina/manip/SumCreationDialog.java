@@ -101,7 +101,7 @@ public class SumCreationDialog {
 		series.setType(voc);
 		
 		TridasLinkSeries links = new TridasLinkSeries();
-		series.getLinkSeries().add(links);
+		series.setLinkSeries(links);
 
 		// add each sum element to the sample...
 		for(Element sume : sum.getSelectedElements()) {

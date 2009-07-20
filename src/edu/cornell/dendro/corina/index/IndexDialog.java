@@ -244,7 +244,7 @@ public class IndexDialog extends JDialog {
 		// the sample we're basing this index on
 		TridasLinkSeries links = new TridasLinkSeries();
 		links.getIdRevesAndXLinksAndIdentifiers().add(sample.getSeries().getIdentifier());
-		series.getLinkSeries().add(links);
+		series.setLinkSeries(links);
 		
 		// create a new sample to hold this all
 		Sample tmp = new Sample(series);

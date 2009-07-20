@@ -150,10 +150,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 			derived.unsetValues();
 			
 			// do some basic error checking
-			if(derived.isSetLinkSeries()) {
-				if(derived.getLinkSeries().size() == 0)
-					throw new IllegalArgumentException("Derived series specified with empty link series");
-				
+			if(derived.isSetLinkSeries()) {			
 				int nSeries = countLinkSeries(derived);
 				if(s.getSampleType() == SampleType.SUM) {
 					if(nSeries < 2)
@@ -196,17 +193,10 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 	}
 	
 	private int countLinkSeries(ITridasDerivedSeries series) {
-		List<TridasLinkSeries> links = series.getLinkSeries();
-		int nlinks = 0;
+		TridasLinkSeries links = series.getLinkSeries();
 		
-		for(TridasLinkSeries link : links) {
-			List<TridasIdentifier> identifiers = ListUtil.subListOfType(link.getIdRevesAndXLinksAndIdentifiers(), 
-					TridasIdentifier.class);
-			
-			nlinks += identifiers.size();
-		}
-		
-		return nlinks;
+		return ListUtil.subListOfType(links.getIdRevesAndXLinksAndIdentifiers(), 
+				TridasIdentifier.class).size();
 	}
 
 	public String getName() {
