@@ -11,7 +11,7 @@
  * *******************************************************************
  */
 require_once('dbhelper.php');
-require_once('inc/note.php');
+require_once('inc/readingNote.php');
 
 /**
  * Class for interacting with a measurementEntity.  This contains the logic of how to read and write data from the database as well as error checking etc.
@@ -219,7 +219,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->vmeasurementResultID = $row2['vmeasurementresultid'];
 
 		// Call getVMeasurementReadingResult()
-		$sql  = "SELECT * FROM cpgdb.getvmeasurementreadingresult('".pg_escape_string($this->getVMeasurementResultID())."') ".
+		$sql  = "SELECT * FROM vwjsonnotedreadingresult where vmeasurementresultid='".pg_escape_string($this->getVMeasurementResultID())."' ".
         		"ORDER BY relyear ASC";
 		$dbconnstatus = pg_connection_status($dbconn);
 		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -230,13 +230,35 @@ class measurement extends measurementEntity implements IDBAccessor
 			{
 				if ($relYearCheck==$row['relyear'])
 				{
+					// Compile notes array
+							
+					$jsonNotes = json_decode($row['jsonnotes'], true);
+
+					$notesArray = array();
+					
+					if($jsonNotes)
+					{
+						foreach($jsonNotes as $note)
+						{			
+							$currReadingNote = new readingNote();
+							$currReadingNote->setID($note['stdid']);
+							$currReadingNote->setNote($note['note']);
+							$currReadingNote->setInheritedCount($note['icnt']);
+							$currReadingNote->setControlledVoc(null, $note['std']);				
+							
+							// All note to the readingsArray
+							array_push($notesArray, $currReadingNote); 
+						}	
+					}
+							
+					
 					// Get all reading values to array
 					$this->readingsArray[$row['relyear']] = array('value' => $row['reading'],
                                                                   'wjinc' => $row['wjinc'], 
                                                                   'wjdec' => $row['wjdec'], 
                                                                   'count' => $row['count'],
-                                                                  'notesArray' => array()
-					);
+                                                                  'notesArray' => $notesArray
+															);
 					$relYearCheck++;
 				}
 				else
@@ -298,37 +320,6 @@ class measurement extends measurementEntity implements IDBAccessor
 		return TRUE;
 	}
 	
-	private function setReadingNotes($vmresultid)
-	{
-		global $dbconn;
-
-		$sql  = "select * from ? where vmeasurementresultid=$vmresultid";
-
-		$dbconnstatus = pg_connection_status($dbconn);
-		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-		{
-			$result = pg_query($dbconn, $sql);
-			while ($row = pg_fetch_array($result))
-			{
-				$currReadingNote = new readingNote();
-				$currReadingNote->setID($row['readingnoteid']);
-				$currReadingNote->setNote($row['note']);
-				$currReadingNote->setInheritedCount($row['inheritedCount']);
-				$currReadingNote->setControlledVoc($row['vocabid'], $row['vocabname']);				
-				
-				// All note to the readingsArray
-				array_push($this->readingsArray[$row['relyear']]['notesArray'], $currReadingNote); 
-			}
-		}
-		else
-		{
-			// Connection bad
-			$this->setErrorMessage("001", "Error connecting to database");
-			return FALSE;
-		}
-		return TRUE;		
-	}
-
 
 	/**
 	 * Set attributes of this class using a parametersClass
@@ -953,9 +944,9 @@ class measurement extends measurementEntity implements IDBAccessor
 		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryElementTitle())."</tridas:genericField>\n";
 		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummarySampleTitle())."</tridas:genericField>\n";
 		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryRadiusTitle())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.seriesCount\" type=\"xs:integer\">".dbHelper::escapeXMLChars($this->getMeasurementCount())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.seriesCount\" type=\"xs:int\">".dbHelper::escapeXMLChars($this->getMeasurementCount())."</tridas:genericField>\n";
 		$tags.= "<tridas:genericField name=\"corina.summaryTaxonName\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryTaxonName())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.summaryTaxonCount\" type=\"xs:integer\">".dbHelper::escapeXMLChars($this->getSummaryTaxonCount())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.summaryTaxonCount\" type=\"xs:int\">".dbHelper::escapeXMLChars($this->getSummaryTaxonCount())."</tridas:genericField>\n";
 		return $tags;
 	}
 
@@ -991,12 +982,12 @@ class measurement extends measurementEntity implements IDBAccessor
 		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"corina.crossdateJustification\" type=\"xs:string\">".$this->getJustification()."</tridas:genericField>\n";
 		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"corina.crossdateConfidenceLevel\" type=\"xs:string\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
 		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"corina.operationParameter\" type=\"xs:string\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
-		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"corina.authorID\" type=\"xs:integer\">".$this->author->getID()."</tridas:genericField>\n";
+		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"corina.authorID\" type=\"xs:int\">".$this->author->getID()."</tridas:genericField>\n";
 	    											$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
 		
 		$xml .= $this->getPermissionsXML();
-		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:integer\">".$this->getReadingCount()."</tridas:genericField>\n";
-		$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:integer\">".$this->getDirectChildCount()."</tridas:genericField>\n";
+		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
+		$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
 
 
 
@@ -1048,9 +1039,9 @@ class measurement extends measurementEntity implements IDBAccessor
 			$xml .= $this->getPermissionsXML();
 			if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
 			if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\" type=\"xs:boolean\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
-			if($this->analyst->getID()!=NULL)			$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"xs:integer\">".$this->analyst->getID()."</tridas:genericField>\n";
-			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"xs:integer\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
-			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:integer\">".$this->getReadingCount()."</tridas:genericField>\n";
+			if($this->analyst->getID()!=NULL)			$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"xs:int\">".$this->analyst->getID()."</tridas:genericField>\n";
+			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"xs:int\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
+			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
 														$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
 					$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:integer\">".$this->getDirectChildCount()."</tridas:genericField>\n";
 														
@@ -1216,7 +1207,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 			// Increment yearvalue for next loop
 			$yearvalue++;
-
+	
 		}
 		$xml.="</tridas:values>\n";
 
@@ -1363,18 +1354,28 @@ class measurement extends measurementEntity implements IDBAccessor
 		 * New direct measurements:
 		 * 1) Insert tblmeasurement row
 		 * 2) Insert multiple tblreading rows
-		 * 3) Insert tblreadingreadingnote rows
-		 * 4) Create new vmeasurement with cpgdb.createnewvmeasurement()
+		 * 3) Create new vmeasurement with cpgdb.createnewvmeasurement()
+		 * 4) Add new notes using cpgdb.addreadingnote()
 		 *
 		 * New derived measurement:
 		 * 1) Use cpgdb.createnewvmeasurement()
 		 * 2) Use cpgdb.finishcrossdate() if it's a crossdate
+		 * 3) Add notes using cpgdb.addreadingnote() which have inheritedCount=-1, 0 or NULL (-1 is overide inheritance)
 		 *
-		 * Edit existing measurement:
-		 * 1) Delete then reinsert relevant tblvmeasurementgroup entries if derived
-		 * 2) Update tblmeasurement row
-		 * 3) Delete then reinsert tblreading entries if direct
+		 * Edit existing direct measurement:
+		 * 1) Delete tblreading entries
+		 * 2) Reinsert tblreading entries
+		 * 3) Update tblmeasurement row
 		 * 4) Update tblvmeasurement row
+         * 5) Use clearReadingNotes() to delete notes
+		 * 6) Add notes using cpgdb.addreadingnotes()
+		 * 
+		 * Edit existing derived measurement:
+		 * 1) Delete relevant tblvmeasurementgroup entries
+         * 2) Reinsert relevant tblvmeasurementgroup entries 
+		 * 3) Update tblvmeasurement row
+		 * 4) Use clearReadingNotes() to delete notes
+		 * 5) Add notes using cpgdb.addreadingnote() which have inheritedCount=-1, 0 or NULL (-1 is overide inheritance)
 		 *
 		 * **************
 		 */
@@ -1483,36 +1484,6 @@ class measurement extends measurementEntity implements IDBAccessor
 								$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $insertSQL");
 								return FALSE;
 							}
-							else
-							{
-								// Insert successful
-								if(count($value['notesArray']) > 0)
-								{
-									// There are notes associated with this reading.  Before insert new notes we first need the pkey of the newly inserted record
-									$sql3 = "SELECT * from tblreading where readingid=currval('tblreading_readingid_seq')";
-									$result3 = pg_query($dbconn, $sql3);
-									while ($row3 = pg_fetch_array($result3))
-									{
-										$thisReadingID = $row3['readingid'];
-									}
-
-									foreach($value['notesArray'] as $noteKey )
-									{
-										// Looping through notes and creating SQL insert statements
-										$insertSQL = "INSERT INTO tblreadingreadingnote (readingid, readingnoteid) value(".pg_escape_string($thisReadingID).", ".pg_escape_string($noteKey).")";
-
-										// Do tblreadingreadingnote inserts
-										pg_send_query($dbconn, $insertSQL);
-										$result4 = pg_get_result($dbconn);
-										if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-										{
-											// Insert failed
-											$this->setErrorMessage("002", pg_result_error($result4)."--- SQL was $insertSQL");
-											return FALSE;
-										}
-									}
-								}
-							}
 						}
 						// End of Readings insert
 
@@ -1560,20 +1531,21 @@ class measurement extends measurementEntity implements IDBAccessor
 						}
 					}
 
+					// Add reading notes to DB
+					$this->addReadingNotesToDB($localVMID);
+												
 					// Successful so retrieve the automated fields for this new vmeasurement
 					$this->setParamsFromDB($localVMID);
-
 
 				}
 				else
 				{
 					// Editing an exisiting record
+					$deleteSQL = NULL;
 					$insertSQL	= NULL;
 					$updateSQL2 = NULL;
-					$deleteSQL = NULL;
 
 					// Update references or readings depending on whether the measurement is direct or not
-
 					if ($this->vmeasurementOp->getValue()!=="Direct")
 					{
 						// Update references to other vmeasurements
@@ -1589,7 +1561,7 @@ class measurement extends measurementEntity implements IDBAccessor
 					{
 						// Update the tblmeasurement table
 						$updateSQL2.= "UPDATE tblmeasurement SET ";
-						if(isset($this->parentEntityArray[0]))            	$updateSQL2.= "radiusid = ".pg_escape_string($this->parentEntityArray[0]->getID()).", ";
+						if(isset($this->parentEntityArray[0]))            			$updateSQL2.= "radiusid = ".pg_escape_string($this->parentEntityArray[0]->getID()).", ";
 						if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled='".dbHelper::formatBool($this->getIsReconciled(),'pg')."', ";
 						if($this->getFirstYear()!=NULL)           					$updateSQL2.= "startyear = ".pg_escape_string($this->getFirstYear()).", ";
 						if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".pg_escape_string($this->analyst->getID()).", ";
@@ -1612,17 +1584,16 @@ class measurement extends measurementEntity implements IDBAccessor
 					// Update the tblvmeasurement table
 					$updateSQL = "UPDATE tblvmeasurement SET ";
 
-					if($this->getVMeasurementOp()!=NULL)		$updateSQL.= "vmeasurementopid ='".pg_escape_string($this->vmeasurementOp->getID())."', ";
+					if($this->getVMeasurementOp()!=NULL)			$updateSQL.= "vmeasurementopid ='".pg_escape_string($this->vmeasurementOp->getID())."', ";
 					if($this->vmeasurementOp->getParamID()!=NULL)	$updateSQL.= "vmeasurementopparameter ='".pg_escape_string($this->vmeasurementOp->getParamID())."', ";
-					if($this->getCode()!=NULL)               	$updateSQL.= "code = '".pg_escape_string($this->getCode())."', ";
-					if($this->getComments()!=NULL)        		$updateSQL.= "comments = '".pg_escape_string($this->getComments())."', ";
-					if($this->author->getID()!=NULL)			$updateSQL.= "owneruserid = '".pg_escape_string($this->author->getID())."', ";
-					if($this->objective!=NULL)					$updateSQL.= "objective= '".pg_escape_string($this->objective)."', ";
-					if($this->version!=NULL)					$updateSQL.= "version= '".pg_escape_string($this->version)."', ";
+					if($this->getCode()!=NULL)               		$updateSQL.= "code = '".pg_escape_string($this->getCode())."', ";
+					if($this->getComments()!=NULL)        			$updateSQL.= "comments = '".pg_escape_string($this->getComments())."', ";
+					if($this->author->getID()!=NULL)				$updateSQL.= "owneruserid = '".pg_escape_string($this->author->getID())."', ";
+					if($this->objective!=NULL)						$updateSQL.= "objective= '".pg_escape_string($this->objective)."', ";
+					if($this->version!=NULL)						$updateSQL.= "version= '".pg_escape_string($this->version)."', ";
 					$updateSQL = substr($updateSQL, 0 , -2);
-					$updateSQL.= " WHERE vmeasurementid='".$this->getID()."'; ";
-
-
+					$updateSQL.= " WHERE vmeasurementid='".$this->getID()."'; ";					
+					
 					// Perform query using transactions so that if anything goes wrong we can roll back
 					$transaction = array("begin;", $deleteSQL, $insertSQL, $updateSQL2, $updateSQL );
 					
@@ -1643,6 +1614,11 @@ class measurement extends measurementEntity implements IDBAccessor
 
 					// All gone well so commit transaction to db
 					$result = pg_query($dbconn, "commit;");
+					
+					// Now clear and add all reading notes
+					$this->clearReadingNotesFromDB();
+					$this->addReadingNotesToDB();
+					
 				}
 			}
 			else
@@ -1657,6 +1633,86 @@ class measurement extends measurementEntity implements IDBAccessor
 		return TRUE;
 	}
 
+	private function clearReadingNotesFromDB($localVMID=NULL)
+	{
+		global $dbconn;	
+		
+		// Either use the passed vmid or get it from the class
+		if($localVMID==NULL) $localVMID = $this->getID();
+		
+		$sql = "SELECT cpgdb.clearReadingNotes('".$localVMID."')";
+
+		$result = pg_query($dbconn, $sql);		
+		if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+		{
+			// Insert failed
+			$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+			return FALSE;
+		}			
+		return TRUE;
+	}
+	
+	private function addReadingNotesToDB($localVMID=NULL)
+	{
+		global $dbconn;
+		
+		// Either use the passed vmid or get it from the class
+		if($localVMID==NULL) $localVMID = $this->getID();
+			
+		// Add reading notes 
+		$relyear = 0;
+		foreach($this->readingsArray as $key => $value)
+		{		
+			$relyear++;
+			if(count($value['notesArray']) > 0)
+			{
+				// There are notes associated with this reading.  
+				foreach($value['notesArray'] as $note )
+				{						
+					if(($note->getControlledVocName()!=NULL) && ($note->getNote()!=NULL))
+					{	
+						
+						if($this->getVMeasurementOp()=='Direct')
+						{
+							$disabledoverride = 'null';
+							if(($note->getInheritedCount()!=NULL) || ($note->getInheritedCount()!=0))
+							{
+								$this->setErrorMessage("667"."InheritanceCount can only be 0 or NULL for notes in measurementSeries");
+							}
+						}
+						else
+						{
+							if(($note->getInheritedCount()==NULL) || ($note->getInheritedCount()==0))
+							{
+								$disabledoverride = 'false';
+							}
+							elseif($note->getInheritedCount()<0)
+							{
+								$disabledoverride = 'true';
+							}
+							else
+							{
+								// Skip this note as it is inherited!
+								continue;
+							}
+						}
+															
+						$sql = "SELECT cpgdb.addreadingnote('".$localVMID."', $relyear, (SELECT readingnoteid from cpgdb.getNote('".$note->getControlledVocName()."', '".$note->getNote()."')), $disabledoverride)";
+
+						$result = pg_query($dbconn, $sql);		
+						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+						{
+							// Insert failed
+							$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+							return FALSE;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	
 	function deleteFromDB()
 	{
 		// Delete the record in the database matching the current object's ID

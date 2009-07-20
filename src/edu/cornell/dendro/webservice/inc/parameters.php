@@ -933,7 +933,8 @@ class measurementParameters extends measurementEntity implements IParams
 		   			case "corina.isReconciled":		   				
 		   				$this->setIsReconciled($value);
 		   				break;
-		   				
+		   			
+		   			case "corina.directChildCount":		break;
 		   			case "corina.mapLink":				break;
 		   			case "corina.isPublished":			break;
 		   			case "corina.readingCount":			break;		   			
@@ -969,22 +970,36 @@ class measurementParameters extends measurementEntity implements IParams
 			   				if($valuechild->nodeType != XML_ELEMENT_NODE) continue;
 			   				if($valuechild->tagName == 'remark')
 			   				{
-			   					// Add notes in a notes array
+			   					// Create a notes object to hold note
 			   					$currReadingNote = new readingNote();
 			   					
-			   					$currReadingNote->setID($valuechild->getAttribute("normalId"));
-			   					$currReadingNote->setInheritedCount($valuechild->getAttribute("inheritedCount"));
-			   					$currReadingNote->setControlledVoc(null, $valuechild->getAttribute("normalStd"));
-			   					
-			   					if($valueChild->hasAttribute("normal"))
+			   					if($valuechild->hasAttribute("normalTridas"))
 			   					{
-			   						$currReadingNote->setNote($valueChild->getAttribute("normal"));
+			   						// TRiDaS controlled remark
+			   						$currReadingNote->setControlledVoc(null, "TRiDaS");
+			   						$currReadingNote->setNote($valuechild->getAttribute("normalTridas"));	   						
 			   					}
 			   					else
-			   					{  		
-			   						$currReadingNote->setNote($valueChild->nodeValue);			
-			   						
+			   					{
+				   					// Corina or free text remark
+				   					$currReadingNote->setID($valuechild->getAttribute("normalId"));
+				   					$currReadingNote->setControlledVoc(null, $valuechild->getAttribute("normalStd"));
+				   					
+				   					if($valuechild->hasAttribute("normal"))
+				   					{
+				   						$currReadingNote->setNote($valuechild->getAttribute("normal"));
+				   					}
+				   					else
+				   					{  		
+				   						$currReadingNote->setNote($valuechild->nodeValue);			
+				   						
+				   					}
 			   					}
+			   					
+			   					// Notes fields common to all types of notes
+			   					$currReadingNote->setInheritedCount($valuechild->getAttribute("inheritedCount"));
+			   					
+			   					// Add notes in a notes array
 			   					array_push($myNotesArray, $currReadingNote);
 			   				}
 			   				
