@@ -1017,7 +1017,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	private function getMeasurementSeriesXML($format, $parts, $recurseLevel=2)
 	{
 
-		$xml = "\n<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">\n";
+		$xml = "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">\n";
 		$xml.= $this->getIdentifierXML();
 
 
