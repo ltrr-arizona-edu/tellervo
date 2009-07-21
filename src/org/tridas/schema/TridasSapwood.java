@@ -5,8 +5,11 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -20,6 +23,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.adapters.IntegerAdapter;
 
 
 /**
@@ -58,6 +62,9 @@ public class TridasSapwood
 {
 
     private final static long serialVersionUID = 1001L;
+    @XmlElement(type = String.class)
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
+    @XmlSchemaType(name = "int")
     protected Integer nrOfSapwoodRings;
     protected TridasLastRingUnderBark lastRingUnderBark;
     protected String missingSapwoodRingsToBark;
@@ -70,7 +77,7 @@ public class TridasSapwood
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
     public Integer getNrOfSapwoodRings() {
@@ -82,7 +89,7 @@ public class TridasSapwood
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
     public void setNrOfSapwoodRings(Integer value) {

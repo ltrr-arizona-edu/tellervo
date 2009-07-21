@@ -10,7 +10,9 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -24,6 +26,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.adapters.IntegerAdapter;
 import org.w3c.dom.Element;
 
 
@@ -60,7 +63,9 @@ public class WSIMessage
     @XmlMixed
     @XmlAnyElement
     protected List<Object> content;
-    @XmlAttribute(name = "code")
+    @XmlAttribute
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
+    @XmlSchemaType(name = "int")
     protected Integer code;
 
     /**
@@ -106,10 +111,10 @@ public class WSIMessage
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 
@@ -118,19 +123,15 @@ public class WSIMessage
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public void setCode(int value) {
+    public void setCode(Integer value) {
         this.code = value;
     }
 
     public boolean isSetCode() {
         return (this.code!= null);
-    }
-
-    public void unsetCode() {
-        this.code = null;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {

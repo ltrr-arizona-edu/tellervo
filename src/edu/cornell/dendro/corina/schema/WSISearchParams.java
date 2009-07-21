@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -23,6 +24,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.adapters.IntegerAdapter;
 
 
 /**
@@ -74,9 +76,11 @@ public class WSISearchParams
     protected List<WSIParam> params;
     @XmlAttribute
     protected SearchReturnObject returnObject;
-    @XmlAttribute(name = "limit")
+    @XmlAttribute
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
     protected Integer limit;
-    @XmlAttribute(name = "skip")
+    @XmlAttribute
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
     protected Integer skip;
     @XmlAttribute(name = "includeChildren")
     protected Boolean includeChildren;
@@ -179,10 +183,10 @@ public class WSISearchParams
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public int getLimit() {
+    public Integer getLimit() {
         return limit;
     }
 
@@ -191,10 +195,10 @@ public class WSISearchParams
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public void setLimit(int value) {
+    public void setLimit(Integer value) {
         this.limit = value;
     }
 
@@ -202,19 +206,15 @@ public class WSISearchParams
         return (this.limit!= null);
     }
 
-    public void unsetLimit() {
-        this.limit = null;
-    }
-
     /**
      * Gets the value of the skip property.
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public int getSkip() {
+    public Integer getSkip() {
         return skip;
     }
 
@@ -223,19 +223,15 @@ public class WSISearchParams
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public void setSkip(int value) {
+    public void setSkip(Integer value) {
         this.skip = value;
     }
 
     public boolean isSetSkip() {
         return (this.skip!= null);
-    }
-
-    public void unsetSkip() {
-        this.skip = null;
     }
 
     /**

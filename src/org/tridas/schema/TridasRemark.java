@@ -6,7 +6,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -20,6 +22,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.adapters.IntegerAdapter;
 import org.tridas.interfaces.NormalTridasVoc;
 
 
@@ -52,7 +55,9 @@ public class TridasRemark
     private final static long serialVersionUID = 1001L;
     @XmlAttribute
     protected NormalTridasRemark normalTridas;
-    @XmlAttribute(name = "inheritedCount")
+    @XmlAttribute
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
+    @XmlSchemaType(name = "int")
     protected Integer inheritedCount;
 
     /**
@@ -88,13 +93,10 @@ public class TridasRemark
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public int getInheritedCount() {
-    	// kludge because JAXB IS BROKEN!
-    	if(inheritedCount == null)
-    		return 0;
+    public Integer getInheritedCount() {
         return inheritedCount;
     }
 
@@ -103,19 +105,15 @@ public class TridasRemark
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public void setInheritedCount(int value) {
+    public void setInheritedCount(Integer value) {
         this.inheritedCount = value;
     }
 
     public boolean isSetInheritedCount() {
         return (this.inheritedCount!= null);
-    }
-
-    public void unsetInheritedCount() {
-        this.inheritedCount = null;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {

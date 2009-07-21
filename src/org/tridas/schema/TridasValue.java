@@ -9,7 +9,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -23,6 +25,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.adapters.IntegerAdapter;
 
 
 /**
@@ -63,7 +66,9 @@ public class TridasValue
     protected String value;
     @XmlAttribute(required = true)
     protected String index;
-    @XmlAttribute(name = "count")
+    @XmlAttribute
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
+    @XmlSchemaType(name = "int")
     protected Integer count;
 
     /**
@@ -164,10 +169,10 @@ public class TridasValue
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public int getCount() {
+    public Integer getCount() {
         return count;
     }
 
@@ -176,19 +181,15 @@ public class TridasValue
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public void setCount(int value) {
+    public void setCount(Integer value) {
         this.count = value;
     }
 
     public boolean isSetCount() {
         return (this.count!= null);
-    }
-
-    public void unsetCount() {
-        this.count = null;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
