@@ -18,7 +18,7 @@
 			<jaxb:serializable uid="1001"/>
 			<xjc:simple />
 			<xjc:treatRestrictionLikeNewType />	
-			<xjc:javaType name="java.lang.Integer" xmlType="xs:int" adapter="org.tridas.interfaces.IntegerAdapter" />
+			<xjc:javaType name="java.lang.Integer" xmlType="xs:int" adapter="org.tridas.adapters.IntegerAdapter" />
 		</jaxb:globalBindings>
 	</jaxb:bindings> 
 	
