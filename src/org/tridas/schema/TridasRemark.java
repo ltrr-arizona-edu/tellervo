@@ -92,6 +92,9 @@ public class TridasRemark
      *     
      */
     public int getInheritedCount() {
+    	// kludge because JAXB IS BROKEN!
+    	if(inheritedCount == null)
+    		return 0;
         return inheritedCount;
     }
 

@@ -88,7 +88,11 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 		}
 
 		Sample s = resource.getSample(getTridasIdentifier());
-					
+
+		if(s == null) {
+			throw new IllegalStateException("doLoad() failed: sample not found");
+		}
+		
 		// make sure we load our special info
 		preload(s);
 		
