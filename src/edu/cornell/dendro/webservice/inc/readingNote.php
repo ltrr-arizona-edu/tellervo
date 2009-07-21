@@ -154,7 +154,7 @@ class readingNote
 			{
 				$xml.= "normalTridas=\"".$this->getNote()."\" />";
 			}
-			elseif($this->getControlledVocID()==NULL)
+			elseif(($this->getControlledVocID()==NULL) || ($this->getControlledVocName()=="[Custom]"))
 			{
 				$xml.=">".$this->getNote()."</tridas:remark>";
 			}

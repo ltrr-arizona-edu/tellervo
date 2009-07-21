@@ -387,12 +387,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		if ($paramsClass->getConfidenceLevel()!=NULL)		$this->setConfidenceLevel($paramsClass->getConfidenceLevel());
 		if ($paramsClass->getNewStartYear()!=NULL)			$this->setNewStartYear($paramsClass->getNewStartYear());
 
-		
-		if (isset($paramsClass->dating))
-		{
-			$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
-			$this->dating->setDatingErrors($paramsClass->dating->getDatingErrorPositive(), $paramsClass->dating->getDatingErrorNegative());
-		}
+		if ($paramsClass->dating->getValue()!=NULL) 		$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
+		if ($paramsClass->dating->getDatingErrorPositive()!=NULL) $this->dating->setDatingErrors($paramsClass->dating->getDatingErrorPositive(), $paramsClass->dating->getDatingErrorNegative());
 
 		if ($paramsClass->parentID!=NULL)
 		{
@@ -414,8 +410,12 @@ class measurement extends measurementEntity implements IDBAccessor
 				{
 					$power = -5;
 				}
-				$convValue = $this->unitsHandler($value['value'], $power, 'db-default');
-				$this->readingsArray[$key]['value'] = $convValue;
+
+				if($power!=NULL)
+				{
+					$convValue = $this->unitsHandler($value['value'], $power, 'db-default');
+					$this->readingsArray[$key]['value'] = $convValue;
+				}
 			}
 		}
 		return true;
@@ -957,7 +957,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		global $domain;
 		$xml = "";
 
-		$xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
+		$xml.= "\n\n<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
 		$xml.= $this->getIdentifierXML();
 		
 		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".dbHelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
@@ -1017,7 +1017,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	private function getMeasurementSeriesXML($format, $parts, $recurseLevel=2)
 	{
 
-		$xml = "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">\n";
+		$xml = "\n<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">\n";
 		$xml.= $this->getIdentifierXML();
 
 
@@ -1115,7 +1115,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			return false;
 		}
 		 
-		 
+		
 		// Initially set yearvalue to 1001 default
 		if ($this->dating->getValue()=='Relative')
 		{
@@ -1125,7 +1125,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		{
 			if($this->getFirstYear()==NULL)
 			{
-				$this->setErrorMessage(667, "First year missing from absolute or absolute with error measurement.  You shouldn't have been able to get this far!");
+				$this->setErrorMessage(667, "First year missing from absolute or absolute with error series (this is a ".$this->dating->getValue()." series).  You shouldn't have been able to get this far!");
 				return false;
 			}
 			else
@@ -1134,8 +1134,11 @@ class measurement extends measurementEntity implements IDBAccessor
 			}
 		}
 
+		// Begin <values> block
 		$xml = "<tridas:values>\n";
-		 
+
+		
+		// Set variable and units
 		if($this->getTridasSeriesType()=='measurementSeries')
 		{
 			global $wsDefaultUnits;
@@ -1162,7 +1165,8 @@ class measurement extends measurementEntity implements IDBAccessor
 			$xml.="<tridas:unitless/>\n";
 		}
 
-		//print_r($this->readingsArray);
+
+		// Set the actual value tags
 		foreach($this->readingsArray as $key => $value)
 		{
 			// Calculate absolute year where possible
@@ -1201,7 +1205,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			{
 				foreach($value['notesArray'] as $myReadingNote)
 				{
-						$xml.=$myReadingNote->asXML();
+						$xml.="\n".$myReadingNote->asXML();
 				}
 			}
 
@@ -1551,11 +1555,11 @@ class measurement extends measurementEntity implements IDBAccessor
 					if ($this->vmeasurementOp->getValue()!=="Direct")
 					{
 						// Update references to other vmeasurements
-						$deleteSQL = "DELETE FROM tblvmeasurementgroup WHERE vmeasurementid=".pg_escape_string($this->vmeasurementID)."; ";
+						$deleteSQL = "DELETE FROM tblvmeasurementgroup WHERE vmeasurementid='".pg_escape_string($this->getID())."'; ";
 						$relyear = 0;
 						foreach($this->referencesArray as $key => $value)
 						{
-							$insertSQL .= "INSERT INTO tblvmeasurementgroup (vmeasurementid, membervmeasurementid) VALUES (".pg_escape_string($this->getID()).", ".pg_escape_string($value)."); ";
+							$insertSQL .= "INSERT INTO tblvmeasurementgroup (vmeasurementid, membervmeasurementid) VALUES ('".pg_escape_string($this->getID())."', '".pg_escape_string($value)."'); ";
 							$relyear++;
 						}
 					}
@@ -1563,7 +1567,7 @@ class measurement extends measurementEntity implements IDBAccessor
 					{
 						// Update the tblmeasurement table
 						$updateSQL2.= "UPDATE tblmeasurement SET ";
-						if(isset($this->parentEntityArray[0]))            			$updateSQL2.= "radiusid = ".pg_escape_string($this->parentEntityArray[0]->getID()).", ";
+						if(isset($this->parentEntityArray[0]))            			$updateSQL2.= "radiusid = '".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
 						if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled='".dbHelper::formatBool($this->getIsReconciled(),'pg')."', ";
 						if($this->getFirstYear()!=NULL)           					$updateSQL2.= "startyear = ".pg_escape_string($this->getFirstYear()).", ";
 						if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".pg_escape_string($this->analyst->getID()).", ";
@@ -1671,15 +1675,29 @@ class measurement extends measurementEntity implements IDBAccessor
 				// There are notes associated with this reading.  
 				foreach($value['notesArray'] as $note )
 				{						
-					if(($note->getControlledVocName()!=NULL) && ($note->getNote()!=NULL))
+					if(($note->getControlledVocName()==NULL)  && ($note->getNote()!=NULL))
+					{
+						// Free text note so first we need to add it.
+						$sql = "INSERT INTO tlkpreadingnote (note, vocabularyid) values ('".pg_escape_string($note->getNote())."', 0)";
+						$result = pg_query($dbconn, $sql);		
+						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+						{
+							// Insert failed
+							trigger_error("002"."Error inserting note to database. Database returned: ".pg_result_error($result).".  SQL was $sql", E_USER_ERROR);
+							return FALSE;
+						}	
+						$note->setControlledVoc("0", "[Custom]");
+											
+					}
+					
+					if($note->getNote()!=NULL)
 					{	
-						
 						if($this->getVMeasurementOp()=='Direct')
 						{
 							$disabledoverride = 'null';
 							if(($note->getInheritedCount()!=NULL) || ($note->getInheritedCount()!=0))
 							{
-								$this->setErrorMessage("667"."InheritanceCount can only be 0 or NULL for notes in measurementSeries");
+								trigger_error("667"."InheritanceCount can only be 0 or NULL for notes in measurementSeries", E_USER_ERROR);
 							}
 						}
 						else
@@ -1705,9 +1723,13 @@ class measurement extends measurementEntity implements IDBAccessor
 						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
 						{
 							// Insert failed
-							$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+							trigger_error("002"."Error inserting note to database. Database returned: ".pg_result_error($result).".  SQL was $sql", E_USER_ERROR);
 							return FALSE;
 						}
+					}
+					else
+					{
+						
 					}
 				}
 			}
