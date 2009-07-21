@@ -194,7 +194,10 @@
 
   <path id="xjc.classpath">
   	<pathelement location="Libraries/jaxb/jaxb-xjc.jar"/>
+  	<!--<pathelement location="Libraries/jaxb/jaxb-impl.jar"/>
+  	<pathelement location="Libraries/jaxb/jaxb-api.jar"/>-->
 	<pathelement location="Libraries/commons-lang-2.4.jar"/>
+  	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-ant-0.5.0.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-0.5.0.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-annotate-0.5.0.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-tools-0.5.0.jar"/>
@@ -210,7 +213,7 @@
   </path>
 	
   <!-- XJC JAXB schema compiler -->
-  <taskdef name="xjc" classname="com.sun.tools.xjc.XJC2Task">
+  <taskdef name="xjc" classname="org.jvnet.jaxb2_commons.xjc.XJC2Task">
 	<classpath refid="xjc.classpath" />
   </taskdef>
 <!-- ==================== All Target ====================================== -->
@@ -443,7 +446,7 @@
 -->
 	<target name="buildschema" description="Rebuild webservice schemas">
 		<!-- Compile the schema into java code -->
-		<xjc destdir="src">
+		<xjc destdir="src" target="2.1">
 			<arg value="-Xannotate" />
 			<arg value="-Xtridas-annotations" />
 			<arg value="-Xifins" />

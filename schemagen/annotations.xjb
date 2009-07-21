@@ -62,6 +62,30 @@ This file is for custom annotations applied to tridas objects
 		</annox:annotate>	
 	</bindings>	
 
+	<!-- LinkSeries is unviewable except for preferredSeries -->
+	<bindings node="//xs:element[@name='linkSeries']/xs:complexType/xs:sequence/xs:choice/xs:element[@name='xLink']">
+		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true"/></annox:annotate>
+	</bindings>
+
+	<!-- No element.linkSeries -->
+	<bindings node="//xs:element[@name='element']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='linkSeries']">
+		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true"/></annox:annotate>
+	</bindings>
+
+	<!-- No interpretationUnsolved -->
+	<bindings node="//xs:group[@name='interpretationType']/xs:choice/xs:element[@ref='interpretationUnsolved']">
+		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true"/></annox:annotate>
+	</bindings>
+	
+	<!-- No *series.ID -->
+	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:attribute[@name='id']">
+		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true" /></annox:annotate>
+	</bindings>
+	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:attribute[@name='id']">
+		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true" /></annox:annotate>
+	</bindings>
+	
+
 	<!-- - - - - - - - - - - -->
 	<!-- Dictionary bindings -->	
 	<!-- - - - - - - - - - - -->

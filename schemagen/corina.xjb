@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jaxb:bindings 
-	version="2.1"
+	jaxb:version="2.0"
 	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" 
 	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
 	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
@@ -10,14 +10,15 @@
 	<!-- Make underscores significant; this fixes *most* of the ObjectFactory name collision errors -->
 	<jaxb:bindings>
 		<jaxb:globalBindings 
-				underscoreBinding="asCharInWord" 
-				generateIsSetMethod="true" 
+				underscoreBinding="asCharInWord"
+				generateIsSetMethod="true"
 				enableFailFastCheck="true"
 				typesafeEnumBase="xs:string xs:int xs:long xs:short xs:double xs:float"
 				typesafeEnumMemberName="generateName">
 			<jaxb:serializable uid="1001"/>
 			<xjc:simple />
-			<xjc:treatRestrictionLikeNewType />			
+			<xjc:treatRestrictionLikeNewType />	
+			<xjc:javaType name="java.lang.Integer" xmlType="xs:int" adapter="org.tridas.interfaces.IntegerAdapter" />
 		</jaxb:globalBindings>
 	</jaxb:bindings> 
 	
