@@ -32,7 +32,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 		sample.addSampleListener(this);
 
 		// plot
-		plot = new JMenuItem(new CorinaAction("graph") {
+		plot = new JMenuItem(new CorinaAction("graph", "graph.png", 22) {
 			public void actionPerformed(ActionEvent e) {
 				new GraphWindow(sample);
 			}

@@ -48,52 +48,8 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 
 		sample.addSampleListener(this);
 
-		// redate
-		JMenuItem redate = Builder.makeMenuItem("redate...", true, "redate.png");
-		redate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				new RedateDialog(sample, editor);
-			}
-		});
-		if (System.getSecurityManager() != null) {
-			try {
-				AccessController.checkPermission(new CorinaPermission("redate"));
-			} catch (AccessControlException ace) {
-				ace.printStackTrace();
-				redate.setEnabled(false);
-				redate.setBackground(Color.red.darker().darker());
-			}
-		}
-		add(redate);
-		redate.setEnabled(false);
-		redate.setVisible(false);
-
-		// index
-		indexMenu = Builder.makeMenuItem("index...", true, "index.png");
-		indexMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				// PERF: for big samples, it can take a couple
-				// seconds for the dialog to appear.  not enough
-				// for a progressbar, but enough that i should use
-				// the "wait" cursor on the editor window.
-				new IndexDialog(sample, editor);
-			}
-		});
-		indexMenu.setEnabled(!sample.isIndexed());
-		add(indexMenu);
-
-		// sum
-		sumMenu = Builder.makeMenuItem("sum...", true, "sum.png");
-		sumMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
-			}
-		});
-		sumMenu.setEnabled(!sample.isSummed());
-		add(sumMenu);
-
 		// truncate
-		JMenuItem truncate = Builder.makeMenuItem("truncate...");
+		JMenuItem truncate = Builder.makeMenuItem("truncate...", true, "truncate.png");
 		truncate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				new TruncateDialog(sample, editor);
@@ -114,35 +70,8 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		truncate.setEnabled(sample.getSampleType() == SampleType.DIRECT);
 
 		// ---
-		addSeparator();
-
-		// cross against
-		// HACK: just disable this if the sample isn't saved?
-		JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...", true, "crossdate.png");
-		crossAgainst.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				Element secondary = new CachedElement(sample); 
-				new Crossdater(editor, ElementList.singletonList(secondary), secondary);
-			}
-		});
-		add(crossAgainst);
-
-		// cross all
-		/*
-		crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
-		crossElements.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				// n-by-n cross
-				Sequence seq = new Sequence(sample.getElements(),
-						sample.getElements());
-				new CrossdateWindow(seq);
-			}
-		});
-		add(crossElements);
-		crossElements.setEnabled(false);
-		crossElements.setVisible(false);
-		*/
-
+		addSeparator();		
+		
 		// reconcile
 		JMenuItem reconcile = Builder.makeMenuItem("new_reconcile", true, "reconcile.png");
 		reconcile.addActionListener(new ActionListener() {
@@ -204,7 +133,81 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		reconcileMenu.add(reconcile);
 		reconcileMenu.addSeparator();
 		OpenRecent.makeOpenRecentMenu("reconcile", reconcileMenu, 2);
-		add(reconcileMenu);
+		add(reconcileMenu);		
+	
+		// index
+		indexMenu = Builder.makeMenuItem("index...", true, "index.png");
+		indexMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				// PERF: for big samples, it can take a couple
+				// seconds for the dialog to appear.  not enough
+				// for a progressbar, but enough that i should use
+				// the "wait" cursor on the editor window.
+				new IndexDialog(sample, editor);
+			}
+		});
+		indexMenu.setEnabled(!sample.isIndexed());
+		add(indexMenu);
+
+		// sum
+		sumMenu = Builder.makeMenuItem("sum...", true, "sum.png");
+		sumMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
+			}
+		});
+		sumMenu.setEnabled(!sample.isSummed());
+		add(sumMenu);
+
+		// redate
+		JMenuItem redate = Builder.makeMenuItem("redate...", true, "redate.png");
+		redate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				new RedateDialog(sample, editor);
+			}
+		});
+		if (System.getSecurityManager() != null) {
+			try {
+				AccessController.checkPermission(new CorinaPermission("redate"));
+			} catch (AccessControlException ace) {
+				ace.printStackTrace();
+				redate.setEnabled(false);
+				redate.setBackground(Color.red.darker().darker());
+			}
+		}
+		add(redate);
+		redate.setEnabled(true);
+		redate.setVisible(true);		
+
+
+		// cross against
+		// HACK: just disable this if the sample isn't saved?
+		JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...", true, "crossdate.png");
+		crossAgainst.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				Element secondary = new CachedElement(sample); 
+				new Crossdater(editor, ElementList.singletonList(secondary), secondary);
+			}
+		});
+		add(crossAgainst);
+
+		// cross all
+		/*
+		crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
+		crossElements.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				// n-by-n cross
+				Sequence seq = new Sequence(sample.getElements(),
+						sample.getElements());
+				new CrossdateWindow(seq);
+			}
+		});
+		add(crossElements);
+		crossElements.setEnabled(false);
+		crossElements.setVisible(false);
+		*/
+
+
 
 		// hit them so they enable/disable themselves properly
 		sampleMetadataChanged(null);

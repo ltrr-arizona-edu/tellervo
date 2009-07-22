@@ -97,7 +97,7 @@ public class HelpMenu extends JMenu {
     */
     protected void addSystemInfoMenu() {
         add(Builder.makeMenuItem("system_info...",
-                                 "edu.cornell.dendro.corina.util.PropertiesWindow.showPropertiesWindow()"));
+                                 "edu.cornell.dendro.corina.util.PropertiesWindow.showPropertiesWindow()", "system.png"));
     }
 
     /**
@@ -105,9 +105,11 @@ public class HelpMenu extends JMenu {
      * FIXME: not really just an "error" log... more like "activity" log.
      */
     protected void addErrorLogMenu() {
-        add(Builder.makeMenuItem("error_log...", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()"));
-        add(Builder.makeMenuItem("error_ws...", "edu.cornell.dendro.corina.wsi.TransactionDebug.forceGenerateWSBug()"));
-        add(Builder.makeMenuItem("xml_debug", "edu.cornell.dendro.corina.gui.XMLDebugView.showDialog()"));
+        add(Builder.makeMenuItem("error_log...", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()", "log.png"));
+        add(Builder.makeMenuItem("xml_debug", "edu.cornell.dendro.corina.gui.XMLDebugView.showDialog()", "networksettings.png"));
+        addSeparator();
+        add(Builder.makeMenuItem("error_ws...", "edu.cornell.dendro.corina.wsi.TransactionDebug.forceGenerateWSBug()", "mail_send.png"));
+
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.DebugInstantiator.showMe()"));
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.newui.NewJFrame1.main()"));
     }
