@@ -112,7 +112,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 		// left: buttons (add)
 		add = Builder.makeButton("add");
 		if (!App.platform.isMac())
-			add.setIcon(Builder.getIcon("1downarrow.png", 22));
+			add.setIcon(Builder.getIcon("1downarrow.png", 32));
 		add.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				if(files != null) {			
@@ -131,7 +131,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 		// left: buttons (remove)
 		remove = Builder.makeButton("remove");
 		if (!App.platform.isMac())
-			remove.setIcon(Builder.getIcon("1uparrow.png", 22));
+			remove.setIcon(Builder.getIcon("1uparrow.png", 32));
 		remove.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				panel.removeSelectedRows();

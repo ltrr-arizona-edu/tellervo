@@ -383,7 +383,7 @@ public class OpenRecent {
 			menu.add(r);
 		}
 
-		JMenuItem clear = Builder.makeMenuItem("clear_menu");
+		JMenuItem clear = Builder.makeMenuItem("clear_menu", true, "trashcan_full.png");
 		if (recent.isEmpty()) {
 			// no recent items: just "Clear Menu", but dimmed
 			clear.setEnabled(false);

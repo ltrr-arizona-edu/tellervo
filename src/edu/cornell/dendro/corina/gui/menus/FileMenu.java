@@ -189,7 +189,7 @@ public class FileMenu extends JMenu {
 		//add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()", "filenew.png"));
 		add(Builder.makeMenuItem("dbnew...", "new edu.cornell.dendro.corina.editor.Editor()", "filenew.png"));
 		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
-		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()"));	
+		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png"));	
 		add(OpenRecent.makeOpenRecentMenu());
 		//addSeparator();
 
@@ -550,7 +550,7 @@ public class FileMenu extends JMenu {
 	}
 
 	public void addSaveMenu() {
-		JMenuItem save = Builder.makeMenuItem("save");
+		JMenuItem save = Builder.makeMenuItem("save", true, "filesave.png");
 
 		if (f instanceof SaveableDocument) {
 			// add menuitems, hooked up to |f|
@@ -620,7 +620,7 @@ public class FileMenu extends JMenu {
 	public void addCloseMenu() {
 		// close menu
 		// -- DESIGN: don't i need an XFrame for this? ouch, that's a harsh restriction.
-		JMenuItem close = Builder.makeMenuItem("close");
+		JMenuItem close = Builder.makeMenuItem("close", true, "fileclose.png");
 		close.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// call close() on XFrame (asks for confirmation), else dispose().
@@ -674,7 +674,7 @@ public class FileMenu extends JMenu {
 
 	public void addPrintMenu() {
 		// menuitem
-		JMenuItem print = Builder.makeMenuItem("print...");
+		JMenuItem print = Builder.makeMenuItem("print...", true, "printer.png");
 
 		if (f instanceof PrintableDocument) {
 			// print
