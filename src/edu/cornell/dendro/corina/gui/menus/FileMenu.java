@@ -620,7 +620,7 @@ public class FileMenu extends JMenu {
 	public void addCloseMenu() {
 		// close menu
 		// -- DESIGN: don't i need an XFrame for this? ouch, that's a harsh restriction.
-		JMenuItem close = Builder.makeMenuItem("close", true, "fileclose.png");
+		JMenuItem close = Builder.makeMenuItem("close", false, "fileclose.png");
 		close.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// call close() on XFrame (asks for confirmation), else dispose().

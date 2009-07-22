@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
@@ -82,35 +83,43 @@ public class LoginDialog extends JDialog {
 		GridBagConstraints ogbc = new GridBagConstraints();
 
 		username = new JTextField();
-		username.setColumns(12);
+		username.setColumns(20);
 		
 		password = new JPasswordField();
-		password.setColumns(12);
+		password.setColumns(20);
+		
+		serverUrl = new JTextField();
+		serverUrl.setColumns(20);
+		serverUrl.setEditable(true);
+		new TextComponentWrapper(serverUrl, "corina.webservice.url", null);
+		serverUrl.setEnabled(false);
+		
 		
 		JLabel lockIcon = new JLabel(Builder.getIcon("lock.png", 128));
-		lockIcon.setBorder(BorderFactory.createEtchedBorder());
+		//lockIcon.setBorder(BorderFactory.createEtchedBorder());
 	
-		
 		
 		ogbc.gridx = 0;
 		ogbc.gridy = 0;
-		ogbc.insets = new Insets(0, 0, 0, 20);
+		ogbc.insets = new Insets(20, 0, 0, 0);
 		ogbc.anchor = GridBagConstraints.NORTHWEST;		
 		getContentPane().add(lockIcon, ogbc);
 		ogbc.gridx++;
+		
+		
 		
 		// create an 'inside panel'
 		JPanel insidePanel = new JPanel(new GridBagLayout());
 		JLabel tmp;
 		GridBagConstraints igbc = new GridBagConstraints();
 
-		igbc.gridx = 0;
+		igbc.gridx = 1;
 		igbc.gridy = 0;
 		
 		// title for login
-		tmp = new JLabel("You must log in for access.");
-		igbc.anchor = GridBagConstraints.CENTER;
-		igbc.insets = new Insets(15, 0, 0, 0);
+		tmp = new JLabel("You must log in for access...");
+		igbc.anchor = GridBagConstraints.WEST;
+		igbc.insets = new Insets(0, 10, 0, 80);
 		igbc.gridwidth = 2;
 		
 		insidePanel.add(tmp, igbc);
@@ -126,11 +135,11 @@ public class LoginDialog extends JDialog {
 		// username label and field
 		igbc.gridx = 0;
 		igbc.gridy++;
-		igbc.insets = new Insets(8, 10, 0, 0);
+		igbc.insets = new Insets(12, 10, 0, 0);
 		tmp = new JLabel(I18n.getText("login.username"));
 		tmp.setLabelFor(username);
 		
-		igbc.insets = new Insets(8, 10, 0, 0);
+		igbc.insets = new Insets(12, 10, 0, 20);
 		insidePanel.add(tmp, igbc);
 		
 		igbc.ipady = 0;
@@ -152,18 +161,33 @@ public class LoginDialog extends JDialog {
 		igbc.gridx++;
 		insidePanel.add(password, igbc);
 		
+		// server label and field
+		igbc.gridx = 0;
+		igbc.gridy++;	
+		
+		tmp = new JLabel(I18n.getText("login.serverurl"));
+		tmp.setLabelFor(serverUrl);
+		
+		igbc.ipady = 0;
+		igbc.ipadx = 0;
+		insidePanel.add(tmp, igbc);		
+		
+		igbc.ipady = 0;
+		igbc.gridx++;
+		insidePanel.add(serverUrl, igbc);		
 		
 		// checkboxes
 		igbc.gridwidth = 2;
-		igbc.insets = new Insets(10, 50, 0, 0);
-		igbc.gridx = 0;
+		igbc.anchor = GridBagConstraints.WEST;
+		igbc.insets = new Insets(10, 8, 0, 0);
+		igbc.gridx = 1;
 		
 		igbc.gridy++;
 		rememberUsername = new JCheckBox("Remember my username");
 		insidePanel.add(rememberUsername, igbc);
 		
 		igbc.gridy++;
-		igbc.insets = new Insets(0, 50, 0, 0);
+		igbc.insets = new Insets(0, 8, 0, 0);
 		rememberPassword = new JCheckBox("Remember my password");
 		insidePanel.add(rememberPassword, igbc);
 		
@@ -198,14 +222,18 @@ public class LoginDialog extends JDialog {
 
 		igbc.gridx = 0;
 		igbc.gridy++;
-		igbc.gridwidth = 3;
-		igbc.anchor = GridBagConstraints.WEST;
+		igbc.gridwidth = 2;
+		igbc.anchor = GridBagConstraints.EAST;
 		igbc.insets = new Insets(10, 0, 0, 0);
 		
 		insidePanel.add(buttonPanel, igbc);
 
+		//insidePanel.setBorder(BorderFactory.createEtchedBorder());
+
+		
 		// finish up the UI part
 		getContentPane().add(insidePanel, ogbc);
+		
 			
 		pack();
 		Center.center(this);
