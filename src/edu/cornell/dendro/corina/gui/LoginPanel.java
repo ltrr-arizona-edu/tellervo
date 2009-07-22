@@ -62,13 +62,13 @@ public class LoginPanel extends JPanel {
 		password = new JPasswordField();
 		password.setColumns(16);
 		
-		JLabel treeIcon = new JLabel(Builder.getIcon("encrypted.png"));
+		JLabel lockIcon = new JLabel(Builder.getIcon("lock.png"));
 		
 		ogbc.gridx = 0;
 		ogbc.gridy = 0;
 		ogbc.insets = new Insets(0, 0, 0, 50);
 		ogbc.anchor = GridBagConstraints.NORTHWEST;		
-		add(treeIcon, ogbc);
+		add(lockIcon, ogbc);
 		ogbc.gridx++;
 		
 		// create an 'inside panel'

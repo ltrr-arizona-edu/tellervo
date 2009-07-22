@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -39,6 +41,7 @@ public class LoginDialog extends JDialog {
 
 	private JTextField username;
 	private JPasswordField password;
+	private JTextField serverUrl;
 	private JCheckBox rememberUsername;
 	private JCheckBox rememberPassword;
 	private JCheckBox autoLogin;
@@ -70,7 +73,6 @@ public class LoginDialog extends JDialog {
 	 */
 	private void initialize() {
 		
-		//setIconImage(Builder.getImage("Tree.png"));
 		setResizable(false);
 
 		getContentPane().setLayout(new GridBagLayout());
@@ -80,18 +82,20 @@ public class LoginDialog extends JDialog {
 		GridBagConstraints ogbc = new GridBagConstraints();
 
 		username = new JTextField();
-		username.setColumns(16);
+		username.setColumns(12);
 		
 		password = new JPasswordField();
-		password.setColumns(16);
+		password.setColumns(12);
 		
-		JLabel treeIcon = new JLabel(Builder.getIcon("encrypted.png"));
+		JLabel lockIcon = new JLabel(Builder.getIcon("lock.png", 128));
+		lockIcon.setBorder(BorderFactory.createEtchedBorder());
+		
 		
 		ogbc.gridx = 0;
 		ogbc.gridy = 0;
-		ogbc.insets = new Insets(0, 0, 0, 50);
+		ogbc.insets = new Insets(0, 0, 0, 20);
 		ogbc.anchor = GridBagConstraints.NORTHWEST;		
-		getContentPane().add(treeIcon, ogbc);
+		getContentPane().add(lockIcon, ogbc);
 		ogbc.gridx++;
 		
 		// create an 'inside panel'
@@ -110,10 +114,10 @@ public class LoginDialog extends JDialog {
 		
 		insidePanel.add(tmp, igbc);
 		
-		igbc.gridy++;
-		igbc.insets = new Insets(5, 0, 10, 0);
-		subtitle = new JLabel("Please provide your credentials.");
-		insidePanel.add(subtitle, igbc);
+		//igbc.gridy++;
+		//igbc.insets = new Insets(5, 0, 10, 0);
+		//subtitle = new JLabel("Please provide your credentials.");
+		//insidePanel.add(subtitle, igbc);
 		
 		igbc.anchor = GridBagConstraints.WEST;
 		igbc.gridwidth = 1;
@@ -146,6 +150,7 @@ public class LoginDialog extends JDialog {
 		igbc.ipady = 0;
 		igbc.gridx++;
 		insidePanel.add(password, igbc);
+		
 		
 		// checkboxes
 		igbc.gridwidth = 2;

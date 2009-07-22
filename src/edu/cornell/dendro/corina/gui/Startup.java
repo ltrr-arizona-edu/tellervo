@@ -38,6 +38,7 @@ import javax.swing.JTextField;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
  * Bootstrap for Corina. It all starts here...
@@ -84,6 +85,7 @@ public class Startup implements PrivilegedAction {
 			ClassLoader cl = this.getClass().getClassLoader();
 			URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background.png");
 			ImageIcon ii = null;
+					
 			if (url != null) {
 				ii = new ImageIcon(url);
 			}
