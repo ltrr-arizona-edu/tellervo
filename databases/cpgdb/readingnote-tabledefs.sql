@@ -3,8 +3,8 @@ THIS FILE IS A PLACEHOLDER FOR THE TIME BEING
 Don''t run me! It makes errors!
 
 CREATE TABLE tblVMeasurementReadingNoteResult (
-    vMeasurementResultID uuid NOT NULL,
-    relYear integer NOT NULL,
+    	vMeasurementResultID uuid NOT NULL,
+    	relYear integer NOT NULL,
 	readingNoteID integer NOT NULL,
 	inheritedCount integer NOT NULL default 0
 );

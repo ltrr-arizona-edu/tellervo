@@ -1,7 +1,9 @@
 CREATE OR REPLACE FUNCTION create_defaultreadingnotestandardisedid()
   RETURNS trigger AS
 $BODY$BEGIN
-RAISE NOTICE 'BEFORE: %,%,%', NEW.vocabularyid, NEW.standardisedid, NEW.note;
+
+--RAISE NOTICE 'BEFORE: %,%,%', NEW.vocabularyid, NEW.standardisedid, NEW.note;
+
 -- If entry is a TRiDaS type then make sure standardisedid is null 
 IF NEW.vocabularyid=1 THEN
   NEW.standardisedid=NULL;
@@ -12,7 +14,9 @@ END IF;
 IF NEW.standardisedid IS NULL THEN
   NEW.standardisedid=NEW.readingnoteid;
 END IF;
-RAISE NOTICE 'AFTER: %,%,%', NEW.vocabularyid, NEW.standardisedid, NEW.note;
+
+-- RAISE NOTICE 'AFTER: %,%,%', NEW.vocabularyid, NEW.standardisedid, NEW.note;
+
 RETURN NEW;
 
 
@@ -24,6 +28,7 @@ GRANT EXECUTE ON FUNCTION create_defaultreadingnotestandardisedid() TO public;
 GRANT EXECUTE ON FUNCTION create_defaultreadingnotestandardisedid() TO aps03pwb;
 GRANT EXECUTE ON FUNCTION create_defaultreadingnotestandardisedid() TO "Webgroup";
 
+DROP TRIGGER default_standardisedid ON tlkpreadingnote;
 
 CREATE TRIGGER default_standardisedid
   BEFORE INSERT OR UPDATE
