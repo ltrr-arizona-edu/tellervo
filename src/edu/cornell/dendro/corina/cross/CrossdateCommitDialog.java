@@ -36,7 +36,7 @@ import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
-
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
  *
@@ -210,10 +210,7 @@ public class CrossdateCommitDialog extends JDialog {
 		private ImageIcon image;
 
 		public StarRenderer() {
-			ClassLoader cl = this.getClass().getClassLoader();
-		    URL url = cl.getResource("edu/cornell/dendro/corina_resources/Icons/star-16x16.png");
-		    
-		    image = new ImageIcon(url);			
+		    image = Builder.getIcon("star.png", 16);
 		}
 
 		public Component getListCellRendererComponent(JList list, Object value,

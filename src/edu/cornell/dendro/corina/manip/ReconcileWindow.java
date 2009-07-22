@@ -52,7 +52,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	private JButton btnRemeasure;
 	private JPanel refPanel; // the panel with the reference measurement
 	private JSeparator sepLine;
-
+//bagldsalgdsa
 	
 	private boolean extraIsShown = false;
 	private final static String EXPAND = "Show reference";

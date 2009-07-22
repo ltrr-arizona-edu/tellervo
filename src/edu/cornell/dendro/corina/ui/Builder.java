@@ -69,7 +69,7 @@ public class Builder {
 	}
 	
 	public static JMenuItem makeMenuItem(String key, String action, String iconfilename){					
-		JMenuItem m = new JMenuItem(key, getIcon(iconfilename, "Icons"));
+		JMenuItem m = new JMenuItem(key, getIcon(iconfilename, "Icons", 22));
 
 		setupMnemonics(m, key);
 		
@@ -153,20 +153,42 @@ public class Builder {
 		}
 	}
 
-	// i make icons from files in Images/ so often, i'll just make it a builder method.
-	// use: Builder.getIcon("x.png") returns an Icon made from the file "Images/x.png".
-	public static Icon getIcon(String name) {
-		return getIcon(name, "Images");
+	/**
+	 * Get standard sized icon of specified filename from Icons folder
+	 * @param filename
+	 * @return ImageIcon
+	 */
+	public static ImageIcon getIcon(String filename) {
+		return getIcon(filename, "Icons", 22);
+	}
+	
+	/**
+	 * Get icon of specified size and filename from Icons folder
+	 * @param filename
+	 * @param size
+	 * @return ImageIcon
+	 */
+	public static ImageIcon getIcon(String filename, int size) {
+		return getIcon(filename, "Icons", size);
 	}
 		
-	public static Icon getIcon(String name, String packagename) {
-		
-		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/" + packagename + "/" + name);
+	public static Icon getIcon(String name, String packagename) {		
+		String resourceurl = "edu/cornell/dendro/corina_resources/" + packagename + "/" + name;
+		java.net.URL url = cl.getResource(resourceurl);
 		if (url != null)
 			return new ImageIcon(url);
 		else
 			return null;
 	}
+	
+	public static ImageIcon getIcon(String name, String packagename, int size) {	
+		String resourceurl = "edu/cornell/dendro/corina_resources/" + packagename + "/" + Integer.toString(size) + "x" + Integer.toString(size) + "/" + name;
+		java.net.URL url = cl.getResource(resourceurl);
+		if (url != null)
+			return new ImageIcon(url);
+		else
+			return null;
+	}	
 
 	public static Image getImage(String name) {
 		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/" + name);
