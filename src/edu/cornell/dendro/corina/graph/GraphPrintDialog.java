@@ -717,8 +717,8 @@ public class GraphPrintDialog extends JPanel {
 				 }
 			});
 			    
-			JLabel large = new JLabel(Builder.getIcon("mountains-large.png"));
-			JLabel small = new JLabel(Builder.getIcon("mountains-small.png"));
+			JLabel large = new JLabel(Builder.getIcon("viewmag+.png", 22));
+			JLabel small = new JLabel(Builder.getIcon("viewmag-.png", 22));
 
 			// allow clicking on these!
 			large.addMouseListener(new MouseAdapter() {

@@ -129,7 +129,7 @@ public class SourcesTable extends JTable {
 	    this.password = password;
 	}
 	public Icon getIcon() {
-	    return Builder.getIcon("Database-32.png"); // See also Relations.*
+	    return Builder.getIcon("database.png", 22); // See also Relations.*
 	    // IDEAS for database icon: strong, robust, fast, powerful ... relations?
 	}
 	public String getName() {

@@ -77,5 +77,5 @@ public class Alert {
     }
 
     // icon for dialogs
-    private final static Icon treeIcon = Builder.getIcon("Tree-icon.png"); // WAS: Tree-64x64.png
+    private final static Icon treeIcon = Builder.getIcon("treeicon.png", 64); // WAS: Tree-64x64.png
 }

@@ -17,7 +17,7 @@ public class FavoritesSource implements Source {
     }
 
     public Icon getIcon() {
-	return Builder.getIcon("Favorites.png");
+	return Builder.getIcon("bookmark-toolbar.png", 22);
     }
 
     public boolean canAcceptDrop() {
