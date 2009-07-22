@@ -94,8 +94,8 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
    private void initialize() { 
 	   // audio clips :)
 	   try {
-			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/meas1.wav"));
-			measure_error = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/measerr.wav"));
+			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/meas1.wav"));
+			measure_error = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/measerr.wav"));
 	   } catch (Exception ae) { /* ignore this... */ }
 		
 	   // now, stuff that really matters
