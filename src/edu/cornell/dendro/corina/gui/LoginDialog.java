@@ -128,6 +128,7 @@ public class LoginDialog extends JDialog {
 		//igbc.insets = new Insets(5, 0, 10, 0);
 		//subtitle = new JLabel("Please provide your credentials.");
 		//insidePanel.add(subtitle, igbc);
+		subtitle = new JLabel();
 		
 		igbc.anchor = GridBagConstraints.WEST;
 		igbc.gridwidth = 1;
