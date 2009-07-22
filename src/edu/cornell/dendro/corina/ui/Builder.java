@@ -183,13 +183,8 @@ public class Builder {
 	 * @deprecated old, need to specify size now
 	 */
 	@Deprecated
-	public static Icon getIcon(String name, String packagename) {		
-		String resourceurl = RESOURCE_PACKAGE_PREFIX + packagename + "/" + name;
-		java.net.URL url = cl.getResource(resourceurl);
-		if (url != null)
-			return new ImageIcon(url);
-		else
-			return null;
+	public static Icon getIcon(String name, String packagename) {
+		return getIcon(name, packagename, 22);
 	}
 	
 	/**

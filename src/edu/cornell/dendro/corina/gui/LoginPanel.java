@@ -62,7 +62,7 @@ public class LoginPanel extends JPanel {
 		password = new JPasswordField();
 		password.setColumns(16);
 		
-		JLabel lockIcon = new JLabel(Builder.getIcon("lock.png"), 128);
+		JLabel lockIcon = new JLabel(Builder.getIcon("lock.png", 128));
 		
 		ogbc.gridx = 0;
 		ogbc.gridy = 0;

@@ -288,8 +288,8 @@ public class XCorina extends JFrame {
 	private JPanel makeAddRemovePanel(SourcesTable ss) {
 		final SourcesTable s = ss;
 
-		JButton plus = new JButton(Builder.getIcon("plus.png"));
-		JButton minus = new JButton(Builder.getIcon("minus.png"));
+		JButton plus = new JButton(Builder.getIcon("edit_add.png", 22));
+		JButton minus = new JButton(Builder.getIcon("edit_remove.png", 22));
 
 		plus.setToolTipText("Add Data Source");
 		plus.addActionListener(new AbstractAction() {

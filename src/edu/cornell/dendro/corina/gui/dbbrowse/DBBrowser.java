@@ -252,9 +252,9 @@ public class DBBrowser extends DBBrowser_UI{
     		
     		JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.CENTER));
     		
-    		Icon dn = Builder.getIcon("downarrow.png");
-    		Icon up = Builder.getIcon("uparrow.png");
-    		Icon downall = Builder.getIcon("uparrow.png");
+    		Icon dn = Builder.getIcon("1downarrow.png", 22);
+    		Icon up = Builder.getIcon("1uparrow.png", 22);
+    		Icon downall = Builder.getIcon("1downarrow.png", 22);
     		//Icon upall = Builder.getIcon("uparrow.png");
 
     		btnAdd.setIcon(dn);

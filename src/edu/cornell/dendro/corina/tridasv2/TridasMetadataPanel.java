@@ -798,8 +798,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		ELEMENT(TridasElement.class, "Element", "element.png", Metadata.ELEMENT),
 		SAMPLE(TridasSample.class, "Sample", "sample.png", Metadata.SAMPLE),
 		RADIUS(TridasRadius.class, "Radius", "radius.png", Metadata.RADIUS),
-		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "tridas/measurementseries.png", null),
-		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "tridas/derivedseries.png", null);
+		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "measurementseries.png", null),
+		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "derivedseries.png", null);
 		
 		
 		private Class<? extends ITridas> type;
