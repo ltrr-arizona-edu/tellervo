@@ -27,7 +27,7 @@ public class ListComboBoxRenderer extends JPanel implements
 	public ListComboBoxRenderer() {
 		renderer = new ListComboBoxItemRenderer();
 		
-        Icon icon = Builder.getIcon("dropdown.png", "Icons");
+        Icon icon = Builder.getIcon("dropdown.png", Builder.ICONS, 22);
         if(icon == null)
         	dropdown = new JLabel("[...]");
         else

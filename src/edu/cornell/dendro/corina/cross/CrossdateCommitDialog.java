@@ -7,10 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.IOException;
-import java.net.URL;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -35,8 +34,8 @@ import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 
 /**
  *
@@ -207,7 +206,7 @@ public class CrossdateCommitDialog extends JDialog {
 	 * A quick and dirty class to render stars in a combo box
 	 */
 	private class StarRenderer implements ListCellRenderer {
-		private ImageIcon image;
+		private Icon image;
 
 		public StarRenderer() {
 		    image = Builder.getIcon("star.png", 16);

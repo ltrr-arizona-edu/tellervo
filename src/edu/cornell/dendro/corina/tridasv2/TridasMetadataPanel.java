@@ -300,8 +300,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		////////// BOTTOM BAR
 		editEntity = new JToggleButton();
-		editEntity.setIcon(scaleIcon20x20((ImageIcon) Builder.getIcon("lock.png", "Icons")));
-		editEntity.setSelectedIcon(scaleIcon20x20((ImageIcon) Builder.getIcon("unlock.png", "Icons")));
+		editEntity.setIcon(scaleIcon20x20((ImageIcon) Builder.getIcon("lock.png", Builder.ICONS, 32)));
+		editEntity.setSelectedIcon(scaleIcon20x20((ImageIcon) Builder.getIcon("unlock.png", Builder.ICONS, 32)));
 		editEntity.setBorderPainted(false);
 		editEntity.setContentAreaFilled(false);
 		editEntity.setFocusable(false);
@@ -794,10 +794,10 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 */
 
 	private static enum EditType {
-		OBJECT(TridasObject.class, "Object", "tridas/object.png", Metadata.OBJECT),
-		ELEMENT(TridasElement.class, "Element", "tridas/element.png", Metadata.ELEMENT),
-		SAMPLE(TridasSample.class, "Sample", "tridas/sample.png", Metadata.SAMPLE),
-		RADIUS(TridasRadius.class, "Radius", "tridas/radius.png", Metadata.RADIUS),
+		OBJECT(TridasObject.class, "Object", "object.png", Metadata.OBJECT),
+		ELEMENT(TridasElement.class, "Element", "element.png", Metadata.ELEMENT),
+		SAMPLE(TridasSample.class, "Sample", "sample.png", Metadata.SAMPLE),
+		RADIUS(TridasRadius.class, "Radius", "radius.png", Metadata.RADIUS),
 		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "tridas/measurementseries.png", null),
 		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "tridas/derivedseries.png", null);
 		
@@ -830,7 +830,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		}
 		
 		public Icon getIcon() {
-			return Builder.getIcon(iconPath, "Icons");
+			return Builder.getIcon(iconPath, Builder.ICONS, 48);
 		}
 		
 		/** 

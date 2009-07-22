@@ -23,9 +23,10 @@ public abstract class ToggleableAction extends CorinaAction {
 	 * @param iconName
 	 * @param iconPackageName
 	 * @param toggleValue
+	 * @param iconSize
 	 */
-	public ToggleableAction(String key, boolean toggleValue, String iconName, String iconPackageName) {
-		super(key, iconName, iconPackageName);
+	public ToggleableAction(String key, boolean toggleValue, String iconName, String iconPackageName, int iconSize) {
+		super(key, iconName, iconPackageName, iconSize);
 		
 		putValue(CORINA_SELECTED_KEY, toggleValue);
 	}
@@ -35,8 +36,8 @@ public abstract class ToggleableAction extends CorinaAction {
 	 * @param iconName
 	 * @param toggleValue
 	 */
-	public ToggleableAction(String key, boolean toggleValue, String iconName) {
-		super(key, iconName);
+	public ToggleableAction(String key, boolean toggleValue, String iconName, int iconSize) {
+		super(key, iconName, iconSize);
 		
 		putValue(CORINA_SELECTED_KEY, toggleValue);
 	}

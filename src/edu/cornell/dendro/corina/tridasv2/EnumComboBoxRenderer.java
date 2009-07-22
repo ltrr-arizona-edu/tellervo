@@ -28,7 +28,7 @@ public class EnumComboBoxRenderer extends JPanel implements
 	public EnumComboBoxRenderer() {
 		renderer = new EnumComboBoxItemRenderer();
 		
-        Icon icon = Builder.getIcon("dropdown.png", "Icons");
+        Icon icon = Builder.getIcon("dropdown.png", Builder.ICONS, 22);
         if(icon == null)
         	dropdown = new JLabel("[...]");
         else

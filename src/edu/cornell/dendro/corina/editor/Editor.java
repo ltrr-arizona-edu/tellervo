@@ -625,7 +625,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 					I18n.getText("new_sample_prompt"), // message
 					I18n.getText("new_sample"), // title
 					JOptionPane.QUESTION_MESSAGE, Builder
-							.getIcon("Tree-64x64.png"), // null, // icon
+							.getIcon("Tree-64x64.png", 64), // null, // icon
 					null, // values (options)
 					title);
 

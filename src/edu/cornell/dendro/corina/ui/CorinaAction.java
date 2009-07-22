@@ -57,8 +57,8 @@ public abstract class CorinaAction extends AbstractAction {
 	 * @param key
 	 * @param iconName
 	 */
-	public CorinaAction(String key, String iconName) {
-		this(key, Builder.getIcon(iconName));
+	public CorinaAction(String key, String iconName, int iconSize) {
+		this(key, Builder.getIcon(iconName, iconSize));
 	}
 	
 	/**
@@ -68,8 +68,8 @@ public abstract class CorinaAction extends AbstractAction {
 	 * @param iconName
 	 * @param iconPackageName
 	 */
-	public CorinaAction(String key, String iconName, String iconPackageName) {
-		this(key, Builder.getIcon(iconName, iconPackageName));
+	public CorinaAction(String key, String iconName, String iconPackageName, int iconSize) {
+		this(key, Builder.getIcon(iconName, iconPackageName, iconSize));
 	}
 	
 	/**

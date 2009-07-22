@@ -19,6 +19,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.KeyStroke;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
 
 // TODO: if on 1.4, use setDisplayedMnemonicIndex() so "Save &As..."
 // underlines the correct 'A'
@@ -69,7 +70,7 @@ public class Builder {
 	}
 	
 	public static JMenuItem makeMenuItem(String key, String action, String iconfilename){					
-		JMenuItem m = new JMenuItem(key, getIcon(iconfilename, "Icons", 22));
+		JMenuItem m = new JMenuItem(key, getIcon(iconfilename, ICONS, 22));
 
 		setupMnemonics(m, key);
 		
@@ -90,7 +91,7 @@ public class Builder {
 		setupMnemonics(m, key);		
 		
 		if (iconfilename!=null)	
-			m.setIcon(getIcon(iconfilename, "Icons"));
+			m.setIcon(getIcon(iconfilename, ICONS, 22));
 
 		return m;
 	}
@@ -157,9 +158,11 @@ public class Builder {
 	 * Get standard sized icon of specified filename from Icons folder
 	 * @param filename
 	 * @return ImageIcon
+	 * @deprecated old, need to specify size now
 	 */
-	public static ImageIcon getIcon(String filename) {
-		return getIcon(filename, "Icons", 22);
+	@Deprecated
+	public static Icon getIcon(String filename) {
+		return getIcon(filename, ICONS, 22);
 	}
 	
 	/**
@@ -168,12 +171,20 @@ public class Builder {
 	 * @param size
 	 * @return ImageIcon
 	 */
-	public static ImageIcon getIcon(String filename, int size) {
-		return getIcon(filename, "Icons", size);
+	public static Icon getIcon(String filename, int size) {
+		return getIcon(filename, ICONS, size);
 	}
 		
+	/**
+	 * 
+	 * @param name
+	 * @param packagename
+	 * @return
+	 * @deprecated old, need to specify size now
+	 */
+	@Deprecated
 	public static Icon getIcon(String name, String packagename) {		
-		String resourceurl = "edu/cornell/dendro/corina_resources/" + packagename + "/" + name;
+		String resourceurl = RESOURCE_PACKAGE_PREFIX + packagename + "/" + name;
 		java.net.URL url = cl.getResource(resourceurl);
 		if (url != null)
 			return new ImageIcon(url);
@@ -181,25 +192,65 @@ public class Builder {
 			return null;
 	}
 	
-	public static ImageIcon getIcon(String name, String packagename, int size) {	
-		String resourceurl = "edu/cornell/dendro/corina_resources/" + packagename + "/" + Integer.toString(size) + "x" + Integer.toString(size) + "/" + name;
-		java.net.URL url = cl.getResource(resourceurl);
+	/**
+	 * Get an icon of the specified size from the specified package
+	 * 
+	 * @param name
+	 * @param packagename
+	 * @param size
+	 * @return
+	 */
+	public static Icon getIcon(String name, String packagename, int size) {
+		StringBuffer urlBuffer = new StringBuffer();
+		
+		urlBuffer.append(RESOURCE_PACKAGE_PREFIX);
+		urlBuffer.append(packagename);
+		urlBuffer.append('/');
+		urlBuffer.append(size);
+		urlBuffer.append('x');
+		urlBuffer.append(size);
+		urlBuffer.append('/');		
+		urlBuffer.append(name);
+		
+		java.net.URL url = cl.getResource(urlBuffer.toString());
 		if (url != null)
 			return new ImageIcon(url);
 		else
-			return null;
+			return getMissingIcon();
 	}	
 
+	/**
+	 * Retrieve the "missing icon" icon
+	 * @return
+	 */
+	public static Icon getMissingIcon() {
+		String resourceurl = RESOURCE_PACKAGE_PREFIX + ICONS + "/32x32/missingicon.png";
+		java.net.URL url = cl.getResource(resourceurl);
+		if (url != null)
+			return new ImageIcon(url);
+		else {
+			IllegalStateException ise = new IllegalStateException("Can't load missing icon icon!");
+			new Bug(ise);
+			throw ise;
+		}
+	}
+	
 	public static Image getImage(String name) {
-		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/" + name);
+		java.net.URL url = cl.getResource(IMAGES_PACKAGE_PREFIX + name);
 		if (url != null)
 			return new ImageIcon(url).getImage();
 		else
 			return null;
 	}
 
-	// my classloador, for getting icons as resources.
-	private static ClassLoader cl = edu.cornell.dendro.corina.ui.Builder.class.getClassLoader();
+	public final static String IMAGES = "Images";
+	public final static String ICONS = "Icons";
+	private final static String RESOURCE_PACKAGE_PREFIX = "edu/cornell/dendro/corina_resources/";
+	
+	private final static String IMAGES_PACKAGE_PREFIX = RESOURCE_PACKAGE_PREFIX + IMAGES;
+	
+	// my classloader, for getting icons as resources.
+	private final static ClassLoader cl = edu.cornell.dendro.corina.ui.Builder.class.getClassLoader();
 
 	// ----------------------------------------
 	/*

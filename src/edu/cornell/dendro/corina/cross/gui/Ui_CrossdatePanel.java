@@ -44,7 +44,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     public Ui_CrossdatePanel() {
         initComponents();
         
-        btnSwap.setIcon(Builder.getIcon("swap.png", "Icons"));
+        btnSwap.setIcon(Builder.getIcon("swap.png", Builder.ICONS, 16));
         btnSwap.setText(null);
     }
 

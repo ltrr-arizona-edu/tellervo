@@ -77,7 +77,7 @@ public class AboutBox extends javax.swing.JDialog {
     private void addDetails(){
     
     	// Set icon
-	    Icon icon = Builder.getIcon("treeicon.png");
+	    Icon icon = Builder.getIcon("treeicon.png", 128);
 	    if (icon != null) {
 	    	  lblIcon.setIcon(icon);
 	    }

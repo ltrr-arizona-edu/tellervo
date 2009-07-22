@@ -24,11 +24,12 @@ public abstract class ToggleablePreferenceAction extends ToggleableAction {
 	 * @param keyTrue The I18n key to use if the value is true
 	 * @param keyFalse The I18n key to use if false
 	 * @param iconName The name of the icon
+	 * @param iconSize The size of the icon
 	 */
 	public ToggleablePreferenceAction(String boolPrefName, boolean defaultValue,
-			String keyTrue, String keyFalse, String iconName) {
+			String keyTrue, String keyFalse, String iconName, int iconSize) {
 		this(boolPrefName, App.prefs.getBooleanPref(boolPrefName, defaultValue),  
-				defaultValue, keyTrue, keyFalse, iconName);
+				defaultValue, keyTrue, keyFalse, iconName, iconSize);
 	}
 
 
@@ -44,10 +45,11 @@ public abstract class ToggleablePreferenceAction extends ToggleableAction {
 	 * @param keyTrue the i18n key to use for name on true
 	 * @param keyFalse the i18n key to use on false
 	 * @param iconName the name of the icon
+	 * @param iconSize The size of the icon
 	 */
 	private ToggleablePreferenceAction(String boolPrefName, boolean boolValue, boolean defaultValue,
-			String keyTrue, String keyFalse, String iconName) {
-		super(boolValue ? keyTrue : keyFalse, boolValue, iconName, "Icons");
+			String keyTrue, String keyFalse, String iconName, int iconSize) {
+		super(boolValue ? keyTrue : keyFalse, boolValue, iconName, Builder.ICONS, iconSize);
 		
 		this.prefName = boolPrefName;
 		this.keyTrue = keyTrue;

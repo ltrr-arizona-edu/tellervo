@@ -40,18 +40,18 @@ public class ToggleableBoundAction<T> extends ToggleableAction implements Proper
 	/**
 	 * Call for an icon property
 	 */
-	public ToggleableBoundAction(String keyTrue, String keyFalse, T bound, Class<T> boundClass, String propertyName, String iconName, String iconPackageName) throws IntrospectionException {
-		this(keyTrue, keyFalse, bound, new PropertyDescriptor(propertyName, boundClass), iconName, iconPackageName);
+	public ToggleableBoundAction(String keyTrue, String keyFalse, T bound, Class<T> boundClass, String propertyName, String iconName, String iconPackageName, int iconSize) throws IntrospectionException {
+		this(keyTrue, keyFalse, bound, new PropertyDescriptor(propertyName, boundClass), iconName, iconPackageName, iconSize);
 	}
 	
 	// phase 2
-	private ToggleableBoundAction(String keyTrue, String keyFalse, T bound, PropertyDescriptor property, String iconName, String iconPackageName) {
-		this(keyTrue, keyFalse, bound, property, getBoundValue(bound, property), iconName, iconPackageName);
+	private ToggleableBoundAction(String keyTrue, String keyFalse, T bound, PropertyDescriptor property, String iconName, String iconPackageName, int iconSize) {
+		this(keyTrue, keyFalse, bound, property, getBoundValue(bound, property), iconName, iconPackageName, iconSize);
 	}
 	
 	// phase 3
-	private ToggleableBoundAction(String keyTrue, String keyFalse, T bound, PropertyDescriptor property, boolean defaultValue, String iconName, String iconPackageName) {
-		super(defaultValue ? keyTrue : keyFalse, defaultValue, iconName, iconPackageName);
+	private ToggleableBoundAction(String keyTrue, String keyFalse, T bound, PropertyDescriptor property, boolean defaultValue, String iconName, String iconPackageName, int iconSize) {
+		super(defaultValue ? keyTrue : keyFalse, defaultValue, iconName, iconPackageName, iconSize);
 		
 		this.keyFalse = keyFalse;
 		this.keyTrue = keyTrue;

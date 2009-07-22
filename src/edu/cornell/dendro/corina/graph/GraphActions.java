@@ -3,6 +3,7 @@ package edu.cornell.dendro.corina.graph;
  import java.awt.event.ActionEvent;
 import java.beans.IntrospectionException;
 
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.ToggleableAction;
 import edu.cornell.dendro.corina.ui.ToggleableBoundAction;
@@ -61,16 +62,19 @@ public class GraphActions {
 	
 	private void createGraphActions() throws IntrospectionException {
 		showVerticalAxis = new ToggleableBoundAction<GraphInfo>("vert_hide", "vert_show", 
-				info, GraphInfo.class, GraphInfo.SHOW_VERT_AXIS_PROPERTY, "axisshow.png", "Icons");
+				info, GraphInfo.class, GraphInfo.SHOW_VERT_AXIS_PROPERTY, "axisshow.png", 
+				Builder.ICONS, 22);
 
 		showGridlines = new ToggleableBoundAction<GraphInfo>("grid_hide", "grid_show",
-				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_PAPER_PROPERTY, "showgrid.png", "Icons");
+				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_PAPER_PROPERTY, "showgrid.png", 
+				Builder.ICONS, 22);
 
 		showBaselines = new ToggleableBoundAction<GraphInfo>("base_hide", "base_show", 
 				info, GraphInfo.class, GraphInfo.SHOW_BASELINES_PROPERTY);
 
 		showComponentNames = new ToggleableBoundAction<GraphInfo>("compn_hide", "compn_show",
-				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_NAMES_PROPERTY, "label.png", "Icons");
+				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_NAMES_PROPERTY, "label.png", 
+				Builder.ICONS, 22);
 
 		showHundredPercentLines = new ToggleableBoundAction<GraphInfo>("hperc_hide", "hperc_show", 
 				info, GraphInfo.class, GraphInfo.SHOW_HUNDREDPERCENTLINES_PROPERTY);
@@ -80,7 +84,8 @@ public class GraphActions {
 	
 	@SuppressWarnings("serial")
 	private void createElementActions() {
-		showElementsPanel = new ToggleableAction("view_elements", false, "legend.png", "Icons") {
+		showElementsPanel = new ToggleableAction("view_elements", false, "legend.png", 
+				Builder.ICONS, 22) {
 			public void togglePerformed(ActionEvent e, Boolean value) {
 				elements.setVisible(value);
 			}
@@ -107,7 +112,7 @@ public class GraphActions {
 	
 	@SuppressWarnings("serial")
 	private void createControllerActions() {
-		squeezeVertically = new CorinaAction("baselines_align", "squeezevertically.png", "Icons") {
+		squeezeVertically = new CorinaAction("baselines_align", "squeezevertically.png", Builder.ICONS, 22) {
 			public void actionPerformed(ActionEvent e) {
 				controller.squeezeTogether();
 			}		
@@ -140,7 +145,7 @@ public class GraphActions {
 			}
 		};
 
-		fitHorizontally = new CorinaAction("fit_horiz", "fitcharthoriz.png", "Icons") {
+		fitHorizontally = new CorinaAction("fit_horiz", "fitcharthoriz.png", Builder.ICONS, 22) {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 				controller.scaleToFitWidth();
@@ -171,7 +176,7 @@ public class GraphActions {
 			}
 		};
 		
-		zoomIn = new CorinaAction("zoom_out", "axiszoomout.png", "Icons"){
+		zoomIn = new CorinaAction("zoom_out", "axiszoomout.png", Builder.ICONS, 22){
 			public void actionPerformed(ActionEvent e) {
 				int height = info.getTenUnitHeight();
 				float fheight = ((float) height) / 1.25f;
@@ -179,7 +184,7 @@ public class GraphActions {
 				info.setTenUnitHeight((height == (int) fheight) ? height - 1 : (int) fheight);
 			}
 		};
-		zoomOut = new CorinaAction("zoom_in", "axiszoomin.png", "Icons"){
+		zoomOut = new CorinaAction("zoom_in", "axiszoomin.png", Builder.ICONS, 22){
 			public void actionPerformed(ActionEvent e) {
 				int height = info.getTenUnitHeight();
 				float fheight = ((float) height) * 1.25f;
