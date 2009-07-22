@@ -41,7 +41,7 @@ import org.tridas.schema.DatingSuffix;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public final class Year implements Comparable {
+public final class Year implements Comparable<Year> {
     /** The default year: 1001. */
     public static final Year DEFAULT = new Year(1001);
 
@@ -292,12 +292,12 @@ public final class Year implements Comparable {
        Compares this and <code>o</code>.
 
        @see java.lang.Comparable
-       @param o Object to compare
+       @param o2 Object to compare
        @return >0, =0, or <0 if this is greater-than, equal-to, or less-than o
        @throws ClassCastException if o is not a Year
     */
-    public int compareTo(Object o) {
-        return this.y - ((Year) o).y;
+    public int compareTo(Year o2) {
+        return this.y - o2.y;
     }
 
     /**
@@ -316,10 +316,12 @@ public final class Year implements Comparable {
     // since i define equals(), i need to define hashCode()
     @Override
 	public int hashCode() {
-	// returning something based on y is logical, but returning y
-	// itself might make people mistakenly think this is like
-	// intValue(), so let's do something weird to it first.
-	return y*y*y;
+    	// returning something based on y is logical, but returning y
+    	// itself might make people mistakenly think this is like
+    	// intValue(), so let's do something weird to it first.
+    	
+    	// seriously? No. Let's not do that.
+    	return y;
     }
 
     // THESE TWO METHODS ARE BUGGY AND NEED WORK!
