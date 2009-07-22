@@ -277,8 +277,44 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			<xs:element ref="comments" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
+	
+	<!-- seriesLink: a singular link to a series -->
+	<xs:complexType name="seriesLink">
+		<xs:choice>
+			<xs:element name="idRef">
+				<xs:complexType>
+					<xs:attribute name="ref" type="xs:IDREF" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="xLink">
+				<xs:complexType>
+					<xs:attribute ref="xlink:href" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element ref="identifier" />
+		</xs:choice>	
+	</xs:complexType>
+	
+	<!-- seriesLinks: a list of seriesLink types -->
+	<xs:complexType name="seriesLinks">
+		<xs:sequence>
+			<xs:element name="series" type="seriesLink" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- seriesLinksWithPreferred: a seriesLinks with a singular preferredSeries -->
+	<xs:complexType name="seriesLinksWithPreferred">
+		<xs:complexContent>
+			<xs:extension base="seriesLinks">
+				<xs:sequence>
+					<xs:element name="preferredSeries" type="seriesLink" minOccurs="0" maxOccurs="1" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>	
+
 	<!-- linkSeries -->
-	<xs:element name="linkSeries">
+	<xs:element name="linkSeriesOBSELETE">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
 				Fields for storing links to Series
@@ -711,7 +747,7 @@ form of a link to an external database such as a museum catalogue.
 					<xs:sequence>
 						<xs:element ref="type"/>
 						<xs:element ref="description" minOccurs="0"/>
-						<xs:element ref="linkSeries" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="linkSeries" type="seriesLinksWithPreferred" minOccurs="0" maxOccurs="1"/>
 						<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="creator" minOccurs="0"/>			
 						<xs:element ref="owner" minOccurs="0"/>		
@@ -803,7 +839,7 @@ element and an element may be dated using one or more derivedSeries.
 					<xs:sequence>
 						<xs:element ref="type" minOccurs="0"/>
 						<xs:element ref="description" minOccurs="0"/>
-						<xs:element ref="linkSeries" minOccurs="0" maxOccurs="1"/>		
+						<xs:element name="linkSeries" type="seriesLinks" minOccurs="0" maxOccurs="1"/>		
 						<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="taxon"/>
 						<xs:element ref="shape" minOccurs="0"/>
@@ -1287,7 +1323,7 @@ resulting in multiple measurementSeries.
 					<xs:element ref="dendrochronologist" minOccurs="0"/>
 					<xs:element ref="measuringMethod" minOccurs="0" maxOccurs="1"/>
 					<xs:element ref="type" minOccurs="0" maxOccurs="1"/>
-					<xs:element ref="linkSeries" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="linkSeries" type="seriesLinks" minOccurs="0" maxOccurs="1"/>
 					<xs:element ref="objective" minOccurs="0"/>
 					<xs:element ref="standardizingMethod" minOccurs="0"/>
 					<xs:element ref="author" minOccurs="0"/>
@@ -1434,7 +1470,7 @@ themselves are stored separately as values.
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="linkSeries"/>
+				<xs:element name="linkSeries" type="seriesLink" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -1544,7 +1580,7 @@ from one or more measurementSeries and has multiple values associated with it.
 						<xs:element ref="comments" minOccurs="0"/>
 						<xs:element ref="derivationDate" minOccurs="0" maxOccurs="1"/>
 						<xs:element ref="type" minOccurs="1"/>
-						<xs:element ref="linkSeries" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="linkSeries" type="seriesLinks" minOccurs="1" maxOccurs="1"/>
 						<xs:element ref="objective" minOccurs="0"/>
 						<xs:element ref="standardizingMethod" minOccurs="0"/>
 						<xs:element ref="author" minOccurs="0"/>
