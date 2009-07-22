@@ -89,6 +89,7 @@ public class LoginDialog extends JDialog {
 		
 		JLabel lockIcon = new JLabel(Builder.getIcon("lock.png", 128));
 		lockIcon.setBorder(BorderFactory.createEtchedBorder());
+	
 		
 		
 		ogbc.gridx = 0;
