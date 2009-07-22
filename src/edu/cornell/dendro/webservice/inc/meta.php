@@ -32,12 +32,13 @@ class meta
   var $nonce = NULL;
   var $seq = NULL;
   var $timing = array();
+  	
 
   function meta($theRequestType="")
   {
     global $wsversion;
     $this->startTimestamp = microtime(true);
-    $this->requestdate= date(c);
+    $this->requestdate= date('c');
     $this->requesturl= dbHelper::escapeXMLChars($_SERVER['REQUEST_URI']);
     $this->clientversion= dbHelper::escapeXMLChars($_SERVER['HTTP_USER_AGENT']);
     if($theRequestType)  $this->requesttype= $theRequestType;
@@ -63,7 +64,7 @@ class meta
 
     $message = array($theCode => $theMessage);
     array_push($this->messages, $message);
-
+        
     // Set corresponding status 
     if($this->status=="Error" || $theStatus=="Error") 
     {
@@ -85,8 +86,13 @@ class meta
 
   function setTiming($theLabel)
   {
-    $message = array($theLabel => round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0));
-    array_push($this->timing, $message);
+  	global $debugFlag;
+  	
+  	if($debugFlag===TRUE)
+  	{
+    	$message = array($theLabel => round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0));
+    	array_push($this->timing, $message);
+  	}
   }
   
   function requestLogin($nonce, $seq, $messageType="Error")

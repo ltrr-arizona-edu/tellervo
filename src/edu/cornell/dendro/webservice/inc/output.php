@@ -60,11 +60,11 @@ function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd
 	    }
 	    else
 	    {
-	    	echo "Output invalid: <br>	";
+	    	header('Content-Type: application/xhtml+xml; charset=utf-8');
 	    	$therrs = libxml_get_errors();
 	    	foreach($therrs as $err)
 	    	{
-	    		echo $err->message."<br>";
+	    		trigger_error("703".$err->message);
 	    	}
 	        error_reporting($origErrorLevel);
 	        echo $theOutput;
