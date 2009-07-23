@@ -51,7 +51,7 @@ import org.tridas.interfaces.ITridasDerivedSeries;
  *         &lt;element ref="{http://www.tridas.org/1.3}comments" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}derivationDate" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}type"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}linkSeries"/>
+ *         &lt;element name="linkSeries" type="{http://www.tridas.org/1.3}seriesLinks"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}objective" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}standardizingMethod" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}author" minOccurs="0"/>
@@ -104,7 +104,7 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
     @XmlElement(required = true)
     protected ControlledVoc type;
     @XmlElement(required = true)
-    protected TridasLinkSeries linkSeries;
+    protected SeriesLinks linkSeries;
     protected String objective;
     protected String standardizingMethod;
     @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.authorID", sortType = TridasCustomDictionarySortType.LASTNAME_FIRSTNAME, type = TridasCustomDictionaryType.CORINA_GENERICID)
@@ -325,10 +325,10 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
      * 
      * @return
      *     possible object is
-     *     {@link TridasLinkSeries }
+     *     {@link SeriesLinks }
      *     
      */
-    public TridasLinkSeries getLinkSeries() {
+    public SeriesLinks getLinkSeries() {
         return linkSeries;
     }
 
@@ -337,10 +337,10 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasLinkSeries }
+     *     {@link SeriesLinks }
      *     
      */
-    public void setLinkSeries(TridasLinkSeries value) {
+    public void setLinkSeries(SeriesLinks value) {
         this.linkSeries = value;
     }
 
@@ -751,7 +751,7 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
             toStringBuilder.append("type", theType);
         }
         {
-            TridasLinkSeries theLinkSeries;
+            SeriesLinks theLinkSeries;
             theLinkSeries = this.getLinkSeries();
             toStringBuilder.append("linkSeries", theLinkSeries);
         }
@@ -858,9 +858,9 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
             copy.setType(copyType);
         }
         {
-            TridasLinkSeries sourceLinkSeries;
+            SeriesLinks sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
-            TridasLinkSeries copyLinkSeries = ((TridasLinkSeries) copyBuilder.copy(sourceLinkSeries));
+            SeriesLinks copyLinkSeries = ((SeriesLinks) copyBuilder.copy(sourceLinkSeries));
             copy.setLinkSeries(copyLinkSeries);
         }
         {

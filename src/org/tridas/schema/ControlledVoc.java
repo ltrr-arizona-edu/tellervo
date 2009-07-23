@@ -52,12 +52,12 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
     "value"
 })
 @XmlSeeAlso({
+    TridasCategory.class,
     TridasMeasuringMethod.class,
     TridasShape.class,
-    TridasRemark.class,
     TridasUnit.class,
     TridasVariable.class,
-    TridasCategory.class
+    TridasRemark.class
 })
 public class ControlledVoc
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString

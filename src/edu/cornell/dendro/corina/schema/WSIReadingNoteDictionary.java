@@ -22,7 +22,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
-import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.TridasRemark;
 
 
 /**
@@ -35,7 +35,7 @@ import org.tridas.schema.ControlledVoc;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="readingNote" type="{http://www.tridas.org/1.3}controlledVoc" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.3}remark" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -46,51 +46,51 @@ import org.tridas.schema.ControlledVoc;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "readingNotes"
+    "remarks"
 })
 @XmlRootElement(name = "readingNoteDictionary")
 public class WSIReadingNoteDictionary implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlElement(name = "readingNote")
-    protected List<ControlledVoc> readingNotes;
+    @XmlElement(name = "remark", namespace = "http://www.tridas.org/1.3")
+    protected List<TridasRemark> remarks;
 
     /**
-     * Gets the value of the readingNotes property.
+     * Gets the value of the remarks property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the readingNotes property.
+     * This is why there is not a <CODE>set</CODE> method for the remarks property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getReadingNotes().add(newItem);
+     *    getRemarks().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link ControlledVoc }
+     * {@link TridasRemark }
      * 
      * 
      */
-    public List<ControlledVoc> getReadingNotes() {
-        if (readingNotes == null) {
-            readingNotes = new ArrayList<ControlledVoc>();
+    public List<TridasRemark> getRemarks() {
+        if (remarks == null) {
+            remarks = new ArrayList<TridasRemark>();
         }
-        return this.readingNotes;
+        return this.remarks;
     }
 
-    public boolean isSetReadingNotes() {
-        return ((this.readingNotes!= null)&&(!this.readingNotes.isEmpty()));
+    public boolean isSetRemarks() {
+        return ((this.remarks!= null)&&(!this.remarks.isEmpty()));
     }
 
-    public void unsetReadingNotes() {
-        this.readingNotes = null;
+    public void unsetRemarks() {
+        this.remarks = null;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
@@ -102,7 +102,7 @@ public class WSIReadingNoteDictionary implements Serializable, CopyTo, Copyable,
             return ;
         }
         final WSIReadingNoteDictionary that = ((WSIReadingNoteDictionary) object);
-        equalsBuilder.append(this.getReadingNotes(), that.getReadingNotes());
+        equalsBuilder.append(this.getRemarks(), that.getRemarks());
     }
 
     public boolean equals(Object object) {
@@ -118,7 +118,7 @@ public class WSIReadingNoteDictionary implements Serializable, CopyTo, Copyable,
     }
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
-        hashCodeBuilder.append(this.getReadingNotes());
+        hashCodeBuilder.append(this.getRemarks());
     }
 
     public int hashCode() {
@@ -129,9 +129,9 @@ public class WSIReadingNoteDictionary implements Serializable, CopyTo, Copyable,
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            List<ControlledVoc> theReadingNotes;
-            theReadingNotes = this.getReadingNotes();
-            toStringBuilder.append("readingNotes", theReadingNotes);
+            List<TridasRemark> theRemarks;
+            theRemarks = this.getRemarks();
+            toStringBuilder.append("remarks", theRemarks);
         }
     }
 
@@ -144,12 +144,12 @@ public class WSIReadingNoteDictionary implements Serializable, CopyTo, Copyable,
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIReadingNoteDictionary copy = ((target == null)?((WSIReadingNoteDictionary) createCopy()):((WSIReadingNoteDictionary) target));
         {
-            List<ControlledVoc> sourceReadingNotes;
-            sourceReadingNotes = this.getReadingNotes();
-            List<ControlledVoc> copyReadingNotes = ((List<ControlledVoc> ) copyBuilder.copy(sourceReadingNotes));
-            copy.unsetReadingNotes();
-            List<ControlledVoc> uniqueReadingNotesl = copy.getReadingNotes();
-            uniqueReadingNotesl.addAll(copyReadingNotes);
+            List<TridasRemark> sourceRemarks;
+            sourceRemarks = this.getRemarks();
+            List<TridasRemark> copyRemarks = ((List<TridasRemark> ) copyBuilder.copy(sourceRemarks));
+            copy.unsetRemarks();
+            List<TridasRemark> uniqueRemarksl = copy.getRemarks();
+            uniqueRemarksl.addAll(copyRemarks);
         }
         return copy;
     }

@@ -5,14 +5,13 @@ import java.util.List;
 
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasIdentifier;
-import org.tridas.schema.TridasLinkSeries;
 import org.tridas.schema.TridasRadius;
 
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
-import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesResource;
@@ -197,10 +196,16 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 	}
 	
 	private int countLinkSeries(ITridasDerivedSeries series) {
-		TridasLinkSeries links = series.getLinkSeries();
-		
-		return ListUtil.subListOfType(links.getIdRevesAndXLinksAndIdentifiers(), 
-				TridasIdentifier.class).size();
+		int count = 0;
+
+		// only allow identifiers here?
+		// XXX: Is this really what we want?
+		for(SeriesLink link : series.getLinkSeries().getSeries()) {
+			if(link.isSetIdentifier())
+				count++;
+		}
+
+		return count;
 	}
 
 	public String getName() {

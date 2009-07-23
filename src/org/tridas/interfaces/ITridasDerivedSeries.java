@@ -1,7 +1,7 @@
 package org.tridas.interfaces;
 
 import org.tridas.schema.ControlledVoc;
-import org.tridas.schema.TridasLinkSeries;
+import org.tridas.schema.SeriesLinks;
 
 public interface ITridasDerivedSeries extends ITridasSeries {
     /**
@@ -31,20 +31,22 @@ public interface ITridasDerivedSeries extends ITridasSeries {
      * 
      * @return
      *     possible object is
-     *     {@link TridasLinkSeries }
+     *     {@link SeriesLinks }
      *     
      */
-    public TridasLinkSeries getLinkSeries();
+    public SeriesLinks getLinkSeries();
+    //public TridasLinkSeries getLinkSeries();
 
     /**
      * Sets the value of the linkSeries property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasLinkSeries }
+     *     {@link SeriesLinks }
      *     
      */
-    public void setLinkSeries(TridasLinkSeries value);
+    public void setLinkSeries(SeriesLinks value);
+    //public void setLinkSeries(TridasLinkSeries value);
 
     public boolean isSetLinkSeries();
 }

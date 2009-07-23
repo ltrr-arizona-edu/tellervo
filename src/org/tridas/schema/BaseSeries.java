@@ -50,7 +50,7 @@ import org.tridas.annotations.TridasEditProperties;
  *         &lt;element ref="{http://www.tridas.org/1.3}dendrochronologist" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}measuringMethod" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}type" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}linkSeries" minOccurs="0"/>
+ *         &lt;element name="linkSeries" type="{http://www.tridas.org/1.3}seriesLinks" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}objective" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}standardizingMethod" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}author" minOccurs="0"/>
@@ -101,7 +101,7 @@ public abstract class BaseSeries
     protected String dendrochronologist;
     protected TridasMeasuringMethod measuringMethod;
     protected ControlledVoc type;
-    protected TridasLinkSeries linkSeries;
+    protected SeriesLinks linkSeries;
     protected String objective;
     protected String standardizingMethod;
     protected String author;
@@ -320,10 +320,10 @@ public abstract class BaseSeries
      * 
      * @return
      *     possible object is
-     *     {@link TridasLinkSeries }
+     *     {@link SeriesLinks }
      *     
      */
-    public TridasLinkSeries getLinkSeries() {
+    public SeriesLinks getLinkSeries() {
         return linkSeries;
     }
 
@@ -332,10 +332,10 @@ public abstract class BaseSeries
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasLinkSeries }
+     *     {@link SeriesLinks }
      *     
      */
-    public void setLinkSeries(TridasLinkSeries value) {
+    public void setLinkSeries(SeriesLinks value) {
         this.linkSeries = value;
     }
 
@@ -749,7 +749,7 @@ public abstract class BaseSeries
             toStringBuilder.append("type", theType);
         }
         {
-            TridasLinkSeries theLinkSeries;
+            SeriesLinks theLinkSeries;
             theLinkSeries = this.getLinkSeries();
             toStringBuilder.append("linkSeries", theLinkSeries);
         }
@@ -860,9 +860,9 @@ public abstract class BaseSeries
             copy.setType(copyType);
         }
         {
-            TridasLinkSeries sourceLinkSeries;
+            SeriesLinks sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
-            TridasLinkSeries copyLinkSeries = ((TridasLinkSeries) copyBuilder.copy(sourceLinkSeries));
+            SeriesLinks copyLinkSeries = ((SeriesLinks) copyBuilder.copy(sourceLinkSeries));
             copy.setLinkSeries(copyLinkSeries);
         }
         {

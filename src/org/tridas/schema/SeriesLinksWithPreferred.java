@@ -1,10 +1,9 @@
 
-package net.opengis.gml.schema;
+package org.tridas.schema;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -22,20 +21,17 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 
 
 /**
- * 
- *             An abstraction of a surface to support the different
- *             levels of complexity. A surface is always a continuous
- *             region of a plane.
- *          
- * 
- * <p>Java class for AbstractSurfaceType complex type.
+ * <p>Java class for seriesLinksWithPreferred complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="AbstractSurfaceType">
+ * &lt;complexType name="seriesLinksWithPreferred">
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.opengis.net/gml}AbstractGeometricPrimitiveType">
+ *     &lt;extension base="{http://www.tridas.org/1.3}seriesLinks">
+ *       &lt;sequence>
+ *         &lt;element name="preferredSeries" type="{http://www.tridas.org/1.3}seriesLink" minOccurs="0"/>
+ *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -44,20 +40,47 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "AbstractSurfaceType")
-@XmlSeeAlso({
-    PolygonType.class,
-    SurfaceType.class
+@XmlType(name = "seriesLinksWithPreferred", propOrder = {
+    "preferredSeries"
 })
-public class AbstractSurfaceType
-    extends AbstractGeometricPrimitiveType
+public class SeriesLinksWithPreferred
+    extends SeriesLinks
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
+    protected SeriesLink preferredSeries;
+
+    /**
+     * Gets the value of the preferredSeries property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link SeriesLink }
+     *     
+     */
+    public SeriesLink getPreferredSeries() {
+        return preferredSeries;
+    }
+
+    /**
+     * Sets the value of the preferredSeries property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link SeriesLink }
+     *     
+     */
+    public void setPreferredSeries(SeriesLink value) {
+        this.preferredSeries = value;
+    }
+
+    public boolean isSetPreferredSeries() {
+        return (this.preferredSeries!= null);
+    }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
-        if (!(object instanceof AbstractSurfaceType)) {
+        if (!(object instanceof SeriesLinksWithPreferred)) {
             equalsBuilder.appendSuper(false);
             return ;
         }
@@ -65,11 +88,12 @@ public class AbstractSurfaceType
             return ;
         }
         super.equals(object, equalsBuilder);
-        final AbstractSurfaceType that = ((AbstractSurfaceType) object);
+        final SeriesLinksWithPreferred that = ((SeriesLinksWithPreferred) object);
+        equalsBuilder.append(this.getPreferredSeries(), that.getPreferredSeries());
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof AbstractSurfaceType)) {
+        if (!(object instanceof SeriesLinksWithPreferred)) {
             return false;
         }
         if (this == object) {
@@ -82,6 +106,7 @@ public class AbstractSurfaceType
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
         super.hashCode(hashCodeBuilder);
+        hashCodeBuilder.append(this.getPreferredSeries());
     }
 
     public int hashCode() {
@@ -92,6 +117,11 @@ public class AbstractSurfaceType
 
     public void toString(ToStringBuilder toStringBuilder) {
         super.toString(toStringBuilder);
+        {
+            SeriesLink thePreferredSeries;
+            thePreferredSeries = this.getPreferredSeries();
+            toStringBuilder.append("preferredSeries", thePreferredSeries);
+        }
     }
 
     public String toString() {
@@ -101,8 +131,14 @@ public class AbstractSurfaceType
     }
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
-        final AbstractSurfaceType copy = ((target == null)?((AbstractSurfaceType) createCopy()):((AbstractSurfaceType) target));
+        final SeriesLinksWithPreferred copy = ((target == null)?((SeriesLinksWithPreferred) createCopy()):((SeriesLinksWithPreferred) target));
         super.copyTo(copy, copyBuilder);
+        {
+            SeriesLink sourcePreferredSeries;
+            sourcePreferredSeries = this.getPreferredSeries();
+            SeriesLink copyPreferredSeries = ((SeriesLink) copyBuilder.copy(sourcePreferredSeries));
+            copy.setPreferredSeries(copyPreferredSeries);
+        }
         return copy;
     }
 
@@ -112,7 +148,7 @@ public class AbstractSurfaceType
     }
 
     public Object createCopy() {
-        return new AbstractSurfaceType();
+        return new SeriesLinksWithPreferred();
     }
 
 }

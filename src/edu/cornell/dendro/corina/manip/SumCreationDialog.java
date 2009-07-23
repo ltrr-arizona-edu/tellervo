@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasIdentifier;
-import org.tridas.schema.TridasLinkSeries;
 
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.GraphDialog;
@@ -26,6 +25,7 @@ import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
@@ -100,9 +100,6 @@ public class SumCreationDialog {
 		voc.setValue(SampleType.SUM.toString());
 		series.setType(voc);
 		
-		TridasLinkSeries links = new TridasLinkSeries();
-		series.setLinkSeries(links);
-
 		// add each sum element to the sample...
 		for(Element sume : sum.getSelectedElements()) {
 			BaseSample bs;
@@ -120,8 +117,8 @@ public class SumCreationDialog {
 			else if(!domainTag.equals(sumElementId.getDomain())) {
 				throw new IllegalArgumentException("Creating a sum from multiple domains is not permitted at this time");
 			}
-			
-			links.getIdRevesAndXLinksAndIdentifiers().add(sumElementId);
+		
+			SeriesLinkUtil.addToSeries(series, sumElementId);
 		}
 		
 		// create a new identifier based on the domain tag

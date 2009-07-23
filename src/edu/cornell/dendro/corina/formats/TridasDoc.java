@@ -16,7 +16,6 @@ import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
-import org.tridas.schema.TridasLinkSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
@@ -32,9 +31,9 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridas.LabCode;
 import edu.cornell.dendro.corina.tridas.LabCodeFormatter;
+import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.tridasv2.TridasIdentifierMap;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.corina.TridasGenericFieldMap;
 
 public class TridasDoc implements Filetype {	
@@ -197,9 +196,7 @@ public class TridasDoc implements Filetype {
 		ElementList elements = new ElementList();
 		
 		// go through the linkseries and use the identifiers
-		TridasLinkSeries link = series.getLinkSeries();
-		List<TridasIdentifier> identifiers = ListUtil.subListOfType(
-				link.getIdRevesAndXLinksAndIdentifiers(), TridasIdentifier.class);
+		List<TridasIdentifier> identifiers = SeriesLinkUtil.getIdentifiers(series.getLinkSeries());
 			
 		for(TridasIdentifier identifier : identifiers) {
 			BaseSample ref = references.get(identifier);

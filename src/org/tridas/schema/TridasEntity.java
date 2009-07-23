@@ -64,10 +64,10 @@ import org.tridas.interfaces.ITridasGeneric;
 @XmlSeeAlso({
     TridasObjectEx.class,
     BaseSeries.class,
+    TridasProject.class,
     TridasRadius.class,
     TridasSample.class,
-    TridasElement.class,
-    TridasProject.class
+    TridasElement.class
 })
 public abstract class TridasEntity implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, ITridas, ITridasGeneric
 {

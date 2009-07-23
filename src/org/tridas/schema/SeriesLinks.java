@@ -1,14 +1,12 @@
 
-package net.opengis.gml.schema;
+package org.tridas.schema;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -26,20 +24,16 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 
 
 /**
- * 
- *             A container for an array of curve segments.
- *          
- * 
- * <p>Java class for CurveSegmentArrayPropertyType complex type.
+ * <p>Java class for seriesLinks complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CurveSegmentArrayPropertyType">
+ * &lt;complexType name="seriesLinks">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.opengis.net/gml}_CurveSegment" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="series" type="{http://www.tridas.org/1.3}seriesLink" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -49,70 +43,70 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "CurveSegmentArrayPropertyType", propOrder = {
-    "curveSegments"
+@XmlType(name = "seriesLinks", propOrder = {
+    "series"
 })
-@XmlRootElement(name = "segments")
-public class Segments
+@XmlSeeAlso({
+    SeriesLinksWithPreferred.class
+})
+public class SeriesLinks
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlElementRef(name = "_CurveSegment", namespace = "http://www.opengis.net/gml", type = JAXBElement.class)
-    protected List<JAXBElement<? extends AbstractCurveSegmentType>> curveSegments;
+    protected List<SeriesLink> series;
 
     /**
-     * Gets the value of the curveSegments property.
+     * Gets the value of the series property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the curveSegments property.
+     * This is why there is not a <CODE>set</CODE> method for the series property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    get_CurveSegments().add(newItem);
+     *    getSeries().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link LineStringSegmentType }{@code >}
-     * {@link JAXBElement }{@code <}{@link AbstractCurveSegmentType }{@code >}
+     * {@link SeriesLink }
      * 
      * 
      */
-    public List<JAXBElement<? extends AbstractCurveSegmentType>> get_CurveSegments() {
-        if (curveSegments == null) {
-            curveSegments = new ArrayList<JAXBElement<? extends AbstractCurveSegmentType>>();
+    public List<SeriesLink> getSeries() {
+        if (series == null) {
+            series = new ArrayList<SeriesLink>();
         }
-        return this.curveSegments;
+        return this.series;
     }
 
-    public boolean isSet_CurveSegments() {
-        return ((this.curveSegments!= null)&&(!this.curveSegments.isEmpty()));
+    public boolean isSetSeries() {
+        return ((this.series!= null)&&(!this.series.isEmpty()));
     }
 
-    public void unset_CurveSegments() {
-        this.curveSegments = null;
+    public void unsetSeries() {
+        this.series = null;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
-        if (!(object instanceof Segments)) {
+        if (!(object instanceof SeriesLinks)) {
             equalsBuilder.appendSuper(false);
             return ;
         }
         if (this == object) {
             return ;
         }
-        final Segments that = ((Segments) object);
-        equalsBuilder.append(this.get_CurveSegments(), that.get_CurveSegments());
+        final SeriesLinks that = ((SeriesLinks) object);
+        equalsBuilder.append(this.getSeries(), that.getSeries());
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof Segments)) {
+        if (!(object instanceof SeriesLinks)) {
             return false;
         }
         if (this == object) {
@@ -124,7 +118,7 @@ public class Segments
     }
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
-        hashCodeBuilder.append(this.get_CurveSegments());
+        hashCodeBuilder.append(this.getSeries());
     }
 
     public int hashCode() {
@@ -135,9 +129,9 @@ public class Segments
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            List<JAXBElement<? extends AbstractCurveSegmentType>> the_CurveSegments;
-            the_CurveSegments = this.get_CurveSegments();
-            toStringBuilder.append("curveSegments", the_CurveSegments);
+            List<SeriesLink> theSeries;
+            theSeries = this.getSeries();
+            toStringBuilder.append("series", theSeries);
         }
     }
 
@@ -148,14 +142,14 @@ public class Segments
     }
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
-        final Segments copy = ((target == null)?((Segments) createCopy()):((Segments) target));
+        final SeriesLinks copy = ((target == null)?((SeriesLinks) createCopy()):((SeriesLinks) target));
         {
-            List<JAXBElement<? extends AbstractCurveSegmentType>> source_CurveSegments;
-            source_CurveSegments = this.get_CurveSegments();
-            List<JAXBElement<? extends AbstractCurveSegmentType>> copy_CurveSegments = ((List<JAXBElement<? extends AbstractCurveSegmentType>> ) copyBuilder.copy(source_CurveSegments));
-            copy.unset_CurveSegments();
-            List<JAXBElement<? extends AbstractCurveSegmentType>> unique_CurveSegmentsl = copy.get_CurveSegments();
-            unique_CurveSegmentsl.addAll(copy_CurveSegments);
+            List<SeriesLink> sourceSeries;
+            sourceSeries = this.getSeries();
+            List<SeriesLink> copySeries = ((List<SeriesLink> ) copyBuilder.copy(sourceSeries));
+            copy.unsetSeries();
+            List<SeriesLink> uniqueSeriesl = copy.getSeries();
+            uniqueSeriesl.addAll(copySeries);
         }
         return copy;
     }
@@ -166,7 +160,7 @@ public class Segments
     }
 
     public Object createCopy() {
-        return new Segments();
+        return new SeriesLinks();
     }
 
 }

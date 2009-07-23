@@ -32,7 +32,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}linkSeries"/>
+ *         &lt;element name="linkSeries" type="{http://www.tridas.org/1.3}seriesLink"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -52,17 +52,17 @@ public class TridasDatingReference
 
     private final static long serialVersionUID = 1001L;
     @XmlElement(required = true)
-    protected TridasLinkSeries linkSeries;
+    protected SeriesLink linkSeries;
 
     /**
      * Gets the value of the linkSeries property.
      * 
      * @return
      *     possible object is
-     *     {@link TridasLinkSeries }
+     *     {@link SeriesLink }
      *     
      */
-    public TridasLinkSeries getLinkSeries() {
+    public SeriesLink getLinkSeries() {
         return linkSeries;
     }
 
@@ -71,10 +71,10 @@ public class TridasDatingReference
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasLinkSeries }
+     *     {@link SeriesLink }
      *     
      */
-    public void setLinkSeries(TridasLinkSeries value) {
+    public void setLinkSeries(SeriesLink value) {
         this.linkSeries = value;
     }
 
@@ -118,7 +118,7 @@ public class TridasDatingReference
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            TridasLinkSeries theLinkSeries;
+            SeriesLink theLinkSeries;
             theLinkSeries = this.getLinkSeries();
             toStringBuilder.append("linkSeries", theLinkSeries);
         }
@@ -133,9 +133,9 @@ public class TridasDatingReference
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasDatingReference copy = ((target == null)?((TridasDatingReference) createCopy()):((TridasDatingReference) target));
         {
-            TridasLinkSeries sourceLinkSeries;
+            SeriesLink sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
-            TridasLinkSeries copyLinkSeries = ((TridasLinkSeries) copyBuilder.copy(sourceLinkSeries));
+            SeriesLink copyLinkSeries = ((SeriesLink) copyBuilder.copy(sourceLinkSeries));
             copy.setLinkSeries(copyLinkSeries);
         }
         return copy;

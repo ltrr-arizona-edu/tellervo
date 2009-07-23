@@ -19,10 +19,10 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasInterpretation;
-import org.tridas.schema.TridasLinkSeries;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.editor.Editor;
@@ -33,6 +33,7 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
+import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
@@ -144,9 +145,7 @@ public class CrossdateCommitDialog extends JDialog {
 		GenericFieldUtils.addField(series, "corina.crossdateJustification", txtJustification.getText());
 		
 		// set the parent
-		TridasLinkSeries linkParent = new TridasLinkSeries();
-		linkParent.getIdRevesAndXLinksAndIdentifiers().add(secondary.getSeries().getIdentifier());
-		series.setLinkSeries(linkParent);
+		SeriesLinkUtil.addToSeries(series, secondary.getSeries().getIdentifier());
 		
 		// create an interpretation for master and first year
 		TridasInterpretation interpretation = new TridasInterpretation();
@@ -155,8 +154,7 @@ public class CrossdateCommitDialog extends JDialog {
 		interpretation.setFirstYear(range.getStart().tridasYearValue());
 
 		// get linkseries for master
-		TridasLinkSeries linkMaster = new TridasLinkSeries();
-		linkMaster.getIdRevesAndXLinksAndIdentifiers().add(primary.getSeries().getIdentifier());
+		SeriesLink linkMaster = SeriesLinkUtil.forIdentifier(primary.getSeries().getIdentifier());
 		// make dating reference for master
 		TridasDatingReference master = new TridasDatingReference();
 		

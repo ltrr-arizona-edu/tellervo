@@ -25,7 +25,6 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasCustomDictionarySortType;
 import org.tridas.annotations.TridasCustomDictionaryType;
-import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -40,7 +39,7 @@ import org.tridas.annotations.TridasEditProperties;
  *       &lt;sequence>
  *         &lt;element ref="{http://www.tridas.org/1.3}type" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}description" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}linkSeries" minOccurs="0"/>
+ *         &lt;element name="linkSeries" type="{http://www.tridas.org/1.3}seriesLinks" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}file" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}taxon"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}shape" minOccurs="0"/>
@@ -93,8 +92,7 @@ public class TridasElement
     @TridasCustomDictionary(dictionary = "elementType", type = TridasCustomDictionaryType.CORINA_CONTROLLEDVOC)
     protected ControlledVoc type;
     protected String description;
-    @TridasEditProperties(machineOnly = true)
-    protected TridasLinkSeries linkSeries;
+    protected SeriesLinks linkSeries;
     @XmlElement(name = "file")
     protected List<TridasFile> files;
     @XmlElement(required = true)
@@ -177,10 +175,10 @@ public class TridasElement
      * 
      * @return
      *     possible object is
-     *     {@link TridasLinkSeries }
+     *     {@link SeriesLinks }
      *     
      */
-    public TridasLinkSeries getLinkSeries() {
+    public SeriesLinks getLinkSeries() {
         return linkSeries;
     }
 
@@ -189,10 +187,10 @@ public class TridasElement
      * 
      * @param value
      *     allowed object is
-     *     {@link TridasLinkSeries }
+     *     {@link SeriesLinks }
      *     
      */
-    public void setLinkSeries(TridasLinkSeries value) {
+    public void setLinkSeries(SeriesLinks value) {
         this.linkSeries = value;
     }
 
@@ -700,7 +698,7 @@ public class TridasElement
             toStringBuilder.append("description", theDescription);
         }
         {
-            TridasLinkSeries theLinkSeries;
+            SeriesLinks theLinkSeries;
             theLinkSeries = this.getLinkSeries();
             toStringBuilder.append("linkSeries", theLinkSeries);
         }
@@ -798,9 +796,9 @@ public class TridasElement
             copy.setDescription(copyDescription);
         }
         {
-            TridasLinkSeries sourceLinkSeries;
+            SeriesLinks sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
-            TridasLinkSeries copyLinkSeries = ((TridasLinkSeries) copyBuilder.copy(sourceLinkSeries));
+            SeriesLinks copyLinkSeries = ((SeriesLinks) copyBuilder.copy(sourceLinkSeries));
             copy.setLinkSeries(copyLinkSeries);
         }
         {

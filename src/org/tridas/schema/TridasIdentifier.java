@@ -48,7 +48,8 @@ import org.tridas.annotations.TridasEditProperties;
 })
 @XmlRootElement(name = "identifier")
 @TridasEditProperties(machineOnly = true)
-public class TridasIdentifier implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
+public class TridasIdentifier
+    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
