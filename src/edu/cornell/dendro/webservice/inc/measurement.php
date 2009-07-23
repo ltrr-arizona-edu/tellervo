@@ -740,7 +740,9 @@ class measurement extends measurementEntity implements IDBAccessor
 		if($tmpdom->loadXML($domhead.$text.$domfoot) === FALSE) {
 			trigger_error("Malformed XML in textAsNode: Internal Error.\n".$text);
 		}
+		
 		return $dom->importNode($tmpdom->documentElement->childNodes->item(0), true);
+
 	}
 
 	function outputElementDerivationTree($elementID, &$dom, $curNode, &$elementTree, &$all, $format)
@@ -801,6 +803,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		global $corinaNS;
 		global $tridasNS;
 		global $gmlNS;
+		global $xlinkNS;
+		global $firebug;
 
 		// first off, load everything
 		$direct = Array();
@@ -816,14 +820,25 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->buildDerivationTrees($direct, $objectToElementMap, $elementTree, $objectTree, $all);
 
 		$dom = new DomDocument();
-		$dom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\"></root>");
+		$dom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\"></root>");
 		$this->outputDerivationTree($dom, $dom->documentElement, $objectTree, $elementTree, $objectToElementMap, $all, $format);
 
+		$firebug->log($derived, "Derived");
+		$firebug->log($direct, "Direct");
+		
+		
 		// now, just print out the derivedSeries in order. $this is going to be last.
 		foreach($derived as $d)
 		{
+
 			$myformat = ($d == $this) ? $format : (($format=='standard') ? 'summary' : $format);
+			try{
 			$dom->documentElement->appendChild($this->textAsNode($d->_asXML($myformat, "full"), $dom));
+			}
+			catch (Exception $e){
+				$firebug->log($e->getMessage(), "DOM exception");	
+			}
+		
 		}
 
 		$txml = "";
@@ -835,13 +850,13 @@ class measurement extends measurementEntity implements IDBAccessor
 
 	function asXML($format='standard', $parts="full")
 	{
-		 
+		global $firebug;		 
 		// Only direct measurements can have comprehensive format so overide if necessary
 		/*if( ($format=='comprehensive') && ($this->vmeasurementOp!='Direct'))
 		{
 		$format = 'standard';
-		}*/
-
+		}*/	
+		
 		switch($format)
 		{
 			case "comprehensive":
@@ -865,7 +880,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			case "minimal":
 				return $this->_asXML($format, $parts);
 			default:
-				$this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary', 'minimal' or 'comprehensive'");
+				trigger_error("901"."Unknown format. Must be one of 'standard', 'summary', 'minimal' or 'comprehensive'");
 				return false;
 		}
 	}
@@ -968,7 +983,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		{											$xml.= "<tridas:linkSeries>\n";
 		foreach($this->referencesArray as $ref)
 		{
-			$xml.= "<tridas:identifier domain=\"$domain\">".$ref."</tridas:identifier>\n";
+			$xml.= "<tridas:series><tridas:identifier domain=\"$domain\">".$ref."</tridas:identifier></tridas:series>\n";
 		}
 		$xml.= "</tridas:linkSeries>\n";
 		}

@@ -88,14 +88,14 @@ class meta
   {
   	global $debugFlag;
   	global $timingFlag;
-  	global $firephp;
+  	global $firebug;
   	
   	if(( $debugFlag===TRUE) && ($timingFlag===TRUE))
   	{
     	//$message = array($theLabel => round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0));
     	//array_push($this->timing, $message);
     	
-  		$firephp->log(round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0), $theLabel);
+  		$firebug->log(round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0), $theLabel);
   	}
   }
   

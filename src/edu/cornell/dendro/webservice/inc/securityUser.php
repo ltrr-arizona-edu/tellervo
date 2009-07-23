@@ -88,6 +88,8 @@ class securityUser
 
         global $dbconn;
         
+        if ($theID==NULL) return false;
+        
         $this->id=$theID;
         $sql = "select * from tblsecurityuser where securityuserid=$theID";
         $dbconnstatus = pg_connection_status($dbconn);
