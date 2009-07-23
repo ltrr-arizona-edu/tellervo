@@ -972,7 +972,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		global $domain;
 		$xml = "";
 
-		$xml.= "\n\n<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
+		$xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
 		$xml.= $this->getIdentifierXML();
 		
 		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".dbHelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
