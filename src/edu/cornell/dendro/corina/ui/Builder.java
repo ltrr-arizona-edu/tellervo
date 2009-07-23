@@ -211,15 +211,16 @@ public class Builder {
 		if (url != null)
 			return new ImageIcon(url);
 		else
-			return getMissingIcon();
+			return getMissingIcon(22);
 	}	
 
 	/**
 	 * Retrieve the "missing icon" icon
 	 * @return
 	 */
-	public static Icon getMissingIcon() {
-		String resourceurl = RESOURCE_PACKAGE_PREFIX + ICONS + "/32x32/missingicon.png";
+	public static Icon getMissingIcon(int size) {
+		String sizeStr = size + "x" + size;
+		String resourceurl = RESOURCE_PACKAGE_PREFIX + ICONS + "/" + sizeStr + "/missingicon.png";
 		java.net.URL url = cl.getResource(resourceurl);
 		if (url != null)
 			return new ImageIcon(url);

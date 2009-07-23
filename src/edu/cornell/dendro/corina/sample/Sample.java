@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.sample;
 
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
+import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.graph.Graphable;
@@ -31,6 +32,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 
 import edu.cornell.dendro.corina_indexing.Indexable;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Vector;
@@ -44,8 +46,10 @@ import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasRemark;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasUnitless;
+import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
 import org.tridas.schema.TridasVariable;
 
@@ -291,6 +295,40 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		}
 	}
 
+	/**
+	 * Shortcut for getRemarksForYear(values, year)
+	 * Uses RING_WIDTH variable
+	 * 
+	 * @param y the year
+	 * @return a list of remarks for this year, or an empty list if one exists.
+	 */
+	public List<TridasRemark> getRemarksForYear(Year y) {
+		return getRemarksForYear(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH), y);
+	}
+	
+	/**
+	 * Get a list of TridasRemarks for this year on the specified variable
+	 * @param values
+	 * @param y
+	 * @return
+	 */
+	public List<TridasRemark> getRemarksForYear(TridasValues values, Year y) {
+		Range range = getRange();
+
+		// sanity - ignore an empty
+		if(!range.contains(y))
+			return Collections.emptyList();
+		
+		int idx = y.diff(range.getStart());
+		TridasValue value = values.getValues().get(idx);
+		
+		// if we've got remarks, return them!
+		if(value.isSetRemarks())
+			return value.getRemarks();
+		
+		return Collections.emptyList();
+	}
+	
 	public synchronized void addSampleListener(SampleListener l) {
 		if (!listeners.contains(l))
 			listeners.add(l);
@@ -345,7 +383,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		// ... (apply '+ count))
 		int n = 0, size = count.size();
 		for (int i = 0; i < size; i++)
-			n += (count.get(i)).intValue();
+			n += count.get(i);
 		return n;
 	}
 

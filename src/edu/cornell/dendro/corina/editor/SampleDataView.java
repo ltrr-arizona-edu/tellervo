@@ -24,20 +24,22 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-import javax.swing.ListSelectionModel;
+
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
@@ -68,6 +70,8 @@ import edu.cornell.dendro.corina.util.PopupListener;
 
 public class SampleDataView extends JPanel implements SampleListener,
 		PrefsListener {
+
+	private static final long serialVersionUID = 1L;
 
 	private Sample mySample;
 
@@ -195,21 +199,21 @@ public class SampleDataView extends JPanel implements SampleListener,
 				 */
 
 				JMenuItem insert = Builder.makeMenuItem("insert_year");
-				insert.addActionListener(new AbstractAction() {
+				insert.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						insertYear();
 					}
 				});
 
 				JMenuItem insertMR = Builder.makeMenuItem("insert_mr");
-				insertMR.addActionListener(new AbstractAction() {
+				insertMR.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						insertMR();
 					}
 				});
 
 				JMenuItem delete = Builder.makeMenuItem("delete_year");
-				delete.addActionListener(new AbstractAction() {
+				delete.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
 						deleteYear();
 					}
@@ -264,6 +268,10 @@ public class SampleDataView extends JPanel implements SampleListener,
 		//         javax.swing.table.JTableHeader().getDefaultRenderer());
 		myTable.getColumnModel().getColumn(11).setCellRenderer(
 				new CountRenderer(max));
+		
+		TableCellRenderer defaultCellRenderer = new IconBackgroundCellRenderer(mySample);
+		for(int i = 1; i < 11; i++)
+			myTable.getColumnModel().getColumn(i).setCellRenderer(defaultCellRenderer);
 
 		// make nulls elsewhere shaded, to indicate "can't use"
 		// DISABLED, because it doesn't hit the area below the table yet (how?).
@@ -274,7 +282,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		//myTable.setIntercellSpacing(new Dimension(0, 0));
 
 		// set font, gridlines, colors ==> handled by refreshFromPreferences()
-
+		
 		// add to panel
 		setLayout(new BorderLayout(0, 0)); // huh?
 		JScrollPane sp = new JScrollPane(myTable,
@@ -283,7 +291,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		add(sp, BorderLayout.CENTER);
 		add(new Modeline(myTable, mySample), BorderLayout.SOUTH);
-
+		
 		initPrefs();
 		App.prefs.addPrefsListener(this);
 	}
@@ -420,7 +428,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	public void deleteYear() {
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
-			Bug.bug(new IllegalArgumentException(
+			new Bug(new IllegalArgumentException(
 					"deleteYear() called on non-editable sample"));
 			return;
 		}
@@ -482,7 +490,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 	private void initPrefs() {
 		// reset fonts
-		Font font = Font.decode(App.prefs.getPref("corina.edit.font"));
+		Font font = App.prefs.getFontPref("corina.edit.font", null);
 		if (font != null)
 			myTable.setFont(font);
 
@@ -490,6 +498,8 @@ public class SampleDataView extends JPanel implements SampleListener,
 		myTable.setRowHeight((font == null ? 12 : font.getSize()) + 4);
 		// BUG: this seems to not work sometimes (?) -- try zapfino
 
+		myTable.setRowHeight(16);
+		
 		// disable gridlines, if requested
 		boolean gridlines = Boolean.valueOf(
 				App.prefs.getPref(Prefs.EDIT_GRIDLINES, "true")).booleanValue();

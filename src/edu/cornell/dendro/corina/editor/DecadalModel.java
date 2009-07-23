@@ -25,6 +25,7 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.manip.Redate;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Years;
 import edu.cornell.dendro.corina.gui.Bug;
 
 import javax.swing.table.*;
@@ -45,6 +46,8 @@ import javax.swing.undo.CannotRedoException;
 public class DecadalModel extends AbstractTableModel {
 	// BUG! -- if the length changes (e.g., truncate), there's a problem
 	// with sums.  ouch.  (<-- what did i mean by this?)
+
+	private static final long serialVersionUID = 1L;
 
 	/** The sample whose data is being displayed. */
 	protected Sample s;
@@ -140,9 +143,10 @@ public class DecadalModel extends AbstractTableModel {
 	 @param col the column in question
 	 @return the Year that the (row,col) cell should display */
 	public/* protected */Year getYear(int row, int col) {
+		return Years.forRowAndColumn(row + row_min, col - 1);
 		// System.out.println("getYear() called (n=" + __n++ + ")");
-		return new Year(row + row_min, // offset row by row_min (top row is 0)
-				col - 1); // offset col by 1 (left col is year label)
+		//return new Year(row + row_min, // offset row by row_min (top row is 0)
+		//		col - 1); // offset col by 1 (left col is year label)
 	}
 
 	// private static int __n=0;
@@ -183,8 +187,6 @@ public class DecadalModel extends AbstractTableModel {
 		return new Integer(mean);
 	}
 
-	private int __a = 0, __b = 0;
-
 	public Object getValueAt(int row, int col) {
 		if (col == 0) {
 			if (row == 0)
@@ -216,7 +218,7 @@ public class DecadalModel extends AbstractTableModel {
 	 @param col the column to query
 	 @return the column's class */
 	@Override
-	public Class getColumnClass(int col) {
+	public Class<?> getColumnClass(int col) {
 		return ((col >= 1 && col <= 10) ? Integer.class : String.class);
 	}
 
@@ -275,7 +277,7 @@ public class DecadalModel extends AbstractTableModel {
 			} catch (NumberFormatException nfe) {
 				// tell the user this is bad?
 			} catch (Exception e) {
-				Bug.bug(e);
+				new Bug(e);
 			}
 
 			// stop, either way
@@ -291,7 +293,7 @@ public class DecadalModel extends AbstractTableModel {
 			} catch (NumberFormatException nfe) {
 				return;
 			} catch (Exception e) {
-				Bug.bug(e);
+				new Bug(e);
 				return;
 			}
 		}
@@ -343,6 +345,8 @@ public class DecadalModel extends AbstractTableModel {
 		
 		final Integer glue = intValue;
 		s.postEdit(new AbstractUndoableEdit() {
+			private static final long serialVersionUID = 1L;
+			
 			private Integer newVal = glue;
 			private boolean grew = bigger; // BIGGER IS ALWAYS FALSE HERE -- LASTVAL PROBLEM!
 
