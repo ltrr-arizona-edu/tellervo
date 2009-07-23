@@ -522,7 +522,7 @@
         <xs:element name="readingNoteDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="readingNote" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element ref="tridas:remark" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
