@@ -21,7 +21,6 @@
 package edu.cornell.dendro.corina.index;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridLayout;
@@ -246,6 +245,7 @@ public class IndexDialog extends JDialog {
 		// call gets a new identifier with the domain of our parent
 		series.setIdentifier(NewTridasIdentifier.getInstance(sample.getSeries().getIdentifier()));
 		series.setTitle(indexName.getText());
+		series.setVersion(versionName.getText());
 
 		// it's an index
 		ControlledVoc voc = new ControlledVoc();
@@ -415,36 +415,31 @@ public class IndexDialog extends JDialog {
 		return p;
 	}
 	
-	// flow containing name: and box
+	// flow containing name and version
 	private JComponent makeNameBox() {
 		JPanel p = new JPanel();
-		
 		p.setLayout(new GridLayout(2,2,5,5));
 			
+		// Create name components
 		JLabel l = new JLabel("Series code:" + sample.getMetaString("title"));
 		JTextField name = new JTextField("Index");
 		name.setColumns(20);
-		
 		indexName = name;
 		l.setLabelFor(indexName);
-		
-		p.add(l);
-		//p.add(Box.createHorizontalStrut(5));
-		p.add(indexName);
-		
-		
+			
+		// Create version components
 		JLabel l2 = new JLabel("Version:");
 		JTextField version = new JTextField("1");
 		version.setColumns(20);		
-		
 		versionName = version;
 		l.setLabelFor(versionName);
 		
+		// Add items to panel
+		p.add(l);
+		p.add(indexName);
 		p.add(l2);
 		p.add(versionName);
-		
-		
-		
+
 		JPanel outer = new JPanel(new BorderLayout());
 		outer.add(p, BorderLayout.NORTH);
 		
