@@ -190,7 +190,7 @@ public class IndexDialog extends JDialog {
 		// Create split pane...
 		JSplitPane splitPane = new JSplitPane();
 		setContentPane(splitPane);
-		splitPane.setDividerLocation(450);
+		//splitPane.setDividerLocation(450);
 		
 		// calculate any extra width in this dialog
 		// 20 = separator + padding
@@ -202,12 +202,13 @@ public class IndexDialog extends JDialog {
 		content.add(Box.createHorizontalStrut(5));
 		content.add(new JSeparator(JSeparator.VERTICAL));
 		content.add(Box.createHorizontalStrut(5));
+			
+		JComponent graph = createGraph(content.getPreferredSize(), extraWidth);
+		splitPane.setRightComponent(content);
+		splitPane.setLeftComponent(graph);
 		
-		//content.add(createGraph(content.getPreferredSize(), extraWidth));
-		
-		splitPane.setLeftComponent(content);
-		splitPane.setRightComponent(createGraph(content.getPreferredSize(), extraWidth));
-		content.setSize(100, 100);
+		content.setMaximumSize(new Dimension(400,400));
+		splitPane.setResizeWeight(1.0);
 		
 		
 		// ok/cancel
@@ -421,7 +422,7 @@ public class IndexDialog extends JDialog {
 		p.setLayout(new GridLayout(2,2,5,5));
 			
 		// Create name components
-		JLabel l = new JLabel("Series code:" + sample.getMetaString("title"));
+		JLabel l = new JLabel("Series code:" + sample.getDisplayTitle().toString());
 		JTextField name = new JTextField("Index");
 		name.setColumns(20);
 		indexName = name;
