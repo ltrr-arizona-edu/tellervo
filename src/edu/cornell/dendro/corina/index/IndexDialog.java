@@ -54,7 +54,6 @@ import javax.swing.text.JTextComponent;
 
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
-import org.tridas.schema.TridasLinkSeries;
 
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.Graph;
@@ -71,6 +70,7 @@ import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -257,9 +257,7 @@ public class IndexDialog extends JDialog {
 		series.setStandardizingMethod(index.getIndexFunction().getDatabaseRepresentation());
 
 		// the sample we're basing this index on
-		TridasLinkSeries links = new TridasLinkSeries();
-		links.getIdRevesAndXLinksAndIdentifiers().add(sample.getSeries().getIdentifier());
-		series.setLinkSeries(links);
+		SeriesLinkUtil.addToSeries(series, sample.getSeries().getIdentifier());
 		
 		// create a new sample to hold this all
 		Sample tmp = new Sample(series);
