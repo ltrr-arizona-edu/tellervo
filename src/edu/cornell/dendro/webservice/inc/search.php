@@ -263,8 +263,12 @@ class search Implements IDBAccessor
 
     function xmlDebugOutput()
     {
-    	$xmldata = "<sql records=\"".$this->recordHits."\">".htmlSpecialChars($this->sqlcommand)."</sql>";
-    	return $xmldata;
+    	//$xmldata = "<sql records=\"".$this->recordHits."\">".htmlSpecialChars($this->sqlcommand)."</sql>";
+    	//return $xmldata;
+    	global $firephp;
+    	
+    	$firephp->log($this->recordHits, "Number of hits");
+    	$firephp->log($this->sqlcommand, "SQL used");
     }
     
     function asXML($format='standard', $mode="all")

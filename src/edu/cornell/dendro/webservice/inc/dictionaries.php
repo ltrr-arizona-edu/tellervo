@@ -80,11 +80,6 @@ class dictionaries
                 	// Unique case
                     $sql="select distinct(tblobjectregion.regionid) as id, tblregion.regionname as value from tblobjectregion, tblregion where tblobjectregion.regionid=tblregion.regionid";
                 }
-                elseif($item=="securityUser")
-                {
-                	// Unique case
-                    $sql = "select securityuserid as id, as value from tbl".strtolower($item)." where ".strtolower($item)."id>0 order by ".strtolower($item)."id"; 
-                }
                 elseif($item=="taxon")
                 {
                 	// Unique case
@@ -125,7 +120,7 @@ class dictionaries
 
         
         // More complex dictionary items
-        $dictItemsWithClasses = array('securityUser');
+        $dictItemsWithClasses = array('securityUser', 'readingNote');
         
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -139,7 +134,7 @@ class dictionaries
             			$myObj = new securityUser();
             			break;     
             		case "readingNote": 
-            			$sql="select readingnoteid as id from tlkpreadingnote";
+            			$sql="select readingnoteid as id from tlkpreadingnote where vocabularyid>0";
             			$myObj = new readingNote();
             			break;              			     			
             		case "taxon":

@@ -87,11 +87,15 @@ class meta
   function setTiming($theLabel)
   {
   	global $debugFlag;
+  	global $timingFlag;
+  	global $firephp;
   	
-  	if($debugFlag===TRUE)
+  	if(( $debugFlag===TRUE) && ($timingFlag===TRUE))
   	{
-    	$message = array($theLabel => round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0));
-    	array_push($this->timing, $message);
+    	//$message = array($theLabel => round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0));
+    	//array_push($this->timing, $message);
+    	
+  		$firephp->log(round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0), $theLabel);
   	}
   }
   
