@@ -277,7 +277,6 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			<xs:element ref="comments" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
-	
 	<!-- seriesLink: a singular link to a series -->
 	<xs:complexType name="seriesLink">
 		<xs:choice>
@@ -294,14 +293,12 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			<xs:element ref="identifier" />
 		</xs:choice>	
 	</xs:complexType>
-	
 	<!-- seriesLinks: a list of seriesLink types -->
 	<xs:complexType name="seriesLinks">
 		<xs:sequence>
 			<xs:element name="series" type="seriesLink" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
-
 	<!-- seriesLinksWithPreferred: a seriesLinks with a singular preferredSeries -->
 	<xs:complexType name="seriesLinksWithPreferred">
 		<xs:complexContent>
@@ -312,54 +309,6 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>	
-
-	<!-- linkSeries -->
-	<xs:element name="linkSeriesOBSELETE">
-		<xs:annotation>
-			<xs:documentation xml:lang="EN">
-				Fields for storing links to Series
-			</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="preferredSeries" minOccurs="0" maxOccurs="1">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							Link to preferred (best/most representative) series for this entity 
-						</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:choice>
-							<xs:element name="idRef">
-								<xs:complexType>
-									<xs:attribute name="ref" type="xs:IDREF"/>
-								</xs:complexType>
-							</xs:element>
-							<xs:element name="xLink">
-								<xs:complexType>
-									<xs:attribute ref="xlink:href"/>
-								</xs:complexType>
-							</xs:element>
-							<xs:element ref="identifier"/>
-						</xs:choice>
-					</xs:complexType>
-				</xs:element>
-				<xs:choice minOccurs="0" maxOccurs="unbounded">
-					<xs:element name="idRef">
-						<xs:complexType>
-							<xs:attribute name="ref" type="xs:IDREF"/>
-						</xs:complexType>
-					</xs:element>
-					<xs:element name="xLink">
-						<xs:complexType>
-							<xs:attribute ref="xlink:href"/>
-						</xs:complexType>
-					</xs:element>
-					<xs:element ref="identifier"/>
-				</xs:choice>			
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>	
 	<!-- type -->
 	<xs:element name="type" type="controlledVoc">
 		<xs:annotation>
