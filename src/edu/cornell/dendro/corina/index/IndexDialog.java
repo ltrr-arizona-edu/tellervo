@@ -21,8 +21,10 @@
 package edu.cornell.dendro.corina.index;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -42,6 +44,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -94,6 +97,7 @@ public class IndexDialog extends JDialog {
 
 	private List<Graph> graphSamples;
 	private JTextComponent indexName;
+	private JTextComponent versionName;
 	
 	private IndexSet iset;
 	private IndexTableModel model;
@@ -183,7 +187,11 @@ public class IndexDialog extends JDialog {
 		// create content pane...
 		JPanel content = new JPanel();
 		content.setLayout(new BoxLayout(content, BoxLayout.X_AXIS));
-		setContentPane(content);
+		
+		// Create split pane...
+		JSplitPane splitPane = new JSplitPane();
+		setContentPane(splitPane);
+		splitPane.setDividerLocation(450);
 		
 		// calculate any extra width in this dialog
 		// 20 = separator + padding
@@ -195,7 +203,13 @@ public class IndexDialog extends JDialog {
 		content.add(Box.createHorizontalStrut(5));
 		content.add(new JSeparator(JSeparator.VERTICAL));
 		content.add(Box.createHorizontalStrut(5));
-		content.add(createGraph(content.getPreferredSize(), extraWidth));
+		
+		//content.add(createGraph(content.getPreferredSize(), extraWidth));
+		
+		splitPane.setLeftComponent(content);
+		splitPane.setRightComponent(createGraph(content.getPreferredSize(), extraWidth));
+		content.setSize(100, 100);
+		
 		
 		// ok/cancel
 		OKCancel.addKeyboardDefaults(okButton);
@@ -278,6 +292,10 @@ public class IndexDialog extends JDialog {
 		// force no drawing of graph names
 		gInfo.setShowGraphNames(false);
 		
+		// Make sure the graphs can't be dragged
+		graphSamples.get(0).setDraggable(false);
+		graphSamples.get(1).setDraggable(false);
+		
 		// create a graph panel; put it in a scroll pane
 		graphPanel = new GrapherPanel(graphSamples, null, gInfo) {
 			@Override
@@ -288,10 +306,13 @@ public class IndexDialog extends JDialog {
 				return new Dimension((graphWidth < screenWidth) ? graphWidth : screenWidth, otherPanelDim.height);
 			}
 		};
-	
+
 		JScrollPane scroller = new JScrollPane(graphPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
+		// make the default viewport background the same color as the graph
+		scroller.getViewport().setBackground(gInfo.getBackgroundColor());
 		
 		GraphActions actions = new GraphActions(graphPanel, null, new GraphController(graphPanel, scroller));
 		GraphToolbar toolbar = new GraphToolbar(actions);
@@ -321,6 +342,7 @@ public class IndexDialog extends JDialog {
 		// name
 		p.add(Box.createVerticalStrut(8));
 		p.add(makeNameBox());
+ 
 		
 		p.add(Box.createVerticalStrut(14));
 
@@ -385,19 +407,21 @@ public class IndexDialog extends JDialog {
 	
 	// label, aligned
 	private JComponent makeLabel() {
+		JPanel p = new JPanel();
+		p.setLayout(new GridLayout(1,1));
 		JLabel l = new JLabel(I18n.getText("choose_index"));
-		l.setAlignmentX(RIGHT_ALIGNMENT);
-		return l;
+		//l.setAlignmentX(LEFT_ALIGNMENT);
+		p.add(l);
+		return p;
 	}
 	
 	// flow containing name: and box
 	private JComponent makeNameBox() {
 		JPanel p = new JPanel();
 		
-		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-		
-		JLabel l = new JLabel("Series code:  " + sample.getMetaString("title"));
-		
+		p.setLayout(new GridLayout(2,2,5,5));
+			
+		JLabel l = new JLabel("Series code:" + sample.getMetaString("title"));
 		JTextField name = new JTextField("Index");
 		name.setColumns(20);
 		
@@ -405,8 +429,21 @@ public class IndexDialog extends JDialog {
 		l.setLabelFor(indexName);
 		
 		p.add(l);
-		p.add(Box.createHorizontalStrut(5));
+		//p.add(Box.createHorizontalStrut(5));
 		p.add(indexName);
+		
+		
+		JLabel l2 = new JLabel("Version:");
+		JTextField version = new JTextField("1");
+		version.setColumns(20);		
+		
+		versionName = version;
+		l.setLabelFor(versionName);
+		
+		p.add(l2);
+		p.add(versionName);
+		
+		
 		
 		JPanel outer = new JPanel(new BorderLayout());
 		outer.add(p, BorderLayout.NORTH);
@@ -479,6 +516,10 @@ public class IndexDialog extends JDialog {
 				// propagate old scale
 				graphSamples.get(0).scale = scale;
 				graphSamples.get(1).scale = scale;
+				
+				// Make sure the graphs can't be dragged
+				graphSamples.get(0).setDraggable(false);
+				graphSamples.get(1).setDraggable(false);				
 				
 				if(graphPanel != null)
 					graphPanel.update();
