@@ -21,6 +21,7 @@
 package edu.cornell.dendro.corina;
 
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.util.Years;
 
 /**
  * A range of years. Ranges are immutable; all otherwise-destructive operations
@@ -124,8 +125,8 @@ public class Range implements Comparable<Range> {
 		String y2 = t.substring(dash + 1);
 
 		// construct years
-		start = new Year(y1);
-		end = new Year(y2);
+		start = Years.valueOf(y1);
+		end = Years.valueOf(y2);
 	}
 
 	/**

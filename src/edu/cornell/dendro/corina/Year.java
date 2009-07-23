@@ -24,6 +24,8 @@ import java.math.BigInteger;
 
 import org.tridas.schema.DatingSuffix;
 
+import edu.cornell.dendro.corina.util.Years;
+
 /**
    <p>A calendar year.  It normally acts similar to an integer, but
    skips the mythical "year 0".</p>
@@ -43,7 +45,7 @@ import org.tridas.schema.DatingSuffix;
 */
 public final class Year implements Comparable<Year> {
     /** The default year: 1001. */
-    public static final Year DEFAULT = new Year(1001);
+    public static final Year DEFAULT = Years.valueOf(1001);
 
     /** Holds the year value as an <code>int</code>. */
     private final int y;
@@ -207,7 +209,7 @@ public final class Year implements Comparable<Year> {
         // convert back, and return
         if (r <= 0)
             r--;
-        return new Year(r);
+        return Years.valueOf(r);
     }
 
     /**
