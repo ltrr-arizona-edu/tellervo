@@ -5,26 +5,13 @@ package edu.cornell.dendro.corina.gui;
  * @author  peterbrewer
  */
 
-import java.awt.Container;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.User;
-import edu.cornell.dendro.corina.gui.UserDetail;
-import edu.cornell.dendro.corina.sample.BaseSample;
-import edu.cornell.dendro.corina.sample.Element;
-import edu.cornell.dendro.corina.sample.ElementList;
-import edu.cornell.dendro.corina.sample.SampleSummary;
 
 
 public class AdminPanel extends javax.swing.JDialog {

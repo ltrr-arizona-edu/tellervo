@@ -11,17 +11,16 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.tridas.schema.TridasObject;
-
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
-import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.tridas.LabCode;
+import edu.cornell.dendro.corina.tridasv2.LabCode;
 
 public class DBBrowserTableModel extends AbstractTableModel {
+	private static final long serialVersionUID = 1L;
+	
 	private ElementList elements;
     private final String[] columnNames = {
             "Name", 

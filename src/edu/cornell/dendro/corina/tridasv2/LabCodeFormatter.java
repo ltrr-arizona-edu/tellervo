@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.tridas;
+package edu.cornell.dendro.corina.tridasv2;
 
 import java.util.List;
 
