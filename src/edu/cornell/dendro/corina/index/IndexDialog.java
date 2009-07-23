@@ -56,6 +56,7 @@ import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
 
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.graph.GraphActions;
 import edu.cornell.dendro.corina.graph.GraphController;
@@ -70,6 +71,8 @@ import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.tridas.LabCode;
+import edu.cornell.dendro.corina.tridas.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -420,11 +423,17 @@ public class IndexDialog extends JDialog {
 		p.setLayout(new GridLayout(2,2,5,5));
 			
 		// Create name components
-		JLabel l = new JLabel("Series code:" + sample.getDisplayTitle().toString());
-		JTextField name = new JTextField("Index");
-		name.setColumns(20);
+		JLabel l = new JLabel("Series code:  ");
+		JLabel prefix = new JLabel(LabCodeFormatter.getSeriesPrefix().format(sample.getMeta(Metadata.LABCODE, LabCode.class)) + "- ");			
+		JTextField name = new JTextField(sample.getSeries().getTitle().toString());
+		name.setColumns(10);
 		indexName = name;
-		l.setLabelFor(indexName);
+		//l.setLabelFor(indexName);
+		
+		JPanel titlePanel = new JPanel();
+		titlePanel.setLayout(new BorderLayout());
+		titlePanel.add(prefix, BorderLayout.WEST);
+		titlePanel.add(indexName, BorderLayout.CENTER);
 			
 		// Create version components
 		JLabel l2 = new JLabel("Version:");
@@ -433,9 +442,11 @@ public class IndexDialog extends JDialog {
 		versionName = version;
 		l.setLabelFor(versionName);
 		
+		
+		
 		// Add items to panel
 		p.add(l);
-		p.add(indexName);
+		p.add(titlePanel);
 		p.add(l2);
 		p.add(versionName);
 
