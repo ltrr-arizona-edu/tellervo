@@ -1,15 +1,18 @@
 package edu.cornell.dendro.corina.wsi;
 
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.BugReportDialog;
-import edu.cornell.dendro.corina.gui.XMLDebugView;
-import edu.cornell.dendro.corina.Build;
-import edu.cornell.dendro.corina.util.BugReport;
-import edu.cornell.dendro.corina.util.PureStringWriter;
-import edu.cornell.dendro.corina.util.XMLBody;
-import edu.cornell.dendro.corina.util.XMLParsingException;
-import edu.cornell.dendro.corina.webdbi.WSCookieStoreHandler;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.validation.Schema;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
@@ -22,24 +25,20 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.VersionInfo;
-import org.jdom.*;
-import org.jdom.input.DOMBuilder;
+import org.jdom.Document;
 import org.jdom.transform.JDOMResult;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.awt.Frame;
-import java.io.*;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.validation.Schema;
+import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.XMLDebugView;
+import edu.cornell.dendro.corina.util.BugReport;
+import edu.cornell.dendro.corina.util.PureStringWriter;
+import edu.cornell.dendro.corina.util.XMLBody;
+import edu.cornell.dendro.corina.util.XMLParsingException;
+import edu.cornell.dendro.corina.wsi.util.WSCookieStoreHandler;
 
 /**
  * This class is for accessing XML documents from the web service.

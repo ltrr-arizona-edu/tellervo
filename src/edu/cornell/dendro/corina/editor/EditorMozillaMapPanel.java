@@ -8,7 +8,6 @@ import org.mozilla.browser.IMozillaWindow.VisibilityMode;
 import org.mozilla.interfaces.nsIIOService;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.webdbi.MapLink;
 
 import static org.mozilla.browser.XPCOMUtils.getService;
 
@@ -17,19 +16,20 @@ import org.mozilla.interfaces.nsICookieService;
 import org.mozilla.interfaces.nsIURI;
 
 public class EditorMozillaMapPanel extends MozillaPanel {
-	public EditorMozillaMapPanel(MapLink link) {
+	public EditorMozillaMapPanel(Object link) {
 		// hide our toolbar
 		super(true, VisibilityMode.FORCED_HIDDEN, VisibilityMode.DEFAULT);
 
 		// set our PHPSESSID cookie
-		setCookie(link);
+		//setCookie(link);
 		
 		// don't change our title!
 		setUpdateTitle(false);
 
-		load(link.getMapLinkURL());
+		//load(link.getMapLinkURL());
 	}
 	
+	/*
 	public void setCookie(MapLink link) {
 		String cookie = App.prefs.getPref("corina.webservice.cookie");
 		
@@ -56,4 +56,5 @@ public class EditorMozillaMapPanel extends MozillaPanel {
 		// woot!
 		cookieserv.setCookieString(nsuri, null, cookie, null);
 	}
+	*/
 }

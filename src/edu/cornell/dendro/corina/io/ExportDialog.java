@@ -28,7 +28,6 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.TextClipboard;
 import edu.cornell.dendro.corina.util.PureStringWriter;
-import edu.cornell.dendro.corina.browser.FileLength;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.formats.Filetype;
@@ -347,7 +346,8 @@ public class ExportDialog extends JDialog {
 
 			// update views
 			preview.setText(buf.toString());
-			size.setText(new FileLength(buf.length()).toString());
+			// TODO: Reimplement me (is this really necessary?)
+			//size.setText(new FileLength(buf.length()).toString());
 			ok.setEnabled(true);
 
 			// move cursor to start -- this scrolls to the top, as well

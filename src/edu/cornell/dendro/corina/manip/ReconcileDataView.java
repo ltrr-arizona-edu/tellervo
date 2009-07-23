@@ -12,15 +12,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-
-import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.DecadalModel;
@@ -28,8 +24,6 @@ import edu.cornell.dendro.corina.editor.SampleDataView;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
-import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
 
 public class ReconcileDataView extends SampleDataView implements SampleListener {
 	private JEditorPane reconcileInfo;

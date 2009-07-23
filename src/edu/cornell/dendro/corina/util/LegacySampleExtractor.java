@@ -17,16 +17,12 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.tridas.Subsite;
-import edu.cornell.dendro.corina.tridas.TridasElement;
-import edu.cornell.dendro.corina.tridas.TridasIdentifier;
-import edu.cornell.dendro.corina.tridas.TridasObject;
-import edu.cornell.dendro.corina.tridas.TridasRadius;
-import edu.cornell.dendro.corina.tridas.TridasSample;
 
 /**
  * This class provides convenience methods for extracting data out of old-format Corina samples
  * (or maybe even imported Heidelberg, etc samples).
+ * 
+ * TODO: Reimplement me!
  * 
  * @author lucasm
  *
@@ -40,13 +36,14 @@ public class LegacySampleExtractor {
 		
 		this.sample = s;
 		
-		extractFromFilename();
+		//extractFromFilename();
 		
 		// populate the site because this is easy!
-		if(siteName != null)
-			associatedSite = App.tridasObjects.findObjectByCode(siteName);
+		//if(siteName != null)
+		//	associatedSite = App.tridasObjects.findObjectByCode(siteName);
 	}
-	
+
+	/*
 	private String siteName;
 	private String specimenOrTreeName;
 	private String radiusName;
@@ -58,7 +55,7 @@ public class LegacySampleExtractor {
 	 * Get the site object!
 	 * 
 	 * @return
-	 */
+	 * /
 	public TridasObject asSite() {
 		return associatedSite;
 	}
@@ -85,7 +82,7 @@ public class LegacySampleExtractor {
 	 * Tree- 
 	 * Populates: name, species->originalTaxonName
 	 * @return
-	 */
+	 * /
 	public TridasElement asTree() {
 		TridasElement tree = new TridasElement(TridasIdentifier.newEntity("element"), (specimenOrTreeName == null) ? 
 				TridasElement.NAME_INVALID : specimenOrTreeName);
@@ -106,7 +103,7 @@ public class LegacySampleExtractor {
 	 * terminalring
 	 * specimencontinuity
 	 * @return
-	 */
+	 * /
 	public TridasSample asSpecimen() {
 		TridasSample spec = new TridasSample(TridasSample.ID_NEW, (specimenOrTreeName == null) ? 
 				TridasSample.NAME_INVALID : specimenOrTreeName);
@@ -157,7 +154,7 @@ public class LegacySampleExtractor {
 	 * Radius
 	 * name
 	 * @return
-	 */
+	 * /
 	public TridasRadius asRadius() {
 		TridasRadius radius = new TridasRadius(TridasRadius.ID_NEW, (radiusName == null) ? 
 				TridasRadius.NAME_INVALID : radiusName);
@@ -167,7 +164,7 @@ public class LegacySampleExtractor {
 	/**
 	 * Actually, just the original sample.
 	 * @return
-	 */
+	 * /
 	public Sample asMeasurement() {
 		if(measurementName != null)
 			sample.setMeta("guessedmeasurementname", measurementName);
@@ -241,7 +238,7 @@ public class LegacySampleExtractor {
 	/**
 	 * Return a sanitized filename
 	 * @return
-	 */
+	 * /
 	public String getFilename() {
 		String fn = (String) sample.getMeta("filename");
 		ArrayList<String> segments = new ArrayList<String>();

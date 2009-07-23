@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.webdbi;
+package edu.cornell.dendro.corina.wsi.util;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

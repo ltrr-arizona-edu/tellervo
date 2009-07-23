@@ -3,7 +3,7 @@
  */
 package edu.cornell.dendro.corina.wsi;
 
-import edu.cornell.dendro.corina.webdbi.ResourceException;
+import edu.cornell.dendro.corina.wsi.util.ResourceException;
 
 /**
  * Thrown when a resource is somehow invalid

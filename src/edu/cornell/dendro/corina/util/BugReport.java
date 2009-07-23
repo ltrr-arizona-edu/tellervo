@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +16,6 @@ import java.util.zip.ZipOutputStream;
 import javax.swing.ListModel;
 
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.InputStreamBody;
@@ -29,7 +27,6 @@ import org.jdom.Document;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.webdbi.MalformedDocumentException;
 
 public class BugReport {
 	private final Throwable bug;
@@ -45,17 +42,7 @@ public class BugReport {
 		this.bug = t;
 		
 		addCompressedLogHistory();
-		fromEmail = comments = null;
-		
-		/**
-		 * If this is a malformed document, include the bad document with our bug report
-		 */
-		if(t instanceof MalformedDocumentException) {
-			Document badDoc = ((MalformedDocumentException) t).getMalformedDocument();
-			
-			if(badDoc != null)
-				addDocument("malformed.xml", badDoc);
-		}
+		fromEmail = comments = null;		
 	}
 	
 	public void setFromEmail(String fromEmail) {

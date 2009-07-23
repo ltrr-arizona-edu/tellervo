@@ -103,7 +103,6 @@ import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.DocumentListener2;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
-import edu.cornell.dendro.corina.webdbi.MapLink;
 
 /*
  left to do:
@@ -469,7 +468,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 	
 	private void initMozillaMapPanel() {
-		MapLink link = (MapLink) sample.getMeta("::maplink");
+		// TODO: FIXME
+		//MapLink link = (MapLink) sample.getMeta("::maplink");
+		Object link = null;
 		
 		// no link? no panel!
 		if(link == null)
