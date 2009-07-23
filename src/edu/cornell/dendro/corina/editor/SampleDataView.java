@@ -26,9 +26,12 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -39,6 +42,9 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+
+import org.tridas.schema.NormalTridasRemark;
+import org.tridas.schema.TridasRemark;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
@@ -170,73 +176,10 @@ public class SampleDataView extends JPanel implements SampleListener,
 				int row = myTable.rowAtPoint(e.getPoint());
 				int col = myTable.columnAtPoint(e.getPoint());
 
-				// clicked on a row header?  don't do anything.
-				if (col == 0)
-					return;
-
-				// select the cell at e.getPoint()
-				myTable.setRowSelectionInterval(row, row);
-				myTable.setColumnSelectionInterval(col, col);
-				// (does this work?  it does, but
-				// the table doesn't get hilited
-				// immediately..)
-
-				// TODO: if it's not a valid data cell, don't show popup
-				// TODO: if you can't ins/del a year here, dim those menuitems [done?]
-
-				// show a popup here.
-				JPopupMenu popup = new JPopupMenu();
-				// PERF: build this popup lazily here, and hold on to it.
-
-				// TODO: use buttongroup (what for? -- oh, the marks)
-
-				/* DISABLED
-				 JMenu marks = new JMenu("Mark with");
-				 for (int i=0; i<Mark.defaults.length; i++)
-				 marks.add(new JRadioButtonMenuItem(Mark.defaults[i].icon, false));
-				 marks.addSeparator();
-				 marks.add(new JRadioButtonMenuItem("None", true));
-				 */
-
-				JMenuItem insert = Builder.makeMenuItem("insert_year");
-				insert.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent ae) {
-						insertYear();
-					}
-				});
-
-				JMenuItem insertMR = Builder.makeMenuItem("insert_mr");
-				insertMR.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent ae) {
-						insertMR();
-					}
-				});
-
-				JMenuItem delete = Builder.makeMenuItem("delete_year");
-				delete.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent ae) {
-						deleteYear();
-					}
-				});
-
-				popup.add(insert);
-				popup.add(insertMR);
-				popup.add(delete);
-				// DISABLED until they're implemented.
-				// popup.addSeparator();
-				// popup.add(marks);
-				// popup.addSeparator();
-				// popup.add(new JMenuItem("Edit note..."));
-				// TODO: hook up edit_note, with i18n
-
-				// (dim insert/insertMR/delete, if it's not an editable sample.)
-				if (!mySample.isEditable()) {
-					insert.setEnabled(false);
-					insertMR.setEnabled(false);
-					delete.setEnabled(false);
-				}
-
-				popup.show(myTable, e.getX(), e.getY());
+				JPopupMenu menu = createPopupMenu(row, col);
+				
+				if(menu != null)
+					menu.show(myTable, e.getX(), e.getY());
 			}
 		});
 
@@ -294,6 +237,129 @@ public class SampleDataView extends JPanel implements SampleListener,
 		
 		initPrefs();
 		App.prefs.addPrefsListener(this);
+	}
+	
+	private JPopupMenu createPopupMenu(int row, int col) {
+		// clicked on a row header?  don't do anything.
+		if (col == 0)
+			return null;
+
+		// select the cell at e.getPoint()
+		myTable.setRowSelectionInterval(row, row);
+		myTable.setColumnSelectionInterval(col, col);
+		// (does this work?  it does, but
+		// the table doesn't get hilited
+		// immediately..)
+
+		// TODO: if it's not a valid data cell, don't show popup
+		// TODO: if you can't ins/del a year here, dim those menuitems [done?]
+
+		// show a popup here.
+		JPopupMenu popup = new JPopupMenu();
+		// PERF: build this popup lazily here, and hold on to it.
+
+		// TODO: use buttongroup (what for? -- oh, the marks)
+
+		/* DISABLED
+		 JMenu marks = new JMenu("Mark with");
+		 for (int i=0; i<Mark.defaults.length; i++)
+		 marks.add(new JRadioButtonMenuItem(Mark.defaults[i].icon, false));
+		 marks.addSeparator();
+		 marks.add(new JRadioButtonMenuItem("None", true));
+		 */
+
+		JMenuItem insert = Builder.makeMenuItem("insert_year");
+		insert.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				insertYear();
+			}
+		});
+
+		JMenuItem insertMR = Builder.makeMenuItem("insert_mr");
+		insertMR.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				insertMR();
+			}
+		});
+
+		JMenuItem delete = Builder.makeMenuItem("delete_year");
+		delete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				deleteYear();
+			}
+		});
+
+		popup.add(insert);
+		popup.add(insertMR);
+		popup.add(delete);
+		// DISABLED until they're implemented.
+		// popup.addSeparator();
+		// popup.add(marks);
+		// popup.addSeparator();
+		// popup.add(new JMenuItem("Edit note..."));
+		// TODO: hook up edit_note, with i18n
+
+		// (dim insert/insertMR/delete, if it's not an editable sample.)
+		if (!mySample.isEditable()) {
+			insert.setEnabled(false);
+			insertMR.setEnabled(false);
+			delete.setEnabled(false);
+		}
+		
+		popup.addSeparator();
+		addNotesMenu(popup, row, col);
+		
+		return popup;
+	}
+	
+	private final void addNotesMenu(JPopupMenu menu, int row, int col) {
+		// get the year
+		final Year y = ((DecadalModel) myModel).getYear(row, col);
+		
+		if(!mySample.getRange().contains(y))
+			return;
+		
+		// get the already-set remarks for this year
+		final List<TridasRemark> remarksForYear = mySample.getRemarksForYear(y);
+		
+		for(final NormalTridasRemark nt : NormalTridasRemark.values()) {
+			JMenuItem item = new JMenuItem(nt.value());
+			
+			menu.add(item);
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					boolean adding = true;
+					
+					// adding a remark is simple!
+					if(adding) {
+						TridasRemark remark = new TridasRemark();
+						remark.setNormalTridas(nt);
+						
+						remarksForYear.add(remark);
+					}
+					
+					mySample.fireSampleDataChanged();
+				}
+			});
+		}
+		
+	}
+
+	/**
+	 * @return a list of all possible TridasRemarks, in their form
+	 */
+	private List<TridasRemark> populateTridasRemarks(JMenu tridasMenu) {
+		ArrayList<TridasRemark> remarks = new ArrayList<TridasRemark>();
+		
+		for(NormalTridasRemark nt : NormalTridasRemark.values()) {
+			TridasRemark remark = new TridasRemark();
+			
+			remark.setNormalTridas(nt);
+			
+			remarks.add(remark);
+		}
+		
+		return remarks;
 	}
 
 	/** Return the Year of the currently selected cell.
