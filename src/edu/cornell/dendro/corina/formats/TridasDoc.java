@@ -10,9 +10,9 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasVariable;
-import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
@@ -186,11 +186,11 @@ public class TridasDoc implements Filetype {
 	public void finishDerivedSample(Sample s, 
 			TridasIdentifierMap<BaseSample> references) {
 		
-		if(!(s.getSeries() instanceof TridasDerivedSeries))
+		if(!(s.getSeries() instanceof ITridasDerivedSeries))
 			throw new IllegalArgumentException("loadReferences requires derived series!");
 		
 		// only works with a derived series
-		TridasDerivedSeries series = (TridasDerivedSeries) s.getSeries();
+		ITridasDerivedSeries series = (ITridasDerivedSeries) s.getSeries();
 		
 		// the list of elements
 		ElementList elements = new ElementList();
@@ -265,8 +265,8 @@ public class TridasDoc implements Filetype {
 				: series.getIdentifier().toString());
 		
 		// set up SampleType
-		if(series instanceof TridasDerivedSeries) {
-			TridasDerivedSeries derived = (TridasDerivedSeries) series;
+		if(series instanceof ITridasDerivedSeries) {
+			ITridasDerivedSeries derived = (ITridasDerivedSeries) series;
 			s.setSampleType(SampleType.fromString(derived.getType().getValue()));
 		}
 		else
@@ -281,10 +281,15 @@ public class TridasDoc implements Filetype {
 				getValue().toGregorianCalendar().getTime());
 		s.setMeta(Metadata.MODIFIED_TIMESTAMP, series.getLastModifiedTimestamp().
 				getValue().toGregorianCalendar().getTime());
-
+		
 		// reconciled only works on Direct VMs
-		if(genericFields.containsKey("corina.isReconciled") && s.getSampleType() == SampleType.DIRECT)
-			s.setMeta(Metadata.RECONCILED, genericFields.getBoolean("corina.isReconciled"));
+		if(s.getSampleType() == SampleType.DIRECT) {
+			// set it to the value of reconciled, or false if it's not present
+			if(genericFields.containsKey("corina.isReconciled"))
+				s.setMeta(Metadata.RECONCILED, genericFields.getBoolean("corina.isReconciled"));
+			else
+				s.setMeta(Metadata.RECONCILED, Boolean.FALSE);
+		}
 		
 		// translate start year
 		Year firstYear;
@@ -361,6 +366,11 @@ public class TridasDoc implements Filetype {
 				s.setMeta(Metadata.SUMMARY_MUTUAL_TAXON, genericFields.getString("corina.summaryTaxonName"));
 			if(genericFields.containsKey("corina.summaryTaxonCount"))
 				s.setMeta(Metadata.SUMMARY_MUTUAL_TAXON_COUNT, genericFields.getInteger("corina.summaryTaxonCount"));
+		
+			// Version
+			if(series instanceof ITridasDerivedSeries) {
+				s.setMeta(Metadata.VERSION, ((ITridasDerivedSeries)series).getVersion());
+			}
 		}
 		
 		return s;

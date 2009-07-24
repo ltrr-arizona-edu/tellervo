@@ -35,7 +35,6 @@ public interface ITridasDerivedSeries extends ITridasSeries {
      *     
      */
     public SeriesLinks getLinkSeries();
-    //public TridasLinkSeries getLinkSeries();
 
     /**
      * Sets the value of the linkSeries property.
@@ -46,7 +45,28 @@ public interface ITridasDerivedSeries extends ITridasSeries {
      *     
      */
     public void setLinkSeries(SeriesLinks value);
-    //public void setLinkSeries(TridasLinkSeries value);
 
     public boolean isSetLinkSeries();
+    
+    /**
+     * Gets the value of the version property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVersion();
+
+    /**
+     * Sets the value of the version property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVersion(String value);
+
+    public boolean isSetVersion();
 }

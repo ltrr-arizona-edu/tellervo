@@ -18,6 +18,9 @@ public class Metadata {
 	public final static String CREATED_TIMESTAMP = "createdTimestamp";
 	public final static String MODIFIED_TIMESTAMP = "modifiedTimestamp";
 	
+	/** Derived series version */
+	public static final String VERSION = "version";
+
 	/** The server says this is a "legacy cleaned" sample
 	 * FIXME: What is that, exactly?
 	 */
