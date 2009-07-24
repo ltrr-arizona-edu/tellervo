@@ -1,6 +1,7 @@
 package edu.cornell.dendro.corina.manip;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
@@ -8,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -38,6 +40,15 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
 
+import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.graph.GraphActions;
+import edu.cornell.dendro.corina.graph.GraphController;
+import edu.cornell.dendro.corina.graph.GraphInfo;
+import edu.cornell.dendro.corina.graph.GraphToolbar;
+import edu.cornell.dendro.corina.graph.GrapherEvent;
+import edu.cornell.dendro.corina.graph.GrapherListener;
+import edu.cornell.dendro.corina.graph.GrapherPanel;
+
 public class ReconcileWindow extends XFrame implements ReconcileNotifier, SaveableDocument {
 	
 	private ReconcileDataView dv1, dv2;
@@ -52,7 +63,15 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	private JButton btnRemeasure;
 	private JPanel refPanel; // the panel with the reference measurement
 	private JSeparator sepLine;
-//bagldsalgdsa
+	protected JPanel panelChart;
+	
+	private GraphActions actions;	
+	private GrapherPanel graph;	
+	private GraphInfo graphInfo;
+	private List<Graph> graphSamples;
+	private JScrollPane graphScroller;	
+	private GraphController graphController;	
+	
 	
 	private boolean extraIsShown = false;
 	private final static String EXPAND = "Show reference";
@@ -98,28 +117,32 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		//refPanel.setVisible(extraIsShown);
 		
 		// Graph panel
-		JPanel graphPanel = new JPanel();
-
+		panelChart = new JPanel();
+		setupGraph();
+		updateGraph(s1, s2);	
+				
 		// Create split pane to hold tab pane and graph pane
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);	
 		splitPane.setTopComponent(seriesHolder);
-		splitPane.setBottomComponent(graphPanel);
+		splitPane.setBottomComponent(panelChart);
+		splitPane.setDividerLocation(300);
 		
 		// Add series panels to seriesHolder panel
-		seriesHolder.add(dv1.getReconcileInfoPanel());
 		seriesHolder.add(reconcilePanel);
 		seriesHolder.add(refPanel);
 		
 		// Add panels to main panel
 		content.add(splitPane, BorderLayout.CENTER);
+		content.add(dv1.getReconcileInfoPanel(), BorderLayout.WEST);
 		content.add(createButtonPanel(), BorderLayout.SOUTH);
-		//reconcilePanel.add(refPanel);
-		
-		setContentPane(content);
-		
+
+		setContentPane(content);	
+
 		pack();
 		setVisible(true);
+		this.setExtendedState(this.getExtendedState() | ReconcileWindow.MAXIMIZED_BOTH);
+		
 	}
 	
 	private JPanel createButtonPanel() {
@@ -180,14 +203,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
                 .addContainerGap(26, Short.MAX_VALUE))
         );			
 	
-		
-        btnViewType.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent ae){
-        		// TODO 	
-        		// Toggle between Graph and Table views
-        	}
-        });
-        
+		        
 		// Cancel should loose any unsaved changes so reload sample from db
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -324,31 +340,6 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 				}
 			}
 		});
-
-		btnShowHideRef.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				// toggle visibility
-				extraIsShown = !extraIsShown;
-
-				// hide it and resize it
-				glue.setVisible(false);
-				
-				btnShowHideRef.setText(extraIsShown ? HIDE : EXPAND);
-				refPanel.setVisible(extraIsShown);
-				glue.pack();
-				
-				// make sure we're not freakin' huge
-				int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-				if(glue.getHeight() > height - 100)
-					glue.setSize(glue.getWidth(), height - 100);
-				
-				// re-visible
-				glue.setVisible(true);
-				
-				// re-center 
-				Center.center(glue);
-			}
-		});
 		
 		return buttonPanel;
 	}
@@ -396,6 +387,9 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		
 		// enable our apply button?
 		if(s1.isModified() || s2.isModified()) btnFinish.setEnabled(true);
+		
+		updateGraph(s1, s2);
+		
 	}
 	
 	
@@ -437,4 +431,83 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	
 	public void setFilename(String fn) {
 	}
+	
+    private void setupGraph() {	    	
+		// create a new graphinfo structure, so we can tailor it to our needs.
+		graphInfo = new GraphInfo();
+		
+		// force no drawing of graph names and drawing of vertical axis
+		graphInfo.setShowGraphNames(false);
+		graphInfo.setShowVertAxis(true);
+		
+		// set up our samples
+		graphSamples = new ArrayList<Graph>(2);
+				
+		// create a graph panel; put it in a scroll pane
+		graph = new GrapherPanel(graphSamples, null, graphInfo) {
+			@Override
+			public Dimension getPreferredSize(Dimension parent, Dimension scroll) {
+				// our height is the size of the graph or the size of the viewport
+				// whichever is greater
+				return new Dimension(parent.width, Math.max(getGraphHeight(), scroll.height));
+			}
+		};
+		graph.setUseVerticalScrollbar(true);
+		
+		
+		graphScroller = new JScrollPane(graph,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		graphScroller.setVerticalScrollBar(new ReverseScrollBar());
+
+		// make the default viewport background the same color as the graph
+		graphScroller.getViewport().setBackground(graphInfo.getBackgroundColor());
+		
+		graphController = new GraphController(graph, graphScroller);
+				
+		panelChart.setLayout(new BorderLayout());
+		panelChart.add(graphScroller, BorderLayout.CENTER);
+		
+		// add a toolbar
+    	actions = new GraphActions(graph, null, graphController);
+    	GraphToolbar graphToolbar = new GraphToolbar(actions);
+    	graphToolbar.setOrientation(1);
+    	panelChart.add(graphToolbar, BorderLayout.WEST);
+    	
+    	// listen to this graph
+    	//graph.addGrapherListener(this);
+    	
+		// get our basic graph set up
+		updateGraph(null, null);
+	 
+    }
+    
+    private void updateGraph(Sample s1, Sample s2) {    	
+   		graphSamples.clear();
+   		
+   		ArrayList<Graph> myGraphs = new ArrayList<Graph>();
+   		
+   		if(!(s1 == null || s2 == null)){ 				
+			myGraphs.add(new Graph(s1));
+			myGraphs.add(new Graph(s2));  
+   		}
+    	
+		if(myGraphs.size() == 2) {
+    		// copy the graphs over
+    		graphSamples.add(myGraphs.get(0));
+    		graphSamples.add(myGraphs.get(1));
+    		
+    		// make sure we can't drag our graphs
+    		myGraphs.get(0).setDraggable(false);
+    		myGraphs.get(1).setDraggable(false);
+    		
+    		// fit the height of the graph
+        	graphController.scaleToFitHeight(5);
+    	}
+    	
+		graphInfo.setShowVertAxis(true);
+    	graph.update(true);
+    }
+    
+    
 }

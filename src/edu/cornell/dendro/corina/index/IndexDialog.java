@@ -71,8 +71,7 @@ import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.tridas.LabCode;
-import edu.cornell.dendro.corina.tridas.LabCodeFormatter;
+import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -424,7 +423,8 @@ public class IndexDialog extends JDialog {
 			
 		// Create name components
 		JLabel l = new JLabel("Series code:  ");
-		JLabel prefix = new JLabel(LabCodeFormatter.getSeriesPrefix().format(sample.getMeta(Metadata.LABCODE, LabCode.class)) + "- ");			
+		//JLabel prefix = new JLabel(LabCodeFormatter.getSeriesPrefix().format() + "- ");
+		JLabel prefix = new JLabel("C-XXX-X-X-X-");
 		JTextField name = new JTextField(sample.getSeries().getTitle().toString());
 		name.setColumns(10);
 		indexName = name;
