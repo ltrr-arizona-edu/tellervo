@@ -81,9 +81,9 @@ BEGIN
 
       -- Our Direct Case is easy; perform it here and leave.
       INSERT INTO tblVMeasurement(VMeasurementID, MeasurementID, VMeasurementOpID, Code, Comments, OwnerUserID, 
- 				  Objective, Version, Birthdate)
+ 				  Objective, Version, Birthdate, IsGenerating)
          VALUES (newID, BaseMeasurement, OpID, V_Code, V_Comments, V_OwnerUserID, 
-		 V_Objective, V_Version, V_Birthdate);
+		 V_Objective, V_Version, V_Birthdate, FALSE);
 
       RETURN newID;
 
