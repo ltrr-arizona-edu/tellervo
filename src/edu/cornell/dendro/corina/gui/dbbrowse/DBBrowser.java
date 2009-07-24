@@ -83,6 +83,8 @@ public class DBBrowser extends DBBrowser_UI{
 
         listTableSplit.setOneTouchExpandable(true);
 
+        cboBrowseBy.setVisible(false);
+        
         setupTableArea();
         populateComponents();        
         

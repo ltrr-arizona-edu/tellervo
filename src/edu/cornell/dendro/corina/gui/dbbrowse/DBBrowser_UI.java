@@ -89,7 +89,7 @@ public class DBBrowser_UI extends JDialog {
 	    listTableSplit.setResizeWeight(0.2);
 	    listTableSplit.setFocusable(false);
 	
-	    browseSearchPane.setEnabled(false);
+	    browseSearchPane.setEnabled(true);
 	
 	    cboBrowseBy.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All Regions", "Mediterranean", "Greece", "Italy", "Turkey", "United States" }));
 	    cboBrowseBy.setToolTipText("Select a region to filter the sites list below");
@@ -122,7 +122,7 @@ public class DBBrowser_UI extends JDialog {
 	            .add(txtFilterInput, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
 	    );
 	
-	    browseSearchPane.addTab("Browse", browsePanel);
+	    browseSearchPane.addTab("Browse by objects", browsePanel);
 	
 	    org.jdesktop.layout.GroupLayout searchPanelLayout = new org.jdesktop.layout.GroupLayout(searchPanel);
 	    searchPanel.setLayout(searchPanelLayout);
