@@ -97,6 +97,18 @@ public class MultiPointType
         this.pointMembers = null;
     }
 
+    /**
+     * Sets the value of the pointMembers property.
+     * 
+     * @param pointMembers
+     *     allowed object is
+     *     {@link PointMember }
+     *     
+     */
+    public void setPointMembers(List<PointMember> pointMembers) {
+        this.pointMembers = pointMembers;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof MultiPointType)) {
             equalsBuilder.appendSuper(false);
@@ -155,9 +167,7 @@ public class MultiPointType
             List<PointMember> sourcePointMembers;
             sourcePointMembers = this.getPointMembers();
             List<PointMember> copyPointMembers = ((List<PointMember> ) copyBuilder.copy(sourcePointMembers));
-            copy.unsetPointMembers();
-            List<PointMember> uniquePointMembersl = copy.getPointMembers();
-            uniquePointMembersl.addAll(copyPointMembers);
+            copy.setPointMembers(copyPointMembers);
         }
         return copy;
     }

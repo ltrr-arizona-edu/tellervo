@@ -93,6 +93,18 @@ public class WSICoverageTemporalDictionary implements Serializable, CopyTo, Copy
         this.coverageTemporals = null;
     }
 
+    /**
+     * Sets the value of the coverageTemporals property.
+     * 
+     * @param coverageTemporals
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setCoverageTemporals(List<ControlledVoc> coverageTemporals) {
+        this.coverageTemporals = coverageTemporals;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSICoverageTemporalDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSICoverageTemporalDictionary implements Serializable, CopyTo, Copy
             List<ControlledVoc> sourceCoverageTemporals;
             sourceCoverageTemporals = this.getCoverageTemporals();
             List<ControlledVoc> copyCoverageTemporals = ((List<ControlledVoc> ) copyBuilder.copy(sourceCoverageTemporals));
-            copy.unsetCoverageTemporals();
-            List<ControlledVoc> uniqueCoverageTemporalsl = copy.getCoverageTemporals();
-            uniqueCoverageTemporalsl.addAll(copyCoverageTemporals);
+            copy.setCoverageTemporals(copyCoverageTemporals);
         }
         return copy;
     }

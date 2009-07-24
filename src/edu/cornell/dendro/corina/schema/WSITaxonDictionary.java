@@ -93,6 +93,18 @@ public class WSITaxonDictionary implements Serializable, CopyTo, Copyable, Equal
         this.taxons = null;
     }
 
+    /**
+     * Sets the value of the taxons property.
+     * 
+     * @param taxons
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setTaxons(List<ControlledVoc> taxons) {
+        this.taxons = taxons;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSITaxonDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSITaxonDictionary implements Serializable, CopyTo, Copyable, Equal
             List<ControlledVoc> sourceTaxons;
             sourceTaxons = this.getTaxons();
             List<ControlledVoc> copyTaxons = ((List<ControlledVoc> ) copyBuilder.copy(sourceTaxons));
-            copy.unsetTaxons();
-            List<ControlledVoc> uniqueTaxonsl = copy.getTaxons();
-            uniqueTaxonsl.addAll(copyTaxons);
+            copy.setTaxons(copyTaxons);
         }
         return copy;
     }

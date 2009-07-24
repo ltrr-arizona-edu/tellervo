@@ -617,6 +617,42 @@ public class TridasElement
         this.samples = null;
     }
 
+    /**
+     * Sets the value of the files property.
+     * 
+     * @param files
+     *     allowed object is
+     *     {@link TridasFile }
+     *     
+     */
+    public void setFiles(List<TridasFile> files) {
+        this.files = files;
+    }
+
+    /**
+     * Sets the value of the genericFields property.
+     * 
+     * @param genericFields
+     *     allowed object is
+     *     {@link TridasGenericField }
+     *     
+     */
+    public void setGenericFields(List<TridasGenericField> genericFields) {
+        this.genericFields = genericFields;
+    }
+
+    /**
+     * Sets the value of the samples property.
+     * 
+     * @param samples
+     *     allowed object is
+     *     {@link TridasSample }
+     *     
+     */
+    public void setSamples(List<TridasSample> samples) {
+        this.samples = samples;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasElement)) {
             equalsBuilder.appendSuper(false);
@@ -805,9 +841,7 @@ public class TridasElement
             List<TridasFile> sourceFiles;
             sourceFiles = this.getFiles();
             List<TridasFile> copyFiles = ((List<TridasFile> ) copyBuilder.copy(sourceFiles));
-            copy.unsetFiles();
-            List<TridasFile> uniqueFilesl = copy.getFiles();
-            uniqueFilesl.addAll(copyFiles);
+            copy.setFiles(copyFiles);
         }
         {
             ControlledVoc sourceTaxon;
@@ -879,17 +913,13 @@ public class TridasElement
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
-            copy.unsetGenericFields();
-            List<TridasGenericField> uniqueGenericFieldsl = copy.getGenericFields();
-            uniqueGenericFieldsl.addAll(copyGenericFields);
+            copy.setGenericFields(copyGenericFields);
         }
         {
             List<TridasSample> sourceSamples;
             sourceSamples = this.getSamples();
             List<TridasSample> copySamples = ((List<TridasSample> ) copyBuilder.copy(sourceSamples));
-            copy.unsetSamples();
-            List<TridasSample> uniqueSamplesl = copy.getSamples();
-            uniqueSamplesl.addAll(copySamples);
+            copy.setSamples(copySamples);
         }
         return copy;
     }

@@ -93,6 +93,18 @@ public class WSIElementAuthenticityDictionary implements Serializable, CopyTo, C
         this.elementAuthenticities = null;
     }
 
+    /**
+     * Sets the value of the elementAuthenticities property.
+     * 
+     * @param elementAuthenticities
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setElementAuthenticities(List<ControlledVoc> elementAuthenticities) {
+        this.elementAuthenticities = elementAuthenticities;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIElementAuthenticityDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSIElementAuthenticityDictionary implements Serializable, CopyTo, C
             List<ControlledVoc> sourceElementAuthenticities;
             sourceElementAuthenticities = this.getElementAuthenticities();
             List<ControlledVoc> copyElementAuthenticities = ((List<ControlledVoc> ) copyBuilder.copy(sourceElementAuthenticities));
-            copy.unsetElementAuthenticities();
-            List<ControlledVoc> uniqueElementAuthenticitiesl = copy.getElementAuthenticities();
-            uniqueElementAuthenticitiesl.addAll(copyElementAuthenticities);
+            copy.setElementAuthenticities(copyElementAuthenticities);
         }
         return copy;
     }

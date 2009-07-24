@@ -248,6 +248,18 @@ public class TridasInterpretation
         return (this.provenance!= null);
     }
 
+    /**
+     * Sets the value of the statFoundations property.
+     * 
+     * @param statFoundations
+     *     allowed object is
+     *     {@link TridasStatFoundation }
+     *     
+     */
+    public void setStatFoundations(List<TridasStatFoundation> statFoundations) {
+        this.statFoundations = statFoundations;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasInterpretation)) {
             equalsBuilder.appendSuper(false);
@@ -349,9 +361,7 @@ public class TridasInterpretation
             List<TridasStatFoundation> sourceStatFoundations;
             sourceStatFoundations = this.getStatFoundations();
             List<TridasStatFoundation> copyStatFoundations = ((List<TridasStatFoundation> ) copyBuilder.copy(sourceStatFoundations));
-            copy.unsetStatFoundations();
-            List<TridasStatFoundation> uniqueStatFoundationsl = copy.getStatFoundations();
-            uniqueStatFoundationsl.addAll(copyStatFoundations);
+            copy.setStatFoundations(copyStatFoundations);
         }
         {
             Year sourceSproutYear;

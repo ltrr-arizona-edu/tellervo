@@ -266,6 +266,18 @@ public class WSISearchParams
         this.includeChildren = null;
     }
 
+    /**
+     * Sets the value of the params property.
+     * 
+     * @param params
+     *     allowed object is
+     *     {@link WSIParam }
+     *     
+     */
+    public void setParams(List<WSIParam> params) {
+        this.params = params;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSISearchParams)) {
             equalsBuilder.appendSuper(false);
@@ -361,9 +373,7 @@ public class WSISearchParams
             List<WSIParam> sourceParams;
             sourceParams = this.getParams();
             List<WSIParam> copyParams = ((List<WSIParam> ) copyBuilder.copy(sourceParams));
-            copy.unsetParams();
-            List<WSIParam> uniqueParamsl = copy.getParams();
-            uniqueParamsl.addAll(copyParams);
+            copy.setParams(copyParams);
         }
         {
             SearchReturnObject sourceReturnObject;

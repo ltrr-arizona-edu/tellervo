@@ -93,6 +93,18 @@ public class WSIElementShapeDictionary implements Serializable, CopyTo, Copyable
         this.elementShapes = null;
     }
 
+    /**
+     * Sets the value of the elementShapes property.
+     * 
+     * @param elementShapes
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setElementShapes(List<ControlledVoc> elementShapes) {
+        this.elementShapes = elementShapes;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIElementShapeDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSIElementShapeDictionary implements Serializable, CopyTo, Copyable
             List<ControlledVoc> sourceElementShapes;
             sourceElementShapes = this.getElementShapes();
             List<ControlledVoc> copyElementShapes = ((List<ControlledVoc> ) copyBuilder.copy(sourceElementShapes));
-            copy.unsetElementShapes();
-            List<ControlledVoc> uniqueElementShapesl = copy.getElementShapes();
-            uniqueElementShapesl.addAll(copyElementShapes);
+            copy.setElementShapes(copyElementShapes);
         }
         return copy;
     }

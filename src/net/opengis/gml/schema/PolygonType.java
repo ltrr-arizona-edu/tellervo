@@ -130,6 +130,18 @@ public class PolygonType
         this.interiors = null;
     }
 
+    /**
+     * Sets the value of the interiors property.
+     * 
+     * @param interiors
+     *     allowed object is
+     *     {@link AbstractRingPropertyType }
+     *     
+     */
+    public void setInteriors(List<AbstractRingPropertyType> interiors) {
+        this.interiors = interiors;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof PolygonType)) {
             equalsBuilder.appendSuper(false);
@@ -201,9 +213,7 @@ public class PolygonType
             List<AbstractRingPropertyType> sourceInteriors;
             sourceInteriors = this.getInteriors();
             List<AbstractRingPropertyType> copyInteriors = ((List<AbstractRingPropertyType> ) copyBuilder.copy(sourceInteriors));
-            copy.unsetInteriors();
-            List<AbstractRingPropertyType> uniqueInteriorsl = copy.getInteriors();
-            uniqueInteriorsl.addAll(copyInteriors);
+            copy.setInteriors(copyInteriors);
         }
         return copy;
     }

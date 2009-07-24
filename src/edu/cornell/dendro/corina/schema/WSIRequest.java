@@ -593,6 +593,102 @@ public class WSIRequest
         return (this.parentEntityID!= null);
     }
 
+    /**
+     * Sets the value of the projects property.
+     * 
+     * @param projects
+     *     allowed object is
+     *     {@link TridasProject }
+     *     
+     */
+    public void setProjects(List<TridasProject> projects) {
+        this.projects = projects;
+    }
+
+    /**
+     * Sets the value of the objects property.
+     * 
+     * @param objects
+     *     allowed object is
+     *     {@link TridasObject }
+     *     
+     */
+    public void setObjects(List<TridasObject> objects) {
+        this.objects = objects;
+    }
+
+    /**
+     * Sets the value of the elements property.
+     * 
+     * @param elements
+     *     allowed object is
+     *     {@link TridasElement }
+     *     
+     */
+    public void setElements(List<TridasElement> elements) {
+        this.elements = elements;
+    }
+
+    /**
+     * Sets the value of the samples property.
+     * 
+     * @param samples
+     *     allowed object is
+     *     {@link TridasSample }
+     *     
+     */
+    public void setSamples(List<TridasSample> samples) {
+        this.samples = samples;
+    }
+
+    /**
+     * Sets the value of the radiuses property.
+     * 
+     * @param radiuses
+     *     allowed object is
+     *     {@link TridasRadius }
+     *     
+     */
+    public void setRadiuses(List<TridasRadius> radiuses) {
+        this.radiuses = radiuses;
+    }
+
+    /**
+     * Sets the value of the measurementSeries property.
+     * 
+     * @param measurementSeries
+     *     allowed object is
+     *     {@link TridasMeasurementSeries }
+     *     
+     */
+    public void setMeasurementSeries(List<TridasMeasurementSeries> measurementSeries) {
+        this.measurementSeries = measurementSeries;
+    }
+
+    /**
+     * Sets the value of the derivedSeries property.
+     * 
+     * @param derivedSeries
+     *     allowed object is
+     *     {@link TridasDerivedSeries }
+     *     
+     */
+    public void setDerivedSeries(List<TridasDerivedSeries> derivedSeries) {
+        this.derivedSeries = derivedSeries;
+    }
+
+    /**
+     * Sets the value of the entities property.
+     * 
+     * @param entities
+     *     allowed object is
+     *     {@link WSIEntity }
+     *     
+     */
+    public void setEntities(List<WSIEntity> entities) {
+        this.entities = entities;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIRequest)) {
             equalsBuilder.appendSuper(false);
@@ -744,65 +840,49 @@ public class WSIRequest
             List<TridasProject> sourceProjects;
             sourceProjects = this.getProjects();
             List<TridasProject> copyProjects = ((List<TridasProject> ) copyBuilder.copy(sourceProjects));
-            copy.unsetProjects();
-            List<TridasProject> uniqueProjectsl = copy.getProjects();
-            uniqueProjectsl.addAll(copyProjects);
+            copy.setProjects(copyProjects);
         }
         {
             List<TridasObject> sourceObjects;
             sourceObjects = this.getObjects();
             List<TridasObject> copyObjects = ((List<TridasObject> ) copyBuilder.copy(sourceObjects));
-            copy.unsetObjects();
-            List<TridasObject> uniqueObjectsl = copy.getObjects();
-            uniqueObjectsl.addAll(copyObjects);
+            copy.setObjects(copyObjects);
         }
         {
             List<TridasElement> sourceElements;
             sourceElements = this.getElements();
             List<TridasElement> copyElements = ((List<TridasElement> ) copyBuilder.copy(sourceElements));
-            copy.unsetElements();
-            List<TridasElement> uniqueElementsl = copy.getElements();
-            uniqueElementsl.addAll(copyElements);
+            copy.setElements(copyElements);
         }
         {
             List<TridasSample> sourceSamples;
             sourceSamples = this.getSamples();
             List<TridasSample> copySamples = ((List<TridasSample> ) copyBuilder.copy(sourceSamples));
-            copy.unsetSamples();
-            List<TridasSample> uniqueSamplesl = copy.getSamples();
-            uniqueSamplesl.addAll(copySamples);
+            copy.setSamples(copySamples);
         }
         {
             List<TridasRadius> sourceRadiuses;
             sourceRadiuses = this.getRadiuses();
             List<TridasRadius> copyRadiuses = ((List<TridasRadius> ) copyBuilder.copy(sourceRadiuses));
-            copy.unsetRadiuses();
-            List<TridasRadius> uniqueRadiusesl = copy.getRadiuses();
-            uniqueRadiusesl.addAll(copyRadiuses);
+            copy.setRadiuses(copyRadiuses);
         }
         {
             List<TridasMeasurementSeries> sourceMeasurementSeries;
             sourceMeasurementSeries = this.getMeasurementSeries();
             List<TridasMeasurementSeries> copyMeasurementSeries = ((List<TridasMeasurementSeries> ) copyBuilder.copy(sourceMeasurementSeries));
-            copy.unsetMeasurementSeries();
-            List<TridasMeasurementSeries> uniqueMeasurementSeriesl = copy.getMeasurementSeries();
-            uniqueMeasurementSeriesl.addAll(copyMeasurementSeries);
+            copy.setMeasurementSeries(copyMeasurementSeries);
         }
         {
             List<TridasDerivedSeries> sourceDerivedSeries;
             sourceDerivedSeries = this.getDerivedSeries();
             List<TridasDerivedSeries> copyDerivedSeries = ((List<TridasDerivedSeries> ) copyBuilder.copy(sourceDerivedSeries));
-            copy.unsetDerivedSeries();
-            List<TridasDerivedSeries> uniqueDerivedSeriesl = copy.getDerivedSeries();
-            uniqueDerivedSeriesl.addAll(copyDerivedSeries);
+            copy.setDerivedSeries(copyDerivedSeries);
         }
         {
             List<WSIEntity> sourceEntities;
             sourceEntities = this.getEntities();
             List<WSIEntity> copyEntities = ((List<WSIEntity> ) copyBuilder.copy(sourceEntities));
-            copy.unsetEntities();
-            List<WSIEntity> uniqueEntitiesl = copy.getEntities();
-            uniqueEntitiesl.addAll(copyEntities);
+            copy.setEntities(copyEntities);
         }
         {
             WSIAuthenticate sourceAuthenticate;

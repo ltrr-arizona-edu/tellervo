@@ -458,6 +458,30 @@ public class WSIHeader
         return (this.nonce!= null);
     }
 
+    /**
+     * Sets the value of the messages property.
+     * 
+     * @param messages
+     *     allowed object is
+     *     {@link WSIMessage }
+     *     
+     */
+    public void setMessages(List<WSIMessage> messages) {
+        this.messages = messages;
+    }
+
+    /**
+     * Sets the value of the timings property.
+     * 
+     * @param timings
+     *     allowed object is
+     *     {@link WSIHeader.Timing }
+     *     
+     */
+    public void setTimings(List<WSIHeader.Timing> timings) {
+        this.timings = timings;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIHeader)) {
             equalsBuilder.appendSuper(false);
@@ -630,17 +654,13 @@ public class WSIHeader
             List<WSIMessage> sourceMessages;
             sourceMessages = this.getMessages();
             List<WSIMessage> copyMessages = ((List<WSIMessage> ) copyBuilder.copy(sourceMessages));
-            copy.unsetMessages();
-            List<WSIMessage> uniqueMessagesl = copy.getMessages();
-            uniqueMessagesl.addAll(copyMessages);
+            copy.setMessages(copyMessages);
         }
         {
             List<WSIHeader.Timing> sourceTimings;
             sourceTimings = this.getTimings();
             List<WSIHeader.Timing> copyTimings = ((List<WSIHeader.Timing> ) copyBuilder.copy(sourceTimings));
-            copy.unsetTimings();
-            List<WSIHeader.Timing> uniqueTimingsl = copy.getTimings();
-            uniqueTimingsl.addAll(copyTimings);
+            copy.setTimings(copyTimings);
         }
         {
             WSINonce sourceNonce;

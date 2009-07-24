@@ -93,6 +93,18 @@ public class WSILocationTypeDictionary implements Serializable, CopyTo, Copyable
         this.locationTypes = null;
     }
 
+    /**
+     * Sets the value of the locationTypes property.
+     * 
+     * @param locationTypes
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setLocationTypes(List<ControlledVoc> locationTypes) {
+        this.locationTypes = locationTypes;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSILocationTypeDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSILocationTypeDictionary implements Serializable, CopyTo, Copyable
             List<ControlledVoc> sourceLocationTypes;
             sourceLocationTypes = this.getLocationTypes();
             List<ControlledVoc> copyLocationTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceLocationTypes));
-            copy.unsetLocationTypes();
-            List<ControlledVoc> uniqueLocationTypesl = copy.getLocationTypes();
-            uniqueLocationTypesl.addAll(copyLocationTypes);
+            copy.setLocationTypes(copyLocationTypes);
         }
         return copy;
     }

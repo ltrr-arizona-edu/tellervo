@@ -79,8 +79,8 @@ public class Patches
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link AbstractSurfacePatchType }{@code >}
      * {@link JAXBElement }{@code <}{@link PolygonPatchType }{@code >}
+     * {@link JAXBElement }{@code <}{@link AbstractSurfacePatchType }{@code >}
      * 
      * 
      */
@@ -97,6 +97,19 @@ public class Patches
 
     public void unset_SurfacePatches() {
         this.surfacePatches = null;
+    }
+
+    /**
+     * Sets the value of the _SurfacePatches property.
+     * 
+     * @param surfacePatches
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link PolygonPatchType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractSurfacePatchType }{@code >}
+     *     
+     */
+    public void set_SurfacePatches(List<JAXBElement<? extends AbstractSurfacePatchType>> surfacePatches) {
+        this.surfacePatches = surfacePatches;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
@@ -153,9 +166,7 @@ public class Patches
             List<JAXBElement<? extends AbstractSurfacePatchType>> source_SurfacePatches;
             source_SurfacePatches = this.get_SurfacePatches();
             List<JAXBElement<? extends AbstractSurfacePatchType>> copy_SurfacePatches = ((List<JAXBElement<? extends AbstractSurfacePatchType>> ) copyBuilder.copy(source_SurfacePatches));
-            copy.unset_SurfacePatches();
-            List<JAXBElement<? extends AbstractSurfacePatchType>> unique_SurfacePatchesl = copy.get_SurfacePatches();
-            unique_SurfacePatchesl.addAll(copy_SurfacePatches);
+            copy.set_SurfacePatches(copy_SurfacePatches);
         }
         return copy;
     }

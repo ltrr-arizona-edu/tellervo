@@ -93,6 +93,18 @@ public class WSISampleTypeDictionary implements Serializable, CopyTo, Copyable, 
         this.sampleTypes = null;
     }
 
+    /**
+     * Sets the value of the sampleTypes property.
+     * 
+     * @param sampleTypes
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setSampleTypes(List<ControlledVoc> sampleTypes) {
+        this.sampleTypes = sampleTypes;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSISampleTypeDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSISampleTypeDictionary implements Serializable, CopyTo, Copyable, 
             List<ControlledVoc> sourceSampleTypes;
             sourceSampleTypes = this.getSampleTypes();
             List<ControlledVoc> copySampleTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceSampleTypes));
-            copy.unsetSampleTypes();
-            List<ControlledVoc> uniqueSampleTypesl = copy.getSampleTypes();
-            uniqueSampleTypesl.addAll(copySampleTypes);
+            copy.setSampleTypes(copySampleTypes);
         }
         return copy;
     }

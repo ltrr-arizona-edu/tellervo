@@ -93,6 +93,18 @@ public class WSICoverageTemporalFoundationDictionary implements Serializable, Co
         this.coverageTemporalFoundations = null;
     }
 
+    /**
+     * Sets the value of the coverageTemporalFoundations property.
+     * 
+     * @param coverageTemporalFoundations
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setCoverageTemporalFoundations(List<ControlledVoc> coverageTemporalFoundations) {
+        this.coverageTemporalFoundations = coverageTemporalFoundations;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSICoverageTemporalFoundationDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSICoverageTemporalFoundationDictionary implements Serializable, Co
             List<ControlledVoc> sourceCoverageTemporalFoundations;
             sourceCoverageTemporalFoundations = this.getCoverageTemporalFoundations();
             List<ControlledVoc> copyCoverageTemporalFoundations = ((List<ControlledVoc> ) copyBuilder.copy(sourceCoverageTemporalFoundations));
-            copy.unsetCoverageTemporalFoundations();
-            List<ControlledVoc> uniqueCoverageTemporalFoundationsl = copy.getCoverageTemporalFoundations();
-            uniqueCoverageTemporalFoundationsl.addAll(copyCoverageTemporalFoundations);
+            copy.setCoverageTemporalFoundations(copyCoverageTemporalFoundations);
         }
         return copy;
     }

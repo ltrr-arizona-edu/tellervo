@@ -191,6 +191,18 @@ public class TridasValues
         this.values = null;
     }
 
+    /**
+     * Sets the value of the values property.
+     * 
+     * @param values
+     *     allowed object is
+     *     {@link TridasValue }
+     *     
+     */
+    public void setValues(List<TridasValue> values) {
+        this.values = values;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasValues)) {
             equalsBuilder.appendSuper(false);
@@ -284,9 +296,7 @@ public class TridasValues
             List<TridasValue> sourceValues;
             sourceValues = this.getValues();
             List<TridasValue> copyValues = ((List<TridasValue> ) copyBuilder.copy(sourceValues));
-            copy.unsetValues();
-            List<TridasValue> uniqueValuesl = copy.getValues();
-            uniqueValuesl.addAll(copyValues);
+            copy.setValues(copyValues);
         }
         return copy;
     }

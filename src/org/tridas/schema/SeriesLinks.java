@@ -93,6 +93,18 @@ public class SeriesLinks
         this.series = null;
     }
 
+    /**
+     * Sets the value of the series property.
+     * 
+     * @param series
+     *     allowed object is
+     *     {@link SeriesLink }
+     *     
+     */
+    public void setSeries(List<SeriesLink> series) {
+        this.series = series;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof SeriesLinks)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class SeriesLinks
             List<SeriesLink> sourceSeries;
             sourceSeries = this.getSeries();
             List<SeriesLink> copySeries = ((List<SeriesLink> ) copyBuilder.copy(sourceSeries));
-            copy.unsetSeries();
-            List<SeriesLink> uniqueSeriesl = copy.getSeries();
-            uniqueSeriesl.addAll(copySeries);
+            copy.setSeries(copySeries);
         }
         return copy;
     }

@@ -93,6 +93,18 @@ public class WSIElementTypeDictionary implements Serializable, CopyTo, Copyable,
         this.elementTypes = null;
     }
 
+    /**
+     * Sets the value of the elementTypes property.
+     * 
+     * @param elementTypes
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setElementTypes(List<ControlledVoc> elementTypes) {
+        this.elementTypes = elementTypes;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIElementTypeDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSIElementTypeDictionary implements Serializable, CopyTo, Copyable,
             List<ControlledVoc> sourceElementTypes;
             sourceElementTypes = this.getElementTypes();
             List<ControlledVoc> copyElementTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceElementTypes));
-            copy.unsetElementTypes();
-            List<ControlledVoc> uniqueElementTypesl = copy.getElementTypes();
-            uniqueElementTypesl.addAll(copyElementTypes);
+            copy.setElementTypes(copyElementTypes);
         }
         return copy;
     }

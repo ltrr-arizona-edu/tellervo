@@ -449,6 +449,18 @@ public class SecurityUser
             this.securityGroups = null;
         }
 
+        /**
+         * Sets the value of the securityGroups property.
+         * 
+         * @param securityGroups
+         *     allowed object is
+         *     {@link SecurityGroup }
+         *     
+         */
+        public void setSecurityGroups(List<SecurityGroup> securityGroups) {
+            this.securityGroups = securityGroups;
+        }
+
         public void equals(Object object, EqualsBuilder equalsBuilder) {
             if (!(object instanceof SecurityUser.MemberOf)) {
                 equalsBuilder.appendSuper(false);
@@ -503,9 +515,7 @@ public class SecurityUser
                 List<SecurityGroup> sourceSecurityGroups;
                 sourceSecurityGroups = this.getSecurityGroups();
                 List<SecurityGroup> copySecurityGroups = ((List<SecurityGroup> ) copyBuilder.copy(sourceSecurityGroups));
-                copy.unsetSecurityGroups();
-                List<SecurityGroup> uniqueSecurityGroupsl = copy.getSecurityGroups();
-                uniqueSecurityGroupsl.addAll(copySecurityGroups);
+                copy.setSecurityGroups(copySecurityGroups);
             }
             return copy;
         }

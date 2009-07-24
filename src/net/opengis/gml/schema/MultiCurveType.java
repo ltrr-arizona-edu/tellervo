@@ -97,6 +97,18 @@ public class MultiCurveType
         this.curveMembers = null;
     }
 
+    /**
+     * Sets the value of the curveMembers property.
+     * 
+     * @param curveMembers
+     *     allowed object is
+     *     {@link CurveMember }
+     *     
+     */
+    public void setCurveMembers(List<CurveMember> curveMembers) {
+        this.curveMembers = curveMembers;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof MultiCurveType)) {
             equalsBuilder.appendSuper(false);
@@ -155,9 +167,7 @@ public class MultiCurveType
             List<CurveMember> sourceCurveMembers;
             sourceCurveMembers = this.getCurveMembers();
             List<CurveMember> copyCurveMembers = ((List<CurveMember> ) copyBuilder.copy(sourceCurveMembers));
-            copy.unsetCurveMembers();
-            List<CurveMember> uniqueCurveMembersl = copy.getCurveMembers();
-            uniqueCurveMembersl.addAll(copyCurveMembers);
+            copy.setCurveMembers(copyCurveMembers);
         }
         return copy;
     }

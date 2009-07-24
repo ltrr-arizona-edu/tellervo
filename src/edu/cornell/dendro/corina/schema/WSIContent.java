@@ -84,29 +84,29 @@ public class WSIContent
 
     private final static long serialVersionUID = 1001L;
     @XmlElements({
-        @XmlElement(name = "securityUserDictionary", type = WSISecurityUserDictionary.class),
-        @XmlElement(name = "coverageTemporalDictionary", type = WSICoverageTemporalDictionary.class),
-        @XmlElement(name = "readingNoteDictionary", type = WSIReadingNoteDictionary.class),
-        @XmlElement(name = "coverageTemporalFoundationDictionary", type = WSICoverageTemporalFoundationDictionary.class),
-        @XmlElement(name = "elementTypeDictionary", type = WSIElementTypeDictionary.class),
-        @XmlElement(name = "sapwoodDictionary", type = WSISapwoodDictionary.class),
-        @XmlElement(name = "sql"),
-        @XmlElement(name = "objectTypeDictionary", type = WSIObjectTypeDictionary.class),
         @XmlElement(name = "datingTypeDictionary", type = WSIDatingTypeDictionary.class),
-        @XmlElement(name = "elementShapeDictionary", type = WSIElementShapeDictionary.class),
-        @XmlElement(name = "heartwoodDictionary", type = WSIHeartwoodDictionary.class),
         @XmlElement(name = "object", namespace = "http://www.tridas.org/1.3", type = TridasObjectEx.class),
-        @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.3", type = TridasSample.class),
+        @XmlElement(name = "coverageTemporalFoundationDictionary", type = WSICoverageTemporalFoundationDictionary.class),
         @XmlElement(name = "regionDictionary", type = WSIRegionDictionary.class),
-        @XmlElement(name = "measurementVariableDictionary", type = WSIMeasurementVariableDictionary.class),
-        @XmlElement(name = "elementAuthenticityDictionary", type = WSIElementAuthenticityDictionary.class),
+        @XmlElement(name = "sql"),
+        @XmlElement(name = "elementShapeDictionary", type = WSIElementShapeDictionary.class),
+        @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.3", type = TridasSample.class),
+        @XmlElement(name = "coverageTemporalDictionary", type = WSICoverageTemporalDictionary.class),
+        @XmlElement(name = "taxonDictionary", type = WSITaxonDictionary.class),
         @XmlElement(name = "locationTypeDictionary", type = WSILocationTypeDictionary.class),
         @XmlElement(name = "element", namespace = "http://www.tridas.org/1.3", type = TridasElement.class),
         @XmlElement(name = "radius", namespace = "http://www.tridas.org/1.3", type = TridasRadius.class),
-        @XmlElement(name = "measurementSeries", namespace = "http://www.tridas.org/1.3", type = TridasMeasurementSeries.class),
-        @XmlElement(name = "taxonDictionary", type = WSITaxonDictionary.class),
         @XmlElement(name = "derivedSeries", namespace = "http://www.tridas.org/1.3", type = TridasDerivedSeries.class),
-        @XmlElement(name = "sampleTypeDictionary", type = WSISampleTypeDictionary.class)
+        @XmlElement(name = "measurementVariableDictionary", type = WSIMeasurementVariableDictionary.class),
+        @XmlElement(name = "heartwoodDictionary", type = WSIHeartwoodDictionary.class),
+        @XmlElement(name = "securityUserDictionary", type = WSISecurityUserDictionary.class),
+        @XmlElement(name = "sapwoodDictionary", type = WSISapwoodDictionary.class),
+        @XmlElement(name = "measurementSeries", namespace = "http://www.tridas.org/1.3", type = TridasMeasurementSeries.class),
+        @XmlElement(name = "objectTypeDictionary", type = WSIObjectTypeDictionary.class),
+        @XmlElement(name = "elementTypeDictionary", type = WSIElementTypeDictionary.class),
+        @XmlElement(name = "elementAuthenticityDictionary", type = WSIElementAuthenticityDictionary.class),
+        @XmlElement(name = "sampleTypeDictionary", type = WSISampleTypeDictionary.class),
+        @XmlElement(name = "readingNoteDictionary", type = WSIReadingNoteDictionary.class)
     })
     protected List<Object> sqlsAndObjectsAndElements;
 
@@ -128,29 +128,29 @@ public class WSIContent
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link WSISecurityUserDictionary }
-     * {@link WSICoverageTemporalDictionary }
-     * {@link WSIReadingNoteDictionary }
-     * {@link WSICoverageTemporalFoundationDictionary }
-     * {@link WSIElementTypeDictionary }
-     * {@link WSISapwoodDictionary }
-     * {@link Object }
-     * {@link WSIObjectTypeDictionary }
      * {@link WSIDatingTypeDictionary }
-     * {@link WSIElementShapeDictionary }
-     * {@link WSIHeartwoodDictionary }
      * {@link TridasObject }
-     * {@link TridasSample }
+     * {@link WSICoverageTemporalFoundationDictionary }
      * {@link WSIRegionDictionary }
-     * {@link WSIMeasurementVariableDictionary }
-     * {@link WSIElementAuthenticityDictionary }
+     * {@link Object }
+     * {@link WSIElementShapeDictionary }
+     * {@link TridasSample }
+     * {@link WSICoverageTemporalDictionary }
+     * {@link WSITaxonDictionary }
      * {@link WSILocationTypeDictionary }
      * {@link TridasElement }
      * {@link TridasRadius }
-     * {@link TridasMeasurementSeries }
-     * {@link WSITaxonDictionary }
      * {@link TridasDerivedSeries }
+     * {@link WSIMeasurementVariableDictionary }
+     * {@link WSIHeartwoodDictionary }
+     * {@link WSISecurityUserDictionary }
+     * {@link WSISapwoodDictionary }
+     * {@link TridasMeasurementSeries }
+     * {@link WSIObjectTypeDictionary }
+     * {@link WSIElementTypeDictionary }
+     * {@link WSIElementAuthenticityDictionary }
      * {@link WSISampleTypeDictionary }
+     * {@link WSIReadingNoteDictionary }
      * 
      * 
      */
@@ -167,6 +167,40 @@ public class WSIContent
 
     public void unsetSqlsAndObjectsAndElements() {
         this.sqlsAndObjectsAndElements = null;
+    }
+
+    /**
+     * Sets the value of the sqlsAndObjectsAndElements property.
+     * 
+     * @param sqlsAndObjectsAndElements
+     *     allowed object is
+     *     {@link WSIDatingTypeDictionary }
+     *     {@link TridasObject }
+     *     {@link WSICoverageTemporalFoundationDictionary }
+     *     {@link WSIRegionDictionary }
+     *     {@link Object }
+     *     {@link WSIElementShapeDictionary }
+     *     {@link TridasSample }
+     *     {@link WSICoverageTemporalDictionary }
+     *     {@link WSITaxonDictionary }
+     *     {@link WSILocationTypeDictionary }
+     *     {@link TridasElement }
+     *     {@link TridasRadius }
+     *     {@link TridasDerivedSeries }
+     *     {@link WSIMeasurementVariableDictionary }
+     *     {@link WSIHeartwoodDictionary }
+     *     {@link WSISecurityUserDictionary }
+     *     {@link WSISapwoodDictionary }
+     *     {@link TridasMeasurementSeries }
+     *     {@link WSIObjectTypeDictionary }
+     *     {@link WSIElementTypeDictionary }
+     *     {@link WSIElementAuthenticityDictionary }
+     *     {@link WSISampleTypeDictionary }
+     *     {@link WSIReadingNoteDictionary }
+     *     
+     */
+    public void setSqlsAndObjectsAndElements(List<Object> sqlsAndObjectsAndElements) {
+        this.sqlsAndObjectsAndElements = sqlsAndObjectsAndElements;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
@@ -223,9 +257,7 @@ public class WSIContent
             List<Object> sourceSqlsAndObjectsAndElements;
             sourceSqlsAndObjectsAndElements = this.getSqlsAndObjectsAndElements();
             List<Object> copySqlsAndObjectsAndElements = ((List<Object> ) copyBuilder.copy(sourceSqlsAndObjectsAndElements));
-            copy.unsetSqlsAndObjectsAndElements();
-            List<Object> uniqueSqlsAndObjectsAndElementsl = copy.getSqlsAndObjectsAndElements();
-            uniqueSqlsAndObjectsAndElementsl.addAll(copySqlsAndObjectsAndElements);
+            copy.setSqlsAndObjectsAndElements(copySqlsAndObjectsAndElements);
         }
         return copy;
     }

@@ -134,6 +134,19 @@ public class WSIMessage
         return (this.code!= null);
     }
 
+    /**
+     * Sets the value of the content property.
+     * 
+     * @param content
+     *     allowed object is
+     *     {@link String }
+     *     {@link Element }
+     *     
+     */
+    public void setContent(List<Object> content) {
+        this.content = content;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIMessage)) {
             equalsBuilder.appendSuper(false);
@@ -195,9 +208,7 @@ public class WSIMessage
             List<Object> sourceContent;
             sourceContent = this.getContent();
             List<Object> copyContent = ((List<Object> ) copyBuilder.copy(sourceContent));
-            copy.unsetContent();
-            List<Object> uniqueContentl = copy.getContent();
-            uniqueContentl.addAll(copyContent);
+            copy.setContent(copyContent);
         }
         {
             Integer sourceCode;

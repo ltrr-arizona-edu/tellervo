@@ -92,6 +92,18 @@ public class WSISecurityUserDictionary implements Serializable, CopyTo, Copyable
         this.users = null;
     }
 
+    /**
+     * Sets the value of the users property.
+     * 
+     * @param users
+     *     allowed object is
+     *     {@link SecurityUser }
+     *     
+     */
+    public void setUsers(List<SecurityUser> users) {
+        this.users = users;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSISecurityUserDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -146,9 +158,7 @@ public class WSISecurityUserDictionary implements Serializable, CopyTo, Copyable
             List<SecurityUser> sourceUsers;
             sourceUsers = this.getUsers();
             List<SecurityUser> copyUsers = ((List<SecurityUser> ) copyBuilder.copy(sourceUsers));
-            copy.unsetUsers();
-            List<SecurityUser> uniqueUsersl = copy.getUsers();
-            uniqueUsersl.addAll(copyUsers);
+            copy.setUsers(copyUsers);
         }
         return copy;
     }

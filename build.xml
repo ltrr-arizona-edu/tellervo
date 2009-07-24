@@ -451,6 +451,7 @@
 			<arg value="-Xannotate" />
 			<arg value="-Xtridas-annotations" />
 			<arg value="-Xifins" />
+			<arg value="-Xcollection-setter-injector" />
 			<!-- <arg value="-Xinject-prop-listeners" /> -->
 			<arg value="-Xequals" />
 			<arg value="-XhashCode" />
@@ -458,6 +459,7 @@
 			<arg value="-Xcopyable" />
 			<arg value="-extension" />
 			<arg value="-no-header" />
+			
 			<binding dir="schemagen">
 				<include name="*.xjb" />
 			</binding>

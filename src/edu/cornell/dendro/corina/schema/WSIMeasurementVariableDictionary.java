@@ -93,6 +93,18 @@ public class WSIMeasurementVariableDictionary implements Serializable, CopyTo, C
         this.measurementVariables = null;
     }
 
+    /**
+     * Sets the value of the measurementVariables property.
+     * 
+     * @param measurementVariables
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setMeasurementVariables(List<ControlledVoc> measurementVariables) {
+        this.measurementVariables = measurementVariables;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIMeasurementVariableDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSIMeasurementVariableDictionary implements Serializable, CopyTo, C
             List<ControlledVoc> sourceMeasurementVariables;
             sourceMeasurementVariables = this.getMeasurementVariables();
             List<ControlledVoc> copyMeasurementVariables = ((List<ControlledVoc> ) copyBuilder.copy(sourceMeasurementVariables));
-            copy.unsetMeasurementVariables();
-            List<ControlledVoc> uniqueMeasurementVariablesl = copy.getMeasurementVariables();
-            uniqueMeasurementVariablesl.addAll(copyMeasurementVariables);
+            copy.setMeasurementVariables(copyMeasurementVariables);
         }
         return copy;
     }

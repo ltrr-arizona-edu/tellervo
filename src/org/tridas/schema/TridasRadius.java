@@ -197,6 +197,30 @@ public class TridasRadius
         this.measurementSeries = null;
     }
 
+    /**
+     * Sets the value of the genericFields property.
+     * 
+     * @param genericFields
+     *     allowed object is
+     *     {@link TridasGenericField }
+     *     
+     */
+    public void setGenericFields(List<TridasGenericField> genericFields) {
+        this.genericFields = genericFields;
+    }
+
+    /**
+     * Sets the value of the measurementSeries property.
+     * 
+     * @param measurementSeries
+     *     allowed object is
+     *     {@link TridasMeasurementSeries }
+     *     
+     */
+    public void setMeasurementSeries(List<TridasMeasurementSeries> measurementSeries) {
+        this.measurementSeries = measurementSeries;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasRadius)) {
             equalsBuilder.appendSuper(false);
@@ -288,17 +312,13 @@ public class TridasRadius
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
-            copy.unsetGenericFields();
-            List<TridasGenericField> uniqueGenericFieldsl = copy.getGenericFields();
-            uniqueGenericFieldsl.addAll(copyGenericFields);
+            copy.setGenericFields(copyGenericFields);
         }
         {
             List<TridasMeasurementSeries> sourceMeasurementSeries;
             sourceMeasurementSeries = this.getMeasurementSeries();
             List<TridasMeasurementSeries> copyMeasurementSeries = ((List<TridasMeasurementSeries> ) copyBuilder.copy(sourceMeasurementSeries));
-            copy.unsetMeasurementSeries();
-            List<TridasMeasurementSeries> uniqueMeasurementSeriesl = copy.getMeasurementSeries();
-            uniqueMeasurementSeriesl.addAll(copyMeasurementSeries);
+            copy.setMeasurementSeries(copyMeasurementSeries);
         }
         return copy;
     }

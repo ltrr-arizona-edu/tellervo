@@ -93,6 +93,18 @@ public class WSIDatingTypeDictionary implements Serializable, CopyTo, Copyable, 
         this.datingTypes = null;
     }
 
+    /**
+     * Sets the value of the datingTypes property.
+     * 
+     * @param datingTypes
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setDatingTypes(List<ControlledVoc> datingTypes) {
+        this.datingTypes = datingTypes;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIDatingTypeDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSIDatingTypeDictionary implements Serializable, CopyTo, Copyable, 
             List<ControlledVoc> sourceDatingTypes;
             sourceDatingTypes = this.getDatingTypes();
             List<ControlledVoc> copyDatingTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceDatingTypes));
-            copy.unsetDatingTypes();
-            List<ControlledVoc> uniqueDatingTypesl = copy.getDatingTypes();
-            uniqueDatingTypesl.addAll(copyDatingTypes);
+            copy.setDatingTypes(copyDatingTypes);
         }
         return copy;
     }

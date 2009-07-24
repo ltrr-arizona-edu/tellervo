@@ -455,6 +455,54 @@ public class TridasObject
         this.elements = null;
     }
 
+    /**
+     * Sets the value of the files property.
+     * 
+     * @param files
+     *     allowed object is
+     *     {@link TridasFile }
+     *     
+     */
+    public void setFiles(List<TridasFile> files) {
+        this.files = files;
+    }
+
+    /**
+     * Sets the value of the genericFields property.
+     * 
+     * @param genericFields
+     *     allowed object is
+     *     {@link TridasGenericField }
+     *     
+     */
+    public void setGenericFields(List<TridasGenericField> genericFields) {
+        this.genericFields = genericFields;
+    }
+
+    /**
+     * Sets the value of the objects property.
+     * 
+     * @param objects
+     *     allowed object is
+     *     {@link TridasObject }
+     *     
+     */
+    public void setObjects(List<TridasObject> objects) {
+        this.objects = objects;
+    }
+
+    /**
+     * Sets the value of the elements property.
+     * 
+     * @param elements
+     *     allowed object is
+     *     {@link TridasElement }
+     *     
+     */
+    public void setElements(List<TridasElement> elements) {
+        this.elements = elements;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasObject)) {
             equalsBuilder.appendSuper(false);
@@ -601,9 +649,7 @@ public class TridasObject
             List<TridasFile> sourceFiles;
             sourceFiles = this.getFiles();
             List<TridasFile> copyFiles = ((List<TridasFile> ) copyBuilder.copy(sourceFiles));
-            copy.unsetFiles();
-            List<TridasFile> uniqueFilesl = copy.getFiles();
-            uniqueFilesl.addAll(copyFiles);
+            copy.setFiles(copyFiles);
         }
         {
             String sourceCreator;
@@ -633,25 +679,19 @@ public class TridasObject
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
-            copy.unsetGenericFields();
-            List<TridasGenericField> uniqueGenericFieldsl = copy.getGenericFields();
-            uniqueGenericFieldsl.addAll(copyGenericFields);
+            copy.setGenericFields(copyGenericFields);
         }
         {
             List<TridasObject> sourceObjects;
             sourceObjects = this.getObjects();
             List<TridasObject> copyObjects = ((List<TridasObject> ) copyBuilder.copy(sourceObjects));
-            copy.unsetObjects();
-            List<TridasObject> uniqueObjectsl = copy.getObjects();
-            uniqueObjectsl.addAll(copyObjects);
+            copy.setObjects(copyObjects);
         }
         {
             List<TridasElement> sourceElements;
             sourceElements = this.getElements();
             List<TridasElement> copyElements = ((List<TridasElement> ) copyBuilder.copy(sourceElements));
-            copy.unsetElements();
-            List<TridasElement> uniqueElementsl = copy.getElements();
-            uniqueElementsl.addAll(copyElements);
+            copy.setElements(copyElements);
         }
         return copy;
     }

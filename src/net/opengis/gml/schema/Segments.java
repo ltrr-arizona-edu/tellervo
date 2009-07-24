@@ -79,8 +79,8 @@ public class Segments
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link LineStringSegmentType }{@code >}
      * {@link JAXBElement }{@code <}{@link AbstractCurveSegmentType }{@code >}
+     * {@link JAXBElement }{@code <}{@link LineStringSegmentType }{@code >}
      * 
      * 
      */
@@ -97,6 +97,19 @@ public class Segments
 
     public void unset_CurveSegments() {
         this.curveSegments = null;
+    }
+
+    /**
+     * Sets the value of the _CurveSegments property.
+     * 
+     * @param curveSegments
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link AbstractCurveSegmentType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link LineStringSegmentType }{@code >}
+     *     
+     */
+    public void set_CurveSegments(List<JAXBElement<? extends AbstractCurveSegmentType>> curveSegments) {
+        this.curveSegments = curveSegments;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
@@ -153,9 +166,7 @@ public class Segments
             List<JAXBElement<? extends AbstractCurveSegmentType>> source_CurveSegments;
             source_CurveSegments = this.get_CurveSegments();
             List<JAXBElement<? extends AbstractCurveSegmentType>> copy_CurveSegments = ((List<JAXBElement<? extends AbstractCurveSegmentType>> ) copyBuilder.copy(source_CurveSegments));
-            copy.unset_CurveSegments();
-            List<JAXBElement<? extends AbstractCurveSegmentType>> unique_CurveSegmentsl = copy.get_CurveSegments();
-            unique_CurveSegmentsl.addAll(copy_CurveSegments);
+            copy.set_CurveSegments(copy_CurveSegments);
         }
         return copy;
     }

@@ -192,6 +192,18 @@ public class TridasValue
         return (this.count!= null);
     }
 
+    /**
+     * Sets the value of the remarks property.
+     * 
+     * @param remarks
+     *     allowed object is
+     *     {@link TridasRemark }
+     *     
+     */
+    public void setRemarks(List<TridasRemark> remarks) {
+        this.remarks = remarks;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasValue)) {
             equalsBuilder.appendSuper(false);
@@ -267,9 +279,7 @@ public class TridasValue
             List<TridasRemark> sourceRemarks;
             sourceRemarks = this.getRemarks();
             List<TridasRemark> copyRemarks = ((List<TridasRemark> ) copyBuilder.copy(sourceRemarks));
-            copy.unsetRemarks();
-            List<TridasRemark> uniqueRemarksl = copy.getRemarks();
-            uniqueRemarksl.addAll(copyRemarks);
+            copy.setRemarks(copyRemarks);
         }
         {
             String sourceValue;

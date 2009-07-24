@@ -177,6 +177,24 @@ public abstract class AbstractGMLType implements Serializable, CopyTo, Copyable,
         return (this.id!= null);
     }
 
+    /**
+     * 
+     *                   Multiple names may be provided.  These will often be
+     *                   distinguished by being assigned by different authorities,
+     *                   as indicated by the value of the codeSpace attribute.
+     *                   In an instance document there will usually only be one
+     *                   name per authority.
+     *                
+     * 
+     * @param names
+     *     allowed object is
+     *     {@link Name }
+     *     
+     */
+    public void setNames(List<Name> names) {
+        this.names = names;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof AbstractGMLType)) {
             equalsBuilder.appendSuper(false);
@@ -254,9 +272,7 @@ public abstract class AbstractGMLType implements Serializable, CopyTo, Copyable,
             List<Name> sourceNames;
             sourceNames = this.getNames();
             List<Name> copyNames = ((List<Name> ) copyBuilder.copy(sourceNames));
-            copy.unsetNames();
-            List<Name> uniqueNamesl = copy.getNames();
-            uniqueNamesl.addAll(copyNames);
+            copy.setNames(copyNames);
         }
         {
             String sourceId;

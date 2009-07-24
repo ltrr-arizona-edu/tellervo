@@ -93,6 +93,18 @@ public class WSISapwoodDictionary implements Serializable, CopyTo, Copyable, Equ
         this.sapwoods = null;
     }
 
+    /**
+     * Sets the value of the sapwoods property.
+     * 
+     * @param sapwoods
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setSapwoods(List<ControlledVoc> sapwoods) {
+        this.sapwoods = sapwoods;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSISapwoodDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSISapwoodDictionary implements Serializable, CopyTo, Copyable, Equ
             List<ControlledVoc> sourceSapwoods;
             sourceSapwoods = this.getSapwoods();
             List<ControlledVoc> copySapwoods = ((List<ControlledVoc> ) copyBuilder.copy(sourceSapwoods));
-            copy.unsetSapwoods();
-            List<ControlledVoc> uniqueSapwoodsl = copy.getSapwoods();
-            uniqueSapwoodsl.addAll(copySapwoods);
+            copy.setSapwoods(copySapwoods);
         }
         return copy;
     }

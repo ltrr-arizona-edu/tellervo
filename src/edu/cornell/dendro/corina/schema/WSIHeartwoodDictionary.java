@@ -93,6 +93,18 @@ public class WSIHeartwoodDictionary implements Serializable, CopyTo, Copyable, E
         this.heartwoods = null;
     }
 
+    /**
+     * Sets the value of the heartwoods property.
+     * 
+     * @param heartwoods
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setHeartwoods(List<ControlledVoc> heartwoods) {
+        this.heartwoods = heartwoods;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIHeartwoodDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSIHeartwoodDictionary implements Serializable, CopyTo, Copyable, E
             List<ControlledVoc> sourceHeartwoods;
             sourceHeartwoods = this.getHeartwoods();
             List<ControlledVoc> copyHeartwoods = ((List<ControlledVoc> ) copyBuilder.copy(sourceHeartwoods));
-            copy.unsetHeartwoods();
-            List<ControlledVoc> uniqueHeartwoodsl = copy.getHeartwoods();
-            uniqueHeartwoodsl.addAll(copyHeartwoods);
+            copy.setHeartwoods(copyHeartwoods);
         }
         return copy;
     }

@@ -399,6 +399,42 @@ public class TridasSample
         this.radiuses = null;
     }
 
+    /**
+     * Sets the value of the files property.
+     * 
+     * @param files
+     *     allowed object is
+     *     {@link TridasFile }
+     *     
+     */
+    public void setFiles(List<TridasFile> files) {
+        this.files = files;
+    }
+
+    /**
+     * Sets the value of the genericFields property.
+     * 
+     * @param genericFields
+     *     allowed object is
+     *     {@link TridasGenericField }
+     *     
+     */
+    public void setGenericFields(List<TridasGenericField> genericFields) {
+        this.genericFields = genericFields;
+    }
+
+    /**
+     * Sets the value of the radiuses property.
+     * 
+     * @param radiuses
+     *     allowed object is
+     *     {@link TridasRadius }
+     *     
+     */
+    public void setRadiuses(List<TridasRadius> radiuses) {
+        this.radiuses = radiuses;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasSample)) {
             equalsBuilder.appendSuper(false);
@@ -532,9 +568,7 @@ public class TridasSample
             List<TridasFile> sourceFiles;
             sourceFiles = this.getFiles();
             List<TridasFile> copyFiles = ((List<TridasFile> ) copyBuilder.copy(sourceFiles));
-            copy.unsetFiles();
-            List<TridasFile> uniqueFilesl = copy.getFiles();
-            uniqueFilesl.addAll(copyFiles);
+            copy.setFiles(copyFiles);
         }
         {
             Date sourceSamplingDate;
@@ -564,9 +598,7 @@ public class TridasSample
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
-            copy.unsetGenericFields();
-            List<TridasGenericField> uniqueGenericFieldsl = copy.getGenericFields();
-            uniqueGenericFieldsl.addAll(copyGenericFields);
+            copy.setGenericFields(copyGenericFields);
         }
         {
             TridasRadiusPlaceholder sourceRadiusPlaceholder;
@@ -578,9 +610,7 @@ public class TridasSample
             List<TridasRadius> sourceRadiuses;
             sourceRadiuses = this.getRadiuses();
             List<TridasRadius> copyRadiuses = ((List<TridasRadius> ) copyBuilder.copy(sourceRadiuses));
-            copy.unsetRadiuses();
-            List<TridasRadius> uniqueRadiusesl = copy.getRadiuses();
-            uniqueRadiusesl.addAll(copyRadiuses);
+            copy.setRadiuses(copyRadiuses);
         }
         return copy;
     }

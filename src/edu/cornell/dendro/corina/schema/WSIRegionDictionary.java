@@ -93,6 +93,18 @@ public class WSIRegionDictionary implements Serializable, CopyTo, Copyable, Equa
         this.regions = null;
     }
 
+    /**
+     * Sets the value of the regions property.
+     * 
+     * @param regions
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setRegions(List<ControlledVoc> regions) {
+        this.regions = regions;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIRegionDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSIRegionDictionary implements Serializable, CopyTo, Copyable, Equa
             List<ControlledVoc> sourceRegions;
             sourceRegions = this.getRegions();
             List<ControlledVoc> copyRegions = ((List<ControlledVoc> ) copyBuilder.copy(sourceRegions));
-            copy.unsetRegions();
-            List<ControlledVoc> uniqueRegionsl = copy.getRegions();
-            uniqueRegionsl.addAll(copyRegions);
+            copy.setRegions(copyRegions);
         }
         return copy;
     }

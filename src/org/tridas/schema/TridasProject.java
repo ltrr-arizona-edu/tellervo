@@ -570,6 +570,102 @@ public class TridasProject
         this.derivedSeries = null;
     }
 
+    /**
+     * Sets the value of the types property.
+     * 
+     * @param types
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setTypes(List<ControlledVoc> types) {
+        this.types = types;
+    }
+
+    /**
+     * Sets the value of the files property.
+     * 
+     * @param files
+     *     allowed object is
+     *     {@link TridasFile }
+     *     
+     */
+    public void setFiles(List<TridasFile> files) {
+        this.files = files;
+    }
+
+    /**
+     * Sets the value of the laboratories property.
+     * 
+     * @param laboratories
+     *     allowed object is
+     *     {@link TridasLaboratory }
+     *     
+     */
+    public void setLaboratories(List<TridasLaboratory> laboratories) {
+        this.laboratories = laboratories;
+    }
+
+    /**
+     * Sets the value of the references property.
+     * 
+     * @param references
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setReferences(List<String> references) {
+        this.references = references;
+    }
+
+    /**
+     * Sets the value of the researches property.
+     * 
+     * @param researches
+     *     allowed object is
+     *     {@link TridasResearch }
+     *     
+     */
+    public void setResearches(List<TridasResearch> researches) {
+        this.researches = researches;
+    }
+
+    /**
+     * Sets the value of the genericFields property.
+     * 
+     * @param genericFields
+     *     allowed object is
+     *     {@link TridasGenericField }
+     *     
+     */
+    public void setGenericFields(List<TridasGenericField> genericFields) {
+        this.genericFields = genericFields;
+    }
+
+    /**
+     * Sets the value of the objects property.
+     * 
+     * @param objects
+     *     allowed object is
+     *     {@link TridasObject }
+     *     
+     */
+    public void setObjects(List<TridasObject> objects) {
+        this.objects = objects;
+    }
+
+    /**
+     * Sets the value of the derivedSeries property.
+     * 
+     * @param derivedSeries
+     *     allowed object is
+     *     {@link TridasDerivedSeries }
+     *     
+     */
+    public void setDerivedSeries(List<TridasDerivedSeries> derivedSeries) {
+        this.derivedSeries = derivedSeries;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasProject)) {
             equalsBuilder.appendSuper(false);
@@ -719,9 +815,7 @@ public class TridasProject
             List<ControlledVoc> sourceTypes;
             sourceTypes = this.getTypes();
             List<ControlledVoc> copyTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceTypes));
-            copy.unsetTypes();
-            List<ControlledVoc> uniqueTypesl = copy.getTypes();
-            uniqueTypesl.addAll(copyTypes);
+            copy.setTypes(copyTypes);
         }
         {
             String sourceDescription;
@@ -733,17 +827,13 @@ public class TridasProject
             List<TridasFile> sourceFiles;
             sourceFiles = this.getFiles();
             List<TridasFile> copyFiles = ((List<TridasFile> ) copyBuilder.copy(sourceFiles));
-            copy.unsetFiles();
-            List<TridasFile> uniqueFilesl = copy.getFiles();
-            uniqueFilesl.addAll(copyFiles);
+            copy.setFiles(copyFiles);
         }
         {
             List<TridasLaboratory> sourceLaboratories;
             sourceLaboratories = this.getLaboratories();
             List<TridasLaboratory> copyLaboratories = ((List<TridasLaboratory> ) copyBuilder.copy(sourceLaboratories));
-            copy.unsetLaboratories();
-            List<TridasLaboratory> uniqueLaboratoriesl = copy.getLaboratories();
-            uniqueLaboratoriesl.addAll(copyLaboratories);
+            copy.setLaboratories(copyLaboratories);
         }
         {
             TridasCategory sourceCategory;
@@ -779,41 +869,31 @@ public class TridasProject
             List<String> sourceReferences;
             sourceReferences = this.getReferences();
             List<String> copyReferences = ((List<String> ) copyBuilder.copy(sourceReferences));
-            copy.unsetReferences();
-            List<String> uniqueReferencesl = copy.getReferences();
-            uniqueReferencesl.addAll(copyReferences);
+            copy.setReferences(copyReferences);
         }
         {
             List<TridasResearch> sourceResearches;
             sourceResearches = this.getResearches();
             List<TridasResearch> copyResearches = ((List<TridasResearch> ) copyBuilder.copy(sourceResearches));
-            copy.unsetResearches();
-            List<TridasResearch> uniqueResearchesl = copy.getResearches();
-            uniqueResearchesl.addAll(copyResearches);
+            copy.setResearches(copyResearches);
         }
         {
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
-            copy.unsetGenericFields();
-            List<TridasGenericField> uniqueGenericFieldsl = copy.getGenericFields();
-            uniqueGenericFieldsl.addAll(copyGenericFields);
+            copy.setGenericFields(copyGenericFields);
         }
         {
             List<TridasObject> sourceObjects;
             sourceObjects = this.getObjects();
             List<TridasObject> copyObjects = ((List<TridasObject> ) copyBuilder.copy(sourceObjects));
-            copy.unsetObjects();
-            List<TridasObject> uniqueObjectsl = copy.getObjects();
-            uniqueObjectsl.addAll(copyObjects);
+            copy.setObjects(copyObjects);
         }
         {
             List<TridasDerivedSeries> sourceDerivedSeries;
             sourceDerivedSeries = this.getDerivedSeries();
             List<TridasDerivedSeries> copyDerivedSeries = ((List<TridasDerivedSeries> ) copyBuilder.copy(sourceDerivedSeries));
-            copy.unsetDerivedSeries();
-            List<TridasDerivedSeries> uniqueDerivedSeriesl = copy.getDerivedSeries();
-            uniqueDerivedSeriesl.addAll(copyDerivedSeries);
+            copy.setDerivedSeries(copyDerivedSeries);
         }
         return copy;
     }

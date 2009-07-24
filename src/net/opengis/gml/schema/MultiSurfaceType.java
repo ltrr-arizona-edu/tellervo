@@ -97,6 +97,18 @@ public class MultiSurfaceType
         this.surfaceMembers = null;
     }
 
+    /**
+     * Sets the value of the surfaceMembers property.
+     * 
+     * @param surfaceMembers
+     *     allowed object is
+     *     {@link SurfaceMember }
+     *     
+     */
+    public void setSurfaceMembers(List<SurfaceMember> surfaceMembers) {
+        this.surfaceMembers = surfaceMembers;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof MultiSurfaceType)) {
             equalsBuilder.appendSuper(false);
@@ -155,9 +167,7 @@ public class MultiSurfaceType
             List<SurfaceMember> sourceSurfaceMembers;
             sourceSurfaceMembers = this.getSurfaceMembers();
             List<SurfaceMember> copySurfaceMembers = ((List<SurfaceMember> ) copyBuilder.copy(sourceSurfaceMembers));
-            copy.unsetSurfaceMembers();
-            List<SurfaceMember> uniqueSurfaceMembersl = copy.getSurfaceMembers();
-            uniqueSurfaceMembersl.addAll(copySurfaceMembers);
+            copy.setSurfaceMembers(copySurfaceMembers);
         }
         return copy;
     }

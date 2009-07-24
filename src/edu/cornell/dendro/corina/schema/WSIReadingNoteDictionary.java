@@ -93,6 +93,18 @@ public class WSIReadingNoteDictionary implements Serializable, CopyTo, Copyable,
         this.remarks = null;
     }
 
+    /**
+     * Sets the value of the remarks property.
+     * 
+     * @param remarks
+     *     allowed object is
+     *     {@link TridasRemark }
+     *     
+     */
+    public void setRemarks(List<TridasRemark> remarks) {
+        this.remarks = remarks;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIReadingNoteDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSIReadingNoteDictionary implements Serializable, CopyTo, Copyable,
             List<TridasRemark> sourceRemarks;
             sourceRemarks = this.getRemarks();
             List<TridasRemark> copyRemarks = ((List<TridasRemark> ) copyBuilder.copy(sourceRemarks));
-            copy.unsetRemarks();
-            List<TridasRemark> uniqueRemarksl = copy.getRemarks();
-            uniqueRemarksl.addAll(copyRemarks);
+            copy.setRemarks(copyRemarks);
         }
         return copy;
     }

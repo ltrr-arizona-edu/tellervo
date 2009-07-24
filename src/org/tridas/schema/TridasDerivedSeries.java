@@ -646,6 +646,30 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
         return (this.id!= null);
     }
 
+    /**
+     * Sets the value of the genericFields property.
+     * 
+     * @param genericFields
+     *     allowed object is
+     *     {@link TridasGenericField }
+     *     
+     */
+    public void setGenericFields(List<TridasGenericField> genericFields) {
+        this.genericFields = genericFields;
+    }
+
+    /**
+     * Sets the value of the values property.
+     * 
+     * @param values
+     *     allowed object is
+     *     {@link TridasValues }
+     *     
+     */
+    public void setValues(List<TridasValues> values) {
+        this.values = values;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasDerivedSeries)) {
             equalsBuilder.appendSuper(false);
@@ -909,17 +933,13 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
-            copy.unsetGenericFields();
-            List<TridasGenericField> uniqueGenericFieldsl = copy.getGenericFields();
-            uniqueGenericFieldsl.addAll(copyGenericFields);
+            copy.setGenericFields(copyGenericFields);
         }
         {
             List<TridasValues> sourceValues;
             sourceValues = this.getValues();
             List<TridasValues> copyValues = ((List<TridasValues> ) copyBuilder.copy(sourceValues));
-            copy.unsetValues();
-            List<TridasValues> uniqueValuesl = copy.getValues();
-            uniqueValuesl.addAll(copyValues);
+            copy.setValues(copyValues);
         }
         {
             String sourceId;

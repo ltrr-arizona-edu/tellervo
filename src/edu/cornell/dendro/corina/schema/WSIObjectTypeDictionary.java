@@ -93,6 +93,18 @@ public class WSIObjectTypeDictionary implements Serializable, CopyTo, Copyable, 
         this.objectTypes = null;
     }
 
+    /**
+     * Sets the value of the objectTypes property.
+     * 
+     * @param objectTypes
+     *     allowed object is
+     *     {@link ControlledVoc }
+     *     
+     */
+    public void setObjectTypes(List<ControlledVoc> objectTypes) {
+        this.objectTypes = objectTypes;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof WSIObjectTypeDictionary)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class WSIObjectTypeDictionary implements Serializable, CopyTo, Copyable, 
             List<ControlledVoc> sourceObjectTypes;
             sourceObjectTypes = this.getObjectTypes();
             List<ControlledVoc> copyObjectTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceObjectTypes));
-            copy.unsetObjectTypes();
-            List<ControlledVoc> uniqueObjectTypesl = copy.getObjectTypes();
-            uniqueObjectTypesl.addAll(copyObjectTypes);
+            copy.setObjectTypes(copyObjectTypes);
         }
         return copy;
     }

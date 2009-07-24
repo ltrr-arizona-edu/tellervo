@@ -101,6 +101,22 @@ public class Pos
         this.values = null;
     }
 
+    /**
+     * 
+     *             XML List based on XML Schema double type.  An element
+     *             of this type contains a space-separated list of double
+     *             values
+     *          
+     * 
+     * @param values
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setValues(List<Double> values) {
+        this.values = values;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof Pos)) {
             equalsBuilder.appendSuper(false);
@@ -155,9 +171,7 @@ public class Pos
             List<Double> sourceValues;
             sourceValues = this.getValues();
             List<Double> copyValues = ((List<Double> ) copyBuilder.copy(sourceValues));
-            copy.unsetValues();
-            List<Double> uniqueValuesl = copy.getValues();
-            uniqueValuesl.addAll(copyValues);
+            copy.setValues(copyValues);
         }
         return copy;
     }

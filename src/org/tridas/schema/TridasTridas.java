@@ -93,6 +93,18 @@ public class TridasTridas
         this.projects = null;
     }
 
+    /**
+     * Sets the value of the projects property.
+     * 
+     * @param projects
+     *     allowed object is
+     *     {@link TridasProject }
+     *     
+     */
+    public void setProjects(List<TridasProject> projects) {
+        this.projects = projects;
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasTridas)) {
             equalsBuilder.appendSuper(false);
@@ -147,9 +159,7 @@ public class TridasTridas
             List<TridasProject> sourceProjects;
             sourceProjects = this.getProjects();
             List<TridasProject> copyProjects = ((List<TridasProject> ) copyBuilder.copy(sourceProjects));
-            copy.unsetProjects();
-            List<TridasProject> uniqueProjectsl = copy.getProjects();
-            uniqueProjectsl.addAll(copyProjects);
+            copy.setProjects(copyProjects);
         }
         return copy;
     }
