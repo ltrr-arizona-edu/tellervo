@@ -36,7 +36,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SeriesResource;
  *
  */
 
-public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<SeriesResource> {
+public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoader<SeriesResource> {
 	private String shortName;
 	private String name;
 	private TridasIdentifier identifier;
@@ -218,5 +218,30 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUISampleLoader<Series
 
 	public void preload(BaseSample bs) {
 		shortName = name = bs.getMetaString(Metadata.TITLE);
+	}
+
+	@Override
+	protected boolean doDelete(SeriesResource resource,
+			CorinaResourceAccessDialog dialog) throws IOException {
+		
+		// start the query
+		resource.query();
+		dialog.setVisible(true);
+		
+		// ok, success?
+		if(!dialog.isSuccessful()) {
+			Exception e = dialog.getFailException();
+			if(e instanceof IOException)
+				throw (IOException) e;
+			else
+				throw new IOException("Error: " + e.toString());
+		}
+		
+		return true;
+	}
+
+	@Override
+	protected SeriesResource getDeletionResource() {
+		return new SeriesResource(identifier, EntityType.MEASUREMENT_SERIES, CorinaRequestType.DELETE);
 	}
 }

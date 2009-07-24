@@ -74,6 +74,27 @@ public class Element implements Comparable<Element> {
 	}
 	
 	/**
+	 * 
+	 * @return true if this element can potentially be deleted
+	 */
+	public boolean isDeletable() {
+		return loader instanceof DeletableSampleLoader;
+	}
+	
+	/**
+	 * 
+	 * @return true if delete was successful
+	 * @throws IOException for errors during delete process
+	 * @throws IllegalArgumentException if this element type can't be deleted
+	 */
+	public boolean delete() throws IOException, IllegalArgumentException {
+		if(loader instanceof DeletableSampleLoader)
+			return ((DeletableSampleLoader)loader).delete();
+		
+		throw new IllegalArgumentException("Cannot delete this type of element");
+	}
+	
+	/**
 	 * Gets the name of the element
 	 * For a FileElement, returns the full path name
 	 * @return
@@ -104,6 +125,7 @@ public class Element implements Comparable<Element> {
 		return o.getName().compareTo(getName());
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		if(o == this)
 			return true;
@@ -112,5 +134,10 @@ public class Element implements Comparable<Element> {
 			return (compareTo((Element)o) == 0);
 		
 		return super.equals(o);
+	}
+	
+	@Override
+	public int hashCode() {
+		return getName().toString().hashCode();
 	}
 }
