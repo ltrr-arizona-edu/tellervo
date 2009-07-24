@@ -1,24 +1,13 @@
 package edu.cornell.dendro.corina.tridasv2;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import java.lang.reflect.Field;
+import java.util.List;
 
 import org.jvnet.jaxb2_commons.lang.Copyable;
-import org.tridas.interfaces.ITridas;
-
-import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasValues;
 
 /**
  * Lazy way to clone an object hierarchy that's JAXB-defined
@@ -33,6 +22,59 @@ public class TridasCloner {
 		o.copyTo(copy);
 		
 		return (T) copy;
+	}
+	
+	/**
+	 * Copy a series, but make the values just a reference
+	 * @param series
+	 * @return A copy of the series with values as reference
+	 */
+	public static ITridasSeries cloneSeriesRefValues(ITridasSeries series) {
+		// safety check
+		if(series == null)
+			return null;
+		
+		List<TridasValues> values = series.isSetValues() ? series.getValues() : null;
+		
+		// remove values from the series temporarily
+		series.unsetValues();
+		
+		ITridasSeries copy = (ITridasSeries)(((Copyable) series).createCopy());
+		((Copyable)series).copyTo(copy);
+		
+		injectValues(series, values);
+		injectValues(copy, values);
+		
+		return (ITridasSeries) copy;
+	}
+	
+	private static void injectValues(Object obj, List<TridasValues> values) {
+		Field field;
+		
+		if(obj instanceof TridasMeasurementSeries) {
+			try {
+				field = TridasMeasurementSeries.class.getDeclaredField("values");
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e);
+			}
+		}
+		else if(obj instanceof TridasDerivedSeries) {
+			try {
+				field = TridasDerivedSeries.class.getDeclaredField("values");
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e);
+			}			
+		}
+		else
+			throw new IllegalArgumentException("injectValues doesn't work on " + obj.getClass().getName());
+		
+		try {
+			// override java security checks to access 'protected' member...
+			field.setAccessible(true);
+			field.set(obj, values);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException(e);
+		}
 	}
 	
 	/*

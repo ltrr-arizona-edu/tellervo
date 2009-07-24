@@ -168,7 +168,11 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				: "Click the lock to edit this " + currentMode.getTitle());
 		
 		if(enabled) {
-			temporaryEditingEntity = (ITridas) TridasCloner.clone(currentMode.getEntity(s));
+			ITridas currentEntity = currentMode.getEntity(s);
+			if(currentEntity instanceof ITridasSeries)
+				temporaryEditingEntity = TridasCloner.cloneSeriesRefValues((ITridasSeries) currentEntity);
+			else
+				temporaryEditingEntity = TridasCloner.clone(currentEntity);
 
 			// user chose to edit without choosing 'new', so be nice and make a new one for them
 			if(temporaryEditingEntity == null && topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
