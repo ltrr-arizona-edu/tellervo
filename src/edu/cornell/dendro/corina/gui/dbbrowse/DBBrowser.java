@@ -15,11 +15,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -39,6 +42,7 @@ import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.PopupListener;
 import edu.cornell.dendro.corina.wsi.ResourceEvent;
 import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -355,6 +359,34 @@ public class DBBrowser extends DBBrowser_UI {
 		table.getColumnModel().getColumn(9).setPreferredWidth(fm.stringWidth("123")); // checkbox?
 		
 		table.setDefaultRenderer(Object.class, new DBBrowserCellRenderer(this, disableSelections));
+		
+		// popup menu
+		table.addMouseListener(new PopupListener() {
+			@Override
+			public void showPopup(MouseEvent e) {
+				// only clicks on tables
+				if(!(e.getSource() instanceof JTable))
+					return;
+				
+				JTable table = (JTable) e.getSource();
+				DBBrowserTableModel model = (DBBrowserTableModel) table.getModel();
+				
+				// get the row and sanity check
+				int row = table.rowAtPoint(e.getPoint());
+				if(row < 0 || row >= model.getRowCount())
+					return;
+				
+				// select it?
+				table.setRowSelectionInterval(row, row);
+				
+				// get the element
+				Element element = model.getElementAt(row);
+				
+				// create and show the menu
+				JPopupMenu popup = new DBBrowserPopupMenu(element, DBBrowser.this);
+				popup.show(table, e.getX(), e.getY());
+			}
+		});
     }
     
     // Placeholder until we re-implement regions?
@@ -389,10 +421,10 @@ public class DBBrowser extends DBBrowser_UI {
         	regionList.addAll(regions);
     	
     	// and make the regions combo box reflect it
-		cboBrowseBy.setModel(new javax.swing.DefaultComboBoxModel(regionList.toArray()));
+		cboBrowseBy.setModel(new DefaultComboBoxModel(regionList.toArray()));
 		
 		// repopulate the site list when something is chosen...
-        cboBrowseBy.addActionListener(new java.awt.event.ActionListener() {
+        cboBrowseBy.addActionListener(new ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	populateSiteList();
             }
@@ -410,7 +442,7 @@ public class DBBrowser extends DBBrowser_UI {
 		}
 		
 		final DBBrowser glue = this;
-		lstSites.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+		lstSites.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(javax.swing.event.ListSelectionEvent lse) {
 				// ignore the first adjustment
 				if(lse.getValueIsAdjusting())
@@ -572,6 +604,33 @@ public class DBBrowser extends DBBrowser_UI {
 			btnOk.setEnabled(true);
 		else
 			btnOk.setEnabled(false);    	
+    }
+    
+    /**
+     * Remove the element from all lists that I have
+     * @param e
+     */
+    public void deleteElement(Element e) {
+   		deleteElementFromModel(e, ((DBBrowserTableModel)tblChosenMeas.getModel()));
+   		deleteElementFromModel(e, ((DBBrowserTableModel)tblAvailMeas.getModel()));    	
+    }
+    
+    private void deleteElementFromModel(Element e, DBBrowserTableModel model) {
+    	ElementList elements = model.getElements();
+    	ListIterator<Element> iterator = elements.listIterator();
+    	
+    	while(iterator.hasNext()) {
+    		int idx = iterator.nextIndex();
+    		Element element = iterator.next();
+    		
+    		if(element.equals(e)) {
+    			// remove the current element
+    			iterator.remove();
+    			
+    			// notify the table
+    			model.fireTableRowsDeleted(idx, idx);
+    		}
+    	}
     }
     
     /**

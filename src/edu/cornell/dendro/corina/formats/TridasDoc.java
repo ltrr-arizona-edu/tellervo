@@ -282,6 +282,9 @@ public class TridasDoc implements Filetype {
 		s.setMeta(Metadata.MODIFIED_TIMESTAMP, series.getLastModifiedTimestamp().
 				getValue().toGregorianCalendar().getTime());
 		
+		// count of direct children
+		s.setMeta(Metadata.CHILD_COUNT, genericFields.getInteger("corina.directChildCount", 0));
+		
 		// reconciled only works on Direct VMs
 		if(s.getSampleType() == SampleType.DIRECT) {
 			// set it to the value of reconciled, or false if it's not present

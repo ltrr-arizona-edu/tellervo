@@ -20,6 +20,9 @@ public class Metadata {
 	
 	/** Derived series version */
 	public static final String VERSION = "version";
+	
+	/** Number of child measurements */
+	public static final String CHILD_COUNT = "childCount";
 
 	/** The server says this is a "legacy cleaned" sample
 	 * FIXME: What is that, exactly?
