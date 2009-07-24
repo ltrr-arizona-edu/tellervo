@@ -244,4 +244,20 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 	protected SeriesResource getDeletionResource() {
 		return new SeriesResource(identifier, EntityType.MEASUREMENT_SERIES, CorinaRequestType.DELETE);
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof CorinaWsiTridasElement) {
+			CorinaWsiTridasElement o2 = (CorinaWsiTridasElement) o;
+
+			return identifier.equals(o2.identifier);
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return identifier.hashCode();
+	}
 }
