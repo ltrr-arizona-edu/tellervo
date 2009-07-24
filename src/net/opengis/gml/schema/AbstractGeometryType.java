@@ -65,7 +65,7 @@ public abstract class AbstractGeometryType
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute
+    @XmlAttribute(name = "srsName")
     @XmlSchemaType(name = "anyURI")
     protected String srsName;
 

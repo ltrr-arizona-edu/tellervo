@@ -56,9 +56,9 @@ public class Year
     @XmlValue
     @XmlSchemaType(name = "positiveInteger")
     protected BigInteger value;
-    @XmlAttribute
+    @XmlAttribute(name = "certainty")
     protected Certainty certainty;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "suffix", required = true)
     protected DatingSuffix suffix;
 
     /**

@@ -49,11 +49,11 @@ public class WSIParam
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute
+    @XmlAttribute(name = "name")
     protected SearchParameterName name;
-    @XmlAttribute
+    @XmlAttribute(name = "operator")
     protected SearchOperator operator;
-    @XmlAttribute
+    @XmlAttribute(name = "value")
     protected String value;
 
     /**

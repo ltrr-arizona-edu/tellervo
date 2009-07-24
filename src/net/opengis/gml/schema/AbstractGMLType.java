@@ -72,7 +72,7 @@ public abstract class AbstractGMLType implements Serializable, CopyTo, Copyable,
     protected String description;
     @XmlElement(name = "name")
     protected List<Name> names;
-    @XmlAttribute(namespace = "http://www.opengis.net/gml")
+    @XmlAttribute(name = "id", namespace = "http://www.opengis.net/gml")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")

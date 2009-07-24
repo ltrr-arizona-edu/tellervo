@@ -53,9 +53,9 @@ public class TridasRemark
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute
+    @XmlAttribute(name = "normalTridas")
     protected NormalTridasRemark normalTridas;
-    @XmlAttribute
+    @XmlAttribute(name = "inheritedCount")
     @XmlJavaTypeAdapter(IntegerAdapter.class)
     @XmlSchemaType(name = "int")
     protected Integer inheritedCount;

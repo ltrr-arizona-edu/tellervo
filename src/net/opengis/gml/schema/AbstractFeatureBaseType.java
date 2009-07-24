@@ -70,7 +70,7 @@ public class AbstractFeatureBaseType
     protected String description;
     @XmlElement(name = "name")
     protected List<Name> names;
-    @XmlAttribute(namespace = "http://www.opengis.net/gml", required = true)
+    @XmlAttribute(name = "id", namespace = "http://www.opengis.net/gml", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")

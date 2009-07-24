@@ -55,7 +55,7 @@ public class TridasIdentifier
     private final static long serialVersionUID = 1001L;
     @XmlValue
     protected String value;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "domain", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String domain;
 

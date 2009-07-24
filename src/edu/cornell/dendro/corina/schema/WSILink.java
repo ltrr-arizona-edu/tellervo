@@ -53,15 +53,15 @@ public class WSILink
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute
+    @XmlAttribute(name = "type")
     protected String type;
-    @XmlAttribute
+    @XmlAttribute(name = "object")
     protected String object;
-    @XmlAttribute
+    @XmlAttribute(name = "id")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String id;
-    @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
+    @XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
     @XmlSchemaType(name = "anyURI")
     protected String href;
 

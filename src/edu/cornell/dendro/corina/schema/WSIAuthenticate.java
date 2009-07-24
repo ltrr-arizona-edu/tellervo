@@ -52,17 +52,17 @@ public class WSIAuthenticate
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute
+    @XmlAttribute(name = "username")
     protected String username;
-    @XmlAttribute
+    @XmlAttribute(name = "password")
     protected String password;
-    @XmlAttribute
+    @XmlAttribute(name = "cnonce")
     protected String cnonce;
-    @XmlAttribute
+    @XmlAttribute(name = "snonce")
     protected String snonce;
-    @XmlAttribute
+    @XmlAttribute(name = "hash")
     protected String hash;
-    @XmlAttribute
+    @XmlAttribute(name = "seq")
     protected String seq;
 
     /**

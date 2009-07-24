@@ -66,13 +66,13 @@ public class ControlledVoc
     private final static long serialVersionUID = 1001L;
     @XmlValue
     protected String value;
-    @XmlAttribute
+    @XmlAttribute(name = "normalStd")
     @XmlSchemaType(name = "anySimpleType")
     protected String normalStd;
-    @XmlAttribute
+    @XmlAttribute(name = "normalId")
     @XmlSchemaType(name = "anySimpleType")
     protected String normalId;
-    @XmlAttribute
+    @XmlAttribute(name = "normal")
     @XmlSchemaType(name = "anySimpleType")
     protected String normal;
 

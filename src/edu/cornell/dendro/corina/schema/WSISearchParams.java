@@ -74,12 +74,12 @@ public class WSISearchParams
     protected WSISearchParams.All all;
     @XmlElement(name = "param")
     protected List<WSIParam> params;
-    @XmlAttribute
+    @XmlAttribute(name = "returnObject")
     protected SearchReturnObject returnObject;
-    @XmlAttribute
+    @XmlAttribute(name = "limit")
     @XmlJavaTypeAdapter(IntegerAdapter.class)
     protected Integer limit;
-    @XmlAttribute
+    @XmlAttribute(name = "skip")
     @XmlJavaTypeAdapter(IntegerAdapter.class)
     protected Integer skip;
     @XmlAttribute(name = "includeChildren")

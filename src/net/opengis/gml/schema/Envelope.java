@@ -71,7 +71,7 @@ public class Envelope
     protected Pos lowerCorner;
     @XmlElement(required = true)
     protected Pos upperCorner;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "srsName", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String srsName;
 

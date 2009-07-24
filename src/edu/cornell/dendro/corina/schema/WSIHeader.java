@@ -695,7 +695,7 @@ public class WSIHeader
         private final static long serialVersionUID = 1001L;
         @XmlValue
         protected double value;
-        @XmlAttribute
+        @XmlAttribute(name = "unit")
         protected String unit;
 
         /**
@@ -858,7 +858,7 @@ public class WSIHeader
         private final static long serialVersionUID = 1001L;
         @XmlValue
         protected String value;
-        @XmlAttribute
+        @XmlAttribute(name = "label")
         protected String label;
 
         /**
@@ -1028,13 +1028,13 @@ public class WSIHeader
     {
 
         private final static long serialVersionUID = 1001L;
-        @XmlAttribute
+        @XmlAttribute(name = "id")
         protected String id;
-        @XmlAttribute
+        @XmlAttribute(name = "username")
         protected String username;
-        @XmlAttribute
+        @XmlAttribute(name = "firstname")
         protected String firstname;
-        @XmlAttribute
+        @XmlAttribute(name = "lastname")
         protected String lastname;
 
         /**

@@ -61,7 +61,7 @@ public class LineStringSegmentType
     private final static long serialVersionUID = 1001L;
     @XmlElement(required = true)
     protected PosList posList;
-    @XmlAttribute
+    @XmlAttribute(name = "interpolation")
     protected CurveInterpolationType interpolation;
 
     /**

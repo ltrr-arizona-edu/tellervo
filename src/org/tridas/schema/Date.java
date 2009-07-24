@@ -57,7 +57,7 @@ public class Date
     @XmlValue
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar value;
-    @XmlAttribute
+    @XmlAttribute(name = "certainty")
     protected Certainty certainty;
 
     /**

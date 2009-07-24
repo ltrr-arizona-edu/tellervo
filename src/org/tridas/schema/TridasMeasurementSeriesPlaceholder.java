@@ -51,7 +51,7 @@ public class TridasMeasurementSeriesPlaceholder
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "id", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")

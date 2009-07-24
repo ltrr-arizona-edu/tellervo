@@ -278,7 +278,7 @@ public class SeriesLink
     {
 
         private final static long serialVersionUID = 1001L;
-        @XmlAttribute
+        @XmlAttribute(name = "ref")
         @XmlIDREF
         @XmlSchemaType(name = "IDREF")
         protected Object ref;
@@ -406,7 +406,7 @@ public class SeriesLink
     {
 
         private final static long serialVersionUID = 1001L;
-        @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
+        @XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
         @XmlSchemaType(name = "anyURI")
         protected String href;
 

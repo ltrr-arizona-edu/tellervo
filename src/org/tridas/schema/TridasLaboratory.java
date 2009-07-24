@@ -91,9 +91,7 @@ public class TridasLaboratory
     }
 
     /**
-     * 
-     * 							Identifier for the laboratory.
-     * 						
+     * Sets the value of the identifier property.
      * 
      * @param value
      *     allowed object is
@@ -332,7 +330,7 @@ public class TridasLaboratory
         private final static long serialVersionUID = 1001L;
         @XmlValue
         protected String value;
-        @XmlAttribute
+        @XmlAttribute(name = "acronym")
         @XmlSchemaType(name = "anySimpleType")
         protected String acronym;
 

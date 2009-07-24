@@ -52,7 +52,7 @@ public class WSINonce
     private final static long serialVersionUID = 1001L;
     @XmlValue
     protected String value;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "seq", required = true)
     protected String seq;
 
     /**

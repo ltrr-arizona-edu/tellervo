@@ -69,7 +69,7 @@ public class TridasSapwood
     protected TridasLastRingUnderBark lastRingUnderBark;
     protected String missingSapwoodRingsToBark;
     protected String missingSapwoodRingsToBarkFoundation;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "presence", required = true)
     protected ComplexPresenceAbsence presence;
 
     /**

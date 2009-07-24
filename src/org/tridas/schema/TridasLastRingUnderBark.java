@@ -52,7 +52,7 @@ public class TridasLastRingUnderBark
     private final static long serialVersionUID = 1001L;
     @XmlValue
     protected String content;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "presence", required = true)
     protected PresenceAbsence presence;
 
     /**

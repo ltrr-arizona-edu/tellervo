@@ -80,10 +80,7 @@ public class CurveType
     }
 
     /**
-     * 
-     *                         This element encapsulates the segments of the
-     *                         curve.
-     *                      
+     * Sets the value of the segments property.
      * 
      * @param value
      *     allowed object is

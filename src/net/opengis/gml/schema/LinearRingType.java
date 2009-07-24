@@ -79,14 +79,7 @@ public class LinearRingType
     }
 
     /**
-     * 
-     *                         The "posList" element provides a compact way to
-     *                         specifiy the coordinates of the control points,
-     *                         if all control points are in the same coordinate
-     *                         reference systems and belong to this ring only.
-     *                         The number of direct positions in the list must
-     *                         be at least four.
-     *                      
+     * Sets the value of the posList property.
      * 
      * @param value
      *     allowed object is

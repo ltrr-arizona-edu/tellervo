@@ -74,15 +74,15 @@ public class SecurityUser
     private final static long serialVersionUID = 1001L;
     @XmlElement(required = true)
     protected SecurityUser.MemberOf memberOf;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "id", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String id;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "username", required = true)
     protected String username;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "firstName", required = true)
     protected String firstName;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "lastName", required = true)
     protected String lastName;
     @XmlAttribute(name = "isActive", required = true)
     protected boolean isActive;

@@ -47,7 +47,7 @@ public class TridasPith
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "presence", required = true)
     protected ComplexPresenceAbsence presence;
 
     /**

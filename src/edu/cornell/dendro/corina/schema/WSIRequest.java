@@ -120,11 +120,11 @@ public class WSIRequest
     protected List<WSIEntity> entities;
     protected WSIAuthenticate authenticate;
     protected WSISearchParams searchParams;
-    @XmlAttribute
+    @XmlAttribute(name = "type")
     protected CorinaRequestType type;
-    @XmlAttribute
+    @XmlAttribute(name = "format")
     protected CorinaRequestFormat format;
-    @XmlAttribute
+    @XmlAttribute(name = "parentEntityID")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String parentEntityID;

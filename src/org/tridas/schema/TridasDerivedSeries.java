@@ -117,7 +117,7 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
     @XmlElement(name = "genericField")
     protected List<TridasGenericField> genericFields;
     protected List<TridasValues> values;
-    @XmlAttribute
+    @XmlAttribute(name = "id")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")

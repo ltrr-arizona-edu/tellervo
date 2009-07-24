@@ -52,22 +52,22 @@ public class ReferenceType
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
+    @XmlAttribute(name = "type", namespace = "http://www.w3.org/1999/xlink")
     protected String type;
-    @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
+    @XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink")
     @XmlSchemaType(name = "anyURI")
     protected String href;
-    @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
+    @XmlAttribute(name = "role", namespace = "http://www.w3.org/1999/xlink")
     @XmlSchemaType(name = "anyURI")
     protected String role;
-    @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
+    @XmlAttribute(name = "arcrole", namespace = "http://www.w3.org/1999/xlink")
     @XmlSchemaType(name = "anyURI")
     protected String arcrole;
-    @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
+    @XmlAttribute(name = "title", namespace = "http://www.w3.org/1999/xlink")
     protected String title;
-    @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
+    @XmlAttribute(name = "show", namespace = "http://www.w3.org/1999/xlink")
     protected String show;
-    @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
+    @XmlAttribute(name = "actuate", namespace = "http://www.w3.org/1999/xlink")
     protected String actuate;
 
     /**

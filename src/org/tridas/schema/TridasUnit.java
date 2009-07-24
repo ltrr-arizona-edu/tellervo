@@ -49,7 +49,7 @@ public class TridasUnit
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute
+    @XmlAttribute(name = "normalTridas")
     protected NormalTridasUnit normalTridas;
 
     /**

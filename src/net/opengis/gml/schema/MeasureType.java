@@ -57,7 +57,7 @@ public class MeasureType
     private final static long serialVersionUID = 1001L;
     @XmlValue
     protected double value;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "uom", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String uom;
 

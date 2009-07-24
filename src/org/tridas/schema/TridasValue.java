@@ -62,11 +62,11 @@ public class TridasValue
     private final static long serialVersionUID = 1001L;
     @XmlElement(name = "remark")
     protected List<TridasRemark> remarks;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "value", required = true)
     protected String value;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "index", required = true)
     protected String index;
-    @XmlAttribute
+    @XmlAttribute(name = "count")
     @XmlJavaTypeAdapter(IntegerAdapter.class)
     @XmlSchemaType(name = "int")
     protected Integer count;

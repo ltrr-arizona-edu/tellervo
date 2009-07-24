@@ -48,7 +48,7 @@ public class TridasFile
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute(namespace = "http://www.w3.org/1999/xlink", required = true)
+    @XmlAttribute(name = "href", namespace = "http://www.w3.org/1999/xlink", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String href;
 

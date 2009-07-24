@@ -89,10 +89,7 @@ public class SurfaceType
     }
 
     /**
-     * 
-     *                         This element encapsulates the patches of the
-     *                         surface.
-     *                      
+     * Sets the value of the patches property.
      * 
      * @param value
      *     allowed object is

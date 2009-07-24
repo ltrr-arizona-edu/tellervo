@@ -62,7 +62,7 @@ public class Name
     private final static long serialVersionUID = 1001L;
     @XmlValue
     protected String value;
-    @XmlAttribute
+    @XmlAttribute(name = "codeSpace")
     @XmlSchemaType(name = "anyURI")
     protected String codeSpace;
 

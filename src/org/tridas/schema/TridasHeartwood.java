@@ -56,7 +56,7 @@ public class TridasHeartwood
     private final static long serialVersionUID = 1001L;
     protected String missingHeartwoodRingsToPith;
     protected String missingHeartwoodRingsToPithFoundation;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "presence", required = true)
     protected ComplexPresenceAbsence presence;
 
     /**

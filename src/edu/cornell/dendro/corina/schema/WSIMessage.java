@@ -63,7 +63,7 @@ public class WSIMessage
     @XmlMixed
     @XmlAnyElement
     protected List<Object> content;
-    @XmlAttribute
+    @XmlAttribute(name = "code")
     @XmlJavaTypeAdapter(IntegerAdapter.class)
     @XmlSchemaType(name = "int")
     protected Integer code;

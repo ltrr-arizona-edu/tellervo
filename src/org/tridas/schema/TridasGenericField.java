@@ -68,10 +68,10 @@ public class TridasGenericField
     private final static long serialVersionUID = 1001L;
     @XmlValue
     protected String value;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "name", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String name;
-    @XmlAttribute
+    @XmlAttribute(name = "type")
     protected String type;
 
     /**
