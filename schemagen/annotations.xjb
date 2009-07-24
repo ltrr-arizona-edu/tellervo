@@ -9,11 +9,11 @@ This file is for custom annotations applied to tridas objects
 	xmlns:annox="http://annox.dev.java.net"
 	extensionBindingPrefixes="annox ls"
 	xmlns:ta="http://annox.dev.java.net/org.tridas.annotations"
-	xmlns:ls="http://www.no0ne.org/xjc/plugin/prop-listener-injector"
 	schemaLocation="../src/edu/cornell/dendro/webservice/schemas/tridas.xsd" node="/xs:schema">
 	
+	<!-- xmlns:ls="http://www.no0ne.org/xjc/plugin/prop-listener-injector" -->	
 	<!-- Disable listener support by default -->	
-	<ls:listener-support type="NONE" />
+	<!-- <ls:listener-support type="NONE" /> -->
 	
 	<!-- MACHINE ONLY THINGS -->
 	<bindings node="//xs:element[@name='identifier']/xs:complexType">

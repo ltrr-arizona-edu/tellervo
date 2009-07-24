@@ -194,21 +194,22 @@
 
   <path id="xjc.classpath">
   	<pathelement location="Libraries/jaxb/jaxb-xjc.jar"/>
-  	<!--<pathelement location="Libraries/jaxb/jaxb-impl.jar"/>
-  	<pathelement location="Libraries/jaxb/jaxb-api.jar"/>-->
+  	<!-- <pathelement location="Libraries/jaxb/jaxb-impl.jar"/>
+  	<pathelement location="Libraries/jaxb/jaxb-api.jar"/> -->
 	<pathelement location="Libraries/commons-lang-2.4.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-ant-0.5.0.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-0.5.0.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-annotate-0.5.0.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-tools-0.5.0.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-runtime-0.5.0.jar"/>
+ 	<pathelement location="Libraries/jaxb/plugin/collection-setter-injector.jar"/> 
   	<pathelement location="Libraries/jaxb/plugin/annox-0.4.2.jar"/>
   	<pathelement location="Libraries/jaxb/plugin/xjc-if-ins+generics.jar"/>
-  	<pathelement location="Libraries/jaxb/plugin/proplistplugin.jar"/>
+  	<!-- <pathelement location="Libraries/jaxb/plugin/proplistplugin.jar"/> -->
   	<pathelement location="Libraries/jaxb/plugin/TridasAandI.jar"/>
     <pathelement location="Libraries/jaxb/plugin/TridasAnnotationsPlugin.jar"/>
   	<pathelement location="${jaxb2-basics-runtime.jar}"/>
-   	<pathelement location="${coll-prop.jar}"/>
+   	<!-- <pathelement location="${coll-prop.jar}"/> -->
     <pathelement location="${commons-logging.jar}"/>
   </path>
 	
@@ -450,7 +451,7 @@
 			<arg value="-Xannotate" />
 			<arg value="-Xtridas-annotations" />
 			<arg value="-Xifins" />
-			<arg value="-Xinject-prop-listeners" />
+			<!-- <arg value="-Xinject-prop-listeners" /> -->
 			<arg value="-Xequals" />
 			<arg value="-XhashCode" />
 			<arg value="-XtoString" />
