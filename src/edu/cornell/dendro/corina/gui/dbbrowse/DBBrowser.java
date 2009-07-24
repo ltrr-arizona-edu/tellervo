@@ -2,16 +2,15 @@ package edu.cornell.dendro.corina.gui.dbbrowse;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,13 +18,12 @@ import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.event.ListSelectionListener;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
@@ -47,8 +45,10 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
-public class DBBrowser extends DBBrowser_UI{
-    private ElementList selectedElements;
+public class DBBrowser extends DBBrowser_UI {
+	private static final long serialVersionUID = 1L;
+	
+	private ElementList selectedElements;
     private boolean isMultiDialog;
     private int minimumSelectedElements = 1;
     
@@ -206,7 +206,7 @@ public class DBBrowser extends DBBrowser_UI{
 				new DBBrowserSorter(mdlAvailMeas, tblAvailMeas)); // add sorter & header renderer
 		tblAvailMeas.setColumnSelectionAllowed(false);
 		tblAvailMeas.setRowSelectionAllowed(true);
-		setupTableColumns(tblAvailMeas);
+		setupTableColumns(tblAvailMeas, true);
 
 		DBBrowserTableModel mdlChosenMeas = new DBBrowserTableModel(selectedElements);
 		tblChosenMeas.setModel(mdlChosenMeas);
@@ -214,7 +214,7 @@ public class DBBrowser extends DBBrowser_UI{
 				new DBBrowserSorter(mdlChosenMeas, tblChosenMeas)); // add sorter & header renderer
 		tblChosenMeas.setColumnSelectionAllowed(false);
 		tblChosenMeas.setRowSelectionAllowed(true);
-		setupTableColumns(tblChosenMeas);
+		setupTableColumns(tblChosenMeas, false);
 		
 		if(!isMultiDialog) {
 			// only single selection!
@@ -230,7 +230,7 @@ public class DBBrowser extends DBBrowser_UI{
     		
     		// start out with initial disabled state, only allow when something is selected
 			btnOk.setEnabled(false);
-    		tblAvailMeas.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+    		tblAvailMeas.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
     			public void valueChanged(javax.swing.event.ListSelectionEvent lse) {
     				// ignore the first adjustment
     				if(lse.getValueIsAdjusting())
@@ -253,7 +253,7 @@ public class DBBrowser extends DBBrowser_UI{
     		
     		Icon dn = Builder.getIcon("down.png", 22);
     		Icon up = Builder.getIcon("up.png", 22);
-    		Icon downall = Builder.getIcon("down.png", 22);
+    		//Icon downall = Builder.getIcon("down.png", 22);
     		//Icon upall = Builder.getIcon("uparrow.png");
 
     		btnAdd.setIcon(dn);
@@ -283,6 +283,11 @@ public class DBBrowser extends DBBrowser_UI{
 					
 					// tell the table it's changed!
 					((DBBrowserTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
+					
+					// remove the selection
+					// repaint to show non-disabled rows
+					tblAvailMeas.repaint();
+					tblAvailMeas.clearSelection();
 
 					// verify a selected element
 					if(selectedElements.size() >= minimumSelectedElements)
@@ -310,6 +315,8 @@ public class DBBrowser extends DBBrowser_UI{
 					
 					// tell the table it's changed!
 					((DBBrowserTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
+					// repaint to show non-disabled rows
+					tblAvailMeas.repaint();
 
 					// verify a selected element
 					if(selectedElements.size() >= minimumSelectedElements)
@@ -329,7 +336,7 @@ public class DBBrowser extends DBBrowser_UI{
     	}	
     }
     
-    private void setupTableColumns(JTable table) {
+    private void setupTableColumns(JTable table, boolean disableSelections) {
 		FontMetrics fm = table.getFontMetrics(table.getFont());
 		
 		table.setShowGrid(false);
@@ -337,8 +344,8 @@ public class DBBrowser extends DBBrowser_UI{
 		table.setGridColor(Color.lightGray);
 		
 		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX-Xx-Xx"));
-		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("DirectX"));
-		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("ABCD"));
+		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("VERSION12"));
+		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("DirectX"));
 		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Pinus Nigra X"));
 		table.getColumnModel().getColumn(4).setPreferredWidth(fm.stringWidth("99"));
 		table.getColumnModel().getColumn(5).setPreferredWidth(fm.stringWidth("2008-08-08"));
@@ -347,28 +354,7 @@ public class DBBrowser extends DBBrowser_UI{
 		table.getColumnModel().getColumn(8).setPreferredWidth(fm.stringWidth("123"));
 		table.getColumnModel().getColumn(9).setPreferredWidth(fm.stringWidth("123")); // checkbox?
 		
-		table.setDefaultRenderer(Object.class,
-				new DefaultTableCellRenderer() {
-					@Override
-					public Component getTableCellRendererComponent(
-							JTable table, Object value, boolean isSelected,
-							boolean hasFocus, int row, int column) {
-						// get existing label
-						JLabel c = (JLabel) super
-								.getTableCellRendererComponent(table,
-										value, isSelected, hasFocus, row,
-										column);
-
-						//c.setOpaque(true);
-
-						// every-other-line colors
-						if (!isSelected)
-							c.setBackground(row % 2 == 0 ? ODD_ROW_COLOR
-									: Color.white);
-
-						return c;
-					}
-				});
+		table.setDefaultRenderer(Object.class, new DBBrowserCellRenderer(this, disableSelections));
     }
     
     // Placeholder until we re-implement regions?
@@ -497,7 +483,8 @@ public class DBBrowser extends DBBrowser_UI{
 		});
 	}
     
-    private void populateSiteList() {
+    @SuppressWarnings("unchecked")
+	private void populateSiteList() {
     	Collection<TridasObjectEx> sites = App.tridasObjects.getObjectList();
     	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
     	TridasObjectEx selectedSite = (TridasObjectEx) lstSites.getSelectedValue();
@@ -585,6 +572,15 @@ public class DBBrowser extends DBBrowser_UI{
 			btnOk.setEnabled(true);
 		else
 			btnOk.setEnabled(false);    	
+    }
+    
+    /**
+     * Is this element in the selected list?
+     * @param e
+     * @return true if the selected elements table contains this element
+     */
+    public boolean isSelectedElement(Element e) {
+    	return selectedElements.contains(e);
     }
     
     /**

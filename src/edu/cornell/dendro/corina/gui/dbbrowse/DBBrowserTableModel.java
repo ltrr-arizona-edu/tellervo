@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -16,7 +15,6 @@ import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.tridasv2.LabCode;
 
 public class DBBrowserTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
@@ -24,8 +22,8 @@ public class DBBrowserTableModel extends AbstractTableModel {
 	private ElementList elements;
     private final String[] columnNames = {
             "Name", 
+            "Version", 
             "Type", 
-            "Object", 
             "Taxon", 
             "#", 
             "Mod", 
@@ -84,23 +82,11 @@ public class DBBrowserTableModel extends AbstractTableModel {
 			return bs.hasMeta("title") ? bs.getMeta("title") : "[id: " + bs.getMeta("id") + "]";
 
 		case 1:
+			return bs.getMetaString(Metadata.VERSION);
+			
+		// Sample type
+		case 2:
 			return bs.getSampleType();
-
-		// site description
-		case 2: {
-			LabCode labcode = bs.getMeta(Metadata.LABCODE, LabCode.class);
-			
-			if(labcode == null)
-				return null;
-			
-			List<String> titles = labcode.getSiteTitles();
-
-			// no titles?
-			if(titles.isEmpty())
-				return null;
-			
-			return titles.get(titles.size() - 1);
-		}
 
 		// taxon
 		case 3: {
@@ -125,7 +111,7 @@ public class DBBrowserTableModel extends AbstractTableModel {
 		// modified date
 		case 5: {
 			Date date = bs.getMeta(Metadata.MODIFIED_TIMESTAMP, Date.class);
-			return date != null ? dateFormat.format(date) : date;
+			return (date != null) ? dateFormat.format(date) : date;
 		}
 
 		// start year
@@ -170,5 +156,5 @@ public class DBBrowserTableModel extends AbstractTableModel {
 	
 	public Element getElementAt(int rowIndex) {
 		return elements.get(rowIndex);
-	}
+	}	
 }

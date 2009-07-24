@@ -45,7 +45,7 @@ public class SiteRenderer implements ListCellRenderer {
 		if(isSelected)
 			c.setBackground(list.getSelectionBackground());
 		else
-			c.setBackground(index % 2 == 0 ? DBBrowser.ODD_ROW_COLOR
+			c.setBackground(index % 2 == 0 ? DBBrowserCellRenderer.BROWSER_ODD_ROW_COLOR
 					: Color.white);	
 
 		if(value instanceof TridasObjectEx) {
@@ -66,7 +66,7 @@ public class SiteRenderer implements ListCellRenderer {
 			Integer seriesCount = site.getSeriesCount();
 			if(seriesCount != null) {
 				String countStr = seriesCount + "/" + site.getChildSeriesCount();
-				Font countFont = font.deriveFont(font.getSize() - 1.0f);
+				//Font countFont = font.deriveFont(font.getSize() - 1.0f);
 
 				lblCode.setText(lblCode.getText() + "   " + countStr);
 			}

@@ -71,6 +71,7 @@ public class DBBrowserSorter extends MouseAdapter {
 			return model.getColumnValueForElement(e, column);
 		}
 		
+		@SuppressWarnings("unchecked")
 		public int compare(Element e1, Element e2) {
 			Object o1 = getValue(e1);
 			Object o2 = getValue(e2);

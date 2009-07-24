@@ -1,6 +1,5 @@
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
-import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
@@ -8,13 +7,14 @@ import java.awt.HeadlessException;
 
 import javax.swing.JDialog;
 
+@SuppressWarnings({"serial","unchecked"})
 public class DBBrowser_UI extends JDialog {
-
+	private static final long serialVersionUID = 1L;
+	
 	/** A return status code - returned if Cancel button has been pressed */
 	public static final int RET_CANCEL = 0;
 	/** A return status code - returned if OK button has been pressed */
 	public static final int RET_OK = 1;
-	public static final Color ODD_ROW_COLOR = new Color(236, 243, 254);
 
 	/**
 	 * @param args the command line arguments
@@ -41,8 +41,6 @@ public class DBBrowser_UI extends JDialog {
 	protected javax.swing.JButton btnOk;
 	protected javax.swing.JButton btnAdd;
 	protected javax.swing.JButton btnRemove;
-	private javax.swing.JButton btnAddAll;
-	private javax.swing.JButton btnRemoveAll;
 
 	/** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
 	public int getReturnStatus() {
