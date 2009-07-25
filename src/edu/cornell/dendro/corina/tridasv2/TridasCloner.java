@@ -38,45 +38,18 @@ public class TridasCloner {
 		
 		// remove values from the series temporarily
 		series.unsetValues();
-		
+	
+		// copy the series
 		ITridasSeries copy = (ITridasSeries)(((Copyable) series).createCopy());
 		((Copyable)series).copyTo(copy);
 		
-		injectValues(series, values);
-		injectValues(copy, values);
+		// re-set the values (and reference them, too)
+		series.setValues(values);
+		copy.setValues(values);
 		
-		return (ITridasSeries) copy;
+		return copy;
 	}
-	
-	private static void injectValues(Object obj, List<TridasValues> values) {
-		Field field;
 		
-		if(obj instanceof TridasMeasurementSeries) {
-			try {
-				field = TridasMeasurementSeries.class.getDeclaredField("values");
-			} catch (Exception e) {
-				throw new IllegalArgumentException(e);
-			}
-		}
-		else if(obj instanceof TridasDerivedSeries) {
-			try {
-				field = TridasDerivedSeries.class.getDeclaredField("values");
-			} catch (Exception e) {
-				throw new IllegalArgumentException(e);
-			}			
-		}
-		else
-			throw new IllegalArgumentException("injectValues doesn't work on " + obj.getClass().getName());
-		
-		try {
-			// override java security checks to access 'protected' member...
-			field.setAccessible(true);
-			field.set(obj, values);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException(e);
-		}
-	}
-	
 	/*
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(T o) {

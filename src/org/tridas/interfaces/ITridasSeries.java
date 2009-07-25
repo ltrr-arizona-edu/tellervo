@@ -85,4 +85,14 @@ public interface ITridasSeries extends ITridas, ITridasGeneric {
     public boolean isSetValues();
 
     public void unsetValues();
+    
+    /**
+     * Sets the value of the values property.
+     * 
+     * @param values
+     *     allowed object is
+     *     {@link TridasValues }
+     *     
+     */
+    public void setValues(List<TridasValues> values);
 }
