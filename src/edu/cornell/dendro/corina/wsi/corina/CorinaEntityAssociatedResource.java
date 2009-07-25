@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasDerivedSeries;
-import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasIdentifier;
@@ -16,7 +15,6 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
-import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIEntity;
@@ -34,6 +32,35 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 	private String parentEntityID;
 
 	/**
+	 * Constructor for create 
+	 * 
+	 * @param entity a tridas entity to perform an operation on
+	 * @param parentEntity the parent object
+	 * @param queryType one of create, update, or delete
+	 */
+	public CorinaEntityAssociatedResource(ITridas entity, ITridas parentEntity) {
+		super(getXMLName(entity), CorinaRequestType.CREATE);
+		
+		// objects can have null parents
+		if(entity == null || (parentEntity == null && !(entity instanceof TridasObject)))
+			throw new NullPointerException("Entity may not be null");
+
+		if(!entity.isSetIdentifier() || !entity.getIdentifier().isSetDomain())
+			throw new IllegalArgumentException("Entity has no identifier or no identifier domain");
+
+		// domains must be the same
+		if(parentEntity != null) {		
+			if(!entity.getIdentifier().getDomain().equals(parentEntity.getIdentifier().getDomain()))
+				throw new IllegalArgumentException(
+					"Can't create an entity as a child of an entity with a different domain!");
+		}
+		
+		initializeForCUD(entity, 
+				parentEntity == null ? null : parentEntity.getIdentifier().getValue(), 
+				CorinaRequestType.CREATE);
+	}
+	
+	/**
 	 * Constructor for create, update, or delete
 	 * 
 	 * @param entity a tridas entity to perform an operation on
@@ -47,6 +74,11 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		if(entity == null)
 			throw new NullPointerException("Entity may not be null");
 		
+		initializeForCUD(entity, parentEntityID, queryType);
+	}
+	
+	private final void initializeForCUD(ITridas entity, String parentEntityID, 
+			CorinaRequestType queryType) {
 		switch(queryType) {
 		case CREATE:
 		case UPDATE:
@@ -74,9 +106,9 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 			throw new IllegalArgumentException("Invalid request type: must be one of CREATE, UPDATE or DELETE for this method");
 		}
 		
-		// derived series don't have a parent entity ID
+		// derived series don't have a parent entity ID. Neither does object.
 		if (queryType == CorinaRequestType.CREATE && parentEntityID == null) {
-			if (!(entity instanceof ITridasDerivedSeries))
+			if (!(entity instanceof ITridasDerivedSeries || entity instanceof TridasObject))
 				throw new IllegalArgumentException("CREATE called with ParentObjectID == null!");
 		}
 	}

@@ -8,16 +8,11 @@ import java.util.List;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasEntity;
-import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.platform.Platform;
-import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
@@ -138,24 +133,4 @@ public class EntitySearchResource<T extends ITridas> extends
 		return true;
 	}
 	
-	public static void main(String args[]) {
-		App.platform = new Platform();
-		App.platform.init();
-		App.prefs = new Prefs();
-		App.prefs.init();
-		
-		TridasObject obj = new TridasObject();
-		TridasIdentifier identifier = new TridasIdentifier();
-		
-		identifier.setValue("2753");
-		obj.setIdentifier(identifier);
-		
-		EntitySearchResource<TridasElement> rsrc = new EntitySearchResource<TridasElement>(obj);
-		rsrc.queryWait();
-		
-		for(TridasEntity entity : rsrc.getAssociatedResult())
-			System.out.println(entity.toString());
-		
-		System.out.println("----");
-	}
 }

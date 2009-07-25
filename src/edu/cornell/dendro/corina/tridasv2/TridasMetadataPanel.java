@@ -3,6 +3,7 @@ package edu.cornell.dendro.corina.tridasv2;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -48,8 +49,13 @@ import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ArrayListModel;
+
+import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 
 @SuppressWarnings("serial")
 public class TridasMetadataPanel extends JPanel implements PropertyChangeListener {
@@ -176,7 +182,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 
 			// user chose to edit without choosing 'new', so be nice and make a new one for them
 			if(temporaryEditingEntity == null && topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
-				temporaryEditingEntity = currentMode.newInstance();
+				temporaryEditingEntity = currentMode.newInstance(s);
 			}
 
 			if(temporaryEditingEntity != null)
@@ -422,6 +428,17 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		}
 		
 		propertiesPanel.writeToObject(temporaryEditingEntity);
+
+		// are we saving something new?
+		boolean isNew = false;
+		EditType prevMode = currentMode.previous();
+		ITridas parentEntity = (prevMode == null) ? null : prevMode.getEntity(s);
+		
+		// sanity check to ensure parent entity being null means we're an object
+		if(parentEntity == null && currentMode != EditType.OBJECT) {
+			new Bug(new IllegalStateException("parentEntity is null, but not an object"));
+			return;
+		}
 		
 		// logic for saving...
 		if(currentMode == EditType.DERIVED_SERIES || currentMode == EditType.MEASUREMENT_SERIES) {
@@ -429,10 +446,82 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			currentMode.setEntity(s, temporaryEditingEntity);			
 		}
 		else {
-			// save to the server
-			// TODO: Save to the server!
+			// ok, we're saving an entity. save to the server!
 			
+			// is it new?
+			isNew = NewTridasIdentifier.isNew(temporaryEditingEntity.getIdentifier());
+			
+			// the resource we'll use
+			EntityResource<? extends ITridas> resource;
+			
+			if(isNew) {
+				if(parentEntity != null) {
+					
+					// give it a new identifier based on the parent
+					temporaryEditingEntity.setIdentifier(
+							NewTridasIdentifier.getInstance(parentEntity.getIdentifier()));
+				}
+				else {
+					// must be an object..
+					// TODO: Properly use domain here!
+					temporaryEditingEntity.setIdentifier(
+							NewTridasIdentifier.getInstance("unknown"));					
+				}
+
+				resource = getNewAccessorResource(temporaryEditingEntity, parentEntity, 
+						currentMode.getType());
+			}
+			else
+				resource = getUpdateAccessorResource(temporaryEditingEntity, currentMode.getType());
+
+			// set up a dialog...
+			Window parentWindow = SwingUtilities.getWindowAncestor(this);
+			CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
+
+			// query the resource
+			resource.query();
+			dialog.setVisible(true);
+			
+			// on failure, just return
+			if(!dialog.isSuccessful()) {
+				JOptionPane.showMessageDialog(this, "There was an error while saving your changes.\r\n" +
+						"Error: " + dialog.getFailException().getLocalizedMessage(),
+						"Error saving", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			// replace the saved result
+			temporaryEditingEntity = resource.getAssociatedResult();
+			
+			// sanity check the result
+			if(temporaryEditingEntity == null) {
+				new Bug(new IllegalStateException("CREATE or UPDATE entity returned null"));
+				return;
+			}
+			
+			// take the return value and save it
 			currentMode.setEntity(s, temporaryEditingEntity);
+		}
+
+		// if it was new, re-enable our editing
+		if(isNew) {
+			// stick it in the combo box list
+			if(parentEntity == null) {
+				// it's an object...
+				// TODO: Fix new objects?
+			}
+			else
+				lists.appendChildToList(parentEntity, temporaryEditingEntity);
+			
+			// repopulate the combo box...
+			populateComboAndSelect(false);
+			
+			lists.prepareChildList(temporaryEditingEntity);
+			EditType next = currentMode.next();
+			if(next != null)
+				disableBelowEnableAbove(currentMode.next());
+			
+			// also, add it to the valid combo box...
 		}
 		
 		// on success...
@@ -441,6 +530,31 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		enableEditing(false);
 		populateComboAndSelect(false);
 		temporaryEditingEntity = null;
+	}
+
+	/**
+	 * For creating a new entity on the server
+	 * 
+	 * @param <T>
+	 * @param entity
+	 * @param parent
+	 * @param type
+	 * @return
+	 */
+	private <T extends ITridas> EntityResource<T> getNewAccessorResource(ITridas entity, ITridas parent, Class<T> type) {
+		return new EntityResource<T>(entity, parent, type);
+	}
+
+	/**
+	 * For updating an existing entity on the server
+	 * 
+	 * @param <T>
+	 * @param entity
+	 * @param type
+	 * @return
+	 */
+	private <T extends ITridas> EntityResource<T> getUpdateAccessorResource(ITridas entity, Class<T> type) {
+		return new EntityResource<T>(entity, CorinaRequestType.UPDATE, type);
 	}
 	
 	/**
@@ -566,7 +680,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		// if it's new, create a new, empty instance
 		if(obj == EntityListComboBox.NEW_ITEM) {
-			temporarySelectingEntity = currentMode.newInstance();
+			temporarySelectingEntity = currentMode.newInstance(s);
 		}
 		else if(obj instanceof ITridas) {
 			temporarySelectingEntity = (ITridas) obj;
@@ -908,11 +1022,19 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			return hasChanged;
 		}
 		
-		public ITridas newInstance() {
+		public ITridas newInstance(Sample s) {
 			try {
 				ITridas entity = type.newInstance();
 				
 				entity.setTitle("New " + displayTitle);
+				
+				if(previous() != null) {
+					entity.setIdentifier(NewTridasIdentifier.getInstance(
+							previous().getEntity(s).getIdentifier()));
+				}
+				else
+					// TODO: use a better default domain!
+					entity.setIdentifier(NewTridasIdentifier.getInstance("unknown"));
 				
 				return entity;
 			} catch (Exception e) {

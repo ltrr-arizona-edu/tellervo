@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -20,6 +21,8 @@ import edu.cornell.dendro.corina.wsi.ResourceEvent;
 import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 
 public class CorinaResourceAccessDialog extends JDialog implements ResourceEventListener {
+	private static final long serialVersionUID = 1L;
+	
 	private JList list;
 	private CorinaResource myResource;
 	private boolean success = false;
@@ -60,6 +63,21 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 		initialize(resource);
 	}
 
+	/**
+	 * Convenience method that allows ease of use for dialogs OR frames
+	 * 
+	 * @param window
+	 * @param resource
+	 * @return
+	 */
+	public static CorinaResourceAccessDialog forWindow(Window window, CorinaResource resource) {
+		if(window == null || window instanceof Frame)
+			return new CorinaResourceAccessDialog((Frame) window, resource);
+		else if(window instanceof Dialog)
+			return new CorinaResourceAccessDialog((Dialog) window, resource);
+		
+		throw new IllegalArgumentException("Window isn't null, frame, or dialog?");
+	}
 	
 	private void initialize(CorinaResource resource) {
 		resource.setOwnerWindow(this);

@@ -48,6 +48,26 @@ public class TridasEntityListHolder {
 		doPrepareChildList(parentObject, key);
 	}
 	
+	/**
+	 * Append the given object to parentObject's combo list
+	 * 
+	 * @param parentObject
+	 * @param object
+	 */
+	public synchronized void appendChildToList(ITridas parentObject, ITridas object) {
+		String key = getKey(parentObject);
+		List<ITridas> list = listMap.get(key);
+		
+		// lazily create if it doesn't exist
+		if(list == null) {
+			list = new ArrayList<ITridas>(1);
+			listMap.put(key, list);
+		}
+		
+		// add the new object to list
+		list.add(object);
+	}
+	
 	private ListQueryHolder doPrepareChildList(ITridas parentObject, String key) {
 		ListQueryHolder qh = new ListQueryHolder();
 
@@ -80,7 +100,7 @@ public class TridasEntityListHolder {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<ITridas> getChildList(ITridas parentObject, boolean goRemote) throws Exception {
+	public synchronized List<ITridas> getChildList(ITridas parentObject, boolean goRemote) throws Exception {
 		// no identifier -> no children!
 		if(!parentObject.isSetIdentifier()) {
 			return Collections.emptyList();
