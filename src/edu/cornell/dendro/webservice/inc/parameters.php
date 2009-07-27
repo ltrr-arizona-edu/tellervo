@@ -441,7 +441,7 @@ class elementParameters extends elementEntity implements IParams
 		   	case "createdTimestamp":	  break;
 		   	case "lastModifiedTimestamp": break;	
 		   	case "comments":			$this->setComments($child->nodeValue); break;			   	
-		   	case "type": 				$this->setType($child->nodeValue); break;
+		   	case "type": 				$this->setType(null, $child->nodeValue); break;
 		   	case "description":			$this->setDescription($child->nodeValue); break;
 		   	case "file": 				$this->addFile($child->nodeValue); break;
 		   	case "taxon":
@@ -459,7 +459,7 @@ class elementParameters extends elementEntity implements IParams
 					trigger_error("901"."The Corina web service only supports taxonomic data that conforms to the '$taxonomicAuthorityEdition'.  Please normalise your data and try again.", E_USER_ERROR);
 		   		}
 		   		break; 
-		   	case "shape": 				$this->setShape($child->nodeValue); break; 
+		   	case "shape": 				$this->setShape(null, $child->nodeValue); break; 
 		   	case "dimensions":
 		   		$unitTag = $child->getElementsByTagName("unit")->item(0);
 		   		$this->setDimensionUnits($unitTag->nodeValue.$child->getAttribute("power"));
@@ -849,9 +849,22 @@ class measurementParameters extends measurementEntity implements IParams
    				foreach($seriesTags as $series)
    				{
    					if($series->nodeType != XML_ELEMENT_NODE) continue;
-   					if($series->nodeName=='identifier')
+   					if($series->nodeName=='series')
    					{
-   						array_push($this->referencesArray, $series->nodeValue);  		
+   						if($series->nodeType != XML_ELEMENT_NODE) continue;
+   						$idTags = $series->childNodes;
+   						foreach($idTags as $idTag)
+		   				{
+		   					if($idTag->nodeType != XML_ELEMENT_NODE) continue;
+		   					if($idTag->nodeName=='identifier')
+		   					{
+		   						array_push($this->referencesArray, $idTag->nodeValue);  		
+		   					}
+		   					else
+		   					{
+		   						trigger_error("901"."Only identifier tags are currently supported in Corina.", E_USER_NOTICE);
+		   					}
+		   				}
    					}
    				}
    				break;	

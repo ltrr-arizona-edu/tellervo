@@ -674,14 +674,14 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('height')!=NULL)   			$sql.= "height='".pg_escape_string($this->getDimension('height'))."', ";
 	                    	if($this->getDimension('width')!=NULL)    			$sql.= "width='".pg_escape_string($this->getDimension('width'))."', ";
 	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "depth='".pg_escape_string($this->getDimension('depth'))."', ";
-	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter=".pg_escape_string($this->getDimension('diameter'))."', ";            	
+	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter='".pg_escape_string($this->getDimension('diameter'))."', ";            	
 	                    }                    	
                     	if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid='".pg_escape_string($this->getAuthenticity(true))."', ";
                         if ($this->location->getType()!=NULL)					$sql.= "locationtype='".pg_escape_string($this->location->getType())."', ";
                         if ($this->location->getPrecision()!=NULL)				$sql.= "locationprecision='".pg_escape_string($this->location->getPrecision())."', ";
                         if ($this->location->getComment()!=NULL)				$sql.= "locationcomment='".pg_escape_string($this->location->getComment())."', ";
                         if ($this->location->getGeometry()!=NULL)				$sql.= "locationgeometry='".pg_escape_string($this->location->getGeometry())."', ";
-                        if ($this->getProcessing()!=NULL)						$sql.= "processing='".pg_escape_string($this->getProcessing()).", ";
+                        if ($this->getProcessing()!=NULL)						$sql.= "processing='".pg_escape_string($this->getProcessing())."', ";
                         if ($this->getMarks()!=NULL)							$sql.= "marks='".pg_escape_string($this->getMarks())."', ";
                         if ($this->getAltitude()!=NULL)							$sql.= "altitude='".pg_escape_string($this->getAltitude())."', ";
                         if ($this->getSlopeAngle()!=NULL)						$sql.= "slopeangle='".pg_escape_string($this->getSlopeAngle())."', ";
@@ -693,7 +693,7 @@ class element extends elementEntity implements IDBAccessor
                         
                      // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
-                    $sql .= " where elementid='".pg_escape_string($this->getID()."'");
+                    $sql .= " where elementid='".pg_escape_string($this->getID())."'";
                 }
                 //echo $sql;
 

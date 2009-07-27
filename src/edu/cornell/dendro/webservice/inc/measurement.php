@@ -122,7 +122,9 @@ class measurement extends measurementEntity implements IDBAccessor
 		$dbconnstatus = pg_connection_status($dbconn);
 		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
 		{
-
+                        do{$result = pg_get_result($dbconn);}
+                        while($result!=NULL);
+                    
 			if ($debugFlag===TRUE) $myMetaHeader->setTiming("Starting setParamsFromDB SQL query");
 			pg_send_query($dbconn, $sql);
 			$result = pg_get_result($dbconn);
@@ -1245,8 +1247,9 @@ class measurement extends measurementEntity implements IDBAccessor
 		/*
 		 -- VMeasurementOp          - Varchar - From tlkpVMeasurementOp
 		 -- VMeasurementOpParameter - Integer - Must be specified for REDATE or INDEX; otherwise NULL
+         -- OwerUserID				- Integer - 
 		 -- Name                    - Varchar - Must be specified
-		 -- Description             - Varchar - May be NULL
+		 -- Comments                - Varchar - May be NULL
 		 -- MeasurementID           - Integer - For direct only; the measurement derived from.
 		 -- Constituents            - Array   - Array of VMeasurementID - Must be NULL for DIRECT type, an array of one value for any type
 		 --                                     other than SUM and DIRECT, and an array of one or more values for SUM
@@ -1404,7 +1407,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		global $dbconn;
 		global $myAuth;
-
+		global $firebug;
 		
 		//Only attempt to run SQL if there are no errors so far
 		if($this->getLastErrorCode() == NULL)
@@ -1469,6 +1472,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						$sql.=")";
 
 						// Run SQL
+						$firebug->log($sql, "SQL Transaction for writeToDB");
 						pg_send_query($dbconn, $sql);
 						$result = pg_get_result($dbconn);
 						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
@@ -1482,8 +1486,7 @@ class measurement extends measurementEntity implements IDBAccessor
 							$sql2 = "select * from tblmeasurement where measurementid=currval('tblmeasurement_measurementid_seq')";
 							$result = pg_query($dbconn, $sql2);
 							while ($row = pg_fetch_array($result))
-							{
-								 
+							{							 
 								$this->setMeasurementID($row['measurementid']);
 							}
 						}
@@ -1497,6 +1500,7 @@ class measurement extends measurementEntity implements IDBAccessor
 							$relyear++;
 
 							// Do tblreading inserts
+							$firebug->log($insertSQL, "SQL Transaction for writeToDB");
 							pg_send_query($dbconn, $insertSQL);
 							$result = pg_get_result($dbconn);
 							if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
@@ -1516,6 +1520,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 
 					// Run SQL
+					$firebug->log($sql, "SQL Transaction for writeToDB");
 					pg_send_query($dbconn, $sql);
 					$result = pg_get_result($dbconn);
 					if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
@@ -1543,6 +1548,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						"'".pg_escape_string($this->getJustification())."', ".
 						"'".pg_escape_string($this->getConfidenceLevel())."')";
 						
+						$firebug->log($sql, "SQL Transaction for writeToDB");
 						pg_send_query($dbconn, $sql);
 						$result = pg_get_result($dbconn);
 						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
@@ -1617,6 +1623,8 @@ class measurement extends measurementEntity implements IDBAccessor
 					
 					// Perform query using transactions so that if anything goes wrong we can roll back
 					$transaction = array("begin;", $deleteSQL, $insertSQL, $updateSQL2, $updateSQL );
+					
+					$firebug->log($transaction, "SQL Transaction for writeToDB");
 					
 					foreach($transaction as $stmt)
 					{
@@ -1694,6 +1702,8 @@ class measurement extends measurementEntity implements IDBAccessor
 					{
 						// Free text note so first we need to add it.
 						$sql = "INSERT INTO tlkpreadingnote (note, vocabularyid) values ('".pg_escape_string($note->getNote())."', 0)";
+						$firebug->log($sql, "SQL Transaction for addReadingNotesToDB");
+						
 						$result = pg_query($dbconn, $sql);		
 						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
 						{
@@ -1734,6 +1744,8 @@ class measurement extends measurementEntity implements IDBAccessor
 															
 						$sql = "SELECT cpgdb.addreadingnote('".$localVMID."', $relyear, (SELECT readingnoteid from cpgdb.getNote('".$note->getControlledVocName()."', '".$note->getNote()."')), $disabledoverride)";
 
+						$firebug->log($sql, "SQL Transaction for addReadingNotesToDB");
+						
 						$result = pg_query($dbconn, $sql);		
 						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
 						{
@@ -1755,7 +1767,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	function deleteFromDB()
 	{
 		// Delete the record in the database matching the current object's ID
-
+                global $firebug;
 		global $dbconn;
 
 		// Check for required parameters
@@ -1789,17 +1801,16 @@ class measurement extends measurementEntity implements IDBAccessor
 					if($this->vmeasurementOp->getValue()=="Direct")
 					{
 						// This is a direct measurement so we can delete the tblmeasurement entry and everything else should cascade delete
-						$deleteSQL = "DELETE FROM tblmeasurement WHERE measurementid=".pg_escape_string($this->getMeasurementID()).";";
+	    $deleteSQL = "DELETE FROM tblmeasurement WHERE measurementid='".pg_escape_string($this->getMeasurementID())."';";
 					}
 					else
 					{
 						// This is a derived measurement so we just delete the tblvmeasurement record and let everything else cascade delete
-						$deleteSQL = "DELETE FROM tblvmeasurement WHERE vmeasurementid=".pg_escape_string($this->getID()).";";
+    	    $deleteSQL = "DELETE FROM tblvmeasurement WHERE vmeasurementid='".pg_escape_string($this->getID())."';";
 					}
 
 					// Perform deletes using transactions
 					$transaction = "BEGIN;".$deleteSQL;
-
 					pg_send_query($dbconn, $transaction);
 					$result = pg_get_result($dbconn);
 					$status = pg_transaction_status($dbconn);
@@ -1812,11 +1823,7 @@ class measurement extends measurementEntity implements IDBAccessor
 					}
 					else
 					{
-						while($result==TRUE)
-						{
 							$result = pg_get_result($dbconn);
-							//echo $result;
-						}
 						// All gone well so commit transaction to db
 						pg_send_query($dbconn, "COMMIT;");
 						return TRUE;
