@@ -732,6 +732,7 @@ class radiusParameters extends radiusEntity implements IParams
     {
 		global $corinaNS;
         global $tridasNS;
+        global $firebug;
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
         
@@ -754,12 +755,12 @@ class radiusParameters extends radiusEntity implements IParams
 		   			switch ($tag->tagName)
 		   			{
 		   				case "pith":
-		   					$this->setSapwood(NULL, $tag->getAttribute("presence"));
+		   					$this->setPith(NULL, $tag->getAttribute("presence"));
 		   					break;
 		   				case "heartwood":	
-					   		$this->setHeartwood(null, $child->getAttribute("presence"));
+					   		$this->setHeartwood(null, $tag->getAttribute("presence"));
 					   		
-					   		$heartwoodtags = $child->childNodes;
+					   		$heartwoodtags = $tag->childNodes;
 					   		
 					   		foreach($heartwoodtags as $heartwoodtag)
 					   		{
@@ -791,6 +792,7 @@ class radiusParameters extends radiusEntity implements IParams
 					   		}		   			
 							break;
 		   				case "bark":
+		   					$firebug->log($tag->getAttribute("presence"), "bark tag: ");
 		   					$this->setBarkPresent($tag->getAttribute("presence"));
 		   					break;					   		
 				

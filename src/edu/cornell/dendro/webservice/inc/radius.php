@@ -173,12 +173,13 @@ class radius extends radiusEntity implements IDBAccessor
         if ($paramsClass->getTitle()!=NULL)       							$this->setTitle($paramsClass->getTitle());
         if ($paramsClass->getID()!=NULL)		 							$this->setID($paramsClass->getID());
 		if ($paramsClass->getComments()!=NULL)								$this->setComments($paramsClass->getComments());
-        if ($paramsClass->getPith()!=NULL)									$this->setPith($paramsClass->getPith());
+        if ($paramsClass->getPith()!=NULL)									$this->setPith(null, $paramsClass->getPith());
         if ($paramsClass->getHeartwood()!=NULL)								$this->setHeartwood($paramsClass->getHeartwood(true), $paramsClass->getHeartwood(false));
         if ($paramsClass->getMissingHeartwoodRingsToPith()!=NULL)			$this->setMissingHeartwoodRingsToPith($paramsClass->getMissingHeartwoodRingsToPith());
         if ($paramsClass->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$this->setMissingHeartwoodRingsToPithFoundation($paramsClass->getMissingHeartwoodRingsToPithFoundation());
         if ($paramsClass->getSapwood()!=NULL)								$this->setSapwood($paramsClass->getSapwood(true), $paramsClass->getSapwood(false));
-        if ($paramsClass->getBarkPresent()!=NULL)							$this->setBarkPresent($paramsClass->getBarkPresent());
+        if (dbHelper::formatBool($paramsClass->getBarkPresent(), 'presentabsent')!=NULL)						
+        																	$this->setBarkPresent(dbHelper::formatBool($paramsClass->getBarkPresent(), 'php'));
         if ($paramsClass->getNumberOfSapwoodRings()!=NULL)					$this->setNumberOfSapwoodRings($paramsClass->getNumberOfSapwoodRings());
         if ($paramsClass->getLastRingUnderBark()!=NULL)						$this->setLastRingUnderBark($paramsClass->getLastRingUnderBark());
         if ($paramsClass->getMissingSapwoodRingsToBark()!=NULL)				$this->setMissingSapwoodRingsToBark($paramsClass->getMissingSapwoodRingsToBark());
@@ -186,7 +187,7 @@ class radius extends radiusEntity implements IDBAccessor
         if ($paramsClass->getAzimuth()!=NULL)								$this->setAzimuth($paramsClass->getAzimuth());
         if ($paramsClass->parentID!=NULL)
         {
-        	$parentObj = new element();
+        	$parentObj = new sample();
         	$parentObj->setParamsFromDB($paramsClass->parentID);
         	array_push($this->parentEntityArray, $parentObj);
         }																				 
@@ -208,12 +209,12 @@ class radius extends radiusEntity implements IDBAccessor
             case "read":
                 if($paramsObj->getID()==NULL)
                 {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a radius.");
+                    trigger_error("902"."Missing parameter - 'id' field is required when reading a radius.", E_USER_ERROR);
                     return false;
                 }
                 if(!($paramsObj->getID()>0) && !($paramsObj->getID()==NULL))
                 {
-                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer.");
+                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -221,14 +222,14 @@ class radius extends radiusEntity implements IDBAccessor
             case "update":
                 if($paramsObj->getID()==NULL)
                 {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
+                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 if(($paramsObj->getSampleID()==NULL) 
                     && ($paramsObj->getCode()==NULL)
                     && ($paramsObj->hasChild!=True))
                 {
-                    $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
+                    trigger_error("902"."Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -236,7 +237,7 @@ class radius extends radiusEntity implements IDBAccessor
             case "delete":
                 if($paramsObj->getID() == NULL) 
                 {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
+                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -246,7 +247,7 @@ class radius extends radiusEntity implements IDBAccessor
                 {
                     if($paramsObj->getID() == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'radiusid' field is required when creating a measurement.");
+                        trigger_error("902"."Missing parameter - 'radiusid' field is required when creating a measurement.", E_USER_ERROR);
                         return false;
                     }
                 }
@@ -254,14 +255,30 @@ class radius extends radiusEntity implements IDBAccessor
                 {
                     if($paramsObj->getCode() == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'code' field is required when creating a radius.");
+                        trigger_error("902"."Missing parameter - 'code' field is required when creating a radius.", E_USER_ERROR);
                         return false;
                     }
                     if($paramsObj->parentID == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'sampleid' field is required when creating a radius.");
+                        trigger_error("902"."Missing parameter - 'sampleid' field is required when creating a radius.", E_USER_ERROR);
                         return false;
                     }
+                    if($paramsObj->pith->getValue()==NULL)
+                    {
+                    	trigger_error("902"."Missing parameter - 'pith' field is required when creating a radius.", E_USER_ERROR);
+                    }
+                    if($paramsObj->heartwood->getValue()==NULL)
+                    {
+                    	trigger_error("902"."Missing parameter - 'heartwood' field is required when creating a radius.", E_USER_ERROR);
+                    }     
+                    if($paramsObj->sapwood->getValue()==NULL)
+                    {
+                    	trigger_error("902"."Missing parameter - 'sapwood' field is required when creating a radius.", E_USER_ERROR);
+                    }
+                    if($paramsObj->getBarkPresent()===NULL)
+                    {
+                    	trigger_error("902"."Missing parameter - 'bark' field is required when creating a radius.", E_USER_ERROR);
+                    }                    
                 }
                 return true;
 
@@ -396,6 +413,7 @@ class radius extends radiusEntity implements IDBAccessor
         // Write the current object to the database
 
         global $dbconn;
+        global $domain;
         $sql = NULL;
         $sql2 = NULL;
         
@@ -427,7 +445,8 @@ class radius extends radiusEntity implements IDBAccessor
                         if($this->getLastRingUnderBark()!=NULL)						$sql.="lastringunderbark, ";
                         if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="missingsapwoodringstobark, ";
                         if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="missingsapwoodringstobarkfoundation, ";
-                        if($this->getBarkPresent()!=NULL)							$sql.="barkpresent, ";
+                        if(dbHelper::formatBool($this->getBarkPresent(), 'presentabsent')!=NULL)
+                        															$sql.="barkpresent, ";
                         if($this->getAzimuth()!=NULL)								$sql.="azimuth, ";                      
                         if(isset($this->parentEntityArray[0]))		 				$sql.="sampleid, ";
                     // Trim off trailing space and comma
@@ -445,7 +464,8 @@ class radius extends radiusEntity implements IDBAccessor
                         if($this->getLastRingUnderBark()!=NULL)						$sql.="'".pg_escape_string($this->getLastRingUnderBark())."', ";
                         if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="'".pg_escape_string($this->getMissingSapwoodRingsToBark())."', ";
                         if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="'".pg_escape_string($this->getMissingSapwoodRingsToBarkFoundation())."', ";
-                        if($this->getBarkPresent()!=NULL)							$sql.="'".formatBool($this->getBarkPresent(),"pg"). "', ";
+                        if(dbHelper::formatBool($this->getBarkPresent(), 'presentabsent')!=NULL)
+                        															$sql.="'".dbHelper::formatBool($this->getBarkPresent(),"pg"). "', ";
                         if($this->getAzimuth()!=NULL)								$sql.="'".pg_escape_string($this->getAzimuth())."', ";
                         if(isset($this->parentEntityArray[0]))      				$sql.="'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                        
                     // Trim off trailing space and comma
@@ -463,12 +483,13 @@ class radius extends radiusEntity implements IDBAccessor
                         if($this->getHeartwood()!=NULL)								$sql.="heartwoodid='".pg_escape_string($this->getHeartwood(true))."', ";
                         if($this->getMissingHeartwoodRingsToPith()!=NULL)			$sql.="missingheartwoodringstopith='".pg_escape_string($this->getMissingHeartwoodRingsToPith())."', ";
                         if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$sql.="missingheartwoodringstopithfoundation='".pg_escape_string($this->getMissingHeartwoodRingsToPithFoundation())."', ";
-                        if($this->getSapwood()!=NULL)								$sql.="sapwood='".pg_escape_string($this->getSapwood(true))."', ";        
+                        if($this->getSapwood()!=NULL)								$sql.="sapwoodid='".pg_escape_string($this->getSapwood(true))."', ";        
                         if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="numberofsapwoodrings='".pg_escape_string($this->getNumberOfSapwoodRings())."', ";
                         if($this->getLastRingUnderBark()!=NULL)						$sql.="lastringunderbark='".pg_escape_string($this->getLastRingUnderBark())."', ";
                         if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="missingsapwoodringstobark='".pg_escape_string($this->getMissingSapwoodRingsToBark())."', ";
                         if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="missingsapwoodringstobarkfoundation='".pg_escape_string($this->getMissingSapwoodRingsToBarkFoundation())."', ";
-                        if($this->getBarkPresent()!=NULL)							$sql.="barpresent='".formatBool($this->getBarkPresent(),"pg")."', ";
+                        if(dbHelper::formatBool($this->getBarkPresent()!=NULL, 'presentabsent')!=NULL)
+                        															$sql.="barkpresent='".dbHelper::formatBool($this->getBarkPresent(),"pg")."', ";
                         if($this->getAzimuth()!=NULL)								$sql.="azimuth='".pg_escape_string($this->getAzimuth())."', ";                        
                         if(isset($this->parentEntityArray[0]))      				$sql.="sampleid='".pg_escape_string($this->parentEntityArray[0]->getID())."', ";             
                     $sql = substr($sql, 0, -2);
@@ -521,7 +542,7 @@ class radius extends radiusEntity implements IDBAccessor
         // Check for required parameters
         if($this->getID() == NULL) 
         {
-            $this->setErrorMessage("902", "Missing parameter - 'id' field is required.");
+            trigger_error("902". "Missing parameter - 'id' field is required.", E_USER_ERROR);
             return FALSE;
         }
 
