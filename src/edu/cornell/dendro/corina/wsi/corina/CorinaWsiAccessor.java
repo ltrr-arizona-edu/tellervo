@@ -1,18 +1,12 @@
 package edu.cornell.dendro.corina.wsi.corina;
 
-import java.io.IOException;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.validation.Schema;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.platform.Platform;
-import edu.cornell.dendro.corina.prefs.Prefs;
-import edu.cornell.dendro.corina.schema.WSIRequest;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
 import edu.cornell.dendro.corina.wsi.WebJaxbAccessor;
 

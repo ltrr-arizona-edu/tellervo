@@ -255,7 +255,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 		} catch (HttpResponseException hre) {
 			BugReport bugs = new BugReport(hre);
 			
-			bugs.addDocument("sent.xml", sendingObject);
+			bugs.addDocument("sent.xml", outDocument);
 			
 			new Bug(hre, bugs);
 
@@ -289,7 +289,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			Document invalidDoc = xmlpe.getNonvalidatingDocument();
 			File invalidFile = xmlpe.getInvalidFile();
 
-			bugs.addDocument("sent.xml", sendingObject);
+			bugs.addDocument("sent.xml", outDocument);
 			if(invalidDoc != null)
 				bugs.addDocument("recv-nonvalid.xml", invalidDoc);
 			if(invalidFile != null)
@@ -310,7 +310,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 		} catch (Exception uhe) {
 			BugReport bugs = new BugReport(uhe);
 			
-			bugs.addDocument("sent.xml", sendingObject);
+			bugs.addDocument("sent.xml", outDocument);
 			
 			/*
 			// MalformedDocs are handled automatically by BugReport class

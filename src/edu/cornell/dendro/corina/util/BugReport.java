@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -259,7 +260,12 @@ public class BugReport {
 
 			// add any attached documents
 			for(DocumentHolder dh : documents) {
-				if(dh.getDocument() instanceof File)
+				if(dh.getDocument() == null) {
+					String emptyDoc = "<Provided document was null>";
+					postEntity.addPart("attachments[]", new InputStreamBody(
+							stringAsStream(emptyDoc), dh.getFilename()));
+				}
+				else if(dh.getDocument() instanceof File)
 					postEntity.addPart("attachments[]", 
 							new FileBody((File)dh.getDocument()));
 				else if(dh.getDocument() instanceof Document)
@@ -285,5 +291,17 @@ public class BugReport {
 		}
 		
 		return true;
+	}
+	
+	private InputStream stringAsStream(String s) {
+		byte[] bytes;
+		
+		try {
+			bytes = s.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			bytes = s.getBytes();
+		}
+		
+		return new ByteArrayInputStream(bytes);
 	}
 }
