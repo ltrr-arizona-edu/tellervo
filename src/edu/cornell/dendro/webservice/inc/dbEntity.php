@@ -1101,6 +1101,7 @@ class elementEntity extends dbEntity
 		$this->location = new location();	
 		$this->taxon = new taxon(); 	
 		$this->type = new elementType(); 	
+		$this->shape = new elementShape();
 	}
 
 	/***********/

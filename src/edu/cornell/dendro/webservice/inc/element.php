@@ -225,7 +225,7 @@ class element extends elementEntity implements IDBAccessor
         // Alter the parameter values based upon values supplied by the user and passed as a parameters class
         if ($paramsClass->getTitle()!=NULL)             	$this->setTitle($paramsClass->getTitle());
         if ($paramsClass->getComments()!=NULL)             	$this->setComments($paramsClass->getComments());
-        if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
+        if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType(true), $paramsClass->getType());
         if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
         if ($paramsClass->getFile()!=NULL)					$this->setFiles($paramsClass->getFile());  
 		if ($paramsClass->taxon->getOriginalTaxon()!=NULL)	$this->taxon->setOriginalTaxon($paramsClass->taxon->getOriginalTaxon());
@@ -301,7 +301,7 @@ class element extends elementEntity implements IDBAccessor
                    && ($paramsObj->taxon->getLabel()==NULL)
                    && ($paramsObj->hasChild!=True))
                 {
-                    $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
+                    trigger_error("902"."Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -309,7 +309,7 @@ class element extends elementEntity implements IDBAccessor
             case "delete":
                 if($paramsObj->getID() == NULL) 
                 {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a element.");
+                    trigger_error("902"."Missing parameter - 'id' field is required when deleting a element.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -319,7 +319,7 @@ class element extends elementEntity implements IDBAccessor
                 {
                     if($paramsObj->getID() == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'elementid' field is required when creating a sample.");
+                        trigger_error("902"."Missing parameter - 'elementid' field is required when creating a sample.", E_USER_ERROR);
                         return false;
                     }
                 }
@@ -327,14 +327,19 @@ class element extends elementEntity implements IDBAccessor
                 {
                     if($paramsObj->getCode() == NULL) 
                     {
-                        $this->setErrorMessage("902","Missing parameter - 'code' field is required when creating a element.");
+                        trigger_error("902"."Missing parameter - 'code' field is required when creating a element.", E_USER_ERROR);
                         return false;
                     }
+                    if($paramsObj->getType()=="")
+                    {
+                    	trigger_error("902"."Missing parameter - 'elementType' field is required when creating an element", E_USER_ERROR);
+                    	return false;
+                    }                    
                 }
                 return true;
 
             default:
-                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+                trigger_error("667"."Program bug - invalid crudMode specified when validating request", E_USER_ERROR);
                 return false;
         }
     }
@@ -562,6 +567,8 @@ class element extends elementEntity implements IDBAccessor
         // Write the current object to the database
 
         global $dbconn;
+        global $domain;
+        
         $sql = "";
         $sql2 = "";
 
@@ -605,10 +612,10 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter, ";              	
 	                    }
                         if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid, ";	                    
-                        if ($this->location->getLocationType()!=NULL)			$sql.= "locationtype, ";
-                        if ($this->location->getLocationPrecision()!=NULL)		$sql.= "locationprecision, ";
-                        if ($this->location->getLocationComment()!=NULL)		$sql.= "locationcomment, ";
-                        if ($this->location->getLocationGeometry()!=NULL)		$sql.= "locationgeometry, ";
+                        if ($this->location->getType()!=NULL)					$sql.= "locationtype, ";
+                        if ($this->location->getPrecision()!=NULL)				$sql.= "locationprecision, ";
+                        if ($this->location->getComment()!=NULL)				$sql.= "locationcomment, ";
+                        if ($this->location->getGeometry()!=NULL)				$sql.= "locationgeometry, ";
                         if ($this->getProcessing()!=NULL)						$sql.= "processing, ";
                         if ($this->getMarks()!=NULL)							$sql.= "marks, ";
                         if ($this->getAltitude()!=NULL)							$sql.= "altitude, ";                        
@@ -638,10 +645,10 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "'".pg_escape_string($this->getDimension('diameter'))."', ";;              	
 	                    }                        
                         if ($this->getAuthenticity()!=NULL)						$sql.= "'".pg_escape_string($this->getAuthenticity(true))."', ";
-                        if ($this->location->getLocationType()!=NULL)			$sql.= "'".pg_escape_string($this->location->getLocationType())."', ";
-                        if ($this->location->getLocationPrecision()!=NULL)		$sql.= "'".pg_escape_string($this->location->getLocationPrecision())."', ";
-                        if ($this->location->getLocationComment()!=NULL)		$sql.= "'".pg_escape_string($this->location->getLocationComment())."', ";
-                        if ($this->location->getLocationGeometry()!=NULL)		$sql.= "'".pg_escape_string($this->location->getLocationGeometry())."', ";
+                        if ($this->location->getType()!=NULL)					$sql.= "'".pg_escape_string($this->location->getType())."', ";
+                        if ($this->location->getPrecision()!=NULL)				$sql.= "'".pg_escape_string($this->location->getPrecision())."', ";
+                        if ($this->location->getComment()!=NULL)				$sql.= "'".pg_escape_string($this->location->getComment())."', ";
+                        if ($this->location->getGeometry()!=NULL)				$sql.= "'".pg_escape_string($this->location->getGeometry())."', ";
                         if ($this->getProcessing()!=NULL)						$sql.= "'".pg_escape_string($this->getProcessing())."', ";
                         if ($this->getMarks()!=NULL)							$sql.= "'".pg_escape_string($this->getMarks())."', ";
                         if ($this->getAltitude()!=NULL)							$sql.= "'".pg_escape_string($this->getAltitude())."', ";
