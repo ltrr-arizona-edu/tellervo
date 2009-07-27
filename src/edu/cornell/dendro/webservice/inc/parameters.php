@@ -441,7 +441,22 @@ class elementParameters extends elementEntity implements IParams
 		   	case "createdTimestamp":	  break;
 		   	case "lastModifiedTimestamp": break;	
 		   	case "comments":			$this->setComments($child->nodeValue); break;			   	
-		   	case "type": 				$this->setType(null, $child->nodeValue); break;
+		   	case "type": 				
+		   		if($child->hasAttribute("normalStd"))
+		   		{
+		   			if($child->getAttribute("normalStd")=="Corina")
+		   			{
+		   				$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
+		   			}
+		   			else
+		   			{
+		   				trigger_error("901"."Webservice only supports Corina vocabularies for element type", E_USER_ERROR);
+		   				break;
+		   			}
+		   		}
+				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+		   		
+		   		
 		   	case "description":			$this->setDescription($child->nodeValue); break;
 		   	case "file": 				$this->addFile($child->nodeValue); break;
 		   	case "taxon":
