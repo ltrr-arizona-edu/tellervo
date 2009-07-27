@@ -44,16 +44,6 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		// objects can have null parents
 		if(entity == null || (parentEntity == null && !(entity instanceof TridasObject)))
 			throw new NullPointerException("Entity may not be null");
-
-		if(!entity.isSetIdentifier() || !entity.getIdentifier().isSetDomain())
-			throw new IllegalArgumentException("Entity has no identifier or no identifier domain");
-
-		// domains must be the same
-		if(parentEntity != null) {		
-			if(!entity.getIdentifier().getDomain().equals(parentEntity.getIdentifier().getDomain()))
-				throw new IllegalArgumentException(
-					"Can't create an entity as a child of an entity with a different domain!");
-		}
 		
 		initializeForCUD(entity, 
 				parentEntity == null ? null : parentEntity.getIdentifier().getValue(), 

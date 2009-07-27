@@ -52,10 +52,8 @@ import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ArrayListModel;
-
-import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
-import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 
 @SuppressWarnings("serial")
 public class TridasMetadataPanel extends JPanel implements PropertyChangeListener {
@@ -448,29 +446,15 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		else {
 			// ok, we're saving an entity. save to the server!
 			
-			// is it new?
-			isNew = NewTridasIdentifier.isNew(temporaryEditingEntity.getIdentifier());
+			// is it new? (no identifier?)
+			isNew = !temporaryEditingEntity.isSetIdentifier();
 			
 			// the resource we'll use
 			EntityResource<? extends ITridas> resource;
 			
-			if(isNew) {
-				if(parentEntity != null) {
-					
-					// give it a new identifier based on the parent
-					temporaryEditingEntity.setIdentifier(
-							NewTridasIdentifier.getInstance(parentEntity.getIdentifier()));
-				}
-				else {
-					// must be an object..
-					// TODO: Properly use domain here!
-					temporaryEditingEntity.setIdentifier(
-							NewTridasIdentifier.getInstance("unknown"));					
-				}
-
+			if(isNew)
 				resource = getNewAccessorResource(temporaryEditingEntity, parentEntity, 
 						currentMode.getType());
-			}
 			else
 				resource = getUpdateAccessorResource(temporaryEditingEntity, currentMode.getType());
 
@@ -1027,15 +1011,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				ITridas entity = type.newInstance();
 				
 				entity.setTitle("New " + displayTitle);
-				
-				if(previous() != null) {
-					entity.setIdentifier(NewTridasIdentifier.getInstance(
-							previous().getEntity(s).getIdentifier()));
-				}
-				else
-					// TODO: use a better default domain!
-					entity.setIdentifier(NewTridasIdentifier.getInstance("unknown"));
-				
+
 				return entity;
 			} catch (Exception e) {
 				new Bug(e);
