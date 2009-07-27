@@ -171,7 +171,7 @@ class sample extends sampleEntity implements IDBAccessor
         if($paramsClass->getTitle()!=NULL)         	$this->setTitle($paramsClass->getTitle());                                             	
     	if($paramsClass->getID()!=NULL)         	$this->setID($paramsClass->getID());                                          
         if($paramsClass->getComments()!=NULL)       $this->setComments($paramsClass->getComments());   
-        if($paramsClass->getType()!=NULL)       	$this->setType($paramsClass->getType());         
+        if($paramsClass->getType()!=NULL)       	$this->setType($paramsClass->getType(true), $paramsClass->getType());         
         if($paramsClass->getDescription()!=NULL) 	$this->setDescription($paramsClass->getDescription());
         if($paramsClass->getFile()!=NULL)			$this->setFile($paramsClass->getFile());     
         if($paramsClass->getSamplingDate())     	$this->setSamplingDate($paramsClass->getSamplingDate());            
@@ -452,6 +452,7 @@ class sample extends sampleEntity implements IDBAccessor
         // Write the current object to the database
 
         global $dbconn;
+        global $domain;
         $sql = NULL;
         $sql2 = NULL;       
         

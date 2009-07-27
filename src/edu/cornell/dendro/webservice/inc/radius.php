@@ -173,7 +173,7 @@ class radius extends radiusEntity implements IDBAccessor
         if ($paramsClass->getTitle()!=NULL)       							$this->setTitle($paramsClass->getTitle());
         if ($paramsClass->getID()!=NULL)		 							$this->setID($paramsClass->getID());
 		if ($paramsClass->getComments()!=NULL)								$this->setComments($paramsClass->getComments());
-        if ($paramsClass->getPithPresent()!=NULL)							$this->setPithPresent($paramsClass->getPithPresent());
+        if ($paramsClass->getPith()!=NULL)									$this->setPith($paramsClass->getPith());
         if ($paramsClass->getHeartwood()!=NULL)								$this->setHeartwood($paramsClass->getHeartwood(true), $paramsClass->getHeartwood(false));
         if ($paramsClass->getMissingHeartwoodRingsToPith()!=NULL)			$this->setMissingHeartwoodRingsToPith($paramsClass->getMissingHeartwoodRingsToPith());
         if ($paramsClass->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$this->setMissingHeartwoodRingsToPithFoundation($paramsClass->getMissingHeartwoodRingsToPithFoundation());

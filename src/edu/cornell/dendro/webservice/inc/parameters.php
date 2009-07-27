@@ -650,13 +650,26 @@ class sampleParameters extends sampleEntity implements IParams
 		   	case "createdTimestamp":	  break;
 		   	case "lastModifiedTimestamp": break;	
 		   	case "comments":			$this->setComments($child->nodeValue); break;
-		   	case "type":				$this->setType($child->nodeValue); break;
+		   	case "type": 				
+		   		if($child->hasAttribute("normalStd"))
+		   		{
+		   			if($child->getAttribute("normalStd")=="Corina")
+		   			{
+		   				$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
+		   			}
+		   			else
+		   			{
+		   				trigger_error("901"."Webservice only supports Corina vocabularies for sample type", E_USER_ERROR);
+		   				break;
+		   			}
+		   		}
+				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
 		   	case "description":			$this->setDescription($child->nodeValue); break;	
 		   	case "file":				$this->addFile($child->nodeValue); break;		   	
 		   	case "samplingDate":		$this->setSamplingDate($child->nodeValue); break;
 		   	case "position":			$this->setPosition($child->nodeValue); break;
 		   	case "state":				$this->setState($child->nodeValue); break;
-		   	case "knots":				$this->setKnots(formatBool($child->nodeValue)); break;
+		   	case "knots":				$this->setKnots(dbHelper::formatBool($child->nodeValue)); break;
 		   		
 
 		   	case "genericField":

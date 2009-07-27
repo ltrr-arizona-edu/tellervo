@@ -1631,7 +1631,8 @@ class sampleEntity extends dbEntity
     function __construct()
     {  
         $groupXMLTag = "samples";
-        parent::__construct($groupXMLTag);  	
+        parent::__construct($groupXMLTag);
+        $this->type = new sampleType();  	
 	}	
 	
 	/***********/
@@ -1756,7 +1757,7 @@ class sampleEntity extends dbEntity
             }
             else
             {
-		return $this->type->getValue();	
+				return $this->type->getValue();	
             }
 	}
 	
@@ -1906,7 +1907,10 @@ class radiusEntity extends dbEntity
     function __construct()
     {
         $groupXMLTag = "radii";
-        parent::__construct($groupXMLTag);  	
+        parent::__construct($groupXMLTag);  
+        $this->pith = new complexPresenceAbsence();
+        $this->heartwood = new complexPresenceAbsence();
+        $this->sapwood = new complexPresenceAbsence();
 	}
 
 	/***********/
