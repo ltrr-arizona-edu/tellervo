@@ -21,6 +21,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -54,6 +55,7 @@ public class SeriesLinks
 {
 
     private final static long serialVersionUID = 1001L;
+    @TridasEditProperties(machineOnly = true)
     protected List<SeriesLink> series;
 
     /**

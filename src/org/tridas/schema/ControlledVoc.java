@@ -52,11 +52,11 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
     "value"
 })
 @XmlSeeAlso({
-    TridasCategory.class,
     TridasMeasuringMethod.class,
     TridasShape.class,
     TridasUnit.class,
     TridasVariable.class,
+    TridasCategory.class,
     TridasRemark.class
 })
 public class ControlledVoc

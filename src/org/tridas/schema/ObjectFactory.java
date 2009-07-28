@@ -36,8 +36,8 @@ public class ObjectFactory {
     private final static QName _DerivationDate_QNAME = new QName("http://www.tridas.org/1.3", "derivationDate");
     private final static QName _Period_QNAME = new QName("http://www.tridas.org/1.3", "period");
     private final static QName _MissingHeartwoodRingsToPithFoundation_QNAME = new QName("http://www.tridas.org/1.3", "missingHeartwoodRingsToPithFoundation");
-    private final static QName _LocationComment_QNAME = new QName("http://www.tridas.org/1.3", "locationComment");
     private final static QName _MissingSapwoodRingsToBarkFoundation_QNAME = new QName("http://www.tridas.org/1.3", "missingSapwoodRingsToBarkFoundation");
+    private final static QName _LocationComment_QNAME = new QName("http://www.tridas.org/1.3", "locationComment");
     private final static QName _StandardizingMethod_QNAME = new QName("http://www.tridas.org/1.3", "standardizingMethod");
     private final static QName _CreatedTimestamp_QNAME = new QName("http://www.tridas.org/1.3", "createdTimestamp");
     private final static QName _Objective_QNAME = new QName("http://www.tridas.org/1.3", "objective");
@@ -50,9 +50,9 @@ public class ObjectFactory {
     private final static QName _Authenticity_QNAME = new QName("http://www.tridas.org/1.3", "authenticity");
     private final static QName _Type_QNAME = new QName("http://www.tridas.org/1.3", "type");
     private final static QName _Knots_QNAME = new QName("http://www.tridas.org/1.3", "knots");
+    private final static QName _LocationPrecision_QNAME = new QName("http://www.tridas.org/1.3", "locationPrecision");
     private final static QName _Investigator_QNAME = new QName("http://www.tridas.org/1.3", "investigator");
     private final static QName _StatValue_QNAME = new QName("http://www.tridas.org/1.3", "statValue");
-    private final static QName _LocationPrecision_QNAME = new QName("http://www.tridas.org/1.3", "locationPrecision");
     private final static QName _Altitude_QNAME = new QName("http://www.tridas.org/1.3", "altitude");
     private final static QName _FirstYear_QNAME = new QName("http://www.tridas.org/1.3", "firstYear");
     private final static QName _Marks_QNAME = new QName("http://www.tridas.org/1.3", "marks");
@@ -67,149 +67,21 @@ public class ObjectFactory {
     private final static QName _DeathYear_QNAME = new QName("http://www.tridas.org/1.3", "deathYear");
     private final static QName _LocationType_QNAME = new QName("http://www.tridas.org/1.3", "locationType");
     private final static QName _Title_QNAME = new QName("http://www.tridas.org/1.3", "title");
-    private final static QName _SignificanceLevel_QNAME = new QName("http://www.tridas.org/1.3", "significanceLevel");
     private final static QName _Author_QNAME = new QName("http://www.tridas.org/1.3", "author");
+    private final static QName _SignificanceLevel_QNAME = new QName("http://www.tridas.org/1.3", "significanceLevel");
     private final static QName _Creator_QNAME = new QName("http://www.tridas.org/1.3", "creator");
     private final static QName _Version_QNAME = new QName("http://www.tridas.org/1.3", "version");
     private final static QName _NrOfSapwoodRings_QNAME = new QName("http://www.tridas.org/1.3", "nrOfSapwoodRings");
     private final static QName _State_QNAME = new QName("http://www.tridas.org/1.3", "state");
     private final static QName _CoverageTemporal_QNAME = new QName("http://www.tridas.org/1.3", "coverageTemporal");
-    private final static QName _Position_QNAME = new QName("http://www.tridas.org/1.3", "position");
     private final static QName _MeasuringDate_QNAME = new QName("http://www.tridas.org/1.3", "measuringDate");
+    private final static QName _Position_QNAME = new QName("http://www.tridas.org/1.3", "position");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.tridas.schema
      * 
      */
     public ObjectFactory() {
-    }
-
-    /**
-     * Create an instance of {@link TridasHeartwood }
-     * 
-     */
-    public TridasHeartwood createTridasHeartwood() {
-        return new TridasHeartwood();
-    }
-
-    /**
-     * Create an instance of {@link TridasStatFoundation }
-     * 
-     */
-    public TridasStatFoundation createTridasStatFoundation() {
-        return new TridasStatFoundation();
-    }
-
-    /**
-     * Create an instance of {@link TridasUnitless }
-     * 
-     */
-    public TridasUnitless createTridasUnitless() {
-        return new TridasUnitless();
-    }
-
-    /**
-     * Create an instance of {@link TridasPith }
-     * 
-     */
-    public TridasPith createTridasPith() {
-        return new TridasPith();
-    }
-
-    /**
-     * Create an instance of {@link TridasFile }
-     * 
-     */
-    public TridasFile createTridasFile() {
-        return new TridasFile();
-    }
-
-    /**
-     * Create an instance of {@link SeriesLink.IdRef }
-     * 
-     */
-    public SeriesLink.IdRef createSeriesLinkIdRef() {
-        return new SeriesLink.IdRef();
-    }
-
-    /**
-     * Create an instance of {@link SeriesLink.XLink }
-     * 
-     */
-    public SeriesLink.XLink createSeriesLinkXLink() {
-        return new SeriesLink.XLink();
-    }
-
-    /**
-     * Create an instance of {@link ControlledVoc }
-     * 
-     */
-    public ControlledVoc createControlledVoc() {
-        return new ControlledVoc();
-    }
-
-    /**
-     * Create an instance of {@link TridasSapwood }
-     * 
-     */
-    public TridasSapwood createTridasSapwood() {
-        return new TridasSapwood();
-    }
-
-    /**
-     * Create an instance of {@link Date }
-     * 
-     */
-    public Date createDate() {
-        return new Date();
-    }
-
-    /**
-     * Create an instance of {@link TridasResearch }
-     * 
-     */
-    public TridasResearch createTridasResearch() {
-        return new TridasResearch();
-    }
-
-    /**
-     * Create an instance of {@link TridasIdentifier }
-     * 
-     */
-    public TridasIdentifier createTridasIdentifier() {
-        return new TridasIdentifier();
-    }
-
-    /**
-     * Create an instance of {@link TridasSample }
-     * 
-     */
-    public TridasSample createTridasSample() {
-        return new TridasSample();
-    }
-
-    /**
-     * Create an instance of {@link TridasBark }
-     * 
-     */
-    public TridasBark createTridasBark() {
-        return new TridasBark();
-    }
-
-    /**
-     * Create an instance of {@link TridasSoil }
-     * 
-     */
-    public TridasSoil createTridasSoil() {
-        return new TridasSoil();
-    }
-
-    /**
-     * Create an instance of {@link SeriesLinksWithPreferred }
-     * 
-     */
-    public SeriesLinksWithPreferred createSeriesLinksWithPreferred() {
-        return new SeriesLinksWithPreferred();
     }
 
     /**
@@ -221,27 +93,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TridasRemark }
+     * Create an instance of {@link TridasSample }
      * 
      */
-    public TridasRemark createTridasRemark() {
-        return new TridasRemark();
-    }
-
-    /**
-     * Create an instance of {@link Year }
-     * 
-     */
-    public Year createYear() {
-        return new Year();
-    }
-
-    /**
-     * Create an instance of {@link TridasLaboratory.Name }
-     * 
-     */
-    public TridasLaboratory.Name createTridasLaboratoryName() {
-        return new TridasLaboratory.Name();
+    public TridasSample createTridasSample() {
+        return new TridasSample();
     }
 
     /**
@@ -253,123 +109,43 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SeriesLinks }
+     * Create an instance of {@link TridasRadius }
      * 
      */
-    public SeriesLinks createSeriesLinks() {
-        return new SeriesLinks();
+    public TridasRadius createTridasRadius() {
+        return new TridasRadius();
     }
 
     /**
-     * Create an instance of {@link TridasProject }
+     * Create an instance of {@link TridasUnitless }
      * 
      */
-    public TridasProject createTridasProject() {
-        return new TridasProject();
+    public TridasUnitless createTridasUnitless() {
+        return new TridasUnitless();
     }
 
     /**
-     * Create an instance of {@link TridasGenericField }
+     * Create an instance of {@link TridasLaboratory.Name }
      * 
      */
-    public TridasGenericField createTridasGenericField() {
-        return new TridasGenericField();
+    public TridasLaboratory.Name createTridasLaboratoryName() {
+        return new TridasLaboratory.Name();
     }
 
     /**
-     * Create an instance of {@link TridasObject }
+     * Create an instance of {@link TridasValue }
      * 
      */
-    public TridasObject createTridasObject() {
-        return new TridasObjectEx();
+    public TridasValue createTridasValue() {
+        return new TridasValue();
     }
 
     /**
-     * Create an instance of {@link TridasMeasurementSeries }
+     * Create an instance of {@link TridasResearch }
      * 
      */
-    public TridasMeasurementSeries createTridasMeasurementSeries() {
-        return new TridasMeasurementSeries();
-    }
-
-    /**
-     * Create an instance of {@link TridasDimensions }
-     * 
-     */
-    public TridasDimensions createTridasDimensions() {
-        return new TridasDimensions();
-    }
-
-    /**
-     * Create an instance of {@link TridasRadiusPlaceholder }
-     * 
-     */
-    public TridasRadiusPlaceholder createTridasRadiusPlaceholder() {
-        return new TridasRadiusPlaceholder();
-    }
-
-    /**
-     * Create an instance of {@link TridasDerivedSeries }
-     * 
-     */
-    public TridasDerivedSeries createTridasDerivedSeries() {
-        return new TridasDerivedSeries();
-    }
-
-    /**
-     * Create an instance of {@link TridasShape }
-     * 
-     */
-    public TridasShape createTridasShape() {
-        return new TridasShape();
-    }
-
-    /**
-     * Create an instance of {@link TridasValues }
-     * 
-     */
-    public TridasValues createTridasValues() {
-        return new TridasValues();
-    }
-
-    /**
-     * Create an instance of {@link TridasDatingReference }
-     * 
-     */
-    public TridasDatingReference createTridasDatingReference() {
-        return new TridasDatingReference();
-    }
-
-    /**
-     * Create an instance of {@link TridasTridas }
-     * 
-     */
-    public TridasTridas createTridasTridas() {
-        return new TridasTridas();
-    }
-
-    /**
-     * Create an instance of {@link TridasBedrock }
-     * 
-     */
-    public TridasBedrock createTridasBedrock() {
-        return new TridasBedrock();
-    }
-
-    /**
-     * Create an instance of {@link DateTime }
-     * 
-     */
-    public DateTime createDateTime() {
-        return new DateTime();
-    }
-
-    /**
-     * Create an instance of {@link TridasElement }
-     * 
-     */
-    public TridasElement createTridasElement() {
-        return new TridasElement();
+    public TridasResearch createTridasResearch() {
+        return new TridasResearch();
     }
 
     /**
@@ -381,59 +157,43 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TridasInterpretationUnsolved }
+     * Create an instance of {@link ControlledVoc }
      * 
      */
-    public TridasInterpretationUnsolved createTridasInterpretationUnsolved() {
-        return new TridasInterpretationUnsolved();
+    public ControlledVoc createControlledVoc() {
+        return new ControlledVoc();
     }
 
     /**
-     * Create an instance of {@link TridasInterpretation }
+     * Create an instance of {@link TridasWoodCompleteness }
      * 
      */
-    public TridasInterpretation createTridasInterpretation() {
-        return new TridasInterpretation();
+    public TridasWoodCompleteness createTridasWoodCompleteness() {
+        return new TridasWoodCompleteness();
     }
 
     /**
-     * Create an instance of {@link TridasCategory }
+     * Create an instance of {@link TridasSoil }
      * 
      */
-    public TridasCategory createTridasCategory() {
-        return new TridasCategory();
+    public TridasSoil createTridasSoil() {
+        return new TridasSoil();
     }
 
     /**
-     * Create an instance of {@link SeriesLink }
+     * Create an instance of {@link TridasTridas }
      * 
      */
-    public SeriesLink createSeriesLink() {
-        return new SeriesLink();
+    public TridasTridas createTridasTridas() {
+        return new TridasTridas();
     }
 
     /**
-     * Create an instance of {@link TridasCoverage }
+     * Create an instance of {@link SeriesLinksWithPreferred }
      * 
      */
-    public TridasCoverage createTridasCoverage() {
-        return new TridasCoverage();
-    }
-
-    /**
-     * Create an instance of {@link TridasSlope }
-     * 
-     */
-    public TridasSlope createTridasSlope() {
-        return new TridasSlope();
-    }
-
-    /**
-     * Create an instance of {@link TridasLaboratory }
-     * 
-     */
-    public TridasLaboratory createTridasLaboratory() {
-        return new TridasLaboratory();
+    public SeriesLinksWithPreferred createSeriesLinksWithPreferred() {
+        return new SeriesLinksWithPreferred();
     }
 
     /**
@@ -445,19 +205,91 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TridasLocation }
+     * Create an instance of {@link TridasGenericField }
      * 
      */
-    public TridasLocation createTridasLocation() {
-        return new TridasLocation();
+    public TridasGenericField createTridasGenericField() {
+        return new TridasGenericField();
     }
 
     /**
-     * Create an instance of {@link TridasRadius }
+     * Create an instance of {@link TridasRadiusPlaceholder }
      * 
      */
-    public TridasRadius createTridasRadius() {
-        return new TridasRadius();
+    public TridasRadiusPlaceholder createTridasRadiusPlaceholder() {
+        return new TridasRadiusPlaceholder();
+    }
+
+    /**
+     * Create an instance of {@link TridasBedrock }
+     * 
+     */
+    public TridasBedrock createTridasBedrock() {
+        return new TridasBedrock();
+    }
+
+    /**
+     * Create an instance of {@link TridasFile }
+     * 
+     */
+    public TridasFile createTridasFile() {
+        return new TridasFile();
+    }
+
+    /**
+     * Create an instance of {@link Year }
+     * 
+     */
+    public Year createYear() {
+        return new Year();
+    }
+
+    /**
+     * Create an instance of {@link TridasInterpretationUnsolved }
+     * 
+     */
+    public TridasInterpretationUnsolved createTridasInterpretationUnsolved() {
+        return new TridasInterpretationUnsolved();
+    }
+
+    /**
+     * Create an instance of {@link TridasRemark }
+     * 
+     */
+    public TridasRemark createTridasRemark() {
+        return new TridasRemark();
+    }
+
+    /**
+     * Create an instance of {@link SeriesLink.XLink }
+     * 
+     */
+    public SeriesLink.XLink createSeriesLinkXLink() {
+        return new SeriesLink.XLink();
+    }
+
+    /**
+     * Create an instance of {@link TridasDimensions }
+     * 
+     */
+    public TridasDimensions createTridasDimensions() {
+        return new TridasDimensions();
+    }
+
+    /**
+     * Create an instance of {@link TridasElement }
+     * 
+     */
+    public TridasElement createTridasElement() {
+        return new TridasElement();
+    }
+
+    /**
+     * Create an instance of {@link DateTime }
+     * 
+     */
+    public DateTime createDateTime() {
+        return new DateTime();
     }
 
     /**
@@ -477,19 +309,187 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TridasWoodCompleteness }
+     * Create an instance of {@link TridasShape }
      * 
      */
-    public TridasWoodCompleteness createTridasWoodCompleteness() {
-        return new TridasWoodCompleteness();
+    public TridasShape createTridasShape() {
+        return new TridasShape();
     }
 
     /**
-     * Create an instance of {@link TridasValue }
+     * Create an instance of {@link SeriesLinks }
      * 
      */
-    public TridasValue createTridasValue() {
-        return new TridasValue();
+    public SeriesLinks createSeriesLinks() {
+        return new SeriesLinks();
+    }
+
+    /**
+     * Create an instance of {@link TridasSapwood }
+     * 
+     */
+    public TridasSapwood createTridasSapwood() {
+        return new TridasSapwood();
+    }
+
+    /**
+     * Create an instance of {@link TridasInterpretation }
+     * 
+     */
+    public TridasInterpretation createTridasInterpretation() {
+        return new TridasInterpretation();
+    }
+
+    /**
+     * Create an instance of {@link SeriesLink }
+     * 
+     */
+    public SeriesLink createSeriesLink() {
+        return new SeriesLink();
+    }
+
+    /**
+     * Create an instance of {@link TridasDerivedSeries }
+     * 
+     */
+    public TridasDerivedSeries createTridasDerivedSeries() {
+        return new TridasDerivedSeries();
+    }
+
+    /**
+     * Create an instance of {@link TridasSlope }
+     * 
+     */
+    public TridasSlope createTridasSlope() {
+        return new TridasSlope();
+    }
+
+    /**
+     * Create an instance of {@link TridasIdentifier }
+     * 
+     */
+    public TridasIdentifier createTridasIdentifier() {
+        return new TridasIdentifier();
+    }
+
+    /**
+     * Create an instance of {@link TridasLaboratory }
+     * 
+     */
+    public TridasLaboratory createTridasLaboratory() {
+        return new TridasLaboratory();
+    }
+
+    /**
+     * Create an instance of {@link TridasCategory }
+     * 
+     */
+    public TridasCategory createTridasCategory() {
+        return new TridasCategory();
+    }
+
+    /**
+     * Create an instance of {@link TridasValues }
+     * 
+     */
+    public TridasValues createTridasValues() {
+        return new TridasValues();
+    }
+
+    /**
+     * Create an instance of {@link TridasLocation }
+     * 
+     */
+    public TridasLocation createTridasLocation() {
+        return new TridasLocation();
+    }
+
+    /**
+     * Create an instance of {@link Date }
+     * 
+     */
+    public Date createDate() {
+        return new Date();
+    }
+
+    /**
+     * Create an instance of {@link TridasCoverage }
+     * 
+     */
+    public TridasCoverage createTridasCoverage() {
+        return new TridasCoverage();
+    }
+
+    /**
+     * Create an instance of {@link TridasMeasurementSeries }
+     * 
+     */
+    public TridasMeasurementSeries createTridasMeasurementSeries() {
+        return new TridasMeasurementSeries();
+    }
+
+    /**
+     * Create an instance of {@link TridasProject }
+     * 
+     */
+    public TridasProject createTridasProject() {
+        return new TridasProject();
+    }
+
+    /**
+     * Create an instance of {@link TridasPith }
+     * 
+     */
+    public TridasPith createTridasPith() {
+        return new TridasPith();
+    }
+
+    /**
+     * Create an instance of {@link TridasObject }
+     * 
+     */
+    public TridasObject createTridasObject() {
+        return new TridasObjectEx();
+    }
+
+    /**
+     * Create an instance of {@link TridasDatingReference }
+     * 
+     */
+    public TridasDatingReference createTridasDatingReference() {
+        return new TridasDatingReference();
+    }
+
+    /**
+     * Create an instance of {@link TridasHeartwood }
+     * 
+     */
+    public TridasHeartwood createTridasHeartwood() {
+        return new TridasHeartwood();
+    }
+
+    /**
+     * Create an instance of {@link TridasStatFoundation }
+     * 
+     */
+    public TridasStatFoundation createTridasStatFoundation() {
+        return new TridasStatFoundation();
+    }
+
+    /**
+     * Create an instance of {@link TridasBark }
+     * 
+     */
+    public TridasBark createTridasBark() {
+        return new TridasBark();
+    }
+
+    /**
+     * Create an instance of {@link SeriesLink.IdRef }
+     * 
+     */
+    public SeriesLink.IdRef createSeriesLinkIdRef() {
+        return new SeriesLink.IdRef();
     }
 
     /**
@@ -568,18 +568,18 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "locationComment")
-    public JAXBElement<String> createLocationComment(String value) {
-        return new JAXBElement<String>(_LocationComment_QNAME, String.class, null, value);
+    @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "missingSapwoodRingsToBarkFoundation")
+    public JAXBElement<String> createMissingSapwoodRingsToBarkFoundation(String value) {
+        return new JAXBElement<String>(_MissingSapwoodRingsToBarkFoundation_QNAME, String.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "missingSapwoodRingsToBarkFoundation")
-    public JAXBElement<String> createMissingSapwoodRingsToBarkFoundation(String value) {
-        return new JAXBElement<String>(_MissingSapwoodRingsToBarkFoundation_QNAME, String.class, null, value);
+    @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "locationComment")
+    public JAXBElement<String> createLocationComment(String value) {
+        return new JAXBElement<String>(_LocationComment_QNAME, String.class, null, value);
     }
 
     /**
@@ -694,6 +694,15 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
+    @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "locationPrecision")
+    public JAXBElement<String> createLocationPrecision(String value) {
+        return new JAXBElement<String>(_LocationPrecision_QNAME, String.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
     @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "investigator")
     public JAXBElement<String> createInvestigator(String value) {
         return new JAXBElement<String>(_Investigator_QNAME, String.class, null, value);
@@ -706,15 +715,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "statValue")
     public JAXBElement<BigDecimal> createStatValue(BigDecimal value) {
         return new JAXBElement<BigDecimal>(_StatValue_QNAME, BigDecimal.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "locationPrecision")
-    public JAXBElement<String> createLocationPrecision(String value) {
-        return new JAXBElement<String>(_LocationPrecision_QNAME, String.class, null, value);
     }
 
     /**
@@ -844,21 +844,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link BigDecimal }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "significanceLevel")
-    public JAXBElement<BigDecimal> createSignificanceLevel(BigDecimal value) {
-        return new JAXBElement<BigDecimal>(_SignificanceLevel_QNAME, BigDecimal.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "author")
     public JAXBElement<String> createAuthor(String value) {
         return new JAXBElement<String>(_Author_QNAME, String.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BigDecimal }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "significanceLevel")
+    public JAXBElement<BigDecimal> createSignificanceLevel(BigDecimal value) {
+        return new JAXBElement<BigDecimal>(_SignificanceLevel_QNAME, BigDecimal.class, null, value);
     }
 
     /**
@@ -908,21 +908,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "position")
-    public JAXBElement<String> createPosition(String value) {
-        return new JAXBElement<String>(_Position_QNAME, String.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Date }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "measuringDate")
     public JAXBElement<Date> createMeasuringDate(Date value) {
         return new JAXBElement<Date>(_MeasuringDate_QNAME, Date.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.tridas.org/1.3", name = "position")
+    public JAXBElement<String> createPosition(String value) {
+        return new JAXBElement<String>(_Position_QNAME, String.class, null, value);
     }
 
 }

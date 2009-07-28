@@ -25,6 +25,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasCustomDictionarySortType;
 import org.tridas.annotations.TridasCustomDictionaryType;
+import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -92,6 +93,7 @@ public class TridasElement
     @TridasCustomDictionary(dictionary = "elementType", type = TridasCustomDictionaryType.CORINA_CONTROLLEDVOC)
     protected ControlledVoc type;
     protected String description;
+    @TridasEditProperties(machineOnly = true)
     protected SeriesLinks linkSeries;
     @XmlElement(name = "file")
     protected List<TridasFile> files;
