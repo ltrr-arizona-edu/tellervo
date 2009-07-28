@@ -8,6 +8,8 @@ import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 
 public class TridasObjectEx extends TridasObject {
+	private static final long serialVersionUID = 1L;
+	
 	/** How many child series do I have (vmeasurements) */
 	@XmlTransient
 	private Integer mySeriesCount;
@@ -23,7 +25,7 @@ public class TridasObjectEx extends TridasObject {
 	
 	/**
 	 * Determines if this is a top level object (has no parent)
-	 * @return
+	 * @return true if this is a top level object
 	 */
 	public boolean isTopLevelObject() {
 		return (parentObject == null);
@@ -31,7 +33,7 @@ public class TridasObjectEx extends TridasObject {
 	
 	/**
 	 * Determines if this has any children
-	 * @return
+	 * @return true of there are any sub-object children
 	 */
 	public boolean hasChildren() {
 		return isSetObjects();
@@ -39,7 +41,7 @@ public class TridasObjectEx extends TridasObject {
 	
 	/**
 	 * Does this object have a lab code?
-	 * @return
+	 * @return true if getLabCode would return a valid labcode
 	 */
 	public boolean hasLabCode() {
 		return (labCode != null);
@@ -47,7 +49,7 @@ public class TridasObjectEx extends TridasObject {
 	
 	/**
 	 * Get the number of series that this particular object has
-	 * @return
+	 * @return the count of child series that are directly descended from this object
 	 */
 	@XmlTransient
 	public Integer getSeriesCount() {
@@ -56,7 +58,7 @@ public class TridasObjectEx extends TridasObject {
 	
 	/**
 	 * Get the number of objects that this series and its children have
-	 * @return
+	 * @return the count of child series that are descended from this object and its children
 	 */
 	@XmlTransient
 	public Integer getChildSeriesCount() {
@@ -65,7 +67,7 @@ public class TridasObjectEx extends TridasObject {
 	
 	/**
 	 * Get the lab code, or (n/a) if there is no lab code
-	 * @return
+	 * @return The "lab code" of this object
 	 */
 	@XmlTransient
 	public String getLabCode() {
@@ -74,7 +76,7 @@ public class TridasObjectEx extends TridasObject {
 
 	/**
 	 * Get a text representation of this site
-	 * @return
+	 * @return A string in the form of '[CODE] title'
 	 */
 	public String toTitleString() {
 		if(labCode == null || labCode.equals(title))
