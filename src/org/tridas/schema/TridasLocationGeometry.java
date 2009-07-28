@@ -22,6 +22,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -50,6 +51,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
     "point"
 })
 @XmlRootElement(name = "locationGeometry")
+@TridasEditProperties(finalType = true, readOnly = true)
 public class TridasLocationGeometry
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {

@@ -22,6 +22,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -63,11 +64,16 @@ public class TridasInterpretation
 {
 
     private final static long serialVersionUID = 1001L;
+    @TridasEditProperties(finalType = true, readOnly = true)
     protected Year firstYear;
+    @TridasEditProperties(readOnly = true)
     protected TridasDatingReference datingReference;
     @XmlElement(name = "statFoundation")
+    @TridasEditProperties(readOnly = true)
     protected List<TridasStatFoundation> statFoundations;
+    @TridasEditProperties(finalType = true, readOnly = true)
     protected Year sproutYear;
+    @TridasEditProperties(finalType = true, readOnly = true)
     protected Year deathYear;
     protected String provenance;
 
