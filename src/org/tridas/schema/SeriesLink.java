@@ -21,6 +21,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -66,6 +67,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
     "xLink",
     "idRef"
 })
+@TridasEditProperties(finalType = true)
 public class SeriesLink
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
