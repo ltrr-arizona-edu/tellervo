@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.tridas.schema.Date;
@@ -28,22 +29,33 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 			// flag if it's required
 			required = ep.isRequired();
 			
-			if(ep.getType().isEnum())
+			// check it's an enum or a parent of an enum...
+			if(ep.representsEnumType())
 				return new EnumComboBoxRenderer(required);
 			
 			if(ep.isDictionaryAttached())
 				return new ListComboBoxRenderer(required);
 		}
 		
+		// get a renderer, if one exists
 		TableCellRenderer defaultRenderer = super.getRenderer(property);
 		
+		// if one doesn't exist, and it has children, mark it as such
 		if(defaultRenderer == null && property instanceof TridasEntityProperty) {
 			TridasEntityProperty ep = (TridasEntityProperty) property;
 			
 			if(ep.isEditable() && ep.getChildProperties().size() > 0)
 				return new TridasDefaultPropertyRenderer();			
 		}
-				
-		return defaultRenderer;
+
+		if(!required)
+			return defaultRenderer;
+		
+		// ok, create a renderer for it if nothing exists
+		if(defaultRenderer == null)
+			defaultRenderer = new DefaultTableCellRenderer();
+		
+		// wrap it if it's required
+		return new RequiredCellRendererWrapper(defaultRenderer);
 	}
 }

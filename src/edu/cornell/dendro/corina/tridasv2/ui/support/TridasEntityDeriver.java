@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasEditProperties;
+import org.tridas.interfaces.NormalTridasVoc;
 import org.tridas.schema.*;
 
 
@@ -125,7 +126,7 @@ public class TridasEntityDeriver {
 				}
 
 				Class<?> entType = pd.getType();
-				
+								
 				// shouldn't happen...
 				if (entType == null)
 					throw new NullPointerException();
@@ -164,6 +165,12 @@ public class TridasEntityDeriver {
 					continue;
 
 				buildDerivationList(pd.qname, entType, pd, rootName);
+				
+				// do we have a NormalTridas property?
+				// construct it now, after we've built its child list
+				if(NormalTridasVoc.class.isAssignableFrom(entType)) {
+					parent.replaceChildProperty(pd, new TridasNormalProperty(pd));
+				}
 			}
 		}
 		
@@ -217,7 +224,7 @@ public class TridasEntityDeriver {
 	public static void main(String[] args) {
 		List<TridasEntityProperty> propertyList = new ArrayList<TridasEntityProperty>();
 
-		propertyList = buildDerivationList(TridasRadius.class);
+		propertyList = buildDerivationList(TridasMeasurementSeries.class);
 		
 		dumpPropertyList(propertyList, 0);
 	}

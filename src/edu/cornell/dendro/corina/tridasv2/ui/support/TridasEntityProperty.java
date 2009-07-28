@@ -91,6 +91,20 @@ public class TridasEntityProperty extends AbstractProperty {
 			property.parentProperty = this;
 	}
 
+	/**
+	 * Replace a property by identity (==).
+	 *  
+	 * @param oldProp the property to replace
+	 * @param newProp the property to replace it with
+	 */
+	public void replaceChildProperty(TridasEntityProperty oldProp, TridasEntityProperty newProp) {
+		int nProps = childProperties.size();
+		for(int i = 0; i < nProps; i++) {
+			if(childProperties.get(i) == oldProp)
+				childProperties.set(i, newProp);
+		}
+	}
+
 	@Override
 	public boolean equals(Object other) {
 		if (other == this) {
@@ -179,9 +193,35 @@ public class TridasEntityProperty extends AbstractProperty {
 	public Property[] getSubProperties() {		
 		return childProperties.toArray(new Property[childProperties.size()]);	
 	}
+	
+	/**
+	 * Get the type of this property
+	 */
 	public Class<?> getType() {
 		return clazz;
 	}
+
+	/**
+	 * Does this class represent an enum property?
+	 * If true, getEnumType() can be called
+	 * @return true if this class represents an enum property
+	 */
+	public boolean representsEnumType() {
+		return clazz.isEnum();
+	}
+	
+	/**
+	 * @return The enum class
+	 * @throws IllegalArgumentException If this doesn't represent an enum property
+	 */
+	@SuppressWarnings("unchecked")
+	public Class<? extends Enum<?>> getEnumType() throws IllegalArgumentException {
+		if(clazz.isEnum())
+			return (Class<? extends Enum<?>>) clazz;
+		
+		throw new IllegalArgumentException("Calling getEnumType() on a non-enum!");
+	}
+	
 	@Override
 	public int hashCode() {
 		return qname.hashCode();
@@ -344,7 +384,7 @@ public class TridasEntityProperty extends AbstractProperty {
 	
 	/**
 	 * Translate the value for internal representation
-	 * (how we want to deal with it)
+	 * (This is what we display in our property table)
 	 * @param value
 	 * @return
 	 */

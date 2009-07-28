@@ -31,9 +31,8 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 			TridasEntityProperty ep = (TridasEntityProperty) property;
 			
 			// Whew, it's an enum! Easy!
-			Class<?> type = ep.getType();
-			if(type.isEnum())
-				return new EnumComboBoxPropertyEditor(type);
+			if(ep.representsEnumType())
+				return new EnumComboBoxPropertyEditor(ep.getEnumType());
 			
 			if(ep.isDictionaryAttached())
 				return new ListComboBoxPropertyEditor(ep.getDictionary());

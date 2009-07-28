@@ -24,7 +24,7 @@ public class EnumComboBoxPropertyEditor extends AbstractPropertyEditor {
 	private static final NotPresentItemImpl NOT_PRESENT = new NotPresentItemImpl();
 	
 	@SuppressWarnings("serial")
-	public EnumComboBoxPropertyEditor(Class<?> enumClass) {
+	public EnumComboBoxPropertyEditor(Class<? extends Enum<?>> enumClass) {
 		if(!enumClass.isEnum())
 			throw new IllegalArgumentException("Not an enum!");
 	

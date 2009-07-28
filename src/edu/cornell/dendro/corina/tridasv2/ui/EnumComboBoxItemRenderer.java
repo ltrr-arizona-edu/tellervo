@@ -46,7 +46,7 @@ public class EnumComboBoxItemRenderer extends JLabel implements ComboBoxItemRend
 		if(value == null) {
 			setText("");
 		} 
-		else {
+		else {			
 			// try to invoke the class' value() to get a String value
 			try {
 				Method method = value.getClass().getMethod("value", (Class<?>[]) null);
