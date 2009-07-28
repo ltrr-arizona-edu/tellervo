@@ -26,8 +26,8 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.graph.Graphable;
-import edu.cornell.dendro.corina.tridasv2.TridasRingWidthWrapper;
-import edu.cornell.dendro.corina.tridasv2.TridasWeiserjahreWrapper;
+import edu.cornell.dendro.corina.tridasv2.support.TridasRingWidthWrapper;
+import edu.cornell.dendro.corina.tridasv2.support.TridasWeiserjahreWrapper;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import edu.cornell.dendro.corina_indexing.Indexable;
