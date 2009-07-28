@@ -19,15 +19,20 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 	}
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {
+		boolean required = false;
+		
 		// handle enums nicely
 		if(property instanceof TridasEntityProperty) {
 			TridasEntityProperty ep = (TridasEntityProperty)property;
 			
+			// flag if it's required
+			required = ep.isRequired();
+			
 			if(ep.getType().isEnum())
-				return new EnumComboBoxRenderer();
+				return new EnumComboBoxRenderer(required);
 			
 			if(ep.isDictionaryAttached())
-				return new ListComboBoxRenderer();
+				return new ListComboBoxRenderer(required);
 		}
 		
 		TableCellRenderer defaultRenderer = super.getRenderer(property);

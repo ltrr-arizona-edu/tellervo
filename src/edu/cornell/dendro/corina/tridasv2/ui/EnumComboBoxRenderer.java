@@ -3,15 +3,11 @@
  */
 package edu.cornell.dendro.corina.tridasv2.ui;
 
-import java.awt.Component;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
 
 import edu.cornell.dendro.corina.ui.Builder;
 
@@ -19,15 +15,16 @@ import edu.cornell.dendro.corina.ui.Builder;
  * @author Lucas Madar
  *
  */
-public class EnumComboBoxRenderer extends JPanel implements
-		TableCellRenderer {
+public class EnumComboBoxRenderer extends AbstractComboBoxRenderer {
 	private static final long serialVersionUID = 1L;
 
 	private EnumComboBoxItemRenderer renderer;
 	private JLabel dropdown;
+	private boolean required;
 
-	public EnumComboBoxRenderer() {
+	public EnumComboBoxRenderer(boolean required) {
 		renderer = new EnumComboBoxItemRenderer();
+		this.required = required;
 		
         Icon icon = Builder.getIcon("dropdown.png", Builder.ICONS, 22);
         if(icon == null)
@@ -40,31 +37,21 @@ public class EnumComboBoxRenderer extends JPanel implements
         add(Box.createHorizontalGlue());
         add(dropdown);
 	}
-	
-	/* (non-Javadoc)
-	 * @see javax.swing.table.TableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
-	 */
-	public Component getTableCellRendererComponent(JTable table, Object value,
-			boolean isSelected, boolean hasFocus, int row, int column) {
-		
-		// hide the arrow if we can't edit
-		dropdown.setVisible(table.isCellEditable(row, column));
-		
-		renderer.modifyComponent(value);
-		
-        if (isSelected) {
-            renderer.setForeground(table.getSelectionForeground());
-            renderer.setBackground(table.getSelectionBackground());
-            setForeground(table.getSelectionForeground());
-            super.setBackground(table.getSelectionBackground());
-        } else {
-            setForeground(table.getForeground());
-            setBackground(table.getBackground());
-            renderer.setForeground(table.getForeground());
-            renderer.setBackground(table.getBackground());
-        }
 
-        return this;
+	@Override
+	public JComponent getDropdownBox() {
+		return dropdown;
 	}
 
+	@Override
+	public ComboBoxItemRenderer getRenderer() {
+		return renderer;
+	}
+
+	@Override
+	public boolean isRequired() {
+		return required;
+	}
+	
+	
 }

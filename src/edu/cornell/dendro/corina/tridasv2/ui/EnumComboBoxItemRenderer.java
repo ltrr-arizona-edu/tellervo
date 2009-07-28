@@ -8,15 +8,13 @@ import java.lang.reflect.Method;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.ListCellRenderer;
 
 /**
  * @author Lucas Madar
  *
  */
-public class EnumComboBoxItemRenderer extends JLabel implements ListCellRenderer {
+public class EnumComboBoxItemRenderer extends JLabel implements ComboBoxItemRenderer {
 	private static final long serialVersionUID = 1L;
-
 
 	public EnumComboBoxItemRenderer() {
 		setOpaque(true);
@@ -54,7 +52,6 @@ public class EnumComboBoxItemRenderer extends JLabel implements ListCellRenderer
 				Method method = value.getClass().getMethod("value", (Class<?>[]) null);
 				setText(method.invoke(value, new Object[] {}).toString());
 			} catch (Exception e) {
-				e.printStackTrace();
 				setText(value.toString());
 			}
 		}		

@@ -7,7 +7,6 @@ import java.awt.Component;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.ListCellRenderer;
 
 import org.tridas.schema.ControlledVoc;
 
@@ -17,7 +16,7 @@ import edu.cornell.dendro.corina.schema.SecurityUser;
  * @author Lucas Madar
  *
  */
-public class ListComboBoxItemRenderer extends JLabel implements ListCellRenderer {
+public class ListComboBoxItemRenderer extends JLabel implements ComboBoxItemRenderer {
 	private static final long serialVersionUID = 1L;
 
 	public ListComboBoxItemRenderer() {

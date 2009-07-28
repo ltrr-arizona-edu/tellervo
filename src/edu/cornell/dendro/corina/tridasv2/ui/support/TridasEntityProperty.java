@@ -190,6 +190,13 @@ public class TridasEntityProperty extends AbstractProperty {
 	public boolean isDictionaryAttached() {
 		return false;
 	}
+
+	/**
+	 * @return true if this property is required to be set
+	 */
+	public boolean isRequired() {
+		return required;
+	}
 	
 	public boolean isEditable() {
 		if(isList || readOnly)
