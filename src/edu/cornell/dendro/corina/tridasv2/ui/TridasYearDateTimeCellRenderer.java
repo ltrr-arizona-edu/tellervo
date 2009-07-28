@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 
 import org.tridas.schema.Date;
 import org.tridas.schema.DateTime;
+import org.tridas.schema.Year;
 
 import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 
@@ -13,7 +14,7 @@ import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
  * @author Lucas Madar
  */
 
-public class TridasDateTimeCellRenderer extends DefaultCellRenderer {
+public class TridasYearDateTimeCellRenderer extends DefaultCellRenderer {
 	private static final long serialVersionUID = 1L;
 
 	protected String convertToString(Object value) {
@@ -23,20 +24,28 @@ public class TridasDateTimeCellRenderer extends DefaultCellRenderer {
 			java.util.Date date = dv.getValue().toGregorianCalendar().getTime();
 			String val = SimpleDateFormat.getDateInstance().format(date);
 			if(dv.getCertainty() != null)
-				val += " [" + dv.getCertainty() + "]";
+				val += " [" + dv.getCertainty().value() + "]";
 			
 			return val;
 		}
-		
-		if(value instanceof DateTime) {
+		else if(value instanceof DateTime) {
 			DateTime dv = (DateTime) value;
 			
 			java.util.Date date = dv.getValue().toGregorianCalendar().getTime();
 			String val = SimpleDateFormat.getDateTimeInstance().format(date);
 			if(dv.getCertainty() != null)
-				val += " [" + dv.getCertainty() + "]";
+				val += " [" + dv.getCertainty().value() + "]";
 			
 			return val;			
+		}
+		else if(value instanceof Year) {
+			Year year = (Year) value;
+			
+			String val = year.getValue().toString() + ' ' + year.getSuffix().value();
+			if(year.getCertainty() != null)
+				val += " [" + year.getCertainty().value() + "]";
+			
+			return val;
 		}
 		
 		return null;
