@@ -6,6 +6,8 @@ package edu.cornell.dendro.corina.tridasv2.ui;
 import com.l2fprod.common.propertysheet.PropertySheetTable;
 
 public class CorinaPropertySheetTable extends PropertySheetTable {
+	private static final long serialVersionUID = 1L;
+
 	private boolean isEditable;
 	
 	public CorinaPropertySheetTable() {

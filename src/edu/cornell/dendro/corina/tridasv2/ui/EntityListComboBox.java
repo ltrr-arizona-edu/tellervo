@@ -1,11 +1,8 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
 import java.awt.Component;
-import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -23,8 +20,9 @@ import com.lowagie.text.Font;
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 
-@SuppressWarnings("serial")
 public class EntityListComboBox extends JComboBox {
+	private static final long serialVersionUID = 1L;
+
 	public final static Object NEW_ITEM = new Object();
 	public final static Object SEPARATOR_ITEM = new Object();
 	
@@ -88,6 +86,8 @@ public class EntityListComboBox extends JComboBox {
 	
 	private class EntityListComboBoxRenderer extends JLabel implements
 			ListCellRenderer {
+		private static final long serialVersionUID = 1L;
+
 		private JSeparator separator;
 		private SiteRenderer siteRenderer;
 		

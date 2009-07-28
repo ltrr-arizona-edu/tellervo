@@ -1,12 +1,9 @@
 package edu.cornell.dendro.corina.tridasv2;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import org.jvnet.jaxb2_commons.lang.Copyable;
 import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.TridasDerivedSeries;
-import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasValues;
 
 /**

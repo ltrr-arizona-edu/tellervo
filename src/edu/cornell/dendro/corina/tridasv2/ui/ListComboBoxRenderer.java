@@ -21,6 +21,9 @@ import edu.cornell.dendro.corina.ui.Builder;
  */
 public class ListComboBoxRenderer extends JPanel implements
 		TableCellRenderer {
+	
+	private static final long serialVersionUID = 1L;
+
 	private ListComboBoxItemRenderer renderer;
 	private JLabel dropdown;
 

@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.tridas.schema.TridasObject;
-
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
@@ -23,7 +21,6 @@ import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceCacher;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
-import edu.cornell.dendro.corina.wsi.corina.TridasGenericFieldMap;
 
 /**
  * @author Lucas Madar

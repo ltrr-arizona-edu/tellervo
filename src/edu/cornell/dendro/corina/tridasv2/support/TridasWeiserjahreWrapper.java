@@ -79,12 +79,15 @@ public class TridasWeiserjahreWrapper implements DumbArrayListHook {
 	
 	/**
 	 * Go through TridasValues and set indexes to be sequential
-	 */
+	 * 
+	 * Not used? Well, we never locally modify weiserjahre...
+	 * 
 	private void reindex() {
 		for(int i = 0, len = values.size(); i < len; i++) {
 			values.get(i).setIndex(Integer.toString(i));
 		}
 	}
+	 */
 	
 	public final void addedElement(List<? extends Number> list, int index, Number e) {
 		boolean atEnd = !(index < values.size());

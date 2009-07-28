@@ -3,7 +3,6 @@
  */
 package edu.cornell.dendro.corina.tridasv2.ui;
 
-import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.Box;
@@ -22,6 +21,8 @@ import edu.cornell.dendro.corina.ui.Builder;
  */
 public class EnumComboBoxRenderer extends JPanel implements
 		TableCellRenderer {
+	private static final long serialVersionUID = 1L;
+
 	private EnumComboBoxItemRenderer renderer;
 	private JLabel dropdown;
 

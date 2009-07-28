@@ -4,17 +4,12 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
 import java.awt.Component;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
-import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import org.tridas.schema.ControlledVoc;
-
-import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.schema.SecurityUser;
 
@@ -23,6 +18,7 @@ import edu.cornell.dendro.corina.schema.SecurityUser;
  *
  */
 public class ListComboBoxItemRenderer extends JLabel implements ListCellRenderer {
+	private static final long serialVersionUID = 1L;
 
 	public ListComboBoxItemRenderer() {
 		setOpaque(true);

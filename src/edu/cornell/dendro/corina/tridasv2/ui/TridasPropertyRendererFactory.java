@@ -1,11 +1,7 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.swing.table.TableCellRenderer;
 
-import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
 import org.tridas.schema.DateTime;
 

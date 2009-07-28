@@ -16,12 +16,10 @@ import edu.cornell.dendro.corina.tridasv2.ui.support.NotPresent;
 public class ListComboBoxPropertyEditor extends AbstractPropertyEditor {
 	/** The old value (for primitive undo on escape) */
 	private Object oldValue;
-
-	/** The class of the enum */
-	private Class enumClass;
 	
 	private static final NotPresentItemImpl NOT_PRESENT = new NotPresentItemImpl();
 	
+	@SuppressWarnings("serial")
 	public ListComboBoxPropertyEditor(List<?> list) {	
 		editor = new ComboBoxFilterable(list.toArray()) {
 			// Cache the last selected item in case the user hits escape!

@@ -54,7 +54,6 @@ public class LabCodeFormatter {
 		StringBuffer format = new StringBuffer(codeFormat);
 		List<String> objects = labCode.getSiteCodes();
 		String val;
-		StringBuffer sb;
 		
 		// handle completely empty lab codes
 		if(labCode.isEmptyCode()) {

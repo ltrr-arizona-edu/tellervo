@@ -7,7 +7,15 @@ import org.tridas.schema.DateTime;
 
 import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 
+/**
+ * A renderer that shows Tridas Dates and DateTimes in a viewer friendly manner
+ * 
+ * @author Lucas Madar
+ */
+
 public class TridasDateTimeCellRenderer extends DefaultCellRenderer {
+	private static final long serialVersionUID = 1L;
+
 	protected String convertToString(Object value) {
 		if(value instanceof Date) {
 			Date dv = (Date) value;

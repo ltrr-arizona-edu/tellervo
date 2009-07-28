@@ -28,6 +28,8 @@ import edu.cornell.dendro.corina.util.ListUtil;
  *
  */
 public class TridasDictionaryEntityProperty extends TridasEntityProperty {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Sort ControlledVocs by their "normal" or their "value"
 	 * @author Lucas Madar

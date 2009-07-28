@@ -11,6 +11,8 @@ import com.lowagie.text.Font;
 
 
 public class TridasDefaultPropertyRenderer extends JLabel implements TableCellRenderer {
+	private static final long serialVersionUID = 1L;
+
 	public TridasDefaultPropertyRenderer() {
 		super("...");
 		

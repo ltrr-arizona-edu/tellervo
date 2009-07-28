@@ -4,21 +4,19 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
 import java.awt.Component;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-
-import com.lowagie.text.Font;
 
 /**
  * @author Lucas Madar
  *
  */
 public class EnumComboBoxItemRenderer extends JLabel implements ListCellRenderer {
+	private static final long serialVersionUID = 1L;
+
 
 	public EnumComboBoxItemRenderer() {
 		setOpaque(true);

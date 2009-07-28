@@ -1,12 +1,11 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
-import java.awt.Color;
-
-import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 
 public class EnumComboBoxEditor extends DefaultCellEditor {
+	private static final long serialVersionUID = 1L;
+
 	public EnumComboBoxEditor(Class<?> enumClass) {
 		super(getComboBox(enumClass));
 	}

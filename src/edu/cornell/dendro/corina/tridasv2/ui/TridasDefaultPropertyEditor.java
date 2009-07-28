@@ -8,12 +8,10 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
-import com.l2fprod.common.beans.editor.ColorPropertyEditor;
 import com.lowagie.text.Font;
 
 public class TridasDefaultPropertyEditor extends AbstractPropertyEditor {
