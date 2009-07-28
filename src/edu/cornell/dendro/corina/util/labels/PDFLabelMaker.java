@@ -1,10 +1,7 @@
 package edu.cornell.dendro.corina.util.labels;
 
 import java.awt.Color;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
@@ -12,19 +9,13 @@ import java.util.UUID;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
 import com.lowagie.text.Image;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.Barcode;
 import com.lowagie.text.pdf.Barcode128;
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-
-import edu.cornell.dendro.corina.util.Base64;
 
 public class PDFLabelMaker {
 	private LabelPage margins;
@@ -33,6 +24,7 @@ public class PDFLabelMaker {
 	private int nDown;
 
 	private int curX;
+	@SuppressWarnings("unused")
 	private int curY;
 	
 	private Document document;
@@ -136,69 +128,11 @@ public class PDFLabelMaker {
 		if(curX == nAcross)
 			curX = 0;
 	}
-	
-	public void addSoloBarcode(String code) {
-		Barcode128 barcode = new Barcode128();
 		
-		barcode.setCode(code);
-		barcode.setCodeType(Barcode.CODE128);
-		barcode.setFont(barcodeFont.getBaseFont());
+	public void addUUIDBarcode(String name, LabBarcode.Type type, UUID uuid) {
+		Barcode128 barcode = new LabBarcode(type, uuid);
 		
-		// if it's tiny, hide it
-		if(margins.getLabelHeight() * .80f < barcode.getBarHeight()) {
-			barcode.setBarHeight(margins.getLabelHeight() * .50f);
-			barcode.setSize(10.0f);
-		}
-		else
-			barcode.setSize(8.0f);
-		
-		Image img = barcode.createImageWithBarcode(contentb, Color.black, Color.gray);
-		addCell(new PdfPCell(img));
-	}
-
-	static enum UUIDType {
-		SAMPLE('S'),
-		BOX('B');
-		
-		private char charVal;
-		
-		UUIDType(char c) {
-			charVal = c;
-		}
-		
-		public char getPrefix() {
-			return charVal;
-		}
-	}
-	
-	public void addUUIDBarcode(String name, UUID uuid, UUIDType uuidType) {
-		Barcode128 barcode = new Barcode128();
-		
-		// convert the uuid into a raw byte array
-		ByteArrayOutputStream bbis = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(bbis);
-		
-		String b64enc;
-		try {
-			dos.writeByte((int) uuidType.getPrefix());
-			dos.writeByte((int) ':');
-			
-			// start with high bits... is this proper?
-			dos.writeLong(uuid.getMostSignificantBits());
-			dos.writeLong(uuid.getLeastSignificantBits());
-			
-			b64enc = Base64.encodeBytes(bbis.toByteArray());
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-		
-		barcode.setCode(b64enc);
-		barcode.setAltText(uuidType + " " + uuid.toString());
-		barcode.setCodeType(Barcode.CODE128);
-		barcode.setFont(barcodeFont.getBaseFont());
-
-		// if it's tiny, hide it
+		// if it's tiny, hide the label
 		if(margins.getLabelHeight() * .80f < barcode.getBarHeight()) {
 			barcode.setBarHeight(margins.getLabelHeight() * .55f);
 			barcode.setSize(6.0f);
@@ -223,8 +157,8 @@ public class PDFLabelMaker {
 		document.close();
 	}
 
-	private static Font barcodeFont = FontFactory.getFont(FontFactory.COURIER);
-	private static Font tinybarcodeFont = FontFactory.getFont(FontFactory.HELVETICA, 6.0f, Font.NORMAL);
+	//private static Font barcodeFont = FontFactory.getFont(FontFactory.COURIER);
+	//private static Font tinybarcodeFont = FontFactory.getFont(FontFactory.HELVETICA, 6.0f, Font.NORMAL);
 	
 	public static void main(String args[]) {
 		try {
@@ -232,7 +166,7 @@ public class PDFLabelMaker {
 			
 			for(int i = 10; i < 100; i++) {
 				UUID uuid = UUID.randomUUID();
-				m.addUUIDBarcode("Cell " + i, uuid, UUIDType.SAMPLE);
+				m.addUUIDBarcode("Cell " + i, LabBarcode.Type.SAMPLE, uuid);
 			}
 			
 			m.finish();
