@@ -66,7 +66,6 @@ public class TridasInterpretation
     private final static long serialVersionUID = 1001L;
     @TridasEditProperties(finalType = true, readOnly = true)
     protected Year firstYear;
-    @TridasEditProperties(readOnly = true)
     protected TridasDatingReference datingReference;
     @XmlElement(name = "statFoundation")
     @TridasEditProperties(readOnly = true)

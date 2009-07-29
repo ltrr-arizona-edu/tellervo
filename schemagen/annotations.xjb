@@ -84,7 +84,50 @@ This file is for custom annotations applied to tridas objects
 	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:attribute[@name='id']">
 		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true" /></annox:annotate>
 	</bindings>
+
+	<!-- Read only/final: locationGeometry -->
+	<bindings node="//xs:element[@name='locationGeometry']/xs:complexType">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" finalType="true" />
+		</annox:annotate>	
+	</bindings>	
 	
+	<!-- Read only: interpretation.*, save for provenance -->
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='firstYear']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" finalType="true" />
+		</annox:annotate>	
+	</bindings>
+	<!-- Don't touch datingReference, its "editor" is only for loading -->
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='statFoundation']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" />
+		</annox:annotate>	
+	</bindings>
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='sproutYear']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='deathYear']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+		
+	<!-- Set seriesLink as a final type -->
+	<bindings node="//xs:complexType[@name='seriesLink']">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+
+	<!-- Set datingReference as a final type -->
+	<bindings node="//xs:element[@name='datingReference']/xs:complexType">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>	
 
 	<!-- - - - - - - - - - - -->
 	<!-- Dictionary bindings -->	

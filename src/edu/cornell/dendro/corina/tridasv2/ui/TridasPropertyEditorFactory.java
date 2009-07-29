@@ -7,6 +7,9 @@ import java.beans.PropertyEditor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.tridas.schema.SeriesLink;
+import org.tridas.schema.TridasDatingReference;
+
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertyEditorRegistry;
 import com.l2fprod.common.util.converter.ConverterRegistry;
@@ -24,6 +27,10 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		registerEditor(BigInteger.class, new BigIntegerPropertyEditor());
 		registerEditor(BigDecimal.class, new BigDecimalPropertyEditor());
 		new BigNumberConverter().register(ConverterRegistry.instance());
+
+		PropertyEditor editor = new TridasSeriesLinkRendererEditor();
+		registerEditor(SeriesLink.class, editor);
+		registerEditor(TridasDatingReference.class, editor);
 	}
 	
 	public synchronized PropertyEditor getEditor(Property property) {

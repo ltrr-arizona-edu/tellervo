@@ -5,6 +5,8 @@ import javax.swing.table.TableCellRenderer;
 
 import org.tridas.schema.Date;
 import org.tridas.schema.DateTime;
+import org.tridas.schema.SeriesLink;
+import org.tridas.schema.TridasDatingReference;
 import org.tridas.schema.Year;
 
 import com.l2fprod.common.propertysheet.Property;
@@ -20,6 +22,10 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super.registerRenderer(Date.class, myRenderer);
 		super.registerRenderer(DateTime.class, myRenderer);
 		super.registerRenderer(Year.class, myRenderer);
+		
+		myRenderer = new TridasSeriesLinkRendererEditor();
+		super.registerRenderer(SeriesLink.class, myRenderer);
+		super.registerRenderer(TridasDatingReference.class, myRenderer);
 	}
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {
