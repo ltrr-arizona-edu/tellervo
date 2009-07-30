@@ -3,6 +3,9 @@ package edu.cornell.dendro.corina.print;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.UUID;
+
+import org.tridas.schema.TridasObject;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
@@ -15,7 +18,6 @@ import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.Barcode39;
 
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
@@ -23,39 +25,38 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.test.PrintReportFramework;
+import edu.cornell.dendro.corina.util.labels.LabBarcode;
 
-/**
- * Generates a simple 'Hello World' PDF file.
- * 
- * @author blowagie
- */
 
 public class SeriesReport {
 
 	static Font docTypeFont = new Font(Font.HELVETICA, 20, Font.BOLD);
 	static Font titleFont = new Font(Font.HELVETICA, 20, Font.BOLD);
-	static Font subTitleFont = new Font(Font.HELVETICA, 16);
+	static Font subTitleFont = new Font(Font.HELVETICA, 14);
 	static Font sectionFont = new Font(Font.HELVETICA, Font.BOLD, 14);
 	static Font subSectionFont = new Font(Font.HELVETICA, Font.ITALIC, 12);
 	static Font bodyFont = new Font(Font.HELVETICA, 10);
 	static Font tableHeaderFont = new Font(Font.HELVETICA, 10, Font.BOLD);
-	static Sample testSample = new Sample();
+	static Sample s = new Sample();
 	
 	
-	/**
-	 * Generates a PDF file with the text 'Hello World'
-	 * 
-	 * @param args no arguments needed here
-	 */
 	public static void main(String[] args) {
-				
+	
+	    App.platform = new Platform();
+	    App.platform.init();
+	    
+		App.init(null, null);
+		
 		String domain = "dendro.cornell.edu/dev/";
 		String measurementID = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
 		
 		try {
-			testSample = PrintReportFramework.getSampleForID(domain, measurementID);
+			s = PrintReportFramework.getSampleForID(domain, measurementID);
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -113,31 +114,33 @@ public class SeriesReport {
 		document.close();
 	}
 	
-	public static Paragraph getTitlePDF()
+	private static Paragraph getTitlePDF()
 	{
 		Paragraph p = new Paragraph();
 		
-		p.add(new Chunk(testSample.getDisplayTitle()+"\n", titleFont));
+		p.add(new Chunk(s.getDisplayTitle()+"\n", titleFont));
 
-		p.add(new Chunk("Corinth, Acrocorinth", subTitleFont));
+		TridasObject tobj = s.getMeta(Metadata.OBJECT, TridasObject.class);
+		
+		p.add(new Chunk(tobj.getTitle(), subTitleFont));
 		return p;
 		
 	}
 	
-	public static Image getBarCode(PdfWriter writer)
+	private static Image getBarCode(PdfWriter writer)
 	{
-	
+		UUID uuid = UUID.fromString(s.getSeries().getIdentifier().getValue());
+		LabBarcode barcode = new LabBarcode(LabBarcode.Type.SERIES, uuid);
+			
 		PdfContentByte cb = writer.getDirectContent();
-		Barcode39 code = new Barcode39();
-		code.setCode("9780201615883");
-		code.setX(2);
-		Image image = code.createImageWithBarcode(cb, null, null);
+		barcode.setSize(6.0f);
+		Image image = barcode.createImageWithBarcode(cb, null, null);
 	
 		return image;
 	
 	}
 	
-	public static Paragraph getDocTypePDF()
+	private static Paragraph getDocTypePDF()
 	{
 		Paragraph p = new Paragraph();
 				
@@ -146,11 +149,14 @@ public class SeriesReport {
 	
 	}
 	
-	public static PdfPTable getRingWidthTable()
+	private static PdfPTable getRingWidthTable()
 	{
 		PdfPTable tbl = new PdfPTable(11);
 		PdfPCell cell = new PdfPCell();
+		DecadalModel model = new DecadalModel(s);
 		
+		int rows = model.getRowCount();
+	
 		// Do column headers
 		cell.setPhrase(new Phrase("1/100th mm", tableHeaderFont));
 		cell.setBorderWidthBottom(1);
@@ -173,9 +179,10 @@ public class SeriesReport {
         }
 		
 		// Loop through rows
-		for(int r=1001; r<1060; r = r+10)
+		for(int row =0; row < rows; row++)
 		{	
-			cell.setPhrase(new Phrase(Integer.toString(r), tableHeaderFont));
+			
+/*			cell.setPhrase(new Phrase(Integer.toString(r), tableHeaderFont));
 			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 			cell.setBorderWidthBottom(0.2f);
 			cell.setBorderWidthTop(1);
@@ -183,19 +190,24 @@ public class SeriesReport {
 			cell.setBorderWidthRight(1);
 			if(r==1051) cell.setBorderWidthBottom(1);
 			tbl.addCell(cell);	
-			
+	*/		
 			// Loop through columns
-			for(int i=0; i<10; i++){
-				cell.setBorderWidthBottom(0.2f);
-				cell.setBorderWidthTop(0.2f);
-				cell.setBorderWidthLeft(0.2f);
-				cell.setBorderWidthRight(0.2f);
-				cell.setPhrase(new Phrase(Integer.toString(i), bodyFont));   
-				cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-				if(i==0) cell.setBorderWidthLeft(1);
-				if(i==9) cell.setBorderWidthRight(1);
-				if(r==1051) cell.setBorderWidthBottom(1);
-	            tbl.addCell(cell);            
+			for(int col = 1; col < 11; col++) {
+				Object value = model.getValueAt(row, col);
+				
+				if(value!=null)
+				{
+					cell.setBorderWidthBottom(0.2f);
+					cell.setBorderWidthTop(0.2f);
+					cell.setBorderWidthLeft(0.2f);
+					cell.setBorderWidthRight(0.2f);
+					cell.setPhrase(new Phrase(value.toString(), bodyFont));   
+					cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+					if(col==1) cell.setBorderWidthLeft(1);
+					if(col==10) cell.setBorderWidthRight(1);
+					//if(r==1051) cell.setBorderWidthBottom(1);
+		            tbl.addCell(cell);
+				}
 	        }
 			
 		

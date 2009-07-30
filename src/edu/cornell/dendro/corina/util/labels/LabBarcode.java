@@ -21,7 +21,8 @@ public class LabBarcode extends Barcode128 {
 	 */
 	public static enum Type {
 		SAMPLE('S'),
-		BOX('B');
+		BOX('B'),
+		SERIES('Z');
 		
 		/** The character we prepend to the UUID */
 		private char charVal;

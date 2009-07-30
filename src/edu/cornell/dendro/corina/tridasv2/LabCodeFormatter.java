@@ -1,6 +1,8 @@
-package edu.cornell.dendro.corina.tridasv2;
+	package edu.cornell.dendro.corina.tridasv2;
 
 import java.util.List;
+
+import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 
 /**
  * Lab code formatter
@@ -23,8 +25,16 @@ public class LabCodeFormatter {
 	private String codeFormat;
 	
 	private static LabCodeFormatter cornellLabCodeFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%");
+	private static LabCodeFormatter cornellSeriesPrefixFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%");
+
+	
 	public static LabCodeFormatter getDefaultFormatter() {
 		return cornellLabCodeFormatter;
+	}
+	
+	
+	public static LabCodeFormatter getSeriesPrefix(){
+		return cornellSeriesPrefixFormatter;
 	}
 	
 	public LabCodeFormatter(String format) {
