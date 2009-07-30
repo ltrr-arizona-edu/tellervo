@@ -126,6 +126,17 @@ BEGIN
 
       DoneCreating := FALSE; -- we have to finish in another function
 
+   ELSIF OPName = 'Truncate' THEN
+      IF OPParam IS NOT NULL THEN
+         RAISE EXCEPTION 'Truncates do not have a paramater - specify in finishTruncate';
+      END IF;
+
+      IF ConstituentSize <> 1 THEN
+         RAISE EXCEPTION 'Truncates may only be comprised of one constituent';
+      END IF;
+
+      DoneCreating := FALSE; -- we have to finish in another function
+
    ELSIF OPName = 'Clean' THEN
       IF ConstituentSize <> 1 THEN
          RAISE EXCEPTION 'Cleans may only be comprised of one constituent';
@@ -207,6 +218,49 @@ BEGIN
 
    -- Get our crossdate id
    RETURN (SELECT CrossdateID from tblCrossdate WHERE VMeasurementID=XVMID);
+END;
+$$ LANGUAGE PLPGSQL VOLATILE;
+
+--
+-- Finishes a truncate made with CreateVMeasurement
+-- 1: VMeasurementID
+-- 2: Relative start year
+-- 3: Relative end year
+-- 4: Justification
+--
+CREATE OR REPLACE FUNCTION cpgdb.FinishCrossdate(tblVMeasurement.VMeasurementID%TYPE, 
+   tblTruncate.startrelyear%TYPE, tblTruncate.endrelyear%TYPE, tbltruncate.justification%TYPE)
+RETURNS tblTruncate.TruncateID%TYPE AS $$
+DECLARE
+   XVMID ALIAS FOR $1;
+   XStartRelYear ALIAS FOR $2;
+   XEndRelYear ALIAS FOR $3;
+   XJustification ALIAS FOR $4;
+
+   dummy tblVMeasurement.VMeasurementID%TYPE;
+BEGIN
+   -- Check to see if our vmeasurement exists
+   SELECT VMeasurementID INTO dummy FROM tblVMeasurement
+      WHERE VMeasurementID=XVMID;
+
+   IF NOT FOUND THEN
+      RAISE EXCEPTION 'VMeasurement for Truncate does not exist (%)', XVMID;
+   END IF;
+
+   -- Check for sanity
+   IF XStartRelYear IS NULL OR XEndRelYear IS NULL THEN
+      RAISE EXCEPTION 'Invalid arguments to cpgdb.FinishTruncate';
+   END IF;
+
+   -- Create the actual truncate
+   INSERT INTO tblCrossdate(VMeasurementID, StartRelYear, EndRelYear, Justification)
+      VALUES(XVMID, XStartRelYear, XEndRelYear, XJustification);
+
+   -- Now we're done, so mark it as no longer being generated
+   UPDATE tblVMeasurement SET isGenerating = FALSE WHERE VMeasurementID = XVMID;
+
+   -- Get our truncate id
+   RETURN (SELECT TruncateID from tblTruncate WHERE VMeasurementID=XVMID);
 END;
 $$ LANGUAGE PLPGSQL VOLATILE;
 
