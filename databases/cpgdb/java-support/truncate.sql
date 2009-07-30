@@ -22,5 +22,9 @@ BEGIN
   UPDATE tblVMeasurementReadingResult SET RelYear=RelYear-XStartRelYear
     WHERE VMeasurementResultID=$2;
 
+  -- Mark the redating in vmeasurementresult (increment startyear)
+  UPDATE tblVMeasurementResult SET StartYear=StartYear+XStartRelYear
+    WHERE VMeasurementResultID=$2;
+
 END;
 $$ LANGUAGE PLPGSQL VOLATILE;
