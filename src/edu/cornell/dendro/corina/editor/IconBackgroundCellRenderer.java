@@ -6,7 +6,6 @@ import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +19,7 @@ import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.TridasRemark;
 
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.remarks.Remarks;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
 
@@ -82,7 +82,7 @@ public class IconBackgroundCellRenderer extends DefaultTableCellRenderer {
 	 * @return the icon, lazily loaded, or null
 	 */
 	private Icon getTridasIcon(NormalTridasRemark remark) {
-		return lazyLoadIcon(tridasRemarkIconMap.get(remark));
+		return lazyLoadIcon(Remarks.getTridasRemarkIcons().get(remark));
 	}
 	
 	/**
@@ -91,23 +91,10 @@ public class IconBackgroundCellRenderer extends DefaultTableCellRenderer {
 	 * @return the icon, lazily loaded, or null
 	 */
 	private Icon getCorinaIcon(String remark) {
-		return lazyLoadIcon(corinaRemarkIconMap.get(remark));
+		return lazyLoadIcon(Remarks.getCorinaRemarkIcons().get(remark));
 	}
 		
-	/** A map from tridas remarks -> icons */
-	private final static EnumMap<NormalTridasRemark, String> tridasRemarkIconMap = new EnumMap<NormalTridasRemark, String>(NormalTridasRemark.class);
-	static {
-		tridasRemarkIconMap.put(NormalTridasRemark.FIRE_DAMAGE, "fire.png");
-		tridasRemarkIconMap.put(NormalTridasRemark.FROST_DAMAGE, "frostring.png");
-	};
-	
 	private final static String CORINA = "Corina";
-	private final static HashMap<String, String> corinaRemarkIconMap = new HashMap<String, String>();
-	static {
-		corinaRemarkIconMap.put("Single pinned", "singlepin.png");
-		corinaRemarkIconMap.put("Double pinned", "doublepin.png");
-		corinaRemarkIconMap.put("Tripled pinned", "triplepin.png");
-	}
 
 	/* (non-Javadoc)
 	 * @see javax.swing.table.DefaultTableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)

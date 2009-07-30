@@ -310,23 +310,49 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * Get a list of TridasRemarks for this year on the specified variable
 	 * @param values
 	 * @param y
-	 * @return
+	 * @return a list of remarks for this year, or an empty list if one exists.
 	 */
 	public List<TridasRemark> getRemarksForYear(TridasValues values, Year y) {
+		try {
+			TridasValue value = getValueForYear(values, y);
+			
+			// if we've got remarks, return them!
+			if(value.isSetRemarks())
+				return value.getRemarks();
+			
+		} catch (IndexOutOfBoundsException ioobe) {
+			// fall through
+		}
+		
+		return Collections.emptyList();		
+	}
+
+	/**
+	 * Shortcut for getRemarksForYear(values, year)
+	 * Uses RING_WIDTH variable
+	 * 
+	 * @param y the year
+	 * @return a TridasValue for the given year
+	 */
+	public TridasValue getValueForYear(Year y) {
+		return getValueForYear(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH), y);
+	}
+
+	/**
+	 * Get a TridasValue for a given year
+	 * 
+	 * @param values
+	 * @param y
+	 * @return a TridasValue for the given year
+	 */
+	public TridasValue getValueForYear(TridasValues values, Year y) {
 		Range range = getRange();
 
-		// sanity - ignore an empty
 		if(!range.contains(y))
-			return Collections.emptyList();
+			throw new IndexOutOfBoundsException();
 		
 		int idx = y.diff(range.getStart());
-		TridasValue value = values.getValues().get(idx);
-		
-		// if we've got remarks, return them!
-		if(value.isSetRemarks())
-			return value.getRemarks();
-		
-		return Collections.emptyList();
+		return values.getValues().get(idx);		
 	}
 	
 	public synchronized void addSampleListener(SampleListener l) {

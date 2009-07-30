@@ -26,12 +26,9 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -43,8 +40,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import org.tridas.schema.NormalTridasRemark;
-import org.tridas.schema.TridasRemark;
+import org.tridas.schema.TridasValue;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
@@ -53,6 +49,7 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.remarks.Remarks;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
@@ -312,54 +309,27 @@ public class SampleDataView extends JPanel implements SampleListener,
 		return popup;
 	}
 	
-	private final void addNotesMenu(JPopupMenu menu, int row, int col) {
+	private final void addNotesMenu(JPopupMenu menu, final int row, final int col) {
 		// get the year
 		final Year y = ((DecadalModel) myModel).getYear(row, col);
 		
 		if(!mySample.getRange().contains(y))
 			return;
-		
-		// get the already-set remarks for this year
-		final List<TridasRemark> remarksForYear = mySample.getRemarksForYear(y);
-		
-		for(final NormalTridasRemark nt : NormalTridasRemark.values()) {
-			JMenuItem item = new JMenuItem(nt.value());
-			
-			menu.add(item);
-			item.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					boolean adding = true;
-					
-					// adding a remark is simple!
-					if(adding) {
-						TridasRemark remark = new TridasRemark();
-						remark.setNormalTridas(nt);
-						
-						remarksForYear.add(remark);
-					}
-					
-					mySample.fireSampleDataChanged();
-				}
-			});
-		}
-		
-	}
 
-	/**
-	 * @return a list of all possible TridasRemarks, in their form
-	 */
-	private List<TridasRemark> populateTridasRemarks(JMenu tridasMenu) {
-		ArrayList<TridasRemark> remarks = new ArrayList<TridasRemark>();
+		TridasValue value = mySample.getValueForYear(y);
 		
-		for(NormalTridasRemark nt : NormalTridasRemark.values()) {
-			TridasRemark remark = new TridasRemark();
-			
-			remark.setNormalTridas(nt);
-			
-			remarks.add(remark);
-		}
+		Runnable onRemarkChange = new Runnable() {
+			public void run() {
+				// notify the table that its data has changed
+				((DecadalModel) myModel).fireTableCellUpdated(row, col);
+				
+				// set the sample as modified
+				mySample.setModified();
+				mySample.fireSampleDataChanged();
+			}
+		};
 		
-		return remarks;
+		Remarks.appendRemarksToMenu(menu, value, onRemarkChange);
 	}
 
 	/** Return the Year of the currently selected cell.
