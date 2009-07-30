@@ -228,7 +228,7 @@ $$ LANGUAGE PLPGSQL VOLATILE;
 -- 3: Relative end year
 -- 4: Justification
 --
-CREATE OR REPLACE FUNCTION cpgdb.FinishCrossdate(tblVMeasurement.VMeasurementID%TYPE, 
+CREATE OR REPLACE FUNCTION cpgdb.FinishTruncate(tblVMeasurement.VMeasurementID%TYPE, 
    tblTruncate.startrelyear%TYPE, tblTruncate.endrelyear%TYPE, tbltruncate.justification%TYPE)
 RETURNS tblTruncate.TruncateID%TYPE AS $$
 DECLARE
@@ -253,7 +253,7 @@ BEGIN
    END IF;
 
    -- Create the actual truncate
-   INSERT INTO tblCrossdate(VMeasurementID, StartRelYear, EndRelYear, Justification)
+   INSERT INTO tblTruncate(VMeasurementID, StartRelYear, EndRelYear, Justification)
       VALUES(XVMID, XStartRelYear, XEndRelYear, XJustification);
 
    -- Now we're done, so mark it as no longer being generated
