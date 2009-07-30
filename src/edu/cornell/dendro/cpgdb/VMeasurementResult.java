@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class VMeasurementResult {
 	// Internal values
-	private enum VMeasurementOperation { DIRECT, INDEX, CLEAN, REDATE, SUM, CROSSDATE }
+	private enum VMeasurementOperation { DIRECT, INDEX, CLEAN, REDATE, SUM, CROSSDATE, TRUNCATE }
 		
 	// This string holds our result, which is a UUID returned by the DB
 	private UUID result;
@@ -132,6 +132,7 @@ public class VMeasurementResult {
 					(op == VMeasurementOperation.CLEAN && VMeasurementsInGroup == 1) ||
 					(op == VMeasurementOperation.REDATE && VMeasurementsInGroup == 1) ||
 					(op == VMeasurementOperation.CROSSDATE && VMeasurementsInGroup == 1) ||
+					(op == VMeasurementOperation.TRUNCATE && VMeasurementsInGroup == 1) ||
 					(op == VMeasurementOperation.SUM && VMeasurementsInGroup > 1)
 				   )) 
 				   throw new SQLException("Malformed VMeasurement (id:" + VMeasurementID + ")");
@@ -175,6 +176,7 @@ public class VMeasurementResult {
 		case CLEAN:
 		case REDATE:
 		case CROSSDATE:
+		case TRUNCATE:
 		case INDEX:
 			/*
 			 * For everything else, we make a new Group ID. If we're a redated
@@ -283,6 +285,11 @@ public class VMeasurementResult {
 			newVMeasurementResultID = lastWorkingVMeasurementResultID;
 			dbq.execute("qupdVMeasurementResultOpCrossdate", VMeasurementID, lastWorkingVMeasurementResultID);
 			break;
+			
+		case TRUNCATE:
+			newVMeasurementResultID = lastWorkingVMeasurementResultID;
+			dbq.execute("qupdVMeasurementResultOpTruncate", VMeasurementID, lastWorkingVMeasurementResultID);
+			break;
 		}
 		
 		/*
@@ -305,6 +312,7 @@ public class VMeasurementResult {
 		case CLEAN:
 		case REDATE:
 		case CROSSDATE:
+		case TRUNCATE:
 			// just mark the notes as inherited
 			res = dbq.query("applyDerivedReadingNotes", VMeasurementID, newVMeasurementResultID, null, null);
 			break;
@@ -328,6 +336,7 @@ public class VMeasurementResult {
 		case INDEX:
 		case REDATE:
 		case CROSSDATE:
+		case TRUNCATE:
 		case CLEAN:
 			// Clear away the group ID and change it to our parent?
 			dbq.execute("qupdVMeasurementResultClearGroupID", newVMeasurementResultGroupID);
@@ -360,22 +369,13 @@ public class VMeasurementResult {
 		
 		return newVMeasurementResultID;
 	}
-		
+
 	private VMeasurementOperation getOp(String strOp) throws SQLException {
-		if(strOp.equals("Direct"))
-			return VMeasurementOperation.DIRECT;
-		if(strOp.equals("Index"))
-			return VMeasurementOperation.INDEX;
-		if(strOp.equals("Sum"))
-			return VMeasurementOperation.SUM;
-		if(strOp.equals("Redate"))
-			return VMeasurementOperation.REDATE;
-		if(strOp.equals("Clean"))
-			return VMeasurementOperation.CLEAN;
-		if(strOp.equals("Crossdate"))
-			return VMeasurementOperation.CROSSDATE;
-		
-		throw new SQLException("Invalid VMeasurement Operation: " + strOp);
+		try {
+			return VMeasurementOperation.valueOf(strOp.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			throw new SQLException("Invalid VMeasurement Operation: " + strOp);
+		}		
 	}
 
 	/*
