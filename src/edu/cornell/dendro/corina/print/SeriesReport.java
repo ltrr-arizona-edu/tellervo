@@ -31,73 +31,59 @@ import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
-
+import edu.cornell.dendro.corina.editor.DecadalModel;
 
 public class SeriesReport {
 
-	static Font docTypeFont = new Font(Font.HELVETICA, 20, Font.BOLD);
-	static Font titleFont = new Font(Font.HELVETICA, 20, Font.BOLD);
-	static Font subTitleFont = new Font(Font.HELVETICA, 14);
-	static Font sectionFont = new Font(Font.HELVETICA, Font.BOLD, 14);
-	static Font subSectionFont = new Font(Font.HELVETICA, Font.ITALIC, 12);
-	static Font bodyFont = new Font(Font.HELVETICA, 10);
-	static Font tableHeaderFont = new Font(Font.HELVETICA, 10, Font.BOLD);
-	static Sample s = new Sample();
+	Font docTypeFont = new Font(Font.HELVETICA, 20, Font.BOLD);
+	Font titleFont = new Font(Font.HELVETICA, 20, Font.BOLD);
+	Font subTitleFont = new Font(Font.HELVETICA, 14);
+	Font sectionFont = new Font(Font.HELVETICA, Font.BOLD, 14);
+	Font subSectionFont = new Font(Font.HELVETICA, Font.ITALIC, 12);
+	Font bodyFont = new Font(Font.HELVETICA, 10);
+	Font tableHeaderFont = new Font(Font.HELVETICA, 10, Font.BOLD);
 	
 	
-	public static void main(String[] args) {
+	private Sample s = new Sample();
+	private PdfContentByte cb;
 	
-	    App.platform = new Platform();
-	    App.platform.init();
-	    
-		App.init(null, null);
+	public SeriesReport(Sample s){
+		this.s = s;
+	}
 		
-		String domain = "dendro.cornell.edu/dev/";
-		String measurementID = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
-		
-		try {
-			s = PrintReportFramework.getSampleForID(domain, measurementID);
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-		
+	public void generateSeriesReport(String filename) {
+	
 		// Create a document-object
 		Document document = new Document(PageSize.LETTER);
 		try {
 
 			PdfWriter writer = PdfWriter.getInstance(document,
-					new FileOutputStream("HelloWorld.pdf"));
-
-			// Open doc and set basic metadata
+					new FileOutputStream(filename));
 			document.open();
-		    document.addAuthor("Peter Brewer"); 
-		    document.addSubject("Corina Test Report"); 
-			HeaderFooter header = new HeaderFooter(new Phrase("This is a header."), false);
-			document.setHeader(header);
+			cb = writer.getDirectContent();			
 			
-			//Title Left
-			PdfContentByte cb = writer.getDirectContent();
+			// Set basic metadata
+		    document.addAuthor("Peter Brewer"); 
+		    document.addSubject("Corina Series Report for " + s.getDisplayTitle()); 
+		
+			// Title Left		
 			ColumnText ct = new ColumnText(cb);
 			ct.setSimpleColumn(document.left(), document.top(10)-163, 283, document.top(10), 20, Element.ALIGN_LEFT);
 			ct.addText(getTitlePDF());
 			ct.go();
 			
-			//TITLE Right
+			// Title Right
 			ColumnText ct3 = new ColumnText(cb);
 			ct3.setSimpleColumn(284, document.top(10)-163, document.right(10), document.top(10), 20, Element.ALIGN_RIGHT);
-			ct3.addElement(getBarCode(writer));
+			ct3.addElement(getBarCode());
 			ct3.go();			
 				
-			// Dummy text
+			// Pad text
 	        document.add(new Paragraph(" "));      
 	        Paragraph p2 = new Paragraph();
 	        p2.setSpacingBefore(90);
 		    p2.setSpacingAfter(10);
-		    p2.add(new Chunk("This text is in Times Roman. This is ZapfDingbats: ", new Font(Font.TIMES_ROMAN, 12)));    
-	        p2.add(new Chunk("abcdefghijklmnopqrstuvwxyz", new Font(Font.ZAPFDINGBATS, 12)));
-	        p2.add(new Chunk(". This is font Symbol: ", new Font(Font.TIMES_ROMAN, 12)));
-	        p2.add(new Chunk("abcdefghijklmnopqrstuvwxyz", new Font(Font.SYMBOL, 12)));
+		    p2.add(new Chunk(" ", new Font(Font.TIMES_ROMAN, 12)));    
 	        document.add(new Paragraph(p2));
 	        
 	        // Ring width table
@@ -110,11 +96,17 @@ public class SeriesReport {
 			System.err.println(ioe.getMessage());
 		}
 
-		// step 5: we close the document
+		// Close the document
 		document.close();
 	}
 	
-	private static Paragraph getTitlePDF()
+	
+	/**
+	 * Get an iText Paragraph for the Title 
+	 * 
+	 * @return Paragraph
+	 */
+	private Paragraph getTitlePDF()
 	{
 		Paragraph p = new Paragraph();
 		
@@ -127,12 +119,17 @@ public class SeriesReport {
 		
 	}
 	
-	private static Image getBarCode(PdfWriter writer)
+	
+	/**
+	 * Create a series bar code for this series
+	 * 
+	 * @return Image 
+	 */
+	private Image getBarCode()
 	{
 		UUID uuid = UUID.fromString(s.getSeries().getIdentifier().getValue());
 		LabBarcode barcode = new LabBarcode(LabBarcode.Type.SERIES, uuid);
 			
-		PdfContentByte cb = writer.getDirectContent();
 		barcode.setSize(6.0f);
 		Image image = barcode.createImageWithBarcode(cb, null, null);
 	
@@ -140,7 +137,7 @@ public class SeriesReport {
 	
 	}
 	
-	private static Paragraph getDocTypePDF()
+	private Paragraph getDocTypePDF()
 	{
 		Paragraph p = new Paragraph();
 				
@@ -149,65 +146,101 @@ public class SeriesReport {
 	
 	}
 	
-	private static PdfPTable getRingWidthTable()
+	
+	/**
+	 * Get PdfPTable containing the ring width data for this series
+	 * 
+	 * @return PdfPTable
+	 */
+	private PdfPTable getRingWidthTable()
 	{
 		PdfPTable tbl = new PdfPTable(11);
-		PdfPCell cell = new PdfPCell();
+		PdfPCell headerCell = new PdfPCell();
 		DecadalModel model = new DecadalModel(s);
+		Float lineWidth = new Float(0.05);
+		Float headerLineWidth = new Float(0.8);
 		
 		int rows = model.getRowCount();
-	
+			
 		// Do column headers
-		cell.setPhrase(new Phrase("1/100th mm", tableHeaderFont));
-		cell.setBorderWidthBottom(1);
-		cell.setBorderWidthTop(1);
-		cell.setBorderWidthLeft(1);
-		cell.setBorderWidthRight(1);
-		tbl.addCell(cell);
+		headerCell.setPhrase(new Phrase("1/100th mm", tableHeaderFont));
+		headerCell.setBorderWidthBottom(headerLineWidth);
+		headerCell.setBorderWidthTop(headerLineWidth);
+		headerCell.setBorderWidthLeft(headerLineWidth);
+		headerCell.setBorderWidthRight(headerLineWidth);
+		tbl.addCell(headerCell);
 		for(int i=0; i<10; i++){
 
-			cell.setPhrase(new Phrase(Integer.toString(i), tableHeaderFont));   
-			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-			cell.setBorderWidthBottom(1);
-			cell.setBorderWidthTop(1);
-			cell.setBorderWidthLeft(0.2f);
-			cell.setBorderWidthRight(0.2f);
+			headerCell.setPhrase(new Phrase(Integer.toString(i), tableHeaderFont));   
+			headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+			headerCell.setBorderWidthBottom(headerLineWidth);
+			headerCell.setBorderWidthTop(headerLineWidth);
+			headerCell.setBorderWidthLeft(lineWidth);
+			headerCell.setBorderWidthRight(lineWidth);
 			
-			if(i==0) cell.setBorderWidthLeft(1);
-			if(i==9) cell.setBorderWidthRight(1);
-            tbl.addCell(cell);          
+			if(i==0) headerCell.setBorderWidthLeft(headerLineWidth);
+			if(i==9) headerCell.setBorderWidthRight(headerLineWidth);
+            tbl.addCell(headerCell);          
         }
 		
 		// Loop through rows
 		for(int row =0; row < rows; row++)
 		{	
-			
-/*			cell.setPhrase(new Phrase(Integer.toString(r), tableHeaderFont));
-			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-			cell.setBorderWidthBottom(0.2f);
-			cell.setBorderWidthTop(1);
-			cell.setBorderWidthLeft(1);
-			cell.setBorderWidthRight(1);
-			if(r==1051) cell.setBorderWidthBottom(1);
-			tbl.addCell(cell);	
-	*/		
+			PdfPCell dataCell = new PdfPCell();
 			// Loop through columns
-			for(int col = 1; col < 11; col++) {
+			for(int col = 0; col < 11; col++) {
 				Object value = model.getValueAt(row, col);
+				Phrase cellPhrase;
 				
-				if(value!=null)
-				{
-					cell.setBorderWidthBottom(0.2f);
-					cell.setBorderWidthTop(0.2f);
-					cell.setBorderWidthLeft(0.2f);
-					cell.setBorderWidthRight(0.2f);
-					cell.setPhrase(new Phrase(value.toString(), bodyFont));   
-					cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-					if(col==1) cell.setBorderWidthLeft(1);
-					if(col==10) cell.setBorderWidthRight(1);
-					//if(r==1051) cell.setBorderWidthBottom(1);
-		            tbl.addCell(cell);
+				// Set value of cell
+				if(value!=null){
+					cellPhrase = new Phrase(value.toString(), getTableFont(col));
 				}
+				else{
+					cellPhrase = new Phrase("");
+				}					
+				
+				
+				// Set border styles depending on where we are in the table
+				
+				// Defaults
+				dataCell.setBorderWidthBottom(lineWidth);
+				dataCell.setBorderWidthTop(lineWidth);
+				dataCell.setBorderWidthLeft(lineWidth);
+				dataCell.setBorderWidthRight(lineWidth);
+				dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				
+				// Row headers
+				if(col==0)
+				{	
+					dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+					dataCell.setBorderWidthLeft(headerLineWidth);
+					dataCell.setBorderWidthRight(headerLineWidth);
+				}				
+				
+				// First data column
+				if(col==1)
+				{
+					dataCell.setBorderWidthLeft(headerLineWidth);
+				}
+				
+				// Last data column
+				if(col==10)
+				{
+					dataCell.setBorderWidthRight(headerLineWidth);
+				}
+
+				// Last row
+				if(row==model.getRowCount()-1)
+				{
+					dataCell.setBorderWidthBottom(headerLineWidth);				
+				}
+				
+
+				// Finally write phrase to cell and cell to table
+				dataCell.setPhrase(cellPhrase);
+	            tbl.addCell(dataCell);
+
 	        }
 			
 		
@@ -216,4 +249,49 @@ public class SeriesReport {
 		return tbl;
 		
 	}
+	
+	private Paragraph getTimestampPDF()
+	{
+		return null;
+		
+	}
+	
+	
+	private  Font getTableFont(int col)
+	{
+		
+		if (col==0)	{
+			return tableHeaderFont;
+		}
+		else {
+			return bodyFont;
+		}
+				
+	}
+	
+	
+	
+	public static void main(String[] args)
+	{
+		String domain = "dendro.cornell.edu/dev/";
+		String measurementID = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
+		String filename = "output.pdf";
+		
+	    App.platform = new Platform();
+	    App.platform.init();	    
+		App.init(null, null);
+		Sample samp = null;
+		
+		try {
+			samp = PrintReportFramework.getSampleForID(domain, measurementID);
+		}
+		catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		
+		
+		SeriesReport report = new SeriesReport(samp); 
+		report.generateSeriesReport(filename);
+	}
+	
 }
