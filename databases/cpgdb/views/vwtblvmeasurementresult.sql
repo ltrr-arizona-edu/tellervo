@@ -6,5 +6,5 @@ CREATE VIEW vwtblvmeasurementresult AS
    FROM tblvmeasurementresult, tlkpdatingtype
   WHERE tblvmeasurementresult.datingtypeid = tlkpdatingtype.datingtypeid;
 
-GRANT ALL on vwtblradius to "Webgroup";
+GRANT ALL on vwtblvmeasurementresult to "Webgroup";
 
