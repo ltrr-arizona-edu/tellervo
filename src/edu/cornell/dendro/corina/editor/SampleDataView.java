@@ -37,7 +37,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import org.tridas.schema.TridasValue;
@@ -45,6 +44,9 @@ import org.tridas.schema.TridasValue;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.support.ModifiableTableCellRenderer;
+import edu.cornell.dendro.corina.editor.support.TableCellModifier;
+import edu.cornell.dendro.corina.editor.support.TableCellModifierListener;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
@@ -81,13 +83,15 @@ public class SampleDataView extends JPanel implements SampleListener,
 	public JTable myTable;
 
 	protected TableModel myModel;
+	
+	protected ModifiableTableCellRenderer myCellRenderer;
 
 	// pass this along to the table
 	@Override
 	public void requestFocus() {
 		myTable.requestFocus();
 	}
-
+	
 	// (for Editor)
 	public void stopEditing(boolean disableFutureEdits) {
 		
@@ -209,10 +213,10 @@ public class SampleDataView extends JPanel implements SampleListener,
 		myTable.getColumnModel().getColumn(11).setCellRenderer(
 				new CountRenderer(max));
 		
-		TableCellRenderer defaultCellRenderer = new IconBackgroundCellRenderer(mySample);
+		myCellRenderer = new ModifiableTableCellRenderer(new IconBackgroundCellRenderer(mySample));
 		for(int i = 1; i < 11; i++)
-			myTable.getColumnModel().getColumn(i).setCellRenderer(defaultCellRenderer);
-
+			myTable.getColumnModel().getColumn(i).setCellRenderer(myCellRenderer);
+		
 		// make nulls elsewhere shaded, to indicate "can't use"
 		// DISABLED, because it doesn't hit the area below the table yet (how?).
 		// (but it looks really cool.)
@@ -616,5 +620,33 @@ public class SampleDataView extends JPanel implements SampleListener,
 		myTable.setColumnSelectionInterval(col, col);
 		
 		return retYear;
+	}
+
+	/**
+	 * Add a cell modifier to the table and repaint
+	 * @param modifier
+	 */
+	public void addCellModifier(TableCellModifier modifier) {
+		myCellRenderer.addModifier(modifier);
+		
+		// repaint the table on notification
+		modifier.setListener(new TableCellModifierListener() {
+			public void cellModifierChanged(TableCellModifier modifier) {
+				myTable.repaint();
+			}
+		});
+		
+		// repaint now, to be safe
+		myTable.repaint();
+	}
+	
+	/**
+	 * Remove a cell modifier from the table and repaint
+	 * @param modifier
+	 */
+	public void removeCellModifier(TableCellModifier modifier) {
+		myCellRenderer.removeModifier(modifier);
+		modifier.setListener(null);
+		myTable.repaint();
 	}
 }

@@ -1022,6 +1022,14 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		}
 	}
 	
+	/**
+	 * Get the sampleDataView
+	 * @return The SampleDataVeiw I am holding
+	 */
+	public SampleDataView getSampleDataView() {
+		return dataView;
+	}
+	
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();

@@ -41,6 +41,7 @@ import javax.swing.undo.CannotUndoException;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -166,10 +167,14 @@ public class TruncateDialog extends JDialog {
 	// update "after:" text with resultant range.
 	private void updateResult() {
 		String rangeAndSpan;
-		if (r == null)
+		if (r == null) {
 			rangeAndSpan = I18n.getText("badcrop");
-		else
+			cellModifier.updateRange(s.getRange());
+		}
+		else {
 			rangeAndSpan = r + " (n=" + r.span() + ")";
+			cellModifier.updateRange(r);
+		}
 
 		result.setText(I18n.getText("after") + ": " + rangeAndSpan);
 	}
@@ -331,7 +336,8 @@ public class TruncateDialog extends JDialog {
 	}
 
 	private JButton cancel, ok;
-
+	private TruncationCellModifier cellModifier;
+	
 	public TruncateDialog(Sample s, JFrame owner) {
 		// owner, title, modal
 		super(owner, I18n.getText("truncate"), true);
@@ -340,6 +346,12 @@ public class TruncateDialog extends JDialog {
 		this.s = s;
 		r = s.getRange();
 
+		// create a cell modifier for editor
+		cellModifier = new TruncationCellModifier(r);
+
+		if(owner instanceof Editor)
+			((Editor) owner).getSampleDataView().addCellModifier(cellModifier);
+		
 		// setup
 		JPanel guts = setup();
 		initButtons();
@@ -358,5 +370,9 @@ public class TruncateDialog extends JDialog {
 		setResizable(false);
 		Center.center(this);
 		setVisible(true);
+
+		// clean up
+		if(owner instanceof Editor)
+			((Editor) owner).getSampleDataView().removeCellModifier(cellModifier);
 	}
 }
