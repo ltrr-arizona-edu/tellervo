@@ -107,13 +107,15 @@ BEGIN
       END IF;
 
    ELSIF OPName = 'Redate' THEN
-      IF OPParam IS NULL THEN
-         RAISE EXCEPTION 'Redates must have a redate parameter';
+      IF OPParam IS NOT NULL THEN
+         RAISE EXCEPTION 'Redates must not have a redate parameter - specify in finishRedate!';
       END IF;
 
       IF ConstituentSize <> 1 THEN
          RAISE EXCEPTION 'Redates may only be comprised of one constituent';
       END IF;
+
+      DoneCreating := FALSE; -- we have to finish in another function
 
    ELSIF OPName = 'Crossdate' THEN
       IF OPParam IS NOT NULL THEN
@@ -261,6 +263,49 @@ BEGIN
 
    -- Get our truncate id
    RETURN (SELECT TruncateID from tblTruncate WHERE VMeasurementID=XVMID);
+END;
+$$ LANGUAGE PLPGSQL VOLATILE;
+
+--
+-- Finishes a redate made with CreateVMeasurement
+-- 1: VMeasurementID
+-- 2: new start year
+-- 3: tlkpdatingtype identifier (or NULL, to inherit)
+-- 4: Justification
+--
+CREATE OR REPLACE FUNCTION cpgdb.FinishRedate(tblVMeasurement.VMeasurementID%TYPE, 
+   tblredate.startyear%TYPE, tblredate.redatingtypeid%TYPE, tblredate.justification%TYPE)
+RETURNS tblredate.redateID%TYPE AS $$
+DECLARE
+   XVMID ALIAS FOR $1;
+   XStartYear ALIAS FOR $2;
+   XRedatingTypeID ALIAS FOR $3;
+   XJustification ALIAS FOR $4;
+
+   dummy tblVMeasurement.VMeasurementID%TYPE;
+BEGIN
+   -- Check to see if our vmeasurement exists
+   SELECT VMeasurementID INTO dummy FROM tblVMeasurement
+      WHERE VMeasurementID=XVMID;
+
+   IF NOT FOUND THEN
+      RAISE EXCEPTION 'VMeasurement for redate does not exist (%)', XVMID;
+   END IF;
+
+   -- Check for sanity
+   IF XStartYear IS NULL THEN
+      RAISE EXCEPTION 'Invalid arguments to cpgdb.Finishredate';
+   END IF;
+
+   -- Create the actual redate
+   INSERT INTO tblredate(VMeasurementID, StartYear, RedatingTypeID, Justification)
+      VALUES(XVMID, XStartYear, XRedatingTypeID, XJustification);
+
+   -- Now we're done, so mark it as no longer being generated
+   UPDATE tblVMeasurement SET isGenerating = FALSE WHERE VMeasurementID = XVMID;
+
+   -- Get our redate id
+   RETURN (SELECT redateID from tblredate WHERE VMeasurementID=XVMID);
 END;
 $$ LANGUAGE PLPGSQL VOLATILE;
 
