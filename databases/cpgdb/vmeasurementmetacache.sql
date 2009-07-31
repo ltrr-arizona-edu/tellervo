@@ -22,6 +22,7 @@ BEGIN
 
    ret.VMeasurementID := vmid;
    ret.StartYear := vmresult.StartYear;
+   ret.datingTypeID := vmresult.datingTypeID;
 
    -- Calculate number of readings
    SELECT COUNT(*) INTO ret.ReadingCount
@@ -42,8 +43,8 @@ BEGIN
 
    -- Delete and populate the cache
    DELETE FROM tblVMeasurementMetaCache WHERE VMeasurementID = vmid;
-   INSERT INTO tblVMeasurementMetaCache(VMeasurementID, StartYear, ReadingCount, MeasurementCount)
-      VALUES (ret.VMeasurementID, ret.StartYear, ret.ReadingCount, ret.MeasurementCount);
+   INSERT INTO tblVMeasurementMetaCache(VMeasurementID, StartYear, ReadingCount, MeasurementCount, DatingTypeID)
+      VALUES (ret.VMeasurementID, ret.StartYear, ret.ReadingCount, ret.MeasurementCount, ret.datingTypeID);
 
    -- Clean up
    DELETE FROM tblVMeasurementResult WHERE VMeasurementResultID = vmresult.VMeasurementResultID;

@@ -21,8 +21,9 @@ CREATE TABLE tblVMeasurementMetaCache (
     objectCode text,
     objectCount integer,   
     commonTaxonName text,
-    taxonCount integer
-    prefix text;
+    taxonCount integer,
+    prefix text,
+    datingTypeID integer NOT NULL,
     CONSTRAINT enforce_dims_vsextent CHECK ((ndims(vsextent) = 2)),
     CONSTRAINT enforce_geotype_vsextent CHECK (((geometrytype(vsextent) = 'POLYGON'::text) OR (vsextent IS NULL))),
     CONSTRAINT enforce_srid_vsextent CHECK ((srid(vsextent) = 4326))
@@ -66,3 +67,4 @@ CREATE TYPE typVMeasurementSummaryInfo AS (
    taxonCount integer
 );
 
+CREATE TYPE DatingTypeClass AS ENUM ('arbitrary', 'inferred');
