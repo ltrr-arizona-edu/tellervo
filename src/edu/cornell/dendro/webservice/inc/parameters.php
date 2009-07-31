@@ -939,7 +939,13 @@ class measurementParameters extends measurementEntity implements IParams
 		   						}
 		   					}
 		   					
+			   			case "dating":
+			   				$this->dating->setDatingType(null, $interpTag->getAttribute(type));
+			   				break;
+		   					
 		   				default:
+		   					trigger_error("901"."Unknown tag &lt;".$interpTag->tagName."&gt;. Tag is being ignored", E_USER_NOTICE);
+		   					
 		   					break;
 		   			}
 		   		}
@@ -965,7 +971,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   				$this->setAuthor($value);
 		   				break;
 		   				
-		   			case "corina.crossdateJustification":
+		   			case "corina.justification":
 		   				$this->setJustification($value);
 		   				break;
 		   			
@@ -976,7 +982,8 @@ class measurementParameters extends measurementEntity implements IParams
 		   			case "corina.isReconciled":		   				
 		   				$this->setIsReconciled($value);
 		   				break;
-		   			
+		   					
+		   			  				
 		   			case "corina.directChildCount":		break;
 		   			case "corina.mapLink":				break;
 		   			case "corina.isPublished":			break;

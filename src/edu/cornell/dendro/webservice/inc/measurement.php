@@ -389,7 +389,9 @@ class measurement extends measurementEntity implements IDBAccessor
 		if ($paramsClass->getConfidenceLevel()!=NULL)		$this->setConfidenceLevel($paramsClass->getConfidenceLevel());
 		if ($paramsClass->getNewStartYear()!=NULL)			$this->setNewStartYear($paramsClass->getNewStartYear());
 
-		if ($paramsClass->dating->getValue()!=NULL) 		$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
+		// Only read dating type from user if doing a redate
+		if (($paramsClass->getVMeasurementOp()=='Redate') && ($paramsClass->dating->getValue()!=NULL)) 		
+															$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
 		if ($paramsClass->dating->getDatingErrorPositive()!=NULL) $this->dating->setDatingErrors($paramsClass->dating->getDatingErrorPositive(), $paramsClass->dating->getDatingErrorNegative());
 
 		if ($paramsClass->parentID!=NULL)
@@ -998,7 +1000,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		$xml .= $this->getInterpretationXML();
 		
 		if($this->hasGeometry())				$xml.= $this->location->asGML()."\n<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
-		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"corina.crossdateJustification\" type=\"xs:string\">".$this->getJustification()."</tridas:genericField>\n";
+		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"corina.justification\" type=\"xs:string\">".$this->getJustification()."</tridas:genericField>\n";
 		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"corina.crossdateConfidenceLevel\" type=\"xs:string\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
 		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"corina.operationParameter\" type=\"xs:string\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
 		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"corina.authorID\" type=\"xs:int\">".$this->author->getID()."</tridas:genericField>\n";
@@ -1104,6 +1106,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		if(($this->getFirstYear()!=NULL) || ($this->getSproutYear()!=NULL) || ($this->getDeathYear()!=NULL) || ($this->getProvenance()!=NULL))
 		{
 			$xml.= "<tridas:interpretation>\n";	
+			if($this->dating->getValue()!=NULL)			$xml.= "<tridas:dating type=\"".$this->dating->getValue()."\" />";
 			if($this->getFirstYear()!=NULL)				$xml.= "<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getFirstYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getFirstYear())."</tridas:firstYear>\n";
 			if($this->getMasterVMeasurementID()!=NULL)	$xml.= "<tridas:datingReference>\n<tridas:linkSeries>\n<tridas:identifier domain=\"$domain\">".$this->getMasterVMeasurementID()."</tridas:identifier>\n</tridas:linkSeries>\n</tridas:datingReference>\n";
 			if($this->getSproutYear()!=NULL)			$xml.= "<tridas:sproutYear certainty=\"".$this->getSproutYearCertainty()."\" suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getSproutYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getSproutYear())."</tridas:sproutYear>\n";
@@ -1383,7 +1386,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		 *
 		 * New derived measurement:
 		 * 1) Use cpgdb.createnewvmeasurement()
-		 * 2) Use cpgdb.finishcrossdate() if it's a crossdate
+		 * 2) Use cpgdb.finishcrossdate(), cpgdb.finishtruncate() or cpgdb.finishredate() if it's a crossdate, truncate or redate
 		 * 3) Add notes using cpgdb.addreadingnote() which have inheritedCount=-1, 0 or NULL (-1 is overide inheritance)
 		 *
 		 * Edit existing direct measurement:
@@ -1432,7 +1435,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						if(isset($this->analyst))					        $sql.= "measuredbyid, ";
 						if($this->dating->getID()!=NULL)
 						{
-							$sql.= "datingtypeid, ";
+							//$sql.= "datingtypeid, ";
 							if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "datingerrornegative, ";
 							if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "datingerrorpositive, ";
 						}
@@ -1454,7 +1457,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						if(isset($this->analyst))					        $sql.= "'".pg_escape_string($this->analyst->getID())."', ";
 						if($this->dating->getID()!=NULL)
 						{
-							$sql.= "'".pg_escape_string($this->dating->getID())."', ";
+							//$sql.= "'".pg_escape_string($this->dating->getID())."', ";
 							if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "'".pg_escape_string($this->dating->getDatingErrorNegative())."', ";
 							if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "'".pg_escape_string($this->dating->getDatingErrorPositive())."', ";
 						}
@@ -1536,19 +1539,37 @@ class measurement extends measurementEntity implements IDBAccessor
 							$localVMID = $row['createnewvmeasurement'];
 							//$this->setParamsFromDB($row['createnewvmeasurement']);
 						}
-					}
+					}		
 					
-					
-					// This extra SQL query is needed to finish off a crossdate
-					if($this->getVMeasurementOp()=='Crossdate')
+					// This extra SQL query is needed to finish off a crossdate, truncate or redate
+					if(($this->getVMeasurementOp()=='Crossdate') || 
+					($this->getVMeasurementOp()=='Truncate') || 
+					($this->getVMeasurementOp()=='Redate'))
 					{
-						$sql = "select cpgdb.finishCrossdate('".pg_escape_string($localVMID)."', ".
-						"'".pg_escape_string($this->getNewStartYear())."', ".
-						"'".pg_escape_string($this->getMasterVMeasurementID())."', ".
-						"'".pg_escape_string($this->getJustification())."', ".
-						"'".pg_escape_string($this->getConfidenceLevel())."')";
+						// Build SQL statement
+						$sql = "select cpgdb.finish".$this->getVMeasurementOp()."('".pg_escape_string($localVMID)."', ".
+								"'".pg_escape_string($this->getNewStartYear())."', ";
 						
-						$firebug->log($sql, "SQL Transaction for writeToDB");
+						// Remaining parameters depend on finish type
+						if($this->getVMeasurementOp()=='Crossdate')
+						{
+							$sql.=  "'".pg_escape_string($this->getMasterVMeasurementID())."', ".
+									"'".pg_escape_string($this->getJustification())."', ".
+									"'".pg_escape_string($this->getConfidenceLevel())."')";
+						}						
+						elseif($this->getVMeasurementOp()=='Truncate')
+						{
+							$sql.= 	"'".pg_escape_string($this->getNewEndYear())."', ".
+									"'".pg_escape_string($this->getJustification())."', ";
+						}						
+						elseif($this->getVMeasurementOp()=='Redate')
+						{
+							$sql.= 	"'".pg_escape_string($this->getNewEndYear())."', ".
+									"'".pg_escape_string($this->dating->getID())."', ".
+									"'".pg_escape_string($this->getJustification())."', ";
+						}
+												
+						$firebug->log($sql, "SQL Transaction for finishing cross, trunc or re- date");
 						pg_send_query($dbconn, $sql);
 						$result = pg_get_result($dbconn);
 						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
@@ -1592,7 +1613,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled='".dbHelper::formatBool($this->getIsReconciled(),'pg')."', ";
 						if($this->getFirstYear()!=NULL)           					$updateSQL2.= "startyear = ".pg_escape_string($this->getFirstYear()).", ";
 						if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".pg_escape_string($this->analyst->getID()).", ";
-						if($this->dating->getID()!=NULL)        					$updateSQL2.= "datingtypeid = ".pg_escape_string($this->dating->getID()).", ";
+						//if($this->dating->getID()!=NULL)        					$updateSQL2.= "datingtypeid = ".pg_escape_string($this->dating->getID()).", ";
 						if($this->dating->getDatingErrorPositive()!=NULL) 			$updateSQL2.= "datingerrorpositive = ".pg_escape_string($this->dating->getDatingErrorPositive()).", ";
 						if($this->dating->getDatingErrorNegative()!=NULL) 			$updateSQL2.= "datingerrornegative = ".pg_escape_string($this->dating->getDatingErrorNegative()).", ";
 						$updateSQL2 = substr($updateSQL2, 0 , -2);
