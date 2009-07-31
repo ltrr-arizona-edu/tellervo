@@ -1402,6 +1402,7 @@ themselves are stored separately as values.
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="dating" minOccurs="0"/>
 				<xs:element ref="firstYear" minOccurs="0"/>
 				<xs:element ref="datingReference" minOccurs="0"/>
 				<xs:element ref="statFoundation" minOccurs="0" maxOccurs="unbounded"/>
@@ -1718,6 +1719,40 @@ TRiDaS controlled vocabulary.
 					</xs:attribute>
 				</xs:extension>
 			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	
+	<!-- PROVISIONAL STUFF NOT APPROVED BY TRIDAS -->
+	
+	<!-- TRiDaS controlledVoc for DatingType-->
+	<xs:simpleType name="normalTridasDatingType">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				TriDaS specified controlled vocabulary for the type of dating
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Absolute"/>
+			<xs:enumeration value="Dated with uncertainty"/>
+			<xs:enumeration value="Relative"/>
+			<xs:enumeration value="Radiocarbon"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:element name="dating">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Information about dating
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="type" type="normalTridasDatingType" use="required">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Field to denote dating type
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
