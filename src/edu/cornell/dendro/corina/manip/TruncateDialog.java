@@ -24,6 +24,7 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.JLine;
 import edu.cornell.dendro.corina.util.DocumentListener2;
@@ -246,7 +247,7 @@ public class TruncateDialog extends JDialog {
         result.setAlignmentX(Component.CENTER_ALIGNMENT);
         pri.add(result);
         pri.add(Box.createVerticalStrut(8));
-
+        
 	// return the panel
 	return pri;
     }
@@ -346,6 +347,7 @@ public class TruncateDialog extends JDialog {
         // show it
         pack();
         setResizable(false);
+        Center.center(this);
         show();
     }
 }

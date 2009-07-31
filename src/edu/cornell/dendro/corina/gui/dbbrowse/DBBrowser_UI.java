@@ -76,7 +76,7 @@ public class DBBrowser_UI extends JDialog {
 	    btnSelectNone = new javax.swing.JButton();
 	    btnInvertSelect = new javax.swing.JButton();
 	
-	    setTitle("Measurement Browser");
+	    setTitle("Series Browser");
 	
 	    btnOk.setText("OK");
 	    btnCancel.setText("Cancel");
