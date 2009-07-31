@@ -155,11 +155,14 @@ public class WSIReadingNoteDictionary implements Serializable, CopyTo, Copyable,
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIReadingNoteDictionary copy = ((target == null)?((WSIReadingNoteDictionary) createCopy()):((WSIReadingNoteDictionary) target));
-        {
+        if (this.isSetRemarks()) {
             List<TridasRemark> sourceRemarks;
             sourceRemarks = this.getRemarks();
+            @SuppressWarnings("unchecked")
             List<TridasRemark> copyRemarks = ((List<TridasRemark> ) copyBuilder.copy(sourceRemarks));
             copy.setRemarks(copyRemarks);
+        } else {
+            copy.unsetRemarks();
         }
         return copy;
     }

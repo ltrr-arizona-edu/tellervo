@@ -155,11 +155,14 @@ public class WSISapwoodDictionary implements Serializable, CopyTo, Copyable, Equ
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSISapwoodDictionary copy = ((target == null)?((WSISapwoodDictionary) createCopy()):((WSISapwoodDictionary) target));
-        {
+        if (this.isSetSapwoods()) {
             List<ControlledVoc> sourceSapwoods;
             sourceSapwoods = this.getSapwoods();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copySapwoods = ((List<ControlledVoc> ) copyBuilder.copy(sourceSapwoods));
             copy.setSapwoods(copySapwoods);
+        } else {
+            copy.unsetSapwoods();
         }
         return copy;
     }

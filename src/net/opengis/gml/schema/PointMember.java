@@ -138,11 +138,13 @@ public class PointMember
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final PointMember copy = ((target == null)?((PointMember) createCopy()):((PointMember) target));
-        {
+        if (this.isSetPoint()) {
             PointType sourcePoint;
             sourcePoint = this.getPoint();
             PointType copyPoint = ((PointType) copyBuilder.copy(sourcePoint));
             copy.setPoint(copyPoint);
+        } else {
+            copy.point = null;
         }
         return copy;
     }

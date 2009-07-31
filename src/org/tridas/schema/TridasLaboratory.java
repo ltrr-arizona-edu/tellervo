@@ -261,29 +261,37 @@ public class TridasLaboratory
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasLaboratory copy = ((target == null)?((TridasLaboratory) createCopy()):((TridasLaboratory) target));
-        {
+        if (this.isSetIdentifier()) {
             TridasIdentifier sourceIdentifier;
             sourceIdentifier = this.getIdentifier();
             TridasIdentifier copyIdentifier = ((TridasIdentifier) copyBuilder.copy(sourceIdentifier));
             copy.setIdentifier(copyIdentifier);
+        } else {
+            copy.identifier = null;
         }
-        {
+        if (this.isSetName()) {
             TridasLaboratory.Name sourceName;
             sourceName = this.getName();
             TridasLaboratory.Name copyName = ((TridasLaboratory.Name) copyBuilder.copy(sourceName));
             copy.setName(copyName);
+        } else {
+            copy.name = null;
         }
-        {
+        if (this.isSetPlace()) {
             String sourcePlace;
             sourcePlace = this.getPlace();
             String copyPlace = ((String) copyBuilder.copy(sourcePlace));
             copy.setPlace(copyPlace);
+        } else {
+            copy.place = null;
         }
-        {
+        if (this.isSetCountry()) {
             String sourceCountry;
             sourceCountry = this.getCountry();
             String copyCountry = ((String) copyBuilder.copy(sourceCountry));
             copy.setCountry(copyCountry);
+        } else {
+            copy.country = null;
         }
         return copy;
     }
@@ -447,17 +455,21 @@ public class TridasLaboratory
 
         public Object copyTo(Object target, CopyBuilder copyBuilder) {
             final TridasLaboratory.Name copy = ((target == null)?((TridasLaboratory.Name) createCopy()):((TridasLaboratory.Name) target));
-            {
+            if (this.isSetValue()) {
                 String sourceValue;
                 sourceValue = this.getValue();
                 String copyValue = ((String) copyBuilder.copy(sourceValue));
                 copy.setValue(copyValue);
+            } else {
+                copy.value = null;
             }
-            {
+            if (this.isSetAcronym()) {
                 String sourceAcronym;
                 sourceAcronym = this.getAcronym();
                 String copyAcronym = ((String) copyBuilder.copy(sourceAcronym));
                 copy.setAcronym(copyAcronym);
+            } else {
+                copy.acronym = null;
             }
             return copy;
         }

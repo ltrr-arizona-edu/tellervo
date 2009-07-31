@@ -222,23 +222,29 @@ public class TridasGenericField
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasGenericField copy = ((target == null)?((TridasGenericField) createCopy()):((TridasGenericField) target));
-        {
+        if (this.isSetValue()) {
             String sourceValue;
             sourceValue = this.getValue();
             String copyValue = ((String) copyBuilder.copy(sourceValue));
             copy.setValue(copyValue);
+        } else {
+            copy.value = null;
         }
-        {
+        if (this.isSetName()) {
             String sourceName;
             sourceName = this.getName();
             String copyName = ((String) copyBuilder.copy(sourceName));
             copy.setName(copyName);
+        } else {
+            copy.name = null;
         }
-        {
+        if (this.isSetType()) {
             String sourceType;
             sourceType = this.getType();
             String copyType = ((String) copyBuilder.copy(sourceType));
             copy.setType(copyType);
+        } else {
+            copy.type = null;
         }
         return copy;
     }

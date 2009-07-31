@@ -132,11 +132,13 @@ public class TridasRadiusPlaceholder
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasRadiusPlaceholder copy = ((target == null)?((TridasRadiusPlaceholder) createCopy()):((TridasRadiusPlaceholder) target));
-        {
+        if (this.isSetMeasurementSeriesPlaceholder()) {
             TridasMeasurementSeriesPlaceholder sourceMeasurementSeriesPlaceholder;
             sourceMeasurementSeriesPlaceholder = this.getMeasurementSeriesPlaceholder();
             TridasMeasurementSeriesPlaceholder copyMeasurementSeriesPlaceholder = ((TridasMeasurementSeriesPlaceholder) copyBuilder.copy(sourceMeasurementSeriesPlaceholder));
             copy.setMeasurementSeriesPlaceholder(copyMeasurementSeriesPlaceholder);
+        } else {
+            copy.measurementSeriesPlaceholder = null;
         }
         return copy;
     }

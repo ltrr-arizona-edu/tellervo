@@ -185,17 +185,21 @@ public class LineStringSegmentType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final LineStringSegmentType copy = ((target == null)?((LineStringSegmentType) createCopy()):((LineStringSegmentType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetPosList()) {
             PosList sourcePosList;
             sourcePosList = this.getPosList();
             PosList copyPosList = ((PosList) copyBuilder.copy(sourcePosList));
             copy.setPosList(copyPosList);
+        } else {
+            copy.posList = null;
         }
-        {
+        if (this.isSetInterpolation()) {
             CurveInterpolationType sourceInterpolation;
             sourceInterpolation = this.getInterpolation();
             CurveInterpolationType copyInterpolation = ((CurveInterpolationType) copyBuilder.copy(sourceInterpolation));
             copy.setInterpolation(copyInterpolation);
+        } else {
+            copy.interpolation = null;
         }
         return copy;
     }

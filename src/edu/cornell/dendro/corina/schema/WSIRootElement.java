@@ -252,29 +252,37 @@ public class WSIRootElement
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIRootElement copy = ((target == null)?((WSIRootElement) createCopy()):((WSIRootElement) target));
-        {
+        if (this.isSetHeader()) {
             WSIHeader sourceHeader;
             sourceHeader = this.getHeader();
             WSIHeader copyHeader = ((WSIHeader) copyBuilder.copy(sourceHeader));
             copy.setHeader(copyHeader);
+        } else {
+            copy.header = null;
         }
-        {
+        if (this.isSetHelp()) {
             WSIHelp sourceHelp;
             sourceHelp = this.getHelp();
             WSIHelp copyHelp = ((WSIHelp) copyBuilder.copy(sourceHelp));
             copy.setHelp(copyHelp);
+        } else {
+            copy.help = null;
         }
-        {
+        if (this.isSetContent()) {
             WSIContent sourceContent;
             sourceContent = this.getContent();
             WSIContent copyContent = ((WSIContent) copyBuilder.copy(sourceContent));
             copy.setContent(copyContent);
+        } else {
+            copy.content = null;
         }
-        {
+        if (this.isSetRequest()) {
             WSIRequest sourceRequest;
             sourceRequest = this.getRequest();
             WSIRequest copyRequest = ((WSIRequest) copyBuilder.copy(sourceRequest));
             copy.setRequest(copyRequest);
+        } else {
+            copy.request = null;
         }
         return copy;
     }

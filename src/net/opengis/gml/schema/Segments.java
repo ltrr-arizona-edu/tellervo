@@ -79,8 +79,8 @@ public class Segments
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link LineStringSegmentType }{@code >}
      * {@link JAXBElement }{@code <}{@link AbstractCurveSegmentType }{@code >}
+     * {@link JAXBElement }{@code <}{@link LineStringSegmentType }{@code >}
      * 
      * 
      */
@@ -104,8 +104,8 @@ public class Segments
      * 
      * @param curveSegments
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link LineStringSegmentType }{@code >}
      *     {@link JAXBElement }{@code <}{@link AbstractCurveSegmentType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link LineStringSegmentType }{@code >}
      *     
      */
     public void set_CurveSegments(List<JAXBElement<? extends AbstractCurveSegmentType>> curveSegments) {
@@ -162,11 +162,14 @@ public class Segments
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final Segments copy = ((target == null)?((Segments) createCopy()):((Segments) target));
-        {
+        if (this.isSet_CurveSegments()) {
             List<JAXBElement<? extends AbstractCurveSegmentType>> source_CurveSegments;
             source_CurveSegments = this.get_CurveSegments();
+            @SuppressWarnings("unchecked")
             List<JAXBElement<? extends AbstractCurveSegmentType>> copy_CurveSegments = ((List<JAXBElement<? extends AbstractCurveSegmentType>> ) copyBuilder.copy(source_CurveSegments));
             copy.set_CurveSegments(copy_CurveSegments);
+        } else {
+            copy.unset_CurveSegments();
         }
         return copy;
     }

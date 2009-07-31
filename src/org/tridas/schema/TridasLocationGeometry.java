@@ -175,17 +175,21 @@ public class TridasLocationGeometry
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasLocationGeometry copy = ((target == null)?((TridasLocationGeometry) createCopy()):((TridasLocationGeometry) target));
-        {
+        if (this.isSetPolygon()) {
             PolygonType sourcePolygon;
             sourcePolygon = this.getPolygon();
             PolygonType copyPolygon = ((PolygonType) copyBuilder.copy(sourcePolygon));
             copy.setPolygon(copyPolygon);
+        } else {
+            copy.polygon = null;
         }
-        {
+        if (this.isSetPoint()) {
             PointType sourcePoint;
             sourcePoint = this.getPoint();
             PointType copyPoint = ((PointType) copyBuilder.copy(sourcePoint));
             copy.setPoint(copyPoint);
+        } else {
+            copy.point = null;
         }
         return copy;
     }

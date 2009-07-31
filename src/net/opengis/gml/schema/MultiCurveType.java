@@ -163,11 +163,14 @@ public class MultiCurveType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final MultiCurveType copy = ((target == null)?((MultiCurveType) createCopy()):((MultiCurveType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetCurveMembers()) {
             List<CurveMember> sourceCurveMembers;
             sourceCurveMembers = this.getCurveMembers();
+            @SuppressWarnings("unchecked")
             List<CurveMember> copyCurveMembers = ((List<CurveMember> ) copyBuilder.copy(sourceCurveMembers));
             copy.setCurveMembers(copyCurveMembers);
+        } else {
+            copy.unsetCurveMembers();
         }
         return copy;
     }

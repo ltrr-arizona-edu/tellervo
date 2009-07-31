@@ -136,11 +136,13 @@ public class MultiCurvePropertyType
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final MultiCurvePropertyType copy = ((target == null)?((MultiCurvePropertyType) createCopy()):((MultiCurvePropertyType) target));
-        {
+        if (this.isSetMultiCurve()) {
             MultiCurveType sourceMultiCurve;
             sourceMultiCurve = this.getMultiCurve();
             MultiCurveType copyMultiCurve = ((MultiCurveType) copyBuilder.copy(sourceMultiCurve));
             copy.setMultiCurve(copyMultiCurve);
+        } else {
+            copy.multiCurve = null;
         }
         return copy;
     }

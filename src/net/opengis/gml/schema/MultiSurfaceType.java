@@ -163,11 +163,14 @@ public class MultiSurfaceType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final MultiSurfaceType copy = ((target == null)?((MultiSurfaceType) createCopy()):((MultiSurfaceType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetSurfaceMembers()) {
             List<SurfaceMember> sourceSurfaceMembers;
             sourceSurfaceMembers = this.getSurfaceMembers();
+            @SuppressWarnings("unchecked")
             List<SurfaceMember> copySurfaceMembers = ((List<SurfaceMember> ) copyBuilder.copy(sourceSurfaceMembers));
             copy.setSurfaceMembers(copySurfaceMembers);
+        } else {
+            copy.unsetSurfaceMembers();
         }
         return copy;
     }

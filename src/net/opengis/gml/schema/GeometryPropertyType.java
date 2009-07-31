@@ -63,20 +63,20 @@ public class GeometryPropertyType
      * 
      * @return
      *     possible object is
+     *     {@link JAXBElement }{@code <}{@link LinearRingType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractGeometricPrimitiveType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link MultiSurfaceType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CurveType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link SurfaceType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link PointType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link MultiPointType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractGeometricAggregateType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link LineStringType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractSurfaceType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractCurveType }{@code >}
      *     {@link JAXBElement }{@code <}{@link AbstractGeometryType }{@code >}
      *     {@link JAXBElement }{@code <}{@link PolygonType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link MultiPointType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractGeometricPrimitiveType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link SurfaceType }{@code >}
      *     {@link JAXBElement }{@code <}{@link MultiCurveType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link PointType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractSurfaceType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link LineStringType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link MultiSurfaceType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractCurveType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractGeometricAggregateType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link LinearRingType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CurveType }{@code >}
      *     
      */
     public JAXBElement<? extends AbstractGeometryType> get_Geometry() {
@@ -88,20 +88,20 @@ public class GeometryPropertyType
      * 
      * @param value
      *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link LinearRingType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractGeometricPrimitiveType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link MultiSurfaceType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link CurveType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link SurfaceType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link PointType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link MultiPointType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractGeometricAggregateType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link LineStringType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractSurfaceType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractCurveType }{@code >}
      *     {@link JAXBElement }{@code <}{@link AbstractGeometryType }{@code >}
      *     {@link JAXBElement }{@code <}{@link PolygonType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link MultiPointType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractGeometricPrimitiveType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link SurfaceType }{@code >}
      *     {@link JAXBElement }{@code <}{@link MultiCurveType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link PointType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractSurfaceType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link LineStringType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link MultiSurfaceType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractCurveType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractGeometricAggregateType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link LinearRingType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link CurveType }{@code >}
      *     
      */
     public void set_Geometry(JAXBElement<? extends AbstractGeometryType> value) {
@@ -162,11 +162,14 @@ public class GeometryPropertyType
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final GeometryPropertyType copy = ((target == null)?((GeometryPropertyType) createCopy()):((GeometryPropertyType) target));
-        {
+        if (this.isSet_Geometry()) {
             JAXBElement<? extends AbstractGeometryType> source_Geometry;
             source_Geometry = this.get_Geometry();
+            @SuppressWarnings("unchecked")
             JAXBElement<? extends AbstractGeometryType> copy_Geometry = ((JAXBElement<? extends AbstractGeometryType> ) copyBuilder.copy(source_Geometry));
             copy.set_Geometry(copy_Geometry);
+        } else {
+            copy.geometry = null;
         }
         return copy;
     }

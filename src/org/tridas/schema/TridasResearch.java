@@ -171,17 +171,21 @@ public class TridasResearch
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasResearch copy = ((target == null)?((TridasResearch) createCopy()):((TridasResearch) target));
-        {
+        if (this.isSetIdentifier()) {
             TridasIdentifier sourceIdentifier;
             sourceIdentifier = this.getIdentifier();
             TridasIdentifier copyIdentifier = ((TridasIdentifier) copyBuilder.copy(sourceIdentifier));
             copy.setIdentifier(copyIdentifier);
+        } else {
+            copy.identifier = null;
         }
-        {
+        if (this.isSetDescription()) {
             String sourceDescription;
             sourceDescription = this.getDescription();
             String copyDescription = ((String) copyBuilder.copy(sourceDescription));
             copy.setDescription(copyDescription);
+        } else {
+            copy.description = null;
         }
         return copy;
     }

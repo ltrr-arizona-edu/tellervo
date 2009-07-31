@@ -362,47 +362,61 @@ public class ReferenceType
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final ReferenceType copy = ((target == null)?((ReferenceType) createCopy()):((ReferenceType) target));
-        {
+        if (this.isSetType()) {
             String sourceType;
             sourceType = this.getType();
             String copyType = ((String) copyBuilder.copy(sourceType));
             copy.setType(copyType);
+        } else {
+            copy.type = null;
         }
-        {
+        if (this.isSetHref()) {
             String sourceHref;
             sourceHref = this.getHref();
             String copyHref = ((String) copyBuilder.copy(sourceHref));
             copy.setHref(copyHref);
+        } else {
+            copy.href = null;
         }
-        {
+        if (this.isSetRole()) {
             String sourceRole;
             sourceRole = this.getRole();
             String copyRole = ((String) copyBuilder.copy(sourceRole));
             copy.setRole(copyRole);
+        } else {
+            copy.role = null;
         }
-        {
+        if (this.isSetArcrole()) {
             String sourceArcrole;
             sourceArcrole = this.getArcrole();
             String copyArcrole = ((String) copyBuilder.copy(sourceArcrole));
             copy.setArcrole(copyArcrole);
+        } else {
+            copy.arcrole = null;
         }
-        {
+        if (this.isSetTitle()) {
             String sourceTitle;
             sourceTitle = this.getTitle();
             String copyTitle = ((String) copyBuilder.copy(sourceTitle));
             copy.setTitle(copyTitle);
+        } else {
+            copy.title = null;
         }
-        {
+        if (this.isSetShow()) {
             String sourceShow;
             sourceShow = this.getShow();
             String copyShow = ((String) copyBuilder.copy(sourceShow));
             copy.setShow(copyShow);
+        } else {
+            copy.show = null;
         }
-        {
+        if (this.isSetActuate()) {
             String sourceActuate;
             sourceActuate = this.getActuate();
             String copyActuate = ((String) copyBuilder.copy(sourceActuate));
             copy.setActuate(copyActuate);
+        } else {
+            copy.actuate = null;
         }
         return copy;
     }

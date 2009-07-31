@@ -133,11 +133,13 @@ public class SeriesLinksWithPreferred
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final SeriesLinksWithPreferred copy = ((target == null)?((SeriesLinksWithPreferred) createCopy()):((SeriesLinksWithPreferred) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetPreferredSeries()) {
             SeriesLink sourcePreferredSeries;
             sourcePreferredSeries = this.getPreferredSeries();
             SeriesLink copyPreferredSeries = ((SeriesLink) copyBuilder.copy(sourcePreferredSeries));
             copy.setPreferredSeries(copyPreferredSeries);
+        } else {
+            copy.preferredSeries = null;
         }
         return copy;
     }

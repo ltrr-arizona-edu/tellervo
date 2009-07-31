@@ -292,35 +292,45 @@ public class TridasDimensions
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasDimensions copy = ((target == null)?((TridasDimensions) createCopy()):((TridasDimensions) target));
-        {
+        if (this.isSetUnit()) {
             TridasUnit sourceUnit;
             sourceUnit = this.getUnit();
             TridasUnit copyUnit = ((TridasUnit) copyBuilder.copy(sourceUnit));
             copy.setUnit(copyUnit);
+        } else {
+            copy.unit = null;
         }
-        {
+        if (this.isSetHeight()) {
             BigDecimal sourceHeight;
             sourceHeight = this.getHeight();
             BigDecimal copyHeight = ((BigDecimal) copyBuilder.copy(sourceHeight));
             copy.setHeight(copyHeight);
+        } else {
+            copy.height = null;
         }
-        {
+        if (this.isSetWidth()) {
             BigDecimal sourceWidth;
             sourceWidth = this.getWidth();
             BigDecimal copyWidth = ((BigDecimal) copyBuilder.copy(sourceWidth));
             copy.setWidth(copyWidth);
+        } else {
+            copy.width = null;
         }
-        {
+        if (this.isSetDepth()) {
             BigDecimal sourceDepth;
             sourceDepth = this.getDepth();
             BigDecimal copyDepth = ((BigDecimal) copyBuilder.copy(sourceDepth));
             copy.setDepth(copyDepth);
+        } else {
+            copy.depth = null;
         }
-        {
+        if (this.isSetDiameter()) {
             BigDecimal sourceDiameter;
             sourceDiameter = this.getDiameter();
             BigDecimal copyDiameter = ((BigDecimal) copyBuilder.copy(sourceDiameter));
             copy.setDiameter(copyDiameter);
+        } else {
+            copy.diameter = null;
         }
         return copy;
     }

@@ -86,8 +86,8 @@ public class WSIMessage
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
      * {@link Element }
+     * {@link String }
      * 
      * 
      */
@@ -139,8 +139,8 @@ public class WSIMessage
      * 
      * @param content
      *     allowed object is
-     *     {@link String }
      *     {@link Element }
+     *     {@link String }
      *     
      */
     public void setContent(List<Object> content) {
@@ -204,17 +204,22 @@ public class WSIMessage
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIMessage copy = ((target == null)?((WSIMessage) createCopy()):((WSIMessage) target));
-        {
+        if (this.isSetContent()) {
             List<Object> sourceContent;
             sourceContent = this.getContent();
+            @SuppressWarnings("unchecked")
             List<Object> copyContent = ((List<Object> ) copyBuilder.copy(sourceContent));
             copy.setContent(copyContent);
+        } else {
+            copy.unsetContent();
         }
-        {
+        if (this.isSetCode()) {
             Integer sourceCode;
             sourceCode = this.getCode();
             Integer copyCode = ((Integer) copyBuilder.copy(sourceCode));
             copy.setCode(copyCode);
+        } else {
+            copy.code = null;
         }
         return copy;
     }

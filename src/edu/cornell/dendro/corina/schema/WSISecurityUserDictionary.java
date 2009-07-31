@@ -154,11 +154,14 @@ public class WSISecurityUserDictionary implements Serializable, CopyTo, Copyable
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSISecurityUserDictionary copy = ((target == null)?((WSISecurityUserDictionary) createCopy()):((WSISecurityUserDictionary) target));
-        {
+        if (this.isSetUsers()) {
             List<SecurityUser> sourceUsers;
             sourceUsers = this.getUsers();
+            @SuppressWarnings("unchecked")
             List<SecurityUser> copyUsers = ((List<SecurityUser> ) copyBuilder.copy(sourceUsers));
             copy.setUsers(copyUsers);
+        } else {
+            copy.unsetUsers();
         }
         return copy;
     }

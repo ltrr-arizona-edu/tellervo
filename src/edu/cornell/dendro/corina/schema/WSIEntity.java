@@ -171,17 +171,21 @@ public class WSIEntity
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIEntity copy = ((target == null)?((WSIEntity) createCopy()):((WSIEntity) target));
-        {
+        if (this.isSetType()) {
             EntityType sourceType;
             sourceType = this.getType();
             EntityType copyType = ((EntityType) copyBuilder.copy(sourceType));
             copy.setType(copyType);
+        } else {
+            copy.type = null;
         }
-        {
+        if (this.isSetId()) {
             String sourceId;
             sourceId = this.getId();
             String copyId = ((String) copyBuilder.copy(sourceId));
             copy.setId(copyId);
+        } else {
+            copy.id = null;
         }
         return copy;
     }

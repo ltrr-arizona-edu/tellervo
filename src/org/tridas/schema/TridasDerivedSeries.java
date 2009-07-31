@@ -839,113 +839,151 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasDerivedSeries copy = ((target == null)?((TridasDerivedSeries) createCopy()):((TridasDerivedSeries) target));
-        {
+        if (this.isSetTitle()) {
             String sourceTitle;
             sourceTitle = this.getTitle();
             String copyTitle = ((String) copyBuilder.copy(sourceTitle));
             copy.setTitle(copyTitle);
+        } else {
+            copy.title = null;
         }
-        {
+        if (this.isSetIdentifier()) {
             TridasIdentifier sourceIdentifier;
             sourceIdentifier = this.getIdentifier();
             TridasIdentifier copyIdentifier = ((TridasIdentifier) copyBuilder.copy(sourceIdentifier));
             copy.setIdentifier(copyIdentifier);
+        } else {
+            copy.identifier = null;
         }
-        {
+        if (this.isSetCreatedTimestamp()) {
             DateTime sourceCreatedTimestamp;
             sourceCreatedTimestamp = this.getCreatedTimestamp();
             DateTime copyCreatedTimestamp = ((DateTime) copyBuilder.copy(sourceCreatedTimestamp));
             copy.setCreatedTimestamp(copyCreatedTimestamp);
+        } else {
+            copy.createdTimestamp = null;
         }
-        {
+        if (this.isSetLastModifiedTimestamp()) {
             DateTime sourceLastModifiedTimestamp;
             sourceLastModifiedTimestamp = this.getLastModifiedTimestamp();
             DateTime copyLastModifiedTimestamp = ((DateTime) copyBuilder.copy(sourceLastModifiedTimestamp));
             copy.setLastModifiedTimestamp(copyLastModifiedTimestamp);
+        } else {
+            copy.lastModifiedTimestamp = null;
         }
-        {
+        if (this.isSetComments()) {
             String sourceComments;
             sourceComments = this.getComments();
             String copyComments = ((String) copyBuilder.copy(sourceComments));
             copy.setComments(copyComments);
+        } else {
+            copy.comments = null;
         }
-        {
+        if (this.isSetDerivationDate()) {
             Date sourceDerivationDate;
             sourceDerivationDate = this.getDerivationDate();
             Date copyDerivationDate = ((Date) copyBuilder.copy(sourceDerivationDate));
             copy.setDerivationDate(copyDerivationDate);
+        } else {
+            copy.derivationDate = null;
         }
-        {
+        if (this.isSetType()) {
             ControlledVoc sourceType;
             sourceType = this.getType();
             ControlledVoc copyType = ((ControlledVoc) copyBuilder.copy(sourceType));
             copy.setType(copyType);
+        } else {
+            copy.type = null;
         }
-        {
+        if (this.isSetLinkSeries()) {
             SeriesLinks sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
             SeriesLinks copyLinkSeries = ((SeriesLinks) copyBuilder.copy(sourceLinkSeries));
             copy.setLinkSeries(copyLinkSeries);
+        } else {
+            copy.linkSeries = null;
         }
-        {
+        if (this.isSetObjective()) {
             String sourceObjective;
             sourceObjective = this.getObjective();
             String copyObjective = ((String) copyBuilder.copy(sourceObjective));
             copy.setObjective(copyObjective);
+        } else {
+            copy.objective = null;
         }
-        {
+        if (this.isSetStandardizingMethod()) {
             String sourceStandardizingMethod;
             sourceStandardizingMethod = this.getStandardizingMethod();
             String copyStandardizingMethod = ((String) copyBuilder.copy(sourceStandardizingMethod));
             copy.setStandardizingMethod(copyStandardizingMethod);
+        } else {
+            copy.standardizingMethod = null;
         }
-        {
+        if (this.isSetAuthor()) {
             String sourceAuthor;
             sourceAuthor = this.getAuthor();
             String copyAuthor = ((String) copyBuilder.copy(sourceAuthor));
             copy.setAuthor(copyAuthor);
+        } else {
+            copy.author = null;
         }
-        {
+        if (this.isSetVersion()) {
             String sourceVersion;
             sourceVersion = this.getVersion();
             String copyVersion = ((String) copyBuilder.copy(sourceVersion));
             copy.setVersion(copyVersion);
+        } else {
+            copy.version = null;
         }
-        {
+        if (this.isSetInterpretationUnsolved()) {
             TridasInterpretationUnsolved sourceInterpretationUnsolved;
             sourceInterpretationUnsolved = this.getInterpretationUnsolved();
             TridasInterpretationUnsolved copyInterpretationUnsolved = ((TridasInterpretationUnsolved) copyBuilder.copy(sourceInterpretationUnsolved));
             copy.setInterpretationUnsolved(copyInterpretationUnsolved);
+        } else {
+            copy.interpretationUnsolved = null;
         }
-        {
+        if (this.isSetInterpretation()) {
             TridasInterpretation sourceInterpretation;
             sourceInterpretation = this.getInterpretation();
             TridasInterpretation copyInterpretation = ((TridasInterpretation) copyBuilder.copy(sourceInterpretation));
             copy.setInterpretation(copyInterpretation);
+        } else {
+            copy.interpretation = null;
         }
-        {
+        if (this.isSetLocation()) {
             TridasLocation sourceLocation;
             sourceLocation = this.getLocation();
             TridasLocation copyLocation = ((TridasLocation) copyBuilder.copy(sourceLocation));
             copy.setLocation(copyLocation);
+        } else {
+            copy.location = null;
         }
-        {
+        if (this.isSetGenericFields()) {
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
+            @SuppressWarnings("unchecked")
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
             copy.setGenericFields(copyGenericFields);
+        } else {
+            copy.unsetGenericFields();
         }
-        {
+        if (this.isSetValues()) {
             List<TridasValues> sourceValues;
             sourceValues = this.getValues();
+            @SuppressWarnings("unchecked")
             List<TridasValues> copyValues = ((List<TridasValues> ) copyBuilder.copy(sourceValues));
             copy.setValues(copyValues);
+        } else {
+            copy.unsetValues();
         }
-        {
+        if (this.isSetId()) {
             String sourceId;
             sourceId = this.getId();
             String copyId = ((String) copyBuilder.copy(sourceId));
             copy.setId(copyId);
+        } else {
+            copy.id = null;
         }
         return copy;
     }

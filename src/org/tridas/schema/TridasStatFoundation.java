@@ -249,29 +249,37 @@ public class TridasStatFoundation
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasStatFoundation copy = ((target == null)?((TridasStatFoundation) createCopy()):((TridasStatFoundation) target));
-        {
+        if (this.isSetStatValue()) {
             BigDecimal sourceStatValue;
             sourceStatValue = this.getStatValue();
             BigDecimal copyStatValue = ((BigDecimal) copyBuilder.copy(sourceStatValue));
             copy.setStatValue(copyStatValue);
+        } else {
+            copy.statValue = null;
         }
-        {
+        if (this.isSetType()) {
             ControlledVoc sourceType;
             sourceType = this.getType();
             ControlledVoc copyType = ((ControlledVoc) copyBuilder.copy(sourceType));
             copy.setType(copyType);
+        } else {
+            copy.type = null;
         }
-        {
+        if (this.isSetSignificanceLevel()) {
             BigDecimal sourceSignificanceLevel;
             sourceSignificanceLevel = this.getSignificanceLevel();
             BigDecimal copySignificanceLevel = ((BigDecimal) copyBuilder.copy(sourceSignificanceLevel));
             copy.setSignificanceLevel(copySignificanceLevel);
+        } else {
+            copy.significanceLevel = null;
         }
-        {
+        if (this.isSetUsedSoftware()) {
             String sourceUsedSoftware;
             sourceUsedSoftware = this.getUsedSoftware();
             String copyUsedSoftware = ((String) copyBuilder.copy(sourceUsedSoftware));
             copy.setUsedSoftware(copyUsedSoftware);
+        } else {
+            copy.usedSoftware = null;
         }
         return copy;
     }

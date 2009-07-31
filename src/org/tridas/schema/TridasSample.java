@@ -552,65 +552,88 @@ public class TridasSample
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasSample copy = ((target == null)?((TridasSample) createCopy()):((TridasSample) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetType()) {
             ControlledVoc sourceType;
             sourceType = this.getType();
             ControlledVoc copyType = ((ControlledVoc) copyBuilder.copy(sourceType));
             copy.setType(copyType);
+        } else {
+            copy.type = null;
         }
-        {
+        if (this.isSetDescription()) {
             String sourceDescription;
             sourceDescription = this.getDescription();
             String copyDescription = ((String) copyBuilder.copy(sourceDescription));
             copy.setDescription(copyDescription);
+        } else {
+            copy.description = null;
         }
-        {
+        if (this.isSetFiles()) {
             List<TridasFile> sourceFiles;
             sourceFiles = this.getFiles();
+            @SuppressWarnings("unchecked")
             List<TridasFile> copyFiles = ((List<TridasFile> ) copyBuilder.copy(sourceFiles));
             copy.setFiles(copyFiles);
+        } else {
+            copy.unsetFiles();
         }
-        {
+        if (this.isSetSamplingDate()) {
             Date sourceSamplingDate;
             sourceSamplingDate = this.getSamplingDate();
             Date copySamplingDate = ((Date) copyBuilder.copy(sourceSamplingDate));
             copy.setSamplingDate(copySamplingDate);
+        } else {
+            copy.samplingDate = null;
         }
-        {
+        if (this.isSetPosition()) {
             String sourcePosition;
             sourcePosition = this.getPosition();
             String copyPosition = ((String) copyBuilder.copy(sourcePosition));
             copy.setPosition(copyPosition);
+        } else {
+            copy.position = null;
         }
-        {
+        if (this.isSetState()) {
             String sourceState;
             sourceState = this.getState();
             String copyState = ((String) copyBuilder.copy(sourceState));
             copy.setState(copyState);
+        } else {
+            copy.state = null;
         }
-        {
+        if (this.isSetKnots()) {
             Boolean sourceKnots;
             sourceKnots = this.isKnots();
             Boolean copyKnots = ((Boolean) copyBuilder.copy(sourceKnots));
             copy.setKnots(copyKnots);
+        } else {
+            copy.knots = null;
         }
-        {
+        if (this.isSetGenericFields()) {
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
+            @SuppressWarnings("unchecked")
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
             copy.setGenericFields(copyGenericFields);
+        } else {
+            copy.unsetGenericFields();
         }
-        {
+        if (this.isSetRadiusPlaceholder()) {
             TridasRadiusPlaceholder sourceRadiusPlaceholder;
             sourceRadiusPlaceholder = this.getRadiusPlaceholder();
             TridasRadiusPlaceholder copyRadiusPlaceholder = ((TridasRadiusPlaceholder) copyBuilder.copy(sourceRadiusPlaceholder));
             copy.setRadiusPlaceholder(copyRadiusPlaceholder);
+        } else {
+            copy.radiusPlaceholder = null;
         }
-        {
+        if (this.isSetRadiuses()) {
             List<TridasRadius> sourceRadiuses;
             sourceRadiuses = this.getRadiuses();
+            @SuppressWarnings("unchecked")
             List<TridasRadius> copyRadiuses = ((List<TridasRadius> ) copyBuilder.copy(sourceRadiuses));
             copy.setRadiuses(copyRadiuses);
+        } else {
+            copy.unsetRadiuses();
         }
         return copy;
     }

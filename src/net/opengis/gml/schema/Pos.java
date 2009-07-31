@@ -167,11 +167,14 @@ public class Pos
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final Pos copy = ((target == null)?((Pos) createCopy()):((Pos) target));
-        {
+        if (this.isSetValues()) {
             List<Double> sourceValues;
             sourceValues = this.getValues();
+            @SuppressWarnings("unchecked")
             List<Double> copyValues = ((List<Double> ) copyBuilder.copy(sourceValues));
             copy.setValues(copyValues);
+        } else {
+            copy.unsetValues();
         }
         return copy;
     }

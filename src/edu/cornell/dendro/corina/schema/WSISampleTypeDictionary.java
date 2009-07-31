@@ -155,11 +155,14 @@ public class WSISampleTypeDictionary implements Serializable, CopyTo, Copyable, 
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSISampleTypeDictionary copy = ((target == null)?((WSISampleTypeDictionary) createCopy()):((WSISampleTypeDictionary) target));
-        {
+        if (this.isSetSampleTypes()) {
             List<ControlledVoc> sourceSampleTypes;
             sourceSampleTypes = this.getSampleTypes();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copySampleTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceSampleTypes));
             copy.setSampleTypes(copySampleTypes);
+        } else {
+            copy.unsetSampleTypes();
         }
         return copy;
     }

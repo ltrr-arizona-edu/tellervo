@@ -209,23 +209,29 @@ public class Year
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final Year copy = ((target == null)?((Year) createCopy()):((Year) target));
-        {
+        if (this.isSetValue()) {
             BigInteger sourceValue;
             sourceValue = this.getValue();
             BigInteger copyValue = ((BigInteger) copyBuilder.copy(sourceValue));
             copy.setValue(copyValue);
+        } else {
+            copy.value = null;
         }
-        {
+        if (this.isSetCertainty()) {
             Certainty sourceCertainty;
             sourceCertainty = this.getCertainty();
             Certainty copyCertainty = ((Certainty) copyBuilder.copy(sourceCertainty));
             copy.setCertainty(copyCertainty);
+        } else {
+            copy.certainty = null;
         }
-        {
+        if (this.isSetSuffix()) {
             DatingSuffix sourceSuffix;
             sourceSuffix = this.getSuffix();
             DatingSuffix copySuffix = ((DatingSuffix) copyBuilder.copy(sourceSuffix));
             copy.setSuffix(copySuffix);
+        } else {
+            copy.suffix = null;
         }
         return copy;
     }

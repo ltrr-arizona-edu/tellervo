@@ -290,35 +290,45 @@ public class TridasSapwood
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasSapwood copy = ((target == null)?((TridasSapwood) createCopy()):((TridasSapwood) target));
-        {
+        if (this.isSetNrOfSapwoodRings()) {
             Integer sourceNrOfSapwoodRings;
             sourceNrOfSapwoodRings = this.getNrOfSapwoodRings();
             Integer copyNrOfSapwoodRings = ((Integer) copyBuilder.copy(sourceNrOfSapwoodRings));
             copy.setNrOfSapwoodRings(copyNrOfSapwoodRings);
+        } else {
+            copy.nrOfSapwoodRings = null;
         }
-        {
+        if (this.isSetLastRingUnderBark()) {
             TridasLastRingUnderBark sourceLastRingUnderBark;
             sourceLastRingUnderBark = this.getLastRingUnderBark();
             TridasLastRingUnderBark copyLastRingUnderBark = ((TridasLastRingUnderBark) copyBuilder.copy(sourceLastRingUnderBark));
             copy.setLastRingUnderBark(copyLastRingUnderBark);
+        } else {
+            copy.lastRingUnderBark = null;
         }
-        {
+        if (this.isSetMissingSapwoodRingsToBark()) {
             String sourceMissingSapwoodRingsToBark;
             sourceMissingSapwoodRingsToBark = this.getMissingSapwoodRingsToBark();
             String copyMissingSapwoodRingsToBark = ((String) copyBuilder.copy(sourceMissingSapwoodRingsToBark));
             copy.setMissingSapwoodRingsToBark(copyMissingSapwoodRingsToBark);
+        } else {
+            copy.missingSapwoodRingsToBark = null;
         }
-        {
+        if (this.isSetMissingSapwoodRingsToBarkFoundation()) {
             String sourceMissingSapwoodRingsToBarkFoundation;
             sourceMissingSapwoodRingsToBarkFoundation = this.getMissingSapwoodRingsToBarkFoundation();
             String copyMissingSapwoodRingsToBarkFoundation = ((String) copyBuilder.copy(sourceMissingSapwoodRingsToBarkFoundation));
             copy.setMissingSapwoodRingsToBarkFoundation(copyMissingSapwoodRingsToBarkFoundation);
+        } else {
+            copy.missingSapwoodRingsToBarkFoundation = null;
         }
-        {
+        if (this.isSetPresence()) {
             ComplexPresenceAbsence sourcePresence;
             sourcePresence = this.getPresence();
             ComplexPresenceAbsence copyPresence = ((ComplexPresenceAbsence) copyBuilder.copy(sourcePresence));
             copy.setPresence(copyPresence);
+        } else {
+            copy.presence = null;
         }
         return copy;
     }

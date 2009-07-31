@@ -173,17 +173,21 @@ public class DateTime
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final DateTime copy = ((target == null)?((DateTime) createCopy()):((DateTime) target));
-        {
+        if (this.isSetValue()) {
             XMLGregorianCalendar sourceValue;
             sourceValue = this.getValue();
             XMLGregorianCalendar copyValue = ((XMLGregorianCalendar) copyBuilder.copy(sourceValue));
             copy.setValue(copyValue);
+        } else {
+            copy.value = null;
         }
-        {
+        if (this.isSetCertainty()) {
             Certainty sourceCertainty;
             sourceCertainty = this.getCertainty();
             Certainty copyCertainty = ((Certainty) copyBuilder.copy(sourceCertainty));
             copy.setCertainty(copyCertainty);
+        } else {
+            copy.certainty = null;
         }
         return copy;
     }

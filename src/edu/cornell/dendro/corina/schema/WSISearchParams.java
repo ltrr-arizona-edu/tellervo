@@ -363,41 +363,54 @@ public class WSISearchParams
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSISearchParams copy = ((target == null)?((WSISearchParams) createCopy()):((WSISearchParams) target));
-        {
+        if (this.isSetAll()) {
             WSISearchParams.All sourceAll;
             sourceAll = this.getAll();
             WSISearchParams.All copyAll = ((WSISearchParams.All) copyBuilder.copy(sourceAll));
             copy.setAll(copyAll);
+        } else {
+            copy.all = null;
         }
-        {
+        if (this.isSetParams()) {
             List<WSIParam> sourceParams;
             sourceParams = this.getParams();
+            @SuppressWarnings("unchecked")
             List<WSIParam> copyParams = ((List<WSIParam> ) copyBuilder.copy(sourceParams));
             copy.setParams(copyParams);
+        } else {
+            copy.unsetParams();
         }
-        {
+        if (this.isSetReturnObject()) {
             SearchReturnObject sourceReturnObject;
             sourceReturnObject = this.getReturnObject();
             SearchReturnObject copyReturnObject = ((SearchReturnObject) copyBuilder.copy(sourceReturnObject));
             copy.setReturnObject(copyReturnObject);
+        } else {
+            copy.returnObject = null;
         }
-        {
+        if (this.isSetLimit()) {
             Integer sourceLimit;
             sourceLimit = this.getLimit();
             Integer copyLimit = ((Integer) copyBuilder.copy(sourceLimit));
             copy.setLimit(copyLimit);
+        } else {
+            copy.limit = null;
         }
-        {
+        if (this.isSetSkip()) {
             Integer sourceSkip;
             sourceSkip = this.getSkip();
             Integer copySkip = ((Integer) copyBuilder.copy(sourceSkip));
             copy.setSkip(copySkip);
+        } else {
+            copy.skip = null;
         }
-        {
+        if (this.isSetIncludeChildren()) {
             Boolean sourceIncludeChildren;
             sourceIncludeChildren = this.isIncludeChildren();
             Boolean copyIncludeChildren = ((Boolean) copyBuilder.copy(sourceIncludeChildren));
             copy.setIncludeChildren(copyIncludeChildren);
+        } else {
+            copy.unsetIncludeChildren();
         }
         return copy;
     }

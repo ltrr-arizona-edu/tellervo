@@ -247,23 +247,30 @@ public class PolygonPatchType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final PolygonPatchType copy = ((target == null)?((PolygonPatchType) createCopy()):((PolygonPatchType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetExterior()) {
             AbstractRingPropertyType sourceExterior;
             sourceExterior = this.getExterior();
             AbstractRingPropertyType copyExterior = ((AbstractRingPropertyType) copyBuilder.copy(sourceExterior));
             copy.setExterior(copyExterior);
+        } else {
+            copy.exterior = null;
         }
-        {
+        if (this.isSetInteriors()) {
             List<AbstractRingPropertyType> sourceInteriors;
             sourceInteriors = this.getInteriors();
+            @SuppressWarnings("unchecked")
             List<AbstractRingPropertyType> copyInteriors = ((List<AbstractRingPropertyType> ) copyBuilder.copy(sourceInteriors));
             copy.setInteriors(copyInteriors);
+        } else {
+            copy.unsetInteriors();
         }
-        {
+        if (this.isSetInterpolation()) {
             SurfaceInterpolationType sourceInterpolation;
             sourceInterpolation = this.getInterpolation();
             SurfaceInterpolationType copyInterpolation = ((SurfaceInterpolationType) copyBuilder.copy(sourceInterpolation));
             copy.setInterpolation(copyInterpolation);
+        } else {
+            copy.interpolation = null;
         }
         return copy;
     }

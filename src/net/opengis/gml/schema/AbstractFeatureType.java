@@ -144,11 +144,13 @@ public abstract class AbstractFeatureType
         }
         final AbstractFeatureType copy = ((AbstractFeatureType) target);
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetBoundedBy()) {
             BoundedBy sourceBoundedBy;
             sourceBoundedBy = this.getBoundedBy();
             BoundedBy copyBoundedBy = ((BoundedBy) copyBuilder.copy(sourceBoundedBy));
             copy.setBoundedBy(copyBoundedBy);
+        } else {
+            copy.boundedBy = null;
         }
         return copy;
     }

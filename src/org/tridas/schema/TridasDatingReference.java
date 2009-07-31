@@ -134,11 +134,13 @@ public class TridasDatingReference
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasDatingReference copy = ((target == null)?((TridasDatingReference) createCopy()):((TridasDatingReference) target));
-        {
+        if (this.isSetLinkSeries()) {
             SeriesLink sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
             SeriesLink copyLinkSeries = ((SeriesLink) copyBuilder.copy(sourceLinkSeries));
             copy.setLinkSeries(copyLinkSeries);
+        } else {
+            copy.linkSeries = null;
         }
         return copy;
     }

@@ -155,11 +155,14 @@ public class TridasTridas
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasTridas copy = ((target == null)?((TridasTridas) createCopy()):((TridasTridas) target));
-        {
+        if (this.isSetProjects()) {
             List<TridasProject> sourceProjects;
             sourceProjects = this.getProjects();
+            @SuppressWarnings("unchecked")
             List<TridasProject> copyProjects = ((List<TridasProject> ) copyBuilder.copy(sourceProjects));
             copy.setProjects(copyProjects);
+        } else {
+            copy.unsetProjects();
         }
         return copy;
     }

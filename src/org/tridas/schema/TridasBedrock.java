@@ -130,11 +130,13 @@ public class TridasBedrock
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasBedrock copy = ((target == null)?((TridasBedrock) createCopy()):((TridasBedrock) target));
-        {
+        if (this.isSetDescription()) {
             String sourceDescription;
             sourceDescription = this.getDescription();
             String copyDescription = ((String) copyBuilder.copy(sourceDescription));
             copy.setDescription(copyDescription);
+        } else {
+            copy.description = null;
         }
         return copy;
     }

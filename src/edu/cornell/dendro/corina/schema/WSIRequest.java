@@ -830,89 +830,125 @@ public class WSIRequest
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIRequest copy = ((target == null)?((WSIRequest) createCopy()):((WSIRequest) target));
-        {
+        if (this.isSetDictionaries()) {
             WSIRequest.Dictionaries sourceDictionaries;
             sourceDictionaries = this.getDictionaries();
             WSIRequest.Dictionaries copyDictionaries = ((WSIRequest.Dictionaries) copyBuilder.copy(sourceDictionaries));
             copy.setDictionaries(copyDictionaries);
+        } else {
+            copy.dictionaries = null;
         }
-        {
+        if (this.isSetProjects()) {
             List<TridasProject> sourceProjects;
             sourceProjects = this.getProjects();
+            @SuppressWarnings("unchecked")
             List<TridasProject> copyProjects = ((List<TridasProject> ) copyBuilder.copy(sourceProjects));
             copy.setProjects(copyProjects);
+        } else {
+            copy.unsetProjects();
         }
-        {
+        if (this.isSetObjects()) {
             List<TridasObject> sourceObjects;
             sourceObjects = this.getObjects();
+            @SuppressWarnings("unchecked")
             List<TridasObject> copyObjects = ((List<TridasObject> ) copyBuilder.copy(sourceObjects));
             copy.setObjects(copyObjects);
+        } else {
+            copy.unsetObjects();
         }
-        {
+        if (this.isSetElements()) {
             List<TridasElement> sourceElements;
             sourceElements = this.getElements();
+            @SuppressWarnings("unchecked")
             List<TridasElement> copyElements = ((List<TridasElement> ) copyBuilder.copy(sourceElements));
             copy.setElements(copyElements);
+        } else {
+            copy.unsetElements();
         }
-        {
+        if (this.isSetSamples()) {
             List<TridasSample> sourceSamples;
             sourceSamples = this.getSamples();
+            @SuppressWarnings("unchecked")
             List<TridasSample> copySamples = ((List<TridasSample> ) copyBuilder.copy(sourceSamples));
             copy.setSamples(copySamples);
+        } else {
+            copy.unsetSamples();
         }
-        {
+        if (this.isSetRadiuses()) {
             List<TridasRadius> sourceRadiuses;
             sourceRadiuses = this.getRadiuses();
+            @SuppressWarnings("unchecked")
             List<TridasRadius> copyRadiuses = ((List<TridasRadius> ) copyBuilder.copy(sourceRadiuses));
             copy.setRadiuses(copyRadiuses);
+        } else {
+            copy.unsetRadiuses();
         }
-        {
+        if (this.isSetMeasurementSeries()) {
             List<TridasMeasurementSeries> sourceMeasurementSeries;
             sourceMeasurementSeries = this.getMeasurementSeries();
+            @SuppressWarnings("unchecked")
             List<TridasMeasurementSeries> copyMeasurementSeries = ((List<TridasMeasurementSeries> ) copyBuilder.copy(sourceMeasurementSeries));
             copy.setMeasurementSeries(copyMeasurementSeries);
+        } else {
+            copy.unsetMeasurementSeries();
         }
-        {
+        if (this.isSetDerivedSeries()) {
             List<TridasDerivedSeries> sourceDerivedSeries;
             sourceDerivedSeries = this.getDerivedSeries();
+            @SuppressWarnings("unchecked")
             List<TridasDerivedSeries> copyDerivedSeries = ((List<TridasDerivedSeries> ) copyBuilder.copy(sourceDerivedSeries));
             copy.setDerivedSeries(copyDerivedSeries);
+        } else {
+            copy.unsetDerivedSeries();
         }
-        {
+        if (this.isSetEntities()) {
             List<WSIEntity> sourceEntities;
             sourceEntities = this.getEntities();
+            @SuppressWarnings("unchecked")
             List<WSIEntity> copyEntities = ((List<WSIEntity> ) copyBuilder.copy(sourceEntities));
             copy.setEntities(copyEntities);
+        } else {
+            copy.unsetEntities();
         }
-        {
+        if (this.isSetAuthenticate()) {
             WSIAuthenticate sourceAuthenticate;
             sourceAuthenticate = this.getAuthenticate();
             WSIAuthenticate copyAuthenticate = ((WSIAuthenticate) copyBuilder.copy(sourceAuthenticate));
             copy.setAuthenticate(copyAuthenticate);
+        } else {
+            copy.authenticate = null;
         }
-        {
+        if (this.isSetSearchParams()) {
             WSISearchParams sourceSearchParams;
             sourceSearchParams = this.getSearchParams();
             WSISearchParams copySearchParams = ((WSISearchParams) copyBuilder.copy(sourceSearchParams));
             copy.setSearchParams(copySearchParams);
+        } else {
+            copy.searchParams = null;
         }
-        {
+        if (this.isSetType()) {
             CorinaRequestType sourceType;
             sourceType = this.getType();
             CorinaRequestType copyType = ((CorinaRequestType) copyBuilder.copy(sourceType));
             copy.setType(copyType);
+        } else {
+            copy.type = null;
         }
-        {
+        if (this.isSetFormat()) {
             CorinaRequestFormat sourceFormat;
             sourceFormat = this.getFormat();
             CorinaRequestFormat copyFormat = ((CorinaRequestFormat) copyBuilder.copy(sourceFormat));
             copy.setFormat(copyFormat);
+        } else {
+            copy.format = null;
         }
-        {
+        if (this.isSetParentEntityID()) {
             String sourceParentEntityID;
             sourceParentEntityID = this.getParentEntityID();
             String copyParentEntityID = ((String) copyBuilder.copy(sourceParentEntityID));
             copy.setParentEntityID(copyParentEntityID);
+        } else {
+            copy.parentEntityID = null;
         }
         return copy;
     }

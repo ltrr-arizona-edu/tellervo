@@ -155,11 +155,14 @@ public class WSIMeasurementVariableDictionary implements Serializable, CopyTo, C
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIMeasurementVariableDictionary copy = ((target == null)?((WSIMeasurementVariableDictionary) createCopy()):((WSIMeasurementVariableDictionary) target));
-        {
+        if (this.isSetMeasurementVariables()) {
             List<ControlledVoc> sourceMeasurementVariables;
             sourceMeasurementVariables = this.getMeasurementVariables();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyMeasurementVariables = ((List<ControlledVoc> ) copyBuilder.copy(sourceMeasurementVariables));
             copy.setMeasurementVariables(copyMeasurementVariables);
+        } else {
+            copy.unsetMeasurementVariables();
         }
         return copy;
     }

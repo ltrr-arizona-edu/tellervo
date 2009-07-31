@@ -157,11 +157,14 @@ public class SeriesLinks
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final SeriesLinks copy = ((target == null)?((SeriesLinks) createCopy()):((SeriesLinks) target));
-        {
+        if (this.isSetSeries()) {
             List<SeriesLink> sourceSeries;
             sourceSeries = this.getSeries();
+            @SuppressWarnings("unchecked")
             List<SeriesLink> copySeries = ((List<SeriesLink> ) copyBuilder.copy(sourceSeries));
             copy.setSeries(copySeries);
+        } else {
+            copy.unsetSeries();
         }
         return copy;
     }

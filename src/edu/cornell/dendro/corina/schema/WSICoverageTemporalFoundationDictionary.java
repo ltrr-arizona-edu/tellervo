@@ -155,11 +155,14 @@ public class WSICoverageTemporalFoundationDictionary implements Serializable, Co
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSICoverageTemporalFoundationDictionary copy = ((target == null)?((WSICoverageTemporalFoundationDictionary) createCopy()):((WSICoverageTemporalFoundationDictionary) target));
-        {
+        if (this.isSetCoverageTemporalFoundations()) {
             List<ControlledVoc> sourceCoverageTemporalFoundations;
             sourceCoverageTemporalFoundations = this.getCoverageTemporalFoundations();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyCoverageTemporalFoundations = ((List<ControlledVoc> ) copyBuilder.copy(sourceCoverageTemporalFoundations));
             copy.setCoverageTemporalFoundations(copyCoverageTemporalFoundations);
+        } else {
+            copy.unsetCoverageTemporalFoundations();
         }
         return copy;
     }

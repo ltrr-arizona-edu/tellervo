@@ -155,11 +155,14 @@ public class WSIElementShapeDictionary implements Serializable, CopyTo, Copyable
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIElementShapeDictionary copy = ((target == null)?((WSIElementShapeDictionary) createCopy()):((WSIElementShapeDictionary) target));
-        {
+        if (this.isSetElementShapes()) {
             List<ControlledVoc> sourceElementShapes;
             sourceElementShapes = this.getElementShapes();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyElementShapes = ((List<ControlledVoc> ) copyBuilder.copy(sourceElementShapes));
             copy.setElementShapes(copyElementShapes);
+        } else {
+            copy.unsetElementShapes();
         }
         return copy;
     }

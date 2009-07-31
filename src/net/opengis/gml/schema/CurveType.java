@@ -149,11 +149,13 @@ public class CurveType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final CurveType copy = ((target == null)?((CurveType) createCopy()):((CurveType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetSegments()) {
             Segments sourceSegments;
             sourceSegments = this.getSegments();
             Segments copySegments = ((Segments) copyBuilder.copy(sourceSegments));
             copy.setSegments(copySegments);
+        } else {
+            copy.segments = null;
         }
         return copy;
     }

@@ -158,11 +158,13 @@ public class SurfaceType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final SurfaceType copy = ((target == null)?((SurfaceType) createCopy()):((SurfaceType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetPatches()) {
             Patches sourcePatches;
             sourcePatches = this.getPatches();
             Patches copyPatches = ((Patches) copyBuilder.copy(sourcePatches));
             copy.setPatches(copyPatches);
+        } else {
+            copy.patches = null;
         }
         return copy;
     }

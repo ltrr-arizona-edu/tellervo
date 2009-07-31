@@ -203,17 +203,22 @@ public class PolygonType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final PolygonType copy = ((target == null)?((PolygonType) createCopy()):((PolygonType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetExterior()) {
             AbstractRingPropertyType sourceExterior;
             sourceExterior = this.getExterior();
             AbstractRingPropertyType copyExterior = ((AbstractRingPropertyType) copyBuilder.copy(sourceExterior));
             copy.setExterior(copyExterior);
+        } else {
+            copy.exterior = null;
         }
-        {
+        if (this.isSetInteriors()) {
             List<AbstractRingPropertyType> sourceInteriors;
             sourceInteriors = this.getInteriors();
+            @SuppressWarnings("unchecked")
             List<AbstractRingPropertyType> copyInteriors = ((List<AbstractRingPropertyType> ) copyBuilder.copy(sourceInteriors));
             copy.setInteriors(copyInteriors);
+        } else {
+            copy.unsetInteriors();
         }
         return copy;
     }

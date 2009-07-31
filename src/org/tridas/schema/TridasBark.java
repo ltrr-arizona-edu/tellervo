@@ -128,11 +128,13 @@ public class TridasBark
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasBark copy = ((target == null)?((TridasBark) createCopy()):((TridasBark) target));
-        {
+        if (this.isSetPresence()) {
             PresenceAbsence sourcePresence;
             sourcePresence = this.getPresence();
             PresenceAbsence copyPresence = ((PresenceAbsence) copyBuilder.copy(sourcePresence));
             copy.setPresence(copyPresence);
+        } else {
+            copy.presence = null;
         }
         return copy;
     }

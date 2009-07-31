@@ -246,29 +246,37 @@ public class TridasLocation
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasLocation copy = ((target == null)?((TridasLocation) createCopy()):((TridasLocation) target));
-        {
+        if (this.isSetLocationGeometry()) {
             TridasLocationGeometry sourceLocationGeometry;
             sourceLocationGeometry = this.getLocationGeometry();
             TridasLocationGeometry copyLocationGeometry = ((TridasLocationGeometry) copyBuilder.copy(sourceLocationGeometry));
             copy.setLocationGeometry(copyLocationGeometry);
+        } else {
+            copy.locationGeometry = null;
         }
-        {
+        if (this.isSetLocationType()) {
             NormalTridasLocationType sourceLocationType;
             sourceLocationType = this.getLocationType();
             NormalTridasLocationType copyLocationType = ((NormalTridasLocationType) copyBuilder.copy(sourceLocationType));
             copy.setLocationType(copyLocationType);
+        } else {
+            copy.locationType = null;
         }
-        {
+        if (this.isSetLocationPrecision()) {
             String sourceLocationPrecision;
             sourceLocationPrecision = this.getLocationPrecision();
             String copyLocationPrecision = ((String) copyBuilder.copy(sourceLocationPrecision));
             copy.setLocationPrecision(copyLocationPrecision);
+        } else {
+            copy.locationPrecision = null;
         }
-        {
+        if (this.isSetLocationComment()) {
             String sourceLocationComment;
             sourceLocationComment = this.getLocationComment();
             String copyLocationComment = ((String) copyBuilder.copy(sourceLocationComment));
             copy.setLocationComment(copyLocationComment);
+        } else {
+            copy.locationComment = null;
         }
         return copy;
     }

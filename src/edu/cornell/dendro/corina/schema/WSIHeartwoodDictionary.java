@@ -155,11 +155,14 @@ public class WSIHeartwoodDictionary implements Serializable, CopyTo, Copyable, E
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIHeartwoodDictionary copy = ((target == null)?((WSIHeartwoodDictionary) createCopy()):((WSIHeartwoodDictionary) target));
-        {
+        if (this.isSetHeartwoods()) {
             List<ControlledVoc> sourceHeartwoods;
             sourceHeartwoods = this.getHeartwoods();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyHeartwoods = ((List<ControlledVoc> ) copyBuilder.copy(sourceHeartwoods));
             copy.setHeartwoods(copyHeartwoods);
+        } else {
+            copy.unsetHeartwoods();
         }
         return copy;
     }

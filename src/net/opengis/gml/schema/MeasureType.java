@@ -166,17 +166,20 @@ public class MeasureType
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final MeasureType copy = ((target == null)?((MeasureType) createCopy()):((MeasureType) target));
-        {
+        if (this.isSetValue()) {
             double sourceValue;
             sourceValue = this.getValue();
-            double copyValue = ((double) copyBuilder.copy(sourceValue));
+            double copyValue = copyBuilder.copy(sourceValue);
             copy.setValue(copyValue);
+        } else {
         }
-        {
+        if (this.isSetUom()) {
             String sourceUom;
             sourceUom = this.getUom();
             String copyUom = ((String) copyBuilder.copy(sourceUom));
             copy.setUom(copyUom);
+        } else {
+            copy.uom = null;
         }
         return copy;
     }

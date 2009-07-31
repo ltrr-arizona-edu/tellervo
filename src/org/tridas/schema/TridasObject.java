@@ -627,71 +627,97 @@ public class TridasObject
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasObject copy = ((target == null)?((TridasObject) createCopy()):((TridasObject) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetType()) {
             ControlledVoc sourceType;
             sourceType = this.getType();
             ControlledVoc copyType = ((ControlledVoc) copyBuilder.copy(sourceType));
             copy.setType(copyType);
+        } else {
+            copy.type = null;
         }
-        {
+        if (this.isSetDescription()) {
             String sourceDescription;
             sourceDescription = this.getDescription();
             String copyDescription = ((String) copyBuilder.copy(sourceDescription));
             copy.setDescription(copyDescription);
+        } else {
+            copy.description = null;
         }
-        {
+        if (this.isSetLinkSeries()) {
             SeriesLinksWithPreferred sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
             SeriesLinksWithPreferred copyLinkSeries = ((SeriesLinksWithPreferred) copyBuilder.copy(sourceLinkSeries));
             copy.setLinkSeries(copyLinkSeries);
+        } else {
+            copy.linkSeries = null;
         }
-        {
+        if (this.isSetFiles()) {
             List<TridasFile> sourceFiles;
             sourceFiles = this.getFiles();
+            @SuppressWarnings("unchecked")
             List<TridasFile> copyFiles = ((List<TridasFile> ) copyBuilder.copy(sourceFiles));
             copy.setFiles(copyFiles);
+        } else {
+            copy.unsetFiles();
         }
-        {
+        if (this.isSetCreator()) {
             String sourceCreator;
             sourceCreator = this.getCreator();
             String copyCreator = ((String) copyBuilder.copy(sourceCreator));
             copy.setCreator(copyCreator);
+        } else {
+            copy.creator = null;
         }
-        {
+        if (this.isSetOwner()) {
             String sourceOwner;
             sourceOwner = this.getOwner();
             String copyOwner = ((String) copyBuilder.copy(sourceOwner));
             copy.setOwner(copyOwner);
+        } else {
+            copy.owner = null;
         }
-        {
+        if (this.isSetCoverage()) {
             TridasCoverage sourceCoverage;
             sourceCoverage = this.getCoverage();
             TridasCoverage copyCoverage = ((TridasCoverage) copyBuilder.copy(sourceCoverage));
             copy.setCoverage(copyCoverage);
+        } else {
+            copy.coverage = null;
         }
-        {
+        if (this.isSetLocation()) {
             TridasLocation sourceLocation;
             sourceLocation = this.getLocation();
             TridasLocation copyLocation = ((TridasLocation) copyBuilder.copy(sourceLocation));
             copy.setLocation(copyLocation);
+        } else {
+            copy.location = null;
         }
-        {
+        if (this.isSetGenericFields()) {
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
+            @SuppressWarnings("unchecked")
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
             copy.setGenericFields(copyGenericFields);
+        } else {
+            copy.unsetGenericFields();
         }
-        {
+        if (this.isSetObjects()) {
             List<TridasObject> sourceObjects;
             sourceObjects = this.getObjects();
+            @SuppressWarnings("unchecked")
             List<TridasObject> copyObjects = ((List<TridasObject> ) copyBuilder.copy(sourceObjects));
             copy.setObjects(copyObjects);
+        } else {
+            copy.unsetObjects();
         }
-        {
+        if (this.isSetElements()) {
             List<TridasElement> sourceElements;
             sourceElements = this.getElements();
+            @SuppressWarnings("unchecked")
             List<TridasElement> copyElements = ((List<TridasElement> ) copyBuilder.copy(sourceElements));
             copy.setElements(copyElements);
+        } else {
+            copy.unsetElements();
         }
         return copy;
     }

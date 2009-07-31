@@ -223,23 +223,29 @@ public class Envelope
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final Envelope copy = ((target == null)?((Envelope) createCopy()):((Envelope) target));
-        {
+        if (this.isSetLowerCorner()) {
             Pos sourceLowerCorner;
             sourceLowerCorner = this.getLowerCorner();
             Pos copyLowerCorner = ((Pos) copyBuilder.copy(sourceLowerCorner));
             copy.setLowerCorner(copyLowerCorner);
+        } else {
+            copy.lowerCorner = null;
         }
-        {
+        if (this.isSetUpperCorner()) {
             Pos sourceUpperCorner;
             sourceUpperCorner = this.getUpperCorner();
             Pos copyUpperCorner = ((Pos) copyBuilder.copy(sourceUpperCorner));
             copy.setUpperCorner(copyUpperCorner);
+        } else {
+            copy.upperCorner = null;
         }
-        {
+        if (this.isSetSrsName()) {
             String sourceSrsName;
             sourceSrsName = this.getSrsName();
             String copySrsName = ((String) copyBuilder.copy(sourceSrsName));
             copy.setSrsName(copySrsName);
+        } else {
+            copy.srsName = null;
         }
         return copy;
     }

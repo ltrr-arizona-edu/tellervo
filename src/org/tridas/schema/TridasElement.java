@@ -821,107 +821,144 @@ public class TridasElement
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasElement copy = ((target == null)?((TridasElement) createCopy()):((TridasElement) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetType()) {
             ControlledVoc sourceType;
             sourceType = this.getType();
             ControlledVoc copyType = ((ControlledVoc) copyBuilder.copy(sourceType));
             copy.setType(copyType);
+        } else {
+            copy.type = null;
         }
-        {
+        if (this.isSetDescription()) {
             String sourceDescription;
             sourceDescription = this.getDescription();
             String copyDescription = ((String) copyBuilder.copy(sourceDescription));
             copy.setDescription(copyDescription);
+        } else {
+            copy.description = null;
         }
-        {
+        if (this.isSetLinkSeries()) {
             SeriesLinks sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
             SeriesLinks copyLinkSeries = ((SeriesLinks) copyBuilder.copy(sourceLinkSeries));
             copy.setLinkSeries(copyLinkSeries);
+        } else {
+            copy.linkSeries = null;
         }
-        {
+        if (this.isSetFiles()) {
             List<TridasFile> sourceFiles;
             sourceFiles = this.getFiles();
+            @SuppressWarnings("unchecked")
             List<TridasFile> copyFiles = ((List<TridasFile> ) copyBuilder.copy(sourceFiles));
             copy.setFiles(copyFiles);
+        } else {
+            copy.unsetFiles();
         }
-        {
+        if (this.isSetTaxon()) {
             ControlledVoc sourceTaxon;
             sourceTaxon = this.getTaxon();
             ControlledVoc copyTaxon = ((ControlledVoc) copyBuilder.copy(sourceTaxon));
             copy.setTaxon(copyTaxon);
+        } else {
+            copy.taxon = null;
         }
-        {
+        if (this.isSetShape()) {
             TridasShape sourceShape;
             sourceShape = this.getShape();
             TridasShape copyShape = ((TridasShape) copyBuilder.copy(sourceShape));
             copy.setShape(copyShape);
+        } else {
+            copy.shape = null;
         }
-        {
+        if (this.isSetDimensions()) {
             TridasDimensions sourceDimensions;
             sourceDimensions = this.getDimensions();
             TridasDimensions copyDimensions = ((TridasDimensions) copyBuilder.copy(sourceDimensions));
             copy.setDimensions(copyDimensions);
+        } else {
+            copy.dimensions = null;
         }
-        {
+        if (this.isSetAuthenticity()) {
             String sourceAuthenticity;
             sourceAuthenticity = this.getAuthenticity();
             String copyAuthenticity = ((String) copyBuilder.copy(sourceAuthenticity));
             copy.setAuthenticity(copyAuthenticity);
+        } else {
+            copy.authenticity = null;
         }
-        {
+        if (this.isSetLocation()) {
             TridasLocation sourceLocation;
             sourceLocation = this.getLocation();
             TridasLocation copyLocation = ((TridasLocation) copyBuilder.copy(sourceLocation));
             copy.setLocation(copyLocation);
+        } else {
+            copy.location = null;
         }
-        {
+        if (this.isSetProcessing()) {
             String sourceProcessing;
             sourceProcessing = this.getProcessing();
             String copyProcessing = ((String) copyBuilder.copy(sourceProcessing));
             copy.setProcessing(copyProcessing);
+        } else {
+            copy.processing = null;
         }
-        {
+        if (this.isSetMarks()) {
             String sourceMarks;
             sourceMarks = this.getMarks();
             String copyMarks = ((String) copyBuilder.copy(sourceMarks));
             copy.setMarks(copyMarks);
+        } else {
+            copy.marks = null;
         }
-        {
+        if (this.isSetAltitude()) {
             Double sourceAltitude;
             sourceAltitude = this.getAltitude();
             Double copyAltitude = ((Double) copyBuilder.copy(sourceAltitude));
             copy.setAltitude(copyAltitude);
+        } else {
+            copy.altitude = null;
         }
-        {
+        if (this.isSetSlope()) {
             TridasSlope sourceSlope;
             sourceSlope = this.getSlope();
             TridasSlope copySlope = ((TridasSlope) copyBuilder.copy(sourceSlope));
             copy.setSlope(copySlope);
+        } else {
+            copy.slope = null;
         }
-        {
+        if (this.isSetSoil()) {
             TridasSoil sourceSoil;
             sourceSoil = this.getSoil();
             TridasSoil copySoil = ((TridasSoil) copyBuilder.copy(sourceSoil));
             copy.setSoil(copySoil);
+        } else {
+            copy.soil = null;
         }
-        {
+        if (this.isSetBedrock()) {
             TridasBedrock sourceBedrock;
             sourceBedrock = this.getBedrock();
             TridasBedrock copyBedrock = ((TridasBedrock) copyBuilder.copy(sourceBedrock));
             copy.setBedrock(copyBedrock);
+        } else {
+            copy.bedrock = null;
         }
-        {
+        if (this.isSetGenericFields()) {
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
+            @SuppressWarnings("unchecked")
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
             copy.setGenericFields(copyGenericFields);
+        } else {
+            copy.unsetGenericFields();
         }
-        {
+        if (this.isSetSamples()) {
             List<TridasSample> sourceSamples;
             sourceSamples = this.getSamples();
+            @SuppressWarnings("unchecked")
             List<TridasSample> copySamples = ((List<TridasSample> ) copyBuilder.copy(sourceSamples));
             copy.setSamples(copySamples);
+        } else {
+            copy.unsetSamples();
         }
         return copy;
     }

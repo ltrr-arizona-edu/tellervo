@@ -65,9 +65,9 @@ public class MultiGeometryPropertyType
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link MultiPointType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractGeometricAggregateType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link MultiCurveType }{@code >}
      *     {@link JAXBElement }{@code <}{@link MultiSurfaceType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link MultiCurveType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractGeometricAggregateType }{@code >}
      *     
      */
     public JAXBElement<? extends AbstractGeometricAggregateType> get_GeometricAggregate() {
@@ -80,9 +80,9 @@ public class MultiGeometryPropertyType
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link MultiPointType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link AbstractGeometricAggregateType }{@code >}
-     *     {@link JAXBElement }{@code <}{@link MultiCurveType }{@code >}
      *     {@link JAXBElement }{@code <}{@link MultiSurfaceType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link MultiCurveType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractGeometricAggregateType }{@code >}
      *     
      */
     public void set_GeometricAggregate(JAXBElement<? extends AbstractGeometricAggregateType> value) {
@@ -143,11 +143,14 @@ public class MultiGeometryPropertyType
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final MultiGeometryPropertyType copy = ((target == null)?((MultiGeometryPropertyType) createCopy()):((MultiGeometryPropertyType) target));
-        {
+        if (this.isSet_GeometricAggregate()) {
             JAXBElement<? extends AbstractGeometricAggregateType> source_GeometricAggregate;
             source_GeometricAggregate = this.get_GeometricAggregate();
+            @SuppressWarnings("unchecked")
             JAXBElement<? extends AbstractGeometricAggregateType> copy_GeometricAggregate = ((JAXBElement<? extends AbstractGeometricAggregateType> ) copyBuilder.copy(source_GeometricAggregate));
             copy.set_GeometricAggregate(copy_GeometricAggregate);
+        } else {
+            copy.geometricAggregate = null;
         }
         return copy;
     }

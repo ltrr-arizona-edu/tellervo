@@ -66,8 +66,8 @@ public class SurfaceMember
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link AbstractSurfaceType }{@code >}
      *     {@link JAXBElement }{@code <}{@link PolygonType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractSurfaceType }{@code >}
      *     {@link JAXBElement }{@code <}{@link SurfaceType }{@code >}
      *     
      */
@@ -80,8 +80,8 @@ public class SurfaceMember
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link AbstractSurfaceType }{@code >}
      *     {@link JAXBElement }{@code <}{@link PolygonType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractSurfaceType }{@code >}
      *     {@link JAXBElement }{@code <}{@link SurfaceType }{@code >}
      *     
      */
@@ -143,11 +143,14 @@ public class SurfaceMember
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final SurfaceMember copy = ((target == null)?((SurfaceMember) createCopy()):((SurfaceMember) target));
-        {
+        if (this.isSet_Surface()) {
             JAXBElement<? extends AbstractSurfaceType> source_Surface;
             source_Surface = this.get_Surface();
+            @SuppressWarnings("unchecked")
             JAXBElement<? extends AbstractSurfaceType> copy_Surface = ((JAXBElement<? extends AbstractSurfaceType> ) copyBuilder.copy(source_Surface));
             copy.set_Surface(copy_Surface);
+        } else {
+            copy.surface = null;
         }
         return copy;
     }

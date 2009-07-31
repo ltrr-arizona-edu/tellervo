@@ -168,17 +168,21 @@ public class TridasLastRingUnderBark
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasLastRingUnderBark copy = ((target == null)?((TridasLastRingUnderBark) createCopy()):((TridasLastRingUnderBark) target));
-        {
+        if (this.isSetContent()) {
             String sourceContent;
             sourceContent = this.getContent();
             String copyContent = ((String) copyBuilder.copy(sourceContent));
             copy.setContent(copyContent);
+        } else {
+            copy.content = null;
         }
-        {
+        if (this.isSetPresence()) {
             PresenceAbsence sourcePresence;
             sourcePresence = this.getPresence();
             PresenceAbsence copyPresence = ((PresenceAbsence) copyBuilder.copy(sourcePresence));
             copy.setPresence(copyPresence);
+        } else {
+            copy.presence = null;
         }
         return copy;
     }

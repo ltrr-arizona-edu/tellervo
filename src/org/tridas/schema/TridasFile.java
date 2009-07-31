@@ -130,11 +130,13 @@ public class TridasFile
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasFile copy = ((target == null)?((TridasFile) createCopy()):((TridasFile) target));
-        {
+        if (this.isSetHref()) {
             String sourceHref;
             sourceHref = this.getHref();
             String copyHref = ((String) copyBuilder.copy(sourceHref));
             copy.setHref(copyHref);
+        } else {
+            copy.href = null;
         }
         return copy;
     }

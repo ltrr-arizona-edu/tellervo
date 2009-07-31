@@ -155,11 +155,14 @@ public class WSIDatingTypeDictionary implements Serializable, CopyTo, Copyable, 
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIDatingTypeDictionary copy = ((target == null)?((WSIDatingTypeDictionary) createCopy()):((WSIDatingTypeDictionary) target));
-        {
+        if (this.isSetDatingTypes()) {
             List<ControlledVoc> sourceDatingTypes;
             sourceDatingTypes = this.getDatingTypes();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyDatingTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceDatingTypes));
             copy.setDatingTypes(copyDatingTypes);
+        } else {
+            copy.unsetDatingTypes();
         }
         return copy;
     }

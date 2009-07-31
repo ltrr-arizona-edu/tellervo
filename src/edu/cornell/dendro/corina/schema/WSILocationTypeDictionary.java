@@ -155,11 +155,14 @@ public class WSILocationTypeDictionary implements Serializable, CopyTo, Copyable
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSILocationTypeDictionary copy = ((target == null)?((WSILocationTypeDictionary) createCopy()):((WSILocationTypeDictionary) target));
-        {
+        if (this.isSetLocationTypes()) {
             List<ControlledVoc> sourceLocationTypes;
             sourceLocationTypes = this.getLocationTypes();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyLocationTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceLocationTypes));
             copy.setLocationTypes(copyLocationTypes);
+        } else {
+            copy.unsetLocationTypes();
         }
         return copy;
     }

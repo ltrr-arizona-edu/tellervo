@@ -155,11 +155,14 @@ public class WSIElementTypeDictionary implements Serializable, CopyTo, Copyable,
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIElementTypeDictionary copy = ((target == null)?((WSIElementTypeDictionary) createCopy()):((WSIElementTypeDictionary) target));
-        {
+        if (this.isSetElementTypes()) {
             List<ControlledVoc> sourceElementTypes;
             sourceElementTypes = this.getElementTypes();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyElementTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceElementTypes));
             copy.setElementTypes(copyElementTypes);
+        } else {
+            copy.unsetElementTypes();
         }
         return copy;
     }

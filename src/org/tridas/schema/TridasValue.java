@@ -275,29 +275,38 @@ public class TridasValue
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasValue copy = ((target == null)?((TridasValue) createCopy()):((TridasValue) target));
-        {
+        if (this.isSetRemarks()) {
             List<TridasRemark> sourceRemarks;
             sourceRemarks = this.getRemarks();
+            @SuppressWarnings("unchecked")
             List<TridasRemark> copyRemarks = ((List<TridasRemark> ) copyBuilder.copy(sourceRemarks));
             copy.setRemarks(copyRemarks);
+        } else {
+            copy.unsetRemarks();
         }
-        {
+        if (this.isSetValue()) {
             String sourceValue;
             sourceValue = this.getValue();
             String copyValue = ((String) copyBuilder.copy(sourceValue));
             copy.setValue(copyValue);
+        } else {
+            copy.value = null;
         }
-        {
+        if (this.isSetIndex()) {
             String sourceIndex;
             sourceIndex = this.getIndex();
             String copyIndex = ((String) copyBuilder.copy(sourceIndex));
             copy.setIndex(copyIndex);
+        } else {
+            copy.index = null;
         }
-        {
+        if (this.isSetCount()) {
             Integer sourceCount;
             sourceCount = this.getCount();
             Integer copyCount = ((Integer) copyBuilder.copy(sourceCount));
             copy.setCount(copyCount);
+        } else {
+            copy.count = null;
         }
         return copy;
     }

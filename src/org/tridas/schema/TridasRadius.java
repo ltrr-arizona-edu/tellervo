@@ -296,29 +296,39 @@ public class TridasRadius
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasRadius copy = ((target == null)?((TridasRadius) createCopy()):((TridasRadius) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetWoodCompleteness()) {
             TridasWoodCompleteness sourceWoodCompleteness;
             sourceWoodCompleteness = this.getWoodCompleteness();
             TridasWoodCompleteness copyWoodCompleteness = ((TridasWoodCompleteness) copyBuilder.copy(sourceWoodCompleteness));
             copy.setWoodCompleteness(copyWoodCompleteness);
+        } else {
+            copy.woodCompleteness = null;
         }
-        {
+        if (this.isSetAzimuth()) {
             BigDecimal sourceAzimuth;
             sourceAzimuth = this.getAzimuth();
             BigDecimal copyAzimuth = ((BigDecimal) copyBuilder.copy(sourceAzimuth));
             copy.setAzimuth(copyAzimuth);
+        } else {
+            copy.azimuth = null;
         }
-        {
+        if (this.isSetGenericFields()) {
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
+            @SuppressWarnings("unchecked")
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
             copy.setGenericFields(copyGenericFields);
+        } else {
+            copy.unsetGenericFields();
         }
-        {
+        if (this.isSetMeasurementSeries()) {
             List<TridasMeasurementSeries> sourceMeasurementSeries;
             sourceMeasurementSeries = this.getMeasurementSeries();
+            @SuppressWarnings("unchecked")
             List<TridasMeasurementSeries> copyMeasurementSeries = ((List<TridasMeasurementSeries> ) copyBuilder.copy(sourceMeasurementSeries));
             copy.setMeasurementSeries(copyMeasurementSeries);
+        } else {
+            copy.unsetMeasurementSeries();
         }
         return copy;
     }

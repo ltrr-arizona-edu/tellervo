@@ -168,17 +168,21 @@ public class WSINonce
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSINonce copy = ((target == null)?((WSINonce) createCopy()):((WSINonce) target));
-        {
+        if (this.isSetValue()) {
             String sourceValue;
             sourceValue = this.getValue();
             String copyValue = ((String) copyBuilder.copy(sourceValue));
             copy.setValue(copyValue);
+        } else {
+            copy.value = null;
         }
-        {
+        if (this.isSetSeq()) {
             String sourceSeq;
             sourceSeq = this.getSeq();
             String copySeq = ((String) copyBuilder.copy(sourceSeq));
             copy.setSeq(copySeq);
+        } else {
+            copy.seq = null;
         }
         return copy;
     }

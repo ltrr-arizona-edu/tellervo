@@ -277,35 +277,44 @@ public class SecurityGroup
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final SecurityGroup copy = ((target == null)?((SecurityGroup) createCopy()):((SecurityGroup) target));
-        {
+        if (this.isSetValue()) {
             String sourceValue;
             sourceValue = this.getValue();
             String copyValue = ((String) copyBuilder.copy(sourceValue));
             copy.setValue(copyValue);
+        } else {
+            copy.value = null;
         }
-        {
+        if (this.isSetId()) {
             String sourceId;
             sourceId = this.getId();
             String copyId = ((String) copyBuilder.copy(sourceId));
             copy.setId(copyId);
+        } else {
+            copy.id = null;
         }
-        {
+        if (this.isSetName()) {
             String sourceName;
             sourceName = this.getName();
             String copyName = ((String) copyBuilder.copy(sourceName));
             copy.setName(copyName);
+        } else {
+            copy.name = null;
         }
-        {
+        if (this.isSetDescription()) {
             String sourceDescription;
             sourceDescription = this.getDescription();
             String copyDescription = ((String) copyBuilder.copy(sourceDescription));
             copy.setDescription(copyDescription);
+        } else {
+            copy.description = null;
         }
-        {
+        if (this.isSetIsActive()) {
             boolean sourceIsActive;
             sourceIsActive = this.isIsActive();
-            boolean copyIsActive = ((boolean) copyBuilder.copy(sourceIsActive));
+            boolean copyIsActive = copyBuilder.copy(sourceIsActive);
             copy.setIsActive(copyIsActive);
+        } else {
         }
         return copy;
     }

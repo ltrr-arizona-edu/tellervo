@@ -179,17 +179,21 @@ public class Name
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final Name copy = ((target == null)?((Name) createCopy()):((Name) target));
-        {
+        if (this.isSetValue()) {
             String sourceValue;
             sourceValue = this.getValue();
             String copyValue = ((String) copyBuilder.copy(sourceValue));
             copy.setValue(copyValue);
+        } else {
+            copy.value = null;
         }
-        {
+        if (this.isSetCodeSpace()) {
             String sourceCodeSpace;
             sourceCodeSpace = this.getCodeSpace();
             String copyCodeSpace = ((String) copyBuilder.copy(sourceCodeSpace));
             copy.setCodeSpace(copyCodeSpace);
+        } else {
+            copy.codeSpace = null;
         }
         return copy;
     }

@@ -725,95 +725,127 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasMeasurementSeries copy = ((target == null)?((TridasMeasurementSeries) createCopy()):((TridasMeasurementSeries) target));
-        {
+        if (this.isSetTitle()) {
             String sourceTitle;
             sourceTitle = this.getTitle();
             String copyTitle = ((String) copyBuilder.copy(sourceTitle));
             copy.setTitle(copyTitle);
+        } else {
+            copy.title = null;
         }
-        {
+        if (this.isSetIdentifier()) {
             TridasIdentifier sourceIdentifier;
             sourceIdentifier = this.getIdentifier();
             TridasIdentifier copyIdentifier = ((TridasIdentifier) copyBuilder.copy(sourceIdentifier));
             copy.setIdentifier(copyIdentifier);
+        } else {
+            copy.identifier = null;
         }
-        {
+        if (this.isSetCreatedTimestamp()) {
             DateTime sourceCreatedTimestamp;
             sourceCreatedTimestamp = this.getCreatedTimestamp();
             DateTime copyCreatedTimestamp = ((DateTime) copyBuilder.copy(sourceCreatedTimestamp));
             copy.setCreatedTimestamp(copyCreatedTimestamp);
+        } else {
+            copy.createdTimestamp = null;
         }
-        {
+        if (this.isSetLastModifiedTimestamp()) {
             DateTime sourceLastModifiedTimestamp;
             sourceLastModifiedTimestamp = this.getLastModifiedTimestamp();
             DateTime copyLastModifiedTimestamp = ((DateTime) copyBuilder.copy(sourceLastModifiedTimestamp));
             copy.setLastModifiedTimestamp(copyLastModifiedTimestamp);
+        } else {
+            copy.lastModifiedTimestamp = null;
         }
-        {
+        if (this.isSetComments()) {
             String sourceComments;
             sourceComments = this.getComments();
             String copyComments = ((String) copyBuilder.copy(sourceComments));
             copy.setComments(copyComments);
+        } else {
+            copy.comments = null;
         }
-        {
+        if (this.isSetMeasuringDate()) {
             Date sourceMeasuringDate;
             sourceMeasuringDate = this.getMeasuringDate();
             Date copyMeasuringDate = ((Date) copyBuilder.copy(sourceMeasuringDate));
             copy.setMeasuringDate(copyMeasuringDate);
+        } else {
+            copy.measuringDate = null;
         }
-        {
+        if (this.isSetWoodCompleteness()) {
             TridasWoodCompleteness sourceWoodCompleteness;
             sourceWoodCompleteness = this.getWoodCompleteness();
             TridasWoodCompleteness copyWoodCompleteness = ((TridasWoodCompleteness) copyBuilder.copy(sourceWoodCompleteness));
             copy.setWoodCompleteness(copyWoodCompleteness);
+        } else {
+            copy.woodCompleteness = null;
         }
-        {
+        if (this.isSetAnalyst()) {
             String sourceAnalyst;
             sourceAnalyst = this.getAnalyst();
             String copyAnalyst = ((String) copyBuilder.copy(sourceAnalyst));
             copy.setAnalyst(copyAnalyst);
+        } else {
+            copy.analyst = null;
         }
-        {
+        if (this.isSetDendrochronologist()) {
             String sourceDendrochronologist;
             sourceDendrochronologist = this.getDendrochronologist();
             String copyDendrochronologist = ((String) copyBuilder.copy(sourceDendrochronologist));
             copy.setDendrochronologist(copyDendrochronologist);
+        } else {
+            copy.dendrochronologist = null;
         }
-        {
+        if (this.isSetMeasuringMethod()) {
             TridasMeasuringMethod sourceMeasuringMethod;
             sourceMeasuringMethod = this.getMeasuringMethod();
             TridasMeasuringMethod copyMeasuringMethod = ((TridasMeasuringMethod) copyBuilder.copy(sourceMeasuringMethod));
             copy.setMeasuringMethod(copyMeasuringMethod);
+        } else {
+            copy.measuringMethod = null;
         }
-        {
+        if (this.isSetInterpretationUnsolved()) {
             TridasInterpretationUnsolved sourceInterpretationUnsolved;
             sourceInterpretationUnsolved = this.getInterpretationUnsolved();
             TridasInterpretationUnsolved copyInterpretationUnsolved = ((TridasInterpretationUnsolved) copyBuilder.copy(sourceInterpretationUnsolved));
             copy.setInterpretationUnsolved(copyInterpretationUnsolved);
+        } else {
+            copy.interpretationUnsolved = null;
         }
-        {
+        if (this.isSetInterpretation()) {
             TridasInterpretation sourceInterpretation;
             sourceInterpretation = this.getInterpretation();
             TridasInterpretation copyInterpretation = ((TridasInterpretation) copyBuilder.copy(sourceInterpretation));
             copy.setInterpretation(copyInterpretation);
+        } else {
+            copy.interpretation = null;
         }
-        {
+        if (this.isSetGenericFields()) {
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
+            @SuppressWarnings("unchecked")
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
             copy.setGenericFields(copyGenericFields);
+        } else {
+            copy.unsetGenericFields();
         }
-        {
+        if (this.isSetValues()) {
             List<TridasValues> sourceValues;
             sourceValues = this.getValues();
+            @SuppressWarnings("unchecked")
             List<TridasValues> copyValues = ((List<TridasValues> ) copyBuilder.copy(sourceValues));
             copy.setValues(copyValues);
+        } else {
+            copy.unsetValues();
         }
-        {
+        if (this.isSetId()) {
             String sourceId;
             sourceId = this.getId();
             String copyId = ((String) copyBuilder.copy(sourceId));
             copy.setId(copyId);
+        } else {
+            copy.id = null;
         }
         return copy;
     }

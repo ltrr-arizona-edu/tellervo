@@ -178,17 +178,21 @@ public class TridasSlope
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasSlope copy = ((target == null)?((TridasSlope) createCopy()):((TridasSlope) target));
-        {
+        if (this.isSetAngle()) {
             Integer sourceAngle;
             sourceAngle = this.getAngle();
             Integer copyAngle = ((Integer) copyBuilder.copy(sourceAngle));
             copy.setAngle(copyAngle);
+        } else {
+            copy.angle = null;
         }
-        {
+        if (this.isSetAzimuth()) {
             Integer sourceAzimuth;
             sourceAzimuth = this.getAzimuth();
             Integer copyAzimuth = ((Integer) copyBuilder.copy(sourceAzimuth));
             copy.setAzimuth(copyAzimuth);
+        } else {
+            copy.azimuth = null;
         }
         return copy;
     }

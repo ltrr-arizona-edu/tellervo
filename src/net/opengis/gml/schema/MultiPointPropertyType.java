@@ -136,11 +136,13 @@ public class MultiPointPropertyType
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final MultiPointPropertyType copy = ((target == null)?((MultiPointPropertyType) createCopy()):((MultiPointPropertyType) target));
-        {
+        if (this.isSetMultiPoint()) {
             MultiPointType sourceMultiPoint;
             sourceMultiPoint = this.getMultiPoint();
             MultiPointType copyMultiPoint = ((MultiPointType) copyBuilder.copy(sourceMultiPoint));
             copy.setMultiPoint(copyMultiPoint);
+        } else {
+            copy.multiPoint = null;
         }
         return copy;
     }

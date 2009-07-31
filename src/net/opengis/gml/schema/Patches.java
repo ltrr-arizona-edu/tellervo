@@ -79,8 +79,8 @@ public class Patches
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link AbstractSurfacePatchType }{@code >}
      * {@link JAXBElement }{@code <}{@link PolygonPatchType }{@code >}
+     * {@link JAXBElement }{@code <}{@link AbstractSurfacePatchType }{@code >}
      * 
      * 
      */
@@ -104,8 +104,8 @@ public class Patches
      * 
      * @param surfacePatches
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link AbstractSurfacePatchType }{@code >}
      *     {@link JAXBElement }{@code <}{@link PolygonPatchType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractSurfacePatchType }{@code >}
      *     
      */
     public void set_SurfacePatches(List<JAXBElement<? extends AbstractSurfacePatchType>> surfacePatches) {
@@ -162,11 +162,14 @@ public class Patches
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final Patches copy = ((target == null)?((Patches) createCopy()):((Patches) target));
-        {
+        if (this.isSet_SurfacePatches()) {
             List<JAXBElement<? extends AbstractSurfacePatchType>> source_SurfacePatches;
             source_SurfacePatches = this.get_SurfacePatches();
+            @SuppressWarnings("unchecked")
             List<JAXBElement<? extends AbstractSurfacePatchType>> copy_SurfacePatches = ((List<JAXBElement<? extends AbstractSurfacePatchType>> ) copyBuilder.copy(source_SurfacePatches));
             copy.set_SurfacePatches(copy_SurfacePatches);
+        } else {
+            copy.unset_SurfacePatches();
         }
         return copy;
     }

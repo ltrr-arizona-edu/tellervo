@@ -134,11 +134,13 @@ public class BoundedBy
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final BoundedBy copy = ((target == null)?((BoundedBy) createCopy()):((BoundedBy) target));
-        {
+        if (this.isSetEnvelope()) {
             Envelope sourceEnvelope;
             sourceEnvelope = this.getEnvelope();
             Envelope copyEnvelope = ((Envelope) copyBuilder.copy(sourceEnvelope));
             copy.setEnvelope(copyEnvelope);
+        } else {
+            copy.envelope = null;
         }
         return copy;
     }

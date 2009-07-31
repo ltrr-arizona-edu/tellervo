@@ -155,11 +155,14 @@ public class WSIRegionDictionary implements Serializable, CopyTo, Copyable, Equa
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIRegionDictionary copy = ((target == null)?((WSIRegionDictionary) createCopy()):((WSIRegionDictionary) target));
-        {
+        if (this.isSetRegions()) {
             List<ControlledVoc> sourceRegions;
             sourceRegions = this.getRegions();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyRegions = ((List<ControlledVoc> ) copyBuilder.copy(sourceRegions));
             copy.setRegions(copyRegions);
+        } else {
+            copy.unsetRegions();
         }
         return copy;
     }

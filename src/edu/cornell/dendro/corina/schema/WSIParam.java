@@ -204,23 +204,29 @@ public class WSIParam
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIParam copy = ((target == null)?((WSIParam) createCopy()):((WSIParam) target));
-        {
+        if (this.isSetName()) {
             SearchParameterName sourceName;
             sourceName = this.getName();
             SearchParameterName copyName = ((SearchParameterName) copyBuilder.copy(sourceName));
             copy.setName(copyName);
+        } else {
+            copy.name = null;
         }
-        {
+        if (this.isSetOperator()) {
             SearchOperator sourceOperator;
             sourceOperator = this.getOperator();
             SearchOperator copyOperator = ((SearchOperator) copyBuilder.copy(sourceOperator));
             copy.setOperator(copyOperator);
+        } else {
+            copy.operator = null;
         }
-        {
+        if (this.isSetValue()) {
             String sourceValue;
             sourceValue = this.getValue();
             String copyValue = ((String) copyBuilder.copy(sourceValue));
             copy.setValue(copyValue);
+        } else {
+            copy.value = null;
         }
         return copy;
     }

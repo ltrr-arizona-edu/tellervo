@@ -128,11 +128,13 @@ public class TridasPith
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasPith copy = ((target == null)?((TridasPith) createCopy()):((TridasPith) target));
-        {
+        if (this.isSetPresence()) {
             ComplexPresenceAbsence sourcePresence;
             sourcePresence = this.getPresence();
             ComplexPresenceAbsence copyPresence = ((ComplexPresenceAbsence) copyBuilder.copy(sourcePresence));
             copy.setPresence(copyPresence);
+        } else {
+            copy.presence = null;
         }
         return copy;
     }

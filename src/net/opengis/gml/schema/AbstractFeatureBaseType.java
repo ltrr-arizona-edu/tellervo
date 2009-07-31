@@ -257,23 +257,30 @@ public class AbstractFeatureBaseType
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final AbstractFeatureBaseType copy = ((target == null)?((AbstractFeatureBaseType) createCopy()):((AbstractFeatureBaseType) target));
-        {
+        if (this.isSetDescription()) {
             String sourceDescription;
             sourceDescription = this.getDescription();
             String copyDescription = ((String) copyBuilder.copy(sourceDescription));
             copy.setDescription(copyDescription);
+        } else {
+            copy.description = null;
         }
-        {
+        if (this.isSetNames()) {
             List<Name> sourceNames;
             sourceNames = this.getNames();
+            @SuppressWarnings("unchecked")
             List<Name> copyNames = ((List<Name> ) copyBuilder.copy(sourceNames));
             copy.setNames(copyNames);
+        } else {
+            copy.unsetNames();
         }
-        {
+        if (this.isSetId()) {
             String sourceId;
             sourceId = this.getId();
             String copyId = ((String) copyBuilder.copy(sourceId));
             copy.setId(copyId);
+        } else {
+            copy.id = null;
         }
         return copy;
     }

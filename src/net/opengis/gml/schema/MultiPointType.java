@@ -163,11 +163,14 @@ public class MultiPointType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final MultiPointType copy = ((target == null)?((MultiPointType) createCopy()):((MultiPointType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetPointMembers()) {
             List<PointMember> sourcePointMembers;
             sourcePointMembers = this.getPointMembers();
+            @SuppressWarnings("unchecked")
             List<PointMember> copyPointMembers = ((List<PointMember> ) copyBuilder.copy(sourcePointMembers));
             copy.setPointMembers(copyPointMembers);
+        } else {
+            copy.unsetPointMembers();
         }
         return copy;
     }

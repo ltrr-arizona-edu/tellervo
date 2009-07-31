@@ -136,11 +136,13 @@ public class MultiSurfacePropertyType
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final MultiSurfacePropertyType copy = ((target == null)?((MultiSurfacePropertyType) createCopy()):((MultiSurfacePropertyType) target));
-        {
+        if (this.isSetMultiSurface()) {
             MultiSurfaceType sourceMultiSurface;
             sourceMultiSurface = this.getMultiSurface();
             MultiSurfaceType copyMultiSurface = ((MultiSurfaceType) copyBuilder.copy(sourceMultiSurface));
             copy.setMultiSurface(copyMultiSurface);
+        } else {
+            copy.multiSurface = null;
         }
         return copy;
     }

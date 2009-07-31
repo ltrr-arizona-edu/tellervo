@@ -248,29 +248,37 @@ public class WSILink
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSILink copy = ((target == null)?((WSILink) createCopy()):((WSILink) target));
-        {
+        if (this.isSetType()) {
             String sourceType;
             sourceType = this.getType();
             String copyType = ((String) copyBuilder.copy(sourceType));
             copy.setType(copyType);
+        } else {
+            copy.type = null;
         }
-        {
+        if (this.isSetObject()) {
             String sourceObject;
             sourceObject = this.getObject();
             String copyObject = ((String) copyBuilder.copy(sourceObject));
             copy.setObject(copyObject);
+        } else {
+            copy.object = null;
         }
-        {
+        if (this.isSetId()) {
             String sourceId;
             sourceId = this.getId();
             String copyId = ((String) copyBuilder.copy(sourceId));
             copy.setId(copyId);
+        } else {
+            copy.id = null;
         }
-        {
+        if (this.isSetHref()) {
             String sourceHref;
             sourceHref = this.getHref();
             String copyHref = ((String) copyBuilder.copy(sourceHref));
             copy.setHref(copyHref);
+        } else {
+            copy.href = null;
         }
         return copy;
     }

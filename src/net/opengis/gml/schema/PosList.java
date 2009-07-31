@@ -166,11 +166,14 @@ public class PosList
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final PosList copy = ((target == null)?((PosList) createCopy()):((PosList) target));
-        {
+        if (this.isSetValues()) {
             List<Double> sourceValues;
             sourceValues = this.getValues();
+            @SuppressWarnings("unchecked")
             List<Double> copyValues = ((List<Double> ) copyBuilder.copy(sourceValues));
             copy.setValues(copyValues);
+        } else {
+            copy.unsetValues();
         }
         return copy;
     }

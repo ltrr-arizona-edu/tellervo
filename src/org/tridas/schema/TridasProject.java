@@ -811,89 +811,125 @@ public class TridasProject
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasProject copy = ((target == null)?((TridasProject) createCopy()):((TridasProject) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetTypes()) {
             List<ControlledVoc> sourceTypes;
             sourceTypes = this.getTypes();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceTypes));
             copy.setTypes(copyTypes);
+        } else {
+            copy.unsetTypes();
         }
-        {
+        if (this.isSetDescription()) {
             String sourceDescription;
             sourceDescription = this.getDescription();
             String copyDescription = ((String) copyBuilder.copy(sourceDescription));
             copy.setDescription(copyDescription);
+        } else {
+            copy.description = null;
         }
-        {
+        if (this.isSetFiles()) {
             List<TridasFile> sourceFiles;
             sourceFiles = this.getFiles();
+            @SuppressWarnings("unchecked")
             List<TridasFile> copyFiles = ((List<TridasFile> ) copyBuilder.copy(sourceFiles));
             copy.setFiles(copyFiles);
+        } else {
+            copy.unsetFiles();
         }
-        {
+        if (this.isSetLaboratories()) {
             List<TridasLaboratory> sourceLaboratories;
             sourceLaboratories = this.getLaboratories();
+            @SuppressWarnings("unchecked")
             List<TridasLaboratory> copyLaboratories = ((List<TridasLaboratory> ) copyBuilder.copy(sourceLaboratories));
             copy.setLaboratories(copyLaboratories);
+        } else {
+            copy.unsetLaboratories();
         }
-        {
+        if (this.isSetCategory()) {
             TridasCategory sourceCategory;
             sourceCategory = this.getCategory();
             TridasCategory copyCategory = ((TridasCategory) copyBuilder.copy(sourceCategory));
             copy.setCategory(copyCategory);
+        } else {
+            copy.category = null;
         }
-        {
+        if (this.isSetInvestigator()) {
             String sourceInvestigator;
             sourceInvestigator = this.getInvestigator();
             String copyInvestigator = ((String) copyBuilder.copy(sourceInvestigator));
             copy.setInvestigator(copyInvestigator);
+        } else {
+            copy.investigator = null;
         }
-        {
+        if (this.isSetPeriod()) {
             String sourcePeriod;
             sourcePeriod = this.getPeriod();
             String copyPeriod = ((String) copyBuilder.copy(sourcePeriod));
             copy.setPeriod(copyPeriod);
+        } else {
+            copy.period = null;
         }
-        {
+        if (this.isSetRequestDate()) {
             Date sourceRequestDate;
             sourceRequestDate = this.getRequestDate();
             Date copyRequestDate = ((Date) copyBuilder.copy(sourceRequestDate));
             copy.setRequestDate(copyRequestDate);
+        } else {
+            copy.requestDate = null;
         }
-        {
+        if (this.isSetCommissioner()) {
             String sourceCommissioner;
             sourceCommissioner = this.getCommissioner();
             String copyCommissioner = ((String) copyBuilder.copy(sourceCommissioner));
             copy.setCommissioner(copyCommissioner);
+        } else {
+            copy.commissioner = null;
         }
-        {
+        if (this.isSetReferences()) {
             List<String> sourceReferences;
             sourceReferences = this.getReferences();
+            @SuppressWarnings("unchecked")
             List<String> copyReferences = ((List<String> ) copyBuilder.copy(sourceReferences));
             copy.setReferences(copyReferences);
+        } else {
+            copy.unsetReferences();
         }
-        {
+        if (this.isSetResearches()) {
             List<TridasResearch> sourceResearches;
             sourceResearches = this.getResearches();
+            @SuppressWarnings("unchecked")
             List<TridasResearch> copyResearches = ((List<TridasResearch> ) copyBuilder.copy(sourceResearches));
             copy.setResearches(copyResearches);
+        } else {
+            copy.unsetResearches();
         }
-        {
+        if (this.isSetGenericFields()) {
             List<TridasGenericField> sourceGenericFields;
             sourceGenericFields = this.getGenericFields();
+            @SuppressWarnings("unchecked")
             List<TridasGenericField> copyGenericFields = ((List<TridasGenericField> ) copyBuilder.copy(sourceGenericFields));
             copy.setGenericFields(copyGenericFields);
+        } else {
+            copy.unsetGenericFields();
         }
-        {
+        if (this.isSetObjects()) {
             List<TridasObject> sourceObjects;
             sourceObjects = this.getObjects();
+            @SuppressWarnings("unchecked")
             List<TridasObject> copyObjects = ((List<TridasObject> ) copyBuilder.copy(sourceObjects));
             copy.setObjects(copyObjects);
+        } else {
+            copy.unsetObjects();
         }
-        {
+        if (this.isSetDerivedSeries()) {
             List<TridasDerivedSeries> sourceDerivedSeries;
             sourceDerivedSeries = this.getDerivedSeries();
+            @SuppressWarnings("unchecked")
             List<TridasDerivedSeries> copyDerivedSeries = ((List<TridasDerivedSeries> ) copyBuilder.copy(sourceDerivedSeries));
             copy.setDerivedSeries(copyDerivedSeries);
+        } else {
+            copy.unsetDerivedSeries();
         }
         return copy;
     }

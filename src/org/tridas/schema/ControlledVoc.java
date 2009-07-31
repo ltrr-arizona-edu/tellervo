@@ -259,29 +259,37 @@ public class ControlledVoc
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final ControlledVoc copy = ((target == null)?((ControlledVoc) createCopy()):((ControlledVoc) target));
-        {
+        if (this.isSetValue()) {
             String sourceValue;
             sourceValue = this.getValue();
             String copyValue = ((String) copyBuilder.copy(sourceValue));
             copy.setValue(copyValue);
+        } else {
+            copy.value = null;
         }
-        {
+        if (this.isSetNormalStd()) {
             String sourceNormalStd;
             sourceNormalStd = this.getNormalStd();
             String copyNormalStd = ((String) copyBuilder.copy(sourceNormalStd));
             copy.setNormalStd(copyNormalStd);
+        } else {
+            copy.normalStd = null;
         }
-        {
+        if (this.isSetNormalId()) {
             String sourceNormalId;
             sourceNormalId = this.getNormalId();
             String copyNormalId = ((String) copyBuilder.copy(sourceNormalId));
             copy.setNormalId(copyNormalId);
+        } else {
+            copy.normalId = null;
         }
-        {
+        if (this.isSetNormal()) {
             String sourceNormal;
             sourceNormal = this.getNormal();
             String copyNormal = ((String) copyBuilder.copy(sourceNormal));
             copy.setNormal(copyNormal);
+        } else {
+            copy.normal = null;
         }
         return copy;
     }

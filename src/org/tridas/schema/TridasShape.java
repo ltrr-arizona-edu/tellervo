@@ -134,11 +134,13 @@ public class TridasShape
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasShape copy = ((target == null)?((TridasShape) createCopy()):((TridasShape) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetNormalTridas()) {
             NormalTridasShape sourceNormalTridas;
             sourceNormalTridas = this.getNormalTridas();
             NormalTridasShape copyNormalTridas = ((NormalTridasShape) copyBuilder.copy(sourceNormalTridas));
             copy.setNormalTridas(copyNormalTridas);
+        } else {
+            copy.normalTridas = null;
         }
         return copy;
     }

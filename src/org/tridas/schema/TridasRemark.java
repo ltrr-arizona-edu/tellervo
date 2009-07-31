@@ -177,17 +177,21 @@ public class TridasRemark
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasRemark copy = ((target == null)?((TridasRemark) createCopy()):((TridasRemark) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetNormalTridas()) {
             NormalTridasRemark sourceNormalTridas;
             sourceNormalTridas = this.getNormalTridas();
             NormalTridasRemark copyNormalTridas = ((NormalTridasRemark) copyBuilder.copy(sourceNormalTridas));
             copy.setNormalTridas(copyNormalTridas);
+        } else {
+            copy.normalTridas = null;
         }
-        {
+        if (this.isSetInheritedCount()) {
             Integer sourceInheritedCount;
             sourceInheritedCount = this.getInheritedCount();
             Integer copyInheritedCount = ((Integer) copyBuilder.copy(sourceInheritedCount));
             copy.setInheritedCount(copyInheritedCount);
+        } else {
+            copy.inheritedCount = null;
         }
         return copy;
     }

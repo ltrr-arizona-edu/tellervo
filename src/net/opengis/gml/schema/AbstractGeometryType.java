@@ -154,11 +154,13 @@ public abstract class AbstractGeometryType
         }
         final AbstractGeometryType copy = ((AbstractGeometryType) target);
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetSrsName()) {
             String sourceSrsName;
             sourceSrsName = this.getSrsName();
             String copySrsName = ((String) copyBuilder.copy(sourceSrsName));
             copy.setSrsName(copySrsName);
+        } else {
+            copy.srsName = null;
         }
         return copy;
     }

@@ -135,11 +135,13 @@ public class AbstractRingPropertyType
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final AbstractRingPropertyType copy = ((target == null)?((AbstractRingPropertyType) createCopy()):((AbstractRingPropertyType) target));
-        {
+        if (this.isSetLinearRing()) {
             LinearRingType sourceLinearRing;
             sourceLinearRing = this.getLinearRing();
             LinearRingType copyLinearRing = ((LinearRingType) copyBuilder.copy(sourceLinearRing));
             copy.setLinearRing(copyLinearRing);
+        } else {
+            copy.linearRing = null;
         }
         return copy;
     }

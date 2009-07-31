@@ -135,11 +135,13 @@ public class TridasMeasurementSeriesPlaceholder
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasMeasurementSeriesPlaceholder copy = ((target == null)?((TridasMeasurementSeriesPlaceholder) createCopy()):((TridasMeasurementSeriesPlaceholder) target));
-        {
+        if (this.isSetId()) {
             String sourceId;
             sourceId = this.getId();
             String copyId = ((String) copyBuilder.copy(sourceId));
             copy.setId(copyId);
+        } else {
+            copy.id = null;
         }
         return copy;
     }

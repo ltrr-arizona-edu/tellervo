@@ -132,11 +132,13 @@ public class WSIHelp
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIHelp copy = ((target == null)?((WSIHelp) createCopy()):((WSIHelp) target));
-        {
+        if (this.isSetAny()) {
             Object sourceAny;
             sourceAny = this.getAny();
             Object copyAny = ((Object) copyBuilder.copy(sourceAny));
             copy.setAny(copyAny);
+        } else {
+            copy.any = null;
         }
         return copy;
     }

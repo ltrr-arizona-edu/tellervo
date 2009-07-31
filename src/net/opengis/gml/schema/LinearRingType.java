@@ -148,11 +148,13 @@ public class LinearRingType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final LinearRingType copy = ((target == null)?((LinearRingType) createCopy()):((LinearRingType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetPosList()) {
             PosList sourcePosList;
             sourcePosList = this.getPosList();
             PosList copyPosList = ((PosList) copyBuilder.copy(sourcePosList));
             copy.setPosList(copyPosList);
+        } else {
+            copy.posList = null;
         }
         return copy;
     }

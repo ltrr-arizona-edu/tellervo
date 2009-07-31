@@ -155,11 +155,14 @@ public class WSIObjectTypeDictionary implements Serializable, CopyTo, Copyable, 
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIObjectTypeDictionary copy = ((target == null)?((WSIObjectTypeDictionary) createCopy()):((WSIObjectTypeDictionary) target));
-        {
+        if (this.isSetObjectTypes()) {
             List<ControlledVoc> sourceObjectTypes;
             sourceObjectTypes = this.getObjectTypes();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyObjectTypes = ((List<ControlledVoc> ) copyBuilder.copy(sourceObjectTypes));
             copy.setObjectTypes(copyObjectTypes);
+        } else {
+            copy.unsetObjectTypes();
         }
         return copy;
     }

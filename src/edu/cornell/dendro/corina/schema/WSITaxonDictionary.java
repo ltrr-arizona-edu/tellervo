@@ -155,11 +155,14 @@ public class WSITaxonDictionary implements Serializable, CopyTo, Copyable, Equal
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSITaxonDictionary copy = ((target == null)?((WSITaxonDictionary) createCopy()):((WSITaxonDictionary) target));
-        {
+        if (this.isSetTaxons()) {
             List<ControlledVoc> sourceTaxons;
             sourceTaxons = this.getTaxons();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyTaxons = ((List<ControlledVoc> ) copyBuilder.copy(sourceTaxons));
             copy.setTaxons(copyTaxons);
+        } else {
+            copy.unsetTaxons();
         }
         return copy;
     }

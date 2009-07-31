@@ -20,7 +20,6 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
-import org.tridas.interfaces.NormalTridasVoc;
 
 
 /**
@@ -30,11 +29,11 @@ import org.tridas.interfaces.NormalTridasVoc;
  * 
  * <pre>
  * &lt;complexType>
- *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.tridas.org/1.3>controlledVoc">
- *       &lt;attribute name="normalTridas" type="{http://www.tridas.org/1.3}normalTridasMeasuringMethod" />
- *     &lt;/extension>
- *   &lt;/simpleContent>
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;attribute name="type" use="required" type="{http://www.tridas.org/1.3}normalTridasDatingType" />
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
  * 
@@ -42,59 +41,57 @@ import org.tridas.interfaces.NormalTridasVoc;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "measuringMethod")
-public class TridasMeasuringMethod
-    extends ControlledVoc
-    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, NormalTridasVoc<NormalTridasMeasuringMethod>
+@XmlRootElement(name = "dating")
+public class TridasDating
+    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAttribute(name = "normalTridas")
-    protected NormalTridasMeasuringMethod normalTridas;
+    @XmlAttribute(name = "type", required = true)
+    protected NormalTridasDatingType type;
 
     /**
-     * Gets the value of the normalTridas property.
+     * Gets the value of the type property.
      * 
      * @return
      *     possible object is
-     *     {@link NormalTridasMeasuringMethod }
+     *     {@link NormalTridasDatingType }
      *     
      */
-    public NormalTridasMeasuringMethod getNormalTridas() {
-        return normalTridas;
+    public NormalTridasDatingType getType() {
+        return type;
     }
 
     /**
-     * Sets the value of the normalTridas property.
+     * Sets the value of the type property.
      * 
      * @param value
      *     allowed object is
-     *     {@link NormalTridasMeasuringMethod }
+     *     {@link NormalTridasDatingType }
      *     
      */
-    public void setNormalTridas(NormalTridasMeasuringMethod value) {
-        this.normalTridas = value;
+    public void setType(NormalTridasDatingType value) {
+        this.type = value;
     }
 
-    public boolean isSetNormalTridas() {
-        return (this.normalTridas!= null);
+    public boolean isSetType() {
+        return (this.type!= null);
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
-        if (!(object instanceof TridasMeasuringMethod)) {
+        if (!(object instanceof TridasDating)) {
             equalsBuilder.appendSuper(false);
             return ;
         }
         if (this == object) {
             return ;
         }
-        super.equals(object, equalsBuilder);
-        final TridasMeasuringMethod that = ((TridasMeasuringMethod) object);
-        equalsBuilder.append(this.getNormalTridas(), that.getNormalTridas());
+        final TridasDating that = ((TridasDating) object);
+        equalsBuilder.append(this.getType(), that.getType());
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof TridasMeasuringMethod)) {
+        if (!(object instanceof TridasDating)) {
             return false;
         }
         if (this == object) {
@@ -106,8 +103,7 @@ public class TridasMeasuringMethod
     }
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
-        super.hashCode(hashCodeBuilder);
-        hashCodeBuilder.append(this.getNormalTridas());
+        hashCodeBuilder.append(this.getType());
     }
 
     public int hashCode() {
@@ -117,11 +113,10 @@ public class TridasMeasuringMethod
     }
 
     public void toString(ToStringBuilder toStringBuilder) {
-        super.toString(toStringBuilder);
         {
-            NormalTridasMeasuringMethod theNormalTridas;
-            theNormalTridas = this.getNormalTridas();
-            toStringBuilder.append("normalTridas", theNormalTridas);
+            NormalTridasDatingType theType;
+            theType = this.getType();
+            toStringBuilder.append("type", theType);
         }
     }
 
@@ -132,15 +127,14 @@ public class TridasMeasuringMethod
     }
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
-        final TridasMeasuringMethod copy = ((target == null)?((TridasMeasuringMethod) createCopy()):((TridasMeasuringMethod) target));
-        super.copyTo(copy, copyBuilder);
-        if (this.isSetNormalTridas()) {
-            NormalTridasMeasuringMethod sourceNormalTridas;
-            sourceNormalTridas = this.getNormalTridas();
-            NormalTridasMeasuringMethod copyNormalTridas = ((NormalTridasMeasuringMethod) copyBuilder.copy(sourceNormalTridas));
-            copy.setNormalTridas(copyNormalTridas);
+        final TridasDating copy = ((target == null)?((TridasDating) createCopy()):((TridasDating) target));
+        if (this.isSetType()) {
+            NormalTridasDatingType sourceType;
+            sourceType = this.getType();
+            NormalTridasDatingType copyType = ((NormalTridasDatingType) copyBuilder.copy(sourceType));
+            copy.setType(copyType);
         } else {
-            copy.normalTridas = null;
+            copy.type = null;
         }
         return copy;
     }
@@ -151,7 +145,7 @@ public class TridasMeasuringMethod
     }
 
     public Object createCopy() {
-        return new TridasMeasuringMethod();
+        return new TridasDating();
     }
 
 }

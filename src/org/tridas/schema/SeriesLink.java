@@ -225,23 +225,29 @@ public class SeriesLink
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final SeriesLink copy = ((target == null)?((SeriesLink) createCopy()):((SeriesLink) target));
-        {
+        if (this.isSetIdentifier()) {
             TridasIdentifier sourceIdentifier;
             sourceIdentifier = this.getIdentifier();
             TridasIdentifier copyIdentifier = ((TridasIdentifier) copyBuilder.copy(sourceIdentifier));
             copy.setIdentifier(copyIdentifier);
+        } else {
+            copy.identifier = null;
         }
-        {
+        if (this.isSetXLink()) {
             SeriesLink.XLink sourceXLink;
             sourceXLink = this.getXLink();
             SeriesLink.XLink copyXLink = ((SeriesLink.XLink) copyBuilder.copy(sourceXLink));
             copy.setXLink(copyXLink);
+        } else {
+            copy.xLink = null;
         }
-        {
+        if (this.isSetIdRef()) {
             SeriesLink.IdRef sourceIdRef;
             sourceIdRef = this.getIdRef();
             SeriesLink.IdRef copyIdRef = ((SeriesLink.IdRef) copyBuilder.copy(sourceIdRef));
             copy.setIdRef(copyIdRef);
+        } else {
+            copy.idRef = null;
         }
         return copy;
     }
@@ -363,11 +369,13 @@ public class SeriesLink
 
         public Object copyTo(Object target, CopyBuilder copyBuilder) {
             final SeriesLink.IdRef copy = ((target == null)?((SeriesLink.IdRef) createCopy()):((SeriesLink.IdRef) target));
-            {
+            if (this.isSetRef()) {
                 Object sourceRef;
                 sourceRef = this.getRef();
                 Object copyRef = ((Object) copyBuilder.copy(sourceRef));
                 copy.setRef(copyRef);
+            } else {
+                copy.ref = null;
             }
             return copy;
         }
@@ -490,11 +498,13 @@ public class SeriesLink
 
         public Object copyTo(Object target, CopyBuilder copyBuilder) {
             final SeriesLink.XLink copy = ((target == null)?((SeriesLink.XLink) createCopy()):((SeriesLink.XLink) target));
-            {
+            if (this.isSetHref()) {
                 String sourceHref;
                 sourceHref = this.getHref();
                 String copyHref = ((String) copyBuilder.copy(sourceHref));
                 copy.setHref(copyHref);
+            } else {
+                copy.href = null;
             }
             return copy;
         }

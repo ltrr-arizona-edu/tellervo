@@ -35,6 +35,7 @@ import org.tridas.annotations.TridasEditProperties;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
+ *         &lt;element ref="{http://www.tridas.org/1.3}dating" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}firstYear" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}datingReference" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}statFoundation" maxOccurs="unbounded" minOccurs="0"/>
@@ -51,6 +52,7 @@ import org.tridas.annotations.TridasEditProperties;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
+    "dating",
     "firstYear",
     "datingReference",
     "statFoundations",
@@ -64,6 +66,7 @@ public class TridasInterpretation
 {
 
     private final static long serialVersionUID = 1001L;
+    protected TridasDating dating;
     @TridasEditProperties(finalType = true, readOnly = true)
     protected Year firstYear;
     protected TridasDatingReference datingReference;
@@ -75,6 +78,34 @@ public class TridasInterpretation
     @TridasEditProperties(finalType = true, readOnly = true)
     protected Year deathYear;
     protected String provenance;
+
+    /**
+     * Gets the value of the dating property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TridasDating }
+     *     
+     */
+    public TridasDating getDating() {
+        return dating;
+    }
+
+    /**
+     * Sets the value of the dating property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TridasDating }
+     *     
+     */
+    public void setDating(TridasDating value) {
+        this.dating = value;
+    }
+
+    public boolean isSetDating() {
+        return (this.dating!= null);
+    }
 
     /**
      * Gets the value of the firstYear property.
@@ -274,6 +305,7 @@ public class TridasInterpretation
             return ;
         }
         final TridasInterpretation that = ((TridasInterpretation) object);
+        equalsBuilder.append(this.getDating(), that.getDating());
         equalsBuilder.append(this.getFirstYear(), that.getFirstYear());
         equalsBuilder.append(this.getDatingReference(), that.getDatingReference());
         equalsBuilder.append(this.getStatFoundations(), that.getStatFoundations());
@@ -295,6 +327,7 @@ public class TridasInterpretation
     }
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
+        hashCodeBuilder.append(this.getDating());
         hashCodeBuilder.append(this.getFirstYear());
         hashCodeBuilder.append(this.getDatingReference());
         hashCodeBuilder.append(this.getStatFoundations());
@@ -310,6 +343,11 @@ public class TridasInterpretation
     }
 
     public void toString(ToStringBuilder toStringBuilder) {
+        {
+            TridasDating theDating;
+            theDating = this.getDating();
+            toStringBuilder.append("dating", theDating);
+        }
         {
             Year theFirstYear;
             theFirstYear = this.getFirstYear();
@@ -350,41 +388,62 @@ public class TridasInterpretation
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasInterpretation copy = ((target == null)?((TridasInterpretation) createCopy()):((TridasInterpretation) target));
-        {
+        if (this.isSetDating()) {
+            TridasDating sourceDating;
+            sourceDating = this.getDating();
+            TridasDating copyDating = ((TridasDating) copyBuilder.copy(sourceDating));
+            copy.setDating(copyDating);
+        } else {
+            copy.dating = null;
+        }
+        if (this.isSetFirstYear()) {
             Year sourceFirstYear;
             sourceFirstYear = this.getFirstYear();
             Year copyFirstYear = ((Year) copyBuilder.copy(sourceFirstYear));
             copy.setFirstYear(copyFirstYear);
+        } else {
+            copy.firstYear = null;
         }
-        {
+        if (this.isSetDatingReference()) {
             TridasDatingReference sourceDatingReference;
             sourceDatingReference = this.getDatingReference();
             TridasDatingReference copyDatingReference = ((TridasDatingReference) copyBuilder.copy(sourceDatingReference));
             copy.setDatingReference(copyDatingReference);
+        } else {
+            copy.datingReference = null;
         }
-        {
+        if (this.isSetStatFoundations()) {
             List<TridasStatFoundation> sourceStatFoundations;
             sourceStatFoundations = this.getStatFoundations();
+            @SuppressWarnings("unchecked")
             List<TridasStatFoundation> copyStatFoundations = ((List<TridasStatFoundation> ) copyBuilder.copy(sourceStatFoundations));
             copy.setStatFoundations(copyStatFoundations);
+        } else {
+            copy.unsetStatFoundations();
         }
-        {
+        if (this.isSetSproutYear()) {
             Year sourceSproutYear;
             sourceSproutYear = this.getSproutYear();
             Year copySproutYear = ((Year) copyBuilder.copy(sourceSproutYear));
             copy.setSproutYear(copySproutYear);
+        } else {
+            copy.sproutYear = null;
         }
-        {
+        if (this.isSetDeathYear()) {
             Year sourceDeathYear;
             sourceDeathYear = this.getDeathYear();
             Year copyDeathYear = ((Year) copyBuilder.copy(sourceDeathYear));
             copy.setDeathYear(copyDeathYear);
+        } else {
+            copy.deathYear = null;
         }
-        {
+        if (this.isSetProvenance()) {
             String sourceProvenance;
             sourceProvenance = this.getProvenance();
             String copyProvenance = ((String) copyBuilder.copy(sourceProvenance));
             copy.setProvenance(copyProvenance);
+        } else {
+            copy.provenance = null;
         }
         return copy;
     }

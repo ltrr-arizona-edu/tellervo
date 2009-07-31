@@ -207,23 +207,29 @@ public class TridasHeartwood
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasHeartwood copy = ((target == null)?((TridasHeartwood) createCopy()):((TridasHeartwood) target));
-        {
+        if (this.isSetMissingHeartwoodRingsToPith()) {
             String sourceMissingHeartwoodRingsToPith;
             sourceMissingHeartwoodRingsToPith = this.getMissingHeartwoodRingsToPith();
             String copyMissingHeartwoodRingsToPith = ((String) copyBuilder.copy(sourceMissingHeartwoodRingsToPith));
             copy.setMissingHeartwoodRingsToPith(copyMissingHeartwoodRingsToPith);
+        } else {
+            copy.missingHeartwoodRingsToPith = null;
         }
-        {
+        if (this.isSetMissingHeartwoodRingsToPithFoundation()) {
             String sourceMissingHeartwoodRingsToPithFoundation;
             sourceMissingHeartwoodRingsToPithFoundation = this.getMissingHeartwoodRingsToPithFoundation();
             String copyMissingHeartwoodRingsToPithFoundation = ((String) copyBuilder.copy(sourceMissingHeartwoodRingsToPithFoundation));
             copy.setMissingHeartwoodRingsToPithFoundation(copyMissingHeartwoodRingsToPithFoundation);
+        } else {
+            copy.missingHeartwoodRingsToPithFoundation = null;
         }
-        {
+        if (this.isSetPresence()) {
             ComplexPresenceAbsence sourcePresence;
             sourcePresence = this.getPresence();
             ComplexPresenceAbsence copyPresence = ((ComplexPresenceAbsence) copyBuilder.copy(sourcePresence));
             copy.setPresence(copyPresence);
+        } else {
+            copy.presence = null;
         }
         return copy;
     }

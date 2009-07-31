@@ -143,11 +143,14 @@ public class CurveMember
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final CurveMember copy = ((target == null)?((CurveMember) createCopy()):((CurveMember) target));
-        {
+        if (this.isSet_Curve()) {
             JAXBElement<? extends AbstractCurveType> source_Curve;
             source_Curve = this.get_Curve();
+            @SuppressWarnings("unchecked")
             JAXBElement<? extends AbstractCurveType> copy_Curve = ((JAXBElement<? extends AbstractCurveType> ) copyBuilder.copy(source_Curve));
             copy.set_Curve(copy_Curve);
+        } else {
+            copy.curve = null;
         }
         return copy;
     }

@@ -172,17 +172,21 @@ public class TridasIdentifier
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasIdentifier copy = ((target == null)?((TridasIdentifier) createCopy()):((TridasIdentifier) target));
-        {
+        if (this.isSetValue()) {
             String sourceValue;
             sourceValue = this.getValue();
             String copyValue = ((String) copyBuilder.copy(sourceValue));
             copy.setValue(copyValue);
+        } else {
+            copy.value = null;
         }
-        {
+        if (this.isSetDomain()) {
             String sourceDomain;
             sourceDomain = this.getDomain();
             String copyDomain = ((String) copyBuilder.copy(sourceDomain));
             copy.setDomain(copyDomain);
+        } else {
+            copy.domain = null;
         }
         return copy;
     }

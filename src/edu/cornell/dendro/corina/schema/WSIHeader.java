@@ -602,71 +602,95 @@ public class WSIHeader
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIHeader copy = ((target == null)?((WSIHeader) createCopy()):((WSIHeader) target));
-        {
+        if (this.isSetUser()) {
             WSIHeader.User sourceUser;
             sourceUser = this.getUser();
             WSIHeader.User copyUser = ((WSIHeader.User) copyBuilder.copy(sourceUser));
             copy.setUser(copyUser);
+        } else {
+            copy.user = null;
         }
-        {
+        if (this.isSetWsVersion()) {
             String sourceWsVersion;
             sourceWsVersion = this.getWsVersion();
             String copyWsVersion = ((String) copyBuilder.copy(sourceWsVersion));
             copy.setWsVersion(copyWsVersion);
+        } else {
+            copy.wsVersion = null;
         }
-        {
+        if (this.isSetClientVersion()) {
             String sourceClientVersion;
             sourceClientVersion = this.getClientVersion();
             String copyClientVersion = ((String) copyBuilder.copy(sourceClientVersion));
             copy.setClientVersion(copyClientVersion);
+        } else {
+            copy.clientVersion = null;
         }
-        {
+        if (this.isSetRequestDate()) {
             XMLGregorianCalendar sourceRequestDate;
             sourceRequestDate = this.getRequestDate();
             XMLGregorianCalendar copyRequestDate = ((XMLGregorianCalendar) copyBuilder.copy(sourceRequestDate));
             copy.setRequestDate(copyRequestDate);
+        } else {
+            copy.requestDate = null;
         }
-        {
+        if (this.isSetQueryTime()) {
             WSIHeader.QueryTime sourceQueryTime;
             sourceQueryTime = this.getQueryTime();
             WSIHeader.QueryTime copyQueryTime = ((WSIHeader.QueryTime) copyBuilder.copy(sourceQueryTime));
             copy.setQueryTime(copyQueryTime);
+        } else {
+            copy.queryTime = null;
         }
-        {
+        if (this.isSetRequestUrl()) {
             String sourceRequestUrl;
             sourceRequestUrl = this.getRequestUrl();
             String copyRequestUrl = ((String) copyBuilder.copy(sourceRequestUrl));
             copy.setRequestUrl(copyRequestUrl);
+        } else {
+            copy.requestUrl = null;
         }
-        {
+        if (this.isSetRequestType()) {
             CorinaRequestType sourceRequestType;
             sourceRequestType = this.getRequestType();
             CorinaRequestType copyRequestType = ((CorinaRequestType) copyBuilder.copy(sourceRequestType));
             copy.setRequestType(copyRequestType);
+        } else {
+            copy.requestType = null;
         }
-        {
+        if (this.isSetStatus()) {
             CorinaRequestStatus sourceStatus;
             sourceStatus = this.getStatus();
             CorinaRequestStatus copyStatus = ((CorinaRequestStatus) copyBuilder.copy(sourceStatus));
             copy.setStatus(copyStatus);
+        } else {
+            copy.status = null;
         }
-        {
+        if (this.isSetMessages()) {
             List<WSIMessage> sourceMessages;
             sourceMessages = this.getMessages();
+            @SuppressWarnings("unchecked")
             List<WSIMessage> copyMessages = ((List<WSIMessage> ) copyBuilder.copy(sourceMessages));
             copy.setMessages(copyMessages);
+        } else {
+            copy.unsetMessages();
         }
-        {
+        if (this.isSetTimings()) {
             List<WSIHeader.Timing> sourceTimings;
             sourceTimings = this.getTimings();
+            @SuppressWarnings("unchecked")
             List<WSIHeader.Timing> copyTimings = ((List<WSIHeader.Timing> ) copyBuilder.copy(sourceTimings));
             copy.setTimings(copyTimings);
+        } else {
+            copy.unsetTimings();
         }
-        {
+        if (this.isSetNonce()) {
             WSINonce sourceNonce;
             sourceNonce = this.getNonce();
             WSINonce copyNonce = ((WSINonce) copyBuilder.copy(sourceNonce));
             copy.setNonce(copyNonce);
+        } else {
+            copy.nonce = null;
         }
         return copy;
     }
@@ -823,17 +847,20 @@ public class WSIHeader
 
         public Object copyTo(Object target, CopyBuilder copyBuilder) {
             final WSIHeader.QueryTime copy = ((target == null)?((WSIHeader.QueryTime) createCopy()):((WSIHeader.QueryTime) target));
-            {
+            if (this.isSetValue()) {
                 double sourceValue;
                 sourceValue = this.getValue();
-                double copyValue = ((double) copyBuilder.copy(sourceValue));
+                double copyValue = copyBuilder.copy(sourceValue);
                 copy.setValue(copyValue);
+            } else {
             }
-            {
+            if (this.isSetUnit()) {
                 String sourceUnit;
                 sourceUnit = this.getUnit();
                 String copyUnit = ((String) copyBuilder.copy(sourceUnit));
                 copy.setUnit(copyUnit);
+            } else {
+                copy.unit = null;
             }
             return copy;
         }
@@ -994,17 +1021,21 @@ public class WSIHeader
 
         public Object copyTo(Object target, CopyBuilder copyBuilder) {
             final WSIHeader.Timing copy = ((target == null)?((WSIHeader.Timing) createCopy()):((WSIHeader.Timing) target));
-            {
+            if (this.isSetValue()) {
                 String sourceValue;
                 sourceValue = this.getValue();
                 String copyValue = ((String) copyBuilder.copy(sourceValue));
                 copy.setValue(copyValue);
+            } else {
+                copy.value = null;
             }
-            {
+            if (this.isSetLabel()) {
                 String sourceLabel;
                 sourceLabel = this.getLabel();
                 String copyLabel = ((String) copyBuilder.copy(sourceLabel));
                 copy.setLabel(copyLabel);
+            } else {
+                copy.label = null;
             }
             return copy;
         }
@@ -1240,29 +1271,37 @@ public class WSIHeader
 
         public Object copyTo(Object target, CopyBuilder copyBuilder) {
             final WSIHeader.User copy = ((target == null)?((WSIHeader.User) createCopy()):((WSIHeader.User) target));
-            {
+            if (this.isSetId()) {
                 String sourceId;
                 sourceId = this.getId();
                 String copyId = ((String) copyBuilder.copy(sourceId));
                 copy.setId(copyId);
+            } else {
+                copy.id = null;
             }
-            {
+            if (this.isSetUsername()) {
                 String sourceUsername;
                 sourceUsername = this.getUsername();
                 String copyUsername = ((String) copyBuilder.copy(sourceUsername));
                 copy.setUsername(copyUsername);
+            } else {
+                copy.username = null;
             }
-            {
+            if (this.isSetFirstname()) {
                 String sourceFirstname;
                 sourceFirstname = this.getFirstname();
                 String copyFirstname = ((String) copyBuilder.copy(sourceFirstname));
                 copy.setFirstname(copyFirstname);
+            } else {
+                copy.firstname = null;
             }
-            {
+            if (this.isSetLastname()) {
                 String sourceLastname;
                 sourceLastname = this.getLastname();
                 String copyLastname = ((String) copyBuilder.copy(sourceLastname));
                 copy.setLastname(copyLastname);
+            } else {
+                copy.lastname = null;
             }
             return copy;
         }

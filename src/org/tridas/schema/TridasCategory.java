@@ -134,11 +134,13 @@ public class TridasCategory
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasCategory copy = ((target == null)?((TridasCategory) createCopy()):((TridasCategory) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetNormalTridas()) {
             NormalTridasCategory sourceNormalTridas;
             sourceNormalTridas = this.getNormalTridas();
             NormalTridasCategory copyNormalTridas = ((NormalTridasCategory) copyBuilder.copy(sourceNormalTridas));
             copy.setNormalTridas(copyNormalTridas);
+        } else {
+            copy.normalTridas = null;
         }
         return copy;
     }

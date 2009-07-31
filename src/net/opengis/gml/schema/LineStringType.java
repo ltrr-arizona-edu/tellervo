@@ -143,11 +143,13 @@ public class LineStringType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final LineStringType copy = ((target == null)?((LineStringType) createCopy()):((LineStringType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetPosList()) {
             PosList sourcePosList;
             sourcePosList = this.getPosList();
             PosList copyPosList = ((PosList) copyBuilder.copy(sourcePosList));
             copy.setPosList(copyPosList);
+        } else {
+            copy.posList = null;
         }
         return copy;
     }

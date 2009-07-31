@@ -249,29 +249,37 @@ public class TridasWoodCompleteness
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasWoodCompleteness copy = ((target == null)?((TridasWoodCompleteness) createCopy()):((TridasWoodCompleteness) target));
-        {
+        if (this.isSetPith()) {
             TridasPith sourcePith;
             sourcePith = this.getPith();
             TridasPith copyPith = ((TridasPith) copyBuilder.copy(sourcePith));
             copy.setPith(copyPith);
+        } else {
+            copy.pith = null;
         }
-        {
+        if (this.isSetHeartwood()) {
             TridasHeartwood sourceHeartwood;
             sourceHeartwood = this.getHeartwood();
             TridasHeartwood copyHeartwood = ((TridasHeartwood) copyBuilder.copy(sourceHeartwood));
             copy.setHeartwood(copyHeartwood);
+        } else {
+            copy.heartwood = null;
         }
-        {
+        if (this.isSetSapwood()) {
             TridasSapwood sourceSapwood;
             sourceSapwood = this.getSapwood();
             TridasSapwood copySapwood = ((TridasSapwood) copyBuilder.copy(sourceSapwood));
             copy.setSapwood(copySapwood);
+        } else {
+            copy.sapwood = null;
         }
-        {
+        if (this.isSetBark()) {
             TridasBark sourceBark;
             sourceBark = this.getBark();
             TridasBark copyBark = ((TridasBark) copyBuilder.copy(sourceBark));
             copy.setBark(copyBark);
+        } else {
+            copy.bark = null;
         }
         return copy;
     }

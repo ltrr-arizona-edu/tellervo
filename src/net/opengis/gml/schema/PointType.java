@@ -139,11 +139,13 @@ public class PointType
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final PointType copy = ((target == null)?((PointType) createCopy()):((PointType) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetPos()) {
             Pos sourcePos;
             sourcePos = this.getPos();
             Pos copyPos = ((Pos) copyBuilder.copy(sourcePos));
             copy.setPos(copyPos);
+        } else {
+            copy.pos = null;
         }
         return copy;
     }

@@ -168,17 +168,21 @@ public class TridasSoil
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasSoil copy = ((target == null)?((TridasSoil) createCopy()):((TridasSoil) target));
-        {
+        if (this.isSetDescription()) {
             String sourceDescription;
             sourceDescription = this.getDescription();
             String copyDescription = ((String) copyBuilder.copy(sourceDescription));
             copy.setDescription(copyDescription);
+        } else {
+            copy.description = null;
         }
-        {
+        if (this.isSetDepth()) {
             Double sourceDepth;
             sourceDepth = this.getDepth();
             Double copyDepth = ((Double) copyBuilder.copy(sourceDepth));
             copy.setDepth(copyDepth);
+        } else {
+            copy.depth = null;
         }
         return copy;
     }

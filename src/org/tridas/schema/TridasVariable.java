@@ -134,11 +134,13 @@ public class TridasVariable
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasVariable copy = ((target == null)?((TridasVariable) createCopy()):((TridasVariable) target));
         super.copyTo(copy, copyBuilder);
-        {
+        if (this.isSetNormalTridas()) {
             NormalTridasVariable sourceNormalTridas;
             sourceNormalTridas = this.getNormalTridas();
             NormalTridasVariable copyNormalTridas = ((NormalTridasVariable) copyBuilder.copy(sourceNormalTridas));
             copy.setNormalTridas(copyNormalTridas);
+        } else {
+            copy.normalTridas = null;
         }
         return copy;
     }

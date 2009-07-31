@@ -332,41 +332,52 @@ public class SecurityUser
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final SecurityUser copy = ((target == null)?((SecurityUser) createCopy()):((SecurityUser) target));
-        {
+        if (this.isSetMemberOf()) {
             SecurityUser.MemberOf sourceMemberOf;
             sourceMemberOf = this.getMemberOf();
             SecurityUser.MemberOf copyMemberOf = ((SecurityUser.MemberOf) copyBuilder.copy(sourceMemberOf));
             copy.setMemberOf(copyMemberOf);
+        } else {
+            copy.memberOf = null;
         }
-        {
+        if (this.isSetId()) {
             String sourceId;
             sourceId = this.getId();
             String copyId = ((String) copyBuilder.copy(sourceId));
             copy.setId(copyId);
+        } else {
+            copy.id = null;
         }
-        {
+        if (this.isSetUsername()) {
             String sourceUsername;
             sourceUsername = this.getUsername();
             String copyUsername = ((String) copyBuilder.copy(sourceUsername));
             copy.setUsername(copyUsername);
+        } else {
+            copy.username = null;
         }
-        {
+        if (this.isSetFirstName()) {
             String sourceFirstName;
             sourceFirstName = this.getFirstName();
             String copyFirstName = ((String) copyBuilder.copy(sourceFirstName));
             copy.setFirstName(copyFirstName);
+        } else {
+            copy.firstName = null;
         }
-        {
+        if (this.isSetLastName()) {
             String sourceLastName;
             sourceLastName = this.getLastName();
             String copyLastName = ((String) copyBuilder.copy(sourceLastName));
             copy.setLastName(copyLastName);
+        } else {
+            copy.lastName = null;
         }
-        {
+        if (this.isSetIsActive()) {
             boolean sourceIsActive;
             sourceIsActive = this.isIsActive();
-            boolean copyIsActive = ((boolean) copyBuilder.copy(sourceIsActive));
+            boolean copyIsActive = copyBuilder.copy(sourceIsActive);
             copy.setIsActive(copyIsActive);
+        } else {
         }
         return copy;
     }
@@ -511,11 +522,14 @@ public class SecurityUser
 
         public Object copyTo(Object target, CopyBuilder copyBuilder) {
             final SecurityUser.MemberOf copy = ((target == null)?((SecurityUser.MemberOf) createCopy()):((SecurityUser.MemberOf) target));
-            {
+            if (this.isSetSecurityGroups()) {
                 List<SecurityGroup> sourceSecurityGroups;
                 sourceSecurityGroups = this.getSecurityGroups();
+                @SuppressWarnings("unchecked")
                 List<SecurityGroup> copySecurityGroups = ((List<SecurityGroup> ) copyBuilder.copy(sourceSecurityGroups));
                 copy.setSecurityGroups(copySecurityGroups);
+            } else {
+                copy.unsetSecurityGroups();
             }
             return copy;
         }

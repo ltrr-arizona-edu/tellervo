@@ -318,41 +318,53 @@ public class WSIAuthenticate
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIAuthenticate copy = ((target == null)?((WSIAuthenticate) createCopy()):((WSIAuthenticate) target));
-        {
+        if (this.isSetUsername()) {
             String sourceUsername;
             sourceUsername = this.getUsername();
             String copyUsername = ((String) copyBuilder.copy(sourceUsername));
             copy.setUsername(copyUsername);
+        } else {
+            copy.username = null;
         }
-        {
+        if (this.isSetPassword()) {
             String sourcePassword;
             sourcePassword = this.getPassword();
             String copyPassword = ((String) copyBuilder.copy(sourcePassword));
             copy.setPassword(copyPassword);
+        } else {
+            copy.password = null;
         }
-        {
+        if (this.isSetCnonce()) {
             String sourceCnonce;
             sourceCnonce = this.getCnonce();
             String copyCnonce = ((String) copyBuilder.copy(sourceCnonce));
             copy.setCnonce(copyCnonce);
+        } else {
+            copy.cnonce = null;
         }
-        {
+        if (this.isSetSnonce()) {
             String sourceSnonce;
             sourceSnonce = this.getSnonce();
             String copySnonce = ((String) copyBuilder.copy(sourceSnonce));
             copy.setSnonce(copySnonce);
+        } else {
+            copy.snonce = null;
         }
-        {
+        if (this.isSetHash()) {
             String sourceHash;
             sourceHash = this.getHash();
             String copyHash = ((String) copyBuilder.copy(sourceHash));
             copy.setHash(copyHash);
+        } else {
+            copy.hash = null;
         }
-        {
+        if (this.isSetSeq()) {
             String sourceSeq;
             sourceSeq = this.getSeq();
             String copySeq = ((String) copyBuilder.copy(sourceSeq));
             copy.setSeq(copySeq);
+        } else {
+            copy.seq = null;
         }
         return copy;
     }

@@ -155,11 +155,14 @@ public class WSIElementAuthenticityDictionary implements Serializable, CopyTo, C
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIElementAuthenticityDictionary copy = ((target == null)?((WSIElementAuthenticityDictionary) createCopy()):((WSIElementAuthenticityDictionary) target));
-        {
+        if (this.isSetElementAuthenticities()) {
             List<ControlledVoc> sourceElementAuthenticities;
             sourceElementAuthenticities = this.getElementAuthenticities();
+            @SuppressWarnings("unchecked")
             List<ControlledVoc> copyElementAuthenticities = ((List<ControlledVoc> ) copyBuilder.copy(sourceElementAuthenticities));
             copy.setElementAuthenticities(copyElementAuthenticities);
+        } else {
+            copy.unsetElementAuthenticities();
         }
         return copy;
     }

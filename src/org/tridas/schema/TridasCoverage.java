@@ -175,17 +175,21 @@ public class TridasCoverage
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasCoverage copy = ((target == null)?((TridasCoverage) createCopy()):((TridasCoverage) target));
-        {
+        if (this.isSetCoverageTemporal()) {
             String sourceCoverageTemporal;
             sourceCoverageTemporal = this.getCoverageTemporal();
             String copyCoverageTemporal = ((String) copyBuilder.copy(sourceCoverageTemporal));
             copy.setCoverageTemporal(copyCoverageTemporal);
+        } else {
+            copy.coverageTemporal = null;
         }
-        {
+        if (this.isSetCoverageTemporalFoundation()) {
             String sourceCoverageTemporalFoundation;
             sourceCoverageTemporalFoundation = this.getCoverageTemporalFoundation();
             String copyCoverageTemporalFoundation = ((String) copyBuilder.copy(sourceCoverageTemporalFoundation));
             copy.setCoverageTemporalFoundation(copyCoverageTemporalFoundation);
+        } else {
+            copy.coverageTemporalFoundation = null;
         }
         return copy;
     }

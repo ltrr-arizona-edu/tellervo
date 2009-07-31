@@ -303,35 +303,45 @@ public abstract class TridasEntity implements Serializable, CopyTo, Copyable, Eq
             throw new IllegalArgumentException("Target argument must not be null for abstract copyable classes.");
         }
         final TridasEntity copy = ((TridasEntity) target);
-        {
+        if (this.isSetTitle()) {
             String sourceTitle;
             sourceTitle = this.getTitle();
             String copyTitle = ((String) copyBuilder.copy(sourceTitle));
             copy.setTitle(copyTitle);
+        } else {
+            copy.title = null;
         }
-        {
+        if (this.isSetIdentifier()) {
             TridasIdentifier sourceIdentifier;
             sourceIdentifier = this.getIdentifier();
             TridasIdentifier copyIdentifier = ((TridasIdentifier) copyBuilder.copy(sourceIdentifier));
             copy.setIdentifier(copyIdentifier);
+        } else {
+            copy.identifier = null;
         }
-        {
+        if (this.isSetCreatedTimestamp()) {
             DateTime sourceCreatedTimestamp;
             sourceCreatedTimestamp = this.getCreatedTimestamp();
             DateTime copyCreatedTimestamp = ((DateTime) copyBuilder.copy(sourceCreatedTimestamp));
             copy.setCreatedTimestamp(copyCreatedTimestamp);
+        } else {
+            copy.createdTimestamp = null;
         }
-        {
+        if (this.isSetLastModifiedTimestamp()) {
             DateTime sourceLastModifiedTimestamp;
             sourceLastModifiedTimestamp = this.getLastModifiedTimestamp();
             DateTime copyLastModifiedTimestamp = ((DateTime) copyBuilder.copy(sourceLastModifiedTimestamp));
             copy.setLastModifiedTimestamp(copyLastModifiedTimestamp);
+        } else {
+            copy.lastModifiedTimestamp = null;
         }
-        {
+        if (this.isSetComments()) {
             String sourceComments;
             sourceComments = this.getComments();
             String copyComments = ((String) copyBuilder.copy(sourceComments));
             copy.setComments(copyComments);
+        } else {
+            copy.comments = null;
         }
         return copy;
     }
