@@ -98,7 +98,23 @@ public class DBBrowser extends DBBrowser_UI {
         // don't let it grow to distort our dialog!
         extraButtonPanel.setPreferredSize(new Dimension(btnOk.getWidth(), 1));
         extraButtonPanel.setMaximumSize(new Dimension(btnOk.getWidth(), Integer.MAX_VALUE));
-        
+               
+        // Set size of window to 1024x700 or full screen whichever is the smaller
+        int width;
+        int height;
+        if(this.getToolkit().getScreenSize().width<1024){
+        	width = this.getToolkit().getScreenSize().width;
+        }
+        else{
+        	width = 1024;
+        }
+        if(this.getToolkit().getScreenSize().height<700){
+        	height = this.getToolkit().getScreenSize().height;
+        }
+        else{
+        	height = 700;
+        }        
+        this.setSize(width, height);
         Center.center(this);
         
         // Whenever the site list changes, make sure we repopulate our site list
