@@ -21,6 +21,7 @@ SET default_with_oids = false;
 CREATE TABLE tblredate (
     redateid integer NOT NULL,
     vmeasurementid uuid NOT NULL,
+    startyear integer NOT NULL,
     redatingtypeid integer,
     justification text
 );
