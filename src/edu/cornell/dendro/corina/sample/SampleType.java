@@ -9,7 +9,8 @@ public enum SampleType {
 	CLEAN(true),
 	REDATE(true),
 	LEGACYCLEAN(true),
-	CROSSDATE(true);
+	CROSSDATE(true),
+	TRUNCATE(true);
 	
 	private SampleType(boolean derived) {
 		this.derived = derived;
@@ -45,6 +46,8 @@ public enum SampleType {
 			return "LegacyClean";
 		case CROSSDATE:
 			return "Crossdate";
+		case TRUNCATE:
+			return "Truncate";
 		default:
 			return "";
 		}
