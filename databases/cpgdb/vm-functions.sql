@@ -188,27 +188,34 @@ DECLARE
    XJustification ALIAS FOR $4;
    XConfidence ALIAS FOR $5;
 
-   dummy tblVMeasurement.VMeasurementID%TYPE;
+   myParentVMID tblVMeasurement.VMeasurementID%TYPE;
+   masterDatingClass DatingTypeClass;
+   childDatingClass DatingTypeClass;
 BEGIN
-   -- Check to see if our vmeasurement exists
-   SELECT VMeasurementID INTO dummy FROM tblVMeasurement
-      WHERE VMeasurementID=XVMID;
+   -- Find the VMeasurement we're being derived from
+   SELECT MemberVMeasurementID INTO myParentVMID FROM tblVMeasurementGroup WHERE VMeasurementID = XVMID;
+
+   -- Check to see if our vmeasurement exists and get its dating class
+   SELECT DatingClass INTO childDatingClass FROM cpgdb.getMetaCache(myParentVMID) LEFT JOIN tlkpDatingType USING (datingTypeID);
 
    IF NOT FOUND THEN
-      RAISE EXCEPTION 'VMeasurement for Crossdate does not exist (%)', XVMID;
+      RAISE EXCEPTION 'VMeasurement for Crossdate does not exist or is invalid (%)', XVMID;
    END IF;
 
-   -- Check to see if our MASTER vmeasurement exists
-   SELECT VMeasurementID INTO dummy FROM tblVMeasurement
-      WHERE VMeasurementID=XMasterVMID;
+   -- Check to see if our MASTER vmeasurement exists and get its dating class
+   SELECT DatingClass INTO masterDatingClass FROM cpgdb.getMetaCache(XMasterVMID) LEFT JOIN tlkpDatingType USING (datingTypeID);
 
    IF NOT FOUND THEN
-      RAISE EXCEPTION 'VMeasurement Master for Crossdate does not exist (%)', XMasterVMID;
+      RAISE EXCEPTION 'VMeasurement Master for Crossdate does not exist or is invalid (%)', XMasterVMID;
    END IF;
 
    -- Check for sanity
    IF XStartYear IS NULL OR XConfidence IS NULL THEN
       RAISE EXCEPTION 'Invalid arguments to cpgdb.FinishCrossdate';
+   END IF;
+
+   IF childDatingClass = 'inferred'::DatingTypeClass THEN
+      RAISE EXCEPTION 'You cannot crossdate a series with inferred/absolute dating.';
    END IF;
 
    -- Create the actual crossdate
