@@ -93,6 +93,11 @@ This file is for custom annotations applied to tridas objects
 	</bindings>	
 	
 	<!-- Read only: interpretation.*, save for provenance -->
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='dating']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" />
+		</annox:annotate>	
+	</bindings>
 	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='firstYear']">
   		<annox:annotate target="field">
 			<ta:TridasEditProperties readOnly="true" finalType="true" />

@@ -66,6 +66,7 @@ public class TridasInterpretation
 {
 
     private final static long serialVersionUID = 1001L;
+    @TridasEditProperties(readOnly = true)
     protected TridasDating dating;
     @TridasEditProperties(finalType = true, readOnly = true)
     protected Year firstYear;
