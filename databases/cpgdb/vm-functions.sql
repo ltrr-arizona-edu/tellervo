@@ -93,7 +93,7 @@ BEGIN
       END IF;
 
       -- throws an exception if it fails, so don't do anything
-      IF cpgdb.VerifySumsAreContiguous(Constituents) = FALSE THEN
+      IF cpgdb.VerifySumsAreContiguousAndDated(Constituents) = FALSE THEN
          NULL;      
       END IF;
 
@@ -309,7 +309,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL VOLATILE;
 
-CREATE OR REPLACE FUNCTION cpgdb.VerifySumsAreContiguous(uuid[]) 
+CREATE OR REPLACE FUNCTION cpgdb.VerifySumsAreContiguousAndDated(uuid[]) 
 RETURNS BOOLEAN AS $$
 DECLARE
    Constituents ALIAS FOR $1;
@@ -321,6 +321,11 @@ DECLARE
    CStart INTEGER;
    CEnd INTEGER;
    VMID tblVMeasurement.VMeasurementID%TYPE;
+
+   CurDatingTypeID INTEGER;
+   
+   CurDatingClass DatingTypeClass;
+   LastDatingClass DatingTypeClass;
 BEGIN
    FOR CVMId IN array_lower(Constituents, 1)..array_upper(Constituents,1) LOOP
       -- first, verify it exists
@@ -330,8 +335,16 @@ BEGIN
          RAISE EXCEPTION 'Sum constituent does not exist (id:%)', Constituents[CVMId];
       END IF;
       
-      -- now, check for continuity
-      SELECT StartYear,StartYear+ReadingCount INTO CStart, CEnd from cpgdb.getMetaCache(Constituents[CVMId]);
+      -- now, check for continuity and similar dating types
+      SELECT StartYear,StartYear+ReadingCount,DatingClass INTO CStart, CEnd, CurDatingClass from cpgdb.getMetaCache(Constituents[CVMId])
+             LEFT JOIN tlkpDatingType USING (datingTypeID);
+      
+      -- Ensure dating classes are the same
+      IF LastDatingClass IS NOT NULL AND CurDatingClass <> LastDatingClass THEN
+         RAISE EXCEPTION 'Sum contains elements from different dating classes, which is not valid (%, %)', CurDatingClass, LastDatingClass;
+      ELSE
+         LastDatingClass := CurDatingClass;
+      END IF;
 
       IF SumStart IS NULL THEN
          -- First part
