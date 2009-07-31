@@ -171,6 +171,8 @@ public class QueryGenerator {
 		 * 2 = paramRedate
 		 * 3 = paramCurrentVMeasurementResultID
 		 */
+		/*
+		 * QUERY IS NOW MANUALLY MAINTAINED; must handle special redating change of dating type
 		addQuery("qupdVMeasurementResultOpRedate",
 				"UPDATE tblVMeasurementResult SET VMeasurementID=$1, " +
 				"StartYear=$2 " +
@@ -181,6 +183,7 @@ public class QueryGenerator {
 				PP.in("paramRedate", PT.integer),
 				PP.in("paramCurrentVMeasurementResultID", PT.uuid)
 				);
+		*/
 	
 		/*
 		 * NOTE: DUPE PARAMS AGAIN!
@@ -188,6 +191,8 @@ public class QueryGenerator {
 		 * 2 = paramVMeasurementID
 		 * 3 = paramCurrentVMeasurementResultID
 		 */
+		/*
+		 * QUERY IS NOW MANUALLY MANTAINED; must inherit dating type from parent
 		addQuery("qupdVMeasurementResultOpCrossdate",
 				"UPDATE tblVMeasurementResult SET VMeasurementID=$1, " +
 				"StartYear=(SELECT StartYear FROM tblCrossdate WHERE VMeasurementID=$1) " +
@@ -197,7 +202,7 @@ public class QueryGenerator {
 				PP.in("paramVMeasurementID", PT.uuid),
 				PP.in("paramCurrentVMeasurementResultID", PT.uuid)
 				);
-	
+		*/
 		/*
 		 * 1 = paramVMeasurementResultGroupID
 		 */
