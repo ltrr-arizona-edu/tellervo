@@ -27,7 +27,9 @@ package edu.cornell.dendro.corina_indexing;
     @version $Id: SingularMatrixException.java 815 2007-09-24 03:02:02Z Lucas Madar $
 */
 public class SingularMatrixException extends Exception {
-    /**
+	private static final long serialVersionUID = 1L;
+
+	/**
         Make a new singular matrix exception.
     */
     public SingularMatrixException() {
