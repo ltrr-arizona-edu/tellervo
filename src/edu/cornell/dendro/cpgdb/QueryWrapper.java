@@ -1,13 +1,12 @@
 package edu.cornell.dendro.cpgdb;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.UUID;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Types;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 
 /*
  * This class is a temporary wrapper for SQL statements.
@@ -218,7 +217,7 @@ public class QueryWrapper {
 	 * @throws SQLException
 	 */
 	public void cleanup() throws SQLException {
-		Iterator i = queries.keySet().iterator();
+		Iterator<String> i = queries.keySet().iterator();
 		
 		while(i.hasNext()) {
 			StatementQueryHolder sq = queries.get(i.next());

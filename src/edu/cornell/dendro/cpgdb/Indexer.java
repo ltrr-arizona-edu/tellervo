@@ -29,15 +29,15 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 		super(readingResults);
 		
 		if(indexType == null)
-			this.indexType = 7; // exponential is the magic default.
-		else
-			this.indexType = indexType;
+			throw new NullPointerException("indexType must be specified as VMeasurementOpParam");
+		
+		this.indexType = indexType;
 	}
 
 	/**
 	 * @see Indexable
 	 */
-	public List getData() {
+	public List<? extends Number> getData() {
 		return reading;
 	}
 
@@ -48,7 +48,7 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 		func = getIndexFunction();
 		func.index();
 		
-		List indexedData = func.getOutput();
+		List<? extends Number> indexedData = func.getOutput();
 		if(indexedData.size() != reading.size())
 			throw new IllegalArgumentException("output and input are not the same size!");
 		
@@ -56,7 +56,7 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 		 * Traverse the indexed data and create our output.
 		 */
 		int len = indexedData.size();
-		output = new ArrayList(len);
+		List<Integer> output = new ArrayList<Integer>(len);
 		for(int i = 0; i < len; i++) {
 			double ind = ((Number) indexedData.get(i)).doubleValue();
 			double raw = ((Number) reading.get(i)).doubleValue();
@@ -65,6 +65,8 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 			
 			output.add(val);
 		}
+		
+		this.output = output;
 	}
 	
 	private IndexFunction getIndexFunction() throws SQLException  {
@@ -112,9 +114,9 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 			
 			b.append(newVMeasurementResultID);
 			b.append("',");
-			b.append(((Number) relYear.get(i)).intValue());
+			b.append(relYear.get(i));
 			b.append(',');
-			b.append(((Number) output.get(i)).intValue());
+			b.append(output.get(i).intValue());
 			b.append(")");
 			s.addBatch(b.toString());
 		}
@@ -125,8 +127,8 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 
 		for(int i = 0; i < len; i++) {
 			s.setObject(1, newVMeasurementResultID);
-			s.setInt(2, ((Number) relYear.get(i)).intValue());
-			s.setInt(3, ((Number) output.get(i)).intValue());
+			s.setInt(2, relYear.get(i));
+			s.setInt(3, output.get(i).intValue());
 		
 			s.addBatch();
 		}

@@ -18,13 +18,13 @@ import java.util.List;
  * @author Lucas Madar
  */
 public class ReadingResultHolder {
-	protected List relYear;
-	protected List reading;
-	protected List output;
+	protected List<Integer> relYear;
+	protected List<Integer> reading;
+	protected List<? extends Number> output;
 	
 	public ReadingResultHolder(ResultSet readingResults) throws SQLException {
-		relYear = new ArrayList();
-		reading = new ArrayList();
+		relYear = new ArrayList<Integer>();
+		reading = new ArrayList<Integer>();
 			
 		populate(readingResults);
 		
