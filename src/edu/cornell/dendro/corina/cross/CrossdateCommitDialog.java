@@ -142,7 +142,7 @@ public class CrossdateCommitDialog extends JDialog {
 		
 		// set certainty and justification
 		GenericFieldUtils.addField(series, "corina.crossdateConfidenceLevel", cboCertainty.getSelectedItem());		
-		GenericFieldUtils.addField(series, "corina.crossdateJustification", txtJustification.getText());
+		GenericFieldUtils.addField(series, "corina.justification", txtJustification.getText());
 		
 		// set the parent
 		SeriesLinkUtil.addToSeries(series, secondary.getSeries().getIdentifier());
