@@ -33,7 +33,7 @@ public class LabCodeFormatter {
 	}
 	
 	
-	public static LabCodeFormatter getSeriesPrefix(){
+	public static LabCodeFormatter getSeriesPrefixFormatter(){
 		return cornellSeriesPrefixFormatter;
 	}
 	

@@ -24,14 +24,13 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -55,6 +54,7 @@ import javax.swing.text.JTextComponent;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
 
+import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.graph.Graph;
@@ -62,6 +62,7 @@ import edu.cornell.dendro.corina.graph.GraphActions;
 import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
 import edu.cornell.dendro.corina.graph.GraphToolbar;
+import edu.cornell.dendro.corina.graph.Graphable;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.Help;
@@ -71,6 +72,7 @@ import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -92,8 +94,9 @@ import edu.cornell.dendro.corina_indexing.Exponential;
  * 
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class IndexDialog extends JDialog {
+	private static final long serialVersionUID = 1L;
+
 	private GrapherPanel graphPanel;
 
 	private List<Graph> graphSamples;
@@ -284,9 +287,6 @@ public class IndexDialog extends JDialog {
 	}
 	
 	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {
-		System.out.println("w1: " + otherPanelDim.width + ", w2: " + extraWidth);
-		System.out.println("WIDTH: " + Toolkit.getDefaultToolkit().getScreenSize().width);
-		
 		// create a new graphinfo structure, so we can tailor it to our needs.
 		GraphInfo gInfo = new GraphInfo();
 		
@@ -299,6 +299,8 @@ public class IndexDialog extends JDialog {
 		
 		// create a graph panel; put it in a scroll pane
 		graphPanel = new GrapherPanel(graphSamples, null, gInfo) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Dimension getPreferredScrollableViewportSize() {
 				// -10s are for insets set below in the emptyBorder
@@ -358,7 +360,7 @@ public class IndexDialog extends JDialog {
 
 		// ok button -- REFACTOR: EXTRACT METHOD
 		okButton = Builder.makeButton("ok");
-		okButton.addActionListener(new AbstractAction() {
+		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				int row = table.getSelectedRow();
 
@@ -398,7 +400,7 @@ public class IndexDialog extends JDialog {
 	
 	private JButton makeCancelButton() {
 		JButton cancel = Builder.makeButton("cancel");
-		cancel.addActionListener(new AbstractAction() {
+		cancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				dispose();
 			}
@@ -423,12 +425,19 @@ public class IndexDialog extends JDialog {
 			
 		// Create name components
 		JLabel l = new JLabel("Series code:  ");
-		//JLabel prefix = new JLabel(LabCodeFormatter.getSeriesPrefix().format() + "- ");
+		
 		JLabel prefix = new JLabel("C-XXX-X-X-X-");
-		JTextField name = new JTextField(sample.getSeries().getTitle().toString());
+
+		// make the prefix more relevant if we have a labcode
+		if(sample.hasMeta(Metadata.LABCODE)) {
+			prefix.setText(LabCodeFormatter.getSeriesPrefixFormatter().format(
+					sample.getMeta(Metadata.LABCODE, LabCode.class)) + "- ");
+		}
+		
+		JTextField name = new JTextField(sample.getSeries().getTitle());
 		name.setColumns(10);
 		indexName = name;
-		//l.setLabelFor(indexName);
+		prefix.setLabelFor(indexName);
 		
 		JPanel titlePanel = new JPanel();
 		titlePanel.setLayout(new BorderLayout());
@@ -441,8 +450,7 @@ public class IndexDialog extends JDialog {
 		version.setColumns(20);		
 		versionName = version;
 		l.setLabelFor(versionName);
-		
-		
+				
 		
 		// Add items to panel
 		p.add(l);
@@ -497,9 +505,10 @@ public class IndexDialog extends JDialog {
 
 		// set up graphSamples, and ensure that it's set to something sane
 		// otherwise, graph won't initialize
-		graphSamples = new ArrayList<Graph>(2);
+		graphSamples = new ArrayList<Graph>(3);
 		graphSamples.add(new Graph(iset.indexes.get(0).getTarget()));
 		graphSamples.add(new Graph(iset.indexes.get(0)));
+		graphSamples.add(getDiffGraph(iset.indexes.get(0)));
 		
     	table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
@@ -517,14 +526,17 @@ public class IndexDialog extends JDialog {
 				// change the graph samples...
 				graphSamples.set(0, new Graph(i.getTarget()));
 				graphSamples.set(1, new Graph(i));
+				graphSamples.set(2, getDiffGraph(i));
 				
 				// propagate old scale
 				graphSamples.get(0).scale = scale;
 				graphSamples.get(1).scale = scale;
+				graphSamples.get(2).scale = scale * 0.1f;
 				
 				// Make sure the graphs can't be dragged
 				graphSamples.get(0).setDraggable(false);
 				graphSamples.get(1).setDraggable(false);				
+				graphSamples.get(2).setDraggable(false);				
 				
 				if(graphPanel != null)
 					graphPanel.update();
@@ -543,5 +555,50 @@ public class IndexDialog extends JDialog {
 		}
 		
 		return scroller;
+	}
+	
+	/**
+	 * Get a difference graph
+	 * @param indexidx
+	 * @return a graph of the differences in the ratio
+	 */
+	private Graph getDiffGraph(Index index) {		
+		Graphable series = index.getTarget();
+
+		return new Graph(new DiffGraph(series.getData(), index.getData(), series.getStart()));
+	}
+	
+	private static final class DiffGraph implements Graphable {
+		private final Year startYear;
+		private final List<? extends Number> output;
+		
+		public DiffGraph(List<? extends Number> seriesData, List<? extends Number> indexData, Year startYear) {
+			this.startYear = startYear;
+		
+			int len = seriesData.size();
+			
+			List<Integer> output = new ArrayList<Integer>(len);
+			for(int i = 0; i < len; i++) {
+				double ind = indexData.get(i).doubleValue();
+				double raw = seriesData.get(i).doubleValue();
+				double ratio = raw / ind;
+				int val = (int) Math.round(ratio * 1000.0d);			
+				
+				output.add(val);
+			}
+			this.output = output;
+		}
+		
+		public List<? extends Number> getData() {
+			return output;
+		}
+
+		public float getScale() {
+			return 1.0f;
+		}
+
+		public Year getStart() {
+			return startYear;
+		}
 	}
 }
