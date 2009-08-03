@@ -2,11 +2,13 @@ package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.EnumSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -27,6 +29,13 @@ public class NameVersionPanel extends JPanel {
 	private JTextComponent versionName;
 	/** The justification */
 	private JTextComponent justification;
+
+	/**
+	 * A the set of fields we have
+	 */
+	public enum Fields {
+		NAME, VERSION, JUSTIFICATION;
+	}
 	
 	/**
 	 * Create a new panel for the given sample, without a justification box
@@ -155,11 +164,37 @@ public class NameVersionPanel extends JPanel {
 	public String getJustification() {
 		return justification.getText();
 	}
-	
+
 	/**
-	 * Change the focus to the name panel
+	 * Check if the fields exist; show a dialog and focus if they don't.
+	 * 
+	 * @param valuesRequired
+	 * @return true if the values are satisfied, false otherwise
 	 */
-	public void focusName() {
-		seriesName.requestFocusInWindow();
+	public boolean testAndComplainRequired(EnumSet<Fields> valuesRequired) {
+		if(valuesRequired.contains(Fields.NAME) && !hasName()) {
+			complain("series name");
+			seriesName.requestFocusInWindow();
+			return false;
+		}
+
+		if(valuesRequired.contains(Fields.VERSION) && !hasVersion()) {
+			complain("version");
+			versionName.requestFocusInWindow();
+			return false;
+		}
+
+		if(valuesRequired.contains(Fields.JUSTIFICATION) && !hasJustification()) {
+			complain("justification");
+			justification.requestFocusInWindow();
+			return false;
+		}
+
+		return true;
+	}
+	
+	private void complain(String name) {
+		JOptionPane.showMessageDialog(this, "The '" + name + "' field is required.", 
+				"Information missing", JOptionPane.ERROR_MESSAGE);
 	}
 }

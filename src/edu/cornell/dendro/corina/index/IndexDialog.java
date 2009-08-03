@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -39,7 +40,6 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -243,12 +243,8 @@ public class IndexDialog extends JDialog {
 
 	private boolean corinaWsiApplyIndex(Index index) {
 		// we have to have a name set in order to create an index
-		if(!nameAndVersion.hasName()) {
-			JOptionPane.showMessageDialog(this, "You must specify a title.", "Cannot index without a title", 
-					JOptionPane.ERROR_MESSAGE);
-			nameAndVersion.focusName();
+		if(!nameAndVersion.testAndComplainRequired(EnumSet.of(NameVersionPanel.Fields.NAME)))
 			return false;
-		}
 		
 		TridasDerivedSeries series = new TridasDerivedSeries();
 		

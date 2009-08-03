@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.EnumSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -34,6 +35,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -51,6 +53,7 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.NameVersionPanel;
 import edu.cornell.dendro.corina.gui.RangeSlider;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
@@ -85,6 +88,7 @@ import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
  * 
  * @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i
  *         style="color: gray">dot</i> edu&gt;
+ * @author Lucas Madar
  * @version $Id$
  */
 public class TruncateDialog extends JDialog {
@@ -100,6 +104,8 @@ public class TruncateDialog extends JDialog {
 	
 	/** The text field that shows the resultant truncation range */
 	private JLabel result;
+	
+	private NameVersionPanel info;
 
 	// when something is typed, update everything from the numbers
 	private DocumentListener2 relativeUpdater = new DocumentListener2() {
@@ -185,10 +191,17 @@ public class TruncateDialog extends JDialog {
 	 * @return true on success
 	 */
 	private boolean applyCorinaWsiTruncation() {
+		// we have to have a name and a justification
+		if(!info.testAndComplainRequired(EnumSet.of(NameVersionPanel.Fields.NAME,
+				NameVersionPanel.Fields.JUSTIFICATION)))
+			return false;
+
 		TridasDerivedSeries series = new TridasDerivedSeries();
 		
 		// set title (and version?)
-		series.setTitle(s.getSeries().getTitle() + "X");
+		series.setTitle(info.getName());
+		if(info.hasVersion())
+			series.setVersion(info.getVersion());
 		
 		// it's a truncate
 		ControlledVoc voc = new ControlledVoc();
@@ -213,7 +226,7 @@ public class TruncateDialog extends JDialog {
 		
 		GenericFieldUtils.setField(series, "corina.newStartYear", relStartYear);
 		GenericFieldUtils.setField(series, "corina.newEndYear", relEndYear);
-		GenericFieldUtils.setField(series, "justification", "justified!");
+		GenericFieldUtils.setField(series, "justification", info.getJustification());
 		
 		// make a new 'truncate' dummy sample for saving
 		Sample tmp = new Sample(series);		
@@ -457,8 +470,22 @@ public class TruncateDialog extends JDialog {
 		pri.add(result);
 		pri.add(Box.createVerticalStrut(8));
 
+		pri.add(new JSeparator(JSeparator.HORIZONTAL));
+		pri.add(Box.createVerticalStrut(8));
+		
+		pri.add(setupNamingAndJustification());
+		
+		pri.add(Box.createVerticalStrut(8));
+		pri.add(new JSeparator(JSeparator.HORIZONTAL));
+		
+		pri.add(Box.createVerticalStrut(12));
 		// return the panel
 		return pri;
+	}
+	
+	private JPanel setupNamingAndJustification() {
+		info = new NameVersionPanel(s, true);
+		return info;
 	}
 	
 	/** 
@@ -516,6 +543,12 @@ public class TruncateDialog extends JDialog {
 		// no error checks, because our slider can't go off from the original scale
 		
 		r = new Range(start, end);
+		
+		// well, don't let the span get to be zero; that breaks things.
+		if(r.span() == 0) {
+			r = null;
+			return;
+		}
 		
 		// first set of boxes
 		tfRelStart.getDocument().removeDocumentListener(relativeUpdater);
