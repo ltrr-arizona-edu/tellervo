@@ -39,24 +39,22 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.text.JTextComponent;
 
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.Editor;
-import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.graph.GraphActions;
 import edu.cornell.dendro.corina.graph.GraphController;
@@ -67,13 +65,12 @@ import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.NameVersionPanel;
 import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.tridasv2.LabCode;
-import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -100,12 +97,12 @@ public class IndexDialog extends JDialog {
 	private GrapherPanel graphPanel;
 
 	private List<Graph> graphSamples;
-	private JTextComponent indexName;
-	private JTextComponent versionName;
 	
 	private IndexSet iset;
 	private IndexTableModel model;
 
+	private NameVersionPanel nameAndVersion;
+	
 	private JButton okButton;
 
 	// source data
@@ -245,13 +242,23 @@ public class IndexDialog extends JDialog {
 	}
 
 	private boolean corinaWsiApplyIndex(Index index) {
+		// we have to have a name set in order to create an index
+		if(!nameAndVersion.hasName()) {
+			JOptionPane.showMessageDialog(this, "You must specify a title.", "Cannot index without a title", 
+					JOptionPane.ERROR_MESSAGE);
+			nameAndVersion.focusName();
+			return false;
+		}
+		
 		TridasDerivedSeries series = new TridasDerivedSeries();
 		
 		// it's a new series! (to force update, set this to the id of the series to update!)
 		// call gets a new identifier with the domain of our parent
 		series.setIdentifier(NewTridasIdentifier.getInstance(sample.getSeries().getIdentifier()));
-		series.setTitle(indexName.getText());
-		series.setVersion(versionName.getText());
+		series.setTitle(nameAndVersion.getName());
+		
+		if(nameAndVersion.hasVersion())
+			series.setVersion(nameAndVersion.getVersion());
 
 		// it's an index
 		ControlledVoc voc = new ControlledVoc();
@@ -420,48 +427,8 @@ public class IndexDialog extends JDialog {
 	
 	// flow containing name and version
 	private JComponent makeNameBox() {
-		JPanel p = new JPanel();
-		p.setLayout(new GridLayout(2,2,5,5));
-			
-		// Create name components
-		JLabel l = new JLabel("Series code:  ");
-		
-		JLabel prefix = new JLabel("C-XXX-X-X-X-");
-
-		// make the prefix more relevant if we have a labcode
-		if(sample.hasMeta(Metadata.LABCODE)) {
-			prefix.setText(LabCodeFormatter.getSeriesPrefixFormatter().format(
-					sample.getMeta(Metadata.LABCODE, LabCode.class)) + "- ");
-		}
-		
-		JTextField name = new JTextField(sample.getSeries().getTitle());
-		name.setColumns(10);
-		indexName = name;
-		prefix.setLabelFor(indexName);
-		
-		JPanel titlePanel = new JPanel();
-		titlePanel.setLayout(new BorderLayout());
-		titlePanel.add(prefix, BorderLayout.WEST);
-		titlePanel.add(indexName, BorderLayout.CENTER);
-			
-		// Create version components
-		JLabel l2 = new JLabel("Version:");
-		JTextField version = new JTextField("1");
-		version.setColumns(20);		
-		versionName = version;
-		l.setLabelFor(versionName);
-				
-		
-		// Add items to panel
-		p.add(l);
-		p.add(titlePanel);
-		p.add(l2);
-		p.add(versionName);
-
-		JPanel outer = new JPanel(new BorderLayout());
-		outer.add(p, BorderLayout.NORTH);
-		
-		return outer;
+		nameAndVersion = new NameVersionPanel(sample);
+		return nameAndVersion;
 	}
 	
 	private JComponent makeTable() {
