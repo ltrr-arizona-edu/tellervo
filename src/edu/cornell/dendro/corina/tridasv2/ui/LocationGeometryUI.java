@@ -57,6 +57,9 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         lblWaypoint = new javax.swing.JLabel();
         radGPS = new javax.swing.JRadioButton();
         radManual = new javax.swing.JRadioButton();
+        panelButton = new javax.swing.JPanel();
+        btnOK = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
 
         lblDDLong.setText("Longitude:");
 
@@ -216,6 +219,31 @@ public class LocationGeometryUI extends javax.swing.JPanel {
 
         radManual.setText("Manual data entry");
 
+        btnOK.setText("OK");
+
+        btnCancel.setText("Cancel");
+
+        org.jdesktop.layout.GroupLayout panelButtonLayout = new org.jdesktop.layout.GroupLayout(panelButton);
+        panelButton.setLayout(panelButtonLayout);
+        panelButtonLayout.setHorizontalGroup(
+            panelButtonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonLayout.createSequentialGroup()
+                .addContainerGap(373, Short.MAX_VALUE)
+                .add(btnCancel)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(btnOK)
+                .addContainerGap())
+        );
+        panelButtonLayout.setVerticalGroup(
+            panelButtonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonLayout.createSequentialGroup()
+                .addContainerGap(19, Short.MAX_VALUE)
+                .add(panelButtonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(btnOK)
+                    .add(btnCancel))
+                .addContainerGap())
+        );
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -250,6 +278,7 @@ public class LocationGeometryUI extends javax.swing.JPanel {
             .add(layout.createSequentialGroup()
                 .add(panelDecDeg, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(160, Short.MAX_VALUE))
+            .add(panelButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -282,7 +311,8 @@ public class LocationGeometryUI extends javax.swing.JPanel {
                 .add(panelDMS, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelDecDeg, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(panelButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -292,7 +322,9 @@ public class LocationGeometryUI extends javax.swing.JPanel {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    protected javax.swing.JButton btnCancel;
     protected javax.swing.JButton btnGPSBrowse;
+    protected javax.swing.JButton btnOK;
     protected javax.swing.JComboBox cboDatum;
     protected javax.swing.JComboBox cboLatLongStyle;
     protected javax.swing.JComboBox cboWaypoint;
@@ -310,6 +342,7 @@ public class LocationGeometryUI extends javax.swing.JPanel {
     protected javax.swing.JLabel lblLongMin;
     protected javax.swing.JLabel lblLongSec;
     protected javax.swing.JLabel lblWaypoint;
+    protected javax.swing.JPanel panelButton;
     protected javax.swing.JPanel panelDMS;
     protected javax.swing.JPanel panelDecDeg;
     protected javax.swing.JRadioButton radGPS;
