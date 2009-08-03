@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina.platform;
 
+import java.io.File;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -211,6 +212,22 @@ public class Macintosh {
 		}
 	}
 
+	/**
+	 * Open a file using rundll32's fileprotocol handler
+	 * @param file
+	 */
+	public static void openFile(File file) {
+		String[] cmdArray = {
+				"open",
+				file.getAbsolutePath()
+		};
+		
+		try {
+			Runtime.getRuntime().exec(cmdArray);
+		} catch (Exception e) {
+		}
+	}
+	
 	// --------------------------------------------------
 	// common code:
 	private static ClassLoader getClassLoader() {
