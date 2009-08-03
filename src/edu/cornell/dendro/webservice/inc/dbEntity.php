@@ -2643,6 +2643,13 @@ class measurementEntity extends dbEntity
 	 */
 	protected $newStartYear = NULL;
 	
+	/**
+	 * New end year when redating/crossdating
+	 *
+	 * @var Integer 
+	 */
+	protected $newEndYear = NULL;	
+	
 	
     /**
      * Array of readings/values
@@ -3081,6 +3088,11 @@ class measurementEntity extends dbEntity
 		$this->units->setUnit($id, $value);
     }
     
+    function setNewEndYear($year)
+    {
+    	$this->newEndYear = $year;
+    }
+    
     function setNewStartYear($year)
     {
         $this->newStartYear = $year;
@@ -3478,6 +3490,11 @@ class measurementEntity extends dbEntity
 	function getNewStartYear()
 	{
 		return $this->newStartYear;
+	}
+	
+	function getNewEndYear()
+	{
+		return $this->newEndYear;
 	}
 	
 	function getStatType()

@@ -38,6 +38,8 @@ class measurement extends measurementEntity implements IDBAccessor
 	{
 		global $debugFlag;
 		global $myMetaHeader;
+		global $firebug;
+		
 		if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting measurement parameters from DB result");
 
 		$this->setTitle($row['code']);		
@@ -90,6 +92,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->setMasterVMeasurementID($row['mastervmeasurementid']);
 		$this->setMeasurementID($row['measurementid']);
 		
+		
 		// Only load summary fields if this is a summary...
 		if($format=='summary') $this->setSummaryObjectArray($row['objectid']);
 
@@ -110,7 +113,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		global $dbconn;
 		global $myMetaHeader;
 		global $debugFlag;
-		 
+		global $firebug;
 		 
 		// Set the current objects parameters from the database
 
@@ -140,6 +143,8 @@ class measurement extends measurementEntity implements IDBAccessor
 			{
 				// Set parameters from db
 				$row = pg_fetch_array($result);
+							
+				
 				$this->setParamsFromDBRow($row, $format);
 			}
 
@@ -199,7 +204,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		global $dbconn;
 		global $myMetaHeader;
 		global $debugFlag;
-
+		global $firebug;
+		
 		// Empty the reading array in case we have data already in there
 		unset($this->readingsArray);
 		$this->readingsArray = array();
@@ -209,9 +215,11 @@ class measurement extends measurementEntity implements IDBAccessor
 		if ($debugFlag===TRUE) $myMetaHeader->setTiming("Running cpgdb.getVMeasurementResult()");
 		$sql2 = "SELECT * FROM cpgdb.getvmeasurementresult('".pg_escape_string($this->getID())."')";
 		pg_send_query($dbconn, $sql2);
+		
 		$result2 = pg_get_result($dbconn);
 		$row2 = pg_fetch_array($result2);
-		
+		$firebug->log(__LINE__, "Line number");	
+		$firebug->log($sql2, "getvmeasurementresult sql");	
 		if (pg_result_error($result2))
 		{
 			$this->setErrorMessage("701", pg_result_error($result2));
@@ -224,10 +232,12 @@ class measurement extends measurementEntity implements IDBAccessor
 		$sql  = "SELECT * FROM vwjsonnotedreadingresult where vmeasurementresultid='".pg_escape_string($this->getVMeasurementResultID())."' ".
         		"ORDER BY relyear ASC";
 		$dbconnstatus = pg_connection_status($dbconn);
+		
 		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
 		{
 			$result = pg_query($dbconn, $sql);
 			$relYearCheck = 0;
+			
 			while ($row = pg_fetch_array($result))
 			{
 				if ($relYearCheck==$row['relyear'])
@@ -394,6 +404,8 @@ class measurement extends measurementEntity implements IDBAccessor
 															$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
 		if ($paramsClass->dating->getDatingErrorPositive()!=NULL) $this->dating->setDatingErrors($paramsClass->dating->getDatingErrorPositive(), $paramsClass->dating->getDatingErrorNegative());
 
+		if ($paramsClass->getNewEndYear()!=NULL)			$this->setNewEndYear($paramsClass->getNewEndYear());
+		
 		if ($paramsClass->parentID!=NULL)
 		{
 			$parentObj = new radius();
@@ -1560,13 +1572,12 @@ class measurement extends measurementEntity implements IDBAccessor
 						elseif($this->getVMeasurementOp()=='Truncate')
 						{
 							$sql.= 	"'".pg_escape_string($this->getNewEndYear())."', ".
-									"'".pg_escape_string($this->getJustification())."', ";
+									"'".pg_escape_string($this->getJustification())."') ";
 						}						
 						elseif($this->getVMeasurementOp()=='Redate')
 						{
-							$sql.= 	"'".pg_escape_string($this->getNewEndYear())."', ".
-									"'".pg_escape_string($this->dating->getID())."', ".
-									"'".pg_escape_string($this->getJustification())."', ";
+							$sql.= 	"'".pg_escape_string($this->dating->getID())."', ".
+									"'".pg_escape_string($this->getJustification())."') ";
 						}
 												
 						$firebug->log($sql, "SQL Transaction for finishing cross, trunc or re- date");
@@ -1581,9 +1592,11 @@ class measurement extends measurementEntity implements IDBAccessor
 
 					// Add reading notes to DB
 					$this->addReadingNotesToDB($localVMID);
-												
+																					
 					// Successful so retrieve the automated fields for this new vmeasurement
 					$this->setParamsFromDB($localVMID);
+					
+
 
 				}
 				else

@@ -914,9 +914,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   			if($interpTag->nodeType != XML_ELEMENT_NODE) continue;
 		   			switch($interpTag->nodeName)
 		   			{
-		   				case "firstYear":
-		   					$this->setNewStartYear($interpTag->nodeValue);
-		   					break;
+
 		   				case "datingReference":
 		   					$datingRefTags = $interpTag->childNodes;
 					   		foreach($datingRefTags as $datingRefTag)
@@ -940,9 +938,12 @@ class measurementParameters extends measurementEntity implements IParams
 		   					}
 		   					
 			   			case "dating":
-			   				$this->dating->setDatingType(null, $interpTag->getAttribute(type));
+			   				$this->dating->setDatingType(null, $interpTag->getAttribute("type"));
 			   				break;
 		   					
+			   			case "firstYear": break;
+			   			case "sproutYear": break;
+			   			case "deathYear":  break;
 		   				default:
 		   					trigger_error("901"."Unknown tag &lt;".$interpTag->tagName."&gt;. Tag is being ignored", E_USER_NOTICE);
 		   					
@@ -982,6 +983,13 @@ class measurementParameters extends measurementEntity implements IParams
 		   			case "corina.isReconciled":		   				
 		   				$this->setIsReconciled($value);
 		   				break;
+		   				
+		   			case "corina.newStartYear":
+	   					$this->setNewStartYear($value);
+	   					break;	
+		   				
+		   			case "corina.newEndYear":
+		   				$this->setNewEndYear($value);
 		   					
 		   			  				
 		   			case "corina.directChildCount":		break;
