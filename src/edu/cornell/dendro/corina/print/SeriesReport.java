@@ -32,6 +32,7 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.tools.Executable;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Metadata;
@@ -58,7 +59,7 @@ public class SeriesReport {
 		this.s = s;
 	}
 		
-	public void generateSeriesReport(String filename) {
+	public Document generateSeriesReport(String filename) {
 	
 		// Create a document-object
 		Document document = new Document(PageSize.LETTER);
@@ -124,10 +125,33 @@ public class SeriesReport {
 			System.err.println(ioe.getMessage());
 		}
 
-		// Close the document
-		document.close();
+		return document;
 	}
 	
+	
+	public void printReport()
+	{
+
+		String filename = "print.pdf";
+		System.out.println("Start printing " + filename);
+		try{
+			Executable.printDocumentSilent(filename);
+			}catch(IOException e){
+			System.out.println("Printing error");
+			e.printStackTrace();
+			}
+			System.out.println("Done printing");
+	}
+	
+	public void displayReport()
+	{
+		String filename = "print.pdf";
+		try{
+			Executable.openDocument(filename);
+			}catch(IOException e){
+			e.printStackTrace();
+			}
+	}	
 	
 	/**
 	 * Get an iText Paragraph for the Title 
@@ -450,7 +474,7 @@ public class SeriesReport {
 		
 		
 		SeriesReport report = new SeriesReport(samp); 
-		report.generateSeriesReport(filename);
+		report.printReport();
 	}
 	
 }
