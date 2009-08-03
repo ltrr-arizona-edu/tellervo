@@ -270,9 +270,6 @@ public class VMeasurementResult {
 			/* 
 			 * "As we are updating a record, not appending a new one, use the current ID as the new one."
 			 */
-			if(VMeasurementOpParameter == null)
-				throw new SQLException("Invalid null redate parameter");
-			
 			newVMeasurementResultID = lastWorkingVMeasurementResultID;
 			dbq.execute("qupdVMeasurementResultOpRedate", VMeasurementID, VMeasurementOpParameter, lastWorkingVMeasurementResultID);
 			break;
