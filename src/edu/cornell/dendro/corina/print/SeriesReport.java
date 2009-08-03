@@ -1,6 +1,7 @@
 
 package edu.cornell.dendro.corina.print;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -12,6 +13,8 @@ import java.util.UUID;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.Year;
 
@@ -32,7 +35,6 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.tools.Executable;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Metadata;
@@ -59,7 +61,7 @@ public class SeriesReport {
 		this.s = s;
 	}
 		
-	public Document generateSeriesReport(String filename) {
+	public void generateSeriesReport(String filename) {
 	
 		// Create a document-object
 		Document document = new Document(PageSize.LETTER);
@@ -125,33 +127,10 @@ public class SeriesReport {
 			System.err.println(ioe.getMessage());
 		}
 
-		return document;
+		// Close the document
+		document.close();
 	}
 	
-	
-	public void printReport()
-	{
-
-		String filename = "print.pdf";
-		System.out.println("Start printing " + filename);
-		try{
-			Executable.printDocumentSilent(filename);
-			}catch(IOException e){
-			System.out.println("Printing error");
-			e.printStackTrace();
-			}
-			System.out.println("Done printing");
-	}
-	
-	public void displayReport()
-	{
-		String filename = "print.pdf";
-		try{
-			Executable.openDocument(filename);
-			}catch(IOException e){
-			e.printStackTrace();
-			}
-	}	
 	
 	/**
 	 * Get an iText Paragraph for the Title 
@@ -349,11 +328,23 @@ public class SeriesReport {
 	{
 		Paragraph p = new Paragraph();
 	
+		ITridasSeries sss = s.getSeries();
+		TridasMeasurementSeries mseries = null;
+		TridasDerivedSeries dseries = null;
+		
+		if(sss instanceof TridasMeasurementSeries) 
+		{ 
+			mseries = (TridasMeasurementSeries) sss; 
+		}
+		else
+		{
+			dseries = (TridasDerivedSeries) sss;
+		}
 		
 		p.add(new Chunk("Measured by: ", subSectionFont));
-		p.add(new Chunk("Peter Brewer", bodyFont));
+		p.add(new Chunk(mseries.getAnalyst(), bodyFont));
 		p.add(new Chunk("\nSupervised by: ", subSectionFont));
-		p.add(new Chunk("Peter Kuniholm", bodyFont));
+		p.add(new Chunk(mseries.getDendrochronologist(), bodyFont));
 
 		
 		return p;		
@@ -474,7 +465,8 @@ public class SeriesReport {
 		
 		
 		SeriesReport report = new SeriesReport(samp); 
-		report.printReport();
+		report.generateSeriesReport(filename);
+		App.platform.openFile(new File(filename));
 	}
 	
 }
