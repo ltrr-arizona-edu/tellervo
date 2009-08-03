@@ -161,7 +161,6 @@ public class BaseSample implements TridasIdentifiable {
 	 */
 	public void setRange(Range range) {
 		this.range = range;
-		System.out.println("Range: " + range);
 	}
 
 	/**
