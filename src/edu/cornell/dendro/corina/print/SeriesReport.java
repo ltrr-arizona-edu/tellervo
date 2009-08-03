@@ -1,16 +1,14 @@
 
 package edu.cornell.dendro.corina.print;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.UUID;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDerivedSeries;
@@ -23,13 +21,10 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
-import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.Image;
-
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
-
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
@@ -37,12 +32,13 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
-import edu.cornell.dendro.corina.editor.DecadalModel;
+import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
+import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 
 public class SeriesReport {
 
@@ -61,14 +57,13 @@ public class SeriesReport {
 		this.s = s;
 	}
 		
-	public void generateSeriesReport(String filename) {
+	public void generateSeriesReport(OutputStream output) {
 	
 		// Create a document-object
 		Document document = new Document(PageSize.LETTER);
 		try {
 
-			PdfWriter writer = PdfWriter.getInstance(document,
-					new FileOutputStream(filename));
+			PdfWriter writer = PdfWriter.getInstance(document, output);
 			document.open();
 			cb = writer.getDirectContent();			
 			
@@ -123,8 +118,6 @@ public class SeriesReport {
 			
 		} catch (DocumentException de) {
 			System.err.println(de.getMessage());
-		} catch (IOException ioe) {
-			System.err.println(ioe.getMessage());
 		}
 
 		// Close the document
@@ -435,7 +428,6 @@ public class SeriesReport {
 	{
 		String domain = "dendro.cornell.edu/dev/";
 		String measurementID = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
-		String filename = "output.pdf";
 		
 	    App.platform = new Platform();
 	    App.platform.init();	    
@@ -448,11 +440,42 @@ public class SeriesReport {
 		catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
+
+		// create the series report
+		SeriesReport report = new SeriesReport(samp);
+
+		// printing? generate PDF in memory
+		boolean printReport = true;
 		
+		if(printReport) {
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			
+			report.generateSeriesReport(output);
+			
+			try {
+				PrintablePDF pdf = PrintablePDF.fromByteArray(output.toByteArray());
+
+				// true means show printer dialog, false means just print using the default printer
+				pdf.print(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			// probably better to use a chooser dialog here...
+			try {
+				File outputFile = File.createTempFile("seriesreport", ".pdf");
+				FileOutputStream output = new FileOutputStream(outputFile);
+				
+				report.generateSeriesReport(output);
+
+				App.platform.openFile(outputFile);
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+				return;
+			}
+		}
 		
-		SeriesReport report = new SeriesReport(samp); 
-		report.generateSeriesReport(filename);
-		App.platform.openFile(new File(filename));
 	}
 	
 }
