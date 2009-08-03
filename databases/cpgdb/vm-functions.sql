@@ -246,19 +246,35 @@ DECLARE
    XEndRelYear ALIAS FOR $3;
    XJustification ALIAS FOR $4;
 
-   dummy tblVMeasurement.VMeasurementID%TYPE;
+   myParentVMID tblVMeasurement.VMeasurementID%TYPE;
+   CStart integer;
+   CCount integer;
 BEGIN
-   -- Check to see if our vmeasurement exists
-   SELECT VMeasurementID INTO dummy FROM tblVMeasurement
-      WHERE VMeasurementID=XVMID;
+   -- Find the VMeasurement we're being derived from
+   SELECT MemberVMeasurementID INTO myParentVMID FROM tblVMeasurementGroup WHERE VMeasurementID = XVMID;
 
    IF NOT FOUND THEN
-      RAISE EXCEPTION 'VMeasurement for Truncate does not exist (%)', XVMID;
+      RAISE EXCEPTION 'VMeasurement for Truncate does not exist or is invalid (%)', XVMID;
+   END IF;
+
+   -- now, check for continuity and similar dating types
+   SELECT StartYear,ReadingCount INTO CStart, CCount from cpgdb.getMetaCache(myParentVMID);
+
+   IF NOT FOUND THEN
+      RAISE EXCEPTION 'Parent measurement does not exist or is malformed for truncate (%/%)', XVMID, myParentVMID;
    END IF;
 
    -- Check for sanity
    IF XStartRelYear IS NULL OR XEndRelYear IS NULL THEN
       RAISE EXCEPTION 'Invalid arguments to cpgdb.FinishTruncate';
+   END IF;
+
+   -- Make sure the year parameters are within the range of the VM we're truncating
+   IF XStartRelYear < 0 OR XStartRelYear > CCount THEN
+      RAISE EXCEPTION 'Truncate StartYear is out of range (% <> [%,%])', XStartRelYear, 0, CCount;
+   END IF;
+   IF XEndRelYear < XStartRelYear OR XEndRelYear > CCount THEN
+      RAISE EXCEPTION 'Truncate EndYear is out of range (% <> [%,%])', XEndRelYear, XStartRelYear, CCount;
    END IF;
 
    -- Create the actual truncate
