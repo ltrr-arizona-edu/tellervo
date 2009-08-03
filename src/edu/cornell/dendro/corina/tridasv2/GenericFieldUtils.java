@@ -116,7 +116,7 @@ public class GenericFieldUtils {
 		if(value instanceof Boolean)
 			fieldValueType = "xs:boolean";
 		else if(value instanceof Integer)
-			fieldValueType = "xs:integer";
+			fieldValueType = "xs:int";
 		else if(value instanceof Float || value instanceof Double)
 			fieldValueType = "xs:float";
 		else
