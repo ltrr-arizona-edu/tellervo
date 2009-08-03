@@ -290,24 +290,10 @@ public class SeriesReport {
 	private Paragraph getTimestampPDF()
 	{
 		// Set up calendar
-		GregorianCalendar cal1 = new GregorianCalendar(
-				s.getSeries().getCreatedTimestamp().getValue().getYear(),
-				s.getSeries().getCreatedTimestamp().getValue().getMonth()-1,
-				s.getSeries().getCreatedTimestamp().getValue().getDay(),
-				s.getSeries().getCreatedTimestamp().getValue().getHour(),
-				s.getSeries().getCreatedTimestamp().getValue().getMinute(),
-				s.getSeries().getCreatedTimestamp().getValue().getSecond());	
-		Date createdTimestamp = cal1.getTime(); 
-		GregorianCalendar cal2 = new GregorianCalendar(
-				s.getSeries().getLastModifiedTimestamp().getValue().getYear(),
-				s.getSeries().getLastModifiedTimestamp().getValue().getMonth()-1,
-				s.getSeries().getLastModifiedTimestamp().getValue().getDay(),
-				s.getSeries().getLastModifiedTimestamp().getValue().getHour(),
-				s.getSeries().getLastModifiedTimestamp().getValue().getMinute(),
-				s.getSeries().getLastModifiedTimestamp().getValue().getSecond());	
-		Date lastModifiedTimestamp = cal2.getTime(); 		
-		cal1.setTime(cal1.getTime());
-		cal2.setTime(cal2.getTime());		
+		Date createdTimestamp = s.getSeries().getCreatedTimestamp().getValue()
+				.toGregorianCalendar().getTime();
+		Date lastModifiedTimestamp = s.getSeries().getLastModifiedTimestamp()
+				.getValue().toGregorianCalendar().getTime();
 		DateFormat df1 = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
 		
 		Paragraph p = new Paragraph();
