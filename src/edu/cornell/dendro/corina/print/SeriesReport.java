@@ -523,6 +523,7 @@ public class SeriesReport {
 				missingSapwoodFoundation = "unspecified reasons";
 			}
 						
+			p.add(new Chunk("- Sapwood is " + sapwoodPresence, bodyFont ));
 			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBark()!=null){
 				p.add(new Chunk(" ("+ missingSapwoodRings + " rings are missing based upon " + missingSapwoodFoundation + ").\n", bodyFont));
 			}
@@ -553,7 +554,7 @@ public class SeriesReport {
 		
 		// Last ring info
 		if(woodCompleteness.getSapwood().getLastRingUnderBark()!=null){
-			p.add(new Chunk("- Last ring: " + woodCompleteness.getSapwood().getLastRingUnderBark().toString(), bodyFont));
+			p.add(new Chunk("- Last ring "+woodCompleteness.getSapwood().getLastRingUnderBark().toString(), bodyFont));
 		}
 		else
 		{
