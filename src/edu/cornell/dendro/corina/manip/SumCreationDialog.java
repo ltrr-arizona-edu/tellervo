@@ -18,7 +18,6 @@ import org.tridas.schema.TridasIdentifier;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.GraphDialog;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
@@ -28,6 +27,8 @@ import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 
 public class SumCreationDialog {
@@ -133,7 +134,7 @@ public class SumCreationDialog {
 			// here's where we do the "meat"
 			if(cwe.save(tmp, sum)) {
 				// put it in our menu
-				OpenRecent.sampleOpened(tmp.getLoader());
+				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 								
 				// open a new editor 
 				new Editor(tmp);

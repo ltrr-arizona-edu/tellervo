@@ -66,7 +66,6 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.NameVersionPanel;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
@@ -78,6 +77,8 @@ import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.NoEmptySelection;
 import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 import edu.cornell.dendro.corina_indexing.Exponential;
 
@@ -276,7 +277,7 @@ public class IndexDialog extends JDialog {
 			// here's where we do the "meat"
 			if(cwe.save(tmp, this)) {
 				// put it in our menu
-				OpenRecent.sampleOpened(tmp.getLoader());
+				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 								
 				// open a new editor 
 				new Editor(tmp);

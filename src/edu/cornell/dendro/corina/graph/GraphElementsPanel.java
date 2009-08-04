@@ -23,11 +23,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 
 public class GraphElementsPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -114,7 +115,7 @@ public class GraphElementsPanel extends JPanel {
 	    					continue;
 	    				}
 
-	    				OpenRecent.sampleOpened(s.getLoader());
+	    				OpenRecent.sampleOpened(new SeriesDescriptor(s));
 	    				
 	    				// add it to graph
 	    				window.add(s);

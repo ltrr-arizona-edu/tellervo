@@ -31,9 +31,9 @@ public interface SaveableDocument {
     public String getFilename();
 
     /**
-     * @return the class instance responsible for actually saving this document
+     * @return the document that was saved
      */
-    public Object getSaverClass();
+    public Object getSavedDocument();
 
     public String getDocumentTitle(); // hack! -- [[ remind me why ]]
 }

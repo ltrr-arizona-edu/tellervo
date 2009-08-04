@@ -402,7 +402,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		return null;
 	}
 
-	public Object getSaverClass() {
+	public Object getSavedDocument() {
 		return null;
 	}
 

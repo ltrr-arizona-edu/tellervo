@@ -793,7 +793,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		App.prefs.removePrefsListener(this);
 	}
 
-	public Object getSaverClass() {
-		return this;
+	public Object getSavedDocument() {
+		return plot;
 	}
 }

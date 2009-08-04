@@ -20,6 +20,12 @@
 
 package edu.cornell.dendro.corina;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.Years;
 
@@ -43,12 +49,17 @@ import edu.cornell.dendro.corina.util.Years;
  *         style="color: gray">dot</i> edu&gt;
  * @version $Id$
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "")
+@XmlRootElement(name = "range")
 public class Range implements Comparable<Range> {
 
 	/** Starting year of the Range. */
+	@XmlAttribute(name = "start")
 	private Year start;
 
 	/** Ending year of the range. */
+	@XmlAttribute(name = "end")
 	private Year end;
 
 	/**
@@ -216,7 +227,7 @@ public class Range implements Comparable<Range> {
 		return memo;
 	}
 
-	private String memo = null;
+	private transient String memo = null;
 
 	/**
 	 * Return a string representation of the range, including the span, like

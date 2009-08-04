@@ -23,10 +23,11 @@ package edu.cornell.dendro.corina.gui;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.editor.Editor;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 
 import java.io.IOException;
 
@@ -40,7 +41,7 @@ public class CanOpener {
 		Element e = ElementFactory.createElement(filename);
 	    Sample s = e.load();
 	    new Editor(s);
-	    OpenRecent.sampleOpened(s.getLoader());
+	    OpenRecent.sampleOpened(new SeriesDescriptor(s));
 	    return;
 	} catch (WrongFiletypeException wfte) {
 	    // just need to hop out of that block

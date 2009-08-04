@@ -13,7 +13,6 @@ import javax.swing.JMenuItem;
 import edu.cornell.dendro.corina.CorinaPermission;
 import edu.cornell.dendro.corina.cross.Crossdater;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.index.IndexDialog;
 import edu.cornell.dendro.corina.manip.ReconcileWindow;
 import edu.cornell.dendro.corina.manip.RedateDialog;
@@ -31,6 +30,8 @@ import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 
 // REFACTOR: this class needs refactoring.  there's IOEs and FNFEs in here!
 
@@ -101,7 +102,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 						return;
 					}
 
-					OpenRecent.sampleOpened(reference.getLoader(), "reconcile");
+					OpenRecent.sampleOpened(new SeriesDescriptor(reference), "reconcile");
 					
 					// open it for fun times
 					Center.center(new ReconcileWindow(sample, reference), editor);
@@ -127,7 +128,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 				// new reconcile window
 				Center.center(new ReconcileWindow(sample, s), editor);
 				// move to top of menu
-				OpenRecent.sampleOpened(s.getLoader(), getTag());
+				OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
 			}
 		});
 		reconcileMenu.add(reconcile);

@@ -18,21 +18,19 @@
 // Copyright 2003 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.gui.menus;
+package edu.cornell.dendro.corina.util.openrecent;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
-import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.xml.bind.JAXBContext;
@@ -40,17 +38,15 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.tridas.schema.TridasIdentifier;
-
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.CanOpener;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleLoader;
+import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.util.HTMLEntities;
 
 /**
     A menu which shows recently-opened files.
@@ -84,11 +80,16 @@ public class OpenRecent {
 	private final static int NUMBER_TO_REMEMBER = 10;
 
 	// list of loaders, most-recent-first
-	private static Map<String, List<Object> > recentMap = new HashMap<String, List<Object> >();
+	private static Map<String, List<OpenableDocumentDescriptor>> recentMap = 
+		new HashMap<String, List<OpenableDocumentDescriptor> >();
 
 	// list of created menus -- soft references
 	private static List<WeakReference<JMenu>> menus = new ArrayList<WeakReference<JMenu>>();
 
+	/** The name of our file */
+	private final static String OPENRECENT_FILENAME_PREFIX = "recent-";
+	private final static String OPENRECENT_FILENAME_SUFFIX = ".xml";
+	
 	// on class load: load previous recent-list from system property into static
 	// structure
 	static {
@@ -110,90 +111,55 @@ public class OpenRecent {
 	 * 			  the tag associated with this (e.g., documents, reconcile, etc)
 	 */
 	public static void fileOpened(String filename, String tag) {
-		List<Object> recent = getListForTag(tag);
+		SeriesDescriptor sd = new SeriesDescriptor();
+		File file = new File(filename);
 		
-		// if already in spot #0, don't need to do anything
-		if (!recent.isEmpty() && recent.get(0).equals(filename))
-			return;
-
-		// if this item is in the list, remove me, too
-		recent.remove(filename);
-
-		// remove last item, if full
-		if (recent.size() == NUMBER_TO_REMEMBER)
-			recent.remove(NUMBER_TO_REMEMBER - 1);
-
-		// prepend fileelement
-		recent.add(0, filename);
-
-		// update menu(s)
-		updateAllMenus();
-
-		// update disk
-		saveList(tag);
+		sd.setDisplayName(file.getName());
+		sd.setFileName(file.getAbsolutePath());
+		sd.setSampleType(SampleType.UNKNOWN);
+		sd.setLoaderType(SeriesDescriptor.LoaderType.FILE);
+		
+		sampleOpened(sd, tag);
 	}
 
-	public static void sampleOpened(SampleLoader sl) {
-		sampleOpened(sl, "documents");
+	/**
+	 * Open a SampleDescriptor in the default category
+	 * @param sl
+	 */
+	public static void sampleOpened(SeriesDescriptor sd) {
+		sampleOpened(sd, "documents");
 	}
 	
 	/**
 	 * Indicate to the recent-file list that a file was just opened. This also
 	 * updates every recent-file menu automatically.
 	 * 
-	 * @param sl the sample loader associated with this object
-	 *            the (full) name of the file that was opened
+	 * @param sl a sample descriptor for the object
 	 */
-	public static void sampleOpened(SampleLoader sl, String tag) {
-		List<Object> recent = getListForTag(tag);
-
-		// cache some useful stuff...
-		LoaderHolder lh = new LoaderHolder();
-		lh.loader = sl;
-		lh.displayName = sl.getName();
+	public static void sampleOpened(SeriesDescriptor sd, String tag) {
+		List<OpenableDocumentDescriptor> recent = getListForTag(tag);
 		
-		if (sl instanceof CorinaWsiTridasElement) {
-			TridasIdentifier identifier = ((CorinaWsiTridasElement) sl).getTridasIdentifier();
-			
-			// marshall the identifier to XML, escape it
-			try {
-				JAXBContext context = JAXBContext.newInstance(TridasIdentifier.class);
-				Marshaller marshaller = context.createMarshaller();
-				StringWriter writer = new StringWriter();
-
-				marshaller.marshal(identifier, writer);
-								
-				lh.resText = writer.toString();
-			} catch (JAXBException e) {
-				e.printStackTrace();
-				return;
-			}
-		}
-
 		// if already in spot #0, don't need to do anything
-		// also make sure their displaynames are the same!
-		if (!recent.isEmpty() && recent.get(0).equals(lh) && 
-				((LoaderHolder) recent.get(0)).displayName.equals(lh.displayName)) {
+		if (!recent.isEmpty() && recent.get(0).equals(sd))
 			return;
-		}
 
 		// if this item is in the list, remove me, too
-		recent.remove(lh);
+		recent.remove(sd);
 
 		// remove last item, if full
 		if (recent.size() == NUMBER_TO_REMEMBER)
 			recent.remove(NUMBER_TO_REMEMBER - 1);
 
 		// prepend element
-		recent.add(0, lh);
+		recent.add(0, sd);
 
 		// update menu(s)
 		updateAllMenus();
 
 		// update disk
 		saveList(tag);
-	}
 
+	}
 
 	public static JMenu makeOpenRecentMenu() {
 		return makeOpenRecentMenu("documents", null, null);
@@ -225,11 +191,11 @@ public class OpenRecent {
 	/**
 	 * Create or retrieve a list for a tag
 	 */
-	private static List<Object> getListForTag(String tag) {
-		List<Object> l = recentMap.get(tag);
+	private static List<OpenableDocumentDescriptor> getListForTag(String tag) {
+		List<OpenableDocumentDescriptor> l = recentMap.get(tag);
 		
 		if(l == null) {
-			l = new ArrayList<Object>();
+			l = new ArrayList<OpenableDocumentDescriptor>();
 			recentMap.put(tag, l);
 		}
 		
@@ -255,40 +221,41 @@ public class OpenRecent {
 		}
 	}
 	
-	private static String getSavableName(Object o) {
-		if(o instanceof LoaderHolder) {
-			LoaderHolder holder = (LoaderHolder)o;
-			
-			// cwte:Some wonderful &amp; tasty>&gt;xxxxx....&lt
-			if(holder.loader instanceof CorinaWsiTridasElement) {
-				return "cwte:" + HTMLEntities.htmlentities(holder.displayName) + '>' + 
-					HTMLEntities.htmlentities(holder.resText);
-			}
-			
-			// default...?
-			return holder.displayName;
-		}		
-		
-		// default
-		return o.toString();
-	}
-	
 	/**
 	 * Return a textual description to display in the menu
 	 * @param o
 	 * @return
 	 */
 	private static String getDescription(Object o) {
-		if(o instanceof LoaderHolder) {
-			LoaderHolder holder = (LoaderHolder)o;
+		// nicely push our data together...
+		if(o instanceof SeriesDescriptor) {
+			SeriesDescriptor desc = (SeriesDescriptor) o;
+			StringBuffer sb = new StringBuffer();
+
+			// first, the display name
+			sb.append(desc.getDisplayName());
 			
-			if(holder.loader instanceof CorinaWsiTridasElement) {
-				CorinaWsiTridasElement cwte = (CorinaWsiTridasElement) holder.loader;
-				
-				return holder.displayName + " (Corina/TRiDaS), from " + cwte.getTridasIdentifier().getDomain();
+			// the range
+			if(desc.getRange() != null) {
+				sb.append(" (");
+				sb.append(desc.getRange());
+				sb.append(')');
 			}
 			
-			return holder.displayName;
+			// derived stuff...
+			if(desc.getSampleType().isDerived()) {
+				sb.append(" [");
+				sb.append(desc.getSampleType().toString());
+				
+				if(desc.getVersion() != null) {
+					sb.append(", version: ");
+					sb.append(desc.getVersion());
+				}
+
+				sb.append(']');
+			}
+			
+			return sb.toString();
 		}
 		
 		// default
@@ -300,11 +267,35 @@ public class OpenRecent {
 	 * @param o
 	 */
 	private static void doOpen(Object o, Object opener) throws IOException {
-		if(o instanceof LoaderHolder) {
-			if(opener == null)
-				opener = defaultSampleOpener;
+		if(opener == null)
+			opener = defaultSampleOpener;
+				
+		if(o instanceof SeriesDescriptor) {
+			SeriesDescriptor desc = (SeriesDescriptor) o;
 			
-			((SampleOpener)opener).performOpen(((LoaderHolder) o).loader.load());
+			switch(desc.getLoaderType()) {
+			case CWTE: {
+				CorinaWsiTridasElement element = new CorinaWsiTridasElement(desc.getIdentifier());
+				
+				((SampleOpener)opener).performOpen(element.load());
+				break;
+			}
+				
+			case FILE: {
+				CanOpener.open(desc.getFileName());
+				return;
+			}
+				
+			case UNKNOWN:
+				new Bug(new IllegalArgumentException("UNKNOWN type element in OpenRecent"));
+				break;
+				
+			default:
+				new Bug(new IllegalArgumentException("Unhandled type element in OpenRecent"));
+				break;
+				
+			}
+			
 			return;
 		}
 
@@ -327,7 +318,7 @@ public class OpenRecent {
 		}
 		
 		public void performOpen(Sample s) {
-			OpenRecent.sampleOpened(s.getLoader(), getTag());
+			OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
 			new Editor(s);
 		}
 	}
@@ -338,7 +329,7 @@ public class OpenRecent {
 	private static void updateMenu(final JMenu menu) {
 		String possibleTag = (String) menu.getClientProperty("corina.open_recent_tag");
 		final String tag = (possibleTag == null) ? "documents" : possibleTag;
-		final List<Object> recent = getListForTag(tag);
+		final List<OpenableDocumentDescriptor> recent = getListForTag(tag);
 		
 		Integer itemsToKeep = (Integer) menu.getClientProperty("corina.open_recent_itemsToKeep");
 
@@ -356,7 +347,7 @@ public class OpenRecent {
 			JMenuItem r = new JMenuItem(menuDesc);
 
 			final int glue = i;
-			r.addActionListener(new AbstractAction() {
+			r.addActionListener(new ActionListener() {
 				// todo: if already open, just toFront() it!
 				public void actionPerformed(ActionEvent e) {
 					try {
@@ -390,7 +381,7 @@ public class OpenRecent {
 			menu.add(clear);
 		} else {
 			// some recent items: spacer, then "Clear Menu"
-			clear.addActionListener(new AbstractAction() {
+			clear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					recent.clear();
 					updateAllMenus();
@@ -405,90 +396,61 @@ public class OpenRecent {
 	// load recent-list from |corina.recent.files|.
 	// only called on class-load, so doesn't need to be synch.
 	private static void loadList(String tag) {
-		// create recent list
-		List<Object> recent = getListForTag(tag);
-
-		// use "?" as a separator, as it's illegal in both filenames and XML
-		// TODO: Make this less kludgier!
-		StringTokenizer tok = new StringTokenizer(App.prefs.getPref("corina.recent." + tag, ""), "?");
-
-		// add all files to recent
-		while (tok.hasMoreTokens()) {
-			String next = tok.nextToken();
-
-			// it's a CorinaWsiTridasElement?
-			if(next.startsWith("cwte:")) {
-				String[] parts = next.substring(5).split("\\>", 2);
-				
-				if(parts.length == 2) {
-					String displayName = HTMLEntities.unhtmlentities(parts[0]);
-					String idXML = HTMLEntities.unhtmlentities(parts[1]);
-					TridasIdentifier identifier;
-					
-					try {
-						JAXBContext context = JAXBContext.newInstance(TridasIdentifier.class);
-						Unmarshaller unmarshaler = context.createUnmarshaller();
-						
-						StringReader reader = new StringReader(idXML);
-						identifier = (TridasIdentifier) unmarshaler.unmarshal(reader);
-					} catch (JAXBException e) {
-						e.printStackTrace();
-						continue;
-					}
-					
-					LoaderHolder holder = new LoaderHolder();
-					holder.displayName = displayName;
-					holder.resText = idXML;
-					holder.loader = new CorinaWsiTridasElement(identifier);
-					recent.add(holder);
-				}
-				else
-					System.out.println("Bad cwte string: " + next);
-			}
-			else
-				recent.add(next);
-		}
-	}
-
-	// store the recent-list in a string, in |corina.recent.<tag>|
-	private static synchronized void saveList(String tag) {
-		List<Object> recent = getListForTag(tag);
-		StringBuffer buf = new StringBuffer();
-
-		char sep = '?';
-
-		for (int i = 0; i < recent.size(); i++) {
-			buf.append(getSavableName(recent.get(i)));
-			if (i < recent.size() - 1)
-				buf.append(sep);
-		}
-
-		// store in pref
-		App.prefs.setPref("corina.recent." + tag, buf.toString());
-	}
-
-	// kludge!
-	private static class LoaderHolder {
-		public String displayName;
-		public String resText;
-		public SampleLoader loader;
+		File file = OpenRecent.getOpenRecentFile(tag);
 		
-		@Override
-		public boolean equals(Object oo) {
-			if(!(oo instanceof LoaderHolder))
-				return false;
-			
-			SampleLoader o = ((LoaderHolder)oo).loader;
-
-			// easy if they're both tridas elements! :)
-			if(o instanceof CorinaWsiTridasElement && loader instanceof CorinaWsiTridasElement) {
-				TridasIdentifier id1 = ((CorinaWsiTridasElement)o).getTridasIdentifier();
-				TridasIdentifier id2 = ((CorinaWsiTridasElement)loader).getTridasIdentifier();
-				
-				return id1.equals(id2);
-			}
-						
-			return false;
+		if(!file.exists() || !file.isFile()) {
+			// doesn't exist, so make a blank list
+			getListForTag(tag);
+			return;
 		}
+		else {
+			RecentlyOpenedDocuments docs;
+			
+			try {
+				JAXBContext context = JAXBContext.newInstance(RecentlyOpenedDocuments.class);
+				Unmarshaller unmarshaler = context.createUnmarshaller();
+				
+				docs = (RecentlyOpenedDocuments) unmarshaler.unmarshal(file);
+			} catch (JAXBException e) {
+				e.printStackTrace();
+				docs = new RecentlyOpenedDocuments();
+			}
+			
+			// steal the list and put it in our map!
+			recentMap.put(tag, docs.getOpenables());
+		}
+	}
+
+	/**
+	 * Store the recent documents...
+	 * @param tag
+	 */
+	private static synchronized void saveList(String tag) {
+		// get the recent list
+		List<OpenableDocumentDescriptor> recent = getListForTag(tag);		
+
+		RecentlyOpenedDocuments docs = new RecentlyOpenedDocuments();
+		docs.getOpenables().addAll(recent);
+		
+		// marshall it to xml
+		try {
+			JAXBContext context = JAXBContext.newInstance(RecentlyOpenedDocuments.class);
+			Marshaller marshaller = context.createMarshaller();
+			
+			// marshall pretty-like!
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			
+			marshaller.marshal(docs, getOpenRecentFile(tag));
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @return a File representing our OpenRecent file
+	 */
+	private static File getOpenRecentFile(String tag) {
+		return new File(App.prefs.getCorinaDir() + OPENRECENT_FILENAME_PREFIX + 
+				tag + OPENRECENT_FILENAME_SUFFIX);
 	}
 }

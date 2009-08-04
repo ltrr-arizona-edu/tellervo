@@ -55,7 +55,6 @@ import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.NameVersionPanel;
 import edu.cornell.dendro.corina.gui.RangeSlider;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
@@ -69,6 +68,8 @@ import edu.cornell.dendro.corina.util.DocumentListener2;
 import edu.cornell.dendro.corina.util.JLine;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Years;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 
 /**
@@ -236,7 +237,7 @@ public class TruncateDialog extends JDialog {
 			// here's where we do the "meat"
 			if(saver.save(tmp)) {
 				// put it in our menu
-				OpenRecent.sampleOpened(tmp.getLoader());
+				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 				
 				new Editor(tmp).toFront();
 				

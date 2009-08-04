@@ -399,8 +399,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		updateTitle();
 	}
 
-	public Object getSaverClass() {
-		return sample.getLoader();
+	public Object getSavedDocument() {
+		return sample;
 	}
 
 	// init methods

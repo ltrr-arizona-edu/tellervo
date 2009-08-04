@@ -22,6 +22,11 @@ package edu.cornell.dendro.corina;
 
 import java.math.BigInteger;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
+
 import org.tridas.schema.DatingSuffix;
 
 import edu.cornell.dendro.corina.util.Years;
@@ -43,11 +48,14 @@ import edu.cornell.dendro.corina.util.Years;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "year")
 public final class Year implements Comparable<Year> {
     /** The default year: 1001. */
-    public static final Year DEFAULT = Years.valueOf(1001);
+    public static transient final Year DEFAULT = Years.valueOf(1001);
 
     /** Holds the year value as an <code>int</code>. */
+    @XmlValue
     private final int y;
 
     /**

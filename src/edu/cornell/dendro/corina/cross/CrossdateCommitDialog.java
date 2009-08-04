@@ -27,7 +27,6 @@ import org.tridas.schema.TridasInterpretation;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
@@ -36,6 +35,8 @@ import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 
 /**
@@ -171,7 +172,7 @@ public class CrossdateCommitDialog extends JDialog {
 			// here's where we do the "meat"
 			if(saver.save(tmp)) {
 				// put it in our menu
-				OpenRecent.sampleOpened(tmp.getLoader());
+				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 				
 				new Editor(tmp);
 				

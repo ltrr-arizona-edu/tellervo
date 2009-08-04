@@ -8,13 +8,14 @@ import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+
 import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
 

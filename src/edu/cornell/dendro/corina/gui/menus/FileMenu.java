@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.gui.menus;
 
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Printable;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -31,19 +31,18 @@ import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.io.ExportDialog;
 import edu.cornell.dendro.corina.manip.Sum;
-import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 import edu.cornell.dendro.corina.util.Overwrite;
-import edu.cornell.dendro.corina.io.ExportDialog;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 
 // TODO:
 // -- refactor so Editor can use it (export)
@@ -83,6 +82,8 @@ import edu.cornell.dendro.corina.io.ExportDialog;
 
 public class FileMenu extends JMenu {
 
+	private static final long serialVersionUID = 1L;
+
 	protected JFrame f;
 
 	public FileMenu(JFrame f) {
@@ -111,11 +112,13 @@ public class FileMenu extends JMenu {
 
 	// *****
 	// for indenting menuitems
+	/*
 	private static String INDENT = "    ";
 
 	private static void indent(JMenuItem m) {
 		m.setText(INDENT + m.getText());
 	}
+	*/
 
 	/*
 	 BETTER: spec needs to only be something like
@@ -285,7 +288,7 @@ public class FileMenu extends JMenu {
 					continue;
 				}
 
-				OpenRecent.sampleOpened(s.getLoader());
+				OpenRecent.sampleOpened(new SeriesDescriptor(s));
 				
 				// open it
 				new Editor(s);
@@ -301,6 +304,9 @@ public class FileMenu extends JMenu {
 			// get filename, and load
 			Element e = ElementFactory.createElement(filename);
 		    Sample s = e.load();
+		    
+		    // dummy code: fix me
+		    s.equals(s);
 		    
 		    /*
 		    CreateOrImportWizard wiz = new CreateOrImportWizard(null, false);
@@ -552,7 +558,7 @@ public class FileMenu extends JMenu {
 
 		if (f instanceof SaveableDocument) {
 			// add menuitems, hooked up to |f|
-			save.addActionListener(new AbstractAction() {
+			save.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					// get doc
 					SaveableDocument doc = (SaveableDocument) f;
@@ -563,8 +569,8 @@ public class FileMenu extends JMenu {
 					// add to the recently opened files list if the user actually saved
 					// also, the user can try to save a document they didn't do anything to. argh.
 					if (doc.isSaved() && doc.getFilename() != null) {
-						if(doc.getSaverClass() != null && doc.getSaverClass() instanceof SampleLoader)
-							OpenRecent.sampleOpened((SampleLoader)doc.getSaverClass());
+						if(doc.getSavedDocument() instanceof Sample)
+							OpenRecent.sampleOpened(new SeriesDescriptor((Sample) doc.getSavedDocument()));
 						else
 							OpenRecent.fileOpened(doc.getFilename());
 					}
@@ -584,7 +590,7 @@ public class FileMenu extends JMenu {
 		if (f instanceof SaveableDocument
 				&& ((SaveableDocument) f).isNameChangeable()) {
 			// add menuitems, hooked up to |f|
-			saveAs.addActionListener(new AbstractAction() {
+			saveAs.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						// get doc
@@ -619,7 +625,7 @@ public class FileMenu extends JMenu {
 		// close menu
 		// -- DESIGN: don't i need an XFrame for this? ouch, that's a harsh restriction.
 		JMenuItem close = Builder.makeMenuItem("close", false, "fileclose.png");
-		close.addActionListener(new AbstractAction() {
+		close.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// call close() on XFrame (asks for confirmation), else dispose().
 				// -- yeah, it should be able to call dispose() everywhere,
@@ -648,7 +654,7 @@ public class FileMenu extends JMenu {
 
 		if (f instanceof PrintableDocument) {
 			// page setup
-			setup.addActionListener(new AbstractAction() {
+			setup.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					pageSetup();
 				}
@@ -676,7 +682,7 @@ public class FileMenu extends JMenu {
 
 		if (f instanceof PrintableDocument) {
 			// print
-			print.addActionListener(new AbstractAction() {
+			print.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					print();
 				}
@@ -711,7 +717,7 @@ public class FileMenu extends JMenu {
 		else if (p instanceof Pageable)
 			printJob.setPageable((Pageable) p);
 		else
-			Bug.bug(new IllegalArgumentException(
+			new Bug(new IllegalArgumentException(
 					"not an object which can be printed!"));
 
 		// job title
