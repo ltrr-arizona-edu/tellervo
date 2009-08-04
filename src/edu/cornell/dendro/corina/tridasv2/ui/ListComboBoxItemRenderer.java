@@ -5,7 +5,7 @@ package edu.cornell.dendro.corina.tridasv2.ui;
 
 import java.awt.Component;
 
-import javax.swing.JLabel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
 import org.tridas.schema.ControlledVoc;
@@ -16,11 +16,10 @@ import edu.cornell.dendro.corina.schema.SecurityUser;
  * @author Lucas Madar
  *
  */
-public class ListComboBoxItemRenderer extends JLabel implements ComboBoxItemRenderer {
+public class ListComboBoxItemRenderer extends DefaultListCellRenderer implements ComboBoxItemRenderer {
 	private static final long serialVersionUID = 1L;
 
 	public ListComboBoxItemRenderer() {
-		setOpaque(true);
 		setHorizontalAlignment(LEFT);
 		setVerticalAlignment(CENTER);
 	}

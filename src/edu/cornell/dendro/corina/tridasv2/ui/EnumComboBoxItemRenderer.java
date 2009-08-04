@@ -6,18 +6,17 @@ package edu.cornell.dendro.corina.tridasv2.ui;
 import java.awt.Component;
 import java.lang.reflect.Method;
 
-import javax.swing.JLabel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
 /**
  * @author Lucas Madar
  *
  */
-public class EnumComboBoxItemRenderer extends JLabel implements ComboBoxItemRenderer {
+public class EnumComboBoxItemRenderer extends DefaultListCellRenderer implements ComboBoxItemRenderer {
 	private static final long serialVersionUID = 1L;
 
 	public EnumComboBoxItemRenderer() {
-		setOpaque(true);
 		setHorizontalAlignment(LEFT);
 		setVerticalAlignment(CENTER);
 	}
@@ -28,15 +27,8 @@ public class EnumComboBoxItemRenderer extends JLabel implements ComboBoxItemRend
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 
-		// set backgrounds and such
-		if (isSelected) {
-            setBackground(list.getSelectionBackground());
-            setForeground(list.getSelectionForeground());
-        } else {
-            setBackground(list.getBackground());
-            setForeground(list.getForeground());
-        }
-
+		super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		
 		modifyComponent(value);
 		
 		return this;
