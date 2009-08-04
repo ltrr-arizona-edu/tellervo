@@ -2772,7 +2772,6 @@ class measurementEntity extends dbEntity
 	
 	function setDatingType($id, $value)
 	{
-		$this->dating = new dating();
 		$this->dating->setDatingType($id, $value);
 	}
 	

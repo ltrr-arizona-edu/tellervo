@@ -400,9 +400,10 @@ class measurement extends measurementEntity implements IDBAccessor
 		if ($paramsClass->getNewStartYear()!=NULL)			$this->setNewStartYear($paramsClass->getNewStartYear());
 
 		// Only read dating type from user if doing a redate
-		if (($paramsClass->getVMeasurementOp()=='Redate') && ($paramsClass->dating->getValue()!=NULL)) 		
+		if (($paramsClass->getVMeasurementOp()=='Redate') && ($paramsClass->dating->getValue()!=NULL))
 															$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
-		if ($paramsClass->dating->getDatingErrorPositive()!=NULL) $this->dating->setDatingErrors($paramsClass->dating->getDatingErrorPositive(), $paramsClass->dating->getDatingErrorNegative());
+		
+															//if ($paramsClass->dating->getDatingErrorPositive()!=NULL) $this->dating->setDatingErrors($paramsClass->dating->getDatingErrorPositive(), $paramsClass->dating->getDatingErrorNegative());
 
 		if ($paramsClass->getNewEndYear()!=NULL)			$this->setNewEndYear($paramsClass->getNewEndYear());
 		
@@ -1552,6 +1553,7 @@ class measurement extends measurementEntity implements IDBAccessor
 							//$this->setParamsFromDB($row['createnewvmeasurement']);
 						}
 					}		
+					$firebug->log($this->dating->getID(), "dating");
 					
 					// This extra SQL query is needed to finish off a crossdate, truncate or redate
 					if(($this->getVMeasurementOp()=='Crossdate') || 
@@ -1576,8 +1578,16 @@ class measurement extends measurementEntity implements IDBAccessor
 						}						
 						elseif($this->getVMeasurementOp()=='Redate')
 						{
-							$sql.= 	"'".pg_escape_string($this->dating->getID())."', ".
-									"'".pg_escape_string($this->getJustification())."') ";
+							if ($this->dating->getID()==NULL)
+							{
+								$sql.= 	"null, ";
+							}
+							else
+							{
+								$sql.= "'".pg_escape_string($this->dating->getID())."', ";
+							}
+
+							$sql.= "'".pg_escape_string($this->getJustification())."') ";
 						}
 												
 						$firebug->log($sql, "SQL Transaction for finishing cross, trunc or re- date");

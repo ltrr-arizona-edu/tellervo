@@ -852,6 +852,7 @@ class measurementParameters extends measurementEntity implements IParams
     {
 		global $corinaNS;
         global $tridasNS;
+        global $firebug;
 
         if($this->xmlRequestDom->documentElement->tagName=='measurementSeries')
         {
@@ -989,8 +990,7 @@ class measurementParameters extends measurementEntity implements IParams
 	   					break;	
 		   				
 		   			case "corina.newEndYear":
-		   				$this->setNewEndYear($value);
-		   					
+		   				$this->setNewEndYear($value);	   					
 		   			  				
 		   			case "corina.directChildCount":		break;
 		   			case "corina.mapLink":				break;
