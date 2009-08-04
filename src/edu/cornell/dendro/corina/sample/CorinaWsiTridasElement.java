@@ -37,7 +37,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SeriesResource;
  *
  */
 
-public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoader<SeriesResource> {
+public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoader<SeriesResource> implements Cloneable {
 	private String shortName;
 	private String name;
 	private TridasIdentifier identifier;
@@ -58,7 +58,9 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 	 * @param src
 	 */
 	public CorinaWsiTridasElement(CorinaWsiTridasElement src) {
-		this.identifier = src.identifier;
+		this.identifier = (TridasIdentifier) src.identifier.createCopy();
+		src.identifier.copyTo(this.identifier);
+		
 		this.name = src.name;
 		this.shortName = src.shortName;
 		this.type = src.type;
@@ -300,6 +302,11 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 	@Override
 	public int hashCode() {
 		return identifier.hashCode();
+	}
+	
+	@Override
+	public Object clone() {
+		return new CorinaWsiTridasElement(this);
 	}
 
 	public SampleType getSampleType() {
