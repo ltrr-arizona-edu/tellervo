@@ -271,7 +271,7 @@ public class VMeasurementResult {
 			 * "As we are updating a record, not appending a new one, use the current ID as the new one."
 			 */
 			newVMeasurementResultID = lastWorkingVMeasurementResultID;
-			dbq.execute("qupdVMeasurementResultOpRedate", VMeasurementID, VMeasurementOpParameter, lastWorkingVMeasurementResultID);
+			dbq.execute("qupdVMeasurementResultOpRedate", VMeasurementID, lastWorkingVMeasurementResultID);
 			break;
 
 		case CROSSDATE:
