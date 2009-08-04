@@ -1,6 +1,8 @@
 package edu.cornell.dendro.corina.wsi.corina;
 
 public class WebPermissionsException extends WebInterfaceException {
+	private static final long serialVersionUID = 1L;
+	
 	private final String nonce;
 	private final String seq;
 

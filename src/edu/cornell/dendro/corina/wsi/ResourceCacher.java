@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina.wsi;
 
 import java.awt.EventQueue;
 import java.io.File;
-import java.sql.Time;
 import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
@@ -11,8 +10,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
-
-import edu.cornell.dendro.corina.core.App;
 
 public abstract class ResourceCacher<INTYPE> implements ResourceEventListener {
 	/** The resource to cache */

@@ -5,13 +5,13 @@ package edu.cornell.dendro.corina.wsi;
 
 import java.util.EventObject;
 
-import org.jdom.Document;
-
 /**
  * @author Lucas Madar
  *
  */
 public class ResourceEvent extends EventObject {
+	private static final long serialVersionUID = 1L;
+
 	public static final int RESOURCE_QUERY_COMPLETE = 1; 	// attached object
 	public static final int RESOURCE_QUERY_FAILED = 2; 		// may have optional attachedException!
 	public static final int RESOURCE_DEBUG_IN = 3;			// no params

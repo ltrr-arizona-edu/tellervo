@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.jdom.Document;
 
 public class ResponseProcessingException extends IOException {
+	private static final long serialVersionUID = 1L;
 	
 	private Document nonvalidatingDocument;
 	private File invalidFile;

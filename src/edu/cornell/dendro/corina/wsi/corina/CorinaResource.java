@@ -5,6 +5,7 @@ import java.awt.Window;
 
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.CorinaRequestStatus;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSIHeader;
@@ -100,6 +101,13 @@ public abstract class CorinaResource extends
 		// populate this request with Corina stuff
 		populateRequest(request);
 
+		// if we have a request format override, implement it
+		if (hasProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT)) {
+			request.setFormat(getProperty(
+					CorinaResourceProperties.ENTITY_REQUEST_FORMAT,
+					CorinaRequestFormat.class));
+		}
+		
 		// and send it off!
 		root.setRequest(request);
 

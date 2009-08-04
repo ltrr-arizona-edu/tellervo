@@ -7,6 +7,8 @@ import edu.cornell.dendro.corina.schema.WSIParam;
 import edu.cornell.dendro.corina.schema.WSISearchParams;
 
 public class SearchParameters extends WSISearchParams {	
+	private static final long serialVersionUID = 1L;
+	
 	private String asText;
 	private boolean hasConstraints;
 	private boolean hasAllConstraint;

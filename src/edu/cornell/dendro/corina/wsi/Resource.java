@@ -6,6 +6,8 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 import java.awt.EventQueue;
 import java.awt.Window;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.event.EventListenerList;
 
@@ -24,8 +26,14 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 	/** The noun of our resource (measurementSeries, dictionary, etc) */
 	private String resourceName; // the noun associated with this resource
 
-
-		
+	/**
+	 * A map of properties, used for setting flags to whatever
+	 * actually accesses the resource
+	 * 
+	 * @see ResourceProperties
+	 */
+	private Map<String, Object> properties;
+	
 	/**
 	 * A resource that binds to the webservice for data
 	 * 
@@ -338,5 +346,58 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 			if(listeners[i] == ResourceEventListener.class)
 				System.out.println("Listening: " + listeners[i + 1]);
 		}		
+	}
+	
+	/**
+	 * Set a property to the given value
+	 * @param propertyName
+	 * @param value
+	 */
+	public void setProperty(String propertyName, Object value) {
+		// lazy-create properties
+		if(properties == null) 
+			properties = new HashMap<String, Object>();
+		
+		properties.put(propertyName, value);
+	}
+
+	/**
+	 * Add all the properties in the given map
+	 * @param newProperties
+	 */
+	public void setProperties(Map<String, ? extends Object> newProperties) {
+		// lazy-create properties
+		if(properties == null) 
+			properties = new HashMap<String, Object>();
+		
+		properties.putAll(newProperties);
+	}
+	
+	/**
+	 * Check to see if this property is set
+	 * @param propertyName
+	 * @return true if this property exists, false otherwise
+	 */
+	public boolean hasProperty(String propertyName) {
+		if(properties == null)
+			return false;
+		
+		return properties.containsKey(propertyName);
+	}
+	
+	/**
+	 * Get a property
+	 * @param <T> the property type
+	 * @param propertyName
+	 * @param propertyClass
+	 * @return The value of the property, casted, or null if it doesn't exist
+	 */
+	public <T> T getProperty(String propertyName, Class<T> propertyClass) {
+		if(properties == null)
+			return null;
+
+		Object value = properties.get(propertyName);
+		
+		return (value != null) ? propertyClass.cast(value) : null;
 	}
 }

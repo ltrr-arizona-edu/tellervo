@@ -2,13 +2,9 @@ package edu.cornell.dendro.corina.wsi.util;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.http.cookie.ClientCookie;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.cookie.SetCookie2;
 import org.apache.http.impl.cookie.BasicClientCookie2;
 
 public class WSCookieWrapper implements Serializable {
@@ -134,6 +130,7 @@ public class WSCookieWrapper implements Serializable {
     }
     
     // attributes to care about
+    /*
     private final static String ATTR_LIST[] = {
     	ClientCookie.VERSION_ATTR, 
     	ClientCookie.PATH_ATTR, 
@@ -146,6 +143,7 @@ public class WSCookieWrapper implements Serializable {
     	ClientCookie.COMMENTURL_ATTR,
     	ClientCookie.DISCARD_ATTR
     };
+    */
 
 
     private boolean iseq(Object a, Object b) {
