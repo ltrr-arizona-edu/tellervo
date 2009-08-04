@@ -40,6 +40,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 	private String shortName;
 	private String name;
 	private TridasIdentifier identifier;
+	private SampleType type = SampleType.UNKNOWN;
 	
 	public CorinaWsiTridasElement(TridasIdentifier identifier) {
 		this.identifier = identifier;
@@ -218,6 +219,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 
 	public void preload(BaseSample bs) {
 		shortName = name = bs.getMetaString(Metadata.TITLE);
+		type = bs.getSampleType();
 	}
 
 	@Override
@@ -259,5 +261,9 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 	@Override
 	public int hashCode() {
 		return identifier.hashCode();
+	}
+
+	public SampleType getSampleType() {
+		return type;
 	}
 }

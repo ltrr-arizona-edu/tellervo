@@ -21,4 +21,5 @@ public interface SampleLoader {
 	
 	public String getName();
 	public String getShortName();
+	public SampleType getSampleType();
 }
