@@ -39,5 +39,6 @@
 	<classpathentry kind="lib" path="Libraries/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/coll-prop.0.1-1.5.jar"/>
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/jaxb2-basics-runtime-0.5.1.jar"/>
+	<classpathentry kind="lib" path="Libraries/PDFRenderer.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

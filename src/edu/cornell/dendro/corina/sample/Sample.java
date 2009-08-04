@@ -599,7 +599,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * Return true if the sample is absolutely dated, else false.
 	 * @return true if the sample is absolutely dated 
 	 */
-	public boolean isAbsolute() {
+	public boolean isAbsolutelyDated() {
 		ITridasSeries series = getSeries();
 		
 		// no interpretation or no dating -> Relative dating

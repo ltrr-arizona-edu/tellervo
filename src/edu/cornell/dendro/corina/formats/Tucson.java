@@ -430,7 +430,7 @@ public class Tucson implements Filetype {
 		}
 
 		// relat or absol
-		line1.append(s.isAbsolute() ? "ABSOL" : "RELAT");
+		line1.append(s.isAbsolutelyDated() ? "ABSOL" : "RELAT");
 
 		// write
 		w.write(line1.toString());
