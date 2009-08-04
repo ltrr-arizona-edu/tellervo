@@ -53,6 +53,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -460,7 +462,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	private void initComponentsPanel() {
 		if(sample.getSampleType().isDerived())
-			componentsPanel = new ComponentViewer();
+			componentsPanel = new ComponentViewer(sample);
 	}
 	
 	private void initElemPanel() {
@@ -504,8 +506,17 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		if (sample.hasWeiserjahre())
 			rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
 		
-		if(componentsPanel != null)
+		if(componentsPanel != null) {
 			rolodex.add(componentsPanel, I18n.getText("tab_components"));			
+			
+			// let the components panel know it's being set as visible...
+			rolodex.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					if(rolodex.getSelectedComponent() == componentsPanel)
+						componentsPanel.notifyPanelVisible();
+				}
+			});
+		}
 		
 		if (sample.getElements() != null)
 			rolodex.add(elemPanel, I18n.getText("tab_components"));

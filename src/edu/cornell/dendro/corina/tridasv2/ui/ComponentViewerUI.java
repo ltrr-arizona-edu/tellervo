@@ -1,3 +1,5 @@
+package edu.cornell.dendro.corina.tridasv2.ui;
+
 /*
  * ComponentViewer.java
  *
@@ -11,8 +13,9 @@
  * @author  peterbrewer
  */
 public class ComponentViewerUI extends javax.swing.JPanel {
-    
-    /** Creates new form ComponentViewer */
+	private static final long serialVersionUID = 1L;
+	
+	/** Creates new form ComponentViewer */
     public ComponentViewerUI() {
         initComponents();
     }
