@@ -255,7 +255,7 @@ public class RedateDialog extends JDialog {
 		interpretation.setDating(dating);
 		
 		// 3: Justification
-		GenericFieldUtils.setField(series, "justification", info.getJustification());
+		GenericFieldUtils.setField(series, "corina.justification", info.getJustification());
 		
 		// make a new 'redate' dummy sample for saving
 		Sample tmp = new Sample(series);		
