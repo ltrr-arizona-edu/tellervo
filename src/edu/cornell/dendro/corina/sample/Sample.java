@@ -26,6 +26,7 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.graph.Graphable;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.tridasv2.support.TridasRingWidthWrapper;
 import edu.cornell.dendro.corina.tridasv2.support.TridasWeiserjahreWrapper;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -594,11 +595,31 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		return (weiserjahre != null);
 	}
 
-	/** Return true if the sample is absolutely dated, else false.
-	 @return true if the sample is absolutely dated */
+	/** 
+	 * Return true if the sample is absolutely dated, else false.
+	 * @return true if the sample is absolutely dated 
+	 */
 	public boolean isAbsolute() {
-		String dating = (String) getMeta("dating");
-		return (dating != null && Character.toUpperCase(dating.charAt(0)) == 'A');
+		ITridasSeries series = getSeries();
+		
+		// no interpretation or no dating -> Relative dating
+		if(!series.isSetInterpretation() || !series.getInterpretation().isSetDating())
+			return false;
+		
+		switch(series.getInterpretation().getDating().getType()) {
+		case ABSOLUTE:
+		case DATED___WITH___UNCERTAINTY:
+		case RADIOCARBON:
+			return true;
+			
+		case RELATIVE:
+			return false;
+			
+		default:
+			new Bug(new IllegalArgumentException("Dating type " + 
+					series.getInterpretation().getDating() + " not supported"));
+			return false;
+		}
 	}
 
 	// is this sample editable?  no, if it's been indexed or summed.
@@ -641,21 +662,6 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 @return if the sample has been modified */
 	public boolean isModified() {
 		return modified;
-	}
-	
-	//
-	// load/save
-	//
-
-	// is this sample oak?  (assumes meta/species is a string, if present)
-	// (FIXME: if it's not a string, it's not oak.)
-	// checks for "oak" or "quercus".
-	public boolean isOak() {
-		String species = (String) getMeta("species");
-		if (species == null)
-			return false;
-		species = species.toLowerCase();
-		return (species.indexOf("oak") != -1 || species.indexOf("quercus") != -1);
 	}
 	
 	/** <p>Return true if the sample is summed, else false.  Here
