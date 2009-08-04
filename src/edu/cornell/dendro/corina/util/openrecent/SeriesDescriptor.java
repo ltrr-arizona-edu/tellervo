@@ -35,7 +35,7 @@ import edu.cornell.dendro.corina.sample.SampleType;
     "version",
     "range"
 })
-@XmlRootElement(namespace = "corina:internal", name = "seriesDescriptor")
+@XmlRootElement(name = "seriesDescriptor")
 public class SeriesDescriptor implements OpenableDocumentDescriptor {
     protected TridasIdentifier identifier;
     protected String fileName;
