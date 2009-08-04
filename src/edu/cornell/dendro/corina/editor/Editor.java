@@ -27,6 +27,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
@@ -35,7 +36,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -62,7 +62,6 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
-import org.tridas.schema.Certainty;
 import org.tridas.schema.NormalTridasMeasuringMethod;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasMeasuringMethod;
@@ -95,6 +94,7 @@ import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridasv2.support.XMLDateUtils;
+import edu.cornell.dendro.corina.tridasv2.ui.ComponentViewer;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -183,6 +183,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	private JComponent metaView;
 
+	private ComponentViewer componentsPanel = null;
+	
 	// gui -- new
 	private SampleDataView dataView; // (a jpanel)
 
@@ -456,6 +458,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		metaView = new TridasMetadataPanel(sample);
 	}
 
+	private void initComponentsPanel() {
+		if(sample.getSampleType().isDerived())
+			componentsPanel = new ComponentViewer();
+	}
+	
 	private void initElemPanel() {
 		if (sample.getElements() != null) {
 			elemPanel = new ElementsPanel(this);
@@ -496,6 +503,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// wj and elements, if it's summed
 		if (sample.hasWeiserjahre())
 			rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
+		
+		if(componentsPanel != null)
+			rolodex.add(componentsPanel, I18n.getText("tab_components"));			
+		
 		if (sample.getElements() != null)
 			rolodex.add(elemPanel, I18n.getText("tab_components"));
 		
@@ -593,7 +604,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		final JDialog dialog = new JDialog(new Frame(), true);
 		dialog.getContentPane().add(fixed);
 
-		AbstractAction okCancel = new AbstractAction() {
+		ActionListener okCancel = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				isOk[0] = (e.getSource() == ok);
 				dialog.dispose();
@@ -607,7 +618,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		input.selectAll(); // (if there's anything here, later, e.g., site name)
 		input.requestFocus();
 		Center.center(dialog);
-		dialog.show();
+		dialog.setVisible(true);
 
 		// then, after it's hidden (by cancel, ok, or close-box)...
 
@@ -731,6 +742,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// view area
 		initWJPanel();
 		initMetaView();
+		initComponentsPanel();
 		initElemPanel();
 		initMozillaMapPanel();
 
@@ -782,7 +794,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// is the same, or just make sure the absolute is within range?
 		// i can store the position either in a ;WINDOW field, or beyond the ~author line.
 		Center.center(this);
-		show();
+		setVisible(true);
 
 		/*
 		 // strategy: keep going down, until it would go off-screen, then start again.
@@ -833,7 +845,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private void setUIFromPrefs() {
 		if (wjTable == null)
 			return;
-		Font font = Font.decode(App.prefs.getPref(Prefs.EDIT_FONT));
+		Font font = App.prefs.getFontPref(Prefs.EDIT_FONT, null);
 		if (font != null)
 			wjTable.setFont(font);
 		// BUG: this doesn't reset the row-heights!
@@ -930,7 +942,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// on ok/cancel, done
 		final boolean okClicked[] = new boolean[1];
-		AbstractAction a = new AbstractAction() {
+		ActionListener a = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				okClicked[0] = (e.getSource() == ok);
 				d.dispose();
@@ -940,7 +952,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		ok.addActionListener(a);
 
 		// if you uncheck all, "print" gets dimmed
-		AbstractAction b = new AbstractAction() {
+		ActionListener b = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ok.setEnabled(s1.isSelected() || s2.isSelected()
 						|| s3.isSelected() || s4.isSelected());
@@ -965,7 +977,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		OKCancel.addKeyboardDefaults(ok);
 		d.pack();
 		d.setResizable(false);
-		d.show();
+		d.setVisible(true);
 
 		// -- (user selects something) --
 
