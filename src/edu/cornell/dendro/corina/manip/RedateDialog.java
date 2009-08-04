@@ -249,11 +249,15 @@ public class RedateDialog extends JDialog {
 		TridasInterpretation interpretation = new TridasInterpretation();
 		series.setInterpretation(interpretation);
 		
-		// 1: Relative start year (in interpretation)
+		// 1: Dating type (but only if it changed)
+		if(datingType != originalDatingType)
+			interpretation.setDating(dating);
+
+		// 2: Relative start year
 		interpretation.setFirstYear(range.getStart().tridasYearValue());
-		// 2: Dating type
-		interpretation.setDating(dating);
-		
+		// looks like the genericField is what's actually used?
+		GenericFieldUtils.setField(series, "corina.newStartYear", Integer.parseInt(range.getStart().toString()));
+
 		// 3: Justification
 		GenericFieldUtils.setField(series, "corina.justification", info.getJustification());
 		
