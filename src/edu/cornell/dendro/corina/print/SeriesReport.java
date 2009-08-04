@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+
+import javax.swing.table.AbstractTableModel;
 
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDerivedSeries;
@@ -16,9 +19,12 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasRemark;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasWoodCompleteness;
 import org.tridas.schema.Year;
+
+import sun.text.CompactShortArray.Iterator;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
@@ -37,9 +43,10 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.DecadalModel;
+import edu.cornell.dendro.corina.editor.WJTableModel;
 import edu.cornell.dendro.corina.formats.Metadata;
-import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
 import edu.cornell.dendro.corina.util.test.PrintReportFramework;
@@ -74,7 +81,7 @@ public class SeriesReport {
 			// Set basic metadata
 		    document.addAuthor("Peter Brewer"); 
 		    document.addSubject("Corina Series Report for " + s.getDisplayTitle()); 
-		
+				   
 			// Title Left		
 			ColumnText ct = new ColumnText(cb);
 			ct.setSimpleColumn(document.left(), document.top(10)-163, 283, document.top(10), 20, Element.ALIGN_LEFT);
@@ -111,15 +118,34 @@ public class SeriesReport {
 	        document.add(new Paragraph(p2));
 	        
 	        // Ring width table
+	        document.add(new Chunk("Ring widths:", subSectionFont));
 	        document.add(getRingWidthTable());
-	        document.add(getParagraphSpace());	        
-	        document.add(getSeriesComments());
-	        document.add(getParagraphSpace());
-	        document.add(getInterpretationPDF());
-	        document.add(getParagraphSpace());	        
-	        document.add(getWoodCompletenessPDF());
 	        document.add(getParagraphSpace());	
-	        document.add(getElementAndSampleInfo());
+		    
+		    if(s.getSeries() instanceof TridasMeasurementSeries)
+		    {
+		    	// MEASUREMENT SERIES
+  
+		    	document.add(getSeriesComments());
+		        document.add(getParagraphSpace());
+		        document.add(getInterpretationPDF());
+		        document.add(getParagraphSpace());	        
+		        document.add(getWoodCompletenessPDF());
+		        document.add(getParagraphSpace());	
+		        document.add(getElementAndSampleInfo());
+		    }
+		    else
+		    {
+		    	// DERIVED SERIES
+		    	document.add(new Chunk("Weiserjahre:", subSectionFont));
+		        document.add(getWJTable());
+		        document.add(getParagraphSpace());
+		        document.add(getSeriesComments());
+		        document.add(getParagraphSpace());
+		        document.add(getRingRemarks());
+		       		       
+				
+		    }
 			
 		} catch (DocumentException de) {
 			System.err.println(de.getMessage());
@@ -140,12 +166,15 @@ public class SeriesReport {
 		Paragraph p = new Paragraph();
 		
 		p.add(new Chunk(s.getDisplayTitle()+"\n", titleFont));
-
-		TridasObject tobj = s.getMeta(Metadata.OBJECT, TridasObject.class);
+	
+		// Add object name if this is a mSeries
+		if(s.getSeries() instanceof TridasMeasurementSeries)
+		{
+			TridasObject tobj = s.getMeta(Metadata.OBJECT, TridasObject.class);
 		
-		p.add(new Chunk(tobj.getTitle(), subTitleFont));
-		return p;
-		
+			p.add(new Chunk(tobj.getTitle(), subTitleFont));
+		}		
+		return p;		
 	}
 	
 	
@@ -187,18 +216,63 @@ public class SeriesReport {
 	 */
 	private PdfPTable getRingWidthTable()
 	{
+		
+		return getDataTable(false);
+	}
+	
+	/**
+	 * Get PdfPTable containing weiserjahre data for this series
+	 * 
+	 * @return
+	 */
+	private PdfPTable getWJTable()
+	{
+		return getDataTable(true);
+	}
+	
+	/**
+	 * Get PdfPTable containing the ring width data for this series
+	 * 
+	 * @return PdfPTable
+	 */
+	private PdfPTable getDataTable(Boolean wj)
+	{
 		PdfPTable tbl = new PdfPTable(11);
 		PdfPCell headerCell = new PdfPCell();
-		DecadalModel model = new DecadalModel(s);
+		AbstractTableModel model;
+		
+		if(wj==true)
+		{
+			if(s.hasWeiserjahre()==true){
+				model = new WJTableModel(s);
+			}
+			else{
+				return null;				
+			}
+		}
+		else
+		{
+			model = new DecadalModel(s);
+			
+		}
+		
+		int rows = model.getRowCount();
+		
 		Float lineWidth = new Float(0.05);
 		Float headerLineWidth = new Float(0.8);
 		
 		tbl.setWidthPercentage(100f);
-		
-		int rows = model.getRowCount();
-			
+				
 		// Do column headers
-		headerCell.setPhrase(new Phrase("1/100th mm", tableHeaderFont));
+		
+		if(wj==true)
+		{
+			headerCell.setPhrase(new Phrase("inc/dec", tableHeaderFont));
+		}
+		else
+		{
+			headerCell.setPhrase(new Phrase("1/100th mm", tableHeaderFont));
+		}
 		headerCell.setBorderWidthBottom(headerLineWidth);
 		headerCell.setBorderWidthTop(headerLineWidth);
 		headerCell.setBorderWidthLeft(headerLineWidth);
@@ -218,22 +292,25 @@ public class SeriesReport {
             tbl.addCell(headerCell);          
         }
 		
+		
 		// Loop through rows
 		for(int row =0; row < rows; row++)
 		{	
 			PdfPCell dataCell = new PdfPCell();
 			// Loop through columns
 			for(int col = 0; col < 11; col++) {
+				
 				Object value = model.getValueAt(row, col);
 				Phrase cellPhrase;
 				
 				// Set value of cell
-				if(value!=null){
-					cellPhrase = new Phrase(value.toString(), getTableFont(col));
-				}
-				else{
+				if(value==null){
 					cellPhrase = new Phrase("");
-				}					
+				}
+				else
+				{
+					cellPhrase = new Phrase(value.toString(), getTableFont(col));
+				}				
 				
 				
 				// Set border styles depending on where we are in the table
@@ -282,6 +359,54 @@ public class SeriesReport {
 		}
 		
 		return tbl;
+		
+	}
+		
+	
+	private Paragraph getRingRemarks(){
+		
+		Paragraph p = new Paragraph();
+		p.setLeading(0, 1.2f);
+		
+		p.add(new Chunk("Ring remarks:\n ", subSectionFont));
+		
+		DecadalModel model = new DecadalModel(s);
+		
+		int rows = model.getRowCount();
+		
+		// Loop through rows
+		for(int row =0; row < rows; row++)
+		{	
+			PdfPCell dataCell = new PdfPCell();
+			// Loop through columns
+			for(int col = 0; col < 11; col++) {
+				
+				edu.cornell.dendro.corina.Year year = model.getYear(row, col);
+				
+				List<TridasRemark> remarks = s.getRemarksForYear(year);
+				
+				for(TridasRemark remark : remarks) 
+				{
+							
+					if (remark.getNormalTridas()!=null)
+					{
+						p.add(new Chunk("Tridas note "+year.toString() + remark.getNormalTridas().value()+"\n", bodyFont));
+					}
+					else if(remark.getNormal()!=null)
+					{
+						p.add(new Chunk("Corina note:" +year.toString() + remark.getNormal().toString()+"\n", bodyFont));
+					}
+					else
+					{
+						p.add(new Chunk("Freetext note:"+year.toString()  + remark.getValue().toString()+"\n", bodyFont));
+					}
+					
+					
+				}
+			}
+		}
+										
+		return p;
 		
 	}
 	
@@ -368,7 +493,9 @@ public class SeriesReport {
 		p.setLeading(0, 1.2f);
 		
 		p.add(new Chunk("Comments: \n", subSectionFont));
-		p.add(new Chunk(s.getSeries().getComments(), bodyFont));
+		if(s.getSeries().getComments()!=null){
+			p.add(new Chunk(s.getSeries().getComments(), bodyFont));
+		}
 	
 		return p;		
 	}
@@ -595,11 +722,15 @@ public class SeriesReport {
 		
 	}	
 	
+	/**
+	 * Function for printing or viewing series report
+	 * @param printReport Boolean
+	 * @param vmid String
+	 */
 	public static void getReport(Boolean printReport, String vmid)
 	{
 		
 		String domain = "dendro.cornell.edu/dev/";
-	
 		Sample samp = null;
 		
 		try {
@@ -624,6 +755,7 @@ public class SeriesReport {
 				pdf.print(true);
 			} catch (Exception e) {
 				e.printStackTrace();
+				Alert.error("Printing error", "An error occured during printing.\n  See error log for further details.");
 			}
 		}
 		else {
@@ -637,27 +769,31 @@ public class SeriesReport {
 				App.platform.openFile(outputFile);
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
+				Alert.error("Error", "An error occurred while generating the series report.\n  See error log for further details.");
 				return;
 			}
 		}
 		
 	}
 	
+	/**
+	 * Wrapper function to print report
+	 *  
+	 * @param vmid
+	 */
 	public static void printReport(String vmid)
 	{
 		getReport(true, vmid);	
 	}
 	
+	/**
+	 * Wrapper function to view report
+	 * @param vmid
+	 */
 	public static void viewReport(String vmid)
 	{
 		getReport(false, vmid);
 	}
 	
-	public static void main(String[] args)
-	{
-		String measurementID = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
-		viewReport(measurementID);
-		
-	}
 	
 }
