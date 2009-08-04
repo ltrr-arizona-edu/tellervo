@@ -5,6 +5,7 @@ import edu.cornell.dendro.corina.io.ExportDialog;
 import edu.cornell.dendro.corina.io.NativeSpawn;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
@@ -22,6 +23,7 @@ import javax.swing.AbstractAction;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,12 +47,7 @@ public class EditorFileMenu extends FileMenu {
 	// THEN print whatever sections you like.
 
 	private Sample sample;
-	
-	public EditorFileMenu(Editor e) {
-		super(e);
-		Sample s = e.getSample();
-	}
-	
+		
 	public EditorFileMenu(Editor e, Sample s){
 		super(e);
 		this.sample = s;
@@ -65,6 +62,28 @@ public class EditorFileMenu extends FileMenu {
 	}
 	
 	@Override
+	public void addPrintMenu() {
+		// Add report printing entry
+		JMenuItem reportPrint = Builder.makeMenuItem("print", true, "printer.png");
+		reportPrint.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				SeriesReport.printReport(sample.getSeries().getIdentifier().getValue().toString());
+			}
+		});
+		add(reportPrint);
+
+		// Add preview printing entry
+		JMenuItem reportPreview = Builder.makeMenuItem("printpreview", true);
+		reportPreview.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {				
+				SeriesReport.viewReport(sample.getSeries().getIdentifier().getValue().toString());
+			}
+		});
+		add(reportPreview);		
+
+	}
+	
+	@Override
 	public void addCloseSaveMenus() {
 		super.addCloseSaveMenus();
 		
@@ -73,20 +92,7 @@ public class EditorFileMenu extends FileMenu {
 		if(Boolean.parseBoolean(App.prefs.getPref("corina.corem.enable"))) {
 			addCoremMenu();
 		}
-		
-		// Add report printing entry
-		JMenuItem reportPrint = Builder.makeMenuItem("report_print", true, "printer.png");
-		reportPrint.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("sample id:");
-				System.out.println(sample.getSeries().getIdentifier().getValue().toString());
-				
-				SeriesReport.printReport(sample.getSeries().getIdentifier().getValue().toString());
-				//SeriesReport.printReport("02189be5-b19c-5dbd-9035-73ae8827dc7a");
-			}
-		});
-		add(reportPrint);
-		
+			
 		// add "Rename to..." menuitem
 		JMenuItem rename_to = Builder.makeMenuItem("rename_to...");
 		rename_to.addActionListener(new AbstractAction() {
