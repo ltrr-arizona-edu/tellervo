@@ -12,8 +12,12 @@ import java.util.UUID;
 
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
+import org.tridas.schema.TridasWoodCompleteness;
 import org.tridas.schema.Year;
 
 import com.lowagie.text.Chunk;
@@ -114,7 +118,8 @@ public class SeriesReport {
 	        document.add(getInterpretationPDF());
 	        document.add(getParagraphSpace());	        
 	        document.add(getWoodCompletenessPDF());
-	        
+	        document.add(getParagraphSpace());	
+	        document.add(getElementAndSampleInfo());
 			
 		} catch (DocumentException de) {
 			System.err.println(de.getMessage());
@@ -280,6 +285,11 @@ public class SeriesReport {
 		
 	}
 	
+	/**
+	 * iText paragraph containing created and lastmodified timestamps
+	 * 
+	 * @return Paragraph
+	 */
 	private Paragraph getTimestampPDF()
 	{
 		// Set up calendar
@@ -302,7 +312,10 @@ public class SeriesReport {
 		
 	}
 	
-	
+	/**
+	 * iText Paragraph containing the various authorship fields
+	 * @return Paragraph
+	 */
 	private Paragraph getAuthorshipPDF()
 	{
 		Paragraph p = new Paragraph();
@@ -314,22 +327,28 @@ public class SeriesReport {
 		if(sss instanceof TridasMeasurementSeries) 
 		{ 
 			mseries = (TridasMeasurementSeries) sss; 
+			p.add(new Chunk("Measured by: ", subSectionFont));
+			p.add(new Chunk(mseries.getAnalyst(), bodyFont));
+			p.add(new Chunk("\nSupervised by: ", subSectionFont));
+			p.add(new Chunk(mseries.getDendrochronologist(), bodyFont));			
 		}
 		else
 		{
 			dseries = (TridasDerivedSeries) sss;
+			p.add(new Chunk("Created by: ", subSectionFont));
+			p.add(new Chunk(dseries.getAuthor(), bodyFont));
+			
 		}
-		
-		p.add(new Chunk("Measured by: ", subSectionFont));
-		p.add(new Chunk(mseries.getAnalyst(), bodyFont));
-		p.add(new Chunk("\nSupervised by: ", subSectionFont));
-		p.add(new Chunk(mseries.getDendrochronologist(), bodyFont));
-
 		
 		return p;		
 		
 	}
 	
+	/**
+	 * Get the font style to use in the table based on column number
+	 * @param col column number
+	 * @return Font
+	 */
 	private  Font getTableFont(int col)
 	{
 		
@@ -403,19 +422,150 @@ public class SeriesReport {
 		return p;		
 	}
 	
+	
+	/**
+	 * iText paragraph for the TRiDaS wood completeness fields
+	 * 
+	 * @return Paragraph
+	 */
 	private Paragraph getWoodCompletenessPDF()
 	{
 		Paragraph p = new Paragraph();
 		p.setLeading(0, 1.2f);
+		TridasRadius trad = s.getMeta(Metadata.RADIUS, TridasRadius.class);
+		TridasWoodCompleteness woodCompleteness = trad.getWoodCompleteness();
+		
+		String pithPresence = null;
+		String barkPresence = null;
+		String heartwoodPresence = null;
+		String missingHeartwoodRings = null;
+		String missingHeartwoodFoundation = null;
+		String sapwoodPresence = null;
+		String missingSapwoodRings = null;
+		String missingSapwoodFoundation = null;
 		
 		p.add(new Chunk("Wood Completeness:\n", subSectionFont));
-		p.add(new Chunk("- Pith is present\n", bodyFont));
-		p.add(new Chunk("- Heartwood is incomplete (4 rings are missing based upon ring geometry)\n", bodyFont));
-		p.add(new Chunk("- Sapwood is incomplete.  A total of 9 sapwood rings are present (3 are missing based on species average)\n", bodyFont));
-		p.add(new Chunk("- Bark is absent\n", bodyFont));
+		
+		// Extract pith info
+		if(woodCompleteness.getPith()!=null){
+			
+			if(woodCompleteness.getPith().getPresence()!=null){
+				pithPresence = woodCompleteness.getPith().getPresence().value();
+			}
+			else{
+				pithPresence = "not specified";
+			}
+		
+			p.add(new Chunk("- Pith is "+ pithPresence +".\n", bodyFont));
+		}
+		else{
+			p.add(new Chunk("- No pith details were recorded.\n", bodyFont));
+		}
+		
+		// Extract Heartwood info
+		if(woodCompleteness.getHeartwood()!=null){
+			
+			if(woodCompleteness.getHeartwood().getPresence()!=null){
+				heartwoodPresence = woodCompleteness.getHeartwood().getPresence().value();
+			}
+			else{
+				heartwoodPresence = "not specified";
+			}
+			
+			if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPith()!=null){
+				missingHeartwoodRings = woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPith().toString();
+			}
+			else{
+				missingHeartwoodRings = "unknown number of";
+			}
+			
+			if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPithFoundation()!=null){
+				missingHeartwoodFoundation = woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPithFoundation().toString();
+			}
+			else{
+				missingHeartwoodFoundation = "unspecified reasons";
+			}
+			
+			p.add(new Chunk("- Heartwood is " + heartwoodPresence, bodyFont));
+			if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPith()!=null){
+				p.add(new Chunk(" ("+ missingHeartwoodRings + " rings are missing based upon " + missingHeartwoodFoundation + ").\n", bodyFont));
+			}
+			else
+			{
+				p.add(new Chunk(" (Details on missing heartwood rings was not recorded.)\n", bodyFont));
+			}
+		}
+		else{
+			p.add(new Chunk("- No heartwood details recorded."));
+		}
+		
+		// Extract Sapwood info
+		if(woodCompleteness.getSapwood()!=null){
+			
+			if(woodCompleteness.getSapwood().getPresence()!=null){
+				sapwoodPresence = woodCompleteness.getSapwood().getPresence().value();
+			}
+			else{
+				sapwoodPresence = "not specified";
+			}
+			
+			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBark()!=null){
+				missingSapwoodRings = woodCompleteness.getSapwood().getMissingSapwoodRingsToBark().toString();
+			}
+			else{
+				missingSapwoodRings = "unknown number of";
+			}
+			
+			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation()!=null){
+				missingSapwoodFoundation = woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation().toString();
+			}
+			else{
+				missingSapwoodFoundation = "unspecified reasons";
+			}
+						
+			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBark()!=null){
+				p.add(new Chunk(" ("+ missingSapwoodRings + " rings are missing based upon " + missingSapwoodFoundation + ").\n", bodyFont));
+			}
+			else
+			{
+				p.add(new Chunk(" (Details on missing sapwood rings was not recorded.)\n", bodyFont));
+			}
+		}
+		else{
+			p.add(new Chunk("- No sapwood details recorded.\n"));
+		}	
+	
+		// Extract bark info
+		if(woodCompleteness.getBark()!=null){
+			
+			if(woodCompleteness.getBark().getPresence().toString().toLowerCase()!=null){
+				barkPresence = woodCompleteness.getBark().getPresence().value();
+			}
+			else{
+				barkPresence = "not specified";
+			}
+		
+			p.add(new Chunk("- Bark is "+ barkPresence +".\n", bodyFont));
+		}
+		else{
+			p.add(new Chunk("- No bark details were recorded.\n", bodyFont));
+		}
+		
+		// Last ring info
+		if(woodCompleteness.getSapwood().getLastRingUnderBark()!=null){
+			p.add(new Chunk("- Last ring: " + woodCompleteness.getSapwood().getLastRingUnderBark().toString(), bodyFont));
+		}
+		else
+		{
+			p.add(new Chunk("- No details about the last ring were recorded.\n", bodyFont));
+		}
 		return p;
 	}
 	
+	/**
+	 * Blank iText paragraph used for padding 
+	 * @return Paragraph
+	 */
 	private Paragraph getParagraphSpace()
 	{
 		Paragraph p = new Paragraph();
@@ -423,6 +573,26 @@ public class SeriesReport {
 		p.add(new Chunk(" "));
 		return p;
 	}
+	
+	/**
+	 * iText paragraph of element and sample info
+	 * @return Paragraph
+	 */
+	private Paragraph getElementAndSampleInfo()
+	{
+		Paragraph p = new Paragraph();
+		
+		TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
+		TridasSample tsamp = s.getMeta(Metadata.SAMPLE, TridasSample.class);
+		
+		p.add(new Chunk("Element and sample details:\n", subSectionFont));
+		
+		p.add(new Chunk("- Taxon - "+ telem.getTaxon().getNormal()+"\n", bodyFont));
+		p.add(new Chunk("- Element type - "+ telem.getType().getNormal()+"\n", bodyFont));
+		p.add(new Chunk("- Sample type - "+ tsamp.getType().getNormal()+"\n", bodyFont));
+		return p;
+		
+	}	
 	
 	public static void main(String[] args)
 	{
