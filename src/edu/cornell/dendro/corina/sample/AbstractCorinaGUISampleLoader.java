@@ -9,7 +9,8 @@ import java.util.Map;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 
-public abstract class AbstractCorinaGUISampleLoader<T extends CorinaResource> implements GUIAwareSampleLoader {
+public abstract class AbstractCorinaGUISampleLoader<T extends CorinaResource>
+		implements GUIAwareSampleLoader, ResourcePropertySupport {
 	public Sample load(Dialog dialog) throws IOException {
 		T resource = getResource(loadProperties);
 		return doLoad(resource, new CorinaResourceAccessDialog(dialog, resource));
