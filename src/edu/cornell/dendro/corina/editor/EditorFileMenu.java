@@ -8,6 +8,7 @@ import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
+import edu.cornell.dendro.corina.print.SeriesReport;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -43,10 +44,19 @@ public class EditorFileMenu extends FileMenu {
 	// (TODO: combine with page-chooser in corina.cross!)
 	// THEN print whatever sections you like.
 
+	private Sample sample;
+	
 	public EditorFileMenu(Editor e) {
 		super(e);
+		Sample s = e.getSample();
 	}
-
+	
+	public EditorFileMenu(Editor e, Sample s){
+		super(e);
+		this.sample = s;
+		
+	}
+	
 	@Override
 	public void addIOMenus(){
 	
@@ -57,13 +67,26 @@ public class EditorFileMenu extends FileMenu {
 	@Override
 	public void addCloseSaveMenus() {
 		super.addCloseSaveMenus();
-
+		
 		//addExportMenu();
 		
 		if(Boolean.parseBoolean(App.prefs.getPref("corina.corem.enable"))) {
 			addCoremMenu();
 		}
-
+		
+		// Add report printing entry
+		JMenuItem reportPrint = Builder.makeMenuItem("report_print", true, "printer.png");
+		reportPrint.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("sample id:");
+				System.out.println(sample.getSeries().getIdentifier().getValue().toString());
+				
+				SeriesReport.printReport(sample.getSeries().getIdentifier().getValue().toString());
+				//SeriesReport.printReport("02189be5-b19c-5dbd-9035-73ae8827dc7a");
+			}
+		});
+		add(reportPrint);
+		
 		// add "Rename to..." menuitem
 		JMenuItem rename_to = Builder.makeMenuItem("rename_to...");
 		rename_to.addActionListener(new AbstractAction() {

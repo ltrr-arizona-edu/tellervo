@@ -110,16 +110,6 @@ public class FileMenu extends JMenu {
 		addExitMenu();
 	}
 
-	// *****
-	// for indenting menuitems
-	/*
-	private static String INDENT = "    ";
-
-	private static void indent(JMenuItem m) {
-		m.setText(INDENT + m.getText());
-	}
-	*/
-
 	/*
 	 BETTER: spec needs to only be something like
 
@@ -138,72 +128,12 @@ public class FileMenu extends JMenu {
 	
 	public void addNewOpenMenus() {
 		
-		/*
-		// new sample
-		JMenuItem sample = Builder.makeMenuItem("sample...",
-				"new edu.cornell.dendro.corina.editor.Editor()");
-		indent(sample); // (re-indent!)
-
-		// new sum
-		JMenuItem sum = Builder.makeMenuItem("sum...",
-			"edu.cornell.dendro.corina.gui.menus.FileMenu.sum()"); // why not "new Sum()"?
-		indent(sum);
-
-		// new plot
-		JMenuItem plot = Builder.makeMenuItem("plot...",
-				"new edu.cornell.dendro.corina.graph.GraphWindow()");
-		indent(plot); // (re-indent!)
-
-		// new grid
-		// (REMOVE ME)
-		// JMenuItem grid = Builder.makeMenuItem("grid...",
-		// "new corina.cross.GridFrame()");
-		// indent(grid); // (re-indent!)
-		JMenuItem crossdate = Builder.makeMenuItem("crossdate...",
-				"new edu.cornell.dendro.corina.cross.CrossdateKit()");
-		indent(crossdate);
-
-		// new atlas
-		JMenuItem map = Builder.makeMenuItem("atlas...",
-				"new edu.cornell.dendro.corina.map.MapFrame()");
-		indent(map);
-
-		// new site (site editor)
-		JMenuItem sites = Builder.makeMenuItem("site...",
-				"new edu.cornell.dendro.corina.site.SiteEditor()");
-		indent(sites);
-
-		// add menuitems to menu
-		add(Builder.makeMenuItem("new", false));
-		add(sample);
-		add(sum);
-		add(plot);
-		// add(grid);
-		add(crossdate);
-		add(map);
-		add(sites);
-*/
-		// db stuff
-	//	addSeparator();
-		
-		
 		//add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()", "filenew.png"));
 		add(Builder.makeMenuItem("dbnew...", "new edu.cornell.dendro.corina.editor.Editor()", "filenew.png"));
 		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
 		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png"));	
 		add(OpenRecent.makeOpenRecentMenu());
-		//addSeparator();
 
-		
-		
-		// open, browse
-		//add(Builder.makeMenuItem("open...", "edu.cornell.dendro.corina.gui.menus.FileMenu.open()"));
-		//add(Builder.makeMenuItem("open_multi...",
-		//		"edu.cornell.dendro.corina.gui.menus.FileMenu.openMulti()"));
-		//add(Builder.makeMenuItem("bulkexport...",
-			//	"edu.cornell.dendro.corina.gui.menus.FileMenu.bulkexport()", "fileexport.png"));
-		
-		//add(Builder.makeMenuItem("browse...", "new edu.cornell.dendro.corina.browser.Browser();"));
 	}
 
 	// ask the user for a file to open, and open it

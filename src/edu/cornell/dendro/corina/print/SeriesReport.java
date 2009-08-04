@@ -595,28 +595,22 @@ public class SeriesReport {
 		
 	}	
 	
-	public static void main(String[] args)
+	public static void getReport(Boolean printReport, String vmid)
 	{
-		String domain = "dendro.cornell.edu/dev/";
-		String measurementID = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
 		
-	    App.platform = new Platform();
-	    App.platform.init();	    
-		App.init(null, null);
+		String domain = "dendro.cornell.edu/dev/";
+	
 		Sample samp = null;
 		
 		try {
-			samp = PrintReportFramework.getSampleForID(domain, measurementID);
+			samp = PrintReportFramework.getSampleForID(domain, vmid);
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
 
 		// create the series report
-		SeriesReport report = new SeriesReport(samp);
-
-		// printing? generate PDF in memory
-		boolean printReport = true;
+		SeriesReport report = new SeriesReport(samp);		
 		
 		if(printReport) {
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -646,6 +640,23 @@ public class SeriesReport {
 				return;
 			}
 		}
+		
+	}
+	
+	public static void printReport(String vmid)
+	{
+		getReport(true, vmid);	
+	}
+	
+	public static void viewReport(String vmid)
+	{
+		getReport(false, vmid);
+	}
+	
+	public static void main(String[] args)
+	{
+		String measurementID = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
+		viewReport(measurementID);
 		
 	}
 	

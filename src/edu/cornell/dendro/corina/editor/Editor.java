@@ -192,6 +192,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private JTabbedPane rolodex;
 	
 	// for menus we have to notify...
+	private EditorFileMenu editorFileMenu;
 	private EditorViewMenu editorViewMenu;
 	private EditorSumMenu editorSumMenu;
 	private EditorEditMenu editorEditMenu;
@@ -750,7 +751,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		JMenuBar menubar = new JMenuBar();
 
 		// TODO: extend CorinaMenuBar
-		menubar.add(new EditorFileMenu(this));
+		menubar.add(new EditorFileMenu(this, sample));
 		editorEditMenu = new EditorEditMenu(sample, dataView, this);
 		menubar.add(editorEditMenu);
 		editorViewMenu = new EditorViewMenu(sample, elemPanel);
