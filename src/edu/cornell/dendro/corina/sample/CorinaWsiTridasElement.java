@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.sample;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
@@ -42,10 +43,25 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 	private TridasIdentifier identifier;
 	private SampleType type = SampleType.UNKNOWN;
 	
+	/**
+	 * Create a new CorinaWsiTridasElement from this identifier
+	 * @param identifier
+	 */
 	public CorinaWsiTridasElement(TridasIdentifier identifier) {
 		this.identifier = identifier;
 		
 		name = shortName = identifier.toString();
+	}
+	
+	/**
+	 * Create a copy of this CorinaWsiTridasElement
+	 * @param src
+	 */
+	public CorinaWsiTridasElement(CorinaWsiTridasElement src) {
+		this.identifier = src.identifier;
+		this.name = src.name;
+		this.shortName = src.shortName;
+		this.type = src.type;
 	}
 
 	/**
@@ -132,12 +148,20 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 	}
 
 	@Override
-	protected SeriesResource getResource() {
-		return new SeriesResource(identifier, EntityType.MEASUREMENT_SERIES, CorinaRequestType.READ);
+	protected SeriesResource getResource(Map<String, ? extends Object> properties) {
+		SeriesResource resource = new SeriesResource(identifier,
+				EntityType.MEASUREMENT_SERIES, CorinaRequestType.READ);
+		
+		// set resource properties
+		if(properties != null && !properties.isEmpty())
+			resource.setProperties(properties);
+		
+		return resource;
 	}
 
 	@Override
-	protected SeriesResource getResource(Sample s) {
+	protected SeriesResource getResource(Sample s, Map<String, ? extends Object> properties) {
+		SeriesResource resource = null;
 		ITridasSeries series = s.getSeries();
 		
 		TridasIdentifier seriesIdentifier = s.getSeries().getIdentifier();
@@ -169,31 +193,46 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 			// set series to our derived copy
 			series = derived;
 		}
-		
-		// creating a new series?
-		if(NewTridasIdentifier.isNew(seriesIdentifier)) {
-			// ok, this is a new series
-			
-			if(!NewTridasIdentifier.isNew(identifier))
-				throw new IllegalArgumentException("Creating a new series must have both identifiers as new");
-			
-			if(series instanceof ITridasDerivedSeries) {			
-				// create a new derived series - parent is null
-				return new SeriesResource(series, null, CorinaRequestType.CREATE);
-			}
-			
-			// ok, series isn't derived; make sure it's got the right information in radius
-			TridasRadius radius;
-			if ((radius = s.getMeta(Metadata.RADIUS, TridasRadius.class)) == null
-					|| !radius.isSetIdentifier()
-					|| NewTridasIdentifier.isNew(radius.getIdentifier()))
-				throw new IllegalArgumentException("Creating a new series without a radius that has an identifier?");
-			
-			return new SeriesResource(series, radius.getIdentifier().getValue(), CorinaRequestType.CREATE);
-		}
 
-		// we're just updating
-		return new SeriesResource(series, null, CorinaRequestType.UPDATE);
+		try {
+			// creating a new series?
+			if (NewTridasIdentifier.isNew(seriesIdentifier)) {
+				// ok, this is a new series
+
+				if (!NewTridasIdentifier.isNew(identifier))
+					throw new IllegalArgumentException(
+							"Creating a new series must have both identifiers as new");
+
+				if (series instanceof ITridasDerivedSeries) {
+					// create a new derived series - parent is null
+					resource = new SeriesResource(series, null,
+							CorinaRequestType.CREATE);
+					return resource;
+				}
+
+				// ok, series isn't derived; make sure it's got the right
+				// information in radius
+				TridasRadius radius;
+				if ((radius = s.getMeta(Metadata.RADIUS, TridasRadius.class)) == null
+						|| !radius.isSetIdentifier()
+						|| NewTridasIdentifier.isNew(radius.getIdentifier()))
+					throw new IllegalArgumentException(
+							"Creating a new series without a radius that has an identifier?");
+
+				resource = new SeriesResource(series, radius.getIdentifier()
+						.getValue(), CorinaRequestType.CREATE);
+				return resource;
+			}
+
+			// we're just updating
+			resource = new SeriesResource(series, null, CorinaRequestType.UPDATE);
+			return resource;
+			
+		} finally {
+			// set save properties, if we're returning a resource
+			if (resource != null && properties != null && !properties.isEmpty())
+				resource.setProperties(properties); 
+		}
 	}
 	
 	private int countLinkSeries(ITridasDerivedSeries series) {
