@@ -125,7 +125,7 @@ public class NameVersionPanel extends JPanel {
 	/**
 	 * @return true if the series name box has characters in it
 	 */
-	public boolean hasName() {
+	public boolean hasSeriesName() {
 		return seriesName.getText().length() > 0;
 	}
 
@@ -147,7 +147,7 @@ public class NameVersionPanel extends JPanel {
 	 * Get the name of the series
 	 * @return The name of the series
 	 */
-	public String getName() {
+	public String getSeriesName() {
 		return seriesName.getText();
 	}
 	
@@ -172,7 +172,7 @@ public class NameVersionPanel extends JPanel {
 	 * @return true if the values are satisfied, false otherwise
 	 */
 	public boolean testAndComplainRequired(EnumSet<Fields> valuesRequired) {
-		if(valuesRequired.contains(Fields.NAME) && !hasName()) {
+		if(valuesRequired.contains(Fields.NAME) && !hasSeriesName()) {
 			complain("series name");
 			seriesName.requestFocusInWindow();
 			return false;

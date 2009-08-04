@@ -251,7 +251,7 @@ public class IndexDialog extends JDialog {
 		// it's a new series! (to force update, set this to the id of the series to update!)
 		// call gets a new identifier with the domain of our parent
 		series.setIdentifier(NewTridasIdentifier.getInstance(sample.getSeries().getIdentifier()));
-		series.setTitle(nameAndVersion.getName());
+		series.setTitle(nameAndVersion.getSeriesName());
 		
 		if(nameAndVersion.hasVersion())
 			series.setVersion(nameAndVersion.getVersion());

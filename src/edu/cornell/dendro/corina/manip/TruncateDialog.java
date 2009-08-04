@@ -199,7 +199,7 @@ public class TruncateDialog extends JDialog {
 		TridasDerivedSeries series = new TridasDerivedSeries();
 		
 		// set title (and version?)
-		series.setTitle(info.getName());
+		series.setTitle(info.getSeriesName());
 		if(info.hasVersion())
 			series.setVersion(info.getVersion());
 		
