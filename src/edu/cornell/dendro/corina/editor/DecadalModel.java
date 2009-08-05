@@ -20,18 +20,22 @@
 
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.Year;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
+
+import javax.swing.JFrame;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.manip.Redate;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.manip.RedateDialog;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Years;
-import edu.cornell.dendro.corina.gui.Bug;
-
-import javax.swing.table.*;
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.CannotRedoException;
 
 /**
    Table model for a decadal dataset.
@@ -270,10 +274,12 @@ public class DecadalModel extends AbstractTableModel {
 					return;
 				
 				Range newRange = s.getRange().redateStartTo(newYear);
-
-				// redate, and post undo
-				s.postEdit(Redate.redate(s, newRange));
-				return;
+				
+				// get the current top level window
+				Window windowFocusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+				if(windowFocusOwner instanceof JFrame)
+					new RedateDialog(s, (JFrame) windowFocusOwner, newRange).setVisible(true);
+				
 			} catch (NumberFormatException nfe) {
 				// tell the user this is bad?
 			} catch (Exception e) {

@@ -180,13 +180,25 @@ public class RedateDialog extends JDialog {
 	protected JTextField startField, endField;
 
 	/**
+	 * @param sample
+	 * @param owner
+	 */
+	public RedateDialog(Sample sample, JFrame owner) {
+		this(sample, owner, sample.getRange());
+	}
+	
+	/**
 	 * Create a redater for a loaded sample. The "OK" button will fire a
 	 * <code>sampleRedated</code> event to update other views.
 	 * 
 	 * @param sample
 	 *            the sample to redate
+	 * @param owner
+	 *            the owning frame
+	 * @param startRange
+	 * 			  the initial range
 	 */
-	public RedateDialog(Sample sample, JFrame owner) {
+	public RedateDialog(Sample sample, JFrame owner, Range startRange) {
 		// modal
 		super(owner, true);
 
@@ -197,17 +209,15 @@ public class RedateDialog extends JDialog {
 		setupDatingType();
 		
 		// pass
-		setup();
+		setup(startRange);
 
 		// all done
 		pack();
 		endField.requestFocusInWindow();
 		
 		Center.center(this, owner);
-		
-		setVisible(true);
 	}
-
+	
 	/**
 	 * Apply a redate directly to the sample
 	 * @param dating
@@ -362,7 +372,7 @@ public class RedateDialog extends JDialog {
 		return combo;
 	}
 	
-	private void setup() {
+	private void setup(Range startRange) {
 		// set title
 		setTitle(I18n.getText("redate"));
 
@@ -370,7 +380,7 @@ public class RedateDialog extends JDialog {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		// grab data
-		range = sample.getRange();
+		range = startRange;
 
 		// dialog is a boxlayout
 		JPanel p = new JPanel();

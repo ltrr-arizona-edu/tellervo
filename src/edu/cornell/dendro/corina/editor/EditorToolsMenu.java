@@ -166,7 +166,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		JMenuItem redate = Builder.makeMenuItem("redate...", true, "redate.png");
 		redate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				new RedateDialog(sample, editor);
+				new RedateDialog(sample, editor).setVisible(true);
 			}
 		});
 		if (System.getSecurityManager() != null) {
