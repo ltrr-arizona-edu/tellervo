@@ -100,6 +100,21 @@ public class CachedElement extends Element {
 		
 		return baseSample;
 	}
+	
+	/**
+	 * @return true if loadBasic() will not block
+	 */
+	public boolean hasBasic() {
+		return baseSample != null || fullSample != null;
+	}
+	
+	/**
+	 * @return true if load() will not block
+	 */
+	public boolean hasFull() {
+		return fullSample != null;
+	}
+
 
 	private BaseSample baseSample;
 	private Sample fullSample;
