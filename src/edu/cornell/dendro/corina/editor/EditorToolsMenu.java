@@ -12,6 +12,7 @@ import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.CorinaPermission;
 import edu.cornell.dendro.corina.cross.Crossdater;
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.index.IndexDialog;
 import edu.cornell.dendro.corina.manip.ReconcileWindow;
@@ -57,7 +58,6 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			}
 		});
 		add(truncate);
-		truncate.setEnabled(sample.getSampleType() == SampleType.DIRECT);
 
 		// reverse
 		JMenuItem reverseMenu = Builder.makeMenuItem("reverse", true, "reverse.png");
@@ -68,7 +68,9 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			}
 		});
 		add(reverseMenu);
-		truncate.setEnabled(sample.getSampleType() == SampleType.DIRECT);
+		reverseMenu.setEnabled(sample.getSampleType() == SampleType.DIRECT
+				&& (!sample.hasMeta(Metadata.CHILD_COUNT) || sample.getMeta(
+						Metadata.CHILD_COUNT, Integer.class) == 0));
 
 		// ---
 		addSeparator();		
