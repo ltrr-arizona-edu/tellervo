@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 import javax.swing.AbstractButton;
@@ -16,6 +17,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -25,7 +27,12 @@ import javax.swing.border.EtchedBorder;
 
 import org.tridas.schema.TridasIdentifier;
 
-import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowserTableModel;
+import edu.cornell.dendro.corina.gui.dbbrowse.BooleanCellRenderer;
+import edu.cornell.dendro.corina.gui.dbbrowse.ElementListCellRenderer;
+import edu.cornell.dendro.corina.gui.dbbrowse.ElementListManager;
+import edu.cornell.dendro.corina.gui.dbbrowse.ElementListPopupMenu;
+import edu.cornell.dendro.corina.gui.dbbrowse.ElementListTableModel;
+import edu.cornell.dendro.corina.gui.dbbrowse.ElementListTableSorter;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
@@ -34,6 +41,7 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
+import edu.cornell.dendro.corina.util.PopupListener;
 import edu.cornell.dendro.corina.wsi.ResourceEvent;
 import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
@@ -43,7 +51,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SeriesResource;
  * @author Lucas Madar
  *
  */
-public class ComponentViewer extends JPanel implements ResourceEventListener {
+public class ComponentViewer extends JPanel implements ResourceEventListener, ElementListManager {
 	private static final long serialVersionUID = 1L;
 	
 	/** The sample we're viewing */
@@ -62,6 +70,8 @@ public class ComponentViewer extends JPanel implements ResourceEventListener {
 	private JPanel contentPanel, tablePanel, treePanel;
 	private JTable table;
 	
+	private ElementListTableModel tableModel;
+	
 	private final static String TABLEPANEL = "Series Table View";
 	private final static String TREEPANEL = "Series Tree View";
 	
@@ -71,6 +81,9 @@ public class ComponentViewer extends JPanel implements ResourceEventListener {
 		
 		initComponents();
 		updateContent();
+		
+		// default to this view...
+		btnTableView.doClick();
 	}
 	
 	private void initComponents() {
@@ -132,10 +145,54 @@ public class ComponentViewer extends JPanel implements ResourceEventListener {
 		add(contentPanel, BorderLayout.CENTER);
 		
 		tablePanel = new JPanel(new BorderLayout());
-		table = new JTable();
+		setupTable();
 		tablePanel.add(new JScrollPane(table));
 		
 		contentPanel.add(tablePanel, TABLEPANEL);
+	}
+	
+	private void setupTable() {
+		tableModel = new ElementListTableModel();
+		table = new JTable(tableModel);
+		
+		table.getTableHeader().addMouseListener(
+				new ElementListTableSorter(tableModel, table)); // add sorter & header renderer
+		table.setColumnSelectionAllowed(false);
+		table.setRowSelectionAllowed(true);
+		
+    	// set our column widths
+    	ElementListTableModel.setupColumnWidths(table);
+		
+    	table.setDefaultRenderer(Object.class, new ElementListCellRenderer(this, false));
+		table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
+		
+		// popup menu
+		table.addMouseListener(new PopupListener() {
+			@Override
+			public void showPopup(MouseEvent e) {
+				// only clicks on tables
+				if(!(e.getSource() instanceof JTable))
+					return;
+				
+				JTable table = (JTable) e.getSource();
+				ElementListTableModel model = (ElementListTableModel) table.getModel();
+				
+				// get the row and sanity check
+				int row = table.rowAtPoint(e.getPoint());
+				if(row < 0 || row >= model.getRowCount())
+					return;
+				
+				// select it?
+				table.setRowSelectionInterval(row, row);
+				
+				// get the element
+				Element element = model.getElementAt(row);
+				
+				// create and show the menu
+				JPopupMenu popup = new ElementListPopupMenu(element, ComponentViewer.this);
+				popup.show(table, e.getX(), e.getY());
+			}
+		});
 	}
 	
 	private void recurseAddElementsToList(ElementList elements, ElementList flat, int depth) {
@@ -151,10 +208,9 @@ public class ComponentViewer extends JPanel implements ResourceEventListener {
 				
 				flat.add(ce);
 				
-				if(!ce.hasFull()) {
-					System.err.println("Cached, but not full loaded!");
-					continue;					
-				}
+				// can't go any deeper if there's no series...
+				if(!ce.hasFull())
+					continue;
 				
 				try {
 					Sample s = ce.load();
@@ -180,7 +236,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener {
 		
 		recurseAddElementsToList(elements, displayElements, 0);
 		
-		table.setModel(new DBBrowserTableModel(elements));
+		tableModel.setElements(displayElements);
 	}
 	
 	private void setStatus(String status, boolean inProgress) {
@@ -251,5 +307,14 @@ public class ComponentViewer extends JPanel implements ResourceEventListener {
 			setStatus("Error loading view: " + re.getAttachedException().getLocalizedMessage(), false);
 			break;
 		}
+	}
+
+	public void deleteElement(Element e) {
+		// this can never happen; all of our elements have dependents.
+	}
+
+	public boolean isElementDisabled(Element e) {
+		// none of our elements are ever disabled
+		return false;
 	}
 }
