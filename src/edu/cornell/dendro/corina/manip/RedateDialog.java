@@ -435,9 +435,9 @@ public class RedateDialog extends JDialog {
 		JPanel p = new JPanel();
 		
 		JLabel lblNewRange = new JLabel();
-		startField = new JTextField();
+		startField = new JTextField(6);
 		JLabel lblTo = new JLabel();
-		endField = new JTextField();
+		endField = new JTextField(6);
 		JLabel lblDating = new JLabel();
 		cboDatingType = getDatingTypeComboBox();
 
@@ -446,11 +446,11 @@ public class RedateDialog extends JDialog {
 		lblTo.setText(I18n.getText("to"));
 
 		startListener = new StartListener();
-		startField.setText(sample.getRange().getStart().toString());
+		startField.setText(range.getStart().toString());
 		startField.getDocument().addDocumentListener(startListener);
 
 		endListener = new EndListener();
-		endField.setText(sample.getRange().getEnd().toString());
+		endField.setText(range.getEnd().toString());
 		endField.getDocument().addDocumentListener(endListener);
 
 		lblDating.setText(I18n.getText("dating") + ":");
