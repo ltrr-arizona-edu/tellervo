@@ -6,17 +6,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.swing.Icon;
 import javax.swing.table.AbstractTableModel;
 
 import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
@@ -26,8 +23,6 @@ import org.tridas.schema.TridasRemark;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasWoodCompleteness;
 import org.tridas.schema.Year;
-
-import sun.text.CompactShortArray.Iterator;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
@@ -48,32 +43,16 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.editor.WJTableModel;
 import edu.cornell.dendro.corina.formats.Metadata;
-import edu.cornell.dendro.corina.remarks.Remark;
-import edu.cornell.dendro.corina.remarks.Remarks;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
 import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 
-public class SeriesReport {
-
-	Font docTypeFont = new Font(Font.HELVETICA, 20f, Font.BOLD);
-	Font titleFont = new Font(Font.HELVETICA, 20f, Font.BOLD);
-	Font subTitleFont = new Font(Font.HELVETICA, 14f);
-	Font sectionFont = new Font(Font.HELVETICA, 14f, Font.BOLD);
-	Font subSectionFont = new Font(Font.HELVETICA, 10f, Font.BOLD);
-	Font bodyFont = new Font(Font.HELVETICA, 10f);
-	Font bodyFontItalic = new Font(Font.HELVETICA, 10f, Font.ITALIC);
-	Font tableHeaderFont = new Font(Font.HELVETICA, 10f, Font.BOLD);
-	Float lineWidth = new Float(0.05);
-	Float headerLineWidth = new Float(0.8);	
+public class SeriesReport extends ReportBase {
 	
 	private Sample s = new Sample();
-	private Document document = new Document();
-	private PdfContentByte cb;
-	
+
 	public SeriesReport(Sample s){
 		this.s = s;
 
@@ -740,18 +719,6 @@ public class SeriesReport {
 		{
 			p.add(new Chunk("- No details about the last ring were recorded.\n", bodyFont));
 		}
-		return p;
-	}
-	
-	/**
-	 * Blank iText paragraph used for padding 
-	 * @return Paragraph
-	 */
-	private Paragraph getParagraphSpace()
-	{
-		Paragraph p = new Paragraph();
-		
-		p.add(new Chunk(" "));
 		return p;
 	}
 	
