@@ -27,6 +27,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import org.tridas.schema.TridasIdentifier;
 
@@ -164,6 +165,31 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	private void setupTree() {
 		treeModel = new DefaultTreeModel(null);
 		tree = new JTree(treeModel);
+		
+		tree.setCellRenderer(new ComponentTreeCellRenderer());
+		
+		// popup menu
+		tree.addMouseListener(new PopupListener() {
+			@Override
+			public void showPopup(MouseEvent e) {
+				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+				DefaultMutableTreeNode node = (path == null) ? null :
+					(DefaultMutableTreeNode) path.getLastPathComponent();
+				
+				if(node == null)
+					return;
+				
+				// ensure we select the node...
+				tree.setSelectionPath(path);
+				
+				// get the element
+				Element element = (Element) node.getUserObject();
+				
+				// create and show the menu
+				JPopupMenu popup = new ElementListPopupMenu(element, ComponentViewer.this);
+				popup.show(tree, e.getX(), e.getY());
+			}
+		});
 	}
 	
 	private void setupTable() {
