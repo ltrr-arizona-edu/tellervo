@@ -22,8 +22,11 @@ import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 import org.tridas.schema.TridasIdentifier;
 
@@ -69,8 +72,10 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	
 	private JPanel contentPanel, tablePanel, treePanel;
 	private JTable table;
+	private JTree tree;
 	
 	private ElementListTableModel tableModel;
+	private DefaultTreeModel treeModel;
 	
 	private final static String TABLEPANEL = "Series Table View";
 	private final static String TREEPANEL = "Series Tree View";
@@ -146,9 +151,19 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		
 		tablePanel = new JPanel(new BorderLayout());
 		setupTable();
-		tablePanel.add(new JScrollPane(table));
+		tablePanel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+		treePanel = new JPanel(new BorderLayout());
+		setupTree();
+		treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
 		
 		contentPanel.add(tablePanel, TABLEPANEL);
+		contentPanel.add(treePanel, TREEPANEL);
+	}
+	
+	private void setupTree() {
+		treeModel = new DefaultTreeModel(null);
+		tree = new JTree(treeModel);
 	}
 	
 	private void setupTable() {
@@ -195,7 +210,8 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		});
 	}
 	
-	private void recurseAddElementsToList(ElementList elements, ElementList flat, int depth) {
+	private void recurseAddElementsToList(ElementList elements, ElementList flat, 
+			DefaultMutableTreeNode parent, int depth) {
 		for(Element e : elements) {
 			if(e instanceof CachedElement) {
 				CachedElement ce = (CachedElement) e;
@@ -206,7 +222,12 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 					continue;
 				}
 				
+				// add to list
 				flat.add(ce);
+				
+				// add to tree
+				DefaultMutableTreeNode node = new DefaultMutableTreeNode(ce);
+				parent.add(node);
 				
 				// can't go any deeper if there's no series...
 				if(!ce.hasFull())
@@ -216,7 +237,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 					Sample s = ce.load();
 					ElementList sampleElements = s.getElements();
 					if(sampleElements != null)
-						recurseAddElementsToList(sampleElements, flat, depth + 1);
+						recurseAddElementsToList(sampleElements, flat, node, depth + 1);
 				} catch (IOException ioe) {
 					// shouldn't happen
 				} 
@@ -234,9 +255,19 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		if(elements == null)
 			elements = new ElementList();
 		
-		recurseAddElementsToList(elements, displayElements, 0);
+		// create root node
+		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new CachedElement(sample));
 		
+		recurseAddElementsToList(elements, displayElements, rootNode, 0);
+
 		tableModel.setElements(displayElements);
+		treeModel.setRoot(rootNode);
+		
+		// expand all nodes in tree
+		// note: tree.getRowCount() changes as we expand each node!
+		for(int i = 0; i < tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
 	}
 	
 	private void setStatus(String status, boolean inProgress) {
