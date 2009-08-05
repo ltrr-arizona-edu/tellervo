@@ -3,11 +3,14 @@
  */
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
+import java.awt.Color;
+import java.awt.FontMetrics;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.formats.Metadata;
@@ -33,6 +36,29 @@ public class DBBrowserTableModel extends AbstractTableModel {
             "Rec"
             //"ID" //useful for debugging
         };
+    
+    /**
+     * Convenience: set up columns for a JTable that is going to be using this model
+     * @param table
+     */
+    public static void setupColumnWidths(JTable table) {
+		FontMetrics fm = table.getFontMetrics(table.getFont());
+		
+		table.setShowGrid(false);
+		table.setShowVerticalLines(true);
+		table.setGridColor(Color.lightGray);
+		
+		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX-Xx-Xx"));
+		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("VERSION12"));
+		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("DirectX"));
+		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Pinus Nigra X"));
+		table.getColumnModel().getColumn(4).setPreferredWidth(fm.stringWidth("99"));
+		table.getColumnModel().getColumn(5).setPreferredWidth(fm.stringWidth("2008-08-08"));
+		table.getColumnModel().getColumn(6).setPreferredWidth(fm.stringWidth("12345"));
+		table.getColumnModel().getColumn(7).setPreferredWidth(fm.stringWidth("12345"));
+		table.getColumnModel().getColumn(8).setPreferredWidth(fm.stringWidth("123"));
+		table.getColumnModel().getColumn(9).setPreferredWidth(fm.stringWidth("123")); // checkbox?
+    }
     
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 

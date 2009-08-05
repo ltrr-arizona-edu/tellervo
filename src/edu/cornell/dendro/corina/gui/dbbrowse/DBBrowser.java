@@ -1,10 +1,8 @@
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -357,24 +355,12 @@ public class DBBrowser extends DBBrowser_UI {
     }
     
     private void setupTableColumns(JTable table, boolean disableSelections) {
-		FontMetrics fm = table.getFontMetrics(table.getFont());
-		
-		table.setShowGrid(false);
-		table.setShowVerticalLines(true);
-		table.setGridColor(Color.lightGray);
-		
-		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX-Xx-Xx"));
-		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("VERSION12"));
-		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("DirectX"));
-		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Pinus Nigra X"));
-		table.getColumnModel().getColumn(4).setPreferredWidth(fm.stringWidth("99"));
-		table.getColumnModel().getColumn(5).setPreferredWidth(fm.stringWidth("2008-08-08"));
-		table.getColumnModel().getColumn(6).setPreferredWidth(fm.stringWidth("12345"));
-		table.getColumnModel().getColumn(7).setPreferredWidth(fm.stringWidth("12345"));
-		table.getColumnModel().getColumn(8).setPreferredWidth(fm.stringWidth("123"));
-		table.getColumnModel().getColumn(9).setPreferredWidth(fm.stringWidth("123")); // checkbox?
+
+    	// set our column widths
+    	DBBrowserTableModel.setupColumnWidths(table);
 		
 		table.setDefaultRenderer(Object.class, new DBBrowserCellRenderer(this, disableSelections));
+		table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
 		
 		// popup menu
 		table.addMouseListener(new PopupListener() {
