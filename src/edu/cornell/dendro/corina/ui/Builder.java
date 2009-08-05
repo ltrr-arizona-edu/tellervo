@@ -196,6 +196,16 @@ public class Builder {
 	 * @return
 	 */
 	public static Icon getIcon(String name, String packagename, int size) {
+	
+		java.net.URL url = cl.getResource(getIconURL(name, packagename, size));
+		
+		if (url != null)
+			return new ImageIcon(url);
+		else
+			return getMissingIcon(size);
+	}	
+
+	public static String getIconURL(String name, String packagename, int size){
 		StringBuffer urlBuffer = new StringBuffer();
 		
 		urlBuffer.append(RESOURCE_PACKAGE_PREFIX);
@@ -207,13 +217,9 @@ public class Builder {
 		urlBuffer.append('/');		
 		urlBuffer.append(name);
 		
-		java.net.URL url = cl.getResource(urlBuffer.toString());
-		if (url != null)
-			return new ImageIcon(url);
-		else
-			return getMissingIcon(22);
-	}	
-
+		return urlBuffer.toString();
+		
+	}
 	/**
 	 * Retrieve the "missing icon" icon
 	 * @return
