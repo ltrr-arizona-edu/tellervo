@@ -47,7 +47,7 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
-public class DBBrowser extends DBBrowser_UI {
+public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	private static final long serialVersionUID = 1L;
 	
 	private ElementList selectedElements;
@@ -205,7 +205,7 @@ public class DBBrowser extends DBBrowser_UI {
     	
     		// create a list of our selected elements (should only be one)
     		for(int i = 0; i < selectedRows.length; i++)
-    			selectedElements.add(((DBBrowserTableModel)tblAvailMeas.getModel()).
+    			selectedElements.add(((ElementListTableModel)tblAvailMeas.getModel()).
     					getElementAt(selectedRows[i]));
     	}
     	
@@ -218,18 +218,18 @@ public class DBBrowser extends DBBrowser_UI {
         
     private void setupTableArea() {
     	
-		DBBrowserTableModel mdlAvailMeas = new DBBrowserTableModel();
+		ElementListTableModel mdlAvailMeas = new ElementListTableModel();
 		tblAvailMeas.setModel(mdlAvailMeas); // set model
 		tblAvailMeas.getTableHeader().addMouseListener(
-				new DBBrowserSorter(mdlAvailMeas, tblAvailMeas)); // add sorter & header renderer
+				new ElementListTableSorter(mdlAvailMeas, tblAvailMeas)); // add sorter & header renderer
 		tblAvailMeas.setColumnSelectionAllowed(false);
 		tblAvailMeas.setRowSelectionAllowed(true);
 		setupTableColumns(tblAvailMeas, true);
 
-		DBBrowserTableModel mdlChosenMeas = new DBBrowserTableModel(selectedElements);
+		ElementListTableModel mdlChosenMeas = new ElementListTableModel(selectedElements);
 		tblChosenMeas.setModel(mdlChosenMeas);
 		tblChosenMeas.getTableHeader().addMouseListener(
-				new DBBrowserSorter(mdlChosenMeas, tblChosenMeas)); // add sorter & header renderer
+				new ElementListTableSorter(mdlChosenMeas, tblChosenMeas)); // add sorter & header renderer
 		tblChosenMeas.setColumnSelectionAllowed(false);
 		tblChosenMeas.setRowSelectionAllowed(true);
 		setupTableColumns(tblChosenMeas, false);
@@ -293,14 +293,14 @@ public class DBBrowser extends DBBrowser_UI {
 					int rows[] = tblAvailMeas.getSelectedRows();
 					
 					for(int i = 0; i < rows.length; i++) {
-						Element e = ((DBBrowserTableModel)tblAvailMeas.getModel()).getElementAt(rows[i]);
+						Element e = ((ElementListTableModel)tblAvailMeas.getModel()).getElementAt(rows[i]);
 						
 						if(!selectedElements.contains(e))
 							selectedElements.add(e);
 					}
 					
 					// tell the table it's changed!
-					((DBBrowserTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
+					((ElementListTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
 					
 					// remove the selection
 					// repaint to show non-disabled rows
@@ -322,7 +322,7 @@ public class DBBrowser extends DBBrowser_UI {
 					List<Element> removeList = new ArrayList<Element>();
 					
 					for(int i = 0; i < rows.length; i++) {
-						Element e = ((DBBrowserTableModel)tblChosenMeas.getModel()).getElementAt(rows[i]);
+						Element e = ((ElementListTableModel)tblChosenMeas.getModel()).getElementAt(rows[i]);
 						
 						removeList.add(e);
 					}
@@ -332,7 +332,7 @@ public class DBBrowser extends DBBrowser_UI {
 						selectedElements.remove(e);
 					
 					// tell the table it's changed!
-					((DBBrowserTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
+					((ElementListTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
 					// repaint to show non-disabled rows
 					tblAvailMeas.repaint();
 
@@ -357,9 +357,9 @@ public class DBBrowser extends DBBrowser_UI {
     private void setupTableColumns(JTable table, boolean disableSelections) {
 
     	// set our column widths
-    	DBBrowserTableModel.setupColumnWidths(table);
+    	ElementListTableModel.setupColumnWidths(table);
 		
-		table.setDefaultRenderer(Object.class, new DBBrowserCellRenderer(this, disableSelections));
+		table.setDefaultRenderer(Object.class, new ElementListCellRenderer(this, disableSelections));
 		table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
 		
 		// popup menu
@@ -371,7 +371,7 @@ public class DBBrowser extends DBBrowser_UI {
 					return;
 				
 				JTable table = (JTable) e.getSource();
-				DBBrowserTableModel model = (DBBrowserTableModel) table.getModel();
+				ElementListTableModel model = (ElementListTableModel) table.getModel();
 				
 				// get the row and sanity check
 				int row = table.rowAtPoint(e.getPoint());
@@ -385,7 +385,7 @@ public class DBBrowser extends DBBrowser_UI {
 				Element element = model.getElementAt(row);
 				
 				// create and show the menu
-				JPopupMenu popup = new DBBrowserPopupMenu(element, DBBrowser.this);
+				JPopupMenu popup = new ElementListPopupMenu(element, DBBrowser.this);
 				popup.show(table, e.getX(), e.getY());
 			}
 		});
@@ -475,7 +475,7 @@ public class DBBrowser extends DBBrowser_UI {
 				if(!dlg.isSuccessful()) {
 					new Bug(dlg.getFailException());
 				} else {
-					((DBBrowserTableModel)tblAvailMeas.getModel()).setElements(searchResource.getAssociatedResult());
+					((ElementListTableModel)tblAvailMeas.getModel()).setElements(searchResource.getAssociatedResult());
 				}
 			}
 		});
@@ -599,7 +599,7 @@ public class DBBrowser extends DBBrowser_UI {
 			return;
 	
 		// tell the table it's changed!
-		((DBBrowserTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
+		((ElementListTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
 
 		// verify a selected element
 		if(selectedElements.size() > minimumSelectedElements)
@@ -613,11 +613,11 @@ public class DBBrowser extends DBBrowser_UI {
      * @param e
      */
     public void deleteElement(Element e) {
-   		deleteElementFromModel(e, ((DBBrowserTableModel)tblChosenMeas.getModel()));
-   		deleteElementFromModel(e, ((DBBrowserTableModel)tblAvailMeas.getModel()));    	
+   		deleteElementFromModel(e, ((ElementListTableModel)tblChosenMeas.getModel()));
+   		deleteElementFromModel(e, ((ElementListTableModel)tblAvailMeas.getModel()));    	
     }
     
-    private void deleteElementFromModel(Element e, DBBrowserTableModel model) {
+    private void deleteElementFromModel(Element e, ElementListTableModel model) {
     	ElementList elements = model.getElements();
     	ListIterator<Element> iterator = elements.listIterator();
     	
@@ -679,4 +679,9 @@ public class DBBrowser extends DBBrowser_UI {
     public JPanel getExtraButtonPanel() {
     	return extraButtonPanel;
     }
+
+	public boolean isElementDisabled(Element e) {
+		// an element is disabled in our table model if it's already been selected...
+		return isSelectedElement(e);
+	}
 }

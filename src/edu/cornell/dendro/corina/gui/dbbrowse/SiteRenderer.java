@@ -45,7 +45,7 @@ public class SiteRenderer implements ListCellRenderer {
 		if(isSelected)
 			c.setBackground(list.getSelectionBackground());
 		else
-			c.setBackground(index % 2 == 0 ? DBBrowserCellRenderer.BROWSER_ODD_ROW_COLOR
+			c.setBackground(index % 2 == 0 ? ElementListCellRenderer.BROWSER_ODD_ROW_COLOR
 					: Color.white);	
 
 		if(value instanceof TridasObjectEx) {

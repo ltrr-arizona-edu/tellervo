@@ -10,14 +10,14 @@ import javax.swing.JTable;
 import edu.cornell.dendro.corina.gui.SortedHeaderArrowRenderer;
 import edu.cornell.dendro.corina.sample.Element;
 
-public class DBBrowserSorter extends MouseAdapter {
-	private DBBrowserTableModel model;
+public class ElementListTableSorter extends MouseAdapter {
+	private ElementListTableModel model;
 	private JTable table;
 	private SortedHeaderArrowRenderer headerRenderer;
 	
 	private int lastSortedCol = -1;
 	
-	public DBBrowserSorter(DBBrowserTableModel model, JTable table) {
+	public ElementListTableSorter(ElementListTableModel model, JTable table) {
 		this.table = table;
 		this.model = model;	
 		
@@ -45,7 +45,7 @@ public class DBBrowserSorter extends MouseAdapter {
 			headerRenderer.setReversed(!headerRenderer.isReversed());
 		}
 		else {
-			Collections.sort(model.getElements(), new DBBrowserTableColumnComparator(model, col));
+			Collections.sort(model.getElements(), new ElementListTableColumnComparator(model, col));
 			
 			headerRenderer.setSortColumn(col);
 			headerRenderer.setReversed(false);
@@ -58,11 +58,11 @@ public class DBBrowserSorter extends MouseAdapter {
 		table.getTableHeader().repaint();
 	}
 	
-	private class DBBrowserTableColumnComparator implements Comparator<Element> {
+	private class ElementListTableColumnComparator implements Comparator<Element> {
 		private int column;
-		private DBBrowserTableModel model;
+		private ElementListTableModel model;
 		
-		public DBBrowserTableColumnComparator(DBBrowserTableModel model, int column) {
+		public ElementListTableColumnComparator(ElementListTableModel model, int column) {
 			this.column = column;
 			this.model = model;
 		}

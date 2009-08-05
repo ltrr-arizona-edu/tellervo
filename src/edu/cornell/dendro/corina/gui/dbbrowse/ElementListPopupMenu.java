@@ -16,10 +16,10 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 
-public class DBBrowserPopupMenu extends JPopupMenu {
+public class ElementListPopupMenu extends JPopupMenu {
 	private static final long serialVersionUID = 1L;
 	
-	public DBBrowserPopupMenu(final Element element, final DBBrowser browser) {
+	public ElementListPopupMenu(final Element element, final ElementListManager browser) {
 		JMenuItem item;
 		
 		item = Builder.makeMenuItem("open", true, "fileopen.png");

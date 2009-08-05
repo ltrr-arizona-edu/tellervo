@@ -19,7 +19,7 @@ import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.SampleType;
 
-public class DBBrowserTableModel extends AbstractTableModel {
+public class ElementListTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	
 	private ElementList elements;
@@ -65,7 +65,7 @@ public class DBBrowserTableModel extends AbstractTableModel {
 	/**
 	 * The default: no elements
 	 */
-	public DBBrowserTableModel() {
+	public ElementListTableModel() {
 		this(new ElementList());
 	}
 
@@ -73,7 +73,7 @@ public class DBBrowserTableModel extends AbstractTableModel {
 	 * 
 	 * @param elements
 	 */
-	public DBBrowserTableModel(ElementList elements) {
+	public ElementListTableModel(ElementList elements) {
 		this.elements = elements;
 	}    	
 	
