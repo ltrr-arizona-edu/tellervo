@@ -165,7 +165,7 @@ public class XCorina extends JFrame {
 		}
 		
 		BufferedImage img = null;
-		url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background2.png");
+		url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background3.png");
 		if (url != null) {
 			try {
 				img = javax.imageio.ImageIO.read(url);
@@ -188,13 +188,21 @@ public class XCorina extends JFrame {
 		}
 
 		ImagePanel panel = new ImagePanel(img, ImagePanel.ACTUAL);
-		panel.setLayout(new BorderLayout());
+		panel.setLayout(new GridLayout(4, 1, 60, 0));
 		Dimension d = new Dimension(img.getWidth(), img.getHeight());	
 		panel.setMinimumSize(d);
 		panel.setMaximumSize(d);
 		panel.setSize(d);
 		
-		panel.add(makeQuickLinkPanel(), BorderLayout.SOUTH);
+		JPanel padpanel = new JPanel();
+		Dimension d2 = new Dimension(100,100);
+		padpanel.setSize(d2);
+		padpanel.setMinimumSize(d2);
+		padpanel.setMaximumSize(d2);
+
+		panel.add(padpanel);
+		
+		panel.add(makeQuickLinkPanel());
 		
 		setContentPane(panel);
 
@@ -304,7 +312,7 @@ public class XCorina extends JFrame {
 		JButton openSeries = new JButton();
 		JButton importSeries = new JButton();
 		
-		btnPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		btnPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		
 		newSeries.setOpaque(false);
 		openSeries.setOpaque(false);
