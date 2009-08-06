@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.gui;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -9,8 +10,8 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
 public class LoginSplash extends Splash {
-	public LoginSplash(String title, ImageIcon image) {
-		super(title, image);
+	public LoginSplash(String title, BufferedImage img) {
+		super(title, img);
 	}
 	
 	public void addLoginPanel() {
@@ -30,9 +31,9 @@ public class LoginSplash extends Splash {
 		loginPanel.setBackground(new Color(255, 255, 200, 220));
 		
 		// size it
-		loginPanel.setBounds(new Rectangle(xpos, ypos, 
-				parentRect.width - (xpos + getContentPane().getInsets().right), 
-				parentRect.height - (ypos + 20 + progressPanel.getHeight())));
+		//loginPanel.setBounds(new Rectangle(xpos, ypos, 
+		//		parentRect.width - (xpos + getContentPane().getInsets().right), 
+		//		parentRect.height - (ypos + 20 + progressPanel.getHeight())));
 		
 		// and add it!
 		getRootPane().getLayeredPane().add(loginPanel, new Integer(JLayeredPane.MODAL_LAYER));

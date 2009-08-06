@@ -352,7 +352,7 @@ public class BoxLabel extends ReportBase{
 		else {
 			// probably better to use a chooser dialog here...
 			try {
-				File outputFile = File.createTempFile("seriesreport", ".pdf");
+				File outputFile = File.createTempFile("boxlabel", ".pdf");
 				FileOutputStream output = new FileOutputStream(outputFile);
 				
 				label.generateBoxLabel(output);
