@@ -6,31 +6,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
-import javax.swing.Icon;
-import javax.swing.table.AbstractTableModel;
-
-import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.NormalTridasRemark;
-import org.tridas.schema.TridasDerivedSeries;
-import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasObject;
-import org.tridas.schema.TridasRadius;
-import org.tridas.schema.TridasRemark;
-import org.tridas.schema.TridasSample;
-import org.tridas.schema.TridasWoodCompleteness;
-import org.tridas.schema.Year;
-
-import sun.text.CompactShortArray.Iterator;
-
 import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
@@ -39,21 +19,14 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.ColumnText;
-import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.editor.DecadalModel;
-import edu.cornell.dendro.corina.editor.WJTableModel;
-import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.platform.Platform;
-import edu.cornell.dendro.corina.remarks.Remark;
-import edu.cornell.dendro.corina.remarks.Remarks;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
 import edu.cornell.dendro.corina.util.test.PrintReportFramework;

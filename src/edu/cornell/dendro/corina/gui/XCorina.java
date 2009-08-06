@@ -20,6 +20,8 @@
 
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -36,6 +38,7 @@ import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -160,10 +163,16 @@ public class XCorina extends JFrame {
 			ImageIcon treeIcon = new ImageIcon(url);
 			setIconImage(treeIcon.getImage());
 		}
-
-		url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background.png");
+		
+		BufferedImage img = null;
+		url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background2.png");
 		if (url != null) {
-			backgroundImage = new ImageIcon(url);
+			try {
+				img = javax.imageio.ImageIO.read(url);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 
 		// menubar
@@ -178,15 +187,18 @@ public class XCorina extends JFrame {
 			setJMenuBar(menubar);
 		}
 
-		JPanel panel = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				if (backgroundImage != null) {
-					g.drawImage(backgroundImage.getImage(), 0, 0, null);
-				}
-			}
-		};
+		ImagePanel panel = new ImagePanel(img, ImagePanel.ACTUAL);
+		panel.setLayout(new BorderLayout());
+		Dimension d = new Dimension(img.getWidth(), img.getHeight());	
+		panel.setMinimumSize(d);
+		panel.setMaximumSize(d);
+		panel.setSize(d);
+		
+		panel.add(makeQuickLinkPanel(), BorderLayout.SOUTH);
+		
 		setContentPane(panel);
+
+		this.pack();
 
 		/*
 		 // content: a browser
@@ -265,13 +277,13 @@ public class XCorina extends JFrame {
 		// size it?
 		//setSize(480, 360); // was: 320, 240
 		// height of the menu bar, height of the frame, and an extra two pels for good measure
-		if (backgroundImage == null) {
+		if (img == null) {
 			setSize(480, getJMenuBar().getHeight() + getInsets().top + 2);
 		}
 		else {
 			setResizable(false);
-			setSize(backgroundImage.getIconWidth(), getJMenuBar().getHeight()
-					+ getInsets().top + 2 + backgroundImage.getIconHeight());
+			setSize(img.getWidth(), getJMenuBar().getHeight()
+					+ getInsets().top + 2 + img.getHeight());
 		}
 
 		/*
@@ -285,6 +297,61 @@ public class XCorina extends JFrame {
 		show();
 	}
 
+	private JPanel makeQuickLinkPanel(){
+		
+		JPanel btnPanel = new JPanel();
+		JButton newSeries = new JButton();
+		JButton openSeries = new JButton();
+		JButton importSeries = new JButton();
+		
+		btnPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		
+		newSeries.setOpaque(false);
+		openSeries.setOpaque(false);
+		importSeries.setOpaque(false);
+
+		newSeries.setBorderPainted(false);
+		openSeries.setBorderPainted(false);
+		importSeries.setBorderPainted(false);
+		
+		newSeries.setToolTipText("Create new series");
+		openSeries.setToolTipText("Open existing series");
+		importSeries.setToolTipText("Import existing dataset");
+		
+		newSeries.setIcon(Builder.getIcon("filenew.png", 64));
+		openSeries.setIcon(Builder.getIcon("fileopen.png", 64));
+		importSeries.setIcon(Builder.getIcon("fileimport.png", 64));
+				
+		btnPanel.add(newSeries);
+		btnPanel.add(openSeries);
+		btnPanel.add(importSeries);		
+		
+		newSeries.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// ?
+
+			}
+		});
+		
+		openSeries.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				FileMenu.opendb();
+			}
+		});
+		
+		importSeries.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				FileMenu.importdb();
+			}
+		});
+		
+		
+
+		
+		return btnPanel;
+	}
+	
+	
 	private JPanel makeAddRemovePanel(SourcesTable ss) {
 		final SourcesTable s = ss;
 
