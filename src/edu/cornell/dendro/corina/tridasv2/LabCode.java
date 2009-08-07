@@ -84,7 +84,7 @@ public class LabCode {
 	 * @param elementCode the elementCode to set
 	 */
 	public void setElementCode(String elementCode) {
-		if(elementCode.length() == 0)
+		if(elementCode != null && elementCode.length() == 0)
 			elementCode = null;
 		
 		this.elementCode = elementCode;
@@ -101,7 +101,7 @@ public class LabCode {
 	 * @param sampleCode the sampleCode to set
 	 */
 	public void setSampleCode(String sampleCode) {
-		if(sampleCode.length() == 0)
+		if(sampleCode != null && sampleCode.length() == 0)
 			sampleCode = null;
 		
 		this.sampleCode = sampleCode;
@@ -118,7 +118,7 @@ public class LabCode {
 	 * @param radiusCode the radiusCode to set
 	 */
 	public void setRadiusCode(String radiusCode) {
-		if(radiusCode.length() == 0)
+		if(radiusCode != null && radiusCode.length() == 0)
 			radiusCode = null;
 		
 		this.radiusCode = radiusCode;
@@ -135,7 +135,7 @@ public class LabCode {
 	 * @param seriesCode the seriesCode to set
 	 */
 	public void setSeriesCode(String seriesCode) {
-		if(seriesCode.length() == 0)
+		if(seriesCode != null && seriesCode.length() == 0)
 			seriesCode = null;
 		
 		this.seriesCode = seriesCode;

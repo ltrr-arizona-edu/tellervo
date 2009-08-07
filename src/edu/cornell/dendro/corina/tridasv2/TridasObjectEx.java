@@ -32,6 +32,14 @@ public class TridasObjectEx extends TridasObject {
 	}
 	
 	/**
+	 * Get the parent object
+	 * @return The parent object, or null if it doesn't exist
+	 */
+	public TridasObjectEx getParent() {
+		return parentObject;
+	}
+	
+	/**
 	 * Determines if this has any children
 	 * @return true of there are any sub-object children
 	 */

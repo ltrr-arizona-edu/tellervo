@@ -24,18 +24,33 @@ public class LabCodeFormatter {
 	private String unavailableValue;
 	private String codeFormat;
 	
-	private static LabCodeFormatter cornellLabCodeFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%");
-	private static LabCodeFormatter cornellSeriesPrefixFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%");
+	private final static LabCodeFormatter cornellLabCodeFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%");
+	private final static LabCodeFormatter cornellSeriesPrefixFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%");
+	private final static LabCodeFormatter cornellRadiusPrefixFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%");
+	private final static LabCodeFormatter cornellSamplePrefixFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%");
+	private final static LabCodeFormatter cornellElementPrefixFormatter = new LabCodeFormatter("C-%SITES%");
 
 	
 	public static LabCodeFormatter getDefaultFormatter() {
 		return cornellLabCodeFormatter;
 	}
-	
-	
+		
 	public static LabCodeFormatter getSeriesPrefixFormatter(){
 		return cornellSeriesPrefixFormatter;
 	}
+	
+	public static LabCodeFormatter getRadiusPrefixFormatter(){
+		return cornellRadiusPrefixFormatter;
+	}
+	
+	public static LabCodeFormatter getSamplePrefixFormatter(){
+		return cornellSamplePrefixFormatter;
+	}
+	
+	public static LabCodeFormatter getElementPrefixFormatter(){
+		return cornellElementPrefixFormatter;
+	}
+	
 	
 	public LabCodeFormatter(String format) {
 		this(format, "/", "*NA*");

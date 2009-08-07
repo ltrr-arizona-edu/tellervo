@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,6 +51,8 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.tridasv2.LabCode;
+import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
@@ -110,6 +113,15 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	public TridasMetadataPanel(Sample s) {
 		this.s = s;	
 
+		// ensure it has a lab code
+		if(!s.hasMeta(Metadata.LABCODE)) {
+			LabCode labcode = new LabCode();
+			
+			// populate it at least with series code
+			labcode.setSeriesCode(s.getSeries().getTitle());
+			s.setMeta(Metadata.LABCODE, labcode);
+		}
+		
 		// select this in button handling routine
 		currentMode = null;
 		temporaryEditingEntity = temporarySelectingEntity = null;
@@ -267,6 +279,11 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 								et.setEntity(s, null);
 						}
 					}
+					
+					// we modified the series...
+					s.setModified();
+					// notify the sample that it changed
+					s.fireSampleMetadataChanged();
 				}
 				
 				// Make sure we populate our combobox with everything from the server
@@ -446,7 +463,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// logic for saving...
 		if(currentMode == EditType.DERIVED_SERIES || currentMode == EditType.MEASUREMENT_SERIES) {
 			// nice and easy... save the series directly into the sample, that's it!
-			currentMode.setEntity(s, temporaryEditingEntity);			
+			currentMode.setEntity(s, temporaryEditingEntity);
 		}
 		else {
 			// ok, we're saving an entity. save to the server!
@@ -519,6 +536,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		enableEditing(false);
 		populateComboAndSelect(false);
 		temporaryEditingEntity = null;
+		
+		s.setModified();
+		s.fireSampleMetadataChanged();
 	}
 
 	/**
@@ -792,7 +812,29 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			// metadata for a remote object
 			topChooser.setVisible(true);
 			
-			topLabel.setText("Metadata for " + currentMode.getTitle());
+			String prefix;
+			LabCode labcode = s.getMeta(Metadata.LABCODE, LabCode.class);
+			
+			switch(currentMode) {				
+			case ELEMENT:
+				prefix = " " + LabCodeFormatter.getElementPrefixFormatter().format(labcode) + "-";
+				break;
+				
+			case SAMPLE:
+				prefix = " " + LabCodeFormatter.getSamplePrefixFormatter().format(labcode) + "-";
+				break;
+				
+			case RADIUS:
+				prefix = " " + LabCodeFormatter.getRadiusPrefixFormatter().format(labcode) + "-";
+				break;
+				
+			// nothing for object..
+			default:
+				prefix = "";
+				break;
+			}
+			
+			topLabel.setText("Metadata for " + currentMode.getTitle() + prefix);
 			topLabel.setLabelFor(topChooser);
 			
 			changeButton.setVisible(true);
@@ -950,7 +992,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES)
 				return s.getSeries();
 			
-			return (ITridas) s.getMeta(metadataTag);
+			return s.getMeta(metadataTag, ITridas.class);
 		}
 		
 		/**
@@ -960,10 +1002,82 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		 * @param entity
 		 */
 		public void setEntity(Sample s, ITridas entity) {
-			if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES)
+			// labcode, for updating
+			// it must have been set in constructor, so no error check
+			LabCode labcode = s.getMeta(Metadata.LABCODE, LabCode.class);
+			
+			if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES) {
 				s.setSeries((ITridasSeries) entity);
-			else
+			
+				// update series code
+				labcode.setSeriesCode((entity == null) ? null : entity.getTitle());			
+			}
+			else {
+				
+				// special case for objects: have to rebuild object array
+				if(this == OBJECT) {
+					TridasObject[] objects = null;
+					
+					if(entity instanceof TridasObjectEx) {
+						TridasObjectEx object = (TridasObjectEx) entity;
+						List<TridasObjectEx> objList = new ArrayList<TridasObjectEx>();
+						
+						// add all objects to list from bottom->top
+						while(object != null) {
+							objList.add(object);
+							object = object.getParent();
+						}
+						
+						// reverse, so list is top->bottom
+						Collections.reverse(objList);
+		
+						// list -> array
+						objects = objList.toArray(new TridasObjectEx[0]);
+					}
+					else if(entity != null)
+						objects = new TridasObject[] { (TridasObject) entity };
+					
+					s.setMeta(Metadata.OBJECT_ARRAY, objects);
+				}
+				
+				// set the metadata tag
 				s.setMeta(metadataTag, entity);
+				
+				switch (this) {
+				case OBJECT:
+					// site
+					labcode.clearSites();
+					if (s.hasMeta(Metadata.OBJECT_ARRAY)
+							&& s.getMeta(Metadata.OBJECT_ARRAY) != null) {
+						for (TridasObject obj : s.getMeta(
+								Metadata.OBJECT_ARRAY, TridasObject[].class)) {
+							if (obj instanceof TridasObjectEx) {
+								labcode.appendSiteCode(((TridasObjectEx) obj)
+										.getLabCode());
+								labcode.appendSiteTitle(obj.getTitle());
+							} else {
+								labcode.appendSiteCode(obj.getTitle());
+								labcode.appendSiteTitle(obj.getTitle());
+							}
+						}
+					}
+					break;
+					
+				case ELEMENT:
+					labcode.setElementCode((entity == null) ? null : entity.getTitle());
+					break;
+					
+				case SAMPLE:
+					labcode.setSampleCode((entity == null) ? null : entity.getTitle());
+					break;
+					
+				case RADIUS:
+					labcode.setRadiusCode((entity == null) ? null : entity.getTitle());
+					break;					
+				}
+			}
+			
+			s.setMeta(Metadata.TITLE, LabCodeFormatter.getDefaultFormatter().format(labcode));
 		}
 		
 		/**
