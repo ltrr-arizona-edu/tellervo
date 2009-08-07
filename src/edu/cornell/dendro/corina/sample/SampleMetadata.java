@@ -3,6 +3,7 @@ package edu.cornell.dendro.corina.sample;
 import org.tridas.schema.Certainty;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -11,6 +12,7 @@ import org.tridas.schema.TridasSapwood;
 import org.tridas.schema.TridasWoodCompleteness;
 
 import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 
 public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata {
@@ -51,6 +53,8 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 			TridasMeasurementSeries mseries = (TridasMeasurementSeries) series;
 
 			// check for woodcompleteness here, return it
+			if(mseries.isSetWoodCompleteness())
+				return mseries.getWoodCompleteness();
 		}
 		
 		// get the woodCompleteness from the radius, if it exists
@@ -140,5 +144,18 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 		}
 		
 		return null;
+	}
+	
+	public String getBoxID() {
+		if(have(sample)) {
+			TridasGenericField field = GenericFieldUtils.findField(sample, "corina.boxID");
+			if(field != null)
+				return field.getValue();
+		}
+		return null;
+	}
+
+	public boolean hasBoxID() {
+		return getBoxID() != null;
 	}
 }

@@ -53,4 +53,18 @@ public interface CorinaMetadata {
 	 * @return the taxon, or null
 	 */
 	public abstract String getTaxon();
+
+	/**
+	 * Does the sample have an associated BoxID?
+	 * 
+	 * @return true if getBoxID() returns not null
+	 */
+	public boolean hasBoxID();
+	
+	/**
+	 * Get the Box ID of the associated Sample
+	 * 
+	 * @return the box ID from sample's corina.boxID (a uuid String), or null
+	 */
+	public String getBoxID();
 }

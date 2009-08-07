@@ -88,4 +88,12 @@ public class BaseSampleMetadata implements CorinaMetadata {
 	public String getTaxon() {
 		return bs.getMetaString(Metadata.SUMMARY_MUTUAL_TAXON);
 	}
+
+	public String getBoxID() {
+		return null;
+	}
+
+	public boolean hasBoxID() {
+		return false;
+	}
 }
