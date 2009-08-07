@@ -16,6 +16,7 @@ import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 
 public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata {
+	@SuppressWarnings("unused")
 	private Sample s;
 	
 	private TridasObject object;
@@ -101,7 +102,7 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 		if(!have(sapwood))
 			return 0;
 		
-		return Integer.valueOf(sapwood.getNrOfSapwoodRings());
+		return sapwood.getNrOfSapwoodRings();
 	}
 	
 	/* (non-Javadoc)
@@ -146,6 +147,7 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 		return null;
 	}
 	
+	@Override
 	public String getBoxID() {
 		if(have(sample)) {
 			TridasGenericField field = GenericFieldUtils.findField(sample, "corina.boxID");
@@ -155,6 +157,7 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 		return null;
 	}
 
+	@Override
 	public boolean hasBoxID() {
 		return getBoxID() != null;
 	}
