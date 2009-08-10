@@ -257,9 +257,9 @@ public class XCorina extends JFrame {
 		btnPanel.add(importSeries);		
 		
 		Dimension size = newSeries.getPreferredSize();
-		newSeries.setBounds(230, 50, size.width, size.height);
-		openSeries.setBounds(300, 100, size.width, size.height);
-		importSeries.setBounds(370, 150, size.width, size.height);
+		newSeries.setBounds(300, 125, size.width, size.height);
+		openSeries.setBounds(370, 125, size.width, size.height);
+		importSeries.setBounds(440, 125, size.width, size.height);
 		
 		newSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
