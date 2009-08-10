@@ -21,7 +21,6 @@
 package edu.cornell.dendro.corina.gui;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.datatransfer.DataFlavor;
@@ -50,6 +49,7 @@ import javax.swing.JPanel;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
@@ -172,18 +172,11 @@ public class XCorina extends JFrame {
 		panel.setMaximumSize(d);
 		panel.setSize(d);
 		
-		JPanel padpanel = new JPanel();
-		Dimension d2 = new Dimension(100,100);
-		padpanel.setSize(d2);
-		padpanel.setMinimumSize(d2);
-		padpanel.setMaximumSize(d2);
-
-		panel.add(padpanel);
-		
-		panel.add(makeQuickLinkPanel());
+		addQuickLinkButtons(panel, d);
 		
 		setContentPane(panel);
 
+		
 		// exit when this window closes
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -230,18 +223,17 @@ public class XCorina extends JFrame {
 		setVisible(true);
 	}
 
-	private JPanel makeQuickLinkPanel(){
-		
-		JPanel btnPanel = new JPanel();
+	private JPanel addQuickLinkButtons(JPanel btnPanel, Dimension d) {		
+		// no layout
+		btnPanel.setLayout(null);
+
 		JButton newSeries = new JButton();
 		JButton openSeries = new JButton();
 		JButton importSeries = new JButton();
-		
-		btnPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		
-		newSeries.setOpaque(false);
-		openSeries.setOpaque(false);
-		importSeries.setOpaque(false);
+				
+		newSeries.setContentAreaFilled(false);
+		openSeries.setContentAreaFilled(false);
+		importSeries.setContentAreaFilled(false);
 
 		newSeries.setBorderPainted(false);
 		openSeries.setBorderPainted(false);
@@ -254,15 +246,19 @@ public class XCorina extends JFrame {
 		newSeries.setIcon(Builder.getIcon("filenew.png", 64));
 		openSeries.setIcon(Builder.getIcon("fileopen.png", 64));
 		importSeries.setIcon(Builder.getIcon("fileimport.png", 64));
-				
+		
 		btnPanel.add(newSeries);
 		btnPanel.add(openSeries);
 		btnPanel.add(importSeries);		
 		
+		Dimension size = newSeries.getPreferredSize();
+		newSeries.setBounds(230, 50, size.width, size.height);
+		openSeries.setBounds(300, 100, size.width, size.height);
+		importSeries.setBounds(370, 150, size.width, size.height);
+		
 		newSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// ?
-
+				new Editor();
 			}
 		});
 		
@@ -277,10 +273,7 @@ public class XCorina extends JFrame {
 				FileMenu.importdb();
 			}
 		});
-		
-		
 
-		
 		return btnPanel;
 	}
 		
