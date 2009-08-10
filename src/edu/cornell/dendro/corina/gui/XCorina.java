@@ -222,6 +222,15 @@ public class XCorina extends JFrame {
 		// show
 		setVisible(true);
 	}
+	
+	// simple convenience method
+	private void qlbutton(JButton button) {
+		button.setFocusable(false);
+		button.setContentAreaFilled(false);
+		button.setRolloverEnabled(true);
+		button.setBorderPainted(false);
+		button.setContentAreaFilled(false);
+	}
 
 	private JPanel addQuickLinkButtons(JPanel btnPanel, Dimension d) {		
 		// no layout
@@ -231,13 +240,9 @@ public class XCorina extends JFrame {
 		JButton openSeries = new JButton();
 		JButton importSeries = new JButton();
 				
-		newSeries.setContentAreaFilled(false);
-		openSeries.setContentAreaFilled(false);
-		importSeries.setContentAreaFilled(false);
-
-		newSeries.setBorderPainted(false);
-		openSeries.setBorderPainted(false);
-		importSeries.setBorderPainted(false);
+		qlbutton(newSeries);
+		qlbutton(openSeries);
+		qlbutton(importSeries);
 		
 		newSeries.setToolTipText("Create new series");
 		openSeries.setToolTipText("Open existing series");
