@@ -54,7 +54,7 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Layout;
-import edu.cornell.dendro.corina.gui.NameVersionPanel;
+import edu.cornell.dendro.corina.gui.NameVersionJustificationPanel;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
@@ -168,7 +168,7 @@ public class RedateDialog extends JDialog {
 	private NormalTridasDatingType datingType;
 
 	/** The name, version, and justificaiton panel */
-	private NameVersionPanel info;
+	private NameVersionJustificationPanel info;
 
 	/** Text field document listeners to auto-update each other */
 	private DocumentListener startListener, endListener;
@@ -233,8 +233,8 @@ public class RedateDialog extends JDialog {
 	 */
 	private boolean performCorinaWsiRedate(TridasDating dating) {
 		// we have to have a name and a justification
-		if(!info.testAndComplainRequired(EnumSet.of(NameVersionPanel.Fields.NAME,
-				NameVersionPanel.Fields.JUSTIFICATION)))
+		if(!info.testAndComplainRequired(EnumSet.of(NameVersionJustificationPanel.Fields.NAME,
+				NameVersionJustificationPanel.Fields.JUSTIFICATION)))
 			return false;
 
 		TridasDerivedSeries series = new TridasDerivedSeries();
@@ -395,7 +395,7 @@ public class RedateDialog extends JDialog {
 		p.add(Box.createVerticalStrut(8));
 
 		// name, version, justificaiton panel
-		info = new NameVersionPanel(sample, true);
+		info = new NameVersionJustificationPanel(sample, false, true);
 		p.add(info);
 
 		p.add(Box.createVerticalStrut(8));

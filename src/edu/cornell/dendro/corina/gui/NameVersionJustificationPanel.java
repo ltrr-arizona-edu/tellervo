@@ -20,7 +20,7 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 
-public class NameVersionPanel extends JPanel {
+public class NameVersionJustificationPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	/** The name of the series */
@@ -41,17 +41,19 @@ public class NameVersionPanel extends JPanel {
 	 * Create a new panel for the given sample, without a justification box
 	 * @param sample
 	 */
-	public NameVersionPanel(Sample sample) {
-		this(sample, false);
+	public NameVersionJustificationPanel(Sample sample) {
+		this(sample, false, false);
 	}
 	
 	/**
 	 * Create a new panel for the given sample
 	 * 
 	 * @param sample
+	 * @paran nameIsEditable true if we can change the name (sums), false otherwise
 	 * @param showJustification true if we have a justification box
 	 */
-	public NameVersionPanel(Sample sample, boolean showJustification) {
+	public NameVersionJustificationPanel(Sample sample, boolean nameIsEditable,
+			boolean showJustification) {
 		JPanel p = new JPanel();
 		p.setLayout(new GridLayout(2, 2, 5, 5));
 
@@ -72,6 +74,9 @@ public class NameVersionPanel extends JPanel {
 		seriesName = name;
 		prefix.setLabelFor(seriesName);
 
+		// set the name to not editable if we can't change it
+		seriesName.setEditable(nameIsEditable);
+		
 		JPanel titlePanel = new JPanel();
 		titlePanel.setLayout(new BorderLayout());
 		titlePanel.add(prefix, BorderLayout.WEST);

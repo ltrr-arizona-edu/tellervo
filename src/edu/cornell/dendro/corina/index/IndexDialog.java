@@ -65,7 +65,7 @@ import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
-import edu.cornell.dendro.corina.gui.NameVersionPanel;
+import edu.cornell.dendro.corina.gui.NameVersionJustificationPanel;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
@@ -102,7 +102,7 @@ public class IndexDialog extends JDialog {
 	private IndexSet iset;
 	private IndexTableModel model;
 
-	private NameVersionPanel nameAndVersion;
+	private NameVersionJustificationPanel nameAndVersion;
 	
 	private JButton okButton;
 
@@ -244,7 +244,7 @@ public class IndexDialog extends JDialog {
 
 	private boolean corinaWsiApplyIndex(Index index) {
 		// we have to have a name set in order to create an index
-		if(!nameAndVersion.testAndComplainRequired(EnumSet.of(NameVersionPanel.Fields.NAME)))
+		if(!nameAndVersion.testAndComplainRequired(EnumSet.of(NameVersionJustificationPanel.Fields.NAME)))
 			return false;
 		
 		TridasDerivedSeries series = new TridasDerivedSeries();
@@ -424,7 +424,7 @@ public class IndexDialog extends JDialog {
 	
 	// flow containing name and version
 	private JComponent makeNameBox() {
-		nameAndVersion = new NameVersionPanel(sample);
+		nameAndVersion = new NameVersionJustificationPanel(sample, false, false);
 		return nameAndVersion;
 	}
 	

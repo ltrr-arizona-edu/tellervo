@@ -53,7 +53,7 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Layout;
-import edu.cornell.dendro.corina.gui.NameVersionPanel;
+import edu.cornell.dendro.corina.gui.NameVersionJustificationPanel;
 import edu.cornell.dendro.corina.gui.RangeSlider;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -106,7 +106,7 @@ public class TruncateDialog extends JDialog {
 	/** The text field that shows the resultant truncation range */
 	private JLabel result;
 	
-	private NameVersionPanel info;
+	private NameVersionJustificationPanel info;
 
 	// when something is typed, update everything from the numbers
 	private DocumentListener2 relativeUpdater = new DocumentListener2() {
@@ -193,8 +193,8 @@ public class TruncateDialog extends JDialog {
 	 */
 	private boolean applyCorinaWsiTruncation() {
 		// we have to have a name and a justification
-		if(!info.testAndComplainRequired(EnumSet.of(NameVersionPanel.Fields.NAME,
-				NameVersionPanel.Fields.JUSTIFICATION)))
+		if(!info.testAndComplainRequired(EnumSet.of(NameVersionJustificationPanel.Fields.NAME,
+				NameVersionJustificationPanel.Fields.JUSTIFICATION)))
 			return false;
 
 		TridasDerivedSeries series = new TridasDerivedSeries();
@@ -485,7 +485,7 @@ public class TruncateDialog extends JDialog {
 	}
 	
 	private JPanel setupNamingAndJustification() {
-		info = new NameVersionPanel(s, true);
+		info = new NameVersionJustificationPanel(s, false, true);
 		return info;
 	}
 	
