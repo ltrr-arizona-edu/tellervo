@@ -20,22 +20,20 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -43,40 +41,26 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSplitPane;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
-import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
-import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.ListUtil;
 
 public class XCorina extends JFrame {
 
-	// menubar, and omnipresent menus
-	private JMenuBar menubar;
-
-	private List leftMenus, rightMenus;
-
-	private ImageIcon backgroundImage;
+	private static final long serialVersionUID = 1L;
 
 	// --- DropLoader ----------------------------------------
 	// EXTRACT METHOD/CLASS!
@@ -104,11 +88,11 @@ public class XCorina extends JFrame {
 					event.acceptDrop(DnDConstants.ACTION_COPY);
 					Object o = transferable
 							.getTransferData(DataFlavor.javaFileListFlavor);
-					List l = (List) o; // a List of Files
+					List<File> l = ListUtil.subListOfType((List<?>) o, File.class); // a List of Files
 
 					// load each one in turn
 					for (int i = 0; i < l.size(); i++) {
-						String pathname = ((File) l.get(i)).getPath();
+						String pathname = l.get(i).getPath();
 						try {
 							CanOpener.open(pathname);
 						} catch (IOException ioe) {
@@ -142,10 +126,6 @@ public class XCorina extends JFrame {
 
 	private static XCorina _self = null;
 
-	private JSplitPane lrSplit, tbSplit;
-
-	private DropTarget drop;
-
 	private XCorina() {
 		// there can be only one
 		if (_self != null)
@@ -168,10 +148,8 @@ public class XCorina extends JFrame {
 		url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background3.png");
 		if (url != null) {
 			try {
-				img = javax.imageio.ImageIO.read(url);
+				img = ImageIO.read(url);
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
 		}
 
@@ -206,63 +184,6 @@ public class XCorina extends JFrame {
 		
 		setContentPane(panel);
 
-		this.pack();
-
-		/*
-		 // content: a browser
-		 // final JSplitPane lrSplit, tbSplit; // "final" so i can reference them from inner classes.
-		 {
-		 // sources list
-		 final SourcesTable s = new SourcesTable(); // "final" so i can reference it in inner classes.
-
-		 // left-right split
-		 lrSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
-		 lrSplit.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-
-		 // top-bottom split
-		 tbSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
-		 tbSplit.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-
-		 // add components
-		 JScrollPane sp = new JScrollPane(s);
-		 JPanel left = new JPanel(new BorderLayout());
-		 sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		 left.add(sp, BorderLayout.CENTER);
-		 JPanel addRemovePanel = makeAddRemovePanel(s);
-		 left.add(addRemovePanel, BorderLayout.SOUTH);
-
-		 // QUESTION: how to add a drop-target-listener to watch for drops below the last row?
-
-		 lrSplit.setLeftComponent(left);
-		 lrSplit.setRightComponent(tbSplit);
-		 tbSplit.setTopComponent(new JLabel("browser stuff here"));
-		 tbSplit.setBottomComponent(new JLabel("file list here"));
-
-		 setContentPane(lrSplit); // BUG: kills drop-loading (no, that's not a bug, drop-loading is dead, right?)
-
-		 // TODO: add listener: on new selection, query Source for tbSplit top and bottom components
-		 s.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-		 public void valueChanged(ListSelectionEvent e) {
-		 // wait until it stops
-		 if (e.getValueIsAdjusting())
-		 return;
-		 // (makeBrowser(), etc., get called twice, if you drag, with this disabled.)
-
-		 // use that source
-		 SourcesTable.Source source = s.getSource();
-		 if (source == null) {
-		 tbSplit.setTopComponent(null);
-		 tbSplit.setBottomComponent(new JPanel());
-		 } else
-		 setSource(source);
-		 }
-		 });
-
-		 // set initial source
-		 setSource(s.getSource());
-		 }
-		 */
-
 		// exit when this window closes
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -275,12 +196,16 @@ public class XCorina extends JFrame {
 		pack();
 
 		// enable drop-loading for panel
+		/*
+		 * These are never used?
+		 * 
 		DropTargetListener dropLoader = new DropLoader();
 		DropTarget target = new DropTarget(this, dropLoader);
 		if (!App.platform.isMac()) { // (note: braces are mandatory here!)
 			DropTarget target2 = new DropTarget(getJMenuBar(), dropLoader);
 		}
 		DropTarget target3 = new DropTarget(panel, dropLoader);
+		*/
 
 		// size it?
 		//setSize(480, 360); // was: 320, 240
@@ -302,7 +227,7 @@ public class XCorina extends JFrame {
 
 		Center.center(this);
 		// show
-		show();
+		setVisible(true);
 	}
 
 	private JPanel makeQuickLinkPanel(){
@@ -334,20 +259,20 @@ public class XCorina extends JFrame {
 		btnPanel.add(openSeries);
 		btnPanel.add(importSeries);		
 		
-		newSeries.addActionListener(new AbstractAction() {
+		newSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// ?
 
 			}
 		});
 		
-		openSeries.addActionListener(new AbstractAction() {
+		openSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FileMenu.opendb();
 			}
 		});
 		
-		importSeries.addActionListener(new AbstractAction() {
+		importSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FileMenu.importdb();
 			}
@@ -358,143 +283,7 @@ public class XCorina extends JFrame {
 		
 		return btnPanel;
 	}
-	
-	
-	private JPanel makeAddRemovePanel(SourcesTable ss) {
-		final SourcesTable s = ss;
-
-		JButton plus = new JButton(Builder.getIcon("edit_add.png", 22));
-		JButton minus = new JButton(Builder.getIcon("edit_remove.png", 22));
-
-		plus.setToolTipText("Add Data Source");
-		plus.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				showAddNewSourceDialog();
-			}
-		});
-
-		minus.setToolTipText("Remove Data Source");
-		minus.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				s.remove();
-			}
-		});
-
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		panel.add(plus);
-		panel.add(Box.createHorizontalStrut(4));
-		panel.add(minus);
-		return panel;
-	}
-
-	// show a window asking what type of source to add,
-	// then a specific window for adding that type of source.
-	private void showAddNewSourceDialog() {
-		// TODO: add icons?
-		/*
-		 [ ======= Add New Source ======= ]
-		 | Type: (*) Folder               |
-		 |       ( ) Database             |
-		 |       ( ) Network (FTP)        |
-		 |       ( ) Favorites list       |
-		 |       ( ) Smart List           |
-		 |                                |
-		 |              (Cancel) (( OK )) |
-		 */
-		final JDialog d = new JDialog();
-		d.setTitle("Add New Source");
-
-		JPanel l = Layout.flowLayoutL("Choose data source:");
-		l.setBorder(BorderFactory.createEmptyBorder(14, 20, 6, 20));
-
-		JPanel r = new JPanel();
-		r.setLayout(new GridLayout(0, 1, 4, 4));
-
-		ButtonGroup group = new ButtonGroup();
-
-		final JRadioButton buttons[] = new JRadioButton[] {
-				new JRadioButton("Folder"), new JRadioButton("Database"),
-				new JRadioButton("Network (FTP)"),
-				new JRadioButton("Favorites List"),
-				new JRadioButton("Smart List"), };
-
-		for (int i = 0; i < buttons.length; i++) {
-			group.add(buttons[i]);
-			r.add(buttons[i]);
-		}
-		buttons[0].setSelected(true);
-
-		// IN PROGRESS: disable some choices
-		for (int i = 2; i < buttons.length; i++)
-			buttons[i].setEnabled(false);
-
-		JButton cancel = Builder.makeButton("cancel");
-		JButton ok = Builder.makeButton("ok");
-
-		cancel.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				d.dispose();
-			}
-		});
-		ok.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				int x = 0;
-				for (int i = 0; i < buttons.length; i++)
-					if (buttons[i].isSelected())
-						x = i;
-
-				switch (x) {
-				case 0:
-					SourcesTable.Source f = new SourcesTable.FolderSource(
-							"Untitled Source", ""); // use wd?
-					f.showInfo();
-					// WRITEME: if cancel, drop, else add to |sources|
-					break;
-				case 1:
-					System.out.println("WRITEME: show database dialog now");
-					break;
-				default:
-					Bug.bug(new IllegalArgumentException("bad selection"));
-				}
-				d.dispose();
-			}
-		});
-
-		JPanel b = Layout.buttonLayout(cancel, ok);
-		b.setBorder(BorderFactory.createEmptyBorder(18, 20, 20, 20));
-
-		JPanel p = Layout.borderLayout(l, Box.createHorizontalStrut(40), r,
-				null, b);
-		d.setContentPane(p);
-
-		OKCancel.addKeyboardDefaults(ok);
-
-		d.pack();
-		d.setResizable(false);
-		d.show();
-	}
-
-	private void setSource(SourcesTable.Source source) {
-		// set the top component when it changes. (bottom component will get set automatically.)
-		if (source.hasBrowser()) {
-			int old;
-
-			old = tbSplit.getDividerLocation(); // (don't let divider location change)
-			// tbSplit.setTopComponent(new JLabel("source: " + source.getName()));
-			tbSplit.setTopComponent(source.makeBrowser());
-			tbSplit.setDividerLocation(old);
-
-			old = lrSplit.getDividerLocation();
-			lrSplit.setRightComponent(tbSplit);
-			lrSplit.setDividerLocation(old);
-		} else {
-			int old = lrSplit.getDividerLocation();
-			lrSplit.setRightComponent(new JLabel("file list here"));
-			lrSplit.setDividerLocation(old);
-		}
-		// WRITEME
-	}
-
+		
 	// shutdown
 	// REFACTOR: wouldn't startup.java (renamed, perhaps) be a better place for this?)
 	public static void quit() {

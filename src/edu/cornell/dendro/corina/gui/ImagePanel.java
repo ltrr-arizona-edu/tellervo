@@ -1,10 +1,24 @@
 package edu.cornell.dendro.corina.gui;
-import java.awt.*;
-import java.awt.image.*;
-import javax.swing.*;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JViewport;
 
 public class ImagePanel extends JPanel
 {
+	private static final long serialVersionUID = 1L;
+	
 	public static final int TILED = 0;
 	public static final int SCALED = 1;
 	public static final int ACTUAL = 2;
