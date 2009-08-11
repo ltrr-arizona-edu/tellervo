@@ -337,7 +337,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	public void resourceChanged(ResourceEvent re) {
 		switch(re.getEventType()) {
 		case ResourceEvent.RESOURCE_DEBUG_OUT:
-			setStatus("Sent request, awaiting reply...", true);
+			setStatus("Loading components please wait...", true);
 			break;
 			
 		case ResourceEvent.RESOURCE_DEBUG_IN:

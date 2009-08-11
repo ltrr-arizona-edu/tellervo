@@ -30,14 +30,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -75,6 +78,7 @@ import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.ElementsPanel;
 import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.ImagePanel;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
@@ -548,6 +552,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				Build.TIMESTAMP);
 	}
 
+	
+
+	
+	
 	// ask the user for a title for this (new) sample.  it's guaranteed to have a number, now!
 	/*
 	 TODO:
@@ -687,16 +695,53 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				return true;
 		return false;
 	}
+	
+	public void setMetadataFromBarcode(String barcode)
+	{
+		
+	}
 
 	public Editor() {
 		// ask user for title
 		String title;
+		title = "[New series]";
+		
+		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI();
+        barcodeUI.jLabel2.setIcon(Builder.getIcon("barcode.png", 128)); 
+
+		final JDialog dialog = new JDialog();
+		
+	      ActionListener al1 = new ActionListener() {
+	          public void actionPerformed(ActionEvent e) {
+	             System.out.println("Barcode entered: "+ barcodeUI.txtBarcode.getText());
+	             setMetadataFromBarcode(barcodeUI.txtBarcode.getText());         
+	             dialog.dispose();
+	          }
+	       };
+		
+	      ActionListener al2 = new ActionListener() {
+	          public void actionPerformed(ActionEvent e) {      
+	             dialog.dispose();
+	          }
+	       };	       
+	       
+	    barcodeUI.txtBarcode.addActionListener(al1);
+	    barcodeUI.btnManual.addActionListener(al2);
+	    
+	    
+		dialog.setContentPane(barcodeUI);
+		dialog.setResizable(false);
+		dialog.pack();
+		dialog.setModal(true);
+		Center.center(dialog);
+		dialog.setVisible(true);
+		/**
 		try {
 			title = askTitle();
 		} catch (UserCancelledException uce) {
 			dispose();
 			return;
-		}
+		}*/
 
 		// make a new measurement series
 		TridasMeasurementSeries series = new TridasMeasurementSeries();
@@ -754,7 +799,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		initWJPanel();
 		initMetaView();
 		initComponentsPanel();
-		initElemPanel();
+		//initElemPanel();
 		initMozillaMapPanel();
 
 		// i'll watch the data
