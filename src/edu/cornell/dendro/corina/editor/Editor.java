@@ -702,10 +702,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	public Editor() {
-		// ask user for title
+
 		String title;
 		title = "[New series]";
-		
+					
 		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI();
         barcodeUI.jLabel2.setIcon(Builder.getIcon("barcode.png", 128)); 
 
@@ -721,6 +721,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		
 	      ActionListener al2 = new ActionListener() {
 	          public void actionPerformed(ActionEvent e) {      
+	        	 if(barcodeUI.chkAlwaysManual.isSelected())
+	        	 {
+	        		 // Set in prefs
+	        		 System.out.println("Requested to never show barcode gui again");
+	        	 }
 	             dialog.dispose();
 	          }
 	       };	       
@@ -735,13 +740,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		dialog.setModal(true);
 		Center.center(dialog);
 		dialog.setVisible(true);
-		/**
-		try {
-			title = askTitle();
-		} catch (UserCancelledException uce) {
-			dispose();
-			return;
-		}*/
+	
+		
 
 		// make a new measurement series
 		TridasMeasurementSeries series = new TridasMeasurementSeries();

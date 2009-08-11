@@ -72,4 +72,5 @@ public class LabBarcode extends Barcode128 {
 		setCodeType(Barcode.CODE128);
 		setFont(barcodeFont.getBaseFont());
 	}
+		
 }
