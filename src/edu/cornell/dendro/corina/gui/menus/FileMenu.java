@@ -129,7 +129,7 @@ public class FileMenu extends JMenu {
 	public void addNewOpenMenus() {
 		
 		//add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()", "filenew.png"));
-		add(Builder.makeMenuItem("dbnew...", "new edu.cornell.dendro.corina.editor.Editor()", "filenew.png"));
+		add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.editor.EditorFactory.newSeries()", "filenew.png"));
 		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
 		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png"));	
 		add(OpenRecent.makeOpenRecentMenu());

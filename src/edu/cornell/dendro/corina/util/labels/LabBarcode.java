@@ -1,6 +1,8 @@
 package edu.cornell.dendro.corina.util.labels;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
@@ -34,6 +36,15 @@ public class LabBarcode extends Barcode128 {
 		public char getPrefix() {
 			return charVal;
 		}
+		
+		public static Type valueOf(char c) {
+			for(Type type : values()) {
+				if(type.charVal == c)
+					return type;
+			}
+			
+			throw new IllegalArgumentException("Invalid type");
+		}
 	}
 	
 	/** The font we use to label the barcode */
@@ -47,7 +58,20 @@ public class LabBarcode extends Barcode128 {
 	 */
 	public LabBarcode(Type uuidType, UUID uuid) {
 		super();
-		
+				
+		setCode(encode(uuidType, uuid));
+		setAltText(uuidType + " " + uuid.toString());
+		setCodeType(Barcode.CODE128);
+		setFont(barcodeFont.getBaseFont());
+	}
+
+	/**
+	 * Encode a UUID and Type into base64
+	 * @param uuidType
+	 * @param uuid
+	 * @returns a string representing the base64 uuid
+	 */
+	public static String encode(Type uuidType, UUID uuid) {
 		// convert the uuid into a raw byte array
 		ByteArrayOutputStream bbis = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(bbis);
@@ -67,10 +91,56 @@ public class LabBarcode extends Barcode128 {
 			throw new RuntimeException(e);
 		}
 		
-		setCode(b64enc);
-		setAltText(uuidType + " " + uuid.toString());
-		setCodeType(Barcode.CODE128);
-		setFont(barcodeFont.getBaseFont());
+		return b64enc;
 	}
+	
+	/**
+	 * Silly class for a return value when decoding lab barcodes
+	 * @author Lucas Madar
+	 */
+	public static class DecodedBarcode {
+		public Type uuidType;
+		public UUID uuid;
+	}
+	
+	/**
+	 * Decodes an encoded barcode
+	 * 
+	 * @param b64enc
+	 * @return A decoded barcode structure
+	 */
+	public static DecodedBarcode decode(String b64enc) {
+		byte[] bytes;
 		
+		try {
+			bytes = Base64.decode(b64enc);
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Invalid barcode value (not base64)");
+		}
+		
+		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
+		try {
+			char type = (char) dis.readByte();
+			char colon = (char) dis.readByte();
+			long msb = dis.readLong();
+			long lsb = dis.readLong();
+			
+			if(colon != ':')
+				throw new IllegalArgumentException("Barcode is not a Corina barcode (invalid format)");
+			
+			DecodedBarcode barcode = new DecodedBarcode();
+			
+			// load uuid
+			barcode.uuid = new UUID(msb, lsb);
+			try {
+				barcode.uuidType = Type.valueOf(type);
+			} catch (IllegalArgumentException iae) {
+				throw new IllegalArgumentException("Invalid barcode type: " + type);
+			}
+			
+			return barcode;
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Barcode is not a Corina barcode");
+		}
+	}
 }

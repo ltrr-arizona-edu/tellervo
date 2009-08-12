@@ -458,12 +458,6 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		EditType prevMode = currentMode.previous();
 		ITridas parentEntity = (prevMode == null) ? null : prevMode.getEntity(s);
 		
-		// sanity check to ensure parent entity being null means we're an object
-		if(parentEntity == null && currentMode != EditType.OBJECT) {
-			new Bug(new IllegalStateException("parentEntity is null, but not an object"));
-			return;
-		}
-		
 		// logic for saving...
 		if(currentMode == EditType.DERIVED_SERIES || currentMode == EditType.MEASUREMENT_SERIES) {
 			// nice and easy... save the series directly into the sample, that's it!
@@ -471,6 +465,12 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		}
 		else {
 			// ok, we're saving an entity. save to the server!
+			
+			// sanity check to ensure parent entity being null means we're an object
+			if(parentEntity == null && currentMode != EditType.OBJECT) {
+				new Bug(new IllegalStateException("parentEntity is null, but not an object"));
+				return;
+			}
 			
 			// is it new? (no identifier?)
 			isNew = !temporaryEditingEntity.isSetIdentifier();
@@ -1110,7 +1110,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		 * @param enabled
 		 */
 		public void enableAssociatedButton(boolean enabled) {
-			if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES)
+			if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES || this == BOX)
 				return;
 			
 			if(associatedButton != null) {
