@@ -30,17 +30,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Date;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -67,18 +63,12 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
-import org.tridas.schema.NormalTridasMeasuringMethod;
-import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasMeasuringMethod;
-
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.ElementsPanel;
 import edu.cornell.dendro.corina.gui.FileDialog;
-import edu.cornell.dendro.corina.gui.ImagePanel;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
@@ -92,14 +82,12 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
-import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.tridasv2.support.XMLDateUtils;
 import edu.cornell.dendro.corina.tridasv2.ui.ComponentViewer;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -176,6 +164,8 @@ import edu.cornell.dendro.corina.util.Overwrite;
 public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		SampleListener, PrintableDocument {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final CorinaLog log = new CorinaLog("Editor");
 
 	// gui
@@ -183,8 +173,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	private JPanel wjPanel;
 
-	private ElementsPanel elemPanel = null;
-	
 	private EditorMeasurePanel measurePanel = null;
 
 	private JComponent metaView;
@@ -201,8 +189,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	
 	// for menus we have to notify...
 	private EditorFileMenu editorFileMenu;
-	private EditorViewMenu editorViewMenu;
-	private EditorSumMenu editorSumMenu;
 	private EditorEditMenu editorEditMenu;
 
 	// undo
@@ -270,19 +256,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				rolodex.remove(wjPanel);
 			else if (rolodex.indexOfComponent(wjPanel) == -1)
 				rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
-			if (sample.getElements() == null) {
-				rolodex.remove(elemPanel);
-				initElemPanel();
-				editorViewMenu.setElementsPanel(elemPanel);
-				editorSumMenu.setElementsPanel(elemPanel);
-			}
-			else if (elemPanel == null)
-			{
-				initElemPanel();
-				rolodex.add(elemPanel, I18n.getText("tab_components"));
-				editorViewMenu.setElementsPanel(elemPanel);
-				editorSumMenu.setElementsPanel(elemPanel);				
-			}
 		}
 	}
 
@@ -468,19 +441,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		if(sample.getSampleType().isDerived())
 			componentsPanel = new ComponentViewer(sample);
 	}
-	
-	private void initElemPanel() {
-		if (sample.getElements() != null) {
-			elemPanel = new ElementsPanel(this);
-			sample.addSampleListener(elemPanel);
-		}
-		else {
-			if(elemPanel != null)
-				sample.removeSampleListener(elemPanel);
-			elemPanel = null;
-		}
-	}
-	
+		
 	private void initMozillaMapPanel() {
 		// TODO: FIXME
 		//MapLink link = (MapLink) sample.getMeta("::maplink");
@@ -521,10 +482,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				}
 			});
 		}
-		
-		if (sample.getElements() != null)
-			rolodex.add(elemPanel, I18n.getText("tab_components"));
-		
+				
 		if(mozillaMapPanel != null)
 			rolodex.add(mozillaMapPanel, "Map");
 	}
@@ -701,71 +659,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		
 	}
 
-	public Editor() {
-
-		String title;
-		title = "[New series]";
-					
-		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI();
-        barcodeUI.jLabel2.setIcon(Builder.getIcon("barcode.png", 128)); 
-
-		final JDialog dialog = new JDialog();
-		
-	      ActionListener al1 = new ActionListener() {
-	          public void actionPerformed(ActionEvent e) {
-	             System.out.println("Barcode entered: "+ barcodeUI.txtBarcode.getText());
-	             setMetadataFromBarcode(barcodeUI.txtBarcode.getText());         
-	             dialog.dispose();
-	          }
-	       };
-		
-	      ActionListener al2 = new ActionListener() {
-	          public void actionPerformed(ActionEvent e) {      
-	        	 if(barcodeUI.chkAlwaysManual.isSelected())
-	        	 {
-	        		 // Set in prefs
-	        		 System.out.println("Requested to never show barcode gui again");
-	        	 }
-	             dialog.dispose();
-	          }
-	       };	       
-	       
-	    barcodeUI.txtBarcode.addActionListener(al1);
-	    barcodeUI.btnManual.addActionListener(al2);
-	    
-	    
-		dialog.setContentPane(barcodeUI);
-		dialog.setResizable(false);
-		dialog.pack();
-		dialog.setModal(true);
-		Center.center(dialog);
-		dialog.setVisible(true);
-	
-		
-
-		// make a new measurement series
-		TridasMeasurementSeries series = new TridasMeasurementSeries();
-		series.setTitle(title);
-		
-		// set up the new measuring method
-		TridasMeasuringMethod method = new TridasMeasuringMethod();
-		method.setNormalTridas(NormalTridasMeasuringMethod.MEASURING___PLATFORM);
-		series.setMeasuringMethod(method);
-	
-		// set the measuring date to today
-		series.setMeasuringDate(XMLDateUtils.toDate(new Date(), null));
-				
-		// make dataset ref, based on our series
-		sample = new Sample(series);
-		
-		// setup our loader and series identifier
-		CorinaWsiTridasElement.attachNewSample(sample);
-		
-		sample.setMeta(Metadata.TITLE, "New entry: " + title);
-
-		// pass
-		setup();
-	}
 
 	// TODO: want single-instance editors.
 	// so:
@@ -822,12 +715,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		menubar.add(new EditorFileMenu(this, sample));
 		editorEditMenu = new EditorEditMenu(sample, dataView, this);
 		menubar.add(editorEditMenu);
-		editorViewMenu = new EditorViewMenu(sample, elemPanel);
-		menubar.add(editorViewMenu);
-		menubar.add(new EditorToolsMenu(sample, this));
-		editorSumMenu = new EditorSumMenu(sample, elemPanel);
-		menubar.add(editorSumMenu);
-		editorSumMenu.setVisible(false);
 		menubar.add(new EditorGraphMenu(sample));
 		//menubar.add(new EditorSiteMenu(sample));
 		if (App.platform.isMac())
