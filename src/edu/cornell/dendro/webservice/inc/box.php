@@ -42,6 +42,8 @@ class box extends boxEntity implements IDBAccessor
 		$this->setCurationLocation($row['curationlocation']);
 		$this->setTrackingLocation($row['trackinglocation']);
 		$this->setSampleCount($row['samplecount']);
+		$this->setCreatedTimestamp($row['createdtimestamp']);
+		$this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
 		
         return true;
     }

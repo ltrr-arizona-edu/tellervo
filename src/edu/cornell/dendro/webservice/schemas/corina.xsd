@@ -631,6 +631,11 @@
 	%		BOX
 	%%%%%%%%%%%%%% -->
 	<xs:element name="box">
+		<xs:annotation>
+			<xs:documentation>
+				A box is where samples are stored
+			</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="tridas:title" maxOccurs="1"/>
@@ -638,8 +643,18 @@
 				<xs:element ref="tridas:createdTimestamp" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="tridas:lastModifiedTimestamp" minOccurs="0"/>
 				<xs:element ref="tridas:comments" minOccurs="0"/>
-				<xs:element name="trackingLocation" type="xs:string" minOccurs="0"/>
-				<xs:element name="curationLocation" type="xs:string" minOccurs="0"/>
+				<xs:element name="trackingLocation" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>The current location of this box if different from it's curation location.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="curationLocation" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>
+							The permanent location where this box is stored. 
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element name="sampleCount" type="xs:int" minOccurs="0"/>
 				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
