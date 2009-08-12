@@ -49,7 +49,7 @@ import javax.swing.JPanel;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.editor.EditorFactory;
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
@@ -263,7 +263,7 @@ public class XCorina extends JFrame {
 		
 		newSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new Editor();
+				EditorFactory.newSeries();
 			}
 		});
 		
