@@ -87,6 +87,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="radiusmissingsapwoodringstobarkfoundation"/>
  *     &lt;enumeration value="radiuscreated"/>
  *     &lt;enumeration value="radiuslastmodified"/>
+ *     &lt;enumeration value="radiusazimuth"/>
+ *     &lt;enumeration value="radiustitle"/>
  *     &lt;enumeration value="seriesid"/>
  *     &lt;enumeration value="seriesdbid"/>
  *     &lt;enumeration value="seriesmeasuringmethod"/>
@@ -97,8 +99,6 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="seriesanalyst"/>
  *     &lt;enumeration value="seriesdendrochronologist"/>
  *     &lt;enumeration value="seriescomments"/>
- *     &lt;enumeration value="seriesusage"/>
- *     &lt;enumeration value="seriesusagecomments"/>
  *     &lt;enumeration value="seriesfirstyear"/>
  *     &lt;enumeration value="seriessproutyear"/>
  *     &lt;enumeration value="seriesdeathyear"/>
@@ -272,6 +272,10 @@ public enum SearchParameterName {
     RADIUSCREATED("radiuscreated"),
     @XmlEnumValue("radiuslastmodified")
     RADIUSLASTMODIFIED("radiuslastmodified"),
+    @XmlEnumValue("radiusazimuth")
+    RADIUSAZIMUTH("radiusazimuth"),
+    @XmlEnumValue("radiustitle")
+    RADIUSTITLE("radiustitle"),
     @XmlEnumValue("seriesid")
     SERIESID("seriesid"),
     @XmlEnumValue("seriesdbid")
@@ -292,10 +296,6 @@ public enum SearchParameterName {
     SERIESDENDROCHRONOLOGIST("seriesdendrochronologist"),
     @XmlEnumValue("seriescomments")
     SERIESCOMMENTS("seriescomments"),
-    @XmlEnumValue("seriesusage")
-    SERIESUSAGE("seriesusage"),
-    @XmlEnumValue("seriesusagecomments")
-    SERIESUSAGECOMMENTS("seriesusagecomments"),
     @XmlEnumValue("seriesfirstyear")
     SERIESFIRSTYEAR("seriesfirstyear"),
     @XmlEnumValue("seriessproutyear")

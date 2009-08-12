@@ -57,6 +57,7 @@ import org.tridas.schema.TridasSample;
  *           &lt;element ref="{http://www.tridas.org/1.3}radius" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://www.tridas.org/1.3}measurementSeries" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://www.tridas.org/1.3}derivedSeries" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}box" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;/sequence>
  *         &lt;sequence>
  *         &lt;/sequence>
@@ -91,6 +92,7 @@ import org.tridas.schema.TridasSample;
     "radiuses",
     "measurementSeries",
     "derivedSeries",
+    "boxes",
     "entities",
     "authenticate",
     "searchParams"
@@ -116,6 +118,8 @@ public class WSIRequest
     protected List<TridasMeasurementSeries> measurementSeries;
     @XmlElement(namespace = "http://www.tridas.org/1.3")
     protected List<TridasDerivedSeries> derivedSeries;
+    @XmlElement(name = "box")
+    protected List<WSIBox> boxes;
     @XmlElement(name = "entity")
     protected List<WSIEntity> entities;
     protected WSIAuthenticate authenticate;
@@ -417,6 +421,43 @@ public class WSIRequest
     }
 
     /**
+     * Gets the value of the boxes property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the boxes property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getBoxes().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link WSIBox }
+     * 
+     * 
+     */
+    public List<WSIBox> getBoxes() {
+        if (boxes == null) {
+            boxes = new ArrayList<WSIBox>();
+        }
+        return this.boxes;
+    }
+
+    public boolean isSetBoxes() {
+        return ((this.boxes!= null)&&(!this.boxes.isEmpty()));
+    }
+
+    public void unsetBoxes() {
+        this.boxes = null;
+    }
+
+    /**
      * Gets the value of the entities property.
      * 
      * <p>
@@ -678,6 +719,18 @@ public class WSIRequest
     }
 
     /**
+     * Sets the value of the boxes property.
+     * 
+     * @param boxes
+     *     allowed object is
+     *     {@link WSIBox }
+     *     
+     */
+    public void setBoxes(List<WSIBox> boxes) {
+        this.boxes = boxes;
+    }
+
+    /**
      * Sets the value of the entities property.
      * 
      * @param entities
@@ -706,6 +759,7 @@ public class WSIRequest
         equalsBuilder.append(this.getRadiuses(), that.getRadiuses());
         equalsBuilder.append(this.getMeasurementSeries(), that.getMeasurementSeries());
         equalsBuilder.append(this.getDerivedSeries(), that.getDerivedSeries());
+        equalsBuilder.append(this.getBoxes(), that.getBoxes());
         equalsBuilder.append(this.getEntities(), that.getEntities());
         equalsBuilder.append(this.getAuthenticate(), that.getAuthenticate());
         equalsBuilder.append(this.getSearchParams(), that.getSearchParams());
@@ -735,6 +789,7 @@ public class WSIRequest
         hashCodeBuilder.append(this.getRadiuses());
         hashCodeBuilder.append(this.getMeasurementSeries());
         hashCodeBuilder.append(this.getDerivedSeries());
+        hashCodeBuilder.append(this.getBoxes());
         hashCodeBuilder.append(this.getEntities());
         hashCodeBuilder.append(this.getAuthenticate());
         hashCodeBuilder.append(this.getSearchParams());
@@ -789,6 +844,11 @@ public class WSIRequest
             List<TridasDerivedSeries> theDerivedSeries;
             theDerivedSeries = this.getDerivedSeries();
             toStringBuilder.append("derivedSeries", theDerivedSeries);
+        }
+        {
+            List<WSIBox> theBoxes;
+            theBoxes = this.getBoxes();
+            toStringBuilder.append("boxes", theBoxes);
         }
         {
             List<WSIEntity> theEntities;
@@ -900,6 +960,15 @@ public class WSIRequest
             copy.setDerivedSeries(copyDerivedSeries);
         } else {
             copy.unsetDerivedSeries();
+        }
+        if (this.isSetBoxes()) {
+            List<WSIBox> sourceBoxes;
+            sourceBoxes = this.getBoxes();
+            @SuppressWarnings("unchecked")
+            List<WSIBox> copyBoxes = ((List<WSIBox> ) copyBuilder.copy(sourceBoxes));
+            copy.setBoxes(copyBoxes);
+        } else {
+            copy.unsetBoxes();
         }
         if (this.isSetEntities()) {
             List<WSIEntity> sourceEntities;

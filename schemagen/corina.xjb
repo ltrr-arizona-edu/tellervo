@@ -109,7 +109,13 @@
 				org.tridas.interfaces.HumanName
 			</ai:interfaces>
 		</jaxb:bindings>
-						
+					
+		<!-- Add ITridas interface to box (kludge) -->
+		<jaxb:bindings node="//xs:element[@name='box']/xs:complexType">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.ITridas
+			</ai:interfaces>
+		</jaxb:bindings>						
 	</jaxb:bindings>
 
 	<!-- GML -->
