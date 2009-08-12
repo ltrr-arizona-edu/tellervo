@@ -168,6 +168,16 @@ class dbEntity
     private static $dbEntityCache = array();
     
     /**
+     * Box this sample is stored in
+     *
+     * @var UUID
+     */
+    protected $boxID = NULL;
+    
+    
+    
+    
+    /**
      * Constructor for this entity
      *
      * @param String $groupXMLTag
@@ -187,6 +197,11 @@ class dbEntity
      /**********/
     /* SETTERS */
     /***********/   
+    
+    function setBoxID($id)
+    {
+    	$this->boxID = $id;
+    }
     
 	/**
 	 * Set an array of associated file urls
@@ -338,6 +353,11 @@ class dbEntity
     /* GETTERS */
     /***********/    
     
+    function getBoxID()
+    {
+    	return $this->boxID;
+    }
+    
 	/**
 	 * Get the array of associated files of this entity
 	 *
@@ -442,13 +462,19 @@ class dbEntity
      *
      * @return unknown
      */
-    function getIdentifierXML()
+    function getIdentifierXML($format="standard", $nspace="tridas")
     {
+    	if($nspace!=null) $nspace = $nspace.":";
+    	
     	global $domain;
-        return "<tridas:title>".dbHelper::escapeXMLChars($this->getTitle())."</tridas:title>\n".
-               "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n".
-        	   "<tridas:createdTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getCreatedTimestamp())."</tridas:createdTimestamp>\n".
-		       "<tridas:lastModifiedTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getLastModifiedTimestamp())."</tridas:lastModifiedTimestamp>\n";
+        $xml= "<$nspace"."title>".dbHelper::escapeXMLChars($this->getTitle())."</$nspace"."title>\n".
+               "<$nspace"."identifier domain=\"$domain\">".$this->getID()."</$nspace"."identifier>\n";
+        if($format!="minimal")
+        {
+       		$xml .= "<$nspace"."createdTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getCreatedTimestamp())."</$nspace"."createdTimestamp>\n".
+		    	   "<$nspace"."lastModifiedTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getLastModifiedTimestamp())."</$nspace"."lastModifiedTimestamp>\n";
+        }
+        return $xml;
     }
     
     function getDBIDXML()
@@ -2216,6 +2242,70 @@ class radiusEntity extends dbEntity
 	
 }
 
+class boxEntity extends dbEntity
+{
+	protected $trackingLocation = NULL;
+	protected $curationLocation = NULL;
+
+	protected $sampleArray = array();
+	
+    function __construct()
+    {
+
+    		
+    }
+    
+    /***********/
+    /* SETTERS */
+    /***********/
+
+    /**
+     * Set the current location of this box
+     *
+     * @param String $trackingLocation
+     */
+    function setTrackingLocation($trackingLocation)
+    {
+    	$this->trackingLocation = $trackingLocation;
+    }
+    
+    /**
+     * Set the proper home for this box
+     *
+     * @param String $curationlocation
+     */
+    function setCurationLocation($curationlocation)
+    {
+    	$this->curationLocation = $curationlocation;
+    }
+    
+    /***********/
+    /* GETTERS */
+    /***********/
+    
+    /**
+     * Get where this box currently is
+     *
+     * @return String
+     */
+    function getTrackingLocation()
+    {
+    	return $this->trackingLocation;
+    }
+    
+    /**
+     * Get where this box should permanently live
+     *
+     * @return String
+     */
+    function getCurationLocation()
+    {
+    	return $this->curationLocation;
+    }
+    
+    
+    
+}
 
 /**
  * Class representing a taxon in the database

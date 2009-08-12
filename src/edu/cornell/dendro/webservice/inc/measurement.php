@@ -1728,6 +1728,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	private function addReadingNotesToDB($localVMID=NULL)
 	{
 		global $dbconn;
+		global $firebug;
 		
 		// Either use the passed vmid or get it from the class
 		if($localVMID==NULL) $localVMID = $this->getID();

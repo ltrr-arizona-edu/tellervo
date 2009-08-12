@@ -23,6 +23,7 @@ require_once("inc/element.php");
 require_once("inc/sample.php");
 require_once("inc/radius.php");
 require_once("inc/measurement.php");
+require_once("inc/box.php");
 require_once("inc/authenticate.php");
 require_once("inc/dictionaries.php");
 require_once("inc/search.php");
@@ -93,7 +94,8 @@ if($myMetaHeader->status != "Error")
             case "searchParameters": 			$myObject = new search(); break;
             case "dictionariesParameters": 		$myObject = new dictionaries(); break;
             //case "securityUserParameters": 		$myObject = new securityUser(); break;
-            //case "securityGroupParameters":		$myObject = new securityGroup(); break;
+            //case "securityGroupParameters":		$myObject = new securityGroup(); break
+            case "boxParameters":				$myObject = new box(); break;
             default:
             	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
             	echo "Object type not supported";
@@ -169,6 +171,11 @@ if($myMetaHeader->status != "Error")
                 case "securityGroup":
                     $myID = $paramObj->id;
                     break;
+                case "box":
+                	$myID = null;
+                	break;
+             
+                  
             }
         }
         elseif( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete'))

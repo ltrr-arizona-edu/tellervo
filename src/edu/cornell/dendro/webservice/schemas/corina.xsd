@@ -19,6 +19,7 @@
 			<xs:enumeration value="taxon" />
 			<xs:enumeration value="measurementSeries" />
 			<xs:enumeration value="derivedSeries" />
+			<xs:enumeration value="box"/>
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -31,6 +32,7 @@
 			<xs:enumeration value="radius"/>
 			<xs:enumeration value="measurementSeries"/>
 			<xs:enumeration value="derivedSeries"/>
+			<xs:enumeration value="box"/>
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -73,7 +75,12 @@
 		<xs:restriction base="xs:string">
 
 			<!-- OBJECT ATTRIBUTES-->
-			<xs:enumeration value="objectid"/>
+			<xs:enumeration value="objectid">
+				<xs:annotation>
+					<xs:appinfo>datatype:uuid</xs:appinfo>
+				</xs:annotation>
+			</xs:enumeration>
+			
 			<xs:enumeration value="objectdbid"/>						
 			<xs:enumeration value="objecttitle"/>
 			<xs:enumeration value="objectcreated"/>
@@ -152,6 +159,8 @@
 			<xs:enumeration value="radiusmissingsapwoodringstobarkfoundation"/>
 			<xs:enumeration value="radiuscreated"/>
 			<xs:enumeration value="radiuslastmodified"/>
+			<xs:enumeration value="radiusazimuth"/>
+			<xs:enumeration value="radiustitle"/>
 			
 			<!-- SERIES ATTRIBUTES -->
 			<xs:enumeration value="seriesid"/>
@@ -164,8 +173,6 @@
 			<xs:enumeration value="seriesanalyst"/>
 			<xs:enumeration value="seriesdendrochronologist"/>
 			<xs:enumeration value="seriescomments"/>
-			<xs:enumeration value="seriesusage"/>
-			<xs:enumeration value="seriesusagecomments"/>
 			<xs:enumeration value="seriesfirstyear"/>
 			<xs:enumeration value="seriessproutyear"/>
 			<xs:enumeration value="seriesdeathyear"/>
@@ -281,7 +288,8 @@
 					<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="tridas:radius" minOccurs="0" maxOccurs="unbounded"/>			
 					<xs:element ref="tridas:measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>					
+					<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>	
+					<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:annotation>
@@ -604,5 +612,27 @@
 			<xs:minInclusive value="0"/>
 		</xs:restriction>
 	</xs:simpleType>
+	
+
+
+<!--
+	%%%%%%%%%%%%%%
+	%		BOX
+	%%%%%%%%%%%%%% -->
+	<xs:element name="box">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="title" type="xs:string" maxOccurs="1"/>
+				<xs:element name="identifier" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="createdTimestamp" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="lastModifiedTimestamp" type="xs:dateTime" minOccurs="0"/>
+				<xs:element name="comments" type="xs:string" minOccurs="0"/>
+				<xs:element name="trackingLocation" type="xs:string" minOccurs="0"/>
+				<xs:element name="curationLocation" type="xs:string" minOccurs="0"/>
+				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
 	
 </xs:schema>

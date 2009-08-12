@@ -285,7 +285,12 @@ class request
 	                	case 'derivedseries':
 	                		$newxml = "<tridas:derivedSeries><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:derivedSeries>";
 	                		$myParamObj = new measurementParameters($newxml, $parentID);
-                            break;	 
+                            break;	
+
+	                	case 'box':
+	                		$newxml = "<box><identifier>".$item->getAttribute('id')."</identifier></box>";
+	                		$myParamObj = new boxParameters($newxml, $parentID);
+                            break;		                		
                                                         
 	                	default:
 	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);
@@ -336,7 +341,10 @@ class request
             			break;
             		case "tridas:derivedSeries":
             			$myParamObj = new measurementParameters($this->xmlRequestDom->saveXML($item), $parentID);
-            			break;    			
+            			break;    	
+            		case "box":
+            			$myParamObj = new boxParameters($this->xmlRequestDom->saveXML($item));
+            			break;
             		default:
             			trigger_error("901"."Unknown entity tag &lt;".$item->tagName."&gt; when trying to ".$this->crudMode." a record", E_USER_ERROR);
             	}

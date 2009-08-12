@@ -143,10 +143,53 @@ class searchParameters implements IParams
 									'samplelastmodified' => 				array('tbl' => 'vwtblsample', 'field' => 'lastmodifiedtimstamp'),
 									'samplingdatecertainty' => 				array('tbl' => 'vwtblsample', 'field' => 'datecertainty'),
 
-                                    'radiusid' =>                           array('tbl' => 'vwtblradius', 'field' => 'radiusid'),
+                                    'radiusid' =>                           		array('tbl' => 'vwtblradius', 'field' => 'radiusid'),
+									//'radiusdbid' 
+									'radiuspith'=>									array('tbl' => 'vwtblradius', 'field' => 'radiuspith'),
+									'radiussapwood'=>								array('tbl' => 'vwtblradius', 'field' => 'sapwood'),
+									'radiusheartwood'=>								array('tbl' => 'vwtblradius', 'field' => 'heartwood'),
+									'radiusbark'=>									array('tbl' => 'vwtblradius', 'field' => 'barkpresent'),
+									'radiusnumbersapwoodrings'=>					array('tbl' => 'vwtblradius', 'field' => 'numberofsapwoodrings'),
+									'radiuslastringunderbark'=>						array('tbl' => 'vwtblradius', 'field' => 'lastringunderbark'),
+									'radiusmissingheartwoodringstopith'=>			array('tbl' => 'vwtblradius', 'field' => 'missingheartwoodringstopith'),
+									'radiusmissingheartwoodringstopithfoundation'=>	array('tbl' => 'vwtblradius', 'field' => 'missingheartwoodringstopithfoundation'),
+									'radiusmissingsapwoodringstobark'=>				array('tbl' => 'vwtblradius', 'field' => 'missingsapwoodringstobark'),
+									'radiusmissingsapwoodringstobarkfoundation'=>	array('tbl' => 'vwtblradius', 'field' => 'missingsapwoodringstobarkfoundation'),
+									'radiuscreated'=>								array('tbl' => 'vwtblradius', 'field' => 'radiuscreated'),
+									'radiuslastmodified'=>							array('tbl' => 'vwtblradius', 'field' => 'radiuslastmodified'),
+									'radiusazimuth'=>								array('tbl' => 'vwtblradius', 'field' => 'azimuth'),
+									'radiustitle'=>									array('tbl' => 'vwtblradius', 'field' => 'radiuscode'),
 		
-									'seriesid' =>                           array('tbl' => 'vwcomprehensivevm', 'field' => 'vmeasurementid')
-									
+									'seriesid' =>                           array('tbl' => 'vwcomprehensivevm', 'field' => 'vmeasurementid'),
+									//'seriesmeasuringmethod' =>				array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesvariable'=>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesunit'=>							array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriespower' =>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriesmeasuringdate' =>				array('tbl' => 'vwcomprehensivevm', 'field' => 'birthdate'),
+									//'seriesanalyst' =>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesdendrochronologist' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriescomments' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'comments'),
+
+									'seriesfirstyear' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'startyear'),
+									//'seriessproutyear' =>					array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesdeathyear' =>					array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriesprovenance' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'provenance'),
+									//'seriestype' =>							array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesstandardizingmethod' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesauthor' =>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriesobjective' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'objective'),
+									'seriesversion' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'version'),
+									'seriesderivationdate' =>				array('tbl' => 'vwcomprehensivevm', 'field' => 'birthdate'),
+									'serieslastmodified' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'lastmodifiedtimestamp'),
+									'seriesoperatorparameter' =>			array('tbl' => 'vwcomprehensivevm', 'field' => 'vmeasurementopparameter'),
+									'seriesisreconciled' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'isreconciled'),
+									'seriesdatingtype' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'datingtype'),
+									//'seriesdatingerrorpositive' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesdatingerrornegative' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesvaluecount' =>					array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriescount' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'directchildcount')
+		
+								
 								  );
 		
 		// Loop through each param tag
@@ -567,6 +610,10 @@ class elementParameters extends elementEntity implements IParams
 		   		{
 		   			case "name":
 		   				$this->setName($value);
+		   				break;
+		   			
+		   			case "corina.boxID":	
+		   				$this->setBoxID($value);
 		   				break;
 		   				
 		   			// Ignore autogenerated fields
@@ -1110,7 +1157,64 @@ class measurementParameters extends measurementEntity implements IParams
 		   }
         }
     }	
+}   
+    
+class boxParameters extends boxEntity implements IParams
+{
+	var $xmlRequestDom = NULL;
+
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+    	parent::__construct();    	
+    	
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='box')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+     		            		
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+		global $corinaNS;
+        global $tridasNS;
+	
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+        
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   	case "title":				$this->setTitle($child->nodeValue); break;
+		   	case "trackingLocation":	$this->setTrackingLocation($child->nodeValue); break;
+		   	case "curationLocation":	$this->setCurationLocation($child->nodeValue); break;
+		   	case "comments":			$this->setComments($child->nodeValue); break;
+		   	case "createdTimestamp":	break;
+		   	case "lastModifiedTimestamp": break;
+
+		   		
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'box' entity of the XML request", E_USER_NOTICE);
+		   }
+        }   
+    }	
 }
+    
+    
+    
+
 
 
 

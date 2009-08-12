@@ -17,6 +17,7 @@ require_once("inc/readingNote.php");
 require_once("inc/taxon.php");
 require_once("inc/region.php");
 require_once("inc/securityUser.php");
+require_once("inc/box.php");
 
 class dictionaries
 {
@@ -69,7 +70,7 @@ class dictionaries
         				  'elementAuthenticity', 'datingType', 'taxon', 'region');
        
         
-		// Standard dictionar items
+		// Standard dictionary items
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -141,6 +142,10 @@ class dictionaries
                        	$sql="select taxonid as id, label as value from tlkptaxon order by taxonid";
                        	$myObj = new taxon();
                        	break;
+            		case "box":
+            			$sql="select boxid as id, title as value from tblbox order by boxid"; 	
+                      	$myObj = new box();
+                      	break;
                 }
             		
 		
@@ -155,7 +160,7 @@ class dictionaries
                 	
                 	if($success)
                 	{
-                		$xmldata.=$myObj->asXML();
+                		$xmldata.=$myObj->asXML("minimal");
                 	}
                 	else
                 	{

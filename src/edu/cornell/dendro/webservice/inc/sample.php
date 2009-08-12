@@ -57,6 +57,7 @@ class sample extends sampleEntity implements IDBAccessor
         $this->setKnots($row['knots']);
 		$this->setElementID($row['elementid']);
 		$this->setCode($row['code']);
+		$this->setBoxID($row['boxid']);
         return true;
     }
     
@@ -178,7 +179,8 @@ class sample extends sampleEntity implements IDBAccessor
         if($paramsClass->getPosition()!=NULL)		$this->setPosition($paramsClass->getPosition());
         if($paramsClass->getState()!=NULL)			$this->setState($paramsClass->getState());
         if($paramsClass->getKnots()!=NULL)			$this->setKnots($paramsClass->getKnots());        
-    	if($paramsClass->getCode()!=NULL)       	$this->setCode($paramsClass->getCode());                      
+    	if($paramsClass->getCode()!=NULL)       	$this->setCode($paramsClass->getCode());        
+    	if($paramsClass->getBoxID()!=NULL)			$this->setBoxID($paramsClass->getBoxID());              
         if ($paramsClass->parentID!=NULL)
         {
         	$parentObj = new element();
@@ -422,6 +424,8 @@ class sample extends sampleEntity implements IDBAccessor
 		        }
             }
 
+            if($this->getBoxID()!=NULL)							$xml.="<tridas:genericField name=\"corina.boxID\" type=\"xs:string\">".$this->getBoxID()."</tridas:genericField>\n";
+            
             // Include permissions details if requested            
             $xml .= $this->getPermissionsXML();            
             
@@ -481,6 +485,7 @@ class sample extends sampleEntity implements IDBAccessor
                         if($this->getPosition()!=NULL)					$sql.="position, ";
                         if($this->getState()!=NULL)						$sql.="state, ";
                         if($this->getKnots()!=NULL)						$sql.="knots, ";
+                        if($this->getBoxID()!=NULL)						$sql.="boxid, ";
                         if(isset($this->parentEntityArray[0]))		 	$sql.="elementid, ";                        
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
@@ -495,6 +500,7 @@ class sample extends sampleEntity implements IDBAccessor
                         if($this->getPosition()!=NULL)					$sql.="'".pg_escape_string($this->getPosition())."', ";
                         if($this->getState()!=NULL)						$sql.="'".pg_escape_string($this->getState())."', ";
                         if($this->getKnots()!=NULL)						$sql.="'".pg_escape_string($this->getKnots("pg"))."', ";
+                        if($this->getBoxID()!=NULL)						$sql.="'".pg_escape_string($this->getBoxID())."', ";
                         if(isset($this->parentEntityArray[0]))      	$sql.="'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                        
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
@@ -514,6 +520,7 @@ class sample extends sampleEntity implements IDBAccessor
                         if($this->getPosition()!=NULL)			$sql.="position='"			.pg_escape_string($this->getPosition())							."', ";
                         if($this->getState()!=NULL)				$sql.="state='"				.pg_escape_string($this->getState())								."', ";
                         if($this->getKnots()!=NULL)				$sql.="knots='"				.pg_escape_string($this->getKnots("pg"))			."', ";
+                        if($this->getBoxID()!=NULL)				$sql.="boxid='"				.pg_escape_string($this->getBoxID()) ."', ";
                         if(isset($this->parentEntityArray[0])) 	$sql.="elementid='"      	.pg_escape_string($this->parentEntityArray[0]->getID()) 	."', ";
                         
                     $sql = substr($sql, 0, -2);
