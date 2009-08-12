@@ -644,6 +644,26 @@ class measurement extends measurementEntity implements IDBAccessor
 
 	}
 
+        // given a Sample, get its box or NULL if it doesn't have one
+	function getSampleBox(&$sample) {
+		$boxID = $sample->getBoxID();
+
+		if($boxID == NULL) 
+			return NULL;
+
+		// see if we've cached it already
+		if(($myBox = dbEntity::getCachedEntity("box", $boxID)) != NULL)
+			return $myBox;
+
+		$myBox = new box();
+		$success = $myBox->setParamsFromDB($boxID);
+		if($success===FALSE) {
+			trigger_error($myBox->getLastErrorCode().$myBox->getLastErrorMessage());
+		}
+
+		return $myBox;
+        }
+
 	function recursiveSetParentsFromDB()
 	{
 		// load radius
@@ -700,7 +720,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		array_push($derived, $this);
 	}
 
-	function buildDerivationTrees(&$direct, &$objectToElementMap, &$elementTree, &$objectTree, &$all)
+	function buildDerivationTrees(&$direct, &$objectToElementMap, &$elementTree, &$objectTree, &$all, &$boxes)
 	{
 		foreach($direct as $d) {
 			$myradius = $d->parentEntityArray[0];
@@ -708,6 +728,11 @@ class measurement extends measurementEntity implements IDBAccessor
 			$myelement = $mysample->parentEntityArray[0];
 			$myobjects = $myelement->parentEntityArray;
 			$lastobject = $myobjects[count($myobjects) - 1];
+
+			// get the box, add it to the list if we don't have it
+			$mybox = $this->getSampleBox($mysample);
+			if(!array_key_exists($mybox->getID(), $boxes))
+				array_push($boxes, $mybox);
 
 			// get some IDs...
 			$rid = $myradius->getID();
@@ -834,23 +859,22 @@ class measurement extends measurementEntity implements IDBAccessor
 		$all = array();
 		$elementTree = array();
 		$objectTree = array();
-		$this->buildDerivationTrees($direct, $objectToElementMap, $elementTree, $objectTree, $all);
+                $boxes = array();
+		$this->buildDerivationTrees($direct, $objectToElementMap, $elementTree, $objectTree, $all, $boxes);
 
 		$dom = new DomDocument();
 		$dom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\"></root>");
 		$this->outputDerivationTree($dom, $dom->documentElement, $objectTree, $elementTree, $objectToElementMap, $all, $format);
 
 		$firebug->log($derived, "Derived");
-		$firebug->log($direct, "Direct");
-		
+		$firebug->log($direct, "Direct");		
 		
 		// now, just print out the derivedSeries in order. $this is going to be last.
 		foreach($derived as $d)
 		{
-
 			$myformat = ($d == $this) ? $format : (($format=='standard') ? 'summary' : $format);
 			try{
-			$dom->documentElement->appendChild($this->textAsNode($d->_asXML($myformat, "full"), $dom));
+			   $dom->documentElement->appendChild($this->textAsNode($d->_asXML($myformat, "full"), $dom));
 			}
 			catch (Exception $e){
 				$firebug->log($e->getMessage(), "DOM exception");	
@@ -860,7 +884,10 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		$txml = "";
 		foreach($dom->documentElement->childNodes as $child)
-		$txml .= $dom->saveXML($child);
+			$txml .= $dom->saveXML($child);
+
+		foreach($boxes as $box)
+			$txml .= $box->asXML("minimal");
 
 		return $txml;
 	}
