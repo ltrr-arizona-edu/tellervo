@@ -622,11 +622,11 @@
 	<xs:element name="box">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="title" type="xs:string" maxOccurs="1"/>
-				<xs:element name="identifier" type="xs:string" minOccurs="0" maxOccurs="1"/>
-				<xs:element name="createdTimestamp" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
-				<xs:element name="lastModifiedTimestamp" type="xs:dateTime" minOccurs="0"/>
-				<xs:element name="comments" type="xs:string" minOccurs="0"/>
+				<xs:element ref="tridas:title" maxOccurs="1"/>
+				<xs:element ref="tridas:identifier" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="tridas:createdTimestamp" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="tridas:lastModifiedTimestamp" minOccurs="0"/>
+				<xs:element ref="tridas:comments" minOccurs="0"/>
 				<xs:element name="trackingLocation" type="xs:string" minOccurs="0"/>
 				<xs:element name="curationLocation" type="xs:string" minOccurs="0"/>
 				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
