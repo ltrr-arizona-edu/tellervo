@@ -125,7 +125,7 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 	 * Constructor for read or delete
 	 * 
 	 * @param entity a corina WS entity to perform an operation on
-	 * @param queryType one of create, update, or delete
+	 * @param queryType one of read or delete
 	 */
 	public CorinaEntityAssociatedResource(WSIEntity entity, CorinaRequestType queryType) {
 		super(entity.getClass().getAnnotation(XmlRootElement.class).name(), 

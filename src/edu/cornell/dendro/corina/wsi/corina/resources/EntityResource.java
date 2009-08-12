@@ -7,6 +7,7 @@ import java.util.List;
 
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
+import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaEntityAssociatedResource;
@@ -75,6 +76,19 @@ public class EntityResource<T extends ITridas> extends
 		this.entityType = entityClassType;
 	}
 
+	/**
+	 * Constructor for read or delete
+	 * 
+	 * @param entity a corina WS entity to perform an operation on
+	 * @param queryType one of read or delete
+	 * @param entityClassType class of the entity to return
+	 */
+	public EntityResource(WSIEntity entity, CorinaRequestType queryType, Class<T> entityClassType) {
+		super(entity, queryType);
+		
+		this.entityType = entityClassType;
+	}
+	
 	@Override
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
