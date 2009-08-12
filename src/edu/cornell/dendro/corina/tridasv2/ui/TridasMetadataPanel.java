@@ -1,8 +1,12 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,8 +29,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
+import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
@@ -51,6 +58,7 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
@@ -150,7 +158,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		mainPanel.add(bottombar, BorderLayout.SOUTH);
 		
 		add(mainPanel, BorderLayout.CENTER);
-		add(buttonBar, BorderLayout.WEST);
+		add(new JScrollPane(buttonBar, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.WEST);
 		
 		// set up initial state!
 		// first, ensure we have a series
@@ -897,12 +906,57 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		return button;
 	}
 	
+	public class ScrollableJButtonBar extends JButtonBar implements Scrollable {
+		public ScrollableJButtonBar(int orientation) {
+			super(orientation);
+		}
+
+		public Dimension getPreferredScrollableViewportSize() {
+			Dimension preferred = getPreferredSize();
+			Border border = getBorder();
+			int extraWidth = 0;
+			
+			if(border != null) {
+				Insets insets = border.getBorderInsets(this);
+				extraWidth += insets.left + insets.right;
+			}
+			
+			return new Dimension(preferred.width + extraWidth, preferred.height);
+		}
+
+		public int getScrollableBlockIncrement(Rectangle visibleRect,
+				int orientation, int direction) {
+			
+			return visibleRect.height;
+		}
+
+		public boolean getScrollableTracksViewportHeight() {
+			return false;
+		}
+
+		public boolean getScrollableTracksViewportWidth() {
+			return true;
+		}
+
+		public int getScrollableUnitIncrement(Rectangle visibleRect,
+				int orientation, int direction) {
+			
+			Component component[] = getComponents();
+			
+			if(component.length == 0)
+				// ok, no components, why are we scrolling?
+				return 10;
+			
+			return component[0].getHeight();
+		}
+	}
+	
 	/**
 	 * Set up the button panel
 	 * @param isDerived
 	 */
 	private void initButtonPanel(boolean isDerived) {
-		buttonBar = new JButtonBar(JButtonBar.VERTICAL);
+		buttonBar = new ScrollableJButtonBar(JButtonBar.VERTICAL);
 		
 		buttonBar.setUI(new BlueishButtonBarUI());
 		
@@ -932,8 +986,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			}
 		}
 		
-		buttonBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), 
-				BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+		buttonBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
 	}
 	
 	/**
@@ -948,7 +1001,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		SAMPLE(TridasSample.class, "Sample", "sample.png", Metadata.SAMPLE),
 		RADIUS(TridasRadius.class, "Radius", "radius.png", Metadata.RADIUS),
 		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "measurementseries.png", null),
-		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "derivedseries.png", null);
+		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "derivedseries.png", null),
+		BOX(WSIBox.class, "Box", "box.png", Metadata.BOX);
 		
 		
 		private Class<? extends ITridas> type;
@@ -1073,7 +1127,11 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 					
 				case RADIUS:
 					labcode.setRadiusCode((entity == null) ? null : entity.getTitle());
-					break;					
+					break;
+					
+				case BOX:
+					// ignore this...
+					return;
 				}
 			}
 			

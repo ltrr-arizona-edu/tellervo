@@ -8,17 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasSample;
 
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.formats.TridasDoc;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
+import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasIdentifierMap;
 import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceException;
@@ -62,12 +67,16 @@ public class SeriesResource extends CorinaEntityAssociatedResource<List<BaseSamp
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
 		List<Object> content = object.getContent().getSqlsAndObjectsAndElements();
+		List<WSIBox> boxes = ListUtil.subListOfType(content, WSIBox.class);
 		List<TridasObject> tridasObjects = ListUtil.subListOfType(content, TridasObject.class);
 		List<ITridasSeries> tridasSeries = ListUtil.subListOfType(content, ITridasSeries.class);
 		List<BaseSample> samples = new ArrayList<BaseSample>();
 
 		// create a map for references
 		TridasIdentifierMap<BaseSample> refmap = new TridasIdentifierMap<BaseSample>();
+		
+		// create a map for boxes (box identifier->box)
+		TridasIdentifierMap<WSIBox> boxmap = new TridasIdentifierMap<WSIBox>(boxes);
 		
 		// init our loader
 		TridasDoc doc = new TridasDoc();
@@ -88,12 +97,35 @@ public class SeriesResource extends CorinaEntityAssociatedResource<List<BaseSamp
 			throw new ResourceException("Couldn't load series: " + ioe.toString());
 		}
 		
+		// we might overwrite this a bunch, so keep it around...
+		TridasIdentifier boxIdentifier = new TridasIdentifier();
+		
 		for(BaseSample s : samples) {
 			ITridasSeries series = s.getSeries();
 						
 			// populate references if it's a derived sample
-			if(s instanceof Sample && s.getSampleType().isDerived())
+			if(s instanceof Sample && s.getSampleType().isDerived()) {
 				doc.finishDerivedSample((Sample) s, refmap);
+			}
+			
+			// if it has a sample, try to get a box
+			if(s.hasMeta(Metadata.SAMPLE)) {
+				TridasSample sample = s.getMeta(Metadata.SAMPLE, TridasSample.class);				
+				TridasGenericField field = GenericFieldUtils.findField(sample, "corina.boxID");
+				
+				// if we have a boxID...
+				if(field != null) {
+					// make the boxIdentifier represent our boxID...
+					boxIdentifier.setDomain(sample.getIdentifier().getDomain());
+					boxIdentifier.setValue(field.getValue());
+					
+					WSIBox box = boxmap.get(boxIdentifier);
+					
+					// if we have a box, attach it to the Corina sample
+					if(box != null)
+						s.setMeta(Metadata.BOX, box);
+				}
+			}
 
 			// create a loader and associate it with this sample
 			CorinaWsiTridasElement loader = new CorinaWsiTridasElement(series.getIdentifier());

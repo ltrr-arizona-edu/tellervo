@@ -52,5 +52,6 @@ public class Metadata {
 	public final static String ELEMENT = "::element";
 	public final static String SAMPLE = "::sample";
 	public final static String RADIUS = "::radius";
-	
+
+	public final static String BOX = "::box";
 }
