@@ -8,7 +8,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -22,6 +24,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.adapters.IntegerAdapter;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.DateTime;
 import org.tridas.schema.TridasIdentifier;
@@ -45,6 +48,7 @@ import org.tridas.schema.TridasSample;
  *         &lt;element ref="{http://www.tridas.org/1.3}comments" minOccurs="0"/>
  *         &lt;element name="trackingLocation" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="curationLocation" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="sampleCount" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.3}sample" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -63,6 +67,7 @@ import org.tridas.schema.TridasSample;
     "comments",
     "trackingLocation",
     "curationLocation",
+    "sampleCount",
     "samples"
 })
 @XmlRootElement(name = "box")
@@ -82,6 +87,10 @@ public class WSIBox implements Serializable, CopyTo, Copyable, Equals, HashCode,
     protected String comments;
     protected String trackingLocation;
     protected String curationLocation;
+    @XmlElement(type = String.class)
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
+    @XmlSchemaType(name = "int")
+    protected Integer sampleCount;
     @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.3")
     protected List<TridasSample> samples;
 
@@ -282,6 +291,34 @@ public class WSIBox implements Serializable, CopyTo, Copyable, Equals, HashCode,
     }
 
     /**
+     * Gets the value of the sampleCount property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public Integer getSampleCount() {
+        return sampleCount;
+    }
+
+    /**
+     * Sets the value of the sampleCount property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSampleCount(Integer value) {
+        this.sampleCount = value;
+    }
+
+    public boolean isSetSampleCount() {
+        return (this.sampleCount!= null);
+    }
+
+    /**
      * Gets the value of the samples property.
      * 
      * <p>
@@ -346,6 +383,7 @@ public class WSIBox implements Serializable, CopyTo, Copyable, Equals, HashCode,
         equalsBuilder.append(this.getComments(), that.getComments());
         equalsBuilder.append(this.getTrackingLocation(), that.getTrackingLocation());
         equalsBuilder.append(this.getCurationLocation(), that.getCurationLocation());
+        equalsBuilder.append(this.getSampleCount(), that.getSampleCount());
         equalsBuilder.append(this.getSamples(), that.getSamples());
     }
 
@@ -369,6 +407,7 @@ public class WSIBox implements Serializable, CopyTo, Copyable, Equals, HashCode,
         hashCodeBuilder.append(this.getComments());
         hashCodeBuilder.append(this.getTrackingLocation());
         hashCodeBuilder.append(this.getCurationLocation());
+        hashCodeBuilder.append(this.getSampleCount());
         hashCodeBuilder.append(this.getSamples());
     }
 
@@ -413,6 +452,11 @@ public class WSIBox implements Serializable, CopyTo, Copyable, Equals, HashCode,
             String theCurationLocation;
             theCurationLocation = this.getCurationLocation();
             toStringBuilder.append("curationLocation", theCurationLocation);
+        }
+        {
+            Integer theSampleCount;
+            theSampleCount = this.getSampleCount();
+            toStringBuilder.append("sampleCount", theSampleCount);
         }
         {
             List<TridasSample> theSamples;
@@ -484,6 +528,14 @@ public class WSIBox implements Serializable, CopyTo, Copyable, Equals, HashCode,
             copy.setCurationLocation(copyCurationLocation);
         } else {
             copy.curationLocation = null;
+        }
+        if (this.isSetSampleCount()) {
+            Integer sourceSampleCount;
+            sourceSampleCount = this.getSampleCount();
+            Integer copySampleCount = ((Integer) copyBuilder.copy(sourceSampleCount));
+            copy.setSampleCount(copySampleCount);
+        } else {
+            copy.sampleCount = null;
         }
         if (this.isSetSamples()) {
             List<TridasSample> sourceSamples;
