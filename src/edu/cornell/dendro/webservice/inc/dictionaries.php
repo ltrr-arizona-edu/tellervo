@@ -67,7 +67,7 @@ class dictionaries
         $xmldata = "";
         
         $dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
-        				  'elementAuthenticity', 'datingType', 'taxon', 'region');
+        				  'elementAuthenticity', 'datingType', 'taxon');
        
         
 		// Standard dictionary items
@@ -121,7 +121,9 @@ class dictionaries
 
         
         // More complex dictionary items
-        $dictItemsWithClasses = array('securityUser', 'readingNote');
+        $dictItemsWithClasses = array('securityUser', 'readingNote', 'box');
+        
+        global $firebug;
         
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -143,7 +145,7 @@ class dictionaries
                        	$myObj = new taxon();
                        	break;
             		case "box":
-            			$sql="select boxid as id, title as value from tblbox order by boxid"; 	
+            			$sql="select boxid as id, title as value from tblbox order by createdtimestamp"; 	
                       	$myObj = new box();
                       	break;
                 }

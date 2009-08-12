@@ -41,7 +41,7 @@ class box extends boxEntity implements IDBAccessor
         $this->setComments($row['comments']);
 		$this->setCurationLocation($row['curationlocation']);
 		$this->setTrackingLocation($row['trackinglocation']);
-		
+		$this->setSampleCount($row['samplecount']);
 		
         return true;
     }
@@ -58,7 +58,7 @@ class box extends boxEntity implements IDBAccessor
         global $firebug;
         
         $this->setID($theID);
-        $sql = "SELECT * from tblbox WHERE boxid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * from vwtblbox WHERE boxid='".pg_escape_string($this->getID())."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -272,11 +272,11 @@ class box extends boxEntity implements IDBAccessor
             {
                 $xml.= "<box>\n";
                 $xml.= $this->getIdentifierXML($format, "");          
-                if($this->getComments()!=NULL) 					$xml.= "<comments>".$this->getComments()."</comments>\n";
+                if($this->getComments()!=NULL) 					$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
                 
                 if($this->getTrackingLocation()!=NULL)			$xml.= "<trackingLocation>".$this->getTrackingLocation()."</trackingLocation>\n";
                 if($this->getCurationLocation()!=NULL)			$xml.= "<curationLocation>".$this->getCurationLocation()."</curationLocation>\n";
-
+				if($this->getSampleCount()!=NULL)				$xml.= "<sampleCount>".$this->getSampleCount()."</sampleCount>\n";
                 
                  // Include samples if present
                 if (($this->sampleArray) && ($format!="minimal"))

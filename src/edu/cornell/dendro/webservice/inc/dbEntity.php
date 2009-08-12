@@ -462,17 +462,15 @@ class dbEntity
      *
      * @return unknown
      */
-    function getIdentifierXML($format="standard", $nspace="tridas")
-    {
-    	if($nspace!=null) $nspace = $nspace.":";
-    	
+    function getIdentifierXML($format="standard")
+    {   	
     	global $domain;
-        $xml= "<$nspace"."title>".dbHelper::escapeXMLChars($this->getTitle())."</$nspace"."title>\n".
-               "<$nspace"."identifier domain=\"$domain\">".$this->getID()."</$nspace"."identifier>\n";
+        $xml= "<tridas:title>".dbHelper::escapeXMLChars($this->getTitle())."</tridas:title>\n".
+               "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n";
         if($format!="minimal")
         {
-       		$xml .= "<$nspace"."createdTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getCreatedTimestamp())."</$nspace"."createdTimestamp>\n".
-		    	   "<$nspace"."lastModifiedTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getLastModifiedTimestamp())."</$nspace"."lastModifiedTimestamp>\n";
+       		$xml .= "<tridas:createdTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getCreatedTimestamp())."</tridas:createdTimestamp>\n".
+		    	   "<tridas:lastModifiedTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getLastModifiedTimestamp())."</tridas:lastModifiedTimestamp>\n";
         }
         return $xml;
     }
@@ -2246,7 +2244,7 @@ class boxEntity extends dbEntity
 {
 	protected $trackingLocation = NULL;
 	protected $curationLocation = NULL;
-
+	protected $sampleCount = NULL;
 	protected $sampleArray = array();
 	
     function __construct()
@@ -2259,6 +2257,16 @@ class boxEntity extends dbEntity
     /* SETTERS */
     /***********/
 
+    /**
+     * Number of samples in this box
+     *
+     * @param unknown_type $count
+     */
+    function setSampleCount($count)
+    {
+    	$this->sampleCount = $count;
+    }
+    
     /**
      * Set the current location of this box
      *
@@ -2282,6 +2290,11 @@ class boxEntity extends dbEntity
     /***********/
     /* GETTERS */
     /***********/
+    
+    function getSampleCount()
+    {
+    	return $this->sampleCount;
+    }
     
     /**
      * Get where this box currently is
