@@ -1,12 +1,8 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,9 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
-import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
@@ -63,6 +57,7 @@ import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
+import edu.cornell.dendro.corina.tridasv2.ui.support.ScrollableJButtonBar;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityListHolder;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
@@ -904,51 +899,6 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		type.associateButton(button);
 		
 		return button;
-	}
-	
-	public class ScrollableJButtonBar extends JButtonBar implements Scrollable {
-		public ScrollableJButtonBar(int orientation) {
-			super(orientation);
-		}
-
-		public Dimension getPreferredScrollableViewportSize() {
-			Dimension preferred = getPreferredSize();
-			Border border = getBorder();
-			int extraWidth = 0;
-			
-			if(border != null) {
-				Insets insets = border.getBorderInsets(this);
-				extraWidth += insets.left + insets.right;
-			}
-			
-			return new Dimension(preferred.width + extraWidth, preferred.height);
-		}
-
-		public int getScrollableBlockIncrement(Rectangle visibleRect,
-				int orientation, int direction) {
-			
-			return visibleRect.height;
-		}
-
-		public boolean getScrollableTracksViewportHeight() {
-			return false;
-		}
-
-		public boolean getScrollableTracksViewportWidth() {
-			return true;
-		}
-
-		public int getScrollableUnitIncrement(Rectangle visibleRect,
-				int orientation, int direction) {
-			
-			Component component[] = getComponents();
-			
-			if(component.length == 0)
-				// ok, no components, why are we scrolling?
-				return 10;
-			
-			return component[0].getHeight();
-		}
 	}
 	
 	/**
