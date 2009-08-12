@@ -653,12 +653,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				return true;
 		return false;
 	}
-	
-	public void setMetadataFromBarcode(String barcode)
-	{
-		
-	}
-
 
 	// TODO: want single-instance editors.
 	// so:
