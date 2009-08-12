@@ -10,6 +10,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import org.tridas.schema.TridasObject;
+
 import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -24,8 +26,10 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
@@ -33,12 +37,31 @@ import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 
 public class BoxLabel extends ReportBase{
 	
-	private Sample s = new Sample();
-
+	private WSIBox b = new WSIBox();
 	
 	public BoxLabel(Sample s){
-		this.s = s;
-
+		
+		if(s==null)
+		{
+			System.out.println("Error - sample is null");
+			return;
+		}
+		
+		if (s.getMeta(Metadata.BOX, WSIBox.class)==null)
+		{
+			System.out.println("Error - no box associated with this series");
+			return;
+		}
+		this.b = s.getMeta(Metadata.BOX, WSIBox.class);
+	}
+	
+	public BoxLabel(WSIBox b){
+		if (b==null)
+		{
+			System.out.println("Error - box is null");
+			return;
+		}
+		this.b = b;
 	}
 		
 	public void generateBoxLabel(OutputStream output) {
@@ -88,7 +111,7 @@ public class BoxLabel extends ReportBase{
 	        getTable();
 	        document.add(getParagraphSpace());	
 		    
-	        getSeriesComments();	       		       
+	        getComments();	       		       
 				
 		    
 			
@@ -110,9 +133,9 @@ public class BoxLabel extends ReportBase{
 	{
 		Paragraph p = new Paragraph();
 		
-		p.add(new Chunk("TU-123\n", monsterFont));
+		p.add(new Chunk(b.getTitle()+"\n", monsterFont));
 	
-		p.add(new Chunk("Stack3, shelf 2, column 1", subTitleFont));
+		p.add(new Chunk(b.getCurationLocation(), subTitleFont));
 				
 		return p;		
 	}
@@ -125,8 +148,8 @@ public class BoxLabel extends ReportBase{
 	 */
 	private Image getBarCode()
 	{
-		UUID uuid = UUID.fromString(s.getSeries().getIdentifier().getValue());
-		LabBarcode barcode = new LabBarcode(LabBarcode.Type.SERIES, uuid);
+		UUID uuid = UUID.fromString(b.getIdentifier().getValue());
+		LabBarcode barcode = new LabBarcode(LabBarcode.Type.BOX, uuid);
 
 		barcode.setX(0.8f);
 		barcode.setSize(5f);
@@ -230,9 +253,9 @@ public class BoxLabel extends ReportBase{
 	private Paragraph getTimestampPDF()
 	{
 		// Set up calendar
-		Date createdTimestamp = s.getSeries().getCreatedTimestamp().getValue()
+		Date createdTimestamp = b.getCreatedTimestamp().getValue()
 				.toGregorianCalendar().getTime();
-		Date lastModifiedTimestamp = s.getSeries().getLastModifiedTimestamp()
+		Date lastModifiedTimestamp = b.getLastModifiedTimestamp()
 				.getValue().toGregorianCalendar().getTime();
 		DateFormat df1 = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
 		
@@ -268,15 +291,15 @@ public class BoxLabel extends ReportBase{
 				
 	}
 	
-	private void getSeriesComments() throws DocumentException
+	private void getComments() throws DocumentException
 	{
 	
 		Paragraph p = new Paragraph();
 		p.setLeading(0, 1.2f);
 		
 		p.add(new Chunk("Comments: \n", subSectionFont));
-		if(s.getSeries().getComments()!=null){
-			p.add(new Chunk(s.getSeries().getComments(), bodyFont));
+		if(b.getComments()!=null){
+			p.add(new Chunk(b.getComments(), bodyFont));
 		}
 		else{
 			p.add(new Chunk("No comments recorded", bodyFont));
@@ -333,7 +356,7 @@ public class BoxLabel extends ReportBase{
 				App.platform.openFile(outputFile);
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
-				Alert.error("Error", "An error occurred while generating the series report.\n  See error log for further details.");
+				Alert.error("Error", "An error occurred while generating the box label.\n  See error log for further details.");
 				return;
 			}
 		}
