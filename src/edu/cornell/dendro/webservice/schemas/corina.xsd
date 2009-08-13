@@ -143,6 +143,8 @@
 			<xs:enumeration value="samplecreated"/>
 			<xs:enumeration value="samplelastmodified"/>
 			<xs:enumeration value="samplingdatecertainty"/>
+			<xs:enumeration value="sampleboxid"/>
+			
 			
 			<!-- RADIUS ATTRIBUTES -->
 			<xs:enumeration value="radiusid"/>

@@ -465,7 +465,8 @@ class dbEntity
     function getIdentifierXML($format="standard")
     {   	
     	global $domain;
-        $xml= "<tridas:title>".dbHelper::escapeXMLChars($this->getTitle())."</tridas:title>\n".
+
+    	$xml= "<tridas:title>".dbHelper::escapeXMLChars($this->getTitle())."</tridas:title>\n".
                "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n";
         if($format!="minimal")
         {

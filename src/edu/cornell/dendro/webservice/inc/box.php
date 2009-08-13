@@ -44,7 +44,7 @@ class box extends boxEntity implements IDBAccessor
 		$this->setSampleCount($row['samplecount']);
 		$this->setCreatedTimestamp($row['createdtimestamp']);
 		$this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
-		
+
         return true;
     }
 
@@ -265,7 +265,8 @@ class box extends boxEntity implements IDBAccessor
     {
 
         global $domain;
-        $xml ="";
+        global $firebug;
+
         // Return a string containing the current object in XML format
         if ($this->getLastErrorCode()==NULL)
         {
@@ -273,7 +274,7 @@ class box extends boxEntity implements IDBAccessor
             if( ($parts=="all") || ($parts=="beginning"))
             {
                 $xml.= "<box>\n";
-                $xml.= $this->getIdentifierXML($format, "");          
+                $xml.= $this->getIdentifierXML();          
                 if($this->getComments()!=NULL) 					$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
                 
                 if($this->getTrackingLocation()!=NULL)			$xml.= "<trackingLocation>".$this->getTrackingLocation()."</trackingLocation>\n";
