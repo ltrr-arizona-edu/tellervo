@@ -53,6 +53,7 @@ sub copy_stuff() {
    dumptable('tblreading');
 
    keepseq('tblvmeasurementgroup_vmeasurementgroupid_seq');
+   keepseq('tblcrossdate_crossdateid_seq');
 }
 
 sub keepseq($) {
@@ -366,6 +367,7 @@ sub do_vmeasurements() {
    $sq->finish;
 
    do_vmeasurementgroups();
+   do_crossdates();
 
    endtable('tblVMeasurement');
 
@@ -391,6 +393,32 @@ sub do_vmeasurementgroups() {
    $sq->finish;
 
    endtable('tblVMeasurementGroup');
+
+   die "Err: ", $sth->errstr(), "\n" if $sq->err();
+}
+
+sub do_crossdates() {
+   $sq = $dbh->prepare('SELECT * FROM tblCrossdate ORDER BY vmeasurementID');
+
+   starttable('tblCrossdate');
+
+   $sq->execute() or die("bad query");
+   while(my $r = $sq->fetchrow_hashref() ) {
+
+      my $stmt = "INSERT INTO tblCrossdate(crossdateID, VMeasurementID, MasterVMeasurementID, startYear, justification, confidence) VALUES (";
+      $stmt .= esc($r->{crossdateid}, 1);
+      $stmt .= touuid($r->{vmeasurementid}, $vmns, 'vm') . ', ';
+      $stmt .= touuid($r->{mastervmeasurementid}, $vmns, 'vm') . ', ';
+      $stmt .= esc($r->{startyear}, 1);
+      $stmt .= esc($r->{justification}, 1);
+      $stmt .= esc($r->{confidence}, 0);
+
+      $stmt .= ')';
+      print "$stmt;\n";
+   }
+   $sq->finish;
+
+   endtable('tblCrossdate');
 
    die "Err: ", $sth->errstr(), "\n" if $sq->err();
 }
