@@ -142,8 +142,9 @@ sub do_objects() {
          next;
       }
 
-      my $stmt = "INSERT INTO tblObject(ObjectID, Title, Code, createdtimestamp, lastmodifiedtimestamp) VALUES (";
+      my $stmt = "INSERT INTO tblObject(ObjectID, parentObjectID, Title, Code, createdtimestamp, lastmodifiedtimestamp) VALUES (";
       $stmt .= touuid($r->{subsiteid}, $subsitens, 'subsite') . ', ';
+      $stmt .= touuid($r->{siteid}, $sitens, 'site') . ', ';
       $stmt .= esc($r->{name}) . ', ';
       $stmt .= esc(trimsubsite($r->{name})) . ', ';
       $stmt .= esc($r->{createdtimestamp}) . ', ';
