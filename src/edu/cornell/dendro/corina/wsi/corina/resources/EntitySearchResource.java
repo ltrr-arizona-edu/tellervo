@@ -50,11 +50,30 @@ public class EntitySearchResource<T extends ITridas> extends
 		returnType = entityForSearchReturnObject(searchParameters.getReturnObject());
 	}
 	
+	/**
+	 * Search for an entity based on searchParameters, guessing the return type
+	 * 
+	 * Note: This is somewhat unsafe, as you can muck up return types.
+	 * Better to use the two-param constructor.
+	 * 
+	 * @param searchParameters
+	 */
+	@SuppressWarnings("unchecked")
 	public EntitySearchResource(SearchParameters searchParameters) {
+		this(searchParameters, (Class<T>) entityForSearchReturnObject(searchParameters.getReturnObject()));
+	}
+	
+	/**
+	 * Search for an entity based on searchParameters, with the given return object class
+	 * 
+	 * @param searchParameters The search parameters
+	 * @param returnObjectClass The base type of entity we're going to have, in a list
+	 */
+	public EntitySearchResource(SearchParameters searchParameters, Class<T> returnObjectClass) {
 		super(searchParameters.getReturnObject().toString() + "Search", CorinaRequestType.SEARCH);
 		
 		this.searchParameters = searchParameters;
-		this.returnType = entityForSearchReturnObject(searchParameters.getReturnObject());
+		this.returnType = returnObjectClass;		
 	}
 	
 	/**
