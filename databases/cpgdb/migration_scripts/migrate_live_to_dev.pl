@@ -121,13 +121,14 @@ sub do_objects() {
 
    $sq->execute() or die("bad query");
    while(my $r = $sq->fetchrow_hashref() ) {
-      my $stmt = "INSERT INTO tblObject(ObjectID, Title, Code, createdtimestamp, lastmodifiedtimestamp, locationgeometry) VALUES (";
+      my $stmt = "INSERT INTO tblObject(ObjectID, Title, Code, createdtimestamp, lastmodifiedtimestamp, locationgeometry, objectTypeID) VALUES (";
       $stmt .= touuid($r->{siteid}, $sitens, 'site') . ', ';
       $stmt .= esc($r->{name}) . ', ';
       $stmt .= esc($r->{code}) . ', ';
       $stmt .= esc($r->{createdtimestamp}) . ', ';
       $stmt .= esc($r->{lastmodifiedtimestamp}) . ', ';
-      $stmt .= esc($r->{extent});
+      $stmt .= esc($r->{extent}, 1);
+      $stmt .= '1'; # site
 
       $stmt .= ')';
       print "$stmt;\n";
@@ -142,13 +143,14 @@ sub do_objects() {
          next;
       }
 
-      my $stmt = "INSERT INTO tblObject(ObjectID, parentObjectID, Title, Code, createdtimestamp, lastmodifiedtimestamp) VALUES (";
+      my $stmt = "INSERT INTO tblObject(ObjectID, parentObjectID, Title, Code, createdtimestamp, lastmodifiedtimestamp, objectTypeID) VALUES (";
       $stmt .= touuid($r->{subsiteid}, $subsitens, 'subsite') . ', ';
       $stmt .= touuid($r->{siteid}, $sitens, 'site') . ', ';
       $stmt .= esc($r->{name}) . ', ';
       $stmt .= esc(trimsubsite($r->{name})) . ', ';
       $stmt .= esc($r->{createdtimestamp}) . ', ';
-      $stmt .= esc($r->{lastmodifiedtimestamp});
+      $stmt .= esc($r->{lastmodifiedtimestamp}, 1);
+      $stmt .= '2'; # subsite
 
       $stmt .= ')';
       print "$stmt;\n";
