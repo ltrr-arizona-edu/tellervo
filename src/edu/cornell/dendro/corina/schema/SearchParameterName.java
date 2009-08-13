@@ -73,6 +73,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="samplecreated"/>
  *     &lt;enumeration value="samplelastmodified"/>
  *     &lt;enumeration value="samplingdatecertainty"/>
+ *     &lt;enumeration value="sampleboxid"/>
  *     &lt;enumeration value="radiusid"/>
  *     &lt;enumeration value="radiusdbid"/>
  *     &lt;enumeration value="radiuspith"/>
@@ -244,6 +245,8 @@ public enum SearchParameterName {
     SAMPLELASTMODIFIED("samplelastmodified"),
     @XmlEnumValue("samplingdatecertainty")
     SAMPLINGDATECERTAINTY("samplingdatecertainty"),
+    @XmlEnumValue("sampleboxid")
+    SAMPLEBOXID("sampleboxid"),
     @XmlEnumValue("radiusid")
     RADIUSID("radiusid"),
     @XmlEnumValue("radiusdbid")
