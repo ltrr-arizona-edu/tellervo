@@ -731,7 +731,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 			// get the box, add it to the list if we don't have it
 			$mybox = $this->getSampleBox($mysample);
-			if(!array_key_exists($mybox->getID(), $boxes))
+			if($mybox != null && !array_key_exists($mybox->getID(), $boxes))
 				array_push($boxes, $mybox);
 
 			// get some IDs...
