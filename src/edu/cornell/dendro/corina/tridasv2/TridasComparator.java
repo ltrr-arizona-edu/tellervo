@@ -24,9 +24,10 @@ public class TridasComparator implements Comparator<ITridas> {
 		TITLES
 	}
 
-	public enum CaseBehavior {
+	public enum CompareBehavior {
 		IGNORE_CASE,
-		CASE_SENSITIVE
+		CASE_SENSITIVE,
+		AS_NUMBERS_THEN_STRINGS
 	}
 	
 	public enum NullBehavior {
@@ -39,14 +40,14 @@ public class TridasComparator implements Comparator<ITridas> {
 	/** The behavior when we encounter nulls */
 	private final NullBehavior nullBehavior;
 	/** How we compare strings */
-	private final CaseBehavior caseBehavior;
+	private final CompareBehavior compareBehavior;
 	
 	/**
 	 * Constructs a TridasComparator of the 'SITE_CODES_THEN_TITLES' type
 	 * with the 'NULLS_LAST' null behavior and case insensitive.
 	 */
 	public TridasComparator() {
-		this(Type.SITE_CODES_THEN_TITLES, NullBehavior.NULLS_LAST, CaseBehavior.IGNORE_CASE);
+		this(Type.SITE_CODES_THEN_TITLES, NullBehavior.NULLS_LAST, CompareBehavior.IGNORE_CASE);
 	}
 	
 	/**
@@ -54,13 +55,13 @@ public class TridasComparator implements Comparator<ITridas> {
 	 * @param comparatorType
 	 * @param nullBehavior
 	 */
-	public TridasComparator(Type comparatorType, NullBehavior nullBehavior, CaseBehavior caseBehavior) {
-		if(comparatorType == null || nullBehavior == null || caseBehavior == null)
+	public TridasComparator(Type comparatorType, NullBehavior nullBehavior, CompareBehavior compareBehavior) {
+		if(comparatorType == null || nullBehavior == null || compareBehavior == null)
 			throw new NullPointerException();
 		
 		this.comparatorType = comparatorType;
 		this.nullBehavior = nullBehavior;
-		this.caseBehavior = caseBehavior;
+		this.compareBehavior = compareBehavior;
 	}
 	
 	public int compare(ITridas o1, ITridas o2) {
@@ -102,8 +103,33 @@ public class TridasComparator implements Comparator<ITridas> {
 		if(v2 == null)
 			return (nullBehavior == NullBehavior.NULLS_LAST) ? -1 : 1; 
 
+		// ok, so we are trying to find things that might be numbers, or prefixed as numbers then strings
+		if(compareBehavior == CompareBehavior.AS_NUMBERS_THEN_STRINGS) {
+			Integer i1 = null, i2 = null;
+			
+			try {
+				i1 = Integer.valueOf(v1);
+			} catch (NumberFormatException nfe) {	
+			}			
+			
+			try {
+				i2 = Integer.valueOf(v2);
+			} catch (NumberFormatException nfe) {	
+			}
+			
+			// string vs int: Strings go last
+			if(i1 == null && i2 != null)
+				return 1;
+			if(i2 == null && i1 != null)
+				return -1;
+	
+			// both int
+			if(i1 != null && i2 != null)
+				return i1.compareTo(i2);
+		}
+		
 		// flat-out string compare
-		return (caseBehavior == CaseBehavior.IGNORE_CASE) ? v1.compareToIgnoreCase(v2) : v1.compareTo(v2);
+		return (compareBehavior != CompareBehavior.CASE_SENSITIVE) ? v1.compareToIgnoreCase(v2) : v1.compareTo(v2);
 	}
 
 }
