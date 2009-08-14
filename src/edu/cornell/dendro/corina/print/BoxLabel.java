@@ -50,6 +50,7 @@ import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
+import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
@@ -240,7 +241,8 @@ public class BoxLabel extends ReportBase{
 		}
 		
 		// Sort objects into alphabetically order based on labcode
-		Collections.sort(obj);
+		TridasComparator sorter = new TridasComparator();
+		Collections.sort(obj, sorter);
 		
 		// Loop through objects
 		for(TridasObject myobj : obj)
@@ -250,7 +252,7 @@ public class BoxLabel extends ReportBase{
 			sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
 			sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
 			EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
-			//resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
+			resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.SUMMARY);
 			CorinaResourceAccessDialog dialog2 = new CorinaResourceAccessDialog(resource);
 			resource.query();
 			dialog2.setVisible(true);
@@ -259,12 +261,12 @@ public class BoxLabel extends ReportBase{
 				System.out.println("oopsey doopsey.  Error getting elements");
 				return;
 			}
-			
+			XMLDebugView.showDialog();
 			List<TridasElement> elements = resource.getAssociatedResult();
-			Collections.sort(elements);
-			
-			
-			
+			TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
+					TridasComparator.NullBehavior.NULLS_LAST, 
+					TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+			Collections.sort(elements, numSorter);	
 			
 			PdfPCell dataCell = new PdfPCell();
 			
@@ -280,15 +282,45 @@ public class BoxLabel extends ReportBase{
 			dataCell.setPhrase(new Phrase(objCode, bodyFont));
 			tbl.addCell(dataCell);
 		
-			
-			
-			String cellStr = "";
+			String smpStr = "";
+			Paragraph cellcont = new Paragraph();
+
+			Integer smpCnt = 0;
 			for(TridasElement myelem : elements)
 			{
-				cellStr += myelem.getTitle() + ", ";
+				cellcont.add(new Chunk(myelem.getTitle(), bodyFont));
+				List<TridasSample> samples = myelem.getSamples();
+				smpStr = "["; 
+				
+				for(TridasSample mysamp : samples)
+				{
+					smpStr += mysamp.getTitle() + ", ";
+				}
+				
+				if (smpStr.length()>2) smpStr = smpStr.substring(0, smpStr.length()-2); 
+				smpStr += "]";
+				
+				Chunk smpChk = new Chunk(smpStr);
+				smpChk.setFont(superBodyFont);
+				smpChk.setTextRise(6.0f);
+				cellcont.add(smpChk);
+				cellcont.add(new Chunk(" ", bodyFont));
+				
+				dataCell.addElement(cellcont);
+				
+				smpCnt += samples.size();
 			}
 			
-			if (cellStr.length()>2) cellStr = cellStr.substring(0, cellStr.length()-2);
+			tbl.addCell(dataCell);
+			dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			dataCell.setPhrase(new Phrase(smpCnt.toString(), bodyFont));
+			tbl.addCell(dataCell);
+			
+			
+			
+			/*Phrase cellPhrase;
+			
+			
 			
 			dataCell.setPhrase(new Phrase(cellStr, bodyFont));
 			tbl.addCell(dataCell);
@@ -296,6 +328,8 @@ public class BoxLabel extends ReportBase{
 			Integer samplecount = elements.size();
 			dataCell.setPhrase(new Phrase(samplecount.toString(), bodyFont));
 			tbl.addCell(dataCell);
+			*/
+			
 			
 		}
 		
