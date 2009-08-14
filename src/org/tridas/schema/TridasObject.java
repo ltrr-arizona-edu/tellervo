@@ -89,7 +89,7 @@ import org.tridas.annotations.TridasCustomDictionaryType;
 @XmlRootElement(name = "object")
 public class TridasObject
     extends TridasEntity
-    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, Comparable<TridasObject>
+    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
@@ -730,19 +730,5 @@ public class TridasObject
     public Object createCopy() {
         return new TridasObject();
     }
-
-	public int compareTo(TridasObject o) {
-		// TODO Auto-generated method stub
-		
-		String otherCode;
-		if(o instanceof TridasObjectEx) otherCode = ((TridasObjectEx)o).getLabCode(); else otherCode = o.getTitle();
-			
-		String thisCode;
-		if(this instanceof TridasObjectEx) thisCode = ((TridasObjectEx)this).getLabCode(); else thisCode = this.getTitle();
-		
-		return thisCode.compareTo(otherCode);
-		
-		
-	}
 
 }

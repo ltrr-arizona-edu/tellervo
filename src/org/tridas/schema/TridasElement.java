@@ -27,8 +27,6 @@ import org.tridas.annotations.TridasCustomDictionarySortType;
 import org.tridas.annotations.TridasCustomDictionaryType;
 import org.tridas.annotations.TridasEditProperties;
 
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
-
 
 /**
  * <p>Java class for anonymous complex type.
@@ -88,7 +86,7 @@ import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 @XmlRootElement(name = "element")
 public class TridasElement
     extends TridasEntity
-    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, Comparable<TridasElement>
+    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
@@ -973,15 +971,5 @@ public class TridasElement
     public Object createCopy() {
         return new TridasElement();
     }
-
-	public int compareTo(TridasElement o) {
-		
-		Integer thisCode = Integer.parseInt(this.getTitle());
-		
-		Integer otherCode = Integer.parseInt(o.getTitle());
-
-		return thisCode.compareTo(otherCode);
-
-	}
 
 }
