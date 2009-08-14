@@ -1019,8 +1019,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		$xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
 		$xml.= $this->getIdentifierXML();
 		
-		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".dbHelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
-		if($this->getBirthDate()!=NULL)	$xml.= "<tridas:derivationDate>".dbHelper::escapeXMLChars($this->getBirthDate())."</tridas:derivationDate>\n";	
+		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".pg_escape_string($this->getComments())."</tridas:comments>\n";
+		if($this->getBirthDate()!=NULL)	$xml.= "<tridas:derivationDate>".pg_escape_string($this->getBirthDate())."</tridas:derivationDate>\n";	
 
 		if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".$this->vmeasurementOp->getValue()."</tridas:type>\n";
 		if(isset($this->referencesArray))
@@ -1083,10 +1083,10 @@ class measurement extends measurementEntity implements IDBAccessor
 		// Only output the remainder of the data if we're not using the 'minimal' format
 		if ($format!="minimal")
 		{
-			if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
+			if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".dbHelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
 			if($this->getBirthDate()!=NULL)				$xml.= "<tridas:measuringDate>".$this->getMeasuringDate()."</tridas:measuringDate>\n";
-			if($this->analyst->getFormattedName()!=NULL) $xml.= "<tridas:analyst>".$this->analyst->getFormattedName()."</tridas:analyst>\n";
-			if($this->dendrochronologist->getFormattedName()!=NULL) $xml.= "<tridas:dendrochronologist>".$this->dendrochronologist->getFormattedName()."</tridas:dendrochronologist>\n";
+			if($this->analyst->getFormattedName()!=NULL) $xml.= "<tridas:analyst>".dbHelper::escapeXMLChars($this->analyst->getFormattedName())."</tridas:analyst>\n";
+			if($this->dendrochronologist->getFormattedName()!=NULL) $xml.= "<tridas:dendrochronologist>".dbHelper::escapeXMLChars($this->dendrochronologist->getFormattedName())."</tridas:dendrochronologist>\n";
 		}
 		
 		$xml.= "<tridas:measuringMethod normalTridas=\"".$this->measuringMethod->getValue()."\"/>\n";

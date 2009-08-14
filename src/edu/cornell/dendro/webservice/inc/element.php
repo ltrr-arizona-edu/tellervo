@@ -192,8 +192,10 @@ class element extends elementEntity implements IDBAccessor
     function setChildParamsFromDB()
     {
         global $dbconn;
-
+		global $firebug;
+        
         $sql2 = "select sampleid from tblsample where elementid='".pg_escape_string($this->getID())."'";
+        $firebug->log($sql2, "sql for getting children");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -432,6 +434,7 @@ class element extends elementEntity implements IDBAccessor
     private function _asXML($format, $parts)
     {
         global $domain;
+        global $firebug;
         $xml ="";
 
         // Return a string containing the current object in XML format
@@ -494,30 +497,15 @@ class element extends elementEntity implements IDBAccessor
         
                     if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
 
-                    if($format!="summary")
+                    if($format=="summary")
                     {
-                    
-                        // Include element notes if present
-                        if ($this->elementNoteArray)
-                        {
-                            foreach($this->elementNoteArray as $value)
-                            {
-                                $myelementNote = new elementNote();
-                                $success = $myelementNote->setParamsFromDB($value);
-
-                                if($success)
-                                {
-                                    $xml.=$myelementNote->asXML();
-                                }
-                                else
-                                {
-                                    $myMetaHeader->setErrorMessage($myelementNote->getLastErrorCode, $myelementNote->getLastErrorMessage);
-                                }
-                            }
-                        }
-
+                    	
+                    	
+                    	$this->setChildParamsFromDB();
+                    	$firebug->log(__LINE__, "at line");
+                    	$firebug->log($this->sampleArray, "samplearray");
                         // Include samples if present
-                        if (($this->sampleArray) && ($format=="standard"))
+                        if ($this->sampleArray)
                         {
                             foreach($this->sampleArray as $value)
                             {

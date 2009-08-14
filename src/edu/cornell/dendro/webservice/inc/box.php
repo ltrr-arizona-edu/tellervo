@@ -266,7 +266,8 @@ class box extends boxEntity implements IDBAccessor
 
         global $domain;
         global $firebug;
-
+		$xml = NULL;
+		
         // Return a string containing the current object in XML format
         if ($this->getLastErrorCode()==NULL)
         {
@@ -291,7 +292,7 @@ class box extends boxEntity implements IDBAccessor
 
                         if($success)
                         {
-                            $xml.=$mysample->asXML("minimal", "all");
+                            $xml.=$mysample->asXML($format, "all");
                         }
                         else
                         {
