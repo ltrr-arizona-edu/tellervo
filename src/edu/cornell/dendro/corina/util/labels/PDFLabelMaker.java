@@ -162,10 +162,10 @@ public class PDFLabelMaker {
 	
 	public static void main(String args[]) {
 		try {
-			PDFLabelMaker m = new PDFLabelMaker(new PetesCustomLabels(), new File("output.pdf"));
+			PDFLabelMaker m = new PDFLabelMaker(new PetesCustomLabels(), new File("output2.pdf"));
 			
 			for(int i = 10; i < 100; i++) {
-				UUID uuid = UUID.randomUUID();
+				UUID uuid = UUID.fromString("01946b69-d86d-5812-a5f6-21ca6f8fa483");
 				m.addUUIDBarcode("Cell " + i, LabBarcode.Type.SAMPLE, uuid);
 			}
 			

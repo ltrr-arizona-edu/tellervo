@@ -72,7 +72,7 @@ import org.tridas.annotations.TridasCustomDictionaryType;
 @XmlRootElement(name = "sample")
 public class TridasSample
     extends TridasEntity
-    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
+    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, Comparable<TridasSample>
 {
 
     private final static long serialVersionUID = 1001L;
@@ -646,5 +646,13 @@ public class TridasSample
     public Object createCopy() {
         return new TridasSample();
     }
+
+	public int compareTo(TridasSample o) {
+		String thisCode = this.getTitle();
+		
+		String otherCode = o.getTitle();
+
+		return thisCode.compareTo(otherCode);
+	}
 
 }

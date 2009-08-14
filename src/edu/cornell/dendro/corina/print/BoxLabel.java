@@ -7,10 +7,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
 import java.util.UUID;
 
+import org.apache.james.mime4j.message.Message;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasSample;
+
+import sun.text.CompactShortArray.Iterator;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
@@ -24,16 +34,32 @@ import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.sun.j3d.utils.geometry.Box;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.gui.XMLDebugView;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.EntityType;
+import edu.cornell.dendro.corina.schema.SearchOperator;
+import edu.cornell.dendro.corina.schema.SearchParameterName;
+import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.schema.WSIBox;
+import edu.cornell.dendro.corina.schema.WSIEntity;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
+import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
 import edu.cornell.dendro.corina.util.test.PrintReportFramework;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
+import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 
 public class BoxLabel extends ReportBase{
 	
@@ -88,7 +114,7 @@ public class BoxLabel extends ReportBase{
 			
 			// Barcode
 			ColumnText ct2 = new ColumnText(cb);
-			ct2.setSimpleColumn(284, document.top(10)-163, document.right(10), document.top(10), 20, Element.ALIGN_RIGHT);
+			ct2.setSimpleColumn(284, document.top(10)-100, document.right(10), document.top(10), 20, Element.ALIGN_RIGHT);
 			ct2.addElement(getBarCode());
 			ct2.go();			
 				
@@ -102,7 +128,7 @@ public class BoxLabel extends ReportBase{
 			// Pad text
 	        document.add(new Paragraph(" "));      
 	        Paragraph p2 = new Paragraph();
-	        p2.setSpacingBefore(130);
+	        p2.setSpacingBefore(70);
 		    p2.setSpacingAfter(10);
 		    p2.add(new Chunk(" ", bodyFont));  
 	        document.add(new Paragraph(p2));
@@ -135,7 +161,7 @@ public class BoxLabel extends ReportBase{
 		
 		p.add(new Chunk(b.getTitle()+"\n", monsterFont));
 	
-		p.add(new Chunk(b.getCurationLocation(), subTitleFont));
+		//p.add(new Chunk(b.getCurationLocation(), subTitleFont));
 				
 		return p;		
 	}
@@ -174,15 +200,14 @@ public class BoxLabel extends ReportBase{
 		float[] widths = {0.1f, 0.75f, 0.1f};
 		PdfPTable tbl = new PdfPTable(widths);
 		PdfPCell headerCell = new PdfPCell();
-		Integer totalSampleCount = 0;
 
 		tbl.setWidthPercentage(100f);
-				
+
+		// Write header cells of table
 		headerCell.setBorderWidthBottom(headerLineWidth);
 		headerCell.setBorderWidthTop(headerLineWidth);
 		headerCell.setBorderWidthLeft(0);
-		headerCell.setBorderWidthRight(0);
-		
+		headerCell.setBorderWidthRight(0);		
 		headerCell.setPhrase(new Phrase("Object", tableHeaderFont));
 		headerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 		tbl.addCell(headerCell);
@@ -190,14 +215,57 @@ public class BoxLabel extends ReportBase{
 		headerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 		tbl.addCell(headerCell);
 		headerCell.setPhrase(new Phrase("Total", tableHeaderFont));
-		headerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+		headerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		tbl.addCell(headerCell);
+									
+		// Find all objects associated with samples in this box
+		SearchParameters objparam = new SearchParameters(SearchReturnObject.OBJECT);
+		objparam.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue().toString());
+		EntitySearchResource<TridasObject> objresource = new EntitySearchResource<TridasObject>(objparam);
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(objresource);
+		objresource.query();
+		dialog.setVisible(true);
+		if(!dialog.isSuccessful()) 
+		{ 
+			System.out.println("oopsey doopsey.  Error getting objects");
+			return;
+		}
+		List<TridasObject> obj = objresource.getAssociatedResult();
 		
-		int rows = 2; // count of objects
+		// Check that there are not too many objects to fit on box label
+		if(obj.size()>8) 
+		{
+			System.out.println("too many objects");
+			return;
+		}
 		
-		// Loop through rows
-		for(int row =0; row < rows; row++)
-		{	
+		// Sort objects into alphabetically order based on labcode
+		Collections.sort(obj);
+		
+		// Loop through objects
+		for(TridasObject myobj : obj)
+		{
+			System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
+			SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
+			sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
+			sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
+			EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
+			//resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
+			CorinaResourceAccessDialog dialog2 = new CorinaResourceAccessDialog(resource);
+			resource.query();
+			dialog2.setVisible(true);
+			if(!dialog2.isSuccessful()) 
+			{ 	
+				System.out.println("oopsey doopsey.  Error getting elements");
+				return;
+			}
+			
+			List<TridasElement> elements = resource.getAssociatedResult();
+			Collections.sort(elements);
+			
+			
+			
+			
 			PdfPCell dataCell = new PdfPCell();
 			
 			dataCell.setBorderWidthBottom(0);
@@ -206,24 +274,32 @@ public class BoxLabel extends ReportBase{
 			dataCell.setBorderWidthRight(0);
 			dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 			
-			dataCell.setPhrase(new Phrase("ABC", bodyFont));
+			String objCode;
+			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getLabCode(); else objCode = myobj.getTitle();
+			
+			dataCell.setPhrase(new Phrase(objCode, bodyFont));
 			tbl.addCell(dataCell);
 		
-			int sampleCount = 7; // count of samples
-				
+			
+			
 			String cellStr = "";
-			for(int sampNum = 0; sampNum < sampleCount; sampNum++) {				
-				cellStr += sampNum + ", ";
+			for(TridasElement myelem : elements)
+			{
+				cellStr += myelem.getTitle() + ", ";
 			}
+			
+			if (cellStr.length()>2) cellStr = cellStr.substring(0, cellStr.length()-2);
 			
 			dataCell.setPhrase(new Phrase(cellStr, bodyFont));
 			tbl.addCell(dataCell);
-			
 			dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			dataCell.setPhrase(new Phrase(Integer.toString(sampleCount), bodyFont));
+			Integer samplecount = elements.size();
+			dataCell.setPhrase(new Phrase(samplecount.toString(), bodyFont));
 			tbl.addCell(dataCell);
-			totalSampleCount = totalSampleCount+sampleCount;
-		}		
+			
+		}
+		
+				
 		
 		headerCell.setBorderWidthBottom(headerLineWidth);
 		headerCell.setBorderWidthTop(headerLineWidth);
@@ -235,7 +311,7 @@ public class BoxLabel extends ReportBase{
 		headerCell.setPhrase(new Phrase("Grand Total", bodyFont));
 		headerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		tbl.addCell(headerCell);	
-		headerCell.setPhrase(new Phrase(Integer.toString(totalSampleCount), bodyFont));
+		headerCell.setPhrase(new Phrase(b.getSampleCount().toString(), bodyFont));
 		tbl.addCell(headerCell);
 		
 		// Add table to document
@@ -307,8 +383,7 @@ public class BoxLabel extends ReportBase{
 		
 		document.add(p);
 	}
-	
-
+		
 	/**
 	 * Function for printing or viewing series report
 	 * @param printReport Boolean
@@ -386,7 +461,7 @@ public class BoxLabel extends ReportBase{
 	
 	public static void main(String[] args) {
 		String domain = "dendro.cornell.edu/dev/";
-		String measurementID = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
+		String measurementID = "c15449db-9834-5271-a699-9217d42919c1";
 		String filename = "output.pdf";
 		
 	    App.platform = new Platform();
