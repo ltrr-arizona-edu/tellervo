@@ -9,18 +9,12 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.UUID;
 
-import org.apache.james.mime4j.message.Message;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
-
-import sun.text.CompactShortArray.Iterator;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
@@ -34,7 +28,6 @@ import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.sun.j3d.utils.geometry.Box;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Metadata;
@@ -42,14 +35,10 @@ import edu.cornell.dendro.corina.gui.XMLDebugView;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
-import edu.cornell.dendro.corina.schema.CorinaRequestType;
-import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.schema.WSIBox;
-import edu.cornell.dendro.corina.schema.WSIEntity;
-import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -59,7 +48,6 @@ import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
-import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 
 public class BoxLabel extends ReportBase{
