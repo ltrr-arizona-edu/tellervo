@@ -34,7 +34,7 @@ public class DBBrowser_UI extends JDialog {
 	}
 
 	private javax.swing.JPanel browsePanel;
-	private javax.swing.JTabbedPane browseSearchPane;
+	protected javax.swing.JTabbedPane browseSearchPane;
 	protected javax.swing.JPanel extraButtonPanel;
 	protected javax.swing.JButton btnCancel;
 	protected javax.swing.JButton btnInvertSelect;
@@ -247,7 +247,7 @@ public class DBBrowser_UI extends JDialog {
 	protected javax.swing.JList lstSites;
 	private javax.swing.JPanel panelBrowseBy;
 	protected javax.swing.JPanel workArea;
-	private javax.swing.JPanel searchPanel;
+	protected javax.swing.JPanel searchPanel;
 	protected javax.swing.JTable tblAvailMeas;
 	protected javax.swing.JTable tblChosenMeas;
 	protected int returnStatus = RET_CANCEL;

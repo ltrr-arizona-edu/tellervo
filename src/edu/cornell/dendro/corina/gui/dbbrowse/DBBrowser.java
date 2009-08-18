@@ -1,8 +1,11 @@
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,15 +18,22 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
 import edu.cornell.dendro.corina.core.App;
@@ -53,6 +63,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	private ElementList selectedElements;
     private boolean isMultiDialog;
     private int minimumSelectedElements = 1;
+    
+    private SearchPanel searchPanel;
     
     public DBBrowser(java.awt.Frame parent, boolean modal) {
     	this(parent, modal, false);	
@@ -87,8 +99,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 
         cboBrowseBy.setVisible(false);
         
+        setupSearch();
         setupTableArea();
-        populateComponents();        
+        populateComponents(); 
         
         // repack :)
         pack();
@@ -215,7 +228,12 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	returnStatus = RET_OK;
     	return true;
     }
-        
+    
+    private void setupSearch() {
+    	searchPanel = new SearchPanel(new SearchSupport());
+    	this.browseSearchPane.setComponentAt(1, searchPanel);
+    }
+    
     private void setupTableArea() {
     	
 		ElementListTableModel mdlAvailMeas = new ElementListTableModel();
@@ -683,5 +701,112 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	public boolean isElementDisabled(Element e) {
 		// an element is disabled in our table model if it's already been selected...
 		return isSelectedElement(e);
+	}
+
+	/**
+	 * Class implementing search support for DB browser
+	 * 
+	 * @author Lucas Madar
+	 */
+	private class SearchSupport implements SearchResultManager, ChangeListener {
+		private final JLabel searchInfoLabel;
+		private JProgressBar progressBar;
+
+		public SearchSupport() {
+			searchInfoLabel = new JLabel();
+			
+			Font font = tblAvailMeas.getFont().deriveFont(36f);
+			searchInfoLabel.setForeground(Color.DARK_GRAY);
+			searchInfoLabel.setFont(font);
+			searchInfoLabel.setOpaque(false);
+			searchInfoLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+			searchInfoLabel.setAlignmentY(JLabel.TOP_ALIGNMENT);
+			
+			DBBrowser.this.browseSearchPane.addChangeListener(this);
+		}
+
+		private void showProgressbar(boolean shouldShow) {
+			if (shouldShow == false) {
+				if(progressBar != null) {
+					progressBar.setVisible(false);
+					getLayeredPane().remove(progressBar);
+					getLayeredPane().validate();
+					progressBar = null;
+				}
+				return;
+			}
+
+			boolean add = true;
+			if(progressBar == null) {
+				progressBar = new JProgressBar();
+				progressBar.setIndeterminate(true);
+				progressBar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+			}
+			else
+				add = false;
+			
+			Point workPt = workArea.getLocation();
+			workPt = SwingUtilities.convertPoint(workArea, workPt, null);
+			progressBar.setBounds(workPt.x, workPt.y + 100, 
+					searchInfoLabel.getPreferredSize().width, progressBar.getPreferredSize().height);
+			
+			if(add) {
+				getLayeredPane().add(progressBar, new Integer(JLayeredPane.POPUP_LAYER - 1), -1);
+				getLayeredPane().validate();
+			}
+		}
+		
+		/**
+		 * Show the search label (or not...)
+		 * @param shouldShow
+		 * @param hasProgress
+		 */
+		private void showSearchLabel(boolean shouldShow) {
+			if (shouldShow == false) {
+				searchInfoLabel.setVisible(false);
+				getLayeredPane().remove(searchInfoLabel);
+				getLayeredPane().validate();
+				return;
+			}
+
+			Point workPt = workArea.getLocation();
+			workPt = SwingUtilities.convertPoint(workArea, workPt, null);
+			searchInfoLabel.setBounds(workPt.x, workPt.y, workArea.getWidth(), 100);
+			searchInfoLabel.setVisible(true);
+
+			getLayeredPane().add(searchInfoLabel,
+					new Integer(JLayeredPane.POPUP_LAYER - 1), 0);
+			getLayeredPane().validate();
+		}
+
+		public void notifySearchFinished(ElementList elements) {
+			tblAvailMeas.setEnabled(true);
+
+			if (elements != null && !elements.isEmpty()) {
+				((ElementListTableModel) tblAvailMeas.getModel()).setElements(elements);
+				showSearchLabel(false);
+				showProgressbar(false);
+			} else {
+				searchInfoLabel.setText("No results");
+				showProgressbar(false);
+			}
+		}
+
+		public void notifySearchStarting() {
+			System.out.println("SEARCH STARTING");
+			searchInfoLabel.setText("Searching...");
+			showProgressbar(true);
+			showSearchLabel(true);
+		}
+
+		public void stateChanged(ChangeEvent e) {
+			int index = DBBrowser.this.browseSearchPane.getSelectedIndex();
+			
+			if(index == 0) {
+				DBBrowser.this.searchPanel.cancelSearch();
+				showProgressbar(false);
+				showSearchLabel(false);
+			}
+		}
 	}
 }

@@ -29,7 +29,7 @@ import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
  */
 public class SeriesSearchResource extends CorinaAssociatedResource<ElementList> {
 	/** The associated search parameters */
-	private SearchParameters params;
+	private final SearchParameters params;
 	
 	/**
 	 * Construct a search resource with the given search parameters
@@ -41,6 +41,13 @@ public class SeriesSearchResource extends CorinaAssociatedResource<ElementList> 
 		this.params = searchParameters;
 	}
 
+	/**
+	 * @return the search parameters we are operating on
+	 */
+	public SearchParameters getSearchParameters() {
+		return params;
+	}
+	
 	@Override
 	protected void populateRequest(WSIRequest request) {
 		request.setFormat(CorinaRequestFormat.SUMMARY);
