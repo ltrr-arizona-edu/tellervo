@@ -6,7 +6,11 @@ package edu.cornell.dendro.cpgdb;
 import java.sql.*;
 import java.util.UUID;
 
+import javax.sql.rowset.CachedRowSet;
+
 import org.postgresql.pljava.ResultSetHandle;
+
+import com.sun.rowset.CachedRowSetImpl;
 
 /**
  * This class is an easier interface to VMeasurementResult (an alternative to Dispatch.GetVMeasurementResult)
@@ -17,8 +21,7 @@ import org.postgresql.pljava.ResultSetHandle;
  *
  */
 public class VMeasurementResultSet implements ResultSetHandle {
-        private UUID VMeasurementID;
-        private Statement statement;
+    private UUID VMeasurementID;
 
 	/**
 	 * @param VMeasurementID
@@ -35,18 +38,37 @@ public class VMeasurementResultSet implements ResultSetHandle {
 	}
 	
 	public void close() throws SQLException {
-		statement.close();
 	}
 
 	public ResultSet getResultSet() throws SQLException {
 		VMeasurementResult result = new VMeasurementResult(VMeasurementID, false);
 		String resid = result.getResult().toString();
 
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet res = null;
 		if(resid != null) {
-			statement = DriverManager.getConnection("jdbc:default:connection").createStatement();
-			return statement.executeQuery(
-				"SELECT * FROM tblVMeasurementResult WHERE VMeasurementResultID = '" +
-				resid + "'");
+			try {
+				connection = DriverManager.getConnection("jdbc:default:connection");
+				statement = connection.createStatement();
+				res = statement.executeQuery(
+						"SELECT * FROM tblVMeasurementResult WHERE VMeasurementResultID = '" +
+						resid + "'");
+			
+				// cache the result set, so we can close all open SQL handles
+				CachedRowSet rows = new CachedRowSetImpl();
+				rows.populate(res);
+				
+				return rows;
+			}
+			finally {
+				if(res != null)
+					res.close();
+				if(statement != null)
+					statement.close();
+				if(connection != null)
+					connection.close();
+			}
 		}
 		return null;
 	}
