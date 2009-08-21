@@ -709,6 +709,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		menubar.add(new EditorFileMenu(this, sample));
 		editorEditMenu = new EditorEditMenu(sample, dataView, this);
 		menubar.add(editorEditMenu);
+		menubar.add(new EditorToolsMenu(sample, this));
 		menubar.add(new EditorGraphMenu(sample));
 		//menubar.add(new EditorSiteMenu(sample));
 		if (App.platform.isMac())
