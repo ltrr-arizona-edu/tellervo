@@ -51,6 +51,13 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 
+/**
+ * Class for producing labels to fix to lab storage boxes.  Designed for 
+ * Avery 6579 system labels 5 x 8 1/8" labels 2 per letter sized sheet
+ * 
+ * @author peterbrewer
+ *
+ */
 public class BoxLabel extends ReportBase{
 	
 	private WSIBox b = new WSIBox();
@@ -98,19 +105,19 @@ public class BoxLabel extends ReportBase{
 				   
 			// Title Left		
 			ColumnText ct = new ColumnText(cb);
-			ct.setSimpleColumn(document.left(), document.top(10)-163, 283, document.top(10), 20, Element.ALIGN_LEFT);
+			ct.setSimpleColumn(document.left(), document.top(15)-163, 283, document.top(15), 20, Element.ALIGN_LEFT);
 			ct.addText(getTitlePDF());
 			ct.go();
 			
 			// Barcode
 			ColumnText ct2 = new ColumnText(cb);
-			ct2.setSimpleColumn(284, document.top(10)-100, document.right(10), document.top(10), 20, Element.ALIGN_RIGHT);
+			ct2.setSimpleColumn(284, document.top(15)-100, document.right(15), document.top(15), 20, Element.ALIGN_RIGHT);
 			ct2.addElement(getBarCode());
 			ct2.go();			
 				
 			// Timestamp
 			ColumnText ct3 = new ColumnText(cb);
-			ct3.setSimpleColumn(document.left(), document.top(10)-223, 283, document.top(10)-60, 20, Element.ALIGN_LEFT);
+			ct3.setSimpleColumn(document.left(), document.top(15)-223, 283, document.top(15)-60, 20, Element.ALIGN_LEFT);
 			ct3.setLeading(0, 1.2f);
 			ct3.addText(getTimestampPDF());
 			ct3.go();		
@@ -213,7 +220,7 @@ public class BoxLabel extends ReportBase{
 		objparam.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue().toString());
 		EntitySearchResource<TridasObject> objresource = new EntitySearchResource<TridasObject>(objparam);
 		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(objresource);
-		objresource.query();
+		objresource.query();	
 		dialog.setVisible(true);
 		if(!dialog.isSuccessful()) 
 		{ 
@@ -223,10 +230,9 @@ public class BoxLabel extends ReportBase{
 		List<TridasObject> obj = objresource.getAssociatedResult();
 		
 		// Check that there are not too many objects to fit on box label
-		if(obj.size()>8) 
+		if(obj.size()>10) 
 		{
-			System.out.println("too many objects");
-			return;
+			System.out.println("Warning this label has " + Integer.toString(obj.size()) + " objects associated with it so is unlikely to fit and may take some time to produce!");
 		}
 		
 		// Sort objects into alphabetically order based on labcode
@@ -296,53 +302,6 @@ public class BoxLabel extends ReportBase{
 			dataCell.setPhrase(new Phrase(smpCnt.toString(), bodyFont));
 			dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			tbl.addCell(dataCell);
-			
-			
-			/*
-			String smpStr = "";
-			Paragraph cellcont = new Paragraph();
-
-			Integer smpCnt = 0;
-			for(TridasElement myelem : elements)
-			{
-				smpStr = 
-				cellcont.add(new Chunk(myelem.getTitle(), bodyFont));								
-				if (smpStr.length()>2) smpStr = smpStr.substring(0, smpStr.length()-2); 
-				
-				
-				
-				List<TridasSample> samples = myelem.getSamples(); 
-				
-				Chunk smpChk = new Chunk(smpStr);
-				smpChk.setFont(superBodyFont);
-				smpChk.setTextRise(6.0f);
-				cellcont.add(smpChk);
-				cellcont.add(new Chunk(" ", bodyFont));
-				
-				dataCell.addElement(cellcont);
-				
-				smpCnt += samples.size();
-			}
-			
-			tbl.addCell(dataCell);
-			dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			dataCell.setPhrase(new Phrase(smpCnt.toString(), bodyFont));
-			tbl.addCell(dataCell);
-			
-			*/
-			
-			/*Phrase cellPhrase;
-			
-			
-			
-			dataCell.setPhrase(new Phrase(cellStr, bodyFont));
-			tbl.addCell(dataCell);
-			dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			Integer samplecount = elements.size();
-			dataCell.setPhrase(new Phrase(samplecount.toString(), bodyFont));
-			tbl.addCell(dataCell);
-			*/
-			
 			
 		}
 		
