@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -200,10 +201,10 @@ public class BoxLabel extends ReportBase{
 		headerCell.setPhrase(new Phrase("Object", tableHeaderFont));
 		headerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 		tbl.addCell(headerCell);
-		headerCell.setPhrase(new Phrase("Samples", tableHeaderFont));
+		headerCell.setPhrase(new Phrase("Elements", tableHeaderFont));
 		headerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 		tbl.addCell(headerCell);
-		headerCell.setPhrase(new Phrase("Total", tableHeaderFont));
+		headerCell.setPhrase(new Phrase("# Samples", tableHeaderFont));
 		headerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		tbl.addCell(headerCell);
 									
@@ -234,7 +235,20 @@ public class BoxLabel extends ReportBase{
 		
 		// Loop through objects
 		for(TridasObject myobj : obj)
-		{
+		{	
+			// Add object code to first column			
+			PdfPCell dataCell = new PdfPCell();
+			dataCell.setBorderWidthBottom(0);
+			dataCell.setBorderWidthTop(0);
+			dataCell.setBorderWidthLeft(0);
+			dataCell.setBorderWidthRight(0);
+			dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+			String objCode;
+			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getLabCode(); else objCode = myobj.getTitle();	
+			dataCell.setPhrase(new Phrase(objCode, bodyFont));
+			tbl.addCell(dataCell);
+			
+			// Search for elements associated with this object
 			System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
 			SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
 			sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
@@ -256,37 +270,48 @@ public class BoxLabel extends ReportBase{
 					TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
 			Collections.sort(elements, numSorter);	
 			
-			PdfPCell dataCell = new PdfPCell();
+			// Loop through elements 
+			Integer smpCnt = 0;
+			ArrayList<String> numlist = new ArrayList<String>();
+			for(TridasElement myelem : elements)
+			{
+				// Add element title to string
+				if(myelem.getTitle()!=null) 
+				{
+					String mytitle = myelem.getTitle();
+					numlist.add(mytitle);
+				}
+
+				// Grab associated samples and add count to running total
+				List<TridasSample> samples = myelem.getSamples(); 
+				smpCnt += samples.size();
+			}
+						
 			
-			dataCell.setBorderWidthBottom(0);
-			dataCell.setBorderWidthTop(0);
-			dataCell.setBorderWidthLeft(0);
-			dataCell.setBorderWidthRight(0);
-			dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
-			
-			String objCode;
-			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getLabCode(); else objCode = myobj.getTitle();
-			
-			dataCell.setPhrase(new Phrase(objCode, bodyFont));
+			// Add element names to second column
+			dataCell.setPhrase(new Phrase(hyphenSummarize(numlist), bodyFont));
 			tbl.addCell(dataCell);
-		
+			
+			// Add sample count to third column
+			dataCell.setPhrase(new Phrase(smpCnt.toString(), bodyFont));
+			dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			tbl.addCell(dataCell);
+			
+			
+			/*
 			String smpStr = "";
 			Paragraph cellcont = new Paragraph();
 
 			Integer smpCnt = 0;
 			for(TridasElement myelem : elements)
 			{
-				cellcont.add(new Chunk(myelem.getTitle(), bodyFont));
-				List<TridasSample> samples = myelem.getSamples();
-				smpStr = "["; 
-				
-				for(TridasSample mysamp : samples)
-				{
-					smpStr += mysamp.getTitle() + ", ";
-				}
-				
+				smpStr = 
+				cellcont.add(new Chunk(myelem.getTitle(), bodyFont));								
 				if (smpStr.length()>2) smpStr = smpStr.substring(0, smpStr.length()-2); 
-				smpStr += "]";
+				
+				
+				
+				List<TridasSample> samples = myelem.getSamples(); 
 				
 				Chunk smpChk = new Chunk(smpStr);
 				smpChk.setFont(superBodyFont);
@@ -304,7 +329,7 @@ public class BoxLabel extends ReportBase{
 			dataCell.setPhrase(new Phrase(smpCnt.toString(), bodyFont));
 			tbl.addCell(dataCell);
 			
-			
+			*/
 			
 			/*Phrase cellPhrase;
 			
@@ -341,6 +366,37 @@ public class BoxLabel extends ReportBase{
 	}
 		
 	
+	public String hyphenSummarize(List<String> lst)
+	{
+		String returnStr = "";
+
+		for(String item : lst)
+		{
+			returnStr += item + ", ";
+		}
+		
+		if (returnStr.length()>2) returnStr = returnStr.substring(0, returnStr.length()-2);
+		return returnStr;
+	}
+	
+    /**
+     * This method checks if a String contains only numbers
+     */
+    public boolean containsOnlyNumbers(String str) {
+        
+        //It can't contain only numbers if it's null or empty...
+        if (str == null || str.length() == 0)
+            return false;
+        
+        for (int i = 0; i < str.length(); i++) {
+
+            //If we find a non-digit character we return false.
+            if (!Character.isDigit(str.charAt(i)))
+                return false;
+        }
+        
+        return true;
+    }
 	
 	
 	/**
