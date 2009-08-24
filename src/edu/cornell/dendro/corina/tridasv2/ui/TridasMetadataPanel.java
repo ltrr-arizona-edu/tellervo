@@ -56,6 +56,7 @@ import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
+import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.ui.support.ScrollableJButtonBar;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
@@ -602,6 +603,13 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				new Bug(e);
 				list = null;
 			}
+			
+			// Sort list intelligently
+			TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
+					TridasComparator.NullBehavior.NULLS_LAST, 
+					TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+				Collections.sort(list, numSorter);
+	
 
 			// get what we already have selected
 			ITridas singleton = mode.getEntity(s);
@@ -750,6 +758,13 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private void populateComboAndSelect(boolean goRemote) {
 		// get the list of stuff that goes in the box
 		List<? extends ITridas> entityList = getEntityList(goRemote);
+		
+		/*TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(entityList, numSorter);
+		*/
+		
 		topChooser.setList(entityList);
 
 		// select what we already have, if it exists
