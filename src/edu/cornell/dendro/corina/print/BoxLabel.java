@@ -327,17 +327,110 @@ public class BoxLabel extends ReportBase{
 	
 	public String hyphenSummarize(List<String> lst)
 	{
-		String returnStr = "";
 
+		String returnStr = "";
+		
+		/*
+		if (none==true)
+		{
+			for(String item : lst)
+			{
+				returnStr += item + ", ";
+				
+			}
+			
+			if (returnStr.length()>2) returnStr = returnStr.substring(0, returnStr.length()-2);
+			return returnStr;
+		}*/
+
+
+		Integer lastnum = null; 
+		Boolean inSeq = false;
+		
 		for(String item : lst)
 		{
-			returnStr += item + ", ";
+			if (containsOnlyNumbers(item))
+			{
+				// Contains only numbers
+				if(lastnum==null)
+				{
+					// Lastnum is null so just add item to return string and continue to the next in list
+					returnStr += ", " + item;
+					lastnum = Integer.valueOf(item);
+					continue;
+				}
+				else
+				{
+					if(inSeq==true)
+					{
+						if(isNextInSeq(lastnum, Integer.valueOf(item)))
+						{
+							// Keep going!
+							inSeq = true;
+							lastnum = Integer.valueOf(item);
+							continue;
+						}
+						else
+						{
+							// 
+							returnStr += "-" + lastnum.toString() + ", " + item;
+							inSeq = false;
+							lastnum = Integer.valueOf(item);
+							continue;
+							
+						}
+					}
+					else
+					{
+						// Not in sequence yet
+						
+						if(isNextInSeq(lastnum, Integer.valueOf(item)))
+						{
+							// Keep going!
+							inSeq = true;
+							lastnum = Integer.valueOf(item);
+							continue;
+						}
+						else
+						{
+							returnStr += ", " + item;
+							lastnum = Integer.valueOf(item);
+							continue;
+						}
+					}
+						
+					
+				}
+			}
+			else
+			{
+				// Contains some chars so just add as comma delimated string to return string
+				returnStr += ", " + item;
+				lastnum = null;
+				inSeq = null;
+			}
+			
+			
+			
+			
 		}
 		
-		if (returnStr.length()>2) returnStr = returnStr.substring(0, returnStr.length()-2);
+		returnStr = returnStr.substring(2, returnStr.length());
 		return returnStr;
 	}
 	
+	private Boolean isNextInSeq(Integer seqnum, Integer curnum)
+	{
+		if(seqnum+1==curnum)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+		
     /**
      * This method checks if a String contains only numbers
      */
@@ -370,6 +463,9 @@ public class BoxLabel extends ReportBase{
 				.toGregorianCalendar().getTime();
 		Date lastModifiedTimestamp = b.getLastModifiedTimestamp()
 				.getValue().toGregorianCalendar().getTime();
+		
+		Date nowTimestamp = new Date();
+		
 		DateFormat df1 = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
 		
 		Paragraph p = new Paragraph();
@@ -377,8 +473,10 @@ public class BoxLabel extends ReportBase{
 	
 		p.add(new Chunk("Created: ", subSectionFont));
 		p.add(new Chunk(df1.format(createdTimestamp), bodyFont));
-		p.add(new Chunk("\nLast Modified: ", subSectionFont));
-		p.add(new Chunk(df1.format(lastModifiedTimestamp), bodyFont));
+		//p.add(new Chunk("\nLast Modified: ", subSectionFont));
+		//p.add(new Chunk(df1.format(lastModifiedTimestamp), bodyFont));
+		p.add(new Chunk("\nLabel updated: ", subSectionFont));
+		p.add(new Chunk(df1.format(nowTimestamp), bodyFont));
 
 		
 		return p;
