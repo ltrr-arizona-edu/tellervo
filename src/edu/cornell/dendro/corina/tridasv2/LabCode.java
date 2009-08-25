@@ -3,7 +3,7 @@ package edu.cornell.dendro.corina.tridasv2;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LabCode {
+public class LabCode implements Comparable<LabCode> {
 	private List<String> siteCodes;
 	private List<String> siteTitles;
 	private String elementCode;
@@ -140,5 +140,83 @@ public class LabCode {
 		
 		this.seriesCode = seriesCode;
 	}
+	
+	/**
+	 * Compare two string values, but try them as integers
+	 * 
+	 * @param o1
+	 * @param o2
+	 * @return -1, 0, or 1, if o1 is less than, equal to, or greater than o2
+	 */
+	private int compare(String o1, String o2) {
+		// nicely handle nulls
+		if (o1 == null && o2 == null)
+			return 0;
+
+		// nulls go last
+		if (o1 == null)
+			return 1;
+		if (o2 == null)
+			return -1;
+
+		Integer i1 = null, i2 = null;
+		try {
+			i1 = Integer.valueOf(o1);
+		} catch (NumberFormatException nfe) {
+		}
 		
+		try {
+			i2 = Integer.valueOf(o2);
+		} catch (NumberFormatException nfe) {
+		}
+
+		// both strings, string compare!
+		if (i1 == null && i2 == null)
+			return o1.compareToIgnoreCase(o2);
+
+		// strings go last
+		if (i1 == null)
+			return 1;
+		if (i2 == null)
+			return -1;
+
+		// flat out integers!
+		return i1.compareTo(i2);
+	}
+		
+	//
+	// for comparable
+	//
+	
+	public int compareTo(LabCode o) {
+		int i = 0;
+		int v;
+		
+		// sites are tricky...
+		while(i < o.siteCodes.size() && i < this.siteCodes.size()) {
+			String s1 = (i < this.siteCodes.size()) ? this.siteCodes.get(i) : null;
+			String s2 = (i < o.siteCodes.size()) ? o.siteCodes.get(i) : null;
+			
+			v = compare(s1, s2);
+			if(v != 0)
+				return v;
+			
+			i++;
+		}
+		
+		if((v = compare(this.elementCode, o.elementCode)) != 0)
+			return v;
+		
+		if((v = compare(this.sampleCode, o.sampleCode)) != 0)
+			return v;
+
+		if((v = compare(this.radiusCode, o.radiusCode)) != 0)
+			return v;
+
+		if((v = compare(this.seriesCode, o.seriesCode)) != 0)
+			return v;
+		
+		// they're totally equal??
+		return 0;
+	}
 }
