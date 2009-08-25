@@ -60,6 +60,9 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	private static final long serialVersionUID = 1L;
 	
+	private ElementListTableSorter availableSorter;
+	private ElementListTableSorter chosenSorter;
+	
 	private ElementList selectedElements;
     private boolean isMultiDialog;
     private int minimumSelectedElements = 1;
@@ -238,16 +241,18 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	
 		ElementListTableModel mdlAvailMeas = new ElementListTableModel();
 		tblAvailMeas.setModel(mdlAvailMeas); // set model
-		tblAvailMeas.getTableHeader().addMouseListener(
-				new ElementListTableSorter(mdlAvailMeas, tblAvailMeas)); // add sorter & header renderer
+		availableSorter = new ElementListTableSorter(mdlAvailMeas, tblAvailMeas);
+		availableSorter.sortOnColumn(0, false);
+		tblAvailMeas.getTableHeader().addMouseListener(availableSorter); // add sorter & header renderer
 		tblAvailMeas.setColumnSelectionAllowed(false);
 		tblAvailMeas.setRowSelectionAllowed(true);
 		setupTableColumns(tblAvailMeas, true);
 
 		ElementListTableModel mdlChosenMeas = new ElementListTableModel(selectedElements);
 		tblChosenMeas.setModel(mdlChosenMeas);
-		tblChosenMeas.getTableHeader().addMouseListener(
-				new ElementListTableSorter(mdlChosenMeas, tblChosenMeas)); // add sorter & header renderer
+		chosenSorter = new ElementListTableSorter(mdlChosenMeas, tblChosenMeas);
+		chosenSorter.sortOnColumn(0, false);
+		tblChosenMeas.getTableHeader().addMouseListener(chosenSorter); // add sorter & header renderer
 		tblChosenMeas.setColumnSelectionAllowed(false);
 		tblChosenMeas.setRowSelectionAllowed(true);
 		setupTableColumns(tblChosenMeas, false);
@@ -494,6 +499,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 					new Bug(dlg.getFailException());
 				} else {
 					((ElementListTableModel)tblAvailMeas.getModel()).setElements(searchResource.getAssociatedResult());
+					availableSorter.reSort();
 				}
 			}
 		});
@@ -616,6 +622,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 		else
 			return;
 	
+		chosenSorter.reSort();
+		
 		// tell the table it's changed!
 		((ElementListTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
 
@@ -784,6 +792,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 
 			if (elements != null && !elements.isEmpty()) {
 				((ElementListTableModel) tblAvailMeas.getModel()).setElements(elements);
+				availableSorter.reSort();
 				showSearchLabel(false);
 				showProgressbar(false);
 			} else {

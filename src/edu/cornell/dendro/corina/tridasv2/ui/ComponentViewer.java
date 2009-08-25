@@ -75,6 +75,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	private JTable table;
 	private JTree tree;
 	
+	private ElementListTableSorter tableSorter;
 	private ElementListTableModel tableModel;
 	private DefaultTreeModel treeModel;
 	
@@ -196,8 +197,8 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		tableModel = new ElementListTableModel();
 		table = new JTable(tableModel);
 		
-		table.getTableHeader().addMouseListener(
-				new ElementListTableSorter(tableModel, table)); // add sorter & header renderer
+		tableSorter = new ElementListTableSorter(tableModel, table);
+		table.getTableHeader().addMouseListener(tableSorter); // add sorter & header renderer
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true);
 		
@@ -286,6 +287,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		
 		recurseAddElementsToList(elements, displayElements, rootNode, 0);
 
+		// should be unsorted - default order is what we want
 		tableModel.setElements(displayElements);
 		treeModel.setRoot(rootNode);
 		

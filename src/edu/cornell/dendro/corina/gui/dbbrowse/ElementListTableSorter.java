@@ -7,8 +7,11 @@ import java.util.Comparator;
 
 import javax.swing.JTable;
 
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.SortedHeaderArrowRenderer;
+import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.tridasv2.LabCode;
 
 public class ElementListTableSorter extends MouseAdapter {
 	private ElementListTableModel model;
@@ -39,7 +42,31 @@ public class ElementListTableSorter extends MouseAdapter {
 		// sanity check
 		if(col < 0)
 			return;
+
+		sortOnColumn(col, false);
+	}
+	
+	/**
+	 * Force a re-sort
+	 */
+	public void reSort() {
+		// nothing to sort by :(
+		if(lastSortedCol < 0)
+			return;
 		
+		int col = lastSortedCol;
+		boolean reverse = headerRenderer.isReversed();
+		
+		lastSortedCol = -1;
+		sortOnColumn(col, reverse);
+	}
+	
+	/**
+	 * Force a sort...
+	 * @param col the column to sort on
+	 * @param reverse force reverse
+	 */
+	public void sortOnColumn(int col, boolean reverse) {
 		if(col == lastSortedCol) {
 			Collections.reverse(model.getElements());
 			headerRenderer.setReversed(!headerRenderer.isReversed());
@@ -51,13 +78,18 @@ public class ElementListTableSorter extends MouseAdapter {
 			headerRenderer.setReversed(false);
 			
 			lastSortedCol = col;
+			
+			if(reverse)
+				Collections.reverse(model.getElements());
 		}
+	
 		
 		// notify the model and repaint the header
 		model.fireTableDataChanged();
 		table.getTableHeader().repaint();
+		
 	}
-	
+		
 	private class ElementListTableColumnComparator implements Comparator<Element> {
 		private int column;
 		private ElementListTableModel model;
@@ -68,6 +100,23 @@ public class ElementListTableSorter extends MouseAdapter {
 		}
 		
 		private Object getValue(Element e) {
+			// special case for lab code...
+			if(column == 0) {
+				try {
+					BaseSample bs = e.loadBasic();
+					LabCode code = bs.getMeta(Metadata.LABCODE, LabCode.class);
+					
+					if(code != null)
+						return code;
+					
+					// fall through to default below...
+				}
+				catch (Exception ex) {
+					// doesn't happen!
+					return null;
+				}
+			}
+			
 			return model.getColumnValueForElement(e, column);
 		}
 		
