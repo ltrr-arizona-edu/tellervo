@@ -7,7 +7,7 @@ import org.tridas.schema.TridasValues;
 
 import edu.cornell.dendro.corina.sample.Sample;
 
-public class TridasWeiserjahreWrapper implements DumbArrayListHook {
+public class TridasWeiserjahreWrapper implements NumericArrayListHook {
 	private List<TridasValue> values;
 	
 	private HookableNumericArrayList<Integer> incr;

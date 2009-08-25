@@ -2,7 +2,7 @@ package edu.cornell.dendro.corina.tridasv2.support;
 
 import java.util.List;
 
-public interface DumbArrayListHook {
+public interface NumericArrayListHook {
 	public void addedElement(List<? extends Number> list, int index, Number e);
 	public void changedElement(List<? extends Number> list, int index, Number e);
 	public void removedElement(List<? extends Number> list, int index);

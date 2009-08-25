@@ -6,7 +6,7 @@ import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
 
-public class TridasRingWidthWrapper implements DumbArrayListHook {
+public class TridasRingWidthWrapper implements NumericArrayListHook {
 	private List<TridasValue> values;
 		
 	private HookableNumericArrayList<Number> data;

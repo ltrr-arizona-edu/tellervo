@@ -20,7 +20,7 @@ public class HookableNumericArrayList<E extends Number> extends ArrayList<E> {
 	 * @param hook
 	 * @param c
 	 */
-	public HookableNumericArrayList(DumbArrayListHook hook, Collection<? extends E> c) {
+	public HookableNumericArrayList(NumericArrayListHook hook, Collection<? extends E> c) {
 		super(c.size());
 		super.addAll(c);
 		
@@ -33,7 +33,7 @@ public class HookableNumericArrayList<E extends Number> extends ArrayList<E> {
 	 * @param c
 	 * @param translator
 	 */
-	public <T> HookableNumericArrayList(DumbArrayListHook hook, Collection<T> c, ValueTranslator<T, E> translator) {
+	public <T> HookableNumericArrayList(NumericArrayListHook hook, Collection<T> c, ValueTranslator<T, E> translator) {
 		super(c.size());
 		
 		// go through each element and add its translation
@@ -47,7 +47,7 @@ public class HookableNumericArrayList<E extends Number> extends ArrayList<E> {
 	 * Create a new, empty list
 	 * @param hook
 	 */
-	public HookableNumericArrayList(DumbArrayListHook hook) {
+	public HookableNumericArrayList(NumericArrayListHook hook) {
 		super();
 		
 		this.hook = hook;
@@ -57,14 +57,14 @@ public class HookableNumericArrayList<E extends Number> extends ArrayList<E> {
 	 * Create a new, empty list with the given capacity
 	 * @param initialCapacity
 	 */
-	public HookableNumericArrayList(int initialCapacity, DumbArrayListHook hook) {
+	public HookableNumericArrayList(int initialCapacity, NumericArrayListHook hook) {
 		super(initialCapacity);
 		
 		this.hook = hook;
 	}
 
 	private static final long serialVersionUID = 1L;
-	private DumbArrayListHook hook;
+	private NumericArrayListHook hook;
 	
 	@Override
 	public E get(int index) {
