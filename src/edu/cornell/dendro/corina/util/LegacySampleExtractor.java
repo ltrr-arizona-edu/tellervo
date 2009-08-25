@@ -31,6 +31,7 @@ import org.tridas.schema.TridasSapwood;
 import org.tridas.schema.TridasWoodCompleteness;
 
 import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.dictionary.Taxon;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.SecurityUser;
@@ -188,6 +189,33 @@ public class LegacySampleExtractor {
 		
 		element.setTaxon(getControlledVocForName("Plantae", "taxonDictionary"));
 		element.setType(getControlledVocForName("Tree", "elementTypeDictionary"));
+		
+		// try for a taxon...
+		if(s.hasMeta("species")) {
+			String myTaxon = s.getMetaString("species").toLowerCase();
+			boolean foundTaxon = false;
+		
+			List<?> dictionary = Dictionary.getDictionary("taxonDictionary");
+			List<ControlledVoc> taxa = ListUtil.subListOfType(dictionary, ControlledVoc.class);
+		
+			for(ControlledVoc taxon : taxa) {
+				if(taxon.getNormal().equalsIgnoreCase(myTaxon)) {
+					element.setTaxon(taxon);
+					foundTaxon = true;
+					break;
+				}
+			}
+			
+			// ok, try starts with...
+			if(!foundTaxon) {
+				for(ControlledVoc taxon : taxa) {
+					if(taxon.getNormal().toLowerCase().startsWith(myTaxon)) {
+						element.setTaxon(taxon);
+						break;
+					}
+				}				
+			}
+		}
 	}
 
 	public void populateSample(TridasSample sample) {
@@ -314,14 +342,13 @@ public class LegacySampleExtractor {
 		if(sb.length() > 0)
 			sb.append("; ");
 		
-		if(s.hasMeta("comments"))
+		if(s.hasMeta("comments")) {
 			sb.append(s.getMetaString("comments"));
-		
-		if(sb.length() > 0)
 			sb.append("; ");
+		}		
 	
 		sb.append('[');
-		sb.append(s.getMetaString("filename"));
+		sb.append(getFilename());
 		sb.append(']');
 		
 		series.setComments(sb.toString());

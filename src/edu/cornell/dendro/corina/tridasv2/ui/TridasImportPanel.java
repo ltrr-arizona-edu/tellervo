@@ -14,8 +14,6 @@ import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleAdapter;
-import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 
@@ -43,7 +41,7 @@ public class TridasImportPanel extends TridasMetadataPanel {
 		extractor.populateMeasurement((TridasMeasurementSeries) s.getSeries());
 
 		// start out larger...
-		setPreferredSize(new Dimension(600, 600));
+		setPreferredSize(new Dimension(700, 600));
 		
 		// reload the series
 		EditType.MEASUREMENT_SERIES.setEntity(s, s.getSeries());
@@ -96,6 +94,9 @@ public class TridasImportPanel extends TridasMetadataPanel {
 			break;
 			
 		}
+		
+		// mark it as changed (we populated info!)
+		type.propertyChanged();
 	}
 
 	/* (non-Javadoc)

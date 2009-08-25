@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleAdapter;
 import edu.cornell.dendro.corina.sample.SampleEvent;
@@ -43,12 +44,12 @@ public class ImportFrame extends XFrame {
 		super();
 	
 		this.s = s;
-		
+
+		setTitle("Importing " + s.getMetaString("title"));
+
 		extractor = new LegacySampleExtractor(s);
 		importer = new TridasImportPanel(s, extractor);
-		
-		setTitle("Importing " + s.getDisplayTitle());
-		
+				
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		setLayout(new BorderLayout());
@@ -100,6 +101,11 @@ public class ImportFrame extends XFrame {
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
+				
+				// attach a new loader (well, saver!)
+				CorinaWsiTridasElement.attachNewSample(s);
+				
+				// and open!
 				new Editor(s).setVisible(true);
 			}
 		});
