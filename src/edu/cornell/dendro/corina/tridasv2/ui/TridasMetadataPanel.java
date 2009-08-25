@@ -96,6 +96,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private ChoiceComboBoxActionListener topChooserListener;
 	private JButton changeButton;
 	private JButton cancelChangeButton;
+	/** true if combo box is enabled for changing, false otherwise */
 	private boolean changingTop;
 	private static final String CHANGE_STATE = "Change...";
 	private static final String OK_STATE = "Choose";
@@ -203,6 +204,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			// user chose to edit without choosing 'new', so be nice and make a new one for them
 			if(temporaryEditingEntity == null && topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
 				temporaryEditingEntity = currentMode.newInstance(s);
+				populateNewEntity(currentMode, temporaryEditingEntity);
 			}
 
 			if(temporaryEditingEntity != null)
@@ -255,61 +257,11 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		cancelChangeButton.setVisible(false);
 		changeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				boolean flaggedAsNew = false;
+				if(changingTop)
+					chooseButtonPressed();
+				else
+					changeButtonPressed();
 				
-				// the user is changing away...
-				if(changingTop && temporarySelectingEntity != null && !temporarySelectingEntity.equals(currentMode.getEntity(s))) {
-					currentMode.setEntity(s, temporarySelectingEntity);
-					temporarySelectingEntity = null;
-					
-					// user selected 'new'
-					if(topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
-						flaggedAsNew = true;
-						disableBelowEnableAbove(currentMode);
-						
-						// remove any associated bits BELOW the 'new'
-						for(EditType et = currentMode.next(); et != null; et = et.next())
-							et.setEntity(s, null);
-					}
-					// user chose an existing item
-					else {
-						// do we have to do anything special for the next page?
-						EditType next = currentMode.next();
-						if(next != null) {
-							// disable buttons that we can't use
-							disableBelowEnableAbove(next);
-						
-							// remove any associated bits from the sample
-							for(EditType et = next; et != null; et = et.next())
-								et.setEntity(s, null);
-						}
-					}
-					
-					// we modified the series...
-					s.setModified();
-					// notify the sample that it changed
-					s.fireSampleMetadataChanged();
-				}
-				
-				// Make sure we populate our combobox with everything from the server
-				if(!changingTop) {
-					populateComboAndSelect(true);
-				}
-				
-				changingTop = !changingTop;
-
-				// now: false if we're done changing
-				// true if we're starting to change
-				
-				// disable/enable editing
-				editEntity.setEnabled(!changingTop);
-				topChooser.setEnabled(changingTop);
-				changeButton.setText(changingTop ? OK_STATE : CHANGE_STATE);
-				cancelChangeButton.setVisible(changingTop);
-
-				// if it's new, start editing right away
-				if(flaggedAsNew)
-					editEntity.doClick();
 			}
 		});
 		
@@ -388,6 +340,91 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		bottombar.add(Box.createHorizontalStrut(6));
 		bottombar.add(editEntityCancel);
 		bottombar.add(Box.createHorizontalStrut(6));
+	}
+
+	/**
+	 * Called by either button press to update the UI state
+	 */
+	private void chooseOrCancelUIUpdate() {
+		// disable/enable editing
+		editEntity.setEnabled(!changingTop);
+		topChooser.setEnabled(changingTop);
+		changeButton.setText(changingTop ? OK_STATE : CHANGE_STATE);
+		cancelChangeButton.setVisible(changingTop);		
+	}
+	
+	/**
+	 * Called when the 'Change' button is pressed
+	 * Activates the combo box, allowing for changes
+	 */
+	private void changeButtonPressed() {
+		// Make sure we populate our combobox with everything from the server
+		populateComboAndSelect(true);		
+		// we're starting to change...
+		changingTop = true;
+
+		chooseOrCancelUIUpdate();
+	}
+	
+	/**
+	 * Called when the 'Choose' button is pressed
+	 * Sets the current entity to what is present in the combo box
+	 */
+	private void chooseButtonPressed() {
+		boolean flaggedAsNew = false;
+		
+		// the user is changing away...
+		if(temporarySelectingEntity != null && !temporarySelectingEntity.equals(currentMode.getEntity(s))) {
+			currentMode.setEntity(s, temporarySelectingEntity);
+			temporarySelectingEntity = null;
+			
+			// user selected 'new'
+			if(topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
+				flaggedAsNew = true;
+				disableBelowEnableAbove(currentMode);
+				
+				// remove any associated bits BELOW the 'new'
+				for(EditType et = currentMode.next(); et != null; et = et.next())
+					et.setEntity(s, null);
+			}
+			// user chose an existing item
+			else {
+				// do we have to do anything special for the next page?
+				EditType next = currentMode.next();
+				if(next != null) {
+					// disable buttons that we can't use
+					disableBelowEnableAbove(next);
+				
+					// remove any associated bits from the sample
+					for(EditType et = next; et != null; et = et.next())
+						et.setEntity(s, null);
+				}
+			}
+			
+			// we modified the series...
+			s.setModified();
+			// notify the sample that it changed
+			s.fireSampleMetadataChanged();
+		}
+		
+		// we're done changing...
+		changingTop = false;
+
+		// update the UI...
+		chooseOrCancelUIUpdate();
+
+		// if it's new, start editing right away
+		if(flaggedAsNew)
+			editEntity.doClick();		
+	}
+	
+	/**
+	 * Populate any parameters in a newly created entity
+	 * @param type the current EditType
+	 * @param entity the corresponding entity
+	 */
+	protected void populateNewEntity(EditType type, ITridas entity) {
+		entity.setTitle("New " + type.displayTitle);
 	}
 	
 	private void initPropertiesPanel() {
@@ -579,6 +616,20 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private List<? extends ITridas> getEntityList(boolean goRemote) {
 		return getEntityList(currentMode, goRemote);
 	}
+
+	/**
+	 * Sort a list of ITridas objects
+	 * 
+	 * @param list
+	 */
+	private void sortList(List<? extends ITridas> list) {
+		// Sort list intelligently
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		
+		Collections.sort(list, numSorter);		
+	}
 	
 	/**
 	 * Get an entity list for the given mode
@@ -602,14 +653,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			} catch (Exception e) {
 				new Bug(e);
 				list = null;
-			}
-			
-			// Sort list intelligently
-			TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
-					TridasComparator.NullBehavior.NULLS_LAST, 
-					TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
-				Collections.sort(list, numSorter);
-	
+			}	
 
 			// get what we already have selected
 			ITridas singleton = mode.getEntity(s);
@@ -619,6 +663,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				// make sure the currently selected entity is represented in the list
 				if(singleton != null && entityInList(singleton, list) == null)
 					list.add(singleton);
+		
+				// sort it nicely
+				sortList(list);
 				
 				return list;
 			}
@@ -702,6 +749,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// if it's new, create a new, empty instance
 		if(obj == EntityListComboBox.NEW_ITEM) {
 			temporarySelectingEntity = currentMode.newInstance(s);
+			populateNewEntity(currentMode, temporarySelectingEntity);
 		}
 		else if(obj instanceof ITridas) {
 			temporarySelectingEntity = (ITridas) obj;
@@ -759,20 +807,30 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// get the list of stuff that goes in the box
 		List<? extends ITridas> entityList = getEntityList(goRemote);
 		
-		/*TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
-				TridasComparator.NullBehavior.NULLS_LAST, 
-				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
-		Collections.sort(entityList, numSorter);
-		*/
-		
 		topChooser.setList(entityList);
 
 		// select what we already have, if it exists
 		ITridas selectedEntity = currentMode.getEntity(s);
-		// otherwise, if one thing is in the list, select it only
-		if(selectedEntity == null && entityList.size() == 1)
-			selectedEntity = entityList.get(0);
+		
+		// otherwise, try to choose something nicely
+		if(selectedEntity == null)
+			selectedEntity = suggestSelectedEntity(currentMode, entityList);
+		
 		selectInCombo(selectedEntity);		
+	}
+	
+	/**
+	 * Suggest a selection for the given mode
+	 * 
+	 * @param mode the mode
+	 * @param list a list of acceptable options for the mode
+	 * @return null to choose 'new', a member of the list, or really any ITridas derived thing
+	 */
+	protected ITridas suggestSelectedEntity(EditType mode, List<? extends ITridas> list) {
+		if(list.size() == 1)
+			return list.get(0);
+		
+		return null;
 	}
 	
 	/**
@@ -960,7 +1018,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @author Lucas Madar
 	 */
 
-	private static enum EditType {
+	protected static enum EditType {
 		OBJECT(TridasObject.class, "Object", "object.png", Metadata.OBJECT),
 		ELEMENT(TridasElement.class, "Element", "element.png", Metadata.ELEMENT),
 		SAMPLE(TridasSample.class, "Sample", "sample.png", Metadata.SAMPLE),
@@ -1150,11 +1208,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		public ITridas newInstance(Sample s) {
 			try {
-				ITridas entity = type.newInstance();
-				
-				entity.setTitle("New " + displayTitle);
-
-				return entity;
+				return type.newInstance();
 			} catch (Exception e) {
 				new Bug(e);
 				return null;
