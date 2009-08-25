@@ -26,11 +26,6 @@ public class LocationGeometryUI extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelDecDeg = new javax.swing.JPanel();
-        lblDDLong = new javax.swing.JLabel();
-        lblDDLat = new javax.swing.JLabel();
-        spnDDLat = new javax.swing.JSpinner();
-        spnDDLong = new javax.swing.JSpinner();
         panelDMS = new javax.swing.JPanel();
         lblLong = new javax.swing.JLabel();
         lblLat = new javax.swing.JLabel();
@@ -60,44 +55,17 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         panelButton = new javax.swing.JPanel();
         btnOK = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
+        btnViewMap = new javax.swing.JButton();
+        lblRadio = new javax.swing.JLabel();
+        panelDecDeg = new javax.swing.JPanel();
+        lblDDLong = new javax.swing.JLabel();
+        lblDDLat = new javax.swing.JLabel();
+        spnDDLat = new javax.swing.JSpinner();
+        spnDDLong = new javax.swing.JSpinner();
 
-        lblDDLong.setText("Longitude:");
-
-        lblDDLat.setText("Latitude:");
-        lblDDLat.setPreferredSize(new java.awt.Dimension(85, 16));
-
-        spnDDLat.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(-90.0f), Float.valueOf(90.0f), Float.valueOf(0.1f)));
-
-        spnDDLong.setModel(new javax.swing.SpinnerNumberModel(Float.valueOf(0.0f), Float.valueOf(-90.0f), Float.valueOf(90.0f), Float.valueOf(0.1f)));
-
-        org.jdesktop.layout.GroupLayout panelDecDegLayout = new org.jdesktop.layout.GroupLayout(panelDecDeg);
-        panelDecDeg.setLayout(panelDecDegLayout);
-        panelDecDegLayout.setHorizontalGroup(
-            panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelDecDegLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(lblDDLong)
-                    .add(lblDDLat, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 120, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                    .add(spnDDLong)
-                    .add(spnDDLat, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        panelDecDegLayout.setVerticalGroup(
-            panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelDecDegLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(spnDDLat, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblDDLat, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblDDLong)
-                    .add(spnDDLong, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+        setMaximumSize(new java.awt.Dimension(650, 500));
+        setMinimumSize(new java.awt.Dimension(650, 350));
+        setPreferredSize(null);
 
         lblLong.setText("Longitude:");
 
@@ -118,7 +86,7 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         lblLatSec.setFont(new java.awt.Font("Lucida Grande", 0, 18));
         lblLatSec.setText("''");
 
-        spnDMSLongDeg.setModel(new javax.swing.SpinnerNumberModel(0, -90, 90, 1));
+        spnDMSLongDeg.setModel(new javax.swing.SpinnerNumberModel(0, -180, 180, 1));
 
         lblLongDeg.setFont(new java.awt.Font("Lucida Grande", 0, 18));
         lblLongDeg.setText("¡");
@@ -137,37 +105,35 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         panelDMS.setLayout(panelDMSLayout);
         panelDMSLayout.setHorizontalGroup(
             panelDMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelDMSLayout.createSequentialGroup()
+            .add(panelDMSLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(panelDMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelDMSLayout.createSequentialGroup()
-                        .add(lblLong)
-                        .add(6, 6, 6)
-                        .add(spnDMSLongDeg, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE))
-                    .add(panelDMSLayout.createSequentialGroup()
-                        .add(lblLat)
-                        .add(18, 18, 18)
-                        .add(spnDMSLatDeg, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)))
+                .add(panelDMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(lblLat)
+                    .add(lblLong))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 64, Short.MAX_VALUE)
+                .add(panelDMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                    .add(spnDMSLongDeg)
+                    .add(spnDMSLatDeg, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelDMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(panelDMSLayout.createSequentialGroup()
                         .add(lblLatDeg)
                         .add(10, 10, 10)
-                        .add(spnDMSLatMin, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
+                        .add(spnDMSLatMin, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 97, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(lblLatMin, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(spnDMSLatSec, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
+                        .add(spnDMSLatSec, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 96, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(lblLatSec))
                     .add(panelDMSLayout.createSequentialGroup()
                         .add(lblLongDeg)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(spnDMSLongMin, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
+                        .add(spnDMSLongMin, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 97, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(lblLongMin, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(spnDMSLongSec, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
+                        .add(spnDMSLongSec, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 96, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(lblLongSec)))
                 .addContainerGap())
@@ -178,21 +144,21 @@ public class LocationGeometryUI extends javax.swing.JPanel {
                 .addContainerGap()
                 .add(panelDMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblLat)
-                    .add(spnDMSLatDeg, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblLatDeg)
                     .add(spnDMSLatMin, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblLatMin, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 34, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(spnDMSLatSec, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblLatSec, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(lblLatSec, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(spnDMSLatDeg, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelDMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblLong)
-                    .add(spnDMSLongDeg, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblLongDeg)
                     .add(spnDMSLongMin, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblLongMin, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 34, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(spnDMSLongSec, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblLongSec, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(lblLongSec, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(spnDMSLongDeg, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -210,25 +176,25 @@ public class LocationGeometryUI extends javax.swing.JPanel {
 
         lblWaypoint.setText("Waypoint:");
 
-        radGPS.setText("Select waypoint from GPS");
-        radGPS.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                radGPSActionPerformed(evt);
-            }
-        });
+        radGPS.setText("using waypoint from GPS");
 
-        radManual.setText("Manual data entry");
+
+        radManual.setText("manually");
 
         btnOK.setText("OK");
 
         btnCancel.setText("Cancel");
+
+        btnViewMap.setText("View on map");
 
         org.jdesktop.layout.GroupLayout panelButtonLayout = new org.jdesktop.layout.GroupLayout(panelButton);
         panelButton.setLayout(panelButtonLayout);
         panelButtonLayout.setHorizontalGroup(
             panelButtonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonLayout.createSequentialGroup()
-                .addContainerGap(373, Short.MAX_VALUE)
+                .addContainerGap()
+                .add(btnViewMap)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 359, Short.MAX_VALUE)
                 .add(btnCancel)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnOK)
@@ -237,10 +203,51 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         panelButtonLayout.setVerticalGroup(
             panelButtonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonLayout.createSequentialGroup()
-                .addContainerGap(19, Short.MAX_VALUE)
+                .addContainerGap(17, Short.MAX_VALUE)
                 .add(panelButtonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnOK)
-                    .add(btnCancel))
+                    .add(btnCancel)
+                    .add(btnViewMap))
+                .addContainerGap())
+        );
+
+        lblRadio.setText("Set location:");
+
+        lblDDLong.setText("Longitude:");
+
+        lblDDLat.setText("Latitude:");
+        lblDDLat.setPreferredSize(new java.awt.Dimension(85, 16));
+
+        spnDDLat.setModel(new javax.swing.SpinnerNumberModel(0.0d, -90.0d, 90.0d, 0.10000000149011612d));
+
+        spnDDLong.setModel(new javax.swing.SpinnerNumberModel(0.0d, -90.0d, 90.0d, 0.10000000149011612d));
+
+        org.jdesktop.layout.GroupLayout panelDecDegLayout = new org.jdesktop.layout.GroupLayout(panelDecDeg);
+        panelDecDeg.setLayout(panelDecDegLayout);
+        panelDecDegLayout.setHorizontalGroup(
+            panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelDecDegLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(lblDDLat, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 120, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblDDLong))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(spnDDLat, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 120, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(spnDDLong, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        panelDecDegLayout.setVerticalGroup(
+            panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelDecDegLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(lblDDLat, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(spnDDLat, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelDecDegLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(spnDDLong, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblDDLong))
                 .addContainerGap())
         );
 
@@ -248,83 +255,84 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(panelDMS, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
-                        .add(148, 148, 148)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(radManual)
-                            .add(radGPS))))
-                .addContainerGap())
+            .add(layout.createSequentialGroup()
+                .add(148, 148, 148)
+                .add(radManual)
+                .add(18, 18, 18)
+                .add(radGPS, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
+                .add(101, 101, 101))
+            .add(layout.createSequentialGroup()
+                .addContainerGap()
+                .add(lblRadio, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 617, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(lblGPSFilename, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 117, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblGPSFilename, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 118, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblWaypoint, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 118, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblDatum, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 118, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblFormat, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 118, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(10, 10, 10)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(cboLatLongStyle, 0, 408, Short.MAX_VALUE)
+                    .add(cboDatum, 0, 408, Short.MAX_VALUE)
+                    .add(cboWaypoint, 0, 408, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, lblWaypoint, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, lblDatum, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, lblFormat, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(cboWaypoint, 0, 275, Short.MAX_VALUE)
-                            .add(cboDatum, 0, 275, Short.MAX_VALUE)
-                            .add(cboLatLongStyle, 0, 275, Short.MAX_VALUE)
-                            .add(txtGPSFilename, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE))))
+                        .add(txtGPSFilename, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnGPSBrowse)
-                .add(40, 40, 40))
+                .addContainerGap())
+            .add(layout.createSequentialGroup()
+                .add(panelDMS, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .add(layout.createSequentialGroup()
                 .add(panelDecDeg, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(160, Short.MAX_VALUE))
+                .addContainerGap())
             .add(panelButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(radManual))
-                    .add(layout.createSequentialGroup()
-                        .add(45, 45, 45)
-                        .add(radGPS)))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtGPSFilename, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblRadio)
+                    .add(radManual)
+                    .add(radGPS))
+                .add(18, 18, 18)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(lblGPSFilename)
                     .add(btnGPSBrowse)
-                    .add(lblGPSFilename))
+                    .add(txtGPSFilename, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cboWaypoint, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblWaypoint))
+                    .add(lblWaypoint)
+                    .add(cboWaypoint, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cboDatum, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblDatum))
+                    .add(lblDatum)
+                    .add(cboDatum, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cboLatLongStyle, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblFormat))
-                .add(2, 2, 2)
+                    .add(lblFormat)
+                    .add(cboLatLongStyle, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelDMS, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelDecDeg, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(panelButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void radGPSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radGPSActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_radGPSActionPerformed
-    
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JButton btnCancel;
     protected javax.swing.JButton btnGPSBrowse;
     protected javax.swing.JButton btnOK;
+    protected javax.swing.JButton btnViewMap;
     protected javax.swing.JComboBox cboDatum;
     protected javax.swing.JComboBox cboLatLongStyle;
     protected javax.swing.JComboBox cboWaypoint;
@@ -341,6 +349,7 @@ public class LocationGeometryUI extends javax.swing.JPanel {
     protected javax.swing.JLabel lblLongDeg;
     protected javax.swing.JLabel lblLongMin;
     protected javax.swing.JLabel lblLongSec;
+    protected javax.swing.JLabel lblRadio;
     protected javax.swing.JLabel lblWaypoint;
     protected javax.swing.JPanel panelButton;
     protected javax.swing.JPanel panelDMS;
