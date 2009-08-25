@@ -43,7 +43,7 @@ public class TridasImportPanel extends TridasMetadataPanel {
 		extractor.populateMeasurement((TridasMeasurementSeries) s.getSeries());
 
 		// start out larger...
-		setPreferredSize(new Dimension(800, 600));
+		setPreferredSize(new Dimension(600, 600));
 		
 		// reload the series
 		EditType.MEASUREMENT_SERIES.setEntity(s, s.getSeries());

@@ -4,8 +4,10 @@
 package edu.cornell.dendro.corina.util;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -350,76 +352,13 @@ public class LegacySampleExtractor {
 		return null;
 	}
 	
-	/*
-	private void extractFromFilename() {
-		String filename = (String) sample.getMeta("filename");
-		File f = new File(filename);
-		String basename = f.getName();
-		
-		Pattern patterns[] = new Pattern[6];
-		
-        // Site code, specimen/tree, radius, I for index
-        patterns[0]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z])I\\.");
-        // Site code, specimen/tree, radius, measurement
-        patterns[1]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z]{2})\\.");
-        // Site code, specimen/tree, radius, measurement, I for index
-        patterns[2]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z]{2})I\\.");
-        // Site code, specimen/tree, measurement
-        patterns[3]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z])\\.");
-        // Site code, first specimen, second specimen (SUM)
-        patterns[4]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)\\&([0-9]*)\\.");
-        // Site code, Three digits representing number of specimens in this sum
-        patterns[5]  = Pattern.compile("([a-zA-Z]{3})[000|111|222|333|444|555|666|777|888|999]\\.");
-
-        for(int i = 0; i < patterns.length; i++) {
-        	Matcher matcher = patterns[i].matcher(basename);
-        	
-        	// no match
-        	if(!matcher.find())
-        		continue;
-        	
-        	// off by one
-        	for(int j = 1; j <= matcher.groupCount(); j++) {
-        		String val = matcher.group(j);
-        		
-        		switch (j) {
-        		case 1:
-        			siteName = val.toUpperCase();
-        			break;
-        		case 2:
-        			specimenOrTreeName = val.toUpperCase();
-        			break;
-        		case 3:
-        			switch(i) {
-        			case 0:
-        				radiusName = val.toUpperCase();
-        				break;
-        			case 1:
-        			case 2:
-        				radiusName = val.substring(0, 1).toUpperCase();
-        				measurementName = val.substring(1, 2).toUpperCase();
-        				break;
-        			case 3:
-        				measurementName = val.toUpperCase();
-        				break;
-        			// should we implement case 4? it's not useful, I think
-        			case 4:
-        				break;
-        			}
-        		}
-        	}
-        	
-        	// we found a match, break out
-        	break;
-        }
-	}
 	
 	/**
 	 * Return a sanitized filename
 	 * @return
-	 * /
+	 */
 	public String getFilename() {
-		String fn = (String) sample.getMeta("filename");
+		String fn = (String) s.getMeta("filename");
 		ArrayList<String> segments = new ArrayList<String>();
 		File f = new File(fn);
 		int depth = 0;
@@ -446,15 +385,15 @@ public class LegacySampleExtractor {
 	public String asHTML() {
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("<span style=\"color: white; font-family: sans-serif; font-size: 12pt;\">");
+		sb.append("<span style=\"color: black; font-family: sans-serif; font-size: 12pt;\">");
 
 		// data that we've guessed at
-		if(siteName != null || specimenOrTreeName != null || radiusName != null || measurementName != null) {
+		if(objectCode != null || elementOrSampleName != null || radiusName != null || measurementName != null) {
 			sb.append("<b><u>Guessed Data</u></b><br>");
-			if (siteName != null)
-				sb.append("<b>Site</b>: " + siteName + "<br>");
-			if (specimenOrTreeName != null)
-				sb.append("<b>Specimen/tree</b>: " + specimenOrTreeName
+			if (objectCode != null)
+				sb.append("<b>Object</b>: " + objectCode + "<br>");
+			if (elementOrSampleName != null)
+				sb.append("<b>Element/sample</b>: " + elementOrSampleName
 						+ "<br>");
 			if (radiusName != null)
 				sb.append("<b>Radius</b>: " + radiusName + "<br>");
@@ -467,12 +406,12 @@ public class LegacySampleExtractor {
 
 		sb.append("<b><u>Metadata</u></b><br>");
 
-		Map<String, Object> meta = sample.getMetadata();
+		Map<String, Object> meta = s.getMetadata();
 		for(Map.Entry<String, Object> e : meta.entrySet()) {
 			Object v = e.getValue();
-			
-			// ignore our kludge! :)
-			if(e.getKey().equals("guessedmeasurementname"))
+
+			// ignore 'machine' data
+			if(e.getKey().startsWith(":"))
 				continue;
 			
 			// kludge together something acceptable for files

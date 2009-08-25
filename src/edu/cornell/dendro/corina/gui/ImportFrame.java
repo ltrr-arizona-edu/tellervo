@@ -4,10 +4,12 @@
 package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -51,6 +53,7 @@ public class ImportFrame extends XFrame {
 		setLayout(new BorderLayout());
 		add(importer, BorderLayout.CENTER);
 		add(makeButtonPanel(), BorderLayout.SOUTH);
+		add(makeInfoPanel(), BorderLayout.EAST);
 		
 		pack();
 		Center.center(this);
@@ -68,8 +71,23 @@ public class ImportFrame extends XFrame {
 		});
 	}
 	
+	private JPanel makeInfoPanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		
+		panel.setPreferredSize(new Dimension(280, 400));
+		
+		JEditorPane editor = new JEditorPane();
+		editor.setContentType("text/html");
+		editor.setEditable(false);
+		editor.setText(extractor.asHTML());
+		
+		panel.add(editor, BorderLayout.CENTER);
+		
+		return panel;
+	}
+	
 	private JPanel makeButtonPanel() {
-		JButton cancelButton = new JButton("Cancel");
+		JButton cancelButton = new JButton("Cancel Import");
 		okButton = new JButton("Import");
 		
 		cancelButton.addActionListener(new ActionListener() {
