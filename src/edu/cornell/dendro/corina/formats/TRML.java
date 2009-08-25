@@ -178,7 +178,7 @@ public class TRML implements Filetype {
 				if (type.equals("width") && s.getData() == null) {
 					s.setData(new ArrayList());
 				}
-				if (type.equals("count") && s.getCount() == null) {
+				if (type.equals("count") && s.hasCount()) {
 					s.setCount(new ArrayList());
 				}
 				if (type.equals("incr") && s.getWJIncr() == null) {
@@ -284,7 +284,7 @@ public class TRML implements Filetype {
 		// TODO: add per-year comments?
 
 		// count
-		if (s.getCount() != null) {
+		if (s.hasCount()) {
 			w.newLine();
 			w.write("   <data type=\"count\" units=\"number\">");
 			w.newLine();

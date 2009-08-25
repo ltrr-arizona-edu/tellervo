@@ -414,7 +414,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// make the "Nr" column renderer a progress bar -- this recomputes max(count)!!!
 		int max = 0;
-		if (sample.getCount() != null && !sample.getCount().isEmpty())
+		if (sample.hasCount())
 			max = (Collections.max(sample.getCount())).intValue();
 		wjTable.getColumnModel().getColumn(11).setCellRenderer(
 				new CountRenderer(max));

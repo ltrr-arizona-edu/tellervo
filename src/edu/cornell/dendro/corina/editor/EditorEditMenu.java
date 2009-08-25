@@ -413,7 +413,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			int inindex = range.getStart().compareTo(sample.getRange().getStart());
 			
 			List tmpData = sample.getData().subList(inindex, inindex + range.span());
-			List tmpCount = (sample.getCount() == null) ? null : sample.getCount().subList(inindex, inindex + range.span());
+			List tmpCount = sample.hasCount() ? null : sample.getCount().subList(inindex, inindex + range.span());
 			Sample tmpSample = new Sample();
 			
 			tmpSample.setRange(range);

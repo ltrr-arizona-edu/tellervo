@@ -635,7 +635,7 @@ public class Corina implements Filetype {
 		// count for 9990 is the same as the last count, for reasons i
 		// don't claim to understand.
 		List<Integer> count = null;
-		if (s.getCount() != null) {
+		if (s.hasCount()) {
 			count = new ArrayList<Integer>();
 			count.addAll(s.getCount());
 			count.add(count.get(count.size() - 1));

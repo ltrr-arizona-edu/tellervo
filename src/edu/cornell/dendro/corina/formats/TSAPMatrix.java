@@ -200,7 +200,7 @@ public class TSAPMatrix implements Filetype {
             w.write(',');
             w.write(StringUtils.leftPad(s.getData().get(i).toString(), 15));
             w.write(',');
-            w.write(StringUtils.leftPad(s.getCount()==null ? "1" : s.getCount().get(i).toString(), 15)); // count may be null?
+            w.write(StringUtils.leftPad(s.hasCount() ? "1" : s.getCount().get(i).toString(), 15)); // count may be null?
             w.write(',');
 	    // REFACTOR: this is way too low-level.  move to superclass?
 

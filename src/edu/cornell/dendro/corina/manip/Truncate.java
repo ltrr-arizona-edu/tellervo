@@ -56,7 +56,7 @@ public class Truncate {
 	while (numCropEnd-- > 0) {
 	    int i = s.getData().size()-1;
 	    endData.push(s.getData().remove(i));
-	    if (s.getCount() != null)
+	    if (s.hasCount())
 		endCount.push(s.getCount().remove(i));
 	    if (s.hasWeiserjahre()) {
 		endIncr.push(s.getWJIncr().remove(i));
@@ -106,7 +106,7 @@ public class Truncate {
 	// start
 	while (!startData.empty()) {
 	    s.getData().add(0, startData.pop());
-	    if (s.getCount() != null)
+	    if (s.hasCount())
 		s.getCount().add(0, startCount.pop());
 	    if (s.hasWeiserjahre()) {
 		s.getWJIncr().add(0, startIncr.pop());

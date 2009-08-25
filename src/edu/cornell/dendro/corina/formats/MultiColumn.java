@@ -244,7 +244,7 @@ public String toString() {
   public void save(Sample s, BufferedWriter w) throws IOException {
     Year y = s.getRange().getStart();
     System.out.println("Range start: " + y);
-    boolean hasCount = (s.getCount() != null);
+    boolean hasCount = (s.hasCount());
     System.out.println("Has count: " + hasCount);
 
     // write out the header

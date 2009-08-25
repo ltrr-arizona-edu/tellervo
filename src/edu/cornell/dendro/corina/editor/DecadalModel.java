@@ -156,11 +156,11 @@ public class DecadalModel extends AbstractTableModel {
 	// private static int __n=0;
 
 	// i'll have a lot of these.  better to use only one (flyweight).
-	protected final static Integer ZERO = new Integer(0);
+	protected final static Integer ZERO = Integer.valueOf(0);
 
 	protected final Integer getMean(int row) {
 		// if no count, just return zero
-		if (s.getCount() == null)
+		if (!s.hasCount())
 			return ZERO;
 
 		// compute left end of range

@@ -116,7 +116,7 @@ public class Modeline extends JPanel
 
 	// get modeline from year, index
 	String modeline = y + ": " + sample.getData().get(i);
-	if (sample.getCount() != null)
+	if (sample.hasCount())
 	    modeline += " [" + sample.getCount().get(i) + "]";
 	if (sample.hasWeiserjahre())
 	    modeline += " " + Weiserjahre.toString(sample, i);

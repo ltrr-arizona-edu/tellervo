@@ -380,10 +380,11 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 
 	// number of intervals with >3 samples
 	public int count3SampleIntervals() {
+		if (!hasCount())
+			return 0;
+		
 		// (count-if #'(lambda (x) (> x 3)) (sample-count s))
 		List<Integer> count = getCount();
-		if (count == null)
-			return 0;
 
 		int n = count.size();
 		int three = 0;
@@ -401,9 +402,11 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		// it's not a sum, so the number of rings is just the length
 		// (if (null count) (length data) ...
 		List<Number> data = getData();
-		List<Integer> count = getCount();
-		if (count == null)
+		
+		if (!hasCount())
 			return data.size();
+
+		List<Integer> count = getCount();
 
 		// it's a sum, so the number of rings is the sum of the number
 		// of measurements for each year
@@ -679,8 +682,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		// we don't know? guess.
 		// why is this "or?"
 		case UNKNOWN: {
-			List<Integer> count = getCount();
-			if (elements != null || count != null) {
+			if (elements != null || hasCount()) {
 				setSampleType(SampleType.SUM);
 				return true;
 			}

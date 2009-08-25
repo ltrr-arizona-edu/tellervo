@@ -48,7 +48,7 @@ public class Reverse extends AbstractUndoableEdit {
     private static void reverseSample(Sample s) {
 	// reverse stuff
 	Collections.reverse(s.getData());
-	if (s.getCount() != null)
+	if (s.hasCount())
 	    Collections.reverse(s.getCount());
 	if (s.hasWeiserjahre()) {
 	    Collections.reverse(s.getWJIncr());

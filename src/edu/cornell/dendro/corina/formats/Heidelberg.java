@@ -280,7 +280,7 @@ public class Heidelberg implements Filetype {
 		
 		// We're writing out a 'tree' or a 'single'...
 		// Data is for a single sample, not a sum or anything.
-		if(s.getCount() == null) {
+		if(!s.hasCount()) {
 			w.write("DATA:Tree");
 			w.newLine();
 			int column = 0;

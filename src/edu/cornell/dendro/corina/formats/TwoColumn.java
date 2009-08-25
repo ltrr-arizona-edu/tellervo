@@ -222,7 +222,7 @@ public class TwoColumn implements Filetype {
     
     public void save(Sample s, BufferedWriter w) throws IOException {
         Year y = s.getRange().getStart();
-        boolean hasCount = (s.getCount() != null);
+        boolean hasCount = s.hasCount();
 
         for (int i=0; i<s.getData().size(); i++) {
             w.write(y + "\t" + s.getData().get(i));
