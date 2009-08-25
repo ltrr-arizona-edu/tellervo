@@ -26,6 +26,7 @@ import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.CanOpener;
 import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.ImportFrame;
 import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
@@ -234,18 +235,9 @@ public class FileMenu extends JMenu {
 			// get filename, and load
 			Element e = ElementFactory.createElement(filename);
 		    Sample s = e.load();
-		    
-		    // dummy code: fix me
-		    s.equals(s);
-		    
-		    /*
-		    CreateOrImportWizard wiz = new CreateOrImportWizard(null, false);
 
-		    // extract info from the sample
-		    wiz.setLegacySample(new LegacySampleExtractor(s));
-
-		    wiz.setVisible(true);
-		    */
+		    ImportFrame dialog = new ImportFrame(s);
+		    dialog.setVisible(true);
 		} catch (UserCancelledException uce) {
 			// do nothing
 		} catch (WrongFiletypeException wfte) {

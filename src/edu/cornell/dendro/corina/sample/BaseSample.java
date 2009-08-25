@@ -128,6 +128,17 @@ public class BaseSample implements TridasIdentifiable {
 		
 		return (o == null) ? null : o.toString();
 	}
+	
+	/**
+	 * 
+	 * @param key
+	 * @return an integer, or null
+	 */
+	public Integer getMetaInteger(String key) {
+		Object o = meta.get(key);
+		
+		return (o == null) ? null : Integer.valueOf(o.toString());
+	}
 
 	public boolean hasMeta(String key) {
 		return meta.containsKey(key);

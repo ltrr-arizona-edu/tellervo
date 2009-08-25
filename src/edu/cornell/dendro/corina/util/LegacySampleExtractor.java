@@ -4,174 +4,353 @@
 package edu.cornell.dendro.corina.util;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+import org.tridas.schema.ComplexPresenceAbsence;
+import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasDatingType;
+import org.tridas.schema.NormalTridasMeasuringMethod;
+import org.tridas.schema.PresenceAbsence;
+import org.tridas.schema.TridasBark;
+import org.tridas.schema.TridasDating;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasHeartwood;
+import org.tridas.schema.TridasInterpretation;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasMeasuringMethod;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasPith;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
+import org.tridas.schema.TridasSapwood;
+import org.tridas.schema.TridasWoodCompleteness;
 
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.schema.SecurityUser;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 
 /**
  * This class provides convenience methods for extracting data out of old-format Corina samples
  * (or maybe even imported Heidelberg, etc samples).
  * 
- * TODO: Reimplement me!
- * 
  * @author lucasm
  *
  */
 public class LegacySampleExtractor {
-	private Sample sample;
+	private Sample s;
 	
 	public LegacySampleExtractor(Sample s) {
 		if(!(s.getLoader() instanceof FileElement))
 			throw new UnsupportedOperationException("Legacy samples must be file-based samples");
 		
-		this.sample = s;
+		this.s = s;
 		
-		//extractFromFilename();
-		
-		// populate the site because this is easy!
-		//if(siteName != null)
-		//	associatedSite = App.tridasObjects.findObjectByCode(siteName);
+		extractFromFilename();		
 	}
 
-	/*
-	private String siteName;
-	private String specimenOrTreeName;
+	private String objectCode;
+	private String elementOrSampleName;
 	private String radiusName;
 	private String measurementName;
-	
-	private TridasObject associatedSite;
-	
-	/**
-	 * Get the site object!
-	 * 
-	 * @return
-	 * /
-	public TridasObject asSite() {
-		return associatedSite;
+
+	private void extractFromFilename() {
+		String filename = (String) s.getMeta("filename");
+		File f = new File(filename);
+		String basename = f.getName();
+		
+		Pattern patterns[] = new Pattern[6];
+		
+        // Site code, specimen/tree, radius, I for index
+        patterns[0]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z])I\\.");
+        // Site code, specimen/tree, radius, measurement
+        patterns[1]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z]{2})\\.");
+        // Site code, specimen/tree, radius, measurement, I for index
+        patterns[2]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z]{2})I\\.");
+        // Site code, specimen/tree, measurement
+        patterns[3]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z])\\.");
+        // Site code, first specimen, second specimen (SUM)
+        patterns[4]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)\\&([0-9]*)\\.");
+        // Site code, Three digits representing number of specimens in this sum
+        patterns[5]  = Pattern.compile("([a-zA-Z]{3})[000|111|222|333|444|555|666|777|888|999]\\.");
+
+        for(int i = 0; i < patterns.length; i++) {
+        	Matcher matcher = patterns[i].matcher(basename);
+        	
+        	// no match
+        	if(!matcher.find())
+        		continue;
+        	
+        	// off by one
+        	for(int j = 1; j <= matcher.groupCount(); j++) {
+        		String val = matcher.group(j);
+        		
+        		switch (j) {
+        		case 1:
+        			objectCode = val.toUpperCase();
+        			break;
+        		case 2:
+        			elementOrSampleName = val.toUpperCase();
+        			break;
+        		case 3:
+        			switch(i) {
+        			case 0:
+        				radiusName = val.toUpperCase();
+        				break;
+        			case 1:
+        			case 2:
+        				radiusName = val.substring(0, 1).toUpperCase();
+        				measurementName = val.substring(1, 2).toUpperCase();
+        				break;
+        			case 3:
+        				measurementName = val.toUpperCase();
+        				break;
+        			// should we implement case 4? it's not useful, I think
+        			case 4:
+        				break;
+        			}
+        		}
+        	}
+        	
+        	// we found a match, break out
+        	break;
+        }
+	}
+
+	public String getObjectCode() {
+		return objectCode;
 	}
 	
-	/**
-	 * Get the 'main' subsite, if a site was found
-	 * @return
-	 */
-	/*
-	public Subsite asSubsite() {
-		if(associatedSite != null) {
-			List<Subsite> subsites = associatedSite.getSubsites();
-			
-			for(Subsite s : subsites)
-				if(s.toString().equalsIgnoreCase("main"))
-					return s;
+	public String getElementTitle() {
+		return elementOrSampleName;
+	}
+
+	public String getSampleTitle() {
+		return elementOrSampleName;
+	}
+
+	public String getRadiusTitle() {
+		return radiusName;
+	}
+	
+	public String getMeasurementTitle() {
+		return measurementName;
+	}
+	
+	private ControlledVoc getControlledVocForName(String name, String dictionaryName) {
+		List<?> dictionary = Dictionary.getDictionary(dictionaryName);
+		List<ControlledVoc> vocab = ListUtil.subListOfType(dictionary, ControlledVoc.class);
+		
+		for(ControlledVoc voc : vocab) {
+			if(name.equalsIgnoreCase(voc.getNormal()))
+				return voc;
 		}
 		
 		return null;
 	}
-	*/
 	
-	/**
-	 * Tree- 
-	 * Populates: name, species->originalTaxonName
-	 * @return
-	 * /
-	public TridasElement asTree() {
-		TridasElement tree = new TridasElement(TridasIdentifier.newEntity("element"), (specimenOrTreeName == null) ? 
-				TridasElement.NAME_INVALID : specimenOrTreeName);
+	public void populateObject(TridasObject object) {
+		if(objectCode != null)
+			object.setTitle(objectCode);
+		
+		// does it have a forest in the name?
+		String fn = (String) s.getMeta("filename");
+		if(fn.toLowerCase().contains("forest"))
+			object.setType(getControlledVocForName("Forest", "objectTypeDictionary"));
+		
+		// ok, then default to site
+		if(!object.isSetType())
+			object.setType(getControlledVocForName("Site", "objectTypeDictionary"));
+	}
+	
+	public void populateElement(TridasElement element) {
+		if(elementOrSampleName != null)
+			element.setTitle(elementOrSampleName);
+		
+		element.setTaxon(getControlledVocForName("Plantae", "taxonDictionary"));
+		element.setType(getControlledVocForName("Tree", "elementTypeDictionary"));
+	}
+
+	public void populateSample(TridasSample sample) {
+		if(elementOrSampleName != null)
+			sample.setTitle(elementOrSampleName);
+
+		String type = s.hasMeta("type") 
+				? getLegacyMapping("type", s.getMetaString("type")) 
+				: "Section";
+				
+		sample.setType(getControlledVocForName(type, "sampleTypeDictionary"));
+	}
+	
+	public void populateRadius(TridasRadius radius) {
+		if(radiusName != null)
+			radius.setTitle(radiusName);
+		
+		// add a wood completeness if it's not there
+		if(!radius.isSetWoodCompleteness())
+			radius.setWoodCompleteness(new TridasWoodCompleteness());
+		
+		// ok, now modify it...
+		TridasWoodCompleteness wood = radius.getWoodCompleteness();
+
+		// have to add a bunch of stuff...
+		TridasPith pith = new TridasPith();
+		pith.setPresence(ComplexPresenceAbsence.UNKNOWN);
+		wood.setPith(pith);
+		
+		TridasHeartwood heartwood = new TridasHeartwood();
+		heartwood.setPresence(ComplexPresenceAbsence.UNKNOWN);
+		wood.setHeartwood(heartwood);
+		
+		TridasSapwood sapwood = new TridasSapwood();
+		sapwood.setPresence(ComplexPresenceAbsence.UNKNOWN);
+		wood.setSapwood(sapwood);
+		
+		TridasBark bark = new TridasBark();
+		bark.setPresence(PresenceAbsence.ABSENT); // default to this, we look again later...
+		wood.setBark(bark);
+
 		String val;
+
+		if((val = s.getMetaString("pith")) != null) {
+			val = getLegacyMapping("pith", val);
+			
+			pith.setPresence(ComplexPresenceAbsence.fromValue(val));
+		}
 		
-		if((val = (String) sample.getMeta("species")) != null)
-			tree.setOriginalTaxonName(val);
-		
-		return tree;
-	}
-	
-	/**
-	 * Populates a specimen
-	 * unmeasuredpre
-	 * unmeasuredpost
-	 * sapwood
-	 * specimentype
-	 * terminalring
-	 * specimencontinuity
-	 * @return
-	 * /
-	public TridasSample asSpecimen() {
-		TridasSample spec = new TridasSample(TridasSample.ID_NEW, (specimenOrTreeName == null) ? 
-				TridasSample.NAME_INVALID : specimenOrTreeName);
-		String val;
-		Object oval;
-		
-		if((oval = sample.getMeta("unmeas_pre")) != null) {
-			try {
-				spec.setUnmeasuredPre(Integer.parseInt(oval.toString()));
-			} catch (NumberFormatException nfe) {
-				// ignore
-			}
+		if((val = s.getMetaString("unmeas_pre")) != null) {
+			heartwood.setMissingHeartwoodRingsToPith(val);
+			heartwood.setMissingHeartwoodRingsToPithFoundation("Observed but not measured");
 		}
 
-		if((oval = sample.getMeta("unmeas_post")) != null) {
+		if((val = s.getMetaString("unmeas_post")) != null) {
+			sapwood.setMissingSapwoodRingsToBark(val);
+			sapwood.setMissingSapwoodRingsToBarkFoundation("Observed but not measured");
+		}
+		
+		if((val = s.getMetaString("sapwood")) != null) {	
 			try {
-				spec.setUnmeasuredPost(Integer.parseInt(oval.toString()));
-			} catch (NumberFormatException nfe) {
-				// ignore
+				sapwood.setNrOfSapwoodRings(Integer.parseInt(val));
+			} catch (Exception e) {
+				// well fine, ignore it
 			}
 		}
-
-		if((oval = sample.getMeta("sapwood")) != null) {
-			try {
-				spec.setSapwoodCount(Integer.parseInt(oval.toString()));
-			} catch (NumberFormatException nfe) {
-				// ignore
+		
+		if((val = s.getMetaString("terminal")) != null) {
+			val = getLegacyMapping("terminal", val);
+			
+			if("Bark".equals(val)) {
+				bark.setPresence(PresenceAbsence.PRESENT);
+			}
+			else {					
+				if("Waney edge".equals(val))
+					sapwood.setPresence(ComplexPresenceAbsence.COMPLETE);
+				else if("Near edge".equals(val))
+					sapwood.setPresence(ComplexPresenceAbsence.INCOMPLETE);
+				else
+					sapwood.setPresence(ComplexPresenceAbsence.UNKNOWN);
 			}
 		}
-
-		if((val = (String) sample.getMeta("type")) != null)
-			spec.setSpecimenType(getLegacyMapping("type", val));
-		if((val = (String) sample.getMeta("pith")) != null)
-			spec.setPith(getLegacyMapping("pith", val));
-		if((val = (String) sample.getMeta("terminal")) != null)
-			spec.setTerminalRing(getLegacyMapping("terminal", val));
-		if((val = (String) sample.getMeta("continuous")) != null)
-			spec.setSpecimenContinuity(getLegacyMapping("continuous", val));
-// this doesn't exist?
-//		if((val = (String) sample.getMeta("quality")) != null)
-//			spec.setSpecimenQuality(getLegacyMapping("quality", val));
-
-		return spec;
 	}
 
+	public void populateMeasurement(TridasMeasurementSeries series) {
+		if(measurementName == null) {
+			String filename = (String) s.getMeta("filename");
+			File f = new File(filename);
+			String basename = f.getName();
+			
+			series.setTitle(basename);
+		}
+		else
+			series.setTitle(measurementName);
+		
+		// measuring method...
+		TridasMeasuringMethod method = new TridasMeasuringMethod();
+		method.setNormalTridas(NormalTridasMeasuringMethod.MEASURING___PLATFORM);
+		series.setMeasuringMethod(method);
+		
+		// interpretation
+		TridasInterpretation interpretation = new TridasInterpretation();
+		series.setInterpretation(interpretation);
+		
+		// first year
+		interpretation.setFirstYear(s.getRange().getStart().tridasYearValue());
+		
+		// dating type...
+		TridasDating dating = new TridasDating();
+		interpretation.setDating(dating);
+		
+		if(s.hasMeta("dating")) {
+			String val = getLegacyMapping("dating", s.getMetaString("dating"));
+			dating.setType(NormalTridasDatingType.fromValue(val));
+		}
+		else
+			dating.setType(NormalTridasDatingType.RELATIVE);
+
+		// comments are a little more complicated...
+		StringBuffer sb = new StringBuffer();
+		if(s.hasMeta("title"))
+			sb.append(s.getMetaString("title"));
+		
+		if(sb.length() > 0)
+			sb.append("; ");
+		
+		if(s.hasMeta("comments"))
+			sb.append(s.getMetaString("comments"));
+		
+		if(sb.length() > 0)
+			sb.append("; ");
 	
-	/**
-	 * Radius
-	 * name
-	 * @return
-	 * /
-	public TridasRadius asRadius() {
-		TridasRadius radius = new TridasRadius(TridasRadius.ID_NEW, (radiusName == null) ? 
-				TridasRadius.NAME_INVALID : radiusName);
-		return radius;
-	}
+		sb.append('[');
+		sb.append(s.getMetaString("filename"));
+		sb.append(']');
+		
+		series.setComments(sb.toString());
 
-	/**
-	 * Actually, just the original sample.
-	 * @return
-	 * /
-	public Sample asMeasurement() {
-		if(measurementName != null)
-			sample.setMeta("guessedmeasurementname", measurementName);
-
-		return sample;
+		// author... hey, guess!
+		if(s.hasMeta("author")) {
+			String author = s.getMetaString("author");
+			SecurityUser user = findUser(author);
+			
+			if(user != null) {
+				series.setAnalyst(user.getFirstName() + " " + user.getLastName());
+				series.setDendrochronologist(user.getFirstName() + " " + user.getLastName());
+				
+				GenericFieldUtils.addField(series, "corina.analystID", user.getId());
+				GenericFieldUtils.addField(series, "corina.dendrochronologistID", user.getId());
+			}
+		}
 	}
 	
+	private SecurityUser findUser(String author) {
+		List<?> dictionary = Dictionary.getDictionary("securityUserDictionary");
+		List<SecurityUser> users = ListUtil.subListOfType(dictionary, SecurityUser.class);
+		
+		for(SecurityUser user : users) {
+			String name = user.getFirstName() + " " + user.getLastName();
+			if(name.equalsIgnoreCase(author))
+				return user;
+			
+			name = user.getLastName() + " " + user.getFirstName();
+			if(name.equalsIgnoreCase(author))
+				return user;
+			
+			name = user.getLastName() + ", " + user.getFirstName();
+			if(name.equalsIgnoreCase(author))
+				return user;
+			
+			if(name.toLowerCase().contains(author.toLowerCase()))
+				return user;
+		}
+		
+		return null;
+	}
+	
+	/*
 	private void extractFromFilename() {
 		String filename = (String) sample.getMeta("filename");
 		File f = new File(filename);
@@ -334,9 +513,9 @@ public class LegacySampleExtractor {
 		legacyMetadataMap.put("type_H", "Charcoal");
 		legacyMetadataMap.put("type_C", "Core");
 		// pith
-		legacyMetadataMap.put("pith_+", "Present"); // older corina
-		legacyMetadataMap.put("pith_P", "Present"); // newer corina
-		legacyMetadataMap.put("pith_*", "Present but undateable");
+		legacyMetadataMap.put("pith_+", "Complete"); // older corina
+		legacyMetadataMap.put("pith_P", "Complete"); // newer corina
+		legacyMetadataMap.put("pith_*", "Incomplete");
 		legacyMetadataMap.put("pith_N", "Absent");
 		// terminal ring
 		legacyMetadataMap.put("terminal_v", "Unknown");
@@ -347,11 +526,5 @@ public class LegacySampleExtractor {
 		legacyMetadataMap.put("continuous_C", "Continuous");
 		legacyMetadataMap.put("continuous_R", "Partially continuous (>50%)");
 		legacyMetadataMap.put("continuous_N", "Not continuous");
-		// specimen quality
-		legacyMetadataMap.put("quality_+", "One unmeasured ring");
-		legacyMetadataMap.put("quality_++", "More than one unmeasured rings");
-		// reconciled
-		legacyMetadataMap.put("reconciled_Y", "true");
-		legacyMetadataMap.put("reconciled_N", "false");
 	}
 }

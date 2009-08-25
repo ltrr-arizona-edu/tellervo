@@ -187,7 +187,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * 
 	 * @param enabled
 	 */
-	private void enableEditing(boolean enabled) {
+	protected void enableEditing(boolean enabled) {
 		propertiesTable.setEditable(enabled);
 
 		editEntityText.setFont(editEntityText.getFont().deriveFont(Font.BOLD));
