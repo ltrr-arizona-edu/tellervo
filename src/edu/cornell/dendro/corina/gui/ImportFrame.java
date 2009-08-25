@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -74,7 +75,7 @@ public class ImportFrame extends XFrame {
 	private JPanel makeInfoPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		
-		panel.setPreferredSize(new Dimension(280, 400));
+		panel.setPreferredSize(new Dimension(220, 400));
 		
 		JEditorPane editor = new JEditorPane();
 		editor.setContentType("text/html");
@@ -103,6 +104,9 @@ public class ImportFrame extends XFrame {
 			}
 		});
 		
-		return Layout.buttonLayout(null, cancelButton, okButton);
+		JPanel panel = Layout.buttonLayout(null, cancelButton, okButton);
+		panel.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+		
+		return panel;
 	}
 }
