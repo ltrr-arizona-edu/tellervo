@@ -56,7 +56,8 @@ public class LegacySampleExtractor {
 	}
 
 	private String objectCode;
-	private String elementOrSampleName;
+	private String elementName;
+	private String sampleName;
 	private String radiusName;
 	private String measurementName;
 
@@ -67,12 +68,17 @@ public class LegacySampleExtractor {
 		
 		Pattern patterns[] = new Pattern[6];
 		
+		// default some stuff to A
+		sampleName = "A";
+		radiusName = "A";
+		measurementName = "A";
+		
         // Site code, specimen/tree, radius, I for index
         patterns[0]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z])I\\.");
         // Site code, specimen/tree, radius, measurement
-        patterns[1]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z]{2})\\.");
+        patterns[1]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z]{2,3})\\.");
         // Site code, specimen/tree, radius, measurement, I for index
-        patterns[2]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z]{2})I\\.");
+        patterns[2]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z]{2,3})I\\.");
         // Site code, specimen/tree, measurement
         patterns[3]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)([a-zA-Z])\\.");
         // Site code, first specimen, second specimen (SUM)
@@ -96,7 +102,7 @@ public class LegacySampleExtractor {
         			objectCode = val.toUpperCase();
         			break;
         		case 2:
-        			elementOrSampleName = val.toUpperCase();
+        			elementName = val.toUpperCase();
         			break;
         		case 3:
         			switch(i) {
@@ -105,8 +111,15 @@ public class LegacySampleExtractor {
         				break;
         			case 1:
         			case 2:
-        				radiusName = val.substring(0, 1).toUpperCase();
-        				measurementName = val.substring(1, 2).toUpperCase();
+        				if(val.length() == 2) {
+        					radiusName = val.substring(0, 1).toUpperCase();
+        					measurementName = val.substring(1, 2).toUpperCase();
+        				}
+        				else if(val.length() == 3) {
+        					sampleName = val.substring(0, 1).toUpperCase();
+        					radiusName = val.substring(1, 2).toUpperCase();
+        					measurementName = val.substring(2, 3).toUpperCase();
+        				}
         				break;
         			case 3:
         				measurementName = val.toUpperCase();
@@ -128,11 +141,11 @@ public class LegacySampleExtractor {
 	}
 	
 	public String getElementTitle() {
-		return elementOrSampleName;
+		return elementName;
 	}
 
 	public String getSampleTitle() {
-		return elementOrSampleName;
+		return sampleName;
 	}
 
 	public String getRadiusTitle() {
@@ -170,16 +183,16 @@ public class LegacySampleExtractor {
 	}
 	
 	public void populateElement(TridasElement element) {
-		if(elementOrSampleName != null)
-			element.setTitle(elementOrSampleName);
+		if(elementName != null)
+			element.setTitle(elementName);
 		
 		element.setTaxon(getControlledVocForName("Plantae", "taxonDictionary"));
 		element.setType(getControlledVocForName("Tree", "elementTypeDictionary"));
 	}
 
 	public void populateSample(TridasSample sample) {
-		if(elementOrSampleName != null)
-			sample.setTitle(elementOrSampleName);
+		if(sampleName != null)
+			sample.setTitle(sampleName);
 
 		String type = s.hasMeta("type") 
 				? getLegacyMapping("type", s.getMetaString("type")) 
@@ -388,13 +401,14 @@ public class LegacySampleExtractor {
 		sb.append("<span style=\"color: black; font-family: sans-serif; font-size: 12pt;\">");
 
 		// data that we've guessed at
-		if(objectCode != null || elementOrSampleName != null || radiusName != null || measurementName != null) {
+		if(objectCode != null || elementName != null || sampleName != null || radiusName != null || measurementName != null) {
 			sb.append("<b><u>Guessed Data</u></b><br>");
 			if (objectCode != null)
 				sb.append("<b>Object</b>: " + objectCode + "<br>");
-			if (elementOrSampleName != null)
-				sb.append("<b>Element/sample</b>: " + elementOrSampleName
-						+ "<br>");
+			if (elementName != null)
+				sb.append("<b>Element</b>: " + elementName + "<br>");
+			if (sampleName != null)
+				sb.append("<b>Sample</b>: " + sampleName + "<br>");
 			if (radiusName != null)
 				sb.append("<b>Radius</b>: " + radiusName + "<br>");
 			if (measurementName != null)
