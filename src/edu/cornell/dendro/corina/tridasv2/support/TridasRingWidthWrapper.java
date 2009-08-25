@@ -9,8 +9,8 @@ import org.tridas.schema.TridasValues;
 public class TridasRingWidthWrapper implements DumbArrayListHook {
 	private List<TridasValue> values;
 		
-	private HookableDumbArrayList<Number> data;
-	private HookableDumbArrayList<Integer> count;
+	private HookableNumericArrayList<Number> data;
+	private HookableNumericArrayList<Integer> count;
 
 	/**
 	 * Create a new ring width wrapper around these values
@@ -45,7 +45,7 @@ public class TridasRingWidthWrapper implements DumbArrayListHook {
 			}
 		};
 				
-		data = new HookableDumbArrayList<Number>(this, values, dataTranslator);
+		data = new HookableNumericArrayList<Number>(this, values, dataTranslator);
 		
 		if(usesCounts) {
 			/**
@@ -60,7 +60,7 @@ public class TridasRingWidthWrapper implements DumbArrayListHook {
 				}
 			};
 
-			count = new HookableDumbArrayList<Integer>(this, values, countTranslator);
+			count = new HookableNumericArrayList<Integer>(this, values, countTranslator);
 			countsValid = true;
 		}
 		else {
@@ -76,8 +76,8 @@ public class TridasRingWidthWrapper implements DumbArrayListHook {
 	 * @param in
 	 */
 	public void setData(List<Number> in) {
-		data = (in != null) ? new HookableDumbArrayList<Number>(this, in)
-				: new HookableDumbArrayList<Number>(this);
+		data = (in != null) ? new HookableNumericArrayList<Number>(this, in)
+				: new HookableNumericArrayList<Number>(this);
 		values.clear();
 
 		for (int i = 0, len = values.size(); i < len; i++) {
@@ -116,8 +116,8 @@ public class TridasRingWidthWrapper implements DumbArrayListHook {
 			return;
 		}
 		
-		count = (in != null) ? new HookableDumbArrayList<Integer>(this, in)
-				: new HookableDumbArrayList<Integer>(this);
+		count = (in != null) ? new HookableNumericArrayList<Integer>(this, in)
+				: new HookableNumericArrayList<Integer>(this);
 		countsValid = (count.size() == data.size());
 		
 		if(countsValid)

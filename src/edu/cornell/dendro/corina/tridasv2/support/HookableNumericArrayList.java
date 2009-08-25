@@ -14,13 +14,13 @@ import java.util.Collection;
  * @author Lucas Madar
  *
  */
-public class HookableDumbArrayList<E extends Number> extends ArrayList<E> {
+public class HookableNumericArrayList<E extends Number> extends ArrayList<E> {
 
 	/**
 	 * @param hook
 	 * @param c
 	 */
-	public HookableDumbArrayList(DumbArrayListHook hook, Collection<? extends E> c) {
+	public HookableNumericArrayList(DumbArrayListHook hook, Collection<? extends E> c) {
 		super(c.size());
 		super.addAll(c);
 		
@@ -33,7 +33,7 @@ public class HookableDumbArrayList<E extends Number> extends ArrayList<E> {
 	 * @param c
 	 * @param translator
 	 */
-	public <T> HookableDumbArrayList(DumbArrayListHook hook, Collection<T> c, ValueTranslator<T, E> translator) {
+	public <T> HookableNumericArrayList(DumbArrayListHook hook, Collection<T> c, ValueTranslator<T, E> translator) {
 		super(c.size());
 		
 		// go through each element and add its translation
@@ -47,7 +47,7 @@ public class HookableDumbArrayList<E extends Number> extends ArrayList<E> {
 	 * Create a new, empty list
 	 * @param hook
 	 */
-	public HookableDumbArrayList(DumbArrayListHook hook) {
+	public HookableNumericArrayList(DumbArrayListHook hook) {
 		super();
 		
 		this.hook = hook;
@@ -57,7 +57,7 @@ public class HookableDumbArrayList<E extends Number> extends ArrayList<E> {
 	 * Create a new, empty list with the given capacity
 	 * @param initialCapacity
 	 */
-	public HookableDumbArrayList(int initialCapacity, DumbArrayListHook hook) {
+	public HookableNumericArrayList(int initialCapacity, DumbArrayListHook hook) {
 		super(initialCapacity);
 		
 		this.hook = hook;

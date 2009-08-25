@@ -10,8 +10,8 @@ import edu.cornell.dendro.corina.sample.Sample;
 public class TridasWeiserjahreWrapper implements DumbArrayListHook {
 	private List<TridasValue> values;
 	
-	private HookableDumbArrayList<Integer> incr;
-	private HookableDumbArrayList<Integer> decr;
+	private HookableNumericArrayList<Integer> incr;
+	private HookableNumericArrayList<Integer> decr;
 
 	private boolean valid;
 	
@@ -25,16 +25,16 @@ public class TridasWeiserjahreWrapper implements DumbArrayListHook {
 		WeiserjahreDataTranslator wjtranslator = new WeiserjahreDataTranslator();
 		
 		wjtranslator.setField(WeiserjahreDataTranslator.Field.INCR);
-		incr = new HookableDumbArrayList<Integer>(this, values, wjtranslator);
+		incr = new HookableNumericArrayList<Integer>(this, values, wjtranslator);
 		wjtranslator.setField(WeiserjahreDataTranslator.Field.DECR);
-		decr = new HookableDumbArrayList<Integer>(this, values, wjtranslator);
+		decr = new HookableNumericArrayList<Integer>(this, values, wjtranslator);
 		
 		valid = true;
 	}
 
 	public void setIncr(List<Integer> in) {
-		incr = (in != null) ? new HookableDumbArrayList<Integer>(this, in)
-				: new HookableDumbArrayList<Integer>(this);		
+		incr = (in != null) ? new HookableNumericArrayList<Integer>(this, in)
+				: new HookableNumericArrayList<Integer>(this);		
 		
 		valid = (incr.size() == decr.size());
 		if(valid) {
@@ -44,8 +44,8 @@ public class TridasWeiserjahreWrapper implements DumbArrayListHook {
 	}
 	
 	public void setDecr(List<Integer> in) {
-		decr = (in != null) ? new HookableDumbArrayList<Integer>(this, in)
-				: new HookableDumbArrayList<Integer>(this);		
+		decr = (in != null) ? new HookableNumericArrayList<Integer>(this, in)
+				: new HookableNumericArrayList<Integer>(this);		
 		valid = (incr.size() == decr.size());
 		if(valid) {
 			values.clear();
