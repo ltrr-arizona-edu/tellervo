@@ -213,8 +213,8 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		}
 		
 		// make the ring widths wrapper
-		ringwidths = new TridasRingWidthWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH),
-				getSampleType() == SampleType.SUM);
+		ringwidths = new TridasRingWidthWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH), 
+				true); 
 		
 		// if weiserjahre exists, make the values wrapper for it as well
 		if(otherValuesMap.containsKey(WEISERJAHRE_VARIABLE)) 
@@ -706,10 +706,15 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	public void setCount(List<Integer> count) {
 		ringwidths.setCount(count);
 	}
-
-	//
-	// event model
-	//
+	
+	/**
+	 * Note that getCount() will return a list that has all ones
+	 * when hasCount() can return false
+	 * @return true if counts exist
+	 */
+	public boolean hasCount() {
+		return ringwidths.hasCount();
+	}
 
 	/**
 	 * @param data the data to set

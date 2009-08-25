@@ -32,7 +32,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 // but i'm lazy, and this works nearly as well.)
 
 public class CountRenderer extends DefaultTableCellRenderer {
-    private int val, max;
+	private static final long serialVersionUID = 1L;
+	
+	private int val, max;
     public CountRenderer(int max) { // GENERALIZE: take any number (double)
         // range is 0..max
         this.max = max;
@@ -66,13 +68,17 @@ public class CountRenderer extends DefaultTableCellRenderer {
     @Override
 	public void paintComponent(Graphics g) {
         int w=getWidth(), h=getHeight();
-        double frac = (double) val / (double) max;
-        int stop = (int) (frac * w);
 
         // fill background myself. (why do i have to?)
         g.setColor(super.getBackground());
         g.fillRect(0, 0, w, h);
 
+        if (max <= 1) {
+        	// no max will divide by zero
+        	// max = 1 is just a regular series
+        	return;
+        }
+        
         // zero is a special case
         if (val == 0) {
             // but that looks sort of silly
@@ -80,6 +86,9 @@ public class CountRenderer extends DefaultTableCellRenderer {
             //g.fillRect(2, TOP+(HEIGHT/2)-1, 3, 2);
             return;
         }
+
+        double frac = (double) val / (double) max;
+        int stop = (int) (frac * w);
 
         // draw dark lines -- well, just draw a big rectangle.  it's simpler and probably faster.
         g.setColor(DARK);

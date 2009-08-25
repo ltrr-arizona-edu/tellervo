@@ -10,7 +10,7 @@ public class TridasRingWidthWrapper implements NumericArrayListHook {
 	private List<TridasValue> values;
 		
 	private HookableNumericArrayList<Number> data;
-	private HookableNumericArrayList<Integer> count;
+	private HookableCountArrayList count;
 
 	/**
 	 * Create a new ring width wrapper around these values
@@ -60,7 +60,7 @@ public class TridasRingWidthWrapper implements NumericArrayListHook {
 				}
 			};
 
-			count = new HookableNumericArrayList<Integer>(this, values, countTranslator);
+			count = new HookableCountArrayList(this, values, countTranslator, data);
 			countsValid = true;
 		}
 		else {
@@ -69,6 +69,10 @@ public class TridasRingWidthWrapper implements NumericArrayListHook {
 			clearCounts(); // just to be safe?
 		}
 		
+	}
+	
+	private final void checkCountsValid() {
+		countsValid = (count.actualSize() == data.size() || count.actualIsEmpty()); 
 	}
 	
 	/**
@@ -90,7 +94,8 @@ public class TridasRingWidthWrapper implements NumericArrayListHook {
 		}
 
 		if (usesCounts) {
-			countsValid = (count.size() == data.size());
+			count.setMasterList(data);
+			checkCountsValid();
 
 			if (countsValid)
 				copyOverCounts();
@@ -116,14 +121,18 @@ public class TridasRingWidthWrapper implements NumericArrayListHook {
 			return;
 		}
 		
-		count = (in != null) ? new HookableNumericArrayList<Integer>(this, in)
-				: new HookableNumericArrayList<Integer>(this);
-		countsValid = (count.size() == data.size());
+		count = (in != null) ? new HookableCountArrayList(this, in, data)
+				: new HookableCountArrayList(this, data);
+		checkCountsValid();
 		
 		if(countsValid)
 			copyOverCounts();
 		else
 			clearCounts();
+	}
+	
+	public boolean hasCount() {
+		return usesCounts && !count.actualIsEmpty();		
 	}
 	
 	public List<Integer> getCount() {
@@ -161,7 +170,7 @@ public class TridasRingWidthWrapper implements NumericArrayListHook {
 			boolean shouldReindex = (index < values.size());
 			boolean countsWereValid = countsValid;
 			
-			if(shouldReindex && usesCounts) 
+			if(shouldReindex && usesCounts && !count.actualIsEmpty()) 
 				throw new IllegalStateException("Adding element to middle of data list with counts present is not supported");
 			
 			// create a new tridas value!
@@ -178,7 +187,8 @@ public class TridasRingWidthWrapper implements NumericArrayListHook {
 				reindex();
 
 			if(usesCounts) {
-				countsValid = (count.size() == data.size());
+				checkCountsValid();
+				
 				if (!countsWereValid && countsValid)
 					copyOverCounts();
 				else if (countsWereValid && !countsValid)
@@ -188,8 +198,8 @@ public class TridasRingWidthWrapper implements NumericArrayListHook {
 		else if(list == count) {
 			if(usesCounts) {
 				boolean countsWereValid = countsValid;
-				countsValid = (count.size() == data.size());			
-			
+				checkCountsValid();
+				
 				if(!countsWereValid && countsValid)
 					copyOverCounts();
 				else if(countsWereValid && !countsValid)
@@ -211,17 +221,17 @@ public class TridasRingWidthWrapper implements NumericArrayListHook {
 		if(list == data) {
 			values.clear();
 			if(usesCounts)
-				countsValid = (count.size() == data.size());			
+				checkCountsValid();
 		}
 		else if(list == count) {
 			clearCounts();
-			countsValid = (count.size() == data.size());			
+			checkCountsValid();
 		}
 	}
-
+	
 	public void removedElement(List<? extends Number> list, int index) {
-		if(usesCounts)
-			throw new IllegalStateException("Can't remove elements from count list!");
+		if(usesCounts && !count.actualIsEmpty())
+			throw new IllegalStateException("Can't remove elements from populated count list!");
 	}
 
 	public void getting(List<? extends Number> list, int index) {

@@ -397,11 +397,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// no wj?  die.  (Q: why didn't i have/need this before?  A: i
 		// made it, but it never got displayed, so nobody checks to
 		// see if it actually has any rows or columns)
-		// if (!sample.hasWeiserjahre())
-		// return;
-		// -> i should go back to doing it this way.  don't have an
-		// initialized wjtable/panel sitting around if it's not being used.
-		// FIXME.
+		if (!sample.hasWeiserjahre())
+			return;
 
 		// create the table
 		wjTable = new JTable(new WJTableModel(sample));
@@ -417,7 +414,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// make the "Nr" column renderer a progress bar -- this recomputes max(count)!!!
 		int max = 0;
-		if (sample.getCount() != null)
+		if (sample.getCount() != null && !sample.getCount().isEmpty())
 			max = (Collections.max(sample.getCount())).intValue();
 		wjTable.getColumnModel().getColumn(11).setCellRenderer(
 				new CountRenderer(max));

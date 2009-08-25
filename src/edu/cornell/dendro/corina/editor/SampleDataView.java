@@ -203,7 +203,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// make the last column a jprogressbar, % of max
 		int max = 0;
-		if (mySample.getCount() != null)
+		if (mySample.getCount() != null && !mySample.getCount().isEmpty())
 			max = (Collections.max(mySample.getCount())).intValue();
 		// DISABLED: use column-header renderer for first column (pseudo-row-headers)
 		// -- it doesn't look that great, since there are still gridlines between
