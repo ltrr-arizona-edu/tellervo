@@ -245,13 +245,13 @@ public class LegacySampleExtractor {
 		if((val = s.getMetaString("terminal")) != null) {
 			val = getLegacyMapping("terminal", val);
 			
-			if("Bark".equals(val)) {
+			if("bark".equals(val)) {
 				bark.setPresence(PresenceAbsence.PRESENT);
 			}
 			else {					
-				if("Waney edge".equals(val))
+				if("waney edge".equals(val))
 					sapwood.setPresence(ComplexPresenceAbsence.COMPLETE);
-				else if("Near edge".equals(val))
+				else if("near edge".equals(val))
 					sapwood.setPresence(ComplexPresenceAbsence.INCOMPLETE);
 				else
 					sapwood.setPresence(ComplexPresenceAbsence.UNKNOWN);
@@ -423,6 +423,17 @@ public class LegacySampleExtractor {
 			sb.append(e.getKey());
 			sb.append("</b>: ");
 			sb.append(v == null ? "[empty]" : v.toString());
+			
+			// append useful information?
+			if(v != null) {
+				String mapVal = getLegacyMapping(e.getKey(), v.toString());
+				if(mapVal != null) {
+					sb.append(" (");
+					sb.append(mapVal);
+					sb.append(')');
+				}				
+			}
+			
 			sb.append("<br>");
 		}
 
@@ -452,15 +463,15 @@ public class LegacySampleExtractor {
 		legacyMetadataMap.put("type_H", "Charcoal");
 		legacyMetadataMap.put("type_C", "Core");
 		// pith
-		legacyMetadataMap.put("pith_+", "Complete"); // older corina
-		legacyMetadataMap.put("pith_P", "Complete"); // newer corina
-		legacyMetadataMap.put("pith_*", "Incomplete");
-		legacyMetadataMap.put("pith_N", "Absent");
+		legacyMetadataMap.put("pith_+", "complete"); // older corina
+		legacyMetadataMap.put("pith_P", "complete"); // newer corina
+		legacyMetadataMap.put("pith_*", "incomplete");
+		legacyMetadataMap.put("pith_N", "absent");
 		// terminal ring
-		legacyMetadataMap.put("terminal_v", "Unknown");
-		legacyMetadataMap.put("terminal_vv", "Near edge");
-		legacyMetadataMap.put("terminal_B", "Bark");
-		legacyMetadataMap.put("terminal_W", "Waney edge");
+		legacyMetadataMap.put("terminal_v", "unknown");
+		legacyMetadataMap.put("terminal_vv", "near edge");
+		legacyMetadataMap.put("terminal_B", "bark");
+		legacyMetadataMap.put("terminal_W", "waney edge");
 		// specimen continuity
 		legacyMetadataMap.put("continuous_C", "Continuous");
 		legacyMetadataMap.put("continuous_R", "Partially continuous (>50%)");
