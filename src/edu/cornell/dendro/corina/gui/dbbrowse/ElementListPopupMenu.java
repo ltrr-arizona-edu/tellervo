@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import edu.cornell.dendro.corina.editor.Editor;
@@ -65,8 +66,17 @@ public class ElementListPopupMenu extends JPopupMenu {
 		item.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					element.delete();
-					browser.deleteElement(element);
+				
+					Object[] options = {"OK",
+					                    "Cancel"};
+					int ret = JOptionPane.showOptionDialog(getParent(), "Are you sure you want to delete this series?", "Confirm delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+						
+					if(ret == JOptionPane.YES_OPTION)
+					{
+						element.delete();
+						browser.deleteElement(element);
+					}
+					
 				} catch (IOException ioe) {
 					Alert.error("Cannot delete", "Unable to delete: " + ioe.getMessage());
 				}

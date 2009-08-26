@@ -157,9 +157,24 @@ public class EditMenu extends JMenu {
     }
     
     protected void addAdmin(){
-        JMenuItem prefs = Builder.makeMenuItem("admin",
-                                               "edu.cornell.dendro.corina.gui.AdminPanel.main()", "agent.png");
-        add(prefs);
+        JMenu adminmenu = Builder.makeMenu("admin", "agent.png");
+        
+    	
+    	JMenuItem usergroup = Builder.makeMenuItem("usersandgroups",
+                                               "edu.cornell.dendro.corina.gui.AdminPanel.main()", "edit_group.png");
+        adminmenu.add(usergroup);
+        
+        
+    	JMenuItem boxlabel = Builder.makeMenuItem("boxlabels",
+                "edu.cornell.dendro.corina.util.labels.ui.LabelPrintingDialog.boxLabelDialog()", "box.png");
+        adminmenu.add(boxlabel);
+    	
+        JMenuItem samplelabel = Builder.makeMenuItem("samplelabels",
+                "edu.cornell.dendro.corina.util.labels.ui.LabelPrintingDialog.sampleLabelDialog()", "sample.png");
+        adminmenu.add(samplelabel);    
+        
+        
+        add(adminmenu);
     }
     
 

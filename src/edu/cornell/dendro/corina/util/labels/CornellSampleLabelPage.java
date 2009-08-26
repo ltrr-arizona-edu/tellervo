@@ -3,12 +3,13 @@ package edu.cornell.dendro.corina.util.labels;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Rectangle;
 
-public class PetesCustomLabels implements LabelPage {
+public class CornellSampleLabelPage implements LabelPage {
 	private final static float dpi = 72.0f;
 	private final static float mmpd = dpi / 25.4f;
 
 	public float getLabelHeight() {
-		return 8 * mmpd;
+		//return 8 * mmpd;
+		return 20 * mmpd;
 	}
 
 	public float getLabelHorizontalGap() {
@@ -20,7 +21,7 @@ public class PetesCustomLabels implements LabelPage {
 	}
 
 	public float getLabelWidth() {
-		return 100 * mmpd;
+		return 200 * mmpd;
 	}
 
 	public float getPageBottomMargin() {

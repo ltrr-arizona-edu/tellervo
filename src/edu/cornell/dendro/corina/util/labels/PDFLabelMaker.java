@@ -1,21 +1,34 @@
 package edu.cornell.dendro.corina.util.labels;
 
 import java.awt.Color;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Image;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.Barcode128;
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.XMLDebugView;
+import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.print.SeriesReport;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
+import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 
 public class PDFLabelMaker {
 	private LabelPage margins;
@@ -33,7 +46,7 @@ public class PDFLabelMaker {
 	
 	private PdfPTable table;
 	
-	private int horizontalAlignment = Element.ALIGN_CENTER;
+	private int horizontalAlignment = Element.ALIGN_LEFT;
 	private int verticalAlignment = Element.ALIGN_MIDDLE;
 	
 	public PDFLabelMaker(LabelPage margins, File file) throws IOException, DocumentException {
@@ -144,8 +157,56 @@ public class PDFLabelMaker {
 		addCell(new PdfPCell(img));
 	}
 
+	public void addUUIDBarcode(ArrayList<Sample> samples) {
+		
+		// Loop through samples in list
+		for(Sample s : samples)
+		{		
+			Barcode128 barcode = new LabBarcode(LabBarcode.Type.SAMPLE, UUID.fromString(s.getIdentifier().getValue().toString()));
+			
+			// if it's tiny, hide the label
+			if(margins.getLabelHeight() * .80f < barcode.getBarHeight()) {
+				barcode.setBarHeight(margins.getLabelHeight() * .55f);
+				barcode.setX(0.5f);
+				//barcode.setSize(6.0f);
+			}
+			else
+			{
+				//barcode.setSize(6.0f);
+			}
+			
+			barcode.setFont(null);
+			Image img = barcode.createImageWithBarcode(contentb, Color.black, Color.gray);
+						
+			PdfPCell bccell = new PdfPCell();
+			bccell.addElement(img);
+			bccell.setBackgroundColor(Color.GREEN);
+			addCell(bccell);
+			
+			PdfPCell lbcell = new PdfPCell();
+			lbcell.addElement(new Phrase("hello world"));
+			addCell(lbcell);
+			
+			PdfPTable tbl = new PdfPTable(2);
+			
+			tbl.addCell(bccell);
+			tbl.addCell(lbcell);
+	
+			addTable(tbl);
+		}
+		
+
+	}
+	
 	
 	public void addTable(PdfPTable ntable) {
+		
+		PdfPCell cell = new PdfPCell();
+		cell.addElement(ntable);
+		cell.addElement(new Phrase("boo"));
+		
+		addCell(cell);
+		
 		
 	}
 	
@@ -159,19 +220,37 @@ public class PDFLabelMaker {
 
 	//private static Font barcodeFont = FontFactory.getFont(FontFactory.COURIER);
 	//private static Font tinybarcodeFont = FontFactory.getFont(FontFactory.HELVETICA, 6.0f, Font.NORMAL);
+		
 	
-	public static void main(String args[]) {
+	public static void main(String args[]) throws DocumentException {
+	    App.platform = new Platform();
+	    App.platform.init();
+	    
+		App.init(null, null);
+		
+		XMLDebugView.showDialog();
+		String domain = "dendro.cornell.edu/dev/";
+		Sample samp = null;
+		String vmid = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
+
+		ArrayList<Sample> samples = new ArrayList<Sample>();
+		
+			
+		
 		try {
-			PDFLabelMaker m = new PDFLabelMaker(new PetesCustomLabels(), new File("output2.pdf"));
+			samp = PrintReportFramework.getSampleForID(domain, vmid);
+			samples.add(samp);	
+			samples.add(samp);	
 			
-			for(int i = 10; i < 100; i++) {
-				UUID uuid = UUID.fromString("01946b69-d86d-5812-a5f6-21ca6f8fa483");
-				m.addUUIDBarcode("Cell " + i, LabBarcode.Type.SAMPLE, uuid);
-			}
+			PDFLabelMaker m = new PDFLabelMaker(new CornellSampleLabelPage(), new File("output2.pdf"));		
 			
+			m.addUUIDBarcode(samples);
+
 			m.finish();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+		catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+	
 	}
 }

@@ -22,7 +22,7 @@ import edu.cornell.dendro.corina.spatial.Location;
 public class LocationGeometry extends LocationGeometryUI implements ActionListener, ChangeListener {
   
 	private JFrame dialog;
-	private Location loc;
+	private Location loc = new Location();
 	final JFileChooser fc = new JFileChooser();
 	final GPXFileFilter filter = new GPXFileFilter();
 	
@@ -166,7 +166,7 @@ public class LocationGeometry extends LocationGeometryUI implements ActionListen
 	}
 	
 	private void setDDFromDMS(){
-			
+		
 		Double ddlat;
 		Double ddlong;
 				
@@ -202,6 +202,13 @@ public class LocationGeometry extends LocationGeometryUI implements ActionListen
 		// Set spinners
 		spnDDLat.setValue(ddlat);
 		spnDDLong.setValue(ddlong);
+		
+		// Set members
+		//loc.setLatitudeAsDegrees(ddlat.floatValue());
+		//loc.setLongitudeAsDegrees(ddlong.floatValue());
+		
+		
+		
 	}
 	
 	
@@ -265,14 +272,20 @@ public class LocationGeometry extends LocationGeometryUI implements ActionListen
 		    (evt.getSource() == spnDMSLongMin) ||
 		    (evt.getSource() == spnDMSLongSec) )
 		{
+
 			setDDFromDMS();
+			loc.setLatitudeAsDegrees(Float.parseFloat(spnDDLat.getValue().toString()));
+			loc.setLongitudeAsDegrees(Float.parseFloat(spnDDLong.getValue().toString()));			
 		}
 		
 		// Decimal degress changed so set DMS values
 		if( (evt.getSource() == spnDDLat) || 
 			(evt.getSource() == spnDDLong) )
-		{
+		{			
 			setDMSFromDD();
+			loc.setLatitudeAsDegrees(Float.parseFloat(spnDDLat.getValue().toString()));
+			loc.setLongitudeAsDegrees(Float.parseFloat(spnDDLong.getValue().toString()));
+
 		}
 		
 		

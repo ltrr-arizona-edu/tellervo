@@ -39,6 +39,15 @@ public class Builder {
 
 		return m;
 	}
+	
+	public static JMenu makeMenu(String key, String iconfilename) {
+		JMenu m = new JMenu();
+		m.setIcon(getIcon(iconfilename, ICONS, 22));
+		
+		setupMnemonics(m, key);
+
+		return m;
+	}
 
 	public static JMenuItem makeMenuItem(String key) {
 		JMenuItem m = new JMenuItem("");
