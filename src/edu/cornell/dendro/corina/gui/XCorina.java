@@ -38,6 +38,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -135,17 +136,13 @@ public class XCorina extends JFrame {
 		// boilerplate
 		setTitle("Corina - " + Build.VERSION + " " + Build.TIMESTAMP);
 
-		// set tree icon (also in XFrame).
-		// EEP!  i can't use builder.geticon() if it doesn't guarantee an imageicon, no?
-		ClassLoader cl = this.getClass().getClassLoader();
-		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/Tree.png");
-		if (url != null) {
-			ImageIcon treeIcon = new ImageIcon(url);
-			setIconImage(treeIcon.getImage());
-		}
-		
+		// set tree icon
+		setIconImage(((ImageIcon) Builder.getIcon("corina-application.png", 32)).getImage());
+
+		// set background...
+		ClassLoader cl = this.getClass().getClassLoader();		
 		BufferedImage img = null;
-		url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background3.png");
+		URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background3.png");
 		if (url != null) {
 			try {
 				img = ImageIO.read(url);
