@@ -14,10 +14,6 @@
 	<classpathentry kind="lib" path="Libraries/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="Libraries/jna.jar"/>
 	<classpathentry kind="lib" path="Libraries/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/mozdom4java.jar"/>
-	<classpathentry kind="lib" path="Libraries/MozillaInterfaces-1.9.jar"/>
-	<classpathentry kind="lib" path="Libraries/mozswing.jar"/>
-	<classpathentry kind="lib" path="Libraries/MozillaGlue-1.9.jar"/>
 	<classpathentry kind="lib" path="Libraries/jfontchooser-1.0.5.jar"/>
 	<classpathentry kind="lib" path="Libraries/JFontChooser.jar"/>
 	<classpathentry kind="lib" path="Libraries/apache-mime4j-0.5.jar"/>
@@ -40,5 +36,6 @@
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/coll-prop.0.1-1.5.jar"/>
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/jaxb2-basics-runtime-0.5.1.jar"/>
 	<classpathentry kind="lib" path="Libraries/PDFRenderer.jar"/>
+	<classpathentry kind="lib" path="Libraries/mozswing-complete.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

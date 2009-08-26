@@ -7,7 +7,6 @@
 package edu.cornell.dendro.corina.gui;
 
 import org.mozilla.browser.MozillaPanel;
-import org.mozilla.browser.IMozillaWindow.VisibilityMode;
 
 /**
  *

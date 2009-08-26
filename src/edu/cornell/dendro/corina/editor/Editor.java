@@ -88,6 +88,7 @@ import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.tridasv2.MapLink;
 import edu.cornell.dendro.corina.tridasv2.ui.ComponentViewer;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -440,10 +441,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 		
 	private void initMozillaMapPanel() {
-		// TODO: FIXME
-		//MapLink link = (MapLink) sample.getMeta("::maplink");
-		Object link = null;
-		
+		MapLink link = new MapLink(sample.getSeries());
+	
 		// no link? no panel!
 		if(link == null)
 			return;

@@ -1,60 +1,87 @@
 package edu.cornell.dendro.corina.editor;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.mozilla.browser.MozillaPanel;
-import org.mozilla.browser.IMozillaWindow.VisibilityMode;
-import org.mozilla.interfaces.nsIIOService;
-
-import edu.cornell.dendro.corina.core.App;
-
 import static org.mozilla.browser.XPCOMUtils.getService;
 
-import org.mozilla.interfaces.nsIIOService;
+import java.util.List;
+
+import org.apache.http.client.CookieStore;
+import org.apache.http.cookie.Cookie;
+import org.mozilla.browser.MozillaPanel;
 import org.mozilla.interfaces.nsICookieService;
+import org.mozilla.interfaces.nsIIOService;
 import org.mozilla.interfaces.nsIURI;
 
+import edu.cornell.dendro.corina.tridasv2.MapLink;
+import edu.cornell.dendro.corina.wsi.util.WSCookieStoreHandler;
+
 public class EditorMozillaMapPanel extends MozillaPanel {
-	public EditorMozillaMapPanel(Object link) {
+	private static final long serialVersionUID = 1L;
+
+	public EditorMozillaMapPanel(MapLink link) {
 		// hide our toolbar
-		super(true, VisibilityMode.FORCED_HIDDEN, VisibilityMode.DEFAULT);
+		super(VisibilityMode.FORCED_HIDDEN, VisibilityMode.DEFAULT);
 
 		// set our PHPSESSID cookie
-		//setCookie(link);
+		setCookies();
 		
 		// don't change our title!
 		setUpdateTitle(false);
 
-		//load(link.getMapLinkURL());
+		// load the link
+		load(link.getURI().toString());
 	}
 	
-	/*
-	public void setCookie(MapLink link) {
-		String cookie = App.prefs.getPref("corina.webservice.cookie");
+	/**
+	 * Populate the mozilla browser with cookies from our webservice interface
+	 */
+	private void setCookies() {
+		CookieStore cookieStore = WSCookieStoreHandler.getCookieStore().toCookieStore();
+		List<Cookie> cookies = cookieStore.getCookies();
+					
+		// cookie service used for adding cookies (backdoor interface)
+		nsICookieService cookieService;
+		nsIIOService ioService;
 		
-		// no cookie? bail :)
-		if(cookie == null)
-			return;
-		
-		URI uri;
 		try {
-			uri = new URI(link.getMapLinkURL());
-		} catch (URISyntaxException use) {
-			System.out.println("Error setting cookie! " + use);
+			cookieService = getService("@mozilla.org/cookieService;1", nsICookieService.class);
+			ioService = getService("@mozilla.org/network/io-service;1", nsIIOService.class);
+		} 
+		catch (Exception e) {
+			System.err.println("Couldn't create mozilla object: " + e.getLocalizedMessage());
+			e.printStackTrace();
 			return;
 		}
 
-		// https://xxxx.com/blah/something.php -> https://xxxx.com/
-		String cookiebase = uri.getScheme() + "://" + uri.getAuthority() + "/";
+		// it's null??
+		if(cookieService == null || ioService == null) {
+			System.err.println("Couldn't create cookie manager/io service (it's just null...)");
+			return;
+		}
 		
-		// call the weird internal mozilla services to set our cookie...
-		nsIIOService iosvc = getService("@mozilla.org/network/io-service;1", nsIIOService.class);
-		nsIURI nsuri = iosvc.newURI(cookiebase, null, null);
-		nsICookieService cookieserv = getService("@mozilla.org/cookieService;1", nsICookieService.class);
-		
-		// woot!
-		cookieserv.setCookieString(nsuri, null, cookie, null);
+		for(Cookie cookie : cookies) {
+			StringBuffer path = new StringBuffer();
+			StringBuffer value = new StringBuffer();
+			
+			// end up with http[s]://domain/path
+			path.append(cookie.isSecure() ? "https" : "http");
+			path.append("://");
+			path.append(cookie.getDomain());
+			path.append(cookie.getPath());
+			
+			// end up with NAME=VALUE
+			value.append(cookie.getName());
+			value.append('=');
+			value.append(cookie.getValue());
+			
+			// create an URI based on the given information
+			// then, set a cookie...
+			try {
+				nsIURI uri = ioService.newURI(path.toString(), null, null);
+				cookieService.setCookieString(uri, null, value.toString(), null);
+			} catch (Exception e) {
+				System.err.println("Couldn't create cookie: " + e.getLocalizedMessage());
+				e.printStackTrace();
+			}
+		}
 	}
-	*/
 }
