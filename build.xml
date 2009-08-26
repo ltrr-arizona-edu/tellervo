@@ -150,10 +150,7 @@
     <property name="log4j.jar" value="(set this in build.properties!)"/>
     <property name="jna.jar" value="(set this in build.properties!)"/>
     <property name="commons-logging.jar" value="(set this in build.properties!)"/>
-    <property name="mozdom4java.jar" value="(set this in build.properties!)"/>
-    <property name="MozillaInterfaces.jar" value="(set this in build.properties!)"/>
     <property name="mozswing.jar" value="(set this in build.properties!)"/>
-    <property name="MozillaGlue.jar" value="(set this in build.properties!)"/>
     <property name="jfontchooser.jar" value="(set this in build.properties!)"/>
     <property name="JFontChooser.jar" value="(set this in build.properties!)"/>
     <property name="apache-mime4j.jar" value="(set this in build.properties!)"/>
@@ -390,6 +387,7 @@
 		<include name="edu/cornell/dendro/corina_resources/**/*.jpg"/>
 		<include name="edu/cornell/dendro/corina_resources/**/*.png"/>
 		<include name="edu/cornell/dendro/corina_resources/**/*.wav"/>
+		<include name="edu/cornell/dendro/webservice/schemas/*.xsd"/>
         </fileset>
 
     </jar>
