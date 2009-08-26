@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "recentDocuments")
 public class RecentlyOpenedDocuments {
 	@XmlElements({
-		@XmlElement(name = "seriesDescriptor", type = SeriesDescriptor.class),
+		@XmlElement(name = "seriesDescriptor", type = SeriesDescriptor.class)
 		// add more types in here...!
 	})
 	protected List<OpenableDocumentDescriptor> openables;
