@@ -24,6 +24,8 @@ import edu.cornell.dendro.corina.ui.Builder;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
@@ -56,7 +58,9 @@ public abstract class XFrame extends JFrame {
       all of them to take or leave.
     */
 
-    //
+	private static final long serialVersionUID = 1L;
+
+	//
     // constructor
     //
 	public XFrame() {
@@ -81,7 +85,7 @@ public abstract class XFrame extends JFrame {
 	// icon
 	//
 	private void setTreeIcon() {
-		setIconImage(Builder.getImage("Tree.png"));
+		setIconImage(((ImageIcon) Builder.getIcon("corina-application.png", 32)).getImage());
 	}
 
 	// call me to close an XFrame. confirms close with user, if
