@@ -6,6 +6,16 @@
 
 package edu.cornell.dendro.corina.util.labels.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.ListSelectionModel;
+
+import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
+
+import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
+import edu.cornell.dendro.corina.util.ArrayListModel;
+
 /**
  *
  * @author  peterbrewer
@@ -33,7 +43,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         lstSelected = new javax.swing.JList();
-        jComboBox1 = new javax.swing.JComboBox();
+        cboObjects = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
 
         jScrollPane1.setViewportView(lstAvailable);
@@ -48,7 +58,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
 
         jScrollPane2.setViewportView(lstSelected);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cboObjects.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel3.setText("Samples from object:");
 
@@ -62,7 +72,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
                     .add(layout.createSequentialGroup()
                         .add(jLabel3)
                         .add(18, 18, 18)
-                        .add(jComboBox1, 0, 277, Short.MAX_VALUE))
+                        .add(cboObjects, 0, 277, Short.MAX_VALUE))
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
@@ -86,7 +96,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel3)
-                    .add(jComboBox1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(cboObjects, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(18, 18, 18)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel1)
@@ -104,10 +114,16 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
     
     
+    private void populateObjectList()
+    {
+
+    
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JButton btnAdd;
     protected javax.swing.JButton btnRemove;
-    protected javax.swing.JComboBox jComboBox1;
+    protected javax.swing.JComboBox cboObjects;
     protected javax.swing.JLabel jLabel1;
     protected javax.swing.JLabel jLabel2;
     protected javax.swing.JLabel jLabel3;

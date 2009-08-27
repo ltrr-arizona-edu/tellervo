@@ -7,16 +7,22 @@
 
 package edu.cornell.dendro.corina.util.labels.ui;
 
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import edu.cornell.dendro.corina.print.BoxLabel;
+import edu.cornell.dendro.corina.schema.WSIBox;
 
 /**
  *
  * @author  peterbrewer
  */
-public class LabelPrintingUI extends javax.swing.JPanel implements ActionListener {
-    
-    /** Creates new form LabelPrintingUI */
+public class LabelPrintingUI extends javax.swing.JPanel {
+
+	private static final long serialVersionUID = 3484086245445229624L;
+
+	/** Creates new form LabelPrintingUI */
     public LabelPrintingUI() {
         initComponents();
     }
@@ -95,24 +101,7 @@ public class LabelPrintingUI extends javax.swing.JPanel implements ActionListene
         );
     }// </editor-fold>//GEN-END:initComponents
     
-	public void actionPerformed(ActionEvent evt) {
-		// TODO Auto-generated method stub
-		
-		if (evt.getSource() == btnCancel){
-		
-			
-		}
-		
-		
-		if (evt.getSource() == btnPrint){
-			
-		}
-		
-		
-		if (evt.getSource() == btnPreview){
 
-		}
-	}
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

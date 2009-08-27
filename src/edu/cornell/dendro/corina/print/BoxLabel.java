@@ -60,7 +60,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
  */
 public class BoxLabel extends ReportBase{
 	
-	private WSIBox b = new WSIBox();
+	private ArrayList<WSIBox> boxlist = new ArrayList<WSIBox>();
 	
 	public BoxLabel(Sample s){
 		
@@ -75,7 +75,7 @@ public class BoxLabel extends ReportBase{
 			System.out.println("Error - no box associated with this series");
 			return;
 		}
-		this.b = s.getMeta(Metadata.BOX, WSIBox.class);
+		boxlist.add(s.getMeta(Metadata.BOX, WSIBox.class));
 	}
 	
 	public BoxLabel(WSIBox b){
@@ -84,12 +84,16 @@ public class BoxLabel extends ReportBase{
 			System.out.println("Error - box is null");
 			return;
 		}
-		this.b = b;
+		boxlist.add(b);
 	}
 		
+	public BoxLabel(ArrayList<WSIBox> bl)
+	{
+		boxlist = bl;
+	}
+	
 	public void generateBoxLabel(OutputStream output) {
 	
-		
 		try {
 		
 			PdfWriter writer = PdfWriter.getInstance(document, output);
@@ -102,40 +106,46 @@ public class BoxLabel extends ReportBase{
 			// Set basic metadata
 		    document.addAuthor("Peter Brewer"); 
 		    document.addSubject("Box Label"); 
-				   
-			// Title Left		
-			ColumnText ct = new ColumnText(cb);
-			ct.setSimpleColumn(document.left(), document.top(15)-163, 283, document.top(15), 20, Element.ALIGN_LEFT);
-			ct.addText(getTitlePDF());
-			ct.go();
-			
-			// Barcode
-			ColumnText ct2 = new ColumnText(cb);
-			ct2.setSimpleColumn(284, document.top(15)-100, document.right(15), document.top(15), 20, Element.ALIGN_RIGHT);
-			ct2.addElement(getBarCode());
-			ct2.go();			
 				
-			// Timestamp
-			ColumnText ct3 = new ColumnText(cb);
-			ct3.setSimpleColumn(document.left(), document.top(15)-223, 283, document.top(15)-60, 20, Element.ALIGN_LEFT);
-			ct3.setLeading(0, 1.2f);
-			ct3.addText(getTimestampPDF());
-			ct3.go();		
-			
-			// Pad text
-	        document.add(new Paragraph(" "));      
-	        Paragraph p2 = new Paragraph();
-	        p2.setSpacingBefore(70);
-		    p2.setSpacingAfter(10);
-		    p2.add(new Chunk(" ", bodyFont));  
-	        document.add(new Paragraph(p2));
-	        
-	        // Ring samples table
-	        getTable();
-	        document.add(getParagraphSpace());	
-		    
-	        getComments();	       		       
+		    for(WSIBox b : this.boxlist)
+		    {
+			    
+				// Title Left		
+				ColumnText ct = new ColumnText(cb);
+				ct.setSimpleColumn(document.left(), document.top(15)-163, 283, document.top(15), 20, Element.ALIGN_LEFT);
+				ct.addText(getTitlePDF(b));
+				ct.go();
 				
+				// Barcode
+				ColumnText ct2 = new ColumnText(cb);
+				ct2.setSimpleColumn(284, document.top(15)-100, document.right(15), document.top(15), 20, Element.ALIGN_RIGHT);
+				ct2.addElement(getBarCode(b));
+				ct2.go();			
+					
+				// Timestamp
+				ColumnText ct3 = new ColumnText(cb);
+				ct3.setSimpleColumn(document.left(), document.top(15)-223, 283, document.top(15)-60, 20, Element.ALIGN_LEFT);
+				ct3.setLeading(0, 1.2f);
+				ct3.addText(getTimestampPDF(b));
+				ct3.go();		
+				
+				// Pad text
+		        document.add(new Paragraph(" "));      
+		        Paragraph p2 = new Paragraph();
+		        p2.setSpacingBefore(70);
+			    p2.setSpacingAfter(10);
+			    p2.add(new Chunk(" ", bodyFont));  
+		        document.add(new Paragraph(p2));
+		        
+		        // Ring samples table
+		        getTable(b);
+		        document.add(getParagraphSpace());	
+			    
+		        getComments(b);
+		        
+		        document.newPage();
+
+		    }
 		    
 			
 		} catch (DocumentException de) {
@@ -152,7 +162,7 @@ public class BoxLabel extends ReportBase{
 	 * 
 	 * @return Paragraph
 	 */
-	private Paragraph getTitlePDF()
+	private Paragraph getTitlePDF(WSIBox b)
 	{
 		Paragraph p = new Paragraph();
 		
@@ -169,7 +179,7 @@ public class BoxLabel extends ReportBase{
 	 * 
 	 * @return Image 
 	 */
-	private Image getBarCode()
+	private Image getBarCode(WSIBox b)
 	{
 		UUID uuid = UUID.fromString(b.getIdentifier().getValue());
 		LabBarcode barcode = new LabBarcode(LabBarcode.Type.BOX, uuid);
@@ -192,7 +202,7 @@ public class BoxLabel extends ReportBase{
 	 * @return PdfPTable
 	 * @throws DocumentException 
 	 */
-	private void getTable() throws DocumentException
+	private void getTable(WSIBox b) throws DocumentException
 	{
 		float[] widths = {0.1f, 0.75f, 0.1f};
 		PdfPTable tbl = new PdfPTable(widths);
@@ -269,7 +279,7 @@ public class BoxLabel extends ReportBase{
 				System.out.println("oopsey doopsey.  Error getting elements");
 				return;
 			}
-			XMLDebugView.showDialog();
+			//XMLDebugView.showDialog();
 			List<TridasElement> elements = resource.getAssociatedResult();
 			TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
 					TridasComparator.NullBehavior.NULLS_LAST, 
@@ -456,7 +466,7 @@ public class BoxLabel extends ReportBase{
 	 * 
 	 * @return Paragraph
 	 */
-	private Paragraph getTimestampPDF()
+	private Paragraph getTimestampPDF(WSIBox b)
 	{
 		// Set up calendar
 		Date createdTimestamp = b.getCreatedTimestamp().getValue()
@@ -502,7 +512,7 @@ public class BoxLabel extends ReportBase{
 				
 	}
 	
-	private void getComments() throws DocumentException
+	private void getComments(WSIBox b) throws DocumentException
 	{
 	
 		Paragraph p = new Paragraph();
@@ -518,7 +528,48 @@ public class BoxLabel extends ReportBase{
 		
 		document.add(p);
 	}
+
+	/**
+	 * Function for printing or viewing series report
+	 * @param printReport Boolean
+	 * @param vmid String
+	 */
+	public void getLabel(Boolean printReport)
+	{
+			
+		if(printReport) {
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			
+			this.generateBoxLabel(output);
+			
+			try {
+				PrintablePDF pdf = PrintablePDF.fromByteArray(output.toByteArray());
+
+				// true means show printer dialog, false means just print using the default printer
+				pdf.print(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Alert.error("Printing error", "An error occured during printing.\n  See error log for further details.");
+			}
+		}
+		else {
+			// probably better to use a chooser dialog here...
+			try {
+				File outputFile = File.createTempFile("boxlabel", ".pdf");
+				FileOutputStream output = new FileOutputStream(outputFile);
+				
+				this.generateBoxLabel(output);
+
+				App.platform.openFile(outputFile);
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+				Alert.error("Error", "An error occurred while generating the box label.\n  See error log for further details.");
+				return;
+			}
+		}
 		
+	}
+	
 	/**
 	 * Function for printing or viewing series report
 	 * @param printReport Boolean
@@ -574,25 +625,6 @@ public class BoxLabel extends ReportBase{
 	}
 	
 
-	/**
-	 * Wrapper function to print report
-	 *  
-	 * @param vmid
-	 */
-	public static void printLabel(String vmid)
-	{
-		getLabel(true, vmid);	
-	}
-	
-	/**
-	 * Wrapper function to view report
-	 * @param vmid
-	 */
-	public static void viewLabel(String vmid)
-	{
-		getLabel(false, vmid);
-	}
-	
 	
 	public static void main(String[] args) {
 		String domain = "dendro.cornell.edu/dev/";

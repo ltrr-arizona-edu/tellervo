@@ -19,41 +19,17 @@ import edu.cornell.dendro.corina.util.Center;
 
 public class LabelPrintingDialog extends JDialog{
 
+	private static final long serialVersionUID = 1428573868641877953L;
 	JFrame dialog;
-	LabelPrinting.LabelType labeltype;
-	
-	LabelPrintingUI mainPanel = new LabelPrintingUI();
-	LabelLayoutUI layoutPanel = new LabelLayoutUI();
-	JPanel labelpanel;
+	LabelPrinting lp;
 		
     public LabelPrintingDialog(java.awt.Frame parent, boolean modal, LabelPrinting.LabelType lt) {
         super(parent, modal);
-		labeltype = lt;	
-		this.setupDialog();
+        lp = new LabelPrinting(lt);
+		this.setContentPane(lp);
+		this.pack();
     }
 		
-	public void setupDialog(){
-				
-		// Add layout panel to tab
-		mainPanel.tabLayout.setLayout(new BorderLayout());
-		mainPanel.tabLayout.add(layoutPanel, BorderLayout.CENTER);
-		
-		// Add Label panel to tab
-		mainPanel.tabLabels.setLayout(new BorderLayout());
-		if(labeltype==LabelPrinting.LabelType.BOX)
-		{
-			labelpanel = new BoxLabelPrintingUI();
-		}
-		else if (labeltype==LabelPrinting.LabelType.SAMPLE)
-		{
-			labelpanel = new SampleLabelPrintingUI();
-		}
-		mainPanel.tabLabels.add(labelpanel, BorderLayout.CENTER);
-		this.setContentPane(mainPanel);
-		this.pack();
-		
-	}
-	
 	public static void boxLabelDialog()
 	{
 		LabelPrintingDialog.main(LabelPrinting.LabelType.BOX);
@@ -70,7 +46,7 @@ public class LabelPrintingDialog extends JDialog{
     public static void main(final LabelPrinting.LabelType lt) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-            	LabelPrintingDialog dialog = new LabelPrintingDialog(new javax.swing.JFrame(), true, lt);
+            	LabelPrintingDialog dialog = new LabelPrintingDialog(null, true, lt);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
 
@@ -82,6 +58,7 @@ public class LabelPrintingDialog extends JDialog{
             }
         });
     }
+
 
 
 

@@ -7,15 +7,45 @@
 
 package edu.cornell.dendro.corina.util.labels.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.gui.dbbrowse.ElementListTableSorter;
+import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
+import edu.cornell.dendro.corina.schema.WSIBox;
+import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
+import edu.cornell.dendro.corina.util.ArrayListModel;
+
 /**
  *
  * @author  peterbrewer
  */
-public class BoxLabelPrintingUI extends javax.swing.JPanel {
-    
+public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionListener{
+	
+	ArrayListModel<WSIBox> selModel = new ArrayListModel<WSIBox>();
+	ArrayListModel<WSIBox> availModel = new ArrayListModel<WSIBox>();
+	
+	
+	
     /** Creates new form BoxLabelPrintingUI */
     public BoxLabelPrintingUI() {
-        initComponents();
+    	initComponents();
+    	
+        btnAdd.addActionListener(this);
+        btnRemove.addActionListener(this);
+    	
+        populateBoxList();
+        
+
     }
     
     /** This method is called from within the constructor to
@@ -88,6 +118,55 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
     
+
+    private void populateBoxList(){
+	
+    // Grab box dictionary
+    List<WSIBox> boxlist = (List<WSIBox>) Dictionary.getDictionary("boxDictionary");
+	
+    // Set up available list
+	availModel.addAll(boxlist);
+	lstAvailable.setModel(availModel);
+	lstAvailable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	
+	// Set up selected list
+	lstSelected.setModel(selModel);
+    }
+	  
+    private void sortAvailableBoxList(){
+
+    	
+    }
+    
+	public void actionPerformed(ActionEvent evt) {
+		// TODO Auto-generated method stub
+	
+		if(evt.getSource() == btnAdd){
+
+			for (Object obj : lstAvailable.getSelectedValues())
+			{
+				WSIBox myobj = (WSIBox) obj;
+				selModel.add(myobj);
+				availModel.remove(myobj);	
+			}
+			
+			
+		}
+			
+		if(evt.getSource() == btnRemove)
+		{
+			for (Object obj : lstSelected.getSelectedValues())
+			{
+				WSIBox myobj = (WSIBox) obj;
+				availModel.add(myobj);
+				selModel.remove(myobj);
+
+			}
+		}
+		
+	}
+    
+    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JButton btnAdd;
@@ -99,5 +178,6 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel {
     protected javax.swing.JList lstAvailable;
     protected javax.swing.JList lstSelected;
     // End of variables declaration//GEN-END:variables
+
     
 }
