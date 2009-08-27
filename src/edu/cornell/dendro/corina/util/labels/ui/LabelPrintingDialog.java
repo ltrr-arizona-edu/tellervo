@@ -20,12 +20,14 @@ import edu.cornell.dendro.corina.util.Center;
 public class LabelPrintingDialog extends JDialog{
 
 	private static final long serialVersionUID = 1428573868641877953L;
-	JFrame dialog;
-	LabelPrinting lp;
+	private JFrame dialog;
+	private LabelPrinting lp;
 		
     public LabelPrintingDialog(java.awt.Frame parent, boolean modal, LabelPrinting.LabelType lt) {
         super(parent, modal);
         lp = new LabelPrinting(lt);
+        
+        this.setTitle("Print " + lt.toString().toLowerCase() + " labels" );
 		this.setContentPane(lp);
 		this.pack();
     }
@@ -40,9 +42,6 @@ public class LabelPrintingDialog extends JDialog{
 		LabelPrintingDialog.main(LabelPrinting.LabelType.SAMPLE);
 	}
 	
-	
-	
-	
     public static void main(final LabelPrinting.LabelType lt) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -52,14 +51,12 @@ public class LabelPrintingDialog extends JDialog{
 
                     }
                 });
-
+                
+                dialog.setLocationRelativeTo(null);
                 dialog.setVisible(true);
                
             }
         });
     }
-
-
-
 
 }

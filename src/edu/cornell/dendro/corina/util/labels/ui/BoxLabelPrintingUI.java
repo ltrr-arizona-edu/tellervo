@@ -22,6 +22,7 @@ import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gui.dbbrowse.ElementListTableSorter;
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 import edu.cornell.dendro.corina.schema.WSIBox;
+import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 
@@ -31,8 +32,8 @@ import edu.cornell.dendro.corina.util.ArrayListModel;
  */
 public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionListener{
 	
-	ArrayListModel<WSIBox> selModel = new ArrayListModel<WSIBox>();
-	ArrayListModel<WSIBox> availModel = new ArrayListModel<WSIBox>();
+	protected ArrayListModel<WSIBox> selModel = new ArrayListModel<WSIBox>();
+	protected ArrayListModel<WSIBox> availModel = new ArrayListModel<WSIBox>();
 	
 	
 	
@@ -135,7 +136,7 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionList
 	  
     private void sortAvailableBoxList(){
 
-    	
+
     }
     
 	public void actionPerformed(ActionEvent evt) {

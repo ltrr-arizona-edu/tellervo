@@ -15,7 +15,9 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 	LabelPrinting.LabelType labeltype;
 	
 	LabelLayoutUI layoutPanel = new LabelLayoutUI();
-	BoxLabelPrintingUI labelpanel = new BoxLabelPrintingUI();
+	BoxLabelPrintingUI boxlabelpanel = new BoxLabelPrintingUI();
+	SampleLabelPrintingUI samplelabelpanel = new SampleLabelPrintingUI();
+	
 	
 	public LabelPrinting(LabelPrinting.LabelType lt)
 	{
@@ -23,6 +25,7 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 		setupDialog();
 		btnPrint.addActionListener(this);
 		btnPreview.addActionListener(this);
+
 	}
 	
 	public void setupDialog(){
@@ -33,17 +36,17 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 		
 		// Add Label panel to tab
 		this.tabLabels.setLayout(new BorderLayout());
-		/*if(labeltype==LabelPrinting.LabelType.BOX)
+		if(labeltype==LabelPrinting.LabelType.BOX)
 		{
-			labelpanel = new BoxLabelPrintingUI();
+			boxlabelpanel = new BoxLabelPrintingUI();
+			this.tabLabels.add(boxlabelpanel, BorderLayout.CENTER);
 		}
 		else if (labeltype==LabelPrinting.LabelType.SAMPLE)
 		{
-			labelpanel = new SampleLabelPrintingUI();
-		}*/
-		this.tabLabels.add(labelpanel, BorderLayout.CENTER);
-		
-		
+			samplelabelpanel = new SampleLabelPrintingUI();
+			this.tabLabels.add(samplelabelpanel, BorderLayout.CENTER);
+		}
+
 	}
 	
 	
@@ -58,26 +61,41 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 		
 		if (evt.getSource() == btnPrint){
 			
-			if(labelpanel.selModel.getSize()>0)
+			if(labeltype == LabelType.BOX)
 			{
-				System.out.println("Print box label");
-				BoxLabel label = new BoxLabel(labelpanel.selModel);
-				
-				label.getLabel(true);
+				if(boxlabelpanel.selModel.getSize()>0)
+				{
+					System.out.println("Print box label");
+					BoxLabel label = new BoxLabel(boxlabelpanel.selModel);
+					
+					label.getLabel(true);
+				}
 			}
-	
+			else if(labeltype == LabelType.SAMPLE)
+			{
+
+			}
 		}
 		
 		
 		if (evt.getSource() == btnPreview){
 
-			if(labelpanel.selModel.getSize()>0)
+			if(labeltype == LabelType.BOX)
+			{			
+				if(boxlabelpanel.selModel.getSize()>0)
+				{
+					System.out.println("Preview box label");
+					BoxLabel label = new BoxLabel(boxlabelpanel.selModel);
+					
+					label.getLabel(false);
+				}	
+			}
+			else if(labeltype == LabelType.SAMPLE)
 			{
-				System.out.println("Preview box label");
-				BoxLabel label = new BoxLabel(labelpanel.selModel);
-				
-				label.getLabel(false);
+
 			}			
+
+			
 			
 		}
 	}	

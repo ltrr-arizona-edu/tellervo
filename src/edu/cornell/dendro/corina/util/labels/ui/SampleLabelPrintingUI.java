@@ -6,25 +6,50 @@
 
 package edu.cornell.dendro.corina.util.labels.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasSample;
+
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 
+import edu.cornell.dendro.corina.schema.SearchOperator;
+import edu.cornell.dendro.corina.schema.SearchParameterName;
+import edu.cornell.dendro.corina.schema.SearchReturnObject;
+import edu.cornell.dendro.corina.schema.WSIBox;
+import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
+import edu.cornell.dendro.corina.tridasv2.ui.EntityListComboBox;
 import edu.cornell.dendro.corina.util.ArrayListModel;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 
 /**
  *
  * @author  peterbrewer
  */
-public class SampleLabelPrintingUI extends javax.swing.JPanel {
+public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionListener{
     
+	private ArrayListModel<TridasSample> selModel = new ArrayListModel<TridasSample>();
+	private ArrayListModel<TridasSample> availModel = new ArrayListModel<TridasSample>();
+	private ArrayListModel<TridasObject> objModel = new ArrayListModel<TridasObject>();
+	
     /** Creates new form SampleLabelPrintingUI */
     public SampleLabelPrintingUI() {
         initComponents();
+        populateObjectList();
+        cboObjects.addActionListener(this);
+        btnSelectObject.addActionListener(this);
     }
     
     /** This method is called from within the constructor to
@@ -45,6 +70,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
         lstSelected = new javax.swing.JList();
         cboObjects = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
+        btnSelectObject = new javax.swing.JButton();
 
         jScrollPane1.setViewportView(lstAvailable);
 
@@ -58,9 +84,11 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
 
         jScrollPane2.setViewportView(lstSelected);
 
-        cboObjects.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cboObjects.setModel(objModel);
 
         jLabel3.setText("Samples from object:");
+
+        btnSelectObject.setText("Select");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -72,11 +100,13 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
                     .add(layout.createSequentialGroup()
                         .add(jLabel3)
                         .add(18, 18, 18)
-                        .add(cboObjects, 0, 277, Short.MAX_VALUE))
+                        .add(cboObjects, 0, 219, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(btnSelectObject))
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                                     .add(btnAdd)
@@ -87,7 +117,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
                                 .add(198, 198, 198)))
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(jLabel2)
-                            .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 169, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                            .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -96,6 +126,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel3)
+                    .add(btnSelectObject)
                     .add(cboObjects, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(18, 18, 18)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
@@ -103,11 +134,11 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
                     .add(jLabel2))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
+                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
                         .add(btnAdd)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 158, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 154, Short.MAX_VALUE)
                         .add(btnRemove)))
                 .addContainerGap())
         );
@@ -116,13 +147,84 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
     
     private void populateObjectList()
     {
+		// Find all objects 
+    	SearchParameters objparam = new SearchParameters(SearchReturnObject.OBJECT);
+		objparam.addSearchForAll();
+		EntitySearchResource<TridasObject> objresource = new EntitySearchResource<TridasObject>(objparam);
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(objresource);
+		objresource.query();	
+		dialog.setVisible(true);
+		if(!dialog.isSuccessful()) 
+		{ 
+			System.out.println("oopsey doopsey.  Error getting objects");
+			return;
+		}
+		List<TridasObject> objlist = objresource.getAssociatedResult();
 
-    
+		// Sort list intelligently
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.SITE_CODES_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		
+		Collections.sort(objlist, numSorter);
+		
+		objModel.addAll(objlist);
+		SiteRenderer siteRenderer = new SiteRenderer();
+		cboObjects.setRenderer(siteRenderer);	
+		
+		
+		lstAvailable.setModel(availModel);
     }
+    
+    private void populateAvailableSamples()
+    {
+    	lstAvailable.removeAll();
+    	
+    	TridasObject obj = (TridasObject) cboObjects.getSelectedItem();
+    	
+		// Find all samples for an object 
+    	SearchParameters sampparam = new SearchParameters(SearchReturnObject.SAMPLE);
+    	sampparam.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
+
+		EntitySearchResource<TridasSample> sampresource = new EntitySearchResource<TridasSample>(sampparam);
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(sampresource);
+		sampresource.query();	
+		dialog.setVisible(true);
+		if(!dialog.isSuccessful()) 
+		{ 
+			System.out.println("oopsey doopsey.  Error getting samples");
+			return;
+		}
+		List<TridasSample> samplist = sampresource.getAssociatedResult();
+		
+		availModel.addAll(samplist);
+		
+		
+    }
+    
+    
+	public void actionPerformed(ActionEvent evt) {
+		// TODO Auto-generated method stub
+		
+		
+		if (evt.getSource()==cboObjects)
+		{
+			
+		}
+		if (evt.getSource()==btnSelectObject)
+		{
+			populateAvailableSamples();
+			
+		}
+	}
+    
+    
+    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JButton btnAdd;
     protected javax.swing.JButton btnRemove;
+    protected javax.swing.JButton btnSelectObject;
     protected javax.swing.JComboBox cboObjects;
     protected javax.swing.JLabel jLabel1;
     protected javax.swing.JLabel jLabel2;
@@ -132,5 +234,9 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel {
     protected javax.swing.JList lstAvailable;
     protected javax.swing.JList lstSelected;
     // End of variables declaration//GEN-END:variables
+
+
+
+
     
 }

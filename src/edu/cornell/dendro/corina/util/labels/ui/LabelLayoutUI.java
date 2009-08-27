@@ -17,6 +17,9 @@ public class LabelLayoutUI extends javax.swing.JPanel {
     /** Creates new form LabelLayoutUI */
     public LabelLayoutUI() {
         initComponents();
+        jLabel1.setEnabled(false);
+        cboLabelName.setEnabled(false);
+        
     }
     
     /** This method is called from within the constructor to
