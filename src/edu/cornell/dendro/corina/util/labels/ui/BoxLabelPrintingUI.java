@@ -32,10 +32,10 @@ import edu.cornell.dendro.corina.util.ArrayListModel;
  */
 public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionListener{
 	
+	private static final long serialVersionUID = -7164959226567752919L;
 	protected ArrayListModel<WSIBox> selModel = new ArrayListModel<WSIBox>();
 	protected ArrayListModel<WSIBox> availModel = new ArrayListModel<WSIBox>();
-	
-	
+
 	
     /** Creates new form BoxLabelPrintingUI */
     public BoxLabelPrintingUI() {
@@ -129,9 +129,11 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionList
 	availModel.addAll(boxlist);
 	lstAvailable.setModel(availModel);
 	lstAvailable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	lstAvailable.setCellRenderer(new TridasListCellRenderer());
 	
 	// Set up selected list
 	lstSelected.setModel(selModel);
+	lstSelected.setCellRenderer(new TridasListCellRenderer());
     }
 	  
     private void sortAvailableBoxList(){
@@ -140,7 +142,7 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionList
     }
     
 	public void actionPerformed(ActionEvent evt) {
-		// TODO Auto-generated method stub
+
 	
 		if(evt.getSource() == btnAdd){
 

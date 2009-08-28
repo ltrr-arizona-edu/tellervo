@@ -8,12 +8,12 @@ public class CornellSampleLabelPage implements LabelPage {
 	private final static float mmpd = dpi / 25.4f;
 
 	public float getLabelHeight() {
-		//return 8 * mmpd;
-		return 20 * mmpd;
+		return 8 * mmpd;
+		//return 20 * mmpd;
 	}
 
 	public float getLabelHorizontalGap() {
-		return 10 * mmpd;
+		return 0 * mmpd;
 	}
 
 	public float getLabelVerticalGap() {
@@ -21,7 +21,7 @@ public class CornellSampleLabelPage implements LabelPage {
 	}
 
 	public float getLabelWidth() {
-		return 200 * mmpd;
+		return 100 * mmpd;
 	}
 
 	public float getPageBottomMargin() {

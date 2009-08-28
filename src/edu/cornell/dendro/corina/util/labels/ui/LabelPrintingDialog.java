@@ -25,7 +25,7 @@ public class LabelPrintingDialog extends JDialog{
 		
     public LabelPrintingDialog(java.awt.Frame parent, boolean modal, LabelPrinting.LabelType lt) {
         super(parent, modal);
-        lp = new LabelPrinting(lt);
+        lp = new LabelPrinting(lt, this);
         
         this.setTitle("Print " + lt.toString().toLowerCase() + " labels" );
 		this.setContentPane(lp);

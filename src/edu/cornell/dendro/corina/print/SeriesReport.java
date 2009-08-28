@@ -755,7 +755,7 @@ public class SeriesReport extends ReportBase {
 		Sample samp = null;
 		
 		try {
-			samp = PrintReportFramework.getSampleForID(domain, vmid);
+			samp = PrintReportFramework.getCorinaSampleFromVMID(domain, vmid);
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -793,8 +793,7 @@ public class SeriesReport extends ReportBase {
 				Alert.error("Error", "An error occurred while generating the series report.\n  See error log for further details.");
 				return;
 			}
-		}
-		
+		}	
 	}
 	
 

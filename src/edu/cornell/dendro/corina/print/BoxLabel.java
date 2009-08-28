@@ -582,7 +582,7 @@ public class BoxLabel extends ReportBase{
 		Sample samp = null;
 		
 		try {
-			samp = PrintReportFramework.getSampleForID(domain, vmid);
+			samp = PrintReportFramework.getCorinaSampleFromVMID(domain, vmid);
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();

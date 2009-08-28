@@ -5,14 +5,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.tridas.schema.TridasSample;
+
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
+import com.lowagie.text.Font;
 import com.lowagie.text.Image;
+import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.Barcode128;
 import com.lowagie.text.pdf.ColumnText;
@@ -24,6 +30,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.XMLDebugView;
 import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.print.ReportBase;
 import edu.cornell.dendro.corina.print.SeriesReport;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -49,7 +56,13 @@ public class PDFLabelMaker {
 	private int horizontalAlignment = Element.ALIGN_LEFT;
 	private int verticalAlignment = Element.ALIGN_MIDDLE;
 	
-	public PDFLabelMaker(LabelPage margins, File file) throws IOException, DocumentException {
+	private Font labelfont = new Font(Font.HELVETICA, 15f, Font.BOLD);
+	private Font uuidfont = new Font(Font.HELVETICA, 6f);
+	
+	private Integer borderwidth = 1;
+	
+	
+	public PDFLabelMaker(LabelPage margins, OutputStream output) throws IOException, DocumentException {
 		this.margins = margins;
 		
 		float sides, page, h, w, labelGap;
@@ -81,8 +94,7 @@ public class PDFLabelMaker {
 		System.out.println("LABELS: across: " + nAcross + ", down: " + nDown);
 		
 		document = new Document(margins.getPageSize());
-		writer = PdfWriter.getInstance(document, new FileOutputStream(file));
-
+		PdfWriter writer = PdfWriter.getInstance(document, output);
 		document.addAuthor("Corina Label Generator");
 		document.addCreationDate();
 		
@@ -127,13 +139,21 @@ public class PDFLabelMaker {
 	}
 	
 	public void addCell(PdfPCell cell) {
-		cell.setNoWrap(true);
+		
+		cell.setBorder(borderwidth);
+		
+		cell.setNoWrap(false);
 		cell.setFixedHeight(margins.getLabelHeight());
-		cell.setHorizontalAlignment(horizontalAlignment);
-		cell.setVerticalAlignment(verticalAlignment);
+			
+		//cell.setHorizontalAlignment(horizontalAlignment);
+		cell.setVerticalAlignment(Element.ALIGN_TOP);
 		
 		if(curX != 0)
-			table.addCell("");
+		{
+			PdfPCell gapcell = new PdfPCell();
+			gapcell.setBorder(borderwidth);
+			table.addCell(gapcell);
+		}
 
 		curX++;
 		table.addCell(cell);
@@ -142,7 +162,7 @@ public class PDFLabelMaker {
 			curX = 0;
 	}
 		
-	public void addUUIDBarcode(String name, LabBarcode.Type type, UUID uuid) {
+/*	public void addUUIDBarcode(String name, LabBarcode.Type type, UUID uuid) {
 		Barcode128 barcode = new LabBarcode(type, uuid);
 		
 		// if it's tiny, hide the label
@@ -156,43 +176,54 @@ public class PDFLabelMaker {
 		Image img = barcode.createImageWithBarcode(contentb, Color.black, Color.gray);
 		addCell(new PdfPCell(img));
 	}
-
-	public void addUUIDBarcode(ArrayList<Sample> samples) {
+*/
+	public void addLabelsForSamples(List<TridasSample> samples) {
 		
 		// Loop through samples in list
-		for(Sample s : samples)
+		for(TridasSample s : samples)
 		{		
 			Barcode128 barcode = new LabBarcode(LabBarcode.Type.SAMPLE, UUID.fromString(s.getIdentifier().getValue().toString()));
 			
 			// if it's tiny, hide the label
 			if(margins.getLabelHeight() * .80f < barcode.getBarHeight()) {
-				barcode.setBarHeight(margins.getLabelHeight() * .55f);
-				barcode.setX(0.5f);
-				//barcode.setSize(6.0f);
+				barcode.setBarHeight(margins.getLabelHeight() * .45f);
+				barcode.setX(0.46f);
+				barcode.setSize(4.0f);
+				barcode.setFont(null);
 			}
 			else
 			{
-				//barcode.setSize(6.0f);
+				barcode.setBarHeight(margins.getLabelHeight() * .45f);
+				barcode.setX(0.6f);
+				barcode.setSize(4.0f);
+
 			}
 			
-			barcode.setFont(null);
+			//barcode.setFont(null);
 			Image img = barcode.createImageWithBarcode(contentb, Color.black, Color.gray);
 						
 			PdfPCell bccell = new PdfPCell();
+			//bccell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			bccell.addElement(img);
-			bccell.setBackgroundColor(Color.GREEN);
 			addCell(bccell);
 			
 			PdfPCell lbcell = new PdfPCell();
-			lbcell.addElement(new Phrase("hello world"));
+			
+			lbcell.setVerticalAlignment(Element.ALIGN_TOP);
+			lbcell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			Paragraph p = new Paragraph();
+
+			p.add(new Chunk(s.getTitle().toString(), labelfont));
+			//p.add(new Chunk(s.getIdentifier().getValue().toString(), uuidfont));
+		
+			lbcell.addElement(p);
 			addCell(lbcell);
 			
-			PdfPTable tbl = new PdfPTable(2);
+		/**	PdfPTable tbl = new PdfPTable(2);
 			
 			tbl.addCell(bccell);
-			tbl.addCell(lbcell);
+			tbl.addCell(lbcell);*/
 	
-			addTable(tbl);
 		}
 		
 
@@ -218,39 +249,65 @@ public class PDFLabelMaker {
 		document.close();
 	}
 
-	//private static Font barcodeFont = FontFactory.getFont(FontFactory.COURIER);
-	//private static Font tinybarcodeFont = FontFactory.getFont(FontFactory.HELVETICA, 6.0f, Font.NORMAL);
-		
 	
-	public static void main(String args[]) throws DocumentException {
-	    App.platform = new Platform();
-	    App.platform.init();
-	    
-		App.init(null, null);
-		
-		XMLDebugView.showDialog();
-		String domain = "dendro.cornell.edu/dev/";
-		Sample samp = null;
-		String vmid = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
-
-		ArrayList<Sample> samples = new ArrayList<Sample>();
-		
-			
-		
-		try {
-			samp = PrintReportFramework.getSampleForID(domain, vmid);
-			samples.add(samp);	
-			samples.add(samp);	
-			
-			PDFLabelMaker m = new PDFLabelMaker(new CornellSampleLabelPage(), new File("output2.pdf"));		
-			
-			m.addUUIDBarcode(samples);
-
-			m.finish();
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
+	public static void print(List<TridasSample> samples) throws DocumentException, IOException
+	{
 	
+		PDFLabelMaker lm = new PDFLabelMaker(new CornellSampleLabelPage(), new ByteArrayOutputStream());
+		lm.getLabels(true, samples);
+		
 	}
+	
+	public static void preview(List<TridasSample> samples) throws DocumentException, IOException
+	{
+		PDFLabelMaker lm = new PDFLabelMaker(new CornellSampleLabelPage(), new ByteArrayOutputStream());
+		lm.getLabels(false, samples);		
+	}
+	
+	/**
+	 * Function for printing or viewing labels 
+	 * @param doPrint Boolean
+	 * @param samples List<TridasSample>
+	 * @throws DocumentException 
+	 * @throws IOException 
+	 */
+	private void getLabels(Boolean doPrint, List<TridasSample> samples) throws DocumentException, IOException
+	{
+		if(doPrint) {
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			PDFLabelMaker labelpage = new PDFLabelMaker(new CornellSampleLabelPage(), output);	
+			
+			labelpage.addLabelsForSamples(samples);
+			labelpage.finish();
+
+			try {
+				PrintablePDF pdf = PrintablePDF.fromByteArray(output.toByteArray());
+
+				// true means show printer dialog, false means just print using the default printer
+				pdf.print(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Alert.error("Printing error", "An error occured during printing.\n  See error log for further details.");
+			}
+		}
+		else {
+			// probably better to use a chooser dialog here...
+			try {
+				File outputFile = File.createTempFile("seriesreport", ".pdf");
+				FileOutputStream output = new FileOutputStream(outputFile);
+				PDFLabelMaker labelpage = new PDFLabelMaker(new CornellSampleLabelPage(), output);	
+				
+				labelpage.addLabelsForSamples(samples);
+				labelpage.finish();
+
+				App.platform.openFile(outputFile);
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+				Alert.error("Error", "An error occurred while generating the labels.\n  See error log for further details.");
+				return;
+			}
+		}	
+	}
+	
+
 }

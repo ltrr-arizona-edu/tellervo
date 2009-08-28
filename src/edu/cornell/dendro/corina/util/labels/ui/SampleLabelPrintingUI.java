@@ -22,6 +22,7 @@ import org.tridas.schema.TridasSample;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 
+import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
@@ -31,6 +32,7 @@ import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.ui.EntityListComboBox;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 
@@ -40,16 +42,19 @@ import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
  */
 public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionListener{
     
-	private ArrayListModel<TridasSample> selModel = new ArrayListModel<TridasSample>();
-	private ArrayListModel<TridasSample> availModel = new ArrayListModel<TridasSample>();
-	private ArrayListModel<TridasObject> objModel = new ArrayListModel<TridasObject>();
+	protected ArrayListModel<TridasSample> selModel = new ArrayListModel<TridasSample>();
+	protected ArrayListModel<TridasSample> availModel = new ArrayListModel<TridasSample>();
+	protected ArrayListModel<TridasObject> objModel = new ArrayListModel<TridasObject>();
 	
     /** Creates new form SampleLabelPrintingUI */
     public SampleLabelPrintingUI() {
         initComponents();
+        setupDialog();
         populateObjectList();
         cboObjects.addActionListener(this);
         btnSelectObject.addActionListener(this);
+        btnAdd.addActionListener(this);
+        btnRemove.addActionListener(this);
     }
     
     /** This method is called from within the constructor to
@@ -145,6 +150,17 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
     }// </editor-fold>//GEN-END:initComponents
     
     
+    private void setupDialog()
+    {
+		lstAvailable.setModel(availModel);
+		lstAvailable.setCellRenderer(new TridasListCellRenderer());
+		
+		lstSelected.setModel(selModel);
+		lstSelected.setCellRenderer(new TridasListCellRenderer());
+		
+		cboObjects.setRenderer(new SiteRenderer());	
+    }
+    
     private void populateObjectList()
     {
 		// Find all objects 
@@ -169,11 +185,6 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 		Collections.sort(objlist, numSorter);
 		
 		objModel.addAll(objlist);
-		SiteRenderer siteRenderer = new SiteRenderer();
-		cboObjects.setRenderer(siteRenderer);	
-		
-		
-		lstAvailable.setModel(availModel);
     }
     
     private void populateAvailableSamples()
@@ -187,6 +198,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
     	sampparam.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
 
 		EntitySearchResource<TridasSample> sampresource = new EntitySearchResource<TridasSample>(sampparam);
+		sampresource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
 		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(sampresource);
 		sampresource.query();	
 		dialog.setVisible(true);
@@ -216,6 +228,32 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 			populateAvailableSamples();
 			
 		}
+		
+		
+		if(evt.getSource() == btnAdd){
+
+			for (Object obj : lstAvailable.getSelectedValues())
+			{
+				TridasSample myobj = (TridasSample) obj;
+				selModel.add(myobj);
+				availModel.remove(myobj);	
+			}
+			
+			
+		}
+			
+		if(evt.getSource() == btnRemove)
+		{
+			for (Object obj : lstSelected.getSelectedValues())
+			{
+				TridasSample myobj = (TridasSample) obj;
+				availModel.add(myobj);
+				selModel.remove(myobj);
+
+			}
+		}
+		
+		
 	}
     
     
