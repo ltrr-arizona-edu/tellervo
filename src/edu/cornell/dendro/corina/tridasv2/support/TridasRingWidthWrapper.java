@@ -1,241 +1,244 @@
 package edu.cornell.dendro.corina.tridasv2.support;
 
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
 
-public class TridasRingWidthWrapper implements NumericArrayListHook {
-	private List<TridasValue> values;
-		
-	private HookableNumericArrayList<Number> data;
-	private HookableCountArrayList count;
+/**
+ * A "better" way of handling the data/count lists: 
+ * Wrap completely around the TridasValue list!
+ * 
+ * Count handling is a little sketchy in places where we can add/remove data, 
+ * but this should never be an issue as there's no reason people should
+ * be able to modify series with non-trivial counts.
+ * 
+ * @author Lucas Madar
+ */
 
+public final class TridasRingWidthWrapper {
+	private List<TridasValue> values;
+	private DataWrapper data;
+	private CountWrapper count;
+
+	private final class CountWrapper extends AbstractList<Integer> {
+		/** The index that we've "added" up to */
+		private int countIndex;
+		
+		/** Are all the counts 1? Safety check, not 100% accurate */
+		private boolean countsAreAllOne;
+
+		public CountWrapper() {
+			// start out with a 'clean slate'
+			clear();
+		}
+				
+		// we should never change a count in place, should we?
+		// this is why I don't override set
+
+		@Override
+		public void add(int index, Integer element) {
+			if(index < 0 || index > countIndex) 
+				throw new IndexOutOfBoundsException("Index " + index + 
+						" not in count list (max " + countIndex + ")");
+
+			// this might rely on our values list being in a proper state
+			// which is dangerous. Oh well.
+			TridasValue tridasValue = values.get(index);
+			tridasValue.setCount(element);
+			
+			// not null or one? we have a real count
+			if(element != null && element != 1)
+				countsAreAllOne = false;
+		}
+
+		@Override
+		public void clear() {
+			// don't really do anything, just ensure our 'add' starts back at zero
+			countIndex = 0;
+			// mark all our counts as 'one' by default
+			countsAreAllOne = true;
+		}
+
+		@Override
+		public Integer get(int index) {
+			TridasValue tridasValue = values.get(index);
+		
+			// if no count is present, count = 1
+			return tridasValue.isSetCount() ? tridasValue.getCount() : 1;
+		}
+
+		@Override
+		public Integer remove(int index) {
+			// we must 'remove' a value that doesn't exist...
+			if(index < 0 || index >= countIndex) 
+				throw new IndexOutOfBoundsException("Index " + index + 
+						" not in count list (max " + countIndex + ")");
+			
+			// basic sanity check, but not safe though!
+			if(!countsAreAllOne)
+				throw new IllegalStateException("Removing a value from a non-trivial count list");
+			
+			// this is totally unsafe, but should probably never be used
+			countIndex--;
+			
+			return 1;
+		}
+		
+		@Override
+		public int size() {
+			return countIndex;
+		}	
+	}
+	
+	/**
+	 * Class that emulates a data value list around TridasValue
+	 * Implemented for legacy reasons - in the future, please
+	 * get rid of this gross, nasty kludge
+	 */
+	private final class DataWrapper extends AbstractList<Number> {
+		// get the indexes to where we want them
+		public DataWrapper() {
+			reindex();
+		}
+		
+		/**
+		 * Get the 'Number' represented by a tridasValue
+		 * @param tridasValue
+		 * @return a Number
+		 * @throws NumberFormatException if the value is not valid
+		 */
+		private final Number tridasValueAsNumber(TridasValue tridasValue) {
+			String value = tridasValue.getValue();
+			
+			// lack of a number is invalid!
+			if(value == null)
+				throw new NumberFormatException();
+		
+			// decimal = Double, otherwise Integer
+			if(value.indexOf('.') < 0)
+				return Integer.valueOf(value);
+			else
+				return Double.valueOf(value);
+		}
+		
+		/**
+		 * Re-index the tridas values list
+		 * we have to do this if we insert a value in the middle
+		 */
+		public final void reindex() {
+			int idx = 0;
+			
+			for(TridasValue value : values) {
+				value.setIndex("i" + idx);
+				idx++;
+			}
+		}
+		
+		@Override
+		public Number get(int index) {
+			TridasValue tridasValue = values.get(index);
+			
+			return tridasValueAsNumber(tridasValue);
+		}
+		
+		@Override
+		public void clear() {
+			// clearing the data is the same as clearing the values list...
+			values.clear();			
+		}
+		
+		@Override
+		public void add(int index, Number element) {
+			TridasValue newValue = new TridasValue();
+			newValue.setValue(element.toString());
+			newValue.setIndex("i" + index);
+			
+			// are we inserting somewhere other than at the end of the list?
+			if(index != size()) {
+				// well, now we have to reindex!
+				reindex();
+			}
+			
+			values.add(index, newValue);
+		}
+
+		@Override
+		public Number remove(int index) {
+			return tridasValueAsNumber(values.remove(index));
+		}
+
+		@Override
+		public Number set(int index, Number element) {
+			TridasValue tridasValue = values.get(index);
+			Number ret = tridasValueAsNumber(tridasValue);
+			
+			tridasValue.setValue(element.toString());
+			
+			return ret;
+		}
+
+		@Override
+		public int size() {
+			return values.size();
+		}
+	}
+	
 	/**
 	 * Create a new ring width wrapper around these values
 	 * 
 	 * @param tridasValues
 	 * @param usesCounts
 	 */
-	public TridasRingWidthWrapper(TridasValues tridasValues, boolean usesCounts) {
+	public TridasRingWidthWrapper(TridasValues tridasValues) {
 		// sanity check
 		if(!tridasValues.getVariable().isSetNormalTridas() ||
 				tridasValues.getVariable().getNormalTridas() != NormalTridasVariable.RING_WIDTH) 
 			throw new IllegalArgumentException("RingWidthWrapper only works on Tridas Ring Widths");
 		
 		this.values = tridasValues.getValues();
-		this.usesCounts = usesCounts;
-	
-		/**
-		 * Translate from string 'value' to Integer or Double
-		 */
-		ValueTranslator<TridasValue, Number> dataTranslator = new ValueTranslator<TridasValue, Number>() {
-			public final Number translate(TridasValue o) {
-				String strValue = o.getValue();
-
-				// no value = bad number!
-				if(strValue == null)
-					throw new NumberFormatException();
-				
-				if(strValue.indexOf('.') < 0)
-					return Integer.parseInt(strValue);
-				else
-					return Double.parseDouble(strValue);
-			}
-		};
-				
-		data = new HookableNumericArrayList<Number>(this, values, dataTranslator);
 		
-		if(usesCounts) {
-			/**
-			 * Translate from BigInteger count to count
-			 * Note that a null (nonexistent) count means 1
-			 */
-			ValueTranslator<TridasValue, Integer> countTranslator = new ValueTranslator<TridasValue, Integer>() {
-				public final Integer translate(TridasValue o) {
-					Integer count = o.getCount();
-					
-					return (count != null) ? count.intValue() : 1;
-				}
-			};
-
-			count = new HookableCountArrayList(this, values, countTranslator, data);
-			countsValid = true;
-		}
-		else {
-			count = null;
-			countsValid = false;
-			clearCounts(); // just to be safe?
-		}
-		
+		data = new DataWrapper();
+		count = new CountWrapper();
 	}
 	
-	private final void checkCountsValid() {
-		countsValid = (count.actualSize() == data.size() || count.actualIsEmpty()); 
-	}
-	
-	/**
-	 * Resets the internal values list
-	 * @param in
-	 */
 	public void setData(List<Number> in) {
-		data = (in != null) ? new HookableNumericArrayList<Number>(this, in)
-				: new HookableNumericArrayList<Number>(this);
-		values.clear();
+		data.clear();
 
-		for (int i = 0, len = values.size(); i < len; i++) {
-			TridasValue value = new TridasValue();
-
-			value.setValue(data.get(i).toString());
-			value.setIndex(Integer.toString(i));
-
-			values.add(value);
-		}
-
-		if (usesCounts) {
-			count.setMasterList(data);
-			checkCountsValid();
-
-			if (countsValid)
-				copyOverCounts();
-		}
-	}
-	
-	/**
-	 * Resets the internal count list
-	 * @param in
-	 */
-	public void setCount(List<Integer> in) {
-		if(!usesCounts) {
-			if(in == null || in.isEmpty())
-				return;
-			
-			for(int i = 0, len = in.size(); i < len; i++) {
-				Integer v = in.get(i);
-				
-				if(v != null && v != 1) 
-					throw new IllegalArgumentException("Counts contains a non-trival count");
-			}
-			
+		// clearing the data? just bail out now...
+		if(in == null)
 			return;
-		}
 		
-		count = (in != null) ? new HookableCountArrayList(this, in, data)
-				: new HookableCountArrayList(this, data);
-		checkCountsValid();
+		for(Number n : in)
+			data.add(n);
 		
-		if(countsValid)
-			copyOverCounts();
-		else
-			clearCounts();
+		// get the indexes into our format
+		data.reindex();
 	}
 	
-	public boolean hasCount() {
-		return usesCounts && !count.actualIsEmpty();		
-	}
-	
-	public List<Integer> getCount() {
-		return count;
-	}
-
-	public List<Number> getData() {
+	public final List<Number> getData() {
 		return data;
 	}
 	
-	/**
-	 * Go through TridasValues and set indexes to be sequential
-	 */
-	private void reindex() {
-		for(int i = 0, len = values.size(); i < len; i++) {
-			values.get(i).setIndex(Integer.toString(i));
-		}
-	}
+	public void setCount(List<Integer> in) {
+		count.clear();
 
-	private final void copyOverCounts() {
-		for(int i = 0, len = values.size(); i < len; i++)
-			values.get(i).setCount(count.get(i));
+		// clearing the data? just bail out now...
+		if(in == null)
+			return;
+		
+		for(Integer n : in)
+			count.add(n);
 	}
 	
-	private final void clearCounts() {	
-		for(int i = 0, len = values.size(); i < len; i++)
-			values.get(i).setCount(1);
-	}
-
-	private boolean usesCounts;
-	private boolean countsValid;
-	
-	public final void addedElement(List<? extends Number> list, int index, Number e) {
-		if(list == data) {
-			boolean shouldReindex = (index < values.size());
-			boolean countsWereValid = countsValid;
-			
-			if(shouldReindex && usesCounts && !count.actualIsEmpty()) 
-				throw new IllegalStateException("Adding element to middle of data list with counts present is not supported");
-			
-			// create a new tridas value!
-			TridasValue tv = new TridasValue();
-			
-			tv.setIndex(Integer.toString(index));
-			tv.setValue(e.toString());
-			tv.setCount(1);
-			
-			values.add(tv);
-						
-			// reindex if data was inserted out-of-order
-			if(shouldReindex)
-				reindex();
-
-			if(usesCounts) {
-				checkCountsValid();
-				
-				if (!countsWereValid && countsValid)
-					copyOverCounts();
-				else if (countsWereValid && !countsValid)
-					clearCounts();
-			}
-		}
-		else if(list == count) {
-			if(usesCounts) {
-				boolean countsWereValid = countsValid;
-				checkCountsValid();
-				
-				if(!countsWereValid && countsValid)
-					copyOverCounts();
-				else if(countsWereValid && !countsValid)
-					clearCounts();
-			}
-		}
-	}
-
-	public void changedElement(List<? extends Number> list, int index, Number e) {
-		if(list == data) {
-			values.get(index).setValue(e.toString());
-		}
-		else if(list == count) {
-			values.get(index).setCount(e.intValue());
-		}
-	}
-
-	public void cleared(List<? extends Number> list) {
-		if(list == data) {
-			values.clear();
-			if(usesCounts)
-				checkCountsValid();
-		}
-		else if(list == count) {
-			clearCounts();
-			checkCountsValid();
-		}
+	public final List<Integer> getCount() {
+		return count;
 	}
 	
-	public void removedElement(List<? extends Number> list, int index) {
-		if(usesCounts && !count.actualIsEmpty())
-			throw new IllegalStateException("Can't remove elements from populated count list!");
-	}
-
-	public void getting(List<? extends Number> list, int index) {
-		if(list == count && usesCounts && !countsValid)
-			throw new IllegalStateException("Count list is not in a valid state");
+	public boolean hasCount() {
+		return count.size() > 0;
 	}
 }

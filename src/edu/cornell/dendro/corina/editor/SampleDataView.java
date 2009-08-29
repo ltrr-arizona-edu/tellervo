@@ -333,7 +333,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 			}
 		};
 		
-		Remarks.appendRemarksToMenu(menu, value, onRemarkChange);
+		Remarks.appendRemarksToMenu(menu, value, onRemarkChange, mySample.isEditable());
 	}
 
 	/** Return the Year of the currently selected cell.

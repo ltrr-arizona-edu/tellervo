@@ -213,8 +213,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		}
 		
 		// make the ring widths wrapper
-		ringwidths = new TridasRingWidthWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH), 
-				true); 
+		ringwidths = new TridasRingWidthWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH));
 		
 		// if weiserjahre exists, make the values wrapper for it as well
 		if(otherValuesMap.containsKey(WEISERJAHRE_VARIABLE)) 

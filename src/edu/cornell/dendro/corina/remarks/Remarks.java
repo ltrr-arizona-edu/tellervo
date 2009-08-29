@@ -55,9 +55,10 @@ public class Remarks {
 	 * @param menu
 	 * @param value the associated TridasValue for the given reading
 	 * @param onRemarkChange an action to run when a remark is changed
+	 * @param isChangeable are these menu items selectable (enabled?)
 	 */
 	public static void appendRemarksToMenu(final JPopupMenu menu, final TridasValue value, 
-			final Runnable onRemarkChange) {
+			final Runnable onRemarkChange, final boolean isChangeable) {
 		List<Remark> remarks = getRemarks();
 		
 		for(final Remark remark : remarks) {
@@ -65,6 +66,9 @@ public class Remarks {
 			Icon icon = remark.getIcon();
 			
 			final JCheckBoxMenuItem item = new JCheckBoxMenuItem(displayName, icon, remark.isRemarkSet(value));
+			
+			// disable non-editable remarks
+			item.setEnabled(isChangeable);
 			
 			// set or remove the mark on selection
 			item.addActionListener(new ActionListener() {
