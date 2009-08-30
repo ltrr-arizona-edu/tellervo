@@ -92,12 +92,20 @@ This file is for custom annotations applied to tridas objects
 		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true" /></annox:annotate>
 	</bindings>
 
-	<!-- Read only/final: locationGeometry -->
+	<!-- final: locationGeometry -->
 	<bindings node="//xs:element[@name='locationGeometry']/xs:complexType">
   		<annox:annotate target="field">
-			<ta:TridasEditProperties readOnly="true" finalType="true" />
+			<ta:TridasEditProperties finalType="true" />
 		</annox:annotate>	
 	</bindings>	
+	
+	<!-- read only: object.location! -->
+	<bindings node="//xs:element[@name='object']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='location']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" />
+		</annox:annotate>	
+	</bindings>	
+	
 	
 	<!-- Read only: interpretation.*, save for provenance -->
 	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='dating']">

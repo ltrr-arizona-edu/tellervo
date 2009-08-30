@@ -9,6 +9,7 @@ import java.math.BigInteger;
 
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;
+import org.tridas.schema.TridasLocationGeometry;
 
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertyEditorRegistry;
@@ -31,6 +32,9 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		PropertyEditor editor = new TridasSeriesLinkRendererEditor();
 		registerEditor(SeriesLink.class, editor);
 		registerEditor(TridasDatingReference.class, editor);
+		
+		// edit location geometry with dialog
+		registerEditor(TridasLocationGeometry.class, LocationGeometryEditor.class);
 	}
 	
 	public synchronized PropertyEditor getEditor(Property property) {

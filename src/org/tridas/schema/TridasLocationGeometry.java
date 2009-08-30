@@ -51,7 +51,7 @@ import org.tridas.annotations.TridasEditProperties;
     "point"
 })
 @XmlRootElement(name = "locationGeometry")
-@TridasEditProperties(finalType = true, readOnly = true)
+@TridasEditProperties(finalType = true)
 public class TridasLocationGeometry
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {

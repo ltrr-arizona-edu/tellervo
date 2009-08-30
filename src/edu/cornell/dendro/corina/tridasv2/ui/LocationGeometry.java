@@ -14,6 +14,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 
 import net.opengis.gml.schema.PointType;
 import net.opengis.gml.schema.Pos;
@@ -57,6 +58,13 @@ public class LocationGeometry extends LocationGeometryUI implements
 	}
 
 	/**
+	 * @return true if the user clicked OK
+	 */
+	public boolean hasResults() {
+		return hasResults;
+	}
+	
+	/**
 	 * Get the information in this dialog as represented by a TridasLocationGeometry
 	 * @return a geometry
 	 * @throws IllegalStateException if the dialog hasn't been used properly
@@ -68,6 +76,9 @@ public class LocationGeometry extends LocationGeometryUI implements
 		TridasLocationGeometry geometry = new TridasLocationGeometry();
 		PointType point = new PointType();
 		geometry.setPoint(point);
+		
+		// TODO: Actually implement detecting this and putting in the right standards
+		point.setSrsName("EPSG:4326");
 		
 		Pos pos = new Pos();
 		point.setPos(pos);
@@ -112,19 +123,19 @@ public class LocationGeometry extends LocationGeometryUI implements
 		radManualActionPerformed(null);
 		latLongStyleActionPerformed(null);
 
-		radGPS.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+		radGPS.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
 				radGPSActionPerformed(evt);
 			}
 		});
 
-		radManual.addActionListener(new java.awt.event.ActionListener() {
+		radManual.addActionListener(new ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				radManualActionPerformed(evt);
 			}
 		});
 
-		cboLatLongStyle.addActionListener(new java.awt.event.ActionListener() {
+		cboLatLongStyle.addActionListener(new ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				latLongStyleActionPerformed(evt);
 			}
@@ -362,7 +373,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 	}
 }
 
-class GPXFileFilter extends javax.swing.filechooser.FileFilter {
+class GPXFileFilter extends FileFilter {
 	public boolean accept(File f) {
 		return f.isDirectory() || f.getName().toLowerCase().endsWith(".gpx");
 	}
