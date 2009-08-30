@@ -95,7 +95,7 @@ public class CorinaPropertySheetTable extends PropertySheetTable {
 						
 			// overlay the top of the whole thing with gray
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .2f));
-			g2.setColor(Color.gray);
+			g2.setColor(Color.DARK_GRAY);
 			g2.fillRect(0, 0, w, h);
 			
 			// now, draw the word "PREVIEW" over it all

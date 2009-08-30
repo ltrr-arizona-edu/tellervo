@@ -137,7 +137,13 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionList
     }
 	  
     private void sortAvailableBoxList(){
-
+		// Sort list intelligently
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.SITE_CODES_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		
+		Collections.sort(availModel, numSorter);
+		
 
     }
     
@@ -150,7 +156,8 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionList
 			{
 				WSIBox myobj = (WSIBox) obj;
 				selModel.add(myobj);
-				availModel.remove(myobj);	
+				availModel.remove(myobj);
+				sortAvailableBoxList();
 			}
 			
 			
@@ -163,6 +170,7 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionList
 				WSIBox myobj = (WSIBox) obj;
 				availModel.add(myobj);
 				selModel.remove(myobj);
+				sortAvailableBoxList();
 
 			}
 		}

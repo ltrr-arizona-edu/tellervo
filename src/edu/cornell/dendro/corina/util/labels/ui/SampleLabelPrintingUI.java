@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.tridas.schema.TridasElement;
@@ -25,6 +26,7 @@ import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
+import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -282,8 +284,19 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 				
 		availModel.replaceContents(sampList);	
 		availModel.setSelectedItem(null);
+		sortAvailableBoxList();
     }
     
+    private void sortAvailableBoxList(){
+		// Sort list intelligently
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.SITE_CODES_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		
+		Collections.sort(availModel, numSorter);
+		
+
+    }
     
 	public void actionPerformed(ActionEvent evt) {
 		// TODO Auto-generated method stub
@@ -306,7 +319,8 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 			{
 				TridasSample myobj = (TridasSample) obj;
 				selModel.add(myobj);
-				availModel.remove(myobj);	
+				availModel.remove(myobj);
+				sortAvailableBoxList();
 			}
 			
 			
@@ -319,6 +333,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 				TridasSample myobj = (TridasSample) obj;
 				availModel.add(myobj);
 				selModel.remove(myobj);
+				sortAvailableBoxList();
 
 			}
 		}

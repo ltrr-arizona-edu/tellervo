@@ -98,7 +98,7 @@ public class BoxLabel extends ReportBase{
 		
 			PdfWriter writer = PdfWriter.getInstance(document, output);
 			
-			document.setPageSize(PageSize.A5.rotate());
+			document.setPageSize(PageSize.LETTER);
 			document.open();
 		
 			cb = writer.getDirectContent();			
