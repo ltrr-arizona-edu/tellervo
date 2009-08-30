@@ -60,7 +60,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JToolTip;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.event.EventListenerList;
@@ -1696,18 +1695,20 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		public void propertyChange(PropertyChangeEvent evt) {
 			if(evt.getSource() != gInfo)
 				return;
-			
-			System.out.println("Property: " + evt.getPropertyName());
+
+			// VERBOSE DEBUG
+			// System.out.println("Property: " + evt.getPropertyName());
 
 			Set<UpdateAction> actions = updateActions.get(evt.getPropertyName());
 			if(actions == null)
 				return;
 
-			System.out.print("Actions: ");
-			for(UpdateAction a : actions) {
-				System.out.print(a + ", ");
-			}
-			System.out.println();
+			// VERBOSE DEBUG
+			// System.out.print("Actions: ");
+			// for(UpdateAction a : actions) {
+			//	 System.out.print(a + ", ");
+			// }
+			// System.out.println();
 			
 			// baselines were added or removed
 			if(actions.contains(UpdateAction.BASELINES_SCROLLBAR_UPDATE))
