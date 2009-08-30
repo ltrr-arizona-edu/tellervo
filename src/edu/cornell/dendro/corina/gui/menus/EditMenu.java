@@ -157,7 +157,9 @@ public class EditMenu extends JMenu {
     	
     	JMenuItem usergroup = Builder.makeMenuItem("usersandgroups",
                                                "edu.cornell.dendro.corina.gui.AdminPanel.main()", "edit_group.png");
-        adminmenu.add(usergroup);
+     
+    	usergroup.setEnabled(false);
+    	adminmenu.add(usergroup);
         
         
     	JMenuItem boxlabel = Builder.makeMenuItem("boxlabels",
@@ -173,6 +175,8 @@ public class EditMenu extends JMenu {
                 "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()", "advancedsettings.png");
         
         legacyPrefs.setText("Legacy Preferences Dialog");
+        legacyPrefs.setVisible(false);
+        
         adminmenu.add(legacyPrefs);
         
         
