@@ -107,7 +107,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 					OpenRecent.sampleOpened(new SeriesDescriptor(reference), "reconcile");
 					
 					// open it for fun times
-					Center.center(new ReconcileWindow(sample, reference), editor);
+					new ReconcileWindow(sample, reference);
 				}
 
 					/*
@@ -128,7 +128,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			@Override
 			public void performOpen(Sample s) {
 				// new reconcile window
-				Center.center(new ReconcileWindow(sample, s), editor);
+				new ReconcileWindow(sample, s);
 				// move to top of menu
 				OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
 			}

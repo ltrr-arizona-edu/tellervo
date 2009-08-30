@@ -1,10 +1,8 @@
 package edu.cornell.dendro.corina.manip;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -12,17 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.table.DefaultTableModel;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.DecadalModel;
@@ -40,16 +36,8 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
 
-import edu.cornell.dendro.corina.graph.Graph;
-import edu.cornell.dendro.corina.graph.GraphActions;
-import edu.cornell.dendro.corina.graph.GraphController;
-import edu.cornell.dendro.corina.graph.GraphInfo;
-import edu.cornell.dendro.corina.graph.GraphToolbar;
-import edu.cornell.dendro.corina.graph.GrapherEvent;
-import edu.cornell.dendro.corina.graph.GrapherListener;
-import edu.cornell.dendro.corina.graph.GrapherPanel;
-
 public class ReconcileWindow extends XFrame implements ReconcileNotifier, SaveableDocument {
+	private static final long serialVersionUID = 1L;
 	
 	private ReconcileDataView dv1, dv2;
 	private Sample s1, s2;
@@ -61,7 +49,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	private JButton btnFinish;
 	private JButton btnViewType;
 	private JButton btnRemeasure;
-	private JPanel refPanel; // the panel with the reference measurement
+	//private JPanel refPanel; // the panel with the reference measurement
 	private JSeparator sepLine;
 	protected JPanel panelChart;
 	
@@ -140,9 +128,12 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		setContentPane(content);	
 
 		pack();
-		setVisible(true);
-		this.setExtendedState(this.getExtendedState() | ReconcileWindow.MAXIMIZED_BOTH);
+
+		// start maximized
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		
+		setVisible(true);
 	}
 	
 	private JPanel createButtonPanel() {
@@ -432,7 +423,8 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	public void setFilename(String fn) {
 	}
 	
-    private void setupGraph() {	    	
+    @SuppressWarnings("serial")
+	private void setupGraph() {	    	
 		// create a new graphinfo structure, so we can tailor it to our needs.
 		graphInfo = new GraphInfo();
 		

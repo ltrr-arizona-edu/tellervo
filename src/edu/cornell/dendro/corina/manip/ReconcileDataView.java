@@ -16,16 +16,18 @@ import javax.swing.JViewport;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.editor.SampleDataView;
+import edu.cornell.dendro.corina.editor.support.AbstractTableCellModifier;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 
 public class ReconcileDataView extends SampleDataView implements SampleListener {
+	private static final long serialVersionUID = 1L;
+	
 	private JEditorPane reconcileInfo;
 	private final static String reconcileIntro = "<html><br>";
 
@@ -65,9 +67,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 		doReconciliation();
 
 		// create our special renderer
-		ReconcileRenderer rr = new ReconcileRenderer();
-		for(int i = 1; i <= 10; i++)
-			myTable.getColumnModel().getColumn(i).setCellRenderer(rr);		
+		myCellRenderer.addModifier(new ReconcileCellModifier());
 		
 		// make sure we're aware of selection changes
 		tableSelectionMonitor = new TableSelectionChangeListener(myTable, this);
@@ -78,7 +78,8 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	    // this column is useless in this case and just takes up space!
 	    myTable.getColumnModel().removeColumn(myTable.getColumnModel().getColumn(11));
 		
-	    if(showInfo) add(this.getReconcileInfoPanel(), BorderLayout.WEST);
+	    if(showInfo) 
+	    	add(this.getReconcileInfoPanel(), BorderLayout.WEST);
 	}
 	
 	
@@ -271,31 +272,24 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
         }
     }
 
-	
-	// This makes our table look neat!
-	private class ReconcileRenderer extends DefaultTableCellRenderer {
+    // make our table look neat, and show icons!
+    // use nifty cell modifier!
+    private class ReconcileCellModifier extends AbstractTableCellModifier {
 		private final Border selBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
-		private final Border noBorder = BorderFactory.createEmptyBorder();
-
-		public ReconcileRenderer() {
-			setOpaque(true);
-		}
-
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
+		
+		public void modifyComponent(Component c, JTable table, Object value,
+				boolean isSelected, boolean hasFocus, int row, int column) {
 			
-			Component cell = super.getTableCellRendererComponent(table, value,
-					isSelected, hasFocus, row, column);
-	
+			JLabel cell = (JLabel) c;
+			
 			// Set default selection border
 			if(isSelected) {
-				setBorder(selBorder);				
+				cell.setBorder(selBorder);				
 			}
 			
 			// Right alignment
-			super.setHorizontalAlignment(JLabel.RIGHT);
-
+			cell.setHorizontalAlignment(JLabel.RIGHT);
+		
 			
 			// Determine how we paint the cells depending on type of errors	
 			// - 3% error only = Red background
@@ -327,31 +321,27 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				}
 				
 				
-				if(failures.contains(Reconciler.FailureType.TRENDPREV)) {
-					// Just trend to previous so no border on left of cell
-					setBorder(BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, borderWidth, myBorderColor));
-				}
-				if(failures.contains(Reconciler.FailureType.TRENDNEXT)) {
-					// Just trend to next so no border on right of cell
-					setBorder(BorderFactory.createMatteBorder(borderWidth, borderWidth, borderWidth, 0, myBorderColor));
-				}
 				if(( failures.contains(Reconciler.FailureType.TRENDPREV)) && (failures.contains(Reconciler.FailureType.TRENDNEXT)) ) {
 					// Trends to next and previous so no border on left OR right
-					setBorder(BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, 0, myBorderColor));
+					cell.setBorder(BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, 0, myBorderColor));
 				}	
+				else if(failures.contains(Reconciler.FailureType.TRENDPREV)) {
+					// Just trend to previous so no border on left of cell
+					cell.setBorder(BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, borderWidth, myBorderColor));
+				}
+				else if(failures.contains(Reconciler.FailureType.TRENDNEXT)) {
+					// Just trend to next so no border on right of cell
+					cell.setBorder(BorderFactory.createMatteBorder(borderWidth, borderWidth, borderWidth, 0, myBorderColor));
+				}
 				
 			} else {
 				// No errors so paint green
 				cell.setForeground(Color.BLACK);
 				cell.setBackground(greenColor);
 			}
-			
 
-			
-			return cell;
 		}
-	}
-
+    }
 	
 	// SampleListener
 	public void sampleRedated(SampleEvent e) {
