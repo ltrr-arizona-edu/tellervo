@@ -257,7 +257,7 @@ sub do_radii() {
 
       my $stmt = "INSERT INTO tblRadius(RadiusID, SampleID, code, createdtimestamp, lastmodifiedtimestamp, pithid, " .
                  "missingHeartwoodRingsToPith, missingHeartwoodRingsToPithFoundation, missingSapwoodRingsToBark, missingSapwoodRingsToBarkFoundation, " .
-                 "barkPresent, sapwoodid) VALUES (";
+                 "barkPresent, sapwoodid, numberofsapwoodrings) VALUES (";
       $stmt .= touuid($r->{radiusid}, $radiusns, 'radius') . ', ';
       $stmt .= touuid($r->{specimenid}, $specimenns, 'spec') . ', ';
       $stmt .= esc(undupename($r->{specimenid}, 'radius', $r->{name})) . ', ';
@@ -293,6 +293,9 @@ sub do_radii() {
       } else {
          $stmt .= '5'; #unknown
       }
+      $stmt .= ', ';
+
+      $stmt .= esc($sapwoodcount, false);
 
       $stmt .= ')';
       print "$stmt;\n";
