@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
@@ -46,7 +47,7 @@ import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
-import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
@@ -68,6 +69,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     private int minimumSelectedElements = 1;
     
     private SearchPanel searchPanel;
+    
+    private TridasObjectEx lastSelectedObjects[] = null;
     
     public DBBrowser(java.awt.Frame parent, boolean modal) {
     	this(parent, modal, false);	
@@ -99,8 +102,6 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         isMultiDialog = openMulti;
 
         listTableSplit.setOneTouchExpandable(true);
-
-        cboBrowseBy.setVisible(false);
         
         setupSearch();
         setupTableArea();
@@ -225,8 +226,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     					getElementAt(selectedRows[i]));
     	}
     	
-    	// Save the Region used in preferences so that it can be default next time
-		App.prefs.setPref("corina.region.lastused", Integer.toString(cboBrowseBy.getSelectedIndex()));
+    	// Save the browse list type
+		App.prefs.setPref("corina.dbbrowser.listmode", 
+				((BrowseListMode) cboBrowseBy.getSelectedItem()).name());
     	
     	returnStatus = RET_OK;
     	return true;
@@ -413,40 +415,16 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			}
 		});
     }
-    
-    // Placeholder until we re-implement regions?
-    private class SiteRegion {
-    	public SiteRegion(String a, String b) {
-    		// blah
-    	}
-    	public String getInternalRepresentation() {
-    		return "ALL";
-    	}
-    	public String toString() {
-    		return "Regions are deprecated";
-    	}
-    }
-    
+      
 	private void populateComponents() {
-    	//List<SiteRegion> regions = (List<SiteRegion>) App.dictionary.getDictionary("Regions");
-		List<SiteRegion> regions = new ArrayList<SiteRegion>();
-    	List<SiteRegion> regionList = new ArrayList<SiteRegion>();
-
     	// single selection on site list
     	lstSites.setModel(new ArrayListModel<TridasObjectEx>());
 		lstSites.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		// make it nicely render cells
         lstSites.setCellRenderer(new SiteRenderer());
-
-    	// Duplicate the region list; create an 'All Regions' 
-    	regionList.add(new SiteRegion("ALL", "All Regions"));
-    	
-    	// null regions shouldn't happen, but be safe
-    	if(regions != null) 
-        	regionList.addAll(regions);
     	
     	// and make the regions combo box reflect it
-		cboBrowseBy.setModel(new DefaultComboBoxModel(regionList.toArray()));
+		cboBrowseBy.setModel(new DefaultComboBoxModel(BrowseListMode.values()));
 		
 		// repopulate the site list when something is chosen...
         cboBrowseBy.addActionListener(new ActionListener() {
@@ -454,17 +432,20 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
             	populateSiteList();
             }
         });
-		
-		// Select the last used region otherwise select the first thing in the list
-		// populate our site list (done automatically by choosing an index)
-		if(App.prefs.getPref("corina.region.lastused", null) != null) {
-			Integer lastUsedIndex = App.prefs.getIntPref("corina.region.lastused", 0);
-			if(lastUsedIndex<cboBrowseBy.getItemCount()) 
-				cboBrowseBy.setSelectedIndex(lastUsedIndex);
-        	populateSiteList();
-		} else {
-			cboBrowseBy.setSelectedIndex(0);
-		}
+
+        String browseModeStr = App.prefs.getPref("corina.dbbrowser.listmode", BrowseListMode.POPULATED.name());
+        
+        // handle old modes, maybe?
+        BrowseListMode browseMode;
+        try {
+        	browseMode = BrowseListMode.valueOf(browseModeStr);
+        }
+        catch (Exception e) {
+        	browseMode = BrowseListMode.POPULATED;
+        }
+        
+        // set the mode, which triggers populating of our site list
+		cboBrowseBy.setSelectedItem(browseMode);
 		
 		final DBBrowser glue = this;
 		lstSites.addListSelectionListener(new ListSelectionListener() {
@@ -473,12 +454,26 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 				if(lse.getValueIsAdjusting())
 					return;
 				
-				Object[] selected = lstSites.getSelectedValues();
+				Object[] selectedO = lstSites.getSelectedValues();
 				
-				if(selected.length  == 0) {
+				if(selectedO.length  == 0) {
 					// no selections. clear table!
 					return;
 				}
+
+				// make it into a tridas object array
+				TridasObjectEx[] selected = Arrays.copyOf(selectedO, selectedO.length, 
+						TridasObjectEx[].class); 
+				
+				// sort the list so it's easy to compare
+				Arrays.sort(selected, new TridasObjectList.SiteComparator());
+
+				// arrays are exactly the same, don't do anything
+				if(Arrays.equals(selected, lastSelectedObjects))
+					return;
+				
+				// save this for later.
+				lastSelectedObjects = selected;
 				
 				// set up our query...
 				SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
@@ -543,58 +538,46 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     
     @SuppressWarnings("unchecked")
 	private void populateSiteList() {
-    	Collection<TridasObjectEx> sites = App.tridasObjects.getObjectList();
-    	SiteRegion region = (SiteRegion) cboBrowseBy.getSelectedItem();
+    	Collection<TridasObjectEx> sites; // = App.tridasObjects.getObjectList();
     	TridasObjectEx selectedSite = (TridasObjectEx) lstSites.getSelectedValue();
     	
-    	// have we selected 'all regions?'
-    	if(region.getInternalRepresentation().equals("ALL")) { 
-    		
-    		// User has NOT entered filter text
-        	if(txtFilterInput.getText().equals("")){
-        		((ArrayListModel<TridasObjectEx>)lstSites.getModel()).replaceContents(sites);
-
-        	// User HAS entered filter text
-        	} else {
-        		List<TridasObjectEx> filteredSites = new ArrayList<TridasObjectEx>();
-        		
-        		// Loop through master site list and check if filter matches
-        		String filter = txtFilterInput.getText().toLowerCase();
-        		for(TridasObjectEx s : sites){
-	        		String search = s.toTitleString().toLowerCase();
-	        		if(search.indexOf(filter) != -1)
-	        			filteredSites.add(s);        				
-        		}
-        		((ArrayListModel<TridasObjectEx>)lstSites.getModel()).replaceContents(filteredSites);
-        	}		
-    		
+    	BrowseListMode browseMode = (BrowseListMode) cboBrowseBy.getSelectedItem();
     	
-        // A particular region has been selected so limit list before applying filter
-    	} else {
-    		Alert.error("error", "regions are disabled, use all please");
-    		/*
-    		List<TridasObjectEx> filteredSites = new ArrayList<TridasObject>();
+    	// populate from the right list...
+    	switch(browseMode) {
+    	case ALL:
+    	default:
+    		sites = App.tridasObjects.getObjectList();
+    		break;
     		
-    		// filter the sites...
-    		for(TridasObjectEx s : sites) {
-    			if(s.inRegion(region.getInternalRepresentation())){
- 
-    	    		// User has NOT entered filter text
-    	        	if(txtFilterInput.getText().equals("")){	
-    	        		filteredSites.add(s);   
-
-    	        	// User HAS entered filter text
-    	        	} else {
-    	        		String search = s.toFullString().toLowerCase();
-    	        		if(search.indexOf(txtFilterInput.getText().toLowerCase()) != -1)
-    	        			filteredSites.add(s);        				
-    	        	}	
-    			}
-    		}
+    	case POPULATED:
+    		sites = App.tridasObjects.getPopulatedObjectList();
+    		break;
     		
-    		lstSites.setModel(new javax.swing.DefaultComboBoxModel(filteredSites.toArray()));
-    		*/
+    	case POPULATED_FIRST:
+    		sites = App.tridasObjects.getPopulatedFirstObjectList();
+    		break;
     	}
+    	
+		// User has NOT entered filter text
+		if (txtFilterInput.getText().equals("")) {
+			((ArrayListModel<TridasObjectEx>) lstSites.getModel())
+					.replaceContents(sites);
+
+		// User HAS entered filter text
+		} else {
+			List<TridasObjectEx> filteredSites = new ArrayList<TridasObjectEx>();
+
+			// Loop through master site list and check if filter matches
+			String filter = txtFilterInput.getText().toLowerCase();
+			for (TridasObjectEx s : sites) {
+				String search = s.toTitleString().toLowerCase();
+				if (search.indexOf(filter) != -1)
+					filteredSites.add(s);
+			}
+			((ArrayListModel<TridasObjectEx>) lstSites.getModel())
+					.replaceContents(filteredSites);
+		}
     	
     	// if our site list was updated in the background,
     	// we have to compare sites. blurgh.
@@ -711,6 +694,23 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 		return isSelectedElement(e);
 	}
 
+	private enum BrowseListMode {
+		ALL("Show all objects"),
+		POPULATED("Show only populated objects"),
+		POPULATED_FIRST("Show populated objects first");
+		
+		private final String value;
+		
+		private BrowseListMode(String value) {
+			this.value = value;
+		}
+		
+		@Override
+		public String toString() {
+			return value;
+		}
+	}
+	
 	/**
 	 * Class implementing search support for DB browser
 	 * 

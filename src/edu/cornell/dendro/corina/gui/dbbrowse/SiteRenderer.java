@@ -60,7 +60,7 @@ public class SiteRenderer implements ListCellRenderer {
 			lblName.setText(name);
 			
 			Font font = list.getFont();
-			lblCode.setFont(font.deriveFont(Font.BOLD));
+			lblCode.setFont(font);
 			lblName.setFont(font.deriveFont(font.getSize() - 2.0f));			
 		
 			StringBuffer sb = new StringBuffer();
@@ -90,6 +90,10 @@ public class SiteRenderer implements ListCellRenderer {
 			// add series count if we can...
 			Integer seriesCount = site.getSeriesCount();
 			if(seriesCount != null) {
+				// it's populated, so make it bold
+				lblCode.setFont(font.deriveFont(Font.BOLD));
+				
+				// and then add this info...
 				sb.append("<b>Number of series:</b> ");
 				sb.append(seriesCount);
 				if(site.getChildSeriesCount() != seriesCount) {

@@ -74,7 +74,7 @@ public class TridasObjectList extends CorinaResource {
 			recursiveAdd(obj, newData);
 		}
 	
-		Collections.sort(newData.allObjects, new SiteComparator());
+		Collections.sort(newData.allObjects, new SiteComparator(SiteComparator.Mode.ALPHABETICAL));
 		
 		// move our data over
 		synchronized(data) {
@@ -87,7 +87,22 @@ public class TridasObjectList extends CorinaResource {
 	/**
 	 * Sort objects by # of children, lab code presence, and then lab code or title
 	 */
-	private static class SiteComparator implements Comparator<TridasObjectEx> {
+	public static class SiteComparator implements Comparator<TridasObjectEx> {
+		public static enum Mode {
+			POPULATED_FIRST,
+			ALPHABETICAL
+		}
+		
+		private final Mode mode;
+		
+		public SiteComparator(Mode mode) {
+			this.mode = mode;
+		}
+		
+		public SiteComparator() {
+			this(Mode.ALPHABETICAL);
+		}
+		
 		public int compare(TridasObjectEx o1, TridasObjectEx o2) {
 			Integer s1 = o1.getSeriesCount();
 			Integer s2 = o2.getSeriesCount();
@@ -95,10 +110,12 @@ public class TridasObjectList extends CorinaResource {
 			boolean c2 = (s2 != null && s2 > 0);
 			
 			// ones with children first
-			if(c1 && !c2)
-				return -1;
-			else if(!c1 && c2)
-				return 1;
+			if(mode == Mode.POPULATED_FIRST) {
+				if(c1 && !c2)
+					return -1;
+				else if(!c1 && c2)
+					return 1;
+			}
 			
 			c1 = o1.hasLabCode();
 			c2 = o2.hasLabCode();
@@ -137,7 +154,7 @@ public class TridasObjectList extends CorinaResource {
 	 * Find a tridas object by site code
 	 * 
 	 * @param siteCode
-	 * @return
+	 * @return a tridas object
 	 */
 	public TridasObjectEx findObjectBySiteCode(String siteCode) {
 		synchronized(data) {
@@ -147,11 +164,48 @@ public class TridasObjectList extends CorinaResource {
 	
 	/**
 	 * Retrieve an unmodifiable list of all tridas objects
-	 * @return
+	 * @return a list
 	 */
 	public List<TridasObjectEx> getObjectList() {
 		synchronized(data) {
 			return Collections.unmodifiableList(data.allObjects);
+		}
+	}
+
+	/**
+	 * Retrieve a list of all tridas objects, populated first
+	 * 
+	 * @return a list
+	 */
+	public List<TridasObjectEx> getPopulatedFirstObjectList() {
+		synchronized(data) {
+			List<TridasObjectEx> populatedFirstList = new ArrayList<TridasObjectEx>(data.allObjects);
+			
+			// sort it how we like it...
+			Collections.sort(populatedFirstList, new SiteComparator(SiteComparator.Mode.POPULATED_FIRST));
+			
+			// don't care if the user modifies this list, because we generated it
+			return populatedFirstList;
+		}
+	}
+	
+	/**
+	 * Retrieve a list of all populated Tridas objects
+	 * @return a list
+	 */
+	public List<TridasObjectEx> getPopulatedObjectList() {
+		synchronized(data) {
+			List<TridasObjectEx> populatedList = new ArrayList<TridasObjectEx>(data.allObjects.size());
+			
+			for(TridasObjectEx obj : data.allObjects) {
+				Integer childSeriesCount = obj.getChildSeriesCount();
+				
+				if(childSeriesCount != null && childSeriesCount > 0)
+					populatedList.add(obj);
+			}
+			
+			// don't care if the user modifies this list, because we generated it
+			return populatedList;
 		}
 	}
 	
