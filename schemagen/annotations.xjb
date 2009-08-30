@@ -36,6 +36,13 @@ This file is for custom annotations applied to tridas objects
 		<!-- Add propertychangelistener support -->	
 		<!-- <ls:listener-support type="BOUND" /> -->
 	</bindings>
+	
+	<!-- No derivedSeries.linkSeries visible -->
+	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@name='linkSeries']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>
 
 	<!-- read only -->
 	<bindings node="//xs:complexType[@name='tridasEntity']/xs:sequence/xs:element[@ref='createdTimestamp']">
@@ -134,6 +141,13 @@ This file is for custom annotations applied to tridas objects
 		</annox:annotate>	
 	</bindings>	
 
+	<!-- derivedSeries.type is final and read only -->
+	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='type']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>
+	
 	<!-- - - - - - - - - - - -->
 	<!-- Dictionary bindings -->	
 	<!-- - - - - - - - - - - -->
