@@ -63,13 +63,44 @@ public class SiteRenderer implements ListCellRenderer {
 			lblCode.setFont(font.deriveFont(Font.BOLD));
 			lblName.setFont(font.deriveFont(font.getSize() - 2.0f));			
 		
+			StringBuffer sb = new StringBuffer();
+			sb.append("<html>");
+			if(site.hasLabCode()) {
+				sb.append("<b>Code:</b> ");
+				sb.append(site.getLabCode());
+				sb.append("<br>");
+			}
+			sb.append("<b>Title:</b> ");
+			sb.append(site.getTitle());
+			sb.append("<br>");
+			
+			// add parent info, if we can...
+			TridasObjectEx parent;
+			if((parent = site.getParent()) != null) {
+				if(parent.hasLabCode()) {
+					sb.append("<b>Parent Code:</b> ");
+					sb.append(parent.getLabCode());
+					sb.append("<br>");
+				}
+				sb.append("<b>Parent Title:</b> ");
+				sb.append(parent.getTitle());
+				sb.append("<br>");				
+			}
+
+			// add series count if we can...
 			Integer seriesCount = site.getSeriesCount();
 			if(seriesCount != null) {
-				String countStr = seriesCount + "/" + site.getChildSeriesCount();
-				//Font countFont = font.deriveFont(font.getSize() - 1.0f);
-
-				lblCode.setText(lblCode.getText() + "   " + countStr);
+				sb.append("<b>Number of series:</b> ");
+				sb.append(seriesCount);
+				if(site.getChildSeriesCount() != seriesCount) {
+					sb.append(" (of ");
+					sb.append(site.getChildSeriesCount());
+					sb.append(")");
+				}
+				sb.append("<br>");
 			}
+			
+			panel.setToolTipText(sb.toString());
 		} else if(value instanceof String) {
 			lblCode.setText((String)value);
 			lblName.setText((String)value);
