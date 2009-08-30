@@ -7,11 +7,16 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Vector;
 
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.io.SerialSampleIO;
 import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
@@ -21,6 +26,7 @@ import edu.cornell.dendro.corina.prefs.wrappers.RadioButtonWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.SpinnerWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 
@@ -82,6 +88,45 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		lblProxyPort1.setEnabled(isEnabled);
 	}
 	
+	private void setupCOMPort()
+	{
+		boolean addedPort = false;
+
+		// first, enumerate all the ports.
+		Vector comportlist = SerialSampleIO.enumeratePorts();
+
+		// do we have a COM port selected that's not in the list? (ugh!)
+		String curport = App.prefs.getPref("corina.serialsampleio.port");
+		if (curport != null && !comportlist.contains(curport)) {
+			comportlist.add(curport);
+			addedPort = true;
+		} else if (curport == null) {
+			curport = "<choose a serial port>";
+			comportlist.add(curport);
+		}
+
+		// make the combobox, and select the current port...
+		//final JComboBox comports = new JComboBox(comportlist);
+		
+		ArrayListModel<String> portmodel = new ArrayListModel<String>();
+		
+		portmodel.addAll(comportlist);
+		cboPort.setModel(portmodel);
+		
+		if (curport != null)
+			cboPort.setSelectedItem(curport);
+
+			
+		
+		this.cboPort.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				App.prefs.setPref("corina.serialsampleio.port",
+						(String) cboPort.getSelectedItem());
+			}
+		});
+
+	}
+	
 	private void populateDialog() {
 		// general
 		// TODO: implement cancel?
@@ -129,6 +174,7 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		// networking - server & smtp
 		new TextComponentWrapper(txtWSURL, "corina.webservice.url", null);
 		new TextComponentWrapper(txtSMTPServer, "corina.mail.mailhost", null);
+		
 		
 		// force dictionary reload
 		btnReloadDictionary.addActionListener(new ActionListener() {

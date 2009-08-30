@@ -678,15 +678,15 @@ propertiesTabs.addTab("Statistics", panelStatistics);
 
 panelPlatform.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measuring Platform"));
 
-cboPlatformType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "EveIO", "Velmex TA UniSlide with QC10 Encoder", "Lintab" }));
+cboPlatformType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "EveIO"}));
 
 lblPlatformType.setText("Type:");
 
 lblPort.setText("Port:");
 
-cboPort.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "COM1", "COM2", "COM3", "COM4" }));
+cboPort.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "no ports detected"}));
 
-cboPlatformUnits.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1/100th mm ", "1/1000th mm" }));
+cboPlatformUnits.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1/100th mm "}));
 
 lblPlatformUnits.setText("Units:");
 

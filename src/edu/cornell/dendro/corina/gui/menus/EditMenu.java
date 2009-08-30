@@ -148,12 +148,7 @@ public class EditMenu extends JMenu {
                        
         }
         
-        // kludge, remove me when the new prefs dialog works well
-        JMenuItem legacyPrefs = Builder.makeMenuItem("preferences", 
-                "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()", "advancedsettings.png");
-        
-        legacyPrefs.setText("Legacy Preferences Dialog");
-        add(legacyPrefs);
+
     }
     
     protected void addAdmin(){
@@ -172,6 +167,13 @@ public class EditMenu extends JMenu {
         JMenuItem samplelabel = Builder.makeMenuItem("samplelabels",
                 "edu.cornell.dendro.corina.util.labels.ui.LabelPrintingDialog.sampleLabelDialog()", "sample.png");
         adminmenu.add(samplelabel);    
+        
+        // kludge, remove me when the new prefs dialog works well
+        JMenuItem legacyPrefs = Builder.makeMenuItem("preferences", 
+                "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()", "advancedsettings.png");
+        
+        legacyPrefs.setText("Legacy Preferences Dialog");
+        adminmenu.add(legacyPrefs);
         
         
         add(adminmenu);
