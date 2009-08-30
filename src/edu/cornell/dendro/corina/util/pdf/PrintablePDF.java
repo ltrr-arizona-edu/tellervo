@@ -31,20 +31,56 @@ public class PrintablePDF implements Printable, Pageable {
 	 * Create a new Printable pdf
 	 * @param pdf The PDFFile to print
 	 * @param associatedFile A randomAccessFile to close when this class is finalized (or null)
+	 * @param a page format (or null for default)
 	 */
-	public PrintablePDF(PDFFile pdf, RandomAccessFile associatedFile) {
+	public PrintablePDF(PDFFile pdf, RandomAccessFile associatedFile, PageFormat pageFormat) {
 		this.pdf = pdf;
 		this.associatedFile = associatedFile;
 
 		// create a new print job
 		this.printJob = PrinterJob.getPrinterJob();
-		// use the default page
-		this.pageFormat = printJob.defaultPage();
+		// use the default page if we have a null format
+		this.pageFormat = (pageFormat == null) ? printJob.defaultPage() : pageFormat;
 		
 		printJob.setPageable(this);
 		printJob.setJobName("CORINA Series Report");
 	}
+	
+	/**
+	 * @see #PrintablePDF(PDFFile, RandomAccessFile, PageFormat)
+	 * @param pdf
+	 * @param associatedFile
+	 */
+	public PrintablePDF(PDFFile pdf, RandomAccessFile associatedFile) {
+		this(pdf, associatedFile, null);
+	}
 
+	/**
+	 * Get the current pageFormat
+	 * @return the pageFormat
+	 */
+	public PageFormat getPageFormat() {
+		return pageFormat;
+	}
+	
+	/**
+	 * Change the associated page format
+	 * @param pageFormat
+	 */
+	public void setPageFormat(PageFormat pageFormat) {
+		this.pageFormat = pageFormat;
+	}
+	
+	/**
+	 * Shortcut method for changing page orientation
+	 * Works the same as calling getPageFormat().setOrientation(orientation)
+	 * @see PageFormat#setOrientation(int)
+	 * @param orientation one of PageFormat.LANDSCAPE, PageFormat.PORTRIAT, PageFormat.REVERSE_LANDSCAPE, etc
+	 */
+	public void setPageOrientation(int orientation) {
+		pageFormat.setOrientation(orientation);
+	}
+	
 	/**
 	 * @return A page format that has the minimum acceptable margins for the current printer
 	 */
