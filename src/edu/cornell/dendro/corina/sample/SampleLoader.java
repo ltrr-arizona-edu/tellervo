@@ -2,6 +2,8 @@ package edu.cornell.dendro.corina.sample;
 
 import java.io.IOException;
 
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+
 public interface SampleLoader {
 	/**
 	 * Get a String-based representation of the 'path' information for the file
@@ -14,7 +16,7 @@ public interface SampleLoader {
 	// self explanatory
 	public Sample load() throws IOException;
 	public BaseSample loadBasic() throws IOException;
-	public boolean save(Sample s) throws IOException;
+	public boolean save(Sample s) throws IOException, UserCancelledException;
 
 	// populate any internal loader data from this sample
 	public void preload(BaseSample bs);

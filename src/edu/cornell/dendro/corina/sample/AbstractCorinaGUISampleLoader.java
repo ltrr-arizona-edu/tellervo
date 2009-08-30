@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResource;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 
@@ -45,7 +46,7 @@ public abstract class AbstractCorinaGUISampleLoader<T extends CorinaResource>
 		return load();
 	}
 
-	public boolean save(Sample s, Dialog dialog) throws IOException {
+	public boolean save(Sample s, Dialog dialog) throws IOException, UserCancelledException {
 		T resource = getResource(s, saveProperties);
 		return doSave(s, resource, new CorinaResourceAccessDialog(dialog, resource));
 	}

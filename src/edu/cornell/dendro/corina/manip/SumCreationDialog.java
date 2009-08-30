@@ -17,6 +17,7 @@ import org.tridas.schema.TridasIdentifier;
 
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.GraphDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
@@ -140,6 +141,8 @@ public class SumCreationDialog {
 				new Editor(tmp);
 				return true;
 			}
+		} catch (UserCancelledException uce) {
+			// do nothing...
 		} catch (IOException ioe) {
 			Alert.error("Could not create sum", "Error: " + ioe.toString());
 		}

@@ -20,26 +20,27 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.metadata.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+
+import edu.cornell.dendro.corina.metadata.MetadataField;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.awt.Component;
-import java.awt.Color;
-import java.awt.BorderLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.AbstractTableModel;
 
 public class ElementsTableModel extends AbstractTableModel {
 
@@ -270,6 +271,8 @@ public class ElementsTableModel extends AbstractTableModel {
 
 			try {
 				s.getLoader().save(s);
+			} catch (UserCancelledException uce) {
+				// ignore...
 			} catch (IOException ioe) {
 				Alert.error("I/O Error", "Error saving file: "
 						+ ioe.getMessage());

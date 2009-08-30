@@ -66,6 +66,7 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.NameVersionJustificationPanel;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
@@ -283,6 +284,8 @@ public class IndexDialog extends JDialog {
 				new Editor(tmp);
 				return true;
 			}
+		} catch (UserCancelledException uce) {
+			// do nothing...
 		} catch (IOException ioe) {
 			Alert.error("Could not create index", "Error: " + ioe.toString());
 		}
