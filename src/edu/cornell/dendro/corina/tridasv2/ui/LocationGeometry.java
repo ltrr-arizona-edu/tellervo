@@ -87,8 +87,9 @@ public class LocationGeometry extends LocationGeometryUI implements
 		if(latLong.size() != 2)
 			return;
 		
-		double lat = latLong.get(0);
-		double lng = latLong.get(1);
+		// gml pair is in the form of long, lat (x, y)
+		double lat = latLong.get(1);
+		double lng = latLong.get(0);
 		
 		spnDDLat.setValue(lat);
 		spnDDLong.setValue(lng);
