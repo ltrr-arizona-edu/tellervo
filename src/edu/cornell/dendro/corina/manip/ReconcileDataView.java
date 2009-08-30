@@ -172,6 +172,9 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	public void forceReconciliation() {
 		reconciler.rereconcile();
 		doReconciliation();
+		
+		// we need this so we can repaint any backgrounds, borders, etc we might have
+		((DecadalModel) myModel).fireTableDataChanged();
 	}
 	
 	public int reconciliationErrorCount() {
