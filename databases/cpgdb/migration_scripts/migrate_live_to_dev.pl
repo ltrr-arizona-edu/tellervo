@@ -108,7 +108,7 @@ sub get_sampletypeid($) {
    my $val = shift;
 
    if(!defined $val) {
-      return 'NULL';
+      return 4; #unknown
    }
 
    my $rval = $sampletypes{$val} or die ("No value $val");
