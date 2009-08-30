@@ -25,6 +25,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasCustomDictionaryType;
+import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -103,6 +104,7 @@ public class TridasObject
     protected String creator;
     protected String owner;
     protected TridasCoverage coverage;
+    @TridasEditProperties(readOnly = true)
     protected TridasLocation location;
     @XmlElement(name = "genericField")
     protected List<TridasGenericField> genericFields;
