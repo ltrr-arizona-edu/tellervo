@@ -410,6 +410,7 @@
 		<include name="edu/cornell/dendro/corina_resources/Translations/**"/>
 		<include name="edu/cornell/dendro/corina_resources/Statistics/**"/>
 		<exclude name="edu/cornell/dendro/corina_indexing/**"/>
+		<include name="edu/cornell/dendro/corina/**/*.properties"/>
 	</fileset>
 
     	<manifest>
