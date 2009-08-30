@@ -68,6 +68,24 @@ BEGIN
       ELSE
          ConstituentSize := 1 + array_upper(Constituents, 1) - array_lower(Constituents, 1);
       END IF;
+
+      -- check to see if the version is already in use for this measurement...
+      IF V_Version IS NULL THEN
+         SELECT COUNT(*) INTO CVMId FROM cpgdb.getUsedVersionsForConstituents(Constituents) vname 
+            WHERE vname IS NULL;
+         IF CVMId > 0 THEN
+            RAISE EXCEPTION 'EVERSIONALREADYEXISTS: An unversioned derived measurement already exists for this parent';
+         END IF;
+      ELSE
+         SELECT COUNT(*) INTO CVMId FROM cpgdb.getUsedVersionsForConstituents(Constituents) vname 
+            WHERE vname=V_Version;
+         IF CVMId > 0 THEN
+            RAISE EXCEPTION 'EVERSIONALREADYEXISTS: A derived measurement already exists for this parent with the given version';
+         END IF;
+      END IF;
+
+   ELSIF V_Version IS NOT NULL THEN
+      RAISE EXCEPTION 'Version must be null for direct VMeasurements!';
    END IF;
 
    IF OPName = 'Direct' THEN
@@ -393,3 +411,24 @@ BEGIN
    RETURN TRUE;
 END;
 $$ LANGUAGE PLPGSQL VOLATILE;
+
+--
+-- Get a list of 'versions' from any non-direct constituents
+--
+-- Essentially, get a list of owner measurements, then 
+-- get a list of versions from each of the vmeasurements
+-- owned by the owner measurements
+--
+CREATE OR REPLACE FUNCTION cpgdb.getUsedVersionsForConstituents(uuid[]) 
+RETURNS SETOF text AS $$
+   SELECT DISTINCT version FROM tblVMeasurement
+      INNER JOIN tblVMeasurementDerivedCache dc USING (vMeasurementID)
+      INNER JOIN tlkpVMeasurementOp op USING (vMeasurementOpID)
+      WHERE 
+         op.name <> 'Direct' AND
+         dc.measurementID IN (
+            SELECT DISTINCT measurementID 
+               FROM tblVMeasurementDerivedCache 
+               WHERE vMeasurementID = ANY($1)
+         )
+$$ LANGUAGE SQL STABLE;
