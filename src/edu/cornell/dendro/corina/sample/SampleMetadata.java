@@ -80,7 +80,10 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 		switch(sapwood.getPresence()) {
 		case COMPLETE:
 		case INCOMPLETE:
-			return true;
+			// only say yes if we have a set number of sapwood rings, too!
+			// TODO: THIS IS NOT SUPPOSED TO BE THIS WAY. FIX ME!
+			// FIXME: IN THE DATABASE!
+			return sapwood.isSetNrOfSapwoodRings();
 
 		default:
 			return false;
