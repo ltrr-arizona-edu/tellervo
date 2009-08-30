@@ -90,40 +90,43 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 	
 	private void setupCOMPort()
 	{
-		boolean addedPort = false;
+		if (SerialSampleIO.hasSerialCapability()) {
 
-		// first, enumerate all the ports.
-		Vector comportlist = SerialSampleIO.enumeratePorts();
-
-		// do we have a COM port selected that's not in the list? (ugh!)
-		String curport = App.prefs.getPref("corina.serialsampleio.port");
-		if (curport != null && !comportlist.contains(curport)) {
-			comportlist.add(curport);
-			addedPort = true;
-		} else if (curport == null) {
-			curport = "<choose a serial port>";
-			comportlist.add(curport);
-		}
-
-		// make the combobox, and select the current port...
-		//final JComboBox comports = new JComboBox(comportlist);
-		
-		ArrayListModel<String> portmodel = new ArrayListModel<String>();
-		
-		portmodel.addAll(comportlist);
-		cboPort.setModel(portmodel);
-		
-		if (curport != null)
-			cboPort.setSelectedItem(curport);
-
-			
-		
-		this.cboPort.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				App.prefs.setPref("corina.serialsampleio.port",
-						(String) cboPort.getSelectedItem());
+			boolean addedPort = false;
+	
+			// first, enumerate all the ports.
+			Vector comportlist = SerialSampleIO.enumeratePorts();
+	
+			// do we have a COM port selected that's not in the list? (ugh!)
+			String curport = App.prefs.getPref("corina.serialsampleio.port");
+			if (curport != null && !comportlist.contains(curport)) {
+				comportlist.add(curport);
+				addedPort = true;
+			} else if (curport == null) {
+				curport = "<choose a serial port>";
+				comportlist.add(curport);
 			}
-		});
+	
+			// make the combobox, and select the current port...
+			//final JComboBox comports = new JComboBox(comportlist);
+			
+			ArrayListModel<String> portmodel = new ArrayListModel<String>();
+			
+			portmodel.addAll(comportlist);
+			cboPort.setModel(portmodel);
+			
+			if (curport != null)
+				cboPort.setSelectedItem(curport);
+	
+				
+			
+			this.cboPort.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					App.prefs.setPref("corina.serialsampleio.port",
+							(String) cboPort.getSelectedItem());
+				}
+			});
+		}
 
 	}
 	
@@ -175,6 +178,8 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		new TextComponentWrapper(txtWSURL, "corina.webservice.url", null);
 		new TextComponentWrapper(txtSMTPServer, "corina.mail.mailhost", null);
 		
+		// Measuring platform stuff
+		setupCOMPort();
 		
 		// force dictionary reload
 		btnReloadDictionary.addActionListener(new ActionListener() {
