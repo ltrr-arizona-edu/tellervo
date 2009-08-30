@@ -5,10 +5,12 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.schema.WSIBox;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 
 public class TridasListCellRenderer extends DefaultListCellRenderer {
@@ -24,8 +26,9 @@ public class TridasListCellRenderer extends DefaultListCellRenderer {
         
         if(value instanceof TridasSample){
         	TridasSample s = (TridasSample) value;
+        	TridasGenericField f = GenericFieldUtils.findField(s, "corina.internal.labcodeText");
                 	
-        	value = ((TridasSample) value).getTitle();
+        	value = (f != null) ? f.getValue() : s.getTitle();
         }
         
         else

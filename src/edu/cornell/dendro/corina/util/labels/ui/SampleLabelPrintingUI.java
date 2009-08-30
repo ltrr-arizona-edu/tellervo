@@ -9,27 +9,23 @@ package edu.cornell.dendro.corina.util.labels.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 
-import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
-
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
-import edu.cornell.dendro.corina.schema.WSIBox;
-import edu.cornell.dendro.corina.tridasv2.TridasComparator;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
+import edu.cornell.dendro.corina.tridasv2.LabCode;
+import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
-import edu.cornell.dendro.corina.tridasv2.ui.EntityListComboBox;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
@@ -164,6 +160,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
     private void populateObjectList()
     {
 		// Find all objects 
+    	/*
     	SearchParameters objparam = new SearchParameters(SearchReturnObject.OBJECT);
 		objparam.addSearchForAll();
 		EntitySearchResource<TridasObject> objresource = new EntitySearchResource<TridasObject>(objparam);
@@ -185,11 +182,80 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 		Collections.sort(objlist, numSorter);
 		
 		objModel.addAll(objlist);
+		*/
+    	objModel.replaceContents(App.tridasObjects.getObjectList());
+    	objModel.setSelectedItem(null);
+    }
+
+    /**
+     * Stupid function to get a list of samples from a list of objects
+     * 
+     * Has the side effect of setting corina.internal.labcode generic field ;)
+     * Hack to get lab code!
+     * 
+     * @param objects
+     * @param objsThisLevel
+     * @param returns
+     * @return
+     */
+    private List<TridasSample> getSamplesList(List<TridasObject> objects, 
+    		TridasObject[] objsThisLevel, List<TridasSample> returns) {
+    	
+    	// create this on the fly
+    	if(returns == null)
+    		returns = new ArrayList<TridasSample>();
+    	
+    	for(TridasObject obj : objects) {
+    		
+    		// handle stupid recursive objects
+    		List<TridasObject> currentObjects;    		
+    		if(objsThisLevel == null)
+    			currentObjects = new ArrayList<TridasObject>();
+    		else 
+    			currentObjects = new ArrayList<TridasObject>(Arrays.asList(objsThisLevel));
+    		
+			currentObjects.add(obj);
+			
+			// grar...
+			for(TridasObject obj2 : obj.getObjects()) {
+				getSamplesList(obj.getObjects(), currentObjects.toArray(new TridasObject[0]), returns);
+			}
+			
+			for(TridasElement ele : obj.getElements()) {
+				for(TridasSample samp : ele.getSamples()) {
+					
+					// make lab code
+					LabCode labcode = new LabCode();
+					
+					// objects first...
+					for(TridasObject obj2 : currentObjects) {
+						if(obj2 instanceof TridasObjectEx)
+							labcode.appendSiteCode(((TridasObjectEx) obj2).getLabCode());
+						else
+							labcode.appendSiteCode(obj2.getTitle());
+						labcode.appendSiteTitle(obj2.getTitle());
+					}
+					
+					labcode.setElementCode(ele.getTitle());
+					labcode.setSampleCode(samp.getTitle());
+					
+					// set the lab code kludgily on the sample
+					GenericFieldUtils.setField(samp, "corina.internal.labcodeText", 
+							LabCodeFormatter.getRadiusPrefixFormatter().format(labcode));
+					
+					// add the sample to the returns list
+					returns.add(samp);
+				}
+			}
+    	}
+    	
+    	return returns;
     }
     
     private void populateAvailableSamples()
     {
-    	lstAvailable.removeAll();
+    	// not necessary w/ replaceall
+    	// lstAvailable.removeAll();
     	
     	TridasObject obj = (TridasObject) cboObjects.getSelectedItem();
     	
@@ -197,21 +263,25 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
     	SearchParameters sampparam = new SearchParameters(SearchReturnObject.SAMPLE);
     	sampparam.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
 
-		EntitySearchResource<TridasSample> sampresource = new EntitySearchResource<TridasSample>(sampparam);
+    	// we want an object return here, so we get a list of object->elements->samples when we use comprehensive
+		EntitySearchResource<TridasObject> sampresource = new EntitySearchResource<TridasObject>(sampparam, TridasObject.class);
 		sampresource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
+		
 		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(sampresource);
 		sampresource.query();	
 		dialog.setVisible(true);
+		
 		if(!dialog.isSuccessful()) 
 		{ 
 			System.out.println("oopsey doopsey.  Error getting samples");
 			return;
 		}
-		List<TridasSample> samplist = sampresource.getAssociatedResult();
 		
-		availModel.addAll(samplist);
-		
-		
+		List<TridasObject> objList = sampresource.getAssociatedResult();
+		List<TridasSample> sampList = getSamplesList(objList, null, null);
+				
+		availModel.replaceContents(sampList);	
+		availModel.setSelectedItem(null);
     }
     
     

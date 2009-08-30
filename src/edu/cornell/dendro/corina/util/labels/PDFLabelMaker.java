@@ -6,10 +6,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasSample;
 
 import com.lowagie.text.Chunk;
@@ -28,14 +28,9 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gui.XMLDebugView;
-import edu.cornell.dendro.corina.platform.Platform;
-import edu.cornell.dendro.corina.print.ReportBase;
-import edu.cornell.dendro.corina.print.SeriesReport;
-import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
-import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 
 public class PDFLabelMaker {
 	private LabelPage margins;
@@ -213,7 +208,11 @@ public class PDFLabelMaker {
 			lbcell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			Paragraph p = new Paragraph();
 
-			p.add(new Chunk(s.getTitle().toString(), labelfont));
+			String labelText;
+			TridasGenericField labcodeField = GenericFieldUtils.findField(s, "corina.internal.labcodeText");
+			labelText = (labcodeField != null) ? labcodeField.getValue() : s.getTitle();
+			
+			p.add(new Chunk(labelText, labelfont));
 			//p.add(new Chunk(s.getIdentifier().getValue().toString(), uuidfont));
 		
 			lbcell.addElement(p);
