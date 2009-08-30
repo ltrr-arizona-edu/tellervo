@@ -17,6 +17,7 @@ import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 public class TridasYearDateTimeCellRenderer extends DefaultCellRenderer {
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	protected String convertToString(Object value) {
 		if(value instanceof Date) {
 			Date dv = (Date) value;

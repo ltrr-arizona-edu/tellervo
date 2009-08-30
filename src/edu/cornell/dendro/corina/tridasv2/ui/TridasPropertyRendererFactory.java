@@ -3,6 +3,7 @@ package edu.cornell.dendro.corina.tridasv2.ui;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
+import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
 import org.tridas.schema.DateTime;
 import org.tridas.schema.SeriesLink;
@@ -29,6 +30,9 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super.registerRenderer(TridasDatingReference.class, myRenderer);
 		
 		super.registerRenderer(TridasDating.class, TridasDatingCellRenderer.class);
+		
+		// nicely render controlled vocs
+		super.registerRenderer(ControlledVoc.class, new ControlledVocRenderer());
 	}
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {

@@ -102,8 +102,10 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
     protected String comments;
     protected Date derivationDate;
     @XmlElement(required = true)
+    @TridasEditProperties(finalType = true)
     protected ControlledVoc type;
     @XmlElement(required = true)
+    @TridasEditProperties(machineOnly = true)
     protected SeriesLinks linkSeries;
     protected String objective;
     protected String standardizingMethod;

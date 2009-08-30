@@ -2,44 +2,46 @@ package edu.cornell.dendro.corina.tridasv2.ui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 
-import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
 
-import com.lowagie.text.Font;
+import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 
 
-public class TridasDefaultPropertyRenderer extends JLabel implements TableCellRenderer {
+public class TridasDefaultPropertyRenderer extends DefaultCellRenderer  {
 	private static final long serialVersionUID = 1L;
 
-	public TridasDefaultPropertyRenderer() {
-		super("...");
-		
-		setFont(getFont().deriveFont(Font.ITALIC));
-		setForeground(Color.GRAY.brighter());
-		setAlignmentX(RIGHT_ALIGNMENT);
+	private Font font;
+	
+	@Override
+	protected String convertToString(Object value) {
+		if(value == null)
+			return "";
+		else
+			return "Click to remove...";		
 	}
 
+	
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
+
+		// blank out the value if we're null...
+		if (table instanceof CorinaPropertySheetTable && 
+				!((CorinaPropertySheetTable)table).isCellEditable(row, column))
+			value = null;
 		
-		if(isSelected) {
-			setForeground(table.getSelectionForeground());
-			setBackground(table.getSelectionBackground());
-		}
-		else {
+		// if we're not selected, be inconspicuous
+		if(!isSelected)
 			setForeground(Color.GRAY.brighter());
-			setBackground(table.getBackground());			
-		}
 		
-		if(value == null || 
-				// blank it out if we're not editable, too...
-				(table instanceof CorinaPropertySheetTable && !((CorinaPropertySheetTable)table).isCellEditable(row, column)))
-			setText("");
-		else
-			setText("Click to remove...");
+		Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		
-		return this;
+		// make the font italic
+		if(font == null)
+			font = c.getFont().deriveFont(Font.ITALIC);		
+		c.setFont(font);
+		
+		return c;
 	}
 }
