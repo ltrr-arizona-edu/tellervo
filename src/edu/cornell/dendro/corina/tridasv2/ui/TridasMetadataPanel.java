@@ -358,8 +358,16 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * Activates the combo box, allowing for changes
 	 */
 	private void changeButtonPressed() {
+		
 		// Make sure we populate our combobox with everything from the server
-		populateComboAndSelect(true);		
+		populateComboAndSelect(true);
+		
+		if(topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM)
+			propertiesTable.setPreviewText("CHOOSE");
+		else
+			propertiesTable.setPreviewText("PREVIEW");
+		propertiesTable.setPreviewing(true);
+		
 		// we're starting to change...
 		changingTop = true;
 
@@ -372,6 +380,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 */
 	private void chooseButtonPressed() {
 		boolean flaggedAsNew = false;
+
+		propertiesTable.setPreviewing(false);
+		propertiesTable.setPreviewText(null);
 		
 		// the user is changing away...
 		if(temporarySelectingEntity != null && !temporarySelectingEntity.equals(currentMode.getEntity(s))) {
@@ -750,6 +761,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		if(obj == EntityListComboBox.NEW_ITEM) {
 			temporarySelectingEntity = currentMode.newInstance(s);
 			populateNewEntity(currentMode, temporarySelectingEntity);
+			
+			if(propertiesTable.isPreviewing())
+				propertiesTable.setPreviewText("NEW...");
 		}
 		else if(obj instanceof ITridas) {
 			temporarySelectingEntity = (ITridas) obj;
@@ -757,6 +771,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			// start loading the list of children right away
 			if(loadChildren && currentMode != EditType.RADIUS)
 				lists.prepareChildList(temporarySelectingEntity);
+			
+			if(propertiesTable.isPreviewing())
+				propertiesTable.setPreviewText("PREVIEW");
 		}
 		
 		propertiesPanel.readFromObject(temporarySelectingEntity);		
