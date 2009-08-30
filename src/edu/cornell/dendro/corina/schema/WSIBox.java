@@ -466,13 +466,9 @@ public class WSIBox implements Serializable, CopyTo, Copyable, Equals, HashCode,
     }
 
     public String toString() {
-        //final ToStringBuilder toStringBuilder = new JAXBToStringBuilder(this);
-        //toString(toStringBuilder);
-        //return toStringBuilder.toString();
-        
-        return this.getTitle().toString();
-        
-        
+        final ToStringBuilder toStringBuilder = new JAXBToStringBuilder(this);
+        toString(toStringBuilder);
+        return toStringBuilder.toString();
     }
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
