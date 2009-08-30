@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
@@ -15,6 +19,7 @@ import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.formats.TridasDoc;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -25,9 +30,12 @@ import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasIdentifierMap;
+import edu.cornell.dendro.corina.tridasv2.support.VersionUtil;
 import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaEntityAssociatedResource;
+import edu.cornell.dendro.corina.wsi.corina.WebInterfaceCode;
+import edu.cornell.dendro.corina.wsi.corina.WebInterfaceException;
 
 /**
  * @author Lucas Madar
@@ -158,4 +166,58 @@ public class SeriesResource extends CorinaEntityAssociatedResource<List<BaseSamp
 		
 		return null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.cornell.dendro.corina.wsi.corina.CorinaResource#preprocessQuery(edu.cornell.dendro.corina.schema.WSIRootElement)
+	 * 
+	 * We need to handle a 'version already exists' response
+	 */
+	@Override
+	protected PreprocessResult preprocessQuery(WSIRootElement object)
+			throws ResourceException, UserCancelledException {
+		
+		try {
+			// just try what we normally do
+			return super.preprocessQuery(object);
+		} catch (WebInterfaceException wie) {
+			
+			// ok, if it's anything other than a dupe version, pretend we didn't intercept it
+			if(wie.getMessageCode() != WebInterfaceCode.VERSION_ALREADY_EXISTS)
+				throw wie;
+			
+			// if we're not in a CREATE or UPDATE, this doesn't make any sense. 
+			if(!(getQueryType() == CorinaRequestType.CREATE || getQueryType() == CorinaRequestType.UPDATE))
+				throw wie;
+			
+			ITridas entity = getCreateOrUpdateEntity();
+			
+			// doesn't make sense if it's not a derived series...
+			if(!(entity instanceof ITridasDerivedSeries))
+				throw wie;
+			
+			ITridasDerivedSeries derived = (ITridasDerivedSeries) entity;
+			String oldVersion = derived.isSetVersion() ? derived.getVersion() : "<no version>";
+			String version = VersionUtil.nextVersion(derived.getVersion());
+
+			// prompt the user for input...
+			Object ret = JOptionPane.showInputDialog(getOwnerWindow(),
+					"The version " + oldVersion + " is already in use.\n" +
+					"Please choose a new version.",
+					"Version already exists",
+					JOptionPane.ERROR_MESSAGE,
+					null,
+					null,
+					version);
+			
+			// on success...
+			if(ret != null) {
+				derived.setVersion(ret.toString());
+				return PreprocessResult.TRY_AGAIN;
+			}
+			
+			// on failure (the user cancelled)
+			return PreprocessResult.FAILURE_CANCELLED;
+		}
+	}
+
 }

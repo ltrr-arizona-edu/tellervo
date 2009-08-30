@@ -210,4 +210,16 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 			break;
 		}
 	}
+	
+	/**
+	 * Gets the entity we're submitting to the server
+	 * for create or update.
+	 * <p>
+	 * Used by SeriesResource to handle version changes. 
+	 * 
+	 * @return the create or update entity, or null if it isn't present
+	 */
+	protected ITridas getCreateOrUpdateEntity() {
+		return createOrUpdateEntity;
+	}
 }

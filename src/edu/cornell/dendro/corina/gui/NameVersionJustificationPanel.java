@@ -15,10 +15,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
+import org.tridas.interfaces.ITridasDerivedSeries;
+
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
+import edu.cornell.dendro.corina.tridasv2.support.VersionUtil;
 
 public class NameVersionJustificationPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -84,11 +87,22 @@ public class NameVersionJustificationPanel extends JPanel {
 
 		// Create version components
 		JLabel l2 = new JLabel("Version:");
-		JTextField version = new JTextField("1");
+		JTextField version = new JTextField("");
 		version.setColumns(20);
 		versionName = version;
 		l.setLabelFor(versionName);
 
+		// set default version
+		if(sample.getSeries() instanceof ITridasDerivedSeries) {
+			String parentVersion = ((ITridasDerivedSeries) sample.getSeries()).getVersion();
+			
+			version.setText(VersionUtil.nextVersion(parentVersion));
+		}
+		else {
+			// default to v. 2
+			version.setText("2");
+		}
+		
 		// Add items to panel
 		p.add(l);
 		p.add(titlePanel);

@@ -60,6 +60,8 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 		TRY_AGAIN,
 		/** Failure: Don't try again (calls queryFailed) */
 		FAILURE,
+		/** Failure because of user cancellation */
+		FAILURE_CANCELLED,
 		/** Success: Passes these results on to the next stage of processing */
 		SUCCESS
 	}
@@ -128,6 +130,9 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 						
 					case FAILURE:
 						throw new ResourceException("Preprocessor returned generic failure");
+						
+					case FAILURE_CANCELLED:
+						throw new UserCancelledException();
 						
 					default:
 						throw new IllegalStateException("Preprocessor returned an illegal state!");
