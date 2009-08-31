@@ -381,6 +381,25 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private void chooseButtonPressed() {
 		boolean flaggedAsNew = false;
 
+		// 
+		// HACK:
+		// Don't allow people to select 
+		//
+		if(temporarySelectingEntity != null && 
+				!temporarySelectingEntity.equals(currentMode.getEntity(s)) &&
+				temporarySelectingEntity.getTitle().contains("(")) {
+			
+			JOptionPane.showMessageDialog(this, "Sorry, you may not choose a legacy entity." +
+					"\nIf you don't understand what this means, please speak to someone\n" +
+					"before creating a new entity.", 
+					"Legacy problem", JOptionPane.ERROR_MESSAGE);
+			
+			return;
+		}
+		//
+		// END HACK
+		//
+		
 		propertiesTable.setPreviewing(false);
 		propertiesTable.setPreviewText(null);
 		
@@ -768,12 +787,26 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		else if(obj instanceof ITridas) {
 			temporarySelectingEntity = (ITridas) obj;
 			
+			//
+			// HACK
+			// Warn the user about legacy cruft
+			//
+			if(temporarySelectingEntity.getTitle().contains("(")) {
+				if(propertiesTable.isPreviewing())
+					propertiesTable.setPreviewText("LEGACY");				
+			}
+			else {
+				// this part isn't a hack...
+				if(propertiesTable.isPreviewing())
+					propertiesTable.setPreviewText("PREVIEW");
+			}				
+			//
+			// END HACK
+			//
+			
 			// start loading the list of children right away
 			if(loadChildren && currentMode != EditType.RADIUS)
-				lists.prepareChildList(temporarySelectingEntity);
-			
-			if(propertiesTable.isPreviewing())
-				propertiesTable.setPreviewText("PREVIEW");
+				lists.prepareChildList(temporarySelectingEntity);			
 		}
 		
 		propertiesPanel.readFromObject(temporarySelectingEntity);		
