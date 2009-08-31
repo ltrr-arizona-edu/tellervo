@@ -117,7 +117,7 @@ public class Remarks {
 	static {
 		corinaRemarkIconMap.put("Single pinned", "singlepin.png");
 		corinaRemarkIconMap.put("Double pinned", "doublepin.png");
-		corinaRemarkIconMap.put("Tripled pinned", "triplepin.png");
+		corinaRemarkIconMap.put("Triple pinned", "triplepin.png");
 	}
 	
 	private Remarks() {

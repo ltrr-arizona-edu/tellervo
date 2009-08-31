@@ -141,7 +141,7 @@ public class BoxLabel extends ReportBase{
 		        getTable(b);
 		        document.add(getParagraphSpace());	
 			    
-		        getComments(b);
+		        document.add(getComments(b));
 		        
 		        document.newPage();
 
@@ -224,6 +224,10 @@ public class BoxLabel extends ReportBase{
 		headerCell.setPhrase(new Phrase("# Samples", tableHeaderFont));
 		headerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		tbl.addCell(headerCell);
+		
+		
+		
+
 									
 		// Find all objects associated with samples in this box
 		SearchParameters objparam = new SearchParameters(SearchReturnObject.OBJECT);
@@ -245,9 +249,21 @@ public class BoxLabel extends ReportBase{
 			System.out.println("Warning this label has " + Integer.toString(obj.size()) + " objects associated with it so is unlikely to fit and may take some time to produce!");
 		}
 		
+		if(obj.size()<4)
+		{
+			// Not many objects so add some space to the table for prettiness sake
+			headerCell.setBorder(0);
+			headerCell.setPhrase(new Phrase(" "));
+			tbl.addCell(headerCell);
+			tbl.addCell(headerCell);
+			tbl.addCell(headerCell);
+		}
+		
 		// Sort objects into alphabetically order based on labcode
 		TridasComparator sorter = new TridasComparator();
 		Collections.sort(obj, sorter);
+		
+		Integer sampleCountInBox = 0; 
 		
 		// Loop through objects
 		for(TridasObject myobj : obj)
@@ -313,8 +329,19 @@ public class BoxLabel extends ReportBase{
 			dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			tbl.addCell(dataCell);
 			
+			sampleCountInBox += smpCnt;
+			
 		}
 		
+		if(obj.size()<4)
+		{
+			// Not many objects so add some space to the table for prettiness sake
+			headerCell.setBorder(0);
+			headerCell.setPhrase(new Phrase(" "));
+			tbl.addCell(headerCell);
+			tbl.addCell(headerCell);
+			tbl.addCell(headerCell);
+		}
 				
 		
 		headerCell.setBorderWidthBottom(headerLineWidth);
@@ -327,7 +354,7 @@ public class BoxLabel extends ReportBase{
 		headerCell.setPhrase(new Phrase("Grand Total", bodyFont));
 		headerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		tbl.addCell(headerCell);	
-		headerCell.setPhrase(new Phrase(b.getSampleCount().toString(), bodyFont));
+		headerCell.setPhrase(new Phrase(sampleCountInBox.toString(), bodyFont));
 		tbl.addCell(headerCell);
 		
 		// Add table to document
@@ -356,9 +383,11 @@ public class BoxLabel extends ReportBase{
 
 		Integer lastnum = null; 
 		Boolean inSeq = false;
-		
+		Integer numOfElements = lst.size();
+		Integer cnt = 0;
 		for(String item : lst)
 		{
+			cnt++;
 			if (containsOnlyNumbers(item))
 			{
 				// Contains only numbers
@@ -373,7 +402,13 @@ public class BoxLabel extends ReportBase{
 				{
 					if(inSeq==true)
 					{
-						if(isNextInSeq(lastnum, Integer.valueOf(item)))
+						if(cnt==numOfElements)
+						{
+							// This is the last one in the list!
+							returnStr += "-" + item;
+							continue;
+						}
+						else if(isNextInSeq(lastnum, Integer.valueOf(item)))
 						{
 							// Keep going!
 							inSeq = true;
@@ -396,10 +431,20 @@ public class BoxLabel extends ReportBase{
 						
 						if(isNextInSeq(lastnum, Integer.valueOf(item)))
 						{
-							// Keep going!
-							inSeq = true;
-							lastnum = Integer.valueOf(item);
-							continue;
+							
+							if(cnt==numOfElements)
+							{
+								// This is the last one in the list!
+								returnStr += "-" + item;
+								continue;
+							}
+							else
+							{
+								// Keep going!
+								inSeq = true;
+								lastnum = Integer.valueOf(item);
+								continue;
+							}
 						}
 						else
 						{
@@ -512,7 +557,7 @@ public class BoxLabel extends ReportBase{
 				
 	}
 	
-	private void getComments(WSIBox b) throws DocumentException
+	private Paragraph getComments(WSIBox b) throws DocumentException
 	{
 	
 		Paragraph p = new Paragraph();
@@ -526,7 +571,7 @@ public class BoxLabel extends ReportBase{
 			p.add(new Chunk("No comments recorded", bodyFont));
 		}
 		
-		document.add(p);
+		return(p);
 	}
 
 	/**

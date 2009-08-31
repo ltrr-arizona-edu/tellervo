@@ -74,26 +74,26 @@ public class SeriesReport extends ReportBase {
 				   
 			// Title Left		
 			ColumnText ct = new ColumnText(cb);
-			ct.setSimpleColumn(document.left(), document.top(10)-163, 283, document.top(10), 20, Element.ALIGN_LEFT);
+			ct.setSimpleColumn(document.left(), document.top()-163, 283, document.top(), 20, Element.ALIGN_LEFT);
 			ct.addText(getTitlePDF());
 			ct.go();
 			
 			// Barcode
 			ColumnText ct2 = new ColumnText(cb);
-			ct2.setSimpleColumn(284, document.top(10)-163, document.right(10), document.top(10), 20, Element.ALIGN_RIGHT);
+			ct2.setSimpleColumn(284, document.top()-163, document.right(10), document.top(), 20, Element.ALIGN_RIGHT);
 			ct2.addElement(getBarCode());
 			ct2.go();			
 				
 			// Timestamp
 			ColumnText ct3 = new ColumnText(cb);
-			ct3.setSimpleColumn(document.left(), document.top(10)-223, 283, document.top(10)-60, 20, Element.ALIGN_LEFT);
+			ct3.setSimpleColumn(document.left(), document.top()-223, 283, document.top()-60, 20, Element.ALIGN_LEFT);
 			ct3.setLeading(0, 1.2f);
 			ct3.addText(getTimestampPDF());
 			ct3.go();
 			
 			// Authorship
 			ColumnText ct4 = new ColumnText(cb);
-			ct4.setSimpleColumn(284, document.top(10)-223, document.right(10), document.top(10)-60, 20, Element.ALIGN_RIGHT);
+			ct4.setSimpleColumn(284, document.top()-223, document.right(10), document.top()-60, 20, Element.ALIGN_RIGHT);
 			ct4.setLeading(0, 1.2f);
 			ct4.addText(getAuthorshipPDF());
 			ct4.go();			
@@ -115,7 +115,9 @@ public class SeriesReport extends ReportBase {
 		    {
 		    	// MEASUREMENT SERIES
   
-		    	getSeriesComments();
+		    	document.add(getRingRemarks());
+		        document.add(getParagraphSpace());
+		    	document.add(getSeriesComments());
 		        document.add(getParagraphSpace());
 		        document.add(getInterpretationPDF());
 		        document.add(getParagraphSpace());	        
@@ -128,9 +130,9 @@ public class SeriesReport extends ReportBase {
 		    	// DERIVED SERIES
 		        getWJTable();
 		        document.add(getParagraphSpace());
-		        getSeriesComments();
+		        document.add(getSeriesComments());
 		        document.add(getParagraphSpace());
-		        getRingRemarks();
+		        document.add(getRingRemarks());
 		       		       
 				
 		    }
@@ -358,10 +360,10 @@ public class SeriesReport extends ReportBase {
 	}
 		
 	
-	private void getRingRemarks() throws DocumentException{
+	private Paragraph getRingRemarks(){
 		
 		Paragraph p = new Paragraph();
-		p.setLeading(0, 1.2f);
+		//p.setLeading(0, 1.2f);
 		
 		DecadalModel model = new DecadalModel(s);
 		float[] widths = {0.1f, 0.75f};
@@ -430,12 +432,13 @@ public class SeriesReport extends ReportBase {
 		}
 		
 		// Add to document
-		if(hasRemarks)
-		{
-			p.add(new Chunk("Ring remarks:\n ", subSectionFont));
-			document.add(p);
-			document.add(tbl);
+		if(hasRemarks){
+			p.add(new Chunk("Ring remarks:", subSectionFont));
+			p.add(tbl);
 		}
+		
+		
+		return p;
 		
 	}
 	
@@ -520,7 +523,7 @@ public class SeriesReport extends ReportBase {
 				
 	}
 	
-	private void getSeriesComments() throws DocumentException
+	private Paragraph getSeriesComments() 
 	{
 	
 		Paragraph p = new Paragraph();
@@ -534,7 +537,7 @@ public class SeriesReport extends ReportBase {
 			p.add(new Chunk("No comments recorded", bodyFont));
 		}
 		
-		document.add(p);
+		return p;
 	}
 	
 	private Paragraph getInterpretationPDF()
