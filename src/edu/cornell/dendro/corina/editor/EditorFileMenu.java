@@ -67,7 +67,7 @@ public class EditorFileMenu extends FileMenu {
 		JMenuItem reportPrint = Builder.makeMenuItem("print", true, "printer.png");
 		reportPrint.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				SeriesReport.printReport(sample.getSeries().getIdentifier().getValue().toString());
+				SeriesReport.printReport(sample);
 			}
 		});
 		add(reportPrint);
@@ -76,7 +76,7 @@ public class EditorFileMenu extends FileMenu {
 		JMenuItem reportPreview = Builder.makeMenuItem("printpreview", true);
 		reportPreview.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {				
-				SeriesReport.viewReport(sample.getSeries().getIdentifier().getValue().toString());
+				SeriesReport.viewReport(sample);
 			}
 		});
 		add(reportPreview);		

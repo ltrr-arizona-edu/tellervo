@@ -42,7 +42,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 		else
 			dialog = new JDialog((Dialog) parent, "Location Geometry", true);
 
-		dialog.setIconImage(Builder.getImage("Preferences16.gif"));
+		//dialog.setIconImage(Builder.getImage("Preferences16.gif"));
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 		dialog.setContentPane(this);

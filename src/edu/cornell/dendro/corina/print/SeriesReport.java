@@ -481,10 +481,15 @@ public class SeriesReport extends ReportBase {
 		if(sss instanceof TridasMeasurementSeries) 
 		{ 
 			mseries = (TridasMeasurementSeries) sss; 
+			if(mseries.getAnalyst()!=null) {
 			p.add(new Chunk("Measured by: ", subSectionFont));
 			p.add(new Chunk(mseries.getAnalyst(), bodyFont));
+			}
+			
+			if(mseries.getDendrochronologist()!=null){
 			p.add(new Chunk("\nSupervised by: ", subSectionFont));
-			p.add(new Chunk(mseries.getDendrochronologist(), bodyFont));			
+			p.add(new Chunk(mseries.getDendrochronologist(), bodyFont));
+			}
 		}
 		else
 		{
@@ -534,21 +539,28 @@ public class SeriesReport extends ReportBase {
 	
 	private Paragraph getInterpretationPDF()
 	{
-	
+		
 		Paragraph p = new Paragraph();
 		p.setLeading(0, 1.2f);
 		Year firstyear = s.getSeries().getInterpretation().getFirstYear();
 		Year sproutyear = s.getSeries().getInterpretation().getSproutYear();
 		Year deathyear = s.getSeries().getInterpretation().getDeathYear();
-		
+		Boolean isRelativelyDated = false;
 		p.add(new Chunk("Interpretation:", subSectionFont));
+		
+		String datingType = s.getSeries().getInterpretation().getDating().getType().toString();
+		
+		if(datingType=="RELATIVE") isRelativelyDated = true;
 		
 		if(firstyear!=null){
 			p.add(new Chunk("\n- The first ring of this series begins in ", bodyFont));
+			if(isRelativelyDated) p.add(new Chunk("relative year ", bodyFont));
+			
 			if (firstyear.getCertainty()!=null){
 				p.add(new Chunk(firstyear.getCertainty().toString().toLowerCase() + " ", bodyFont));
 			}
-			p.add(new Chunk(firstyear.getValue().toString() + firstyear.getSuffix().toString() + ". ", bodyFont));
+			p.add(new Chunk(firstyear.getValue().toString(), bodyFont));
+			if(isRelativelyDated==false) p.add(new Chunk(firstyear.getSuffix().toString() + ". ", bodyFont));
 		}
 		
 		if(sproutyear!=null && deathyear!=null){
@@ -556,12 +568,14 @@ public class SeriesReport extends ReportBase {
 			if (sproutyear.getCertainty()!=null){
 				p.add(new Chunk(sproutyear.getCertainty().toString().toLowerCase() + " ", bodyFont));
 			}
-			p.add(new Chunk(sproutyear.getValue().toString() + sproutyear.getSuffix().toString() +
-				" and died in ", bodyFont));
+			p.add(new Chunk(sproutyear.getValue().toString(), bodyFont));
+			if(isRelativelyDated==false) p.add(new Chunk(sproutyear.getSuffix().toString(), bodyFont));
+			p.add(new Chunk(" and died in ", bodyFont));
 			if (deathyear.getCertainty()!=null){
 				p.add(new Chunk(deathyear.getCertainty().toString().toLowerCase() + " ", bodyFont));
 			}
-			p.add(new Chunk(deathyear.getValue().toString() + deathyear.getSuffix().toString() + ".\n", bodyFont));
+			p.add(new Chunk(deathyear.getValue().toString(), bodyFont));
+			if(isRelativelyDated==false) p.add(new Chunk(deathyear.getSuffix().toString() + ".\n", bodyFont));
 		}
 		
 		
@@ -625,10 +639,15 @@ public class SeriesReport extends ReportBase {
 		if(woodCompleteness.getHeartwood()!=null){
 			
 			if(woodCompleteness.getHeartwood().getPresence()!=null){
-				heartwoodPresence = woodCompleteness.getHeartwood().getPresence().value();
+				if(woodCompleteness.getHeartwood().getPresence().value()=="unknown"){
+					heartwoodPresence = "- Whether heartwood is present or not is unknown";
+				}
+				else{
+					heartwoodPresence = "- Heartwood is " + woodCompleteness.getHeartwood().getPresence().value();
+				}
 			}
 			else{
-				heartwoodPresence = "not specified";
+				heartwoodPresence = "- Presence of heartwood has not been specified";
 			}
 			
 			if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPith()!=null){
@@ -639,15 +658,15 @@ public class SeriesReport extends ReportBase {
 			}
 			
 			if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPithFoundation()!=null){
-				missingHeartwoodFoundation = woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPithFoundation().toString();
+				missingHeartwoodFoundation = woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPithFoundation().toString().toLowerCase();
 			}
 			else{
 				missingHeartwoodFoundation = "unspecified reasons";
 			}
 			
-			p.add(new Chunk("- Heartwood is " + heartwoodPresence, bodyFont));
+			p.add(new Chunk(heartwoodPresence, bodyFont));
 			if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPith()!=null){
-				p.add(new Chunk(" ("+ missingHeartwoodRings + " rings are missing based upon " + missingHeartwoodFoundation + ").\n", bodyFont));
+				p.add(new Chunk(" ("+ missingHeartwoodRings + " ring(s) are missing based upon '" + missingHeartwoodFoundation + "').\n", bodyFont));
 			}
 			else
 			{
@@ -662,10 +681,19 @@ public class SeriesReport extends ReportBase {
 		if(woodCompleteness.getSapwood()!=null){
 			
 			if(woodCompleteness.getSapwood().getPresence()!=null){
-				sapwoodPresence = woodCompleteness.getSapwood().getPresence().value();
+				
+				if(woodCompleteness.getSapwood().getPresence().value()=="unknwon")
+				{
+					sapwoodPresence = "- Whether the sapwood is present or not is unknown";
+				}
+				else{
+					sapwoodPresence = "- Sapwood is " + woodCompleteness.getSapwood().getPresence().value();
+				}
+				
+				
 			}
 			else{
-				sapwoodPresence = "not specified";
+				sapwoodPresence = "- Presence of sapwood has not specified";
 			}
 			
 			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBark()!=null){
@@ -676,15 +704,15 @@ public class SeriesReport extends ReportBase {
 			}
 			
 			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation()!=null){
-				missingSapwoodFoundation = woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation().toString();
+				missingSapwoodFoundation = woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation().toString().toLowerCase();
 			}
 			else{
 				missingSapwoodFoundation = "unspecified reasons";
 			}
 						
-			p.add(new Chunk("- Sapwood is " + sapwoodPresence, bodyFont ));
+			p.add(new Chunk(sapwoodPresence, bodyFont ));
 			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBark()!=null){
-				p.add(new Chunk(" ("+ missingSapwoodRings + " rings are missing based upon " + missingSapwoodFoundation + ").\n", bodyFont));
+				p.add(new Chunk(" ("+ missingSapwoodRings + " ring(s) are missing based upon '" + missingSapwoodFoundation + "').\n", bodyFont));
 			}
 			else
 			{
@@ -717,7 +745,7 @@ public class SeriesReport extends ReportBase {
 		}
 		else
 		{
-			p.add(new Chunk("- No details about the last ring were recorded.\n", bodyFont));
+			p.add(new Chunk("- No details about the last ring under the bark were recorded.\n", bodyFont));
 		}
 		return p;
 	}
@@ -743,6 +771,7 @@ public class SeriesReport extends ReportBase {
 		
 	}	
 		
+	
 	/**
 	 * Function for printing or viewing series report
 	 * @param printReport Boolean
@@ -750,7 +779,6 @@ public class SeriesReport extends ReportBase {
 	 */
 	public static void getReport(Boolean printReport, String vmid)
 	{
-		
 		String domain = "dendro.cornell.edu/dev/";
 		Sample samp = null;
 		
@@ -760,7 +788,18 @@ public class SeriesReport extends ReportBase {
 		catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-
+		
+		getReport(printReport, samp);
+		
+	}
+	
+	/**
+	 * Function for printing or viewing series report
+	 * @param printReport Boolean
+	 * @param vmid String
+	 */
+	public static void getReport(Boolean printReport, Sample samp)
+	{
 		// create the series report
 		SeriesReport report = new SeriesReport(samp);		
 		
@@ -802,18 +841,18 @@ public class SeriesReport extends ReportBase {
 	 *  
 	 * @param vmid
 	 */
-	public static void printReport(String vmid)
+	public static void printReport(Sample s)
 	{
-		getReport(true, vmid);	
+		getReport(true, s);	
 	}
 	
 	/**
 	 * Wrapper function to view report
 	 * @param vmid
 	 */
-	public static void viewReport(String vmid)
+	public static void viewReport(Sample s)
 	{
-		getReport(false, vmid);
+		getReport(false, s);
 	}
 	
 	

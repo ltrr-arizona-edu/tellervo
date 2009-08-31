@@ -462,8 +462,15 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 				}
 
 				// make it into a tridas object array
-				TridasObjectEx[] selected = Arrays.copyOf(selectedO, selectedO.length, 
-						TridasObjectEx[].class); 
+				//TridasObjectEx[] selected = Arrays.copyOf(selectedO., selectedO.length, 
+				//		TridasObjectEx[].class);
+				
+				//TridasObjectEx[] selected = new TridasObjectEx[selectedO.length];
+				
+				
+				TridasObjectEx[] selected = new TridasObjectEx[selectedO.length];
+				System.arraycopy(selectedO, 0, selected, 0, selectedO.length);
+				
 				
 				// sort the list so it's easy to compare
 				Arrays.sort(selected, new TridasObjectList.SiteComparator());
