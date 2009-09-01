@@ -133,7 +133,7 @@ public class Help {
 	// pure-java method:
 	button.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-		    showHelp();
+			HelpWiki.showHelp("http://dendro.cornell.edu/corina-manual/Indexing");
 		}
 	    });
     }

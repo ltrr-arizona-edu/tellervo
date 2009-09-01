@@ -124,7 +124,7 @@ public class BoxLabel extends ReportBase{
 					
 				// Timestamp
 				ColumnText ct3 = new ColumnText(cb);
-				ct3.setSimpleColumn(document.left(), document.top(15)-223, 283, document.top(15)-60, 20, Element.ALIGN_LEFT);
+				ct3.setSimpleColumn(document.left(), document.top(15)-223, 350, document.top(15)-60, 20, Element.ALIGN_LEFT);
 				ct3.setLeading(0, 1.2f);
 				ct3.addText(getTimestampPDF(b));
 				ct3.go();		
@@ -134,7 +134,7 @@ public class BoxLabel extends ReportBase{
 		        Paragraph p2 = new Paragraph();
 		        p2.setSpacingBefore(70);
 			    p2.setSpacingAfter(10);
-			    p2.add(new Chunk(" ", bodyFont));  
+			    p2.add(new Chunk(" ", bodyFontLarge));  
 		        document.add(new Paragraph(p2));
 		        
 		        // Ring samples table
@@ -168,7 +168,7 @@ public class BoxLabel extends ReportBase{
 		
 		p.add(new Chunk(b.getTitle()+"\n", monsterFont));
 	
-		//p.add(new Chunk(b.getCurationLocation(), subTitleFont));
+		//p.add(new Chunk(b.getCurationLocation(), bodyFontLarge));
 				
 		return p;		
 	}
@@ -204,7 +204,7 @@ public class BoxLabel extends ReportBase{
 	 */
 	private void getTable(WSIBox b) throws DocumentException
 	{
-		float[] widths = {0.1f, 0.75f, 0.1f};
+		float[] widths = {0.15f, 0.75f, 0.2f};
 		PdfPTable tbl = new PdfPTable(widths);
 		PdfPCell headerCell = new PdfPCell();
 
@@ -215,13 +215,13 @@ public class BoxLabel extends ReportBase{
 		headerCell.setBorderWidthTop(headerLineWidth);
 		headerCell.setBorderWidthLeft(0);
 		headerCell.setBorderWidthRight(0);		
-		headerCell.setPhrase(new Phrase("Object", tableHeaderFont));
+		headerCell.setPhrase(new Phrase("Object", tableHeaderFontLarge));
 		headerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 		tbl.addCell(headerCell);
-		headerCell.setPhrase(new Phrase("Elements", tableHeaderFont));
+		headerCell.setPhrase(new Phrase("Elements", tableHeaderFontLarge));
 		headerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 		tbl.addCell(headerCell);
-		headerCell.setPhrase(new Phrase("# Samples", tableHeaderFont));
+		headerCell.setPhrase(new Phrase("# Samples", tableHeaderFontLarge));
 		headerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		tbl.addCell(headerCell);
 		
@@ -277,7 +277,7 @@ public class BoxLabel extends ReportBase{
 			dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 			String objCode;
 			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getLabCode(); else objCode = myobj.getTitle();	
-			dataCell.setPhrase(new Phrase(objCode, bodyFont));
+			dataCell.setPhrase(new Phrase(objCode, bodyFontLarge));
 			tbl.addCell(dataCell);
 			
 			// Search for elements associated with this object
@@ -321,11 +321,11 @@ public class BoxLabel extends ReportBase{
 						
 			
 			// Add element names to second column
-			dataCell.setPhrase(new Phrase(hyphenSummarize(numlist), bodyFont));
+			dataCell.setPhrase(new Phrase(hyphenSummarize(numlist), bodyFontLarge));
 			tbl.addCell(dataCell);
 			
 			// Add sample count to third column
-			dataCell.setPhrase(new Phrase(smpCnt.toString(), bodyFont));
+			dataCell.setPhrase(new Phrase(smpCnt.toString(), bodyFontLarge));
 			dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			tbl.addCell(dataCell);
 			
@@ -349,12 +349,12 @@ public class BoxLabel extends ReportBase{
 		headerCell.setBorderWidthLeft(0);
 		headerCell.setBorderWidthRight(0);
 		
-		headerCell.setPhrase(new Phrase(" ", bodyFont));
+		headerCell.setPhrase(new Phrase(" ", bodyFontLarge));
 		tbl.addCell(headerCell);	
-		headerCell.setPhrase(new Phrase("Grand Total", bodyFont));
+		headerCell.setPhrase(new Phrase("Grand Total", tableHeaderFontLarge));
 		headerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		tbl.addCell(headerCell);	
-		headerCell.setPhrase(new Phrase(sampleCountInBox.toString(), bodyFont));
+		headerCell.setPhrase(new Phrase(sampleCountInBox.toString(), bodyFontLarge));
 		tbl.addCell(headerCell);
 		
 		// Add table to document
@@ -526,11 +526,11 @@ public class BoxLabel extends ReportBase{
 		Paragraph p = new Paragraph();
 
 	
-		p.add(new Chunk("Created: ", subSectionFont));
+		p.add(new Chunk("Created: ", subSubSectionFont));
 		p.add(new Chunk(df1.format(createdTimestamp), bodyFont));
-		//p.add(new Chunk("\nLast Modified: ", subSectionFont));
-		//p.add(new Chunk(df1.format(lastModifiedTimestamp), bodyFont));
-		p.add(new Chunk("\nLabel updated: ", subSectionFont));
+		//p.add(new Chunk("\nLast Modified: ", subSubSectionFont));
+		//p.add(new Chunk(df1.format(lastModifiedTimestamp), bodyFontLarge));
+		p.add(new Chunk("\nLabel updated: ", subSubSectionFont));
 		p.add(new Chunk(df1.format(nowTimestamp), bodyFont));
 
 		
@@ -549,10 +549,10 @@ public class BoxLabel extends ReportBase{
 	{
 		
 		if (col==0)	{
-			return tableHeaderFont;
+			return tableHeaderFontLarge;
 		}
 		else {
-			return bodyFont;
+			return bodyFontLarge;
 		}
 				
 	}
@@ -563,7 +563,7 @@ public class BoxLabel extends ReportBase{
 		Paragraph p = new Paragraph();
 		p.setLeading(0, 1.2f);
 		
-		p.add(new Chunk("Comments: \n", subSectionFont));
+		p.add(new Chunk("Comments: \n", subSubSectionFont));
 		if(b.getComments()!=null){
 			p.add(new Chunk(b.getComments(), bodyFont));
 		}
@@ -671,19 +671,5 @@ public class BoxLabel extends ReportBase{
 	
 
 	
-	public static void main(String[] args) {
-		String domain = "dendro.cornell.edu/dev/";
-		String measurementID = "c15449db-9834-5271-a699-9217d42919c1";
-		String filename = "output.pdf";
-		
-	    App.platform = new Platform();
-	    App.platform.init();	    
-		App.init(null, null);
-		Sample samp = null;
-		
-		BoxLabel label = new BoxLabel(samp);
-		label.getLabel(false, measurementID);
-		
-	}
 	
 }

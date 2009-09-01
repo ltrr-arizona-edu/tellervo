@@ -361,6 +361,7 @@ public class IndexDialog extends JDialog {
 		// help button
 		JButton help = Builder.makeButton("help");
 		Help.addToButton(help, "indexing");
+		
 
 		// cancel button
 		JButton cancel = makeCancelButton();

@@ -58,6 +58,14 @@ public class HelpWiki extends XFrame {
 		HelpWiki dialog = new HelpWiki(null);
 		dialog.setVisible(true);
 	}
+	
+    /**
+     * Show the help window!
+     */
+	public static void showHelp(String page) {
+		HelpWiki dialog = new HelpWiki(page);
+		dialog.setVisible(true);
+	}	
     
 	private MozillaPanel mozillaPanel;
 }

@@ -7,18 +7,29 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfContentByte;
 
 public class ReportBase {
+	
+	// Title fonts
 	Font docTypeFont = new Font(Font.HELVETICA, 20f, Font.BOLD);
 	Font titleFont = new Font(Font.HELVETICA, 20f, Font.BOLD);
 	Font monsterFont = new Font(Font.HELVETICA, 38f, Font.BOLD);
 	Font subTitleFont = new Font(Font.HELVETICA, 14f);
-	Font sectionFont = new Font(Font.HELVETICA, 14f, Font.BOLD);
-	Font subSectionFont = new Font(Font.HELVETICA, 10f, Font.BOLD);
-	Font bodyFont = new Font(Font.HELVETICA, 10f);
-	Font superBodyFont = new Font(Font.HELVETICA, 6f);
-	Font bodyFontItalic = new Font(Font.HELVETICA, 10f, Font.ITALIC);
-	Font tableHeaderFont = new Font(Font.HELVETICA, 10f, Font.BOLD);
-
 	
+	// Section fonts
+	Font sectionFont = new Font(Font.HELVETICA, 14f, Font.BOLD);
+	Font subSectionFont = new Font(Font.HELVETICA, 14f, Font.BOLD);
+	Font subSubSectionFont = new Font(Font.HELVETICA, 10f, Font.BOLD);
+	
+	// General body fonts
+	Font bodyFontLarge = new Font(Font.HELVETICA, 14f);
+	Font bodyFont = new Font(Font.HELVETICA, 10f);
+	Font bodyFontItalic = new Font(Font.HELVETICA, 10f, Font.ITALIC);
+	Font superBodyFont = new Font(Font.HELVETICA, 6f);
+	
+	// Table fonts
+	Font tableHeaderFont = new Font(Font.HELVETICA, 10f, Font.BOLD);
+	Font tableHeaderFontLarge = new Font(Font.HELVETICA, 14f, Font.BOLD);
+	
+	// Line widths
 	Float lineWidth = new Float(0.05);
 	Float headerLineWidth = new Float(0.8);	
 	
