@@ -85,7 +85,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		
 		dv1.setReconcileNotifier(this);
 		dv2.setReconcileNotifier(this);
-			
+		
 		// Create split pane to hold two series
 		JPanel seriesHolder = new JPanel();
 		seriesHolder.setLayout(new BoxLayout(seriesHolder, BoxLayout.X_AXIS));
@@ -124,8 +124,11 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		content.add(splitPane, BorderLayout.CENTER);
 		content.add(dv1.getReconcileInfoPanel(), BorderLayout.WEST);
 		content.add(createButtonPanel(), BorderLayout.SOUTH);
-
-		setContentPane(content);	
+		
+		setContentPane(content);
+		
+		// set initial remeasure button state
+		checkRemeasurable();
 
 		pack();
 
@@ -358,11 +361,18 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		
 		dv.duplicateSelectionFrom(dataview);
 		
+		checkRemeasurable();
+	}
+	
+	/**
+	 * If we've selected something, enable or disable the 'remeasure' button
+	 */
+	private void checkRemeasurable() {
 		// enable if it's a valid index into both datasets!
 		Year y = dv1.getSelectedYear();
 		int col = dv1.myTable.getSelectedColumn();
 		int idx = y.diff(s1.getStart());
-		btnRemeasure.setEnabled(col > 1 && col < 11 && idx >= 0 && idx < s1.getData().size() && idx < s2.getData().size());
+		btnRemeasure.setEnabled(col > 0 && col < 11 && idx >= 0 && idx < s1.getData().size() && idx < s2.getData().size());		
 	}
 
 	public void reconcileDataChanged(ReconcileDataView dataview) {
