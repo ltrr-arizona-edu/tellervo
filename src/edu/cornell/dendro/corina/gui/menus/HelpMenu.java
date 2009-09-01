@@ -89,7 +89,7 @@ public class HelpMenu extends JMenu {
     */
     protected void addHelpMenu() {
 	add(Builder.makeMenuItem("corina_help",
-				 "edu.cornell.dendro.corina.gui.HelpWiki.main()", "help.png"));
+				 "edu.cornell.dendro.corina.gui.HelpWiki.showHelp()", "help.png"));
     }
 
     /**

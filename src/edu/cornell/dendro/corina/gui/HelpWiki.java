@@ -6,83 +6,58 @@
 
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import org.mozilla.browser.MozillaPanel;
+import org.mozilla.browser.MozillaPanel.VisibilityMode;
 
 /**
  *
  * @author  peterbrewer
  */
-public class HelpWiki extends javax.swing.JDialog {
-    
-    /** Creates new form HelpWiki */
-    public HelpWiki(java.awt.Frame parent, boolean modal, String page) {
-        super(parent, modal);
-        
-        if(page=="") page = "http://dendro.cornell.edu/corina-manual/UserGuideContents";
-        
-        initComponents(page);
+public class HelpWiki extends XFrame {
+	private static final long serialVersionUID = 1L;
 
-    }
-    
-    private void initComponents(String page) {
+	/** Creates new form HelpWiki */
+    public HelpWiki(String page) {
+        super();
+        
+        if(page == null || page == "") 
+        	page = "http://dendro.cornell.edu/corina-manual/UserGuideContents";
+        
+        mozillaPanel = new MozillaPanel(VisibilityMode.FORCED_HIDDEN, VisibilityMode.DEFAULT);
+        mozillaPanel.setUpdateTitle(true);
+        
+        // apparently, have to stick it in a dummy holder panel
+        JPanel holder = new JPanel(new BorderLayout());
+        holder.add(mozillaPanel, BorderLayout.CENTER);
+        setContentPane(holder);
+        
+        setTitle("Corina Help Wiki");
 
-        mozillaPanel = new org.mozilla.browser.MozillaPanel();
+        // die on close!
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		pack();
+		
+        // make the frame medium to start off with
+		// but make it maximized
+        setSize(640, 480);
+		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        
         mozillaPanel.load(page);
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        org.jdesktop.layout.GroupLayout mozillaPanelLayout = new org.jdesktop.layout.GroupLayout(mozillaPanel);
-        mozillaPanel.setLayout(mozillaPanelLayout);
-        mozillaPanelLayout.setHorizontalGroup(
-            mozillaPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 211, Short.MAX_VALUE)
-        );
-        mozillaPanelLayout.setVerticalGroup(
-            mozillaPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 214, Short.MAX_VALUE)
-        );
-
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .add(mozillaPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .add(mozillaPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-    
-        pack();
-
-    }// </editor-fold>//GEN-END:initComponents
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main() {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                HelpWiki dialog = new HelpWiki(new javax.swing.JFrame(), true, "");
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
     }
+        
+    /**
+     * Show the help window!
+     */
+	public static void showHelp() {
+		HelpWiki dialog = new HelpWiki(null);
+		dialog.setVisible(true);
+	}
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    //private java.awt.Panel mozillaPanel;
 	private MozillaPanel mozillaPanel;
-    // End of variables declaration//GEN-END:variables
-    
 }
