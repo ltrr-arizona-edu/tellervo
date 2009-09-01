@@ -64,8 +64,8 @@ public class SeriesReport extends ReportBase {
 		try {
 		
 			PdfWriter writer = PdfWriter.getInstance(document, output);
-			document.open();
 			document.setPageSize(PageSize.LETTER);
+			document.open();
 			cb = writer.getDirectContent();			
 			
 			// Set basic metadata
@@ -102,7 +102,7 @@ public class SeriesReport extends ReportBase {
 			// Pad text
 	        document.add(new Paragraph(" "));      
 	        Paragraph p2 = new Paragraph();
-	        p2.setSpacingBefore(130);
+	        p2.setSpacingBefore(50);
 		    p2.setSpacingAfter(10);
 		    p2.add(new Chunk(" ", bodyFont));  
 	        document.add(new Paragraph(p2));
@@ -239,7 +239,7 @@ public class SeriesReport extends ReportBase {
 		{
 			if(s.hasWeiserjahre()==true){
 				model = new WJTableModel(s);
-				document.add(new Chunk("Weiserjahre:", subSectionFont));
+				document.add(new Chunk("Weiserjahre:", subSubSectionFont));
 			}
 			else{
 				return;				
@@ -248,7 +248,7 @@ public class SeriesReport extends ReportBase {
 		else
 		{
 			model = new DecadalModel(s);
-			document.add(new Chunk("Ring widths:", subSectionFont));
+			document.add(new Chunk("Ring widths:", subSubSectionFont));
 		}
 		
 		int rows = model.getRowCount();
@@ -459,9 +459,9 @@ public class SeriesReport extends ReportBase {
 		Paragraph p = new Paragraph();
 
 	
-		p.add(new Chunk("Created: ", subSectionFont));
+		p.add(new Chunk("Created: ", subSubSectionFont));
 		p.add(new Chunk(df1.format(createdTimestamp), bodyFont));
-		p.add(new Chunk("\nLast Modified: ", subSectionFont));
+		p.add(new Chunk("\nLast Modified: ", subSubSectionFont));
 		p.add(new Chunk(df1.format(lastModifiedTimestamp), bodyFont));
 
 		
@@ -485,19 +485,19 @@ public class SeriesReport extends ReportBase {
 		{ 
 			mseries = (TridasMeasurementSeries) sss; 
 			if(mseries.getAnalyst()!=null) {
-			p.add(new Chunk("Measured by: ", subSectionFont));
+			p.add(new Chunk("Measured by: ", subSubSectionFont));
 			p.add(new Chunk(mseries.getAnalyst(), bodyFont));
 			}
 			
 			if(mseries.getDendrochronologist()!=null){
-			p.add(new Chunk("\nSupervised by: ", subSectionFont));
+			p.add(new Chunk("\nSupervised by: ", subSubSectionFont));
 			p.add(new Chunk(mseries.getDendrochronologist(), bodyFont));
 			}
 		}
 		else
 		{
 			dseries = (TridasDerivedSeries) sss;
-			p.add(new Chunk("Created by: ", subSectionFont));
+			p.add(new Chunk("Created by: ", subSubSectionFont));
 			p.add(new Chunk(dseries.getAuthor(), bodyFont));
 			
 		}
@@ -529,7 +529,7 @@ public class SeriesReport extends ReportBase {
 		Paragraph p = new Paragraph();
 		p.setLeading(0, 1.2f);
 		
-		p.add(new Chunk("Comments: \n", subSectionFont));
+		p.add(new Chunk("Comments: \n", subSubSectionFont));
 		if(s.getSeries().getComments()!=null){
 			p.add(new Chunk(s.getSeries().getComments(), bodyFont));
 		}
@@ -549,7 +549,7 @@ public class SeriesReport extends ReportBase {
 		Year sproutyear = s.getSeries().getInterpretation().getSproutYear();
 		Year deathyear = s.getSeries().getInterpretation().getDeathYear();
 		Boolean isRelativelyDated = false;
-		p.add(new Chunk("Interpretation:", subSectionFont));
+		p.add(new Chunk("Interpretation:", subSubSectionFont));
 		
 		String datingType = s.getSeries().getInterpretation().getDating().getType().toString();
 		
@@ -620,7 +620,7 @@ public class SeriesReport extends ReportBase {
 		String missingSapwoodRings = null;
 		String missingSapwoodFoundation = null;
 		
-		p.add(new Chunk("Wood Completeness:\n", subSectionFont));
+		p.add(new Chunk("Wood Completeness:\n", subSubSectionFont));
 		
 		// Extract pith info
 		if(woodCompleteness.getPith()!=null){
@@ -685,7 +685,7 @@ public class SeriesReport extends ReportBase {
 			
 			if(woodCompleteness.getSapwood().getPresence()!=null){
 				
-				if(woodCompleteness.getSapwood().getPresence().value()=="unknwon")
+				if(woodCompleteness.getSapwood().getPresence().value()=="unknown")
 				{
 					sapwoodPresence = "- Whether the sapwood is present or not is unknown";
 				}
@@ -696,7 +696,7 @@ public class SeriesReport extends ReportBase {
 				
 			}
 			else{
-				sapwoodPresence = "- Presence of sapwood has not specified";
+				sapwoodPresence = "- Presence of sapwood has not been specified";
 			}
 			
 			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBark()!=null){
@@ -764,7 +764,7 @@ public class SeriesReport extends ReportBase {
 		TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
 		TridasSample tsamp = s.getMeta(Metadata.SAMPLE, TridasSample.class);
 		
-		p.add(new Chunk("Element and sample details:\n", subSectionFont));
+		p.add(new Chunk("Element and sample details:\n", subSubSectionFont));
 		
 		p.add(new Chunk("- Taxon:  ", bodyFont));
 		p.add(new Chunk(telem.getTaxon().getNormal()+"\n", bodyFontItalic));
