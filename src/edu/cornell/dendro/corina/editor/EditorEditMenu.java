@@ -215,7 +215,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 
 	private void addMeasure() {
-		measureMenu = Builder.makeMenuItem("start_measuring", true, "measurement.png");
+		measureMenu = Builder.makeMenuItem("start_measuring", true, "measure.png");
 		measureMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				editor.toggleMeasuring();

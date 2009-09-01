@@ -111,6 +111,12 @@ public class Remarks {
 	static {
 		tridasRemarkIconMap.put(NormalTridasRemark.FIRE_DAMAGE, "fire.png");
 		tridasRemarkIconMap.put(NormalTridasRemark.FROST_DAMAGE, "frostring.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.FALSE_RINGS, "falsering.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.COMPRESSION_WOOD, "compressionwood.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.TENSION_WOOD, "tensionwood.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.UNSPECIFIED_INJURY, "injury.png");		
+		tridasRemarkIconMap.put(NormalTridasRemark.TRAUMATIC_DUCTS, "Burn.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.CRACK, "crack.png");	
 	};
 	
 	private final static Map<String, String> corinaRemarkIconMap = new HashMap<String, String>();
@@ -118,6 +124,8 @@ public class Remarks {
 		corinaRemarkIconMap.put("Single pinned", "singlepin.png");
 		corinaRemarkIconMap.put("Double pinned", "doublepin.png");
 		corinaRemarkIconMap.put("Triple pinned", "triplepin.png");
+		corinaRemarkIconMap.put("Missing ring", "missingring.png");
+
 	}
 	
 	private Remarks() {

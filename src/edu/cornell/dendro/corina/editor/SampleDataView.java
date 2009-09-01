@@ -269,21 +269,21 @@ public class SampleDataView extends JPanel implements SampleListener,
 		 marks.add(new JRadioButtonMenuItem("None", true));
 		 */
 
-		JMenuItem insert = Builder.makeMenuItem("insert_year");
+		JMenuItem insert = Builder.makeMenuItem("insert_year", true, "insertyear.png");
 		insert.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				insertYear();
 			}
 		});
 
-		JMenuItem insertMR = Builder.makeMenuItem("insert_mr");
+		JMenuItem insertMR = Builder.makeMenuItem("insert_mr", true, "insertmissingyear.png");
 		insertMR.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				insertMR();
 			}
 		});
 
-		JMenuItem delete = Builder.makeMenuItem("delete_year");
+		JMenuItem delete = Builder.makeMenuItem("delete_year", true, "deleteyear.png");
 		delete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				deleteYear();
