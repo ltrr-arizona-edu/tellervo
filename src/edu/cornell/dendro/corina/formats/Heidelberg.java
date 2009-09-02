@@ -60,7 +60,7 @@ public class Heidelberg implements Filetype {
 	}
 
 	public String getDefaultExtension() {
-		return ".mpl";
+		return ".fh";
 	}
 
 	public Sample load(BufferedReader r) throws IOException {
