@@ -291,7 +291,7 @@ public class FileDialog {
 			f.setCurrentDirectory(workFile);
 		
 		// show the dialog
-		int result = f.showDialog(null, prompt);
+		int result = f.showDialog(null, "Export");
 
 		try {
 			if (result == JFileChooser.APPROVE_OPTION) {

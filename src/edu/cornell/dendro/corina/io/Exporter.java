@@ -67,13 +67,13 @@ public class Exporter {
 		
 		// use the default title...
 		
-		String etext = "";
+		/**String etext = "";
 		if (exportee.getMeta("filename") != null) {
-			File oldfile = new File((String) exportee.getMeta("filename"));
+			File oldfile = new File((String) exportee.getDisplayTitle());
 			etext = " (" + oldfile.getName() + ")";
-		}
+		}*/
 
-		String title = I18n.getText("export") + etext;
+		String title = exportee.getDisplayTitle();
 		
 		return saveSingleSample(exportee, format, title);
 	}
@@ -86,7 +86,7 @@ public class Exporter {
 			String suggestedfn = 
 				exportDirectory + 
 				File.separator + 
-				new File((String)exportee.getMeta("filename")).getName() +
+				exportee.getDisplayTitle().toString() +
 				f.getDefaultExtension();
 			
 			System.out.println(suggestedfn);
