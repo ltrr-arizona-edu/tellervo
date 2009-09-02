@@ -253,6 +253,14 @@ public class Heidelberg implements Filetype {
 	public void save(Sample s, BufferedWriter w) throws IOException {
 		// header
 		w.write("HEADER:");
+		//w.newLine();
+		//w.write("DataFormat" ?);
+		w.newLine();
+		w.write("KeyCode=" + s.getDisplayTitle().replace("-", ""));
+		//w.newLine();
+		//w.write("Unit" + s.getSeries().??);
+		//w.newLine();
+		//w.write("DateBegin=" + ?);
 		w.newLine();
 		w.write("DateEnd=" + s.getRange().getEnd());
 		w.newLine();
