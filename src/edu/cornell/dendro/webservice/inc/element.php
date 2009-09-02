@@ -600,7 +600,7 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter, ";              	
 	                    }
                         if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid, ";	                    
-                        if ($this->location->getType()!=NULL)					$sql.= "locationtype, ";
+                        if ($this->location->getType()!=NULL)					$sql.= "locationtypeid, ";
                         if ($this->location->getPrecision()!=NULL)				$sql.= "locationprecision, ";
                         if ($this->location->getComment()!=NULL)				$sql.= "locationcomment, ";
                         if ($this->location->getGeometry()!=NULL)				$sql.= "locationgeometry, ";
@@ -633,7 +633,7 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "'".pg_escape_string($this->getDimension('diameter'))."', ";;              	
 	                    }                        
                         if ($this->getAuthenticity()!=NULL)						$sql.= "'".pg_escape_string($this->getAuthenticity(true))."', ";
-                        if ($this->location->getType()!=NULL)					$sql.= "'".pg_escape_string($this->location->getType())."', ";
+                        if ($this->location->getType()!=NULL)					$sql.= "'".pg_escape_string($this->location->getTypeID())."', ";
                         if ($this->location->getPrecision()!=NULL)				$sql.= "'".pg_escape_string($this->location->getPrecision())."', ";
                         if ($this->location->getComment()!=NULL)				$sql.= "'".pg_escape_string($this->location->getComment())."', ";
                         if ($this->location->getGeometry()!=NULL)				$sql.= "'".pg_escape_string($this->location->getGeometry())."', ";
@@ -672,7 +672,7 @@ class element extends elementEntity implements IDBAccessor
 	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter='".pg_escape_string($this->getDimension('diameter'))."', ";            	
 	                    }                    	
                     	if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid='".pg_escape_string($this->getAuthenticity(true))."', ";
-                        if ($this->location->getType()!=NULL)					$sql.= "locationtype='".pg_escape_string($this->location->getType())."', ";
+                        if ($this->location->getType()!=NULL)					$sql.= "locationtypeid='".pg_escape_string($this->location->getTypeID())."', ";
                         if ($this->location->getPrecision()!=NULL)				$sql.= "locationprecision='".pg_escape_string($this->location->getPrecision())."', ";
                         if ($this->location->getComment()!=NULL)				$sql.= "locationcomment='".pg_escape_string($this->location->getComment())."', ";
                         if ($this->location->getGeometry()!=NULL)				$sql.= "locationgeometry='".pg_escape_string($this->location->getGeometry())."', ";

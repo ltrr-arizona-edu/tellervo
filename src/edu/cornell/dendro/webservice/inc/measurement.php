@@ -1098,6 +1098,8 @@ class measurement extends measurementEntity implements IDBAccessor
 			
 			// Include permissions details if requested
 			$xml .= $this->getPermissionsXML();
+			if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
+			
 			if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField type=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::fromPHPtoStringBool($this->isReconciled)."</tridas:genericField>\n";
 			if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\" type=\"xs:boolean\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
 			if($this->analyst->getID()!=NULL)			$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"xs:int\">".$this->analyst->getID()."</tridas:genericField>\n";

@@ -478,7 +478,7 @@ class sample extends sampleEntity implements IDBAccessor
                         if($this->getTitle()!=NULL)                   	$sql.="code, ";
                     													$sql.="sampleid, ";
                         if($this->getComments()!=NULL)                  $sql.="comments, ";
-                        if($this->getType()!=NULL)                   	$sql.="type, ";
+                        if($this->getType()!=NULL)                   	$sql.="typeid, ";
                         if($this->getDescription()!=NULL)				$sql.="description, ";
                         if($this->getFile()!=NULL)					 	$sql.="file, ";
                         if($this->getSamplingDate()!=NULL)           	$sql.="samplingdate, ";
@@ -493,7 +493,7 @@ class sample extends sampleEntity implements IDBAccessor
                         if($this->getTitle()!=NULL)                   	$sql.="'".pg_escape_string($this->getTitle())."', ";
 	                    						                  		$sql.="'".pg_escape_string($this->getID())."', "; 
                         if($this->getComments()!=NULL)           		$sql.="'".pg_escape_string($this->getComments())."', ";
-                        if($this->getType()!=NULL)                   	$sql.="'".pg_escape_string($this->getType())."', ";
+                        if($this->getType()!=NULL)                   	$sql.="'".pg_escape_string($this->getType(true))."', ";
                         if($this->getDescription()!=NULL)				$sql.="'".pg_escape_string($this->getDescription())."', ";                        
                         if($this->getFile()!=NULL)					 	$sql.="'".dbHelper::phpArrayToPGStrArray($this->getFile())."', ";
 	                   	if($this->getSamplingDate()!=NULL)           	$sql.="'".pg_escape_string($this->getSamplingDate())."', ";
@@ -513,7 +513,7 @@ class sample extends sampleEntity implements IDBAccessor
                     $sql.="update tblsample set ";
                         if($this->getTitle()!=NULL)             $sql.="code='"           	.pg_escape_string($this->getTitle())          						."', ";
                         if($this->getComments()!=NULL)          $sql.="comments='"          .pg_escape_string($this->getComments())          						."', ";
-                        if($this->getType()!=NULL)          	$sql.="type='"     			.pg_escape_string($this->getType())          						."', ";
+                        if($this->getType()!=NULL)          	$sql.="typeid='"     		.pg_escape_string($this->getType(true))          						."', ";
                         if($this->getDescription()!=NULL)		$sql.="description='"		.pg_escape_string($this->getDescription())		."', ";                             
                         if($this->getFile()!=NULL)				$sql.="file='"	 			.dbHelper::phpArrayToPGStrArray($this->getFile())  								."', ";                                 
                         if($this->getSamplingDate()!=NULL)     	$sql.="samplingdate='"   	.pg_escape_string($this->getSamplingDate())  						."', ";

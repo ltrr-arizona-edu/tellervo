@@ -544,14 +544,30 @@ class elementParameters extends elementEntity implements IParams
 		   			}
 		   		}
 		   		break;
-		   	case "authenticity":	 	$this->setAuthenticity($child->nodeValue); break;   	
-		   	case "locationType": 		$this->location->setType($child->nodeValue); break;		   	
-		   	case "locationPrecision": 	$this->location->setPrecision($child->nodeValue); break;		   	
-		   	case "locationComment": 	$this->location->setComment($child->nodeValue); break;
-		   	case "locationGeometry": 	$this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($child)); break;	   	
+		   	case "authenticity":	 	$this->setAuthenticity($child->nodeValue); break;   		   	
 		   	case "processing": 			$this->setProcessing($child->nodeValue); break;	   	
 		   	case "marks": 				$this->setMarks($child->nodeValue); break;
 		   	case "altitude":			$this->setAltitude($child->nodeValue); break;
+
+		    case "location": 
+				$locationTags = $child->childNodes;
+				foreach($locationTags as $tag)
+				{	
+		  	 		if($tag->nodeType != XML_ELEMENT_NODE) continue;  
+		  	 		
+		  	 		switch($tag->tagName)
+		  	 		{
+		  	 			case "locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
+		  	 			case "locationComment" : $this->location->setComment($tag->nodeValue); break;
+		  	 			case "locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
+		  	 			case "locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	 
+		  	 			default:
+						trigger_error("901"."Unknown tag ".$tag->tagName." in location section of the 'element' entity. This tag is being ignored", E_USER_NOTICE);
+		  	 				
+		  	 		}	  	 		
+				}
+				break;
+ 	
 		   	case "slope":
 		   		$slopeTags = $child->childNodes;
 		   		
@@ -625,8 +641,8 @@ class elementParameters extends elementEntity implements IParams
 		   			case "corina.family":	break;
 		   			case "corina.genus":	break;
 		   			case "corina.species":	break;		   			
-		   			default:
-		   			trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'element' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   			//default:
+		   			//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'element' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
 		   		}
 		   		break;
 	
