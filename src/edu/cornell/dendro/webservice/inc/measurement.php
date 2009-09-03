@@ -1785,14 +1785,16 @@ class measurement extends measurementEntity implements IDBAccessor
 		
 		// Either use the passed vmid or get it from the class
 		if($localVMID==NULL) $localVMID = $this->getID();
-			
+				
 		// Add reading notes 
 		$relyear = 0;
 		foreach($this->readingsArray as $key => $value)
 		{		
-			$relyear++;
+			
+			
 			if(count($value['notesArray']) > 0)
 			{
+				$firebug->log($value['notesArray'], "Notes array for ring $relyear");
 				// There are notes associated with this reading.  
 				foreach($value['notesArray'] as $note )
 				{						
@@ -1858,6 +1860,9 @@ class measurement extends measurementEntity implements IDBAccessor
 					}
 				}
 			}
+		
+		// Increment relative year 
+		$relyear++;
 		}
 	}
 	
