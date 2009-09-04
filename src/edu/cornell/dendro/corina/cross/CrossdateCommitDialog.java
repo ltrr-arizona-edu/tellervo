@@ -147,12 +147,20 @@ public class CrossdateCommitDialog extends JDialog {
 		
 		// set the parent
 		SeriesLinkUtil.addToSeries(series, secondary.getSeries().getIdentifier());
+
+		//
+		// TODO: Stop sending this in both startYear AND newStartYear!
+		// (determine which one is correct)
+		//
 		
 		// create an interpretation for master and first year
 		TridasInterpretation interpretation = new TridasInterpretation();
 		
 		// set first year
 		interpretation.setFirstYear(range.getStart().tridasYearValue());
+		
+		// set "newStartYear" generic field for first year of new crossdate
+		GenericFieldUtils.addField(series, "corina.newStartYear", range.getStart().toString());
 
 		// get linkseries for master
 		SeriesLink linkMaster = SeriesLinkUtil.forIdentifier(primary.getSeries().getIdentifier());
