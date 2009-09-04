@@ -11,7 +11,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.CorinaPermission;
-import edu.cornell.dendro.corina.cross.Crossdater;
+import edu.cornell.dendro.corina.cross.CrossdateDialog;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.index.IndexDialog;
@@ -189,7 +189,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		crossAgainst.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				Element secondary = new CachedElement(sample); 
-				new Crossdater(editor, ElementList.singletonList(secondary), secondary);
+				new CrossdateDialog(editor, ElementList.singletonList(secondary), secondary);
 			}
 		});
 		add(crossAgainst);

@@ -32,12 +32,12 @@
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblNewDateRange" pref="296" max="32767" attributes="0"/>
-                          <Component id="lblCrossdateName" alignment="0" pref="296" max="32767" attributes="0"/>
-                          <Component id="lblMasterSampleName" alignment="0" pref="296" max="32767" attributes="0"/>
+                          <Component id="lblNewDateRange" pref="268" max="32767" attributes="0"/>
+                          <Component id="lblCrossdateName" alignment="0" pref="268" max="32767" attributes="0"/>
+                          <Component id="lblMasterSampleName" alignment="0" pref="268" max="32767" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="jSeparator1" alignment="0" pref="467" max="32767" attributes="0"/>
+                  <Component id="jSeparator1" alignment="0" pref="439" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
@@ -47,10 +47,14 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane1" pref="377" max="32767" attributes="1"/>
-                          <Component id="txtNewCrossdateName" alignment="0" pref="377" max="32767" attributes="0"/>
-                          <Component id="txtVersion" alignment="0" pref="377" max="32767" attributes="0"/>
-                          <Component id="cboCertainty" alignment="0" min="-2" pref="134" max="-2" attributes="1"/>
+                          <Component id="jScrollPane1" pref="349" max="32767" attributes="1"/>
+                          <Component id="txtVersion" alignment="0" pref="349" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="lblprefix" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtNewCrossdateName" pref="339" max="32767" attributes="0"/>
+                          </Group>
+                          <Component id="cboCertainty" alignment="0" min="-2" pref="163" max="-2" attributes="1"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
@@ -85,8 +89,9 @@
               <Component id="jSeparator1" min="-2" pref="2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="txtNewCrossdateName" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblprefix" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
+                  <Component id="txtNewCrossdateName" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -101,7 +106,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jScrollPane1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -215,6 +220,8 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="C-XXX-XX-X-X-X (9876-5432)"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblprefix">
     </Component>
   </SubComponents>
 </Form>

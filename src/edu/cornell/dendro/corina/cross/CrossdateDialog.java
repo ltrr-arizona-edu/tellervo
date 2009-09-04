@@ -50,7 +50,7 @@ import edu.cornell.dendro.corina.util.Center;
  * @author Lucas Madar
  */
 @SuppressWarnings("serial")
-public class Crossdater extends Ui_CrossdatePanel implements GrapherListener {
+public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListener {
 	private JFrame window;
 	
 	private ElementList crossdatingElements;
@@ -71,7 +71,7 @@ public class Crossdater extends Ui_CrossdatePanel implements GrapherListener {
 	private CrossdateStatusBar status;
 	
     /** Creates new form CrossDatingWizard */
-    public Crossdater(java.awt.Frame parent) {
+    public CrossdateDialog(java.awt.Frame parent) {
     	super();
 
     	window = new JFrame();
@@ -86,7 +86,7 @@ public class Crossdater extends Ui_CrossdatePanel implements GrapherListener {
      * @param preexistingElements
      * @param firstSecondary
      */
-    public Crossdater(java.awt.Frame parent,
+    public CrossdateDialog(java.awt.Frame parent,
     		ElementList preexistingElements, Element firstSecondary) {
     	super();
     	

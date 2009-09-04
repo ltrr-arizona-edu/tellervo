@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 
+import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;
@@ -25,6 +26,7 @@ import org.tridas.schema.TridasInterpretation;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -36,7 +38,10 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
+import edu.cornell.dendro.corina.tridasv2.LabCode;
+import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
+import edu.cornell.dendro.corina.tridasv2.support.VersionUtil;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
@@ -146,6 +151,9 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		// the identifier is based on the domain from the secondary
 		series.setIdentifier(NewTridasIdentifier.getInstance(secondary.getSeries().getIdentifier()));
 		
+		// Set version 
+		if(txtVersion.getText()!=null) series.setVersion(txtVersion.getText());
+		
 		// this is a crossdate
 		ControlledVoc voc = new ControlledVoc();
 		voc.setValue(SampleType.CROSSDATE.toString());
@@ -221,9 +229,32 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		txtNewCrossdateName.setText(secondary.meta().getName());
 		txtNewCrossdateName.setEditable(false);
 		
+		// make the prefix more relevant if we have a labcode
+		if (secondary.hasMeta(Metadata.LABCODE)) {
+			lblprefix.setText(LabCodeFormatter.getSeriesPrefixFormatter().format(
+					secondary.getMeta(Metadata.LABCODE, LabCode.class))
+					+ "- ");
+		}
+		else
+		{
+			lblprefix.setVisible(false);
+		}
+		
 		//txtNewCrossdateName.setText("Cross " + primary.meta().getName() + 
 		//		"/" + secondary.meta().getName());	
 		// txtNewCrossdateName.requestFocus();
+		
+		// Version field
+		if(secondary.getSeries() instanceof ITridasDerivedSeries) {
+			String parentVersion = ((ITridasDerivedSeries) secondary.getSeries()).getVersion();
+			
+			txtVersion.setText(VersionUtil.nextVersion(parentVersion));
+		}
+		else {
+			// default to v. 2
+			txtVersion.setText("2");
+		}
+		
 	}
 
 	/**
@@ -292,6 +323,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
         lblCrossdateName = new javax.swing.JLabel();
         lblNewDateRange = new javax.swing.JLabel();
         lblMasterSampleName = new javax.swing.JLabel();
+        lblprefix = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -345,10 +377,10 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
                             .add(jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 153, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                         .add(18, 18, 18)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblNewDateRange, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
-                            .add(lblCrossdateName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
-                            .add(lblMasterSampleName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)))
-                    .add(jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+                            .add(lblNewDateRange, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                            .add(lblCrossdateName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                            .add(lblMasterSampleName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)))
+                    .add(jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(jLabel1)
@@ -357,10 +389,13 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
                             .add(jLabel4))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
-                            .add(txtNewCrossdateName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
-                            .add(txtVersion, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
-                            .add(cboCertainty, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 134, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                            .add(txtVersion, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                            .add(layout.createSequentialGroup()
+                                .add(lblprefix)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(txtNewCrossdateName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE))
+                            .add(cboCertainty, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 163, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(btnCancel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -386,8 +421,9 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
                 .add(jSeparator1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(18, 18, 18)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtNewCrossdateName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel4))
+                    .add(jLabel4)
+                    .add(lblprefix, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(txtNewCrossdateName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel3)
@@ -399,7 +435,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jLabel1)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jScrollPane1))
                 .add(18, 18, 18)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnOk)
@@ -443,6 +479,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
     protected javax.swing.JLabel lblCrossdateName;
     protected javax.swing.JLabel lblMasterSampleName;
     protected javax.swing.JLabel lblNewDateRange;
+    protected javax.swing.JLabel lblprefix;
     protected javax.swing.JTextArea txtJustification;
     protected javax.swing.JTextField txtNewCrossdateName;
     protected javax.swing.JTextField txtVersion;
