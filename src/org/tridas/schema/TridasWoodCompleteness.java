@@ -20,7 +20,6 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
-import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -59,14 +58,12 @@ public class TridasWoodCompleteness
 
     private final static long serialVersionUID = 1001L;
     @XmlElement(required = true)
-    @TridasEditProperties(finalType = true)
     protected TridasPith pith;
     @XmlElement(required = true)
     protected TridasHeartwood heartwood;
     @XmlElement(required = true)
     protected TridasSapwood sapwood;
     @XmlElement(required = true)
-    @TridasEditProperties(finalType = true)
     protected TridasBark bark;
 
     /**

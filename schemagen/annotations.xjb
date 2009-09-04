@@ -169,7 +169,11 @@ This file is for custom annotations applied to tridas objects
 		</annox:annotate>	
 	</bindings>
 	
-	<!-- make pith and bark final types -->
+	<!-- make pith and bark final types 
+	     actually, don't do this!
+	     
+	     This is really complex coding for very little benefit
+	    
 	<bindings node="//xs:element[@name='woodCompleteness']/xs:complexType/xs:sequence/xs:element[@ref='pith']">
   		<annox:annotate target="field">
 			<ta:TridasEditProperties finalType="true" />
@@ -180,6 +184,7 @@ This file is for custom annotations applied to tridas objects
 			<ta:TridasEditProperties finalType="true" />
 		</annox:annotate>	
 	</bindings>	
+	-->
 	
 	<!-- - - - - - - - - - - -->
 	<!-- Dictionary bindings -->	
