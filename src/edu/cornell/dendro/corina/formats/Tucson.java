@@ -441,10 +441,13 @@ public class Tucson implements Filetype {
 	private String make6digitCode(Sample s) {
 		String code;
 
-		if (s.hasMeta("id"))
-			code = s.getMeta("id").toString();
-		else
+		if (s.getIdentifier().getValue()!=null){
+			code = s.getIdentifier().getValue().toString();
+			code = code.substring(code.length()-6);
+		}
+		else{
 			code = "000000";
+		}
 
 		// ensure exactly 6 chars
 		if (code.length() > 6)
