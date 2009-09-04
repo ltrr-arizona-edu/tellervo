@@ -75,6 +75,9 @@ public class PackedTucson extends Tucson implements PackedFileType {
     	// We follow the logic in save() below:
     	// if it's got elements, ignore the sample and use the elements.
     	// Otherwise, we save the sample.
+    	
+    	
+    	//@todo Need to fix 'prefix' to something useful
     	for(int i = 0; i < sl.size(); i++) {
     		Sample s = (Sample) sl.get(i);
     		
@@ -96,9 +99,11 @@ public class PackedTucson extends Tucson implements PackedFileType {
     		} else {
     			try {
     				if(prefix == null)
-    					prefix = s.getMeta("id").toString();
+    					//prefix = s.getMeta("id").toString();
+    					prefix = s.getIdentifier().getValue().toString();
     				else
-    					prefix = commonPrefix(prefix, s.getMeta("id").toString());
+    					//prefix = commonPrefix(prefix, s.getMeta("id").toString());
+    					prefix = s.getIdentifier().getValue().toString();
     			} catch (NullPointerException npe) {
     				throw new IOException("Invalid META ID in file " + s.getMeta("filename"));
     			}
