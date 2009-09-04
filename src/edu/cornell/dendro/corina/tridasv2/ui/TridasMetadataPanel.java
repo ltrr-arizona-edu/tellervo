@@ -386,7 +386,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// Don't allow people to select 
 		//
 		if(temporarySelectingEntity != null && 
-				!temporarySelectingEntity.equals(currentMode.getEntity(s)) &&
+				!(temporarySelectingEntity instanceof TridasObject) &&
+				!(temporarySelectingEntity.equals(currentMode.getEntity(s))) &&
 				temporarySelectingEntity.getTitle().contains("(")) {
 			
 			JOptionPane.showMessageDialog(this, "Sorry, you may not choose a legacy entity." +
@@ -791,7 +792,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			// HACK
 			// Warn the user about legacy cruft
 			//
-			if(temporarySelectingEntity.getTitle().contains("(")) {
+			if(temporarySelectingEntity.getTitle().contains("(") &&
+					!(temporarySelectingEntity instanceof TridasObject)) {
 				if(propertiesTable.isPreviewing())
 					propertiesTable.setPreviewText("LEGACY");				
 			}
