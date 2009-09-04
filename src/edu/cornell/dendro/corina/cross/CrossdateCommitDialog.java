@@ -203,10 +203,17 @@ public class CrossdateCommitDialog extends JDialog {
 		lblCrossdateName.setText(secondary.toString());
 		lblNewDateRange.setText(newRange.toString());
 		
-		txtNewCrossdateName.setText("Cross " + primary.meta().getName() + 
-				"/" + secondary.meta().getName());
+		//
+		// BugID 90:
+		//   The title field in the apply crossdate should be the same 
+		//   as the displayTitle of the moving series that has been crossdated
 		
-		txtNewCrossdateName.requestFocus();
+		txtNewCrossdateName.setText(secondary.meta().getName());
+		txtNewCrossdateName.setEditable(false);
+		
+		//txtNewCrossdateName.setText("Cross " + primary.meta().getName() + 
+		//		"/" + secondary.meta().getName());	
+		// txtNewCrossdateName.requestFocus();
 	}
 
 	/**
