@@ -95,6 +95,7 @@ public class TridasMeasurementSeries implements Serializable, CopyTo, Copyable, 
     protected DateTime lastModifiedTimestamp;
     protected String comments;
     protected Date measuringDate;
+    @TridasEditProperties(machineOnly = true)
     protected TridasWoodCompleteness woodCompleteness;
     @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.analystID", sortType = TridasCustomDictionarySortType.LASTNAME_FIRSTNAME, type = TridasCustomDictionaryType.CORINA_GENERICID)
     protected String analyst;

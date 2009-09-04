@@ -108,6 +108,7 @@ public class TridasDerivedSeries implements Serializable, CopyTo, Copyable, Equa
     @TridasEditProperties(machineOnly = true)
     protected SeriesLinks linkSeries;
     protected String objective;
+    @TridasEditProperties(readOnly = true)
     protected String standardizingMethod;
     @TridasCustomDictionary(dictionary = "securityUser", identifierField = "corina.authorID", sortType = TridasCustomDictionarySortType.LASTNAME_FIRSTNAME, type = TridasCustomDictionaryType.CORINA_GENERICID)
     protected String author;
