@@ -356,8 +356,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			sample.setLoader(new FileElement(filename));
 		}
 
-		// it's not complete yet
-		if(!sample.hasMeta(Metadata.RADIUS)) {
+		// complain if it's not complete yet 
+		// but only if it's not derived!
+		if(!sample.getSampleType().isDerived() && !sample.hasMeta(Metadata.RADIUS)) {
 			JOptionPane.showMessageDialog(this,
 					"Metadata not complete. You must choose a radius.",
 					"Save error", JOptionPane.ERROR_MESSAGE);
