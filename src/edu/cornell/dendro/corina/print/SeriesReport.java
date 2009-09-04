@@ -58,7 +58,7 @@ public class SeriesReport extends ReportBase {
 
 	}
 		
-	public void generateSeriesReport(OutputStream output) {
+	private void generateSeriesReport(OutputStream output) {
 	
 		
 		try {
@@ -301,13 +301,7 @@ public class SeriesReport extends ReportBase {
 				else
 				{
 					cellPhrase = new Phrase(value.toString(), getTableFont(col));
-				}				
-				
-	
-				
-				
-				
-				
+				}								
 				// Set border styles depending on where we are in the table
 				
 				// Defaults
@@ -433,7 +427,7 @@ public class SeriesReport extends ReportBase {
 		
 		// Add to document
 		if(hasRemarks){
-			p.add(new Chunk("Ring remarks:", subSectionFont));
+			p.add(new Chunk("Ring remarks:", subSubSectionFont));
 			p.add(tbl);
 		}
 		
@@ -567,18 +561,24 @@ public class SeriesReport extends ReportBase {
 		}
 		
 		if(sproutyear!=null && deathyear!=null){
-			p.add(new Chunk("\n- This tree sprouted in ", bodyFont));
+			p.add(new Chunk("\n- This tree sprouted ", bodyFont));
 			if (sproutyear.getCertainty()!=null){
-				p.add(new Chunk(sproutyear.getCertainty().toString().toLowerCase() + " ", bodyFont));
+				p.add(certaintyToNaturalString(sproutyear.getCertainty().toString()));
 			}
 			p.add(new Chunk(sproutyear.getValue().toString(), bodyFont));
 			if(isRelativelyDated==false) p.add(new Chunk(sproutyear.getSuffix().toString(), bodyFont));
-			p.add(new Chunk(" and died in ", bodyFont));
+			p.add(new Chunk(" and died ", bodyFont));
 			if (deathyear.getCertainty()!=null){
-				p.add(new Chunk(deathyear.getCertainty().toString().toLowerCase() + " ", bodyFont));
+				p.add(certaintyToNaturalString(deathyear.getCertainty().toString()));
 			}
 			p.add(new Chunk(deathyear.getValue().toString(), bodyFont));
-			if(isRelativelyDated==false) p.add(new Chunk(deathyear.getSuffix().toString() + ".\n", bodyFont));
+			if(isRelativelyDated==false) {
+				p.add(new Chunk(deathyear.getSuffix().toString() + ".\n", bodyFont));
+			}
+			else
+			{
+				p.add(new Chunk(".\n", bodyFont));
+			}
 		}
 		
 		
@@ -599,6 +599,27 @@ public class SeriesReport extends ReportBase {
 	}
 	
 	
+	private Chunk certaintyToNaturalString(String certainty)
+	{
+		Chunk c = new Chunk();
+		
+		if(certainty.equals("exact")){
+			c.append("in exactly ");
+		}
+		else if (certainty.equals("after")){
+			c.append("after ");
+		}
+		else if (certainty.equals("before")){
+			c.append("before ");
+		}		
+		else{
+			c.append("in "+certainty.toLowerCase() + " ");
+		}
+		
+		c.setFont(bodyFont);
+		return c;
+	}
+	
 	/**
 	 * iText paragraph for the TRiDaS wood completeness fields
 	 * 
@@ -613,12 +634,6 @@ public class SeriesReport extends ReportBase {
 		
 		String pithPresence = null;
 		String barkPresence = null;
-		String heartwoodPresence = null;
-		String missingHeartwoodRings = null;
-		String missingHeartwoodFoundation = null;
-		String sapwoodPresence = null;
-		String missingSapwoodRings = null;
-		String missingSapwoodFoundation = null;
 		
 		p.add(new Chunk("Wood Completeness:\n", subSubSectionFont));
 		
@@ -638,119 +653,166 @@ public class SeriesReport extends ReportBase {
 			p.add(new Chunk("- No pith details were recorded.\n", bodyFont));
 		}
 		
-		// Extract Heartwood info
-		if(woodCompleteness.getHeartwood()!=null){
-			
-			if(woodCompleteness.getHeartwood().getPresence()!=null){
-				if(woodCompleteness.getHeartwood().getPresence().value()=="unknown"){
-					heartwoodPresence = "- Whether heartwood is present or not is unknown";
-				}
-				else{
-					heartwoodPresence = "- Heartwood is " + woodCompleteness.getHeartwood().getPresence().value();
-				}
-			}
-			else{
-				heartwoodPresence = "- Presence of heartwood has not been specified";
-			}
-			
-			if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPith()!=null){
-				missingHeartwoodRings = woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPith().toString();
-			}
-			else{
-				missingHeartwoodRings = "unknown number of";
-			}
-			
-			if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPithFoundation()!=null){
-				missingHeartwoodFoundation = woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPithFoundation().toString().toLowerCase();
-			}
-			else{
-				missingHeartwoodFoundation = "unspecified reasons";
-			}
-			
-			p.add(new Chunk(heartwoodPresence, bodyFont));
-			if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPith()!=null){
-				p.add(new Chunk(" ("+ missingHeartwoodRings + " ring(s) are missing based upon '" + missingHeartwoodFoundation + "').\n", bodyFont));
-			}
-			else
-			{
-				p.add(new Chunk(" (Details on missing heartwood rings was not recorded.)\n", bodyFont));
-			}
-		}
-		else{
-			p.add(new Chunk("- No heartwood details recorded."));
-		}
+		// Extract Heartwood and sapwood info
+		p.add(getHeartSapwoodDetails(woodCompleteness, WoodType.HEARTWOOD));
+		p.add(getHeartSapwoodDetails(woodCompleteness, WoodType.SAPWOOD));
 		
-		// Extract Sapwood info
-		if(woodCompleteness.getSapwood()!=null){
-			
-			if(woodCompleteness.getSapwood().getPresence()!=null){
-				
-				if(woodCompleteness.getSapwood().getPresence().value()=="unknown")
-				{
-					sapwoodPresence = "- Whether the sapwood is present or not is unknown";
-				}
-				else{
-					sapwoodPresence = "- Sapwood is " + woodCompleteness.getSapwood().getPresence().value();
-				}
-				
-				
-			}
-			else{
-				sapwoodPresence = "- Presence of sapwood has not been specified";
-			}
-			
-			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBark()!=null){
-				missingSapwoodRings = woodCompleteness.getSapwood().getMissingSapwoodRingsToBark().toString();
-			}
-			else{
-				missingSapwoodRings = "unknown number of";
-			}
-			
-			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation()!=null){
-				missingSapwoodFoundation = woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation().toString().toLowerCase();
-			}
-			else{
-				missingSapwoodFoundation = "unspecified reasons";
-			}
-						
-			p.add(new Chunk(sapwoodPresence, bodyFont ));
-			if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBark()!=null){
-				p.add(new Chunk(" ("+ missingSapwoodRings + " ring(s) are missing based upon '" + missingSapwoodFoundation + "').\n", bodyFont));
-			}
-			else
-			{
-				p.add(new Chunk(" (Details on missing sapwood rings was not recorded.)\n", bodyFont));
-			}
-		}
-		else{
-			p.add(new Chunk("- No sapwood details recorded.\n"));
-		}	
-	
 		// Extract bark info
-		if(woodCompleteness.getBark()!=null){
-			
-			if(woodCompleteness.getBark().getPresence().toString().toLowerCase()!=null){
-				barkPresence = woodCompleteness.getBark().getPresence().value();
+		if(woodCompleteness.getBark()!=null){			
+			if(woodCompleteness.getBark().getPresence().toString().toLowerCase()!=null){			
+				if(woodCompleteness.getBark().getPresence().value()=="present")
+				{
+					p.add(new Chunk("- Bark is present ", bodyFont));
+					// Last ring info
+					if(woodCompleteness.getSapwood().getLastRingUnderBark()!=null){
+						p.add(new Chunk("and the last ring before the bark is noted as: \""+woodCompleteness.getSapwood().getLastRingUnderBark().getContent().toString() + "\"", bodyFont));
+					}
+					else
+					{
+						p.add(new Chunk("but no details about the last ring under the bark were recorded.\n", bodyFont));
+					}
+				}
+				else if (woodCompleteness.getBark().getPresence().value()=="absent")
+				{
+					p.add(new Chunk("- Bark is absent.\n", bodyFont));
+				}
+				else
+				{
+					barkPresence = woodCompleteness.getBark().getPresence().value();
+					p.add(new Chunk("- Bark is " + barkPresence+ "\n", bodyFont));
+				}	
 			}
 			else{
-				barkPresence = "not specified";
+				p.add(new Chunk("- Bark information was not recorded.\n", bodyFont));
 			}
-		
-			p.add(new Chunk("- Bark is "+ barkPresence +".\n", bodyFont));
-		}
-		else{
-			p.add(new Chunk("- No bark details were recorded.\n", bodyFont));
 		}
 		
-		// Last ring info
-		if(woodCompleteness.getSapwood().getLastRingUnderBark()!=null){
-			p.add(new Chunk("- Last ring "+woodCompleteness.getSapwood().getLastRingUnderBark().toString(), bodyFont));
+
+		return p;
+	}
+	
+	
+	private Paragraph getHeartSapwoodDetails(TridasWoodCompleteness woodCompleteness, WoodType type)
+	{
+		Paragraph p = new Paragraph();	
+
+		String presence = null;
+		String presenceStr = null;
+		String missingRings = null;
+		String missingRingsStr = null;
+		String foundationStr = null;
+		String woodTypeStr = null;
+		
+		// Extract data from woodcompleteness based on type
+		if(type==WoodType.HEARTWOOD)
+		{
+			// Extract Heartwood details
+			woodTypeStr = "heartwood";
+			if(woodCompleteness.getHeartwood()!=null){
+
+				// Presence / Absence
+				if(woodCompleteness.getHeartwood().getPresence()!=null){
+					presence = woodCompleteness.getHeartwood().getPresence().value();
+				}
+
+				// Missing rings
+				if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPith()!=null){
+					missingRingsStr = woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPith().toString();
+					missingRings = missingRingsStr;
+				}
+				else{
+					missingRingsStr = "an unknown number of";
+				}
+				
+				// Missing rings foundation
+				if(woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPithFoundation()!=null){
+					foundationStr = woodCompleteness.getHeartwood().getMissingHeartwoodRingsToPithFoundation().toString().toLowerCase();
+				}
+				else{
+					foundationStr = "unspecified reasons";
+				}
+			
+			}
+			else{
+				p.add(new Chunk("- No " + woodTypeStr + " details recorded."));
+			}	
+		}
+		else if (type==WoodType.SAPWOOD)
+		{
+			// Extract Sapwood details
+			woodTypeStr = "sapwood";
+			if(woodCompleteness.getSapwood()!=null){
+
+				// Presence / Absence
+				if(woodCompleteness.getSapwood().getPresence()!=null){
+					presence = woodCompleteness.getSapwood().getPresence().value();
+				}
+
+				// Missing rings
+				if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBark()!=null){
+					missingRingsStr = woodCompleteness.getSapwood().getMissingSapwoodRingsToBark().toString();
+					missingRings = missingRingsStr;
+				}
+				else{
+					missingRingsStr = "an unknown number of";
+				}
+				
+				// Missing rings foundation
+				if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation()!=null){
+					foundationStr = woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation().toString().toLowerCase();
+				}
+				else{
+					foundationStr = "unspecified reasons";
+				}
+			
+			}
+			else{
+				p.add(new Chunk("- No " + woodTypeStr + " details recorded."));
+			}			
 		}
 		else
 		{
-			p.add(new Chunk("- No details about the last ring under the bark were recorded.\n", bodyFont));
+			return null;
 		}
+		
+		// Set output strings for presence/absence
+		if(presence=="unknown"){
+			presenceStr = "- Whether " + woodTypeStr + " is present or not is unknown";
+		}
+		else if (presence == null)
+		{
+			presenceStr = "- Presence of " + woodTypeStr + " has not been specified";
+		}
+		else{
+			presenceStr = "- " + woodTypeStr.substring(0,1).toUpperCase() + woodTypeStr.substring(1) + " is " + presence;
+		}
+		
+	
+		// Compile paragraph	
+		p.add(new Chunk(presenceStr, bodyFont));
+		if(missingRings!=null){
+			p.add(new Chunk(". The analyst records that "+ missingRingsStr, bodyFont));
+			if (missingRingsStr.equals("1"))
+			{
+				p.add(new Chunk(" ring is ", bodyFont)); 
+			}
+			else
+			{
+				p.add(new Chunk(" rings are ", bodyFont));
+			}
+			p.add(new Chunk("missing, the justification of which is noted as: \"" + foundationStr + "\".", bodyFont));
+		}
+		else
+		{
+			p.add(new Chunk(". Details about missing " + woodTypeStr + " rings was not recorded.", bodyFont));
+		}
+		
 		return p;
+			
+	}
+	
+	private enum WoodType {
+	    HEARTWOOD, SAPWOOD 
 	}
 	
 	/**
@@ -780,7 +842,7 @@ public class SeriesReport extends ReportBase {
 	 * @param printReport Boolean
 	 * @param vmid String
 	 */
-	public static void getReport(Boolean printReport, String vmid)
+	private static void getReport(Boolean printReport, String vmid)
 	{
 		String domain = "dendro.cornell.edu/dev/";
 		Sample samp = null;
@@ -801,7 +863,7 @@ public class SeriesReport extends ReportBase {
 	 * @param printReport Boolean
 	 * @param vmid String
 	 */
-	public static void getReport(Boolean printReport, Sample samp)
+	private static void getReport(Boolean printReport, Sample samp)
 	{
 		// create the series report
 		SeriesReport report = new SeriesReport(samp);		

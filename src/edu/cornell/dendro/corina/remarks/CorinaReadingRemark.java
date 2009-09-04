@@ -25,7 +25,17 @@ public class CorinaReadingRemark extends AbstractRemark {
 	}
 	
 	public Icon getIcon() {
-		String iconFn = Remarks.getCorinaRemarkIcons().get(remark.getNormal());
+		
+		String iconFn;
+		if(Remarks.getCorinaRemarkIcons().get(remark.getNormal())!=null)
+		{
+			iconFn = Remarks.getCorinaRemarkIcons().get(remark.getNormal());	
+		}
+		else
+		{
+			iconFn = "note.png";
+		}
+		
 		
 		return (iconFn == null) ? null : Builder.getIcon(iconFn, 16);
 	}

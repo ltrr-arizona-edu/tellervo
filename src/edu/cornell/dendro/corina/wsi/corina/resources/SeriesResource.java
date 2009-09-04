@@ -201,8 +201,9 @@ public class SeriesResource extends CorinaEntityAssociatedResource<List<BaseSamp
 
 			// prompt the user for input...
 			Object ret = JOptionPane.showInputDialog(getOwnerWindow(),
-					"The version " + oldVersion + " is already in use.\n" +
-					"Please choose a new version.",
+					"The version '" + oldVersion + "' is already in use.\n" +
+					"Accept the following suggested\n"+
+					"version number or choose your own.",
 					"Version already exists",
 					JOptionPane.ERROR_MESSAGE,
 					null,
