@@ -594,11 +594,14 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			
 			// repopulate the combo box...
 			populateComboAndSelect(false);
-			
-			lists.prepareChildList(temporaryEditingEntity);
+		
 			EditType next = currentMode.next();
-			if(next != null)
+			if(next != null) {
+				// only prepare a child list if we can have children... 
+				lists.prepareChildList(temporaryEditingEntity);
+				
 				disableBelowEnableAbove(currentMode.next());
+			}
 			
 			// also, add it to the valid combo box...
 		}
@@ -1278,7 +1281,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		 * @return true if the entity for this mode has no identifier
 		 */
 		public boolean isBrandNew(Sample s) {
-			return !(getEntity(s).isSetIdentifier());
+			return !(getEntity(s) != null && getEntity(s).isSetIdentifier());
 		}
 		
 		public ITridas newInstance(Sample s) {
