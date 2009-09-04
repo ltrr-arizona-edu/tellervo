@@ -515,7 +515,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			throw new IllegalStateException();
 		
 		// if nothing actually changed, just ignore it like a cancel
-		if(!currentMode.hasChanged()) {
+		if(!currentMode.hasChanged()) {			
 			editEntityCancel.doClick();
 			return;
 		}
@@ -895,6 +895,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		if(currentMode == type)
 			return;
 		
+		// don't show two dialogs...
+		boolean alreadyWarned = false;
+		
 		if(currentMode != null) {
 			// prompt if the user wants to save any changes they made
 			if(currentMode.hasChanged()) {
@@ -903,22 +906,34 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 					currentMode.getButton().doClick();
 					return;
 				}
-				else
-					currentMode.clearChanged();
+				
+				currentMode.clearChanged();
+				
+				alreadyWarned = true;
+			}
+			
+			if(currentMode.isBrandNew(s)) {
+				// if it's brand new and the user has indicated they don't
+				// care about the changes, destroy it; it's useless!
+				currentMode.setEntity(s, null);
 			}
 		
 		}
 		
 		// cancel out of changing (eg object) if the user decides to..
 		if(changingTop) {
-			if(!warnLosingSelection()) {
+			if(!alreadyWarned && !warnLosingSelection()) {
 				// act like the user clicked the old button again
 				currentMode.getButton().doClick();
 				return;				
 			}
-			else
-				cancelChangeButton.doClick();
+			
+			cancelChangeButton.doClick();
 		}
+		
+		// clear off any overlay text we might have
+		propertiesTable.setPreviewing(false);
+		propertiesTable.setPreviewText(null);
 		
 		// load the new current entity
 		currentMode = type;
@@ -1094,7 +1109,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			this.type = type;
 			this.displayTitle = displayTitle;
 			this.iconPath = iconPath;
-			this.metadataTag = metadataTag;		
+			this.metadataTag = metadataTag;
 			
 			associatedButton = null;
 		}
@@ -1130,7 +1145,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		 * @param s
 		 * @param entity
 		 */
-		public void setEntity(Sample s, ITridas entity) {
+		public void setEntity(Sample s, ITridas entity) {			
 			// labcode, for updating
 			// it must have been set in constructor, so no error check
 			LabCode labcode = s.getMeta(Metadata.LABCODE, LabCode.class);
@@ -1256,6 +1271,14 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		public boolean hasChanged() {
 			return hasChanged;
+		}
+		
+		/**
+		 * @param s
+		 * @return true if the entity for this mode has no identifier
+		 */
+		public boolean isBrandNew(Sample s) {
+			return !(getEntity(s).isSetIdentifier());
 		}
 		
 		public ITridas newInstance(Sample s) {
