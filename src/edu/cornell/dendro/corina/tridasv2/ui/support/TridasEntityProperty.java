@@ -253,21 +253,34 @@ public class TridasEntityProperty extends AbstractProperty {
 		// memorize our 'root' object so we can make non-obvious changes to it
 		if(parentProperty == null)
 			rootObject = object;
+
+		//
+		// we have to be smart - if our value is null, set null on ourselves
+		// and all of our children. Otherwise, old stuff can accumulate!
+		//
 		
-		try {
-			Method method = BeanUtils.getReadMethod(object.getClass(),
-					getName());
-			if (method != null) {
-				Object value = method.invoke(object, (Object[]) null);
-				initializeValue(value); // avoid updating parent or firing
-										// property change
-				if (value != null) {
-					for (TridasEntityProperty child : childProperties)
-						child.readFromObject(value);
+		Object value = null;
+		
+		if(object != null) {
+			try {
+				Method method = BeanUtils.getReadMethod(object.getClass(),
+						getName());
+				if (method != null) {
+					value = method.invoke(object, (Object[]) null);
+					initializeValue(value); // avoid updating parent or firing
 				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} 
+		else {
+			// empty object, set our value to null...
+			initializeValue(null);
+		}
+		
+		// have all child properties read from *us* 
+		for (TridasEntityProperty child : childProperties) {
+			child.readFromObject(value);
 		}
 	}
 	
