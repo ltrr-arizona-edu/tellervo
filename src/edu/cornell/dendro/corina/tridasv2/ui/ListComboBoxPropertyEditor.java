@@ -99,7 +99,7 @@ public class ListComboBoxPropertyEditor extends AbstractPropertyEditor {
 	private static class NotPresentItemImpl implements NotPresent {
 		@Override
 		public String toString() {
-			return "<html><i>Not Present</i>";
+			return "<html><i>[Intentionally left empty]</i>";
 		}
 	}
 }

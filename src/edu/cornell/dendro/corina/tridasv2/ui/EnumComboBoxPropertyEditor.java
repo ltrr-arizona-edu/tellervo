@@ -106,7 +106,7 @@ public class EnumComboBoxPropertyEditor extends AbstractPropertyEditor {
 	/** Package-level class */
 	static class NotPresentItemImpl implements NotPresent {
 		public String value() {
-			return "<html><i>Not Present</i>";
+			return "<html><i>[Intentionally left empty]</i>";
 		}
 	}
 }
