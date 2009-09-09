@@ -29,6 +29,7 @@ import edu.cornell.dendro.corina.graph.GraphInfo;
 import edu.cornell.dendro.corina.graph.GraphToolbar;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.XFrame;
@@ -49,6 +50,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	private JButton btnFinish;
 	private JButton btnViewType;
 	private JButton btnRemeasure;
+	private JButton btnHelp;
 	//private JPanel refPanel; // the panel with the reference measurement
 	private JSeparator sepLine;
 	protected JPanel panelChart;
@@ -69,7 +71,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		JPanel content = new JPanel(new BorderLayout());
 				
 		setTitle("Reconciling " + s1.toSimpleString());
-
+		
 		// create a copy of our samples before we even touch them
 		// we keep s2 now for future compatibility, when we might have multiple
 		// windows referring to s2 open
@@ -80,8 +82,8 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 
 		this.s1 = s1;
 		this.s2 = s2;
-		dv1 = new ReconcileDataView(s1, s2, false);
-		dv2 = new ReconcileDataView(s2, s1, false);
+		dv1 = new ReconcileDataView(s1, s2, false, this);
+		dv2 = new ReconcileDataView(s2, s1, false, this);
 		
 		dv1.setReconcileNotifier(this);
 		dv2.setReconcileNotifier(this);
@@ -147,6 +149,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		btnRemeasure = new JButton("Remeasure selected ring");
 		btnCancel = new JButton("Cancel");
 		btnViewType = new JButton("Graph");
+		btnHelp = new JButton("Help");
 		sepLine = new javax.swing.JSeparator();
 		
 		btnShowHideRef.setVisible(false);
@@ -174,7 +177,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
             .add(layout.createSequentialGroup()
                 .add(btnViewType)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnShowHideRef)
+                .add(btnHelp)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(btnRemeasure)                
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 361, Short.MAX_VALUE)
@@ -189,7 +192,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
                 .add(sepLine, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnShowHideRef)
+                    .add(btnHelp)
                     .add(btnCancel)
                     .add(btnFinish)
                     .add(btnRemeasure)
@@ -230,6 +233,8 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 				}
 			}
 		});
+		
+		Help.assignHelpPageToButton(btnHelp, "Reconciling");
 		
 		btnFinish.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -310,32 +315,39 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		
 		btnRemeasure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				int col = dv1.myTable.getSelectedColumn();
-				int row = dv1.myTable.getSelectedRow();
-
-				Year y = ((DecadalModel) dv1.myTable.getModel()).getYear(row, col);
-				
-				ReconcileMeasureDialog dlg = new ReconcileMeasureDialog(glue, true, s1, s2, y);
-				
-				Center.center(dlg, glue);
-				dlg.setVisible(true);
-
-				// did we get a value?
-				Integer value = dlg.getFinalValue();
-				if(value != null) {
-					// kludge in some updates!
-					((DecadalModel) dv1.myTable.getModel()).setValueAt(value, row, col);
-					((DecadalModel) dv2.myTable.getModel()).setValueAt(value, row, col);
-					
-					dv1.myTable.setColumnSelectionInterval(col, col);
-					dv1.myTable.setRowSelectionInterval(row, row);
-					dv2.myTable.setColumnSelectionInterval(col, col);
-					dv2.myTable.setRowSelectionInterval(row, row);
-				}
+				remeasureSelectedRing();
 			}
 		});
 		
 		return buttonPanel;
+	}
+	
+	protected void remeasureSelectedRing()
+	{
+		// glue for our buttons...
+		final ReconcileWindow glue = this;
+		int col = dv1.myTable.getSelectedColumn();
+		int row = dv1.myTable.getSelectedRow();
+
+		Year y = ((DecadalModel) dv1.myTable.getModel()).getYear(row, col);
+		
+		ReconcileMeasureDialog dlg = new ReconcileMeasureDialog(glue, true, s1, s2, y);
+		
+		Center.center(dlg, glue);
+		dlg.setVisible(true);
+
+		// did we get a value?
+		Integer value = dlg.getFinalValue();
+		if(value != null) {
+			// kludge in some updates!
+			((DecadalModel) dv1.myTable.getModel()).setValueAt(value, row, col);
+			((DecadalModel) dv2.myTable.getModel()).setValueAt(value, row, col);
+			
+			dv1.myTable.setColumnSelectionInterval(col, col);
+			dv1.myTable.setRowSelectionInterval(row, row);
+			dv2.myTable.setColumnSelectionInterval(col, col);
+			dv2.myTable.setRowSelectionInterval(row, row);
+		}
 	}
 	
 	

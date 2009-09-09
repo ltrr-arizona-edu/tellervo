@@ -240,7 +240,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		App.prefs.addPrefsListener(this);
 	}
 	
-	private JPopupMenu createPopupMenu(int row, int col) {
+	protected JPopupMenu createPopupMenu(int row, int col) {
 		// clicked on a row header?  don't do anything.
 		if (col == 0)
 			return null;
@@ -269,6 +269,15 @@ public class SampleDataView extends JPanel implements SampleListener,
 		 marks.add(new JRadioButtonMenuItem("None", true));
 		 */
 
+		addAddDeleteMenu(popup);
+		popup.addSeparator();
+		addNotesMenu(popup, row, col);
+		
+		return popup;
+	}
+	
+	protected final void addAddDeleteMenu(JPopupMenu menu){
+		
 		JMenuItem insert = Builder.makeMenuItem("insert_year", true, "insertyear.png");
 		insert.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -290,9 +299,9 @@ public class SampleDataView extends JPanel implements SampleListener,
 			}
 		});
 
-		popup.add(insert);
-		popup.add(insertMR);
-		popup.add(delete);
+		menu.add(insert);
+		menu.add(insertMR);
+		menu.add(delete);
 		// DISABLED until they're implemented.
 		// popup.addSeparator();
 		// popup.add(marks);
@@ -307,13 +316,9 @@ public class SampleDataView extends JPanel implements SampleListener,
 			delete.setEnabled(false);
 		}
 		
-		popup.addSeparator();
-		addNotesMenu(popup, row, col);
-		
-		return popup;
 	}
 	
-	private final void addNotesMenu(JPopupMenu menu, final int row, final int col) {
+	protected final void addNotesMenu(JPopupMenu menu, final int row, final int col) {
 		// get the year
 		final Year y = ((DecadalModel) myModel).getYear(row, col);
 		

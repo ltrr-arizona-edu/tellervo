@@ -6,11 +6,16 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.border.Border;
@@ -24,6 +29,8 @@ import edu.cornell.dendro.corina.editor.support.AbstractTableCellModifier;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.PopupListener;
 
 public class ReconcileDataView extends SampleDataView implements SampleListener {
 	private static final long serialVersionUID = 1L;
@@ -37,10 +44,11 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	private TableSelectionChangeListener tableSelectionMonitor;
 	private Color greenColor;
 	private Color redColor;
-
+	private ReconcileWindow parent;
 	
-	public ReconcileDataView(Sample newSample, Sample reference, Boolean showInfo) {
+	public ReconcileDataView(Sample newSample, Sample reference, Boolean showInfo, ReconcileWindow p) {
 		super(newSample);		
+		parent = p;
 		
 		greenColor = Color.getHSBColor(0.305f, 0.23f, 0.89f);
 		redColor = Color.getHSBColor(0f, 0.41f, 0.89f);
@@ -77,6 +85,44 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	    
 	    // this column is useless in this case and just takes up space!
 	    myTable.getColumnModel().removeColumn(myTable.getColumnModel().getColumn(11));
+	    
+	    
+		// Overide mouse listener for table so that we can add a 'remeasure' button
+		myTable.addMouseListener(new PopupListener() {
+			@Override
+			public void showPopup(MouseEvent e) {
+				int row = myTable.rowAtPoint(e.getPoint());
+				int col = myTable.columnAtPoint(e.getPoint());
+				
+				// clicked on a row header?  don't do anything.
+				if (col == 0)
+					return;
+
+				// select the cell at e.getPoint()
+				myTable.setRowSelectionInterval(row, row);
+				myTable.setColumnSelectionInterval(col, col);
+				
+				// Create popup menu
+				JPopupMenu menu = new JPopupMenu();
+				
+				// Create a remeasure button
+				JMenuItem remeasure = Builder.makeMenuItem("remeasure", true, "measure.png");
+				remeasure.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent ae) {
+							parent.remeasureSelectedRing();
+						}
+					});				
+				menu.add(remeasure);
+				menu.addSeparator();
+				addAddDeleteMenu(menu);
+				menu.addSeparator();
+				addNotesMenu(menu, row, col);
+				
+				menu.show(myTable, e.getX(), e.getY());
+				}
+			
+		});
+	    
 		
 	    if(showInfo) 
 	    	add(this.getReconcileInfoPanel(), BorderLayout.WEST);
