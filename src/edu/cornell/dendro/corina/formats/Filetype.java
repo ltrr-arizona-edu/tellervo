@@ -90,4 +90,10 @@ public interface Filetype {
        @return the default extension (including the period)
     */
     public String getDefaultExtension();
+    
+    public Boolean isMultiFileCapable();
+ 
+    public Boolean isLossless();
+    
+    public String getDeficiencyDescription(); 
 }

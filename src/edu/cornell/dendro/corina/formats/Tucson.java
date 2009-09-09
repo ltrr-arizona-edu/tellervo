@@ -565,4 +565,19 @@ public class Tucson implements Filetype {
 		saveFirstLine(s, w);
 		saveData(s, w);
 	}
+
+	public Boolean isMultiFileCapable() {
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format has almost no metadata capabilities. " +
+				"It does not handle the BC/AD boundary correctly so " +
+				"datasets that span this period are offset by one year.  " +
+				"This format is also unable to represent data prior to 1000BC.";
+	}
+
+	public Boolean isLossless() {
+		return false;
+	}
 }

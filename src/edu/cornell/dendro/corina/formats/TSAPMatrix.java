@@ -213,4 +213,16 @@ public class TSAPMatrix implements Filetype {
             w.newLine();
         }
     }
+
+	public Boolean isMultiFileCapable() {
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format has no metadata capabilities.";
+	}
+
+	public Boolean isLossless() {
+		return false;
+	}
 }

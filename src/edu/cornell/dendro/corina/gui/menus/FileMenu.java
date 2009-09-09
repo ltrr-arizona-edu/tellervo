@@ -33,6 +33,7 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.io.ExportDialog;
+import edu.cornell.dendro.corina.io.ExportDialogLegacy;
 import edu.cornell.dendro.corina.manip.Sum;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
@@ -99,6 +100,7 @@ public class FileMenu extends JMenu {
 		addNewOpenMenus();
 		addSeparator();
 		addIOMenus();
+		addExportMenus();
 		addSeparator();
 		addCloseSaveMenus();
 		addSeparator();
@@ -135,6 +137,10 @@ public class FileMenu extends JMenu {
 		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png"));	
 		add(OpenRecent.makeOpenRecentMenu());
 
+	}
+	
+	public void addExportMenus(){
+		add(Builder.makeMenuItem("export...", "edu.cornell.dendro.corina.gui.menus.FileMenu.exportMultiDB()", "fileexport.png"));		
 	}
 
 	// ask the user for a file to open, and open it
@@ -227,6 +233,50 @@ public class FileMenu extends JMenu {
 		}
 	}
 
+	public static void exportMultiDB(){
+		DBBrowser browser = new DBBrowser((Frame) null, true, true);
+		browser.setVisible(true);
+
+		
+		if(browser.getReturnStatus() == DBBrowser.RET_OK) {
+			ElementList toOpen = browser.getSelectedElements();
+			
+			List<Sample> samples = new ArrayList<Sample>();
+
+			for(Element e : toOpen) {
+				// load it
+				Sample s;
+				try {
+					s = e.load();
+					
+				} catch (IOException ioe) {
+					Alert.error("Error Loading Sample",
+							"Can't open this file: " + ioe.getMessage());
+					continue;
+				}
+				samples.add(s);
+
+				OpenRecent.sampleOpened(new SeriesDescriptor(s));
+			}
+			
+			
+			
+			// no samples => don't bother doing anything
+			if (samples.isEmpty()) {
+				return;
+			}
+
+			// ok, now we have a list of valid samples in 'samples'...
+			// so open export dialog box
+
+			new ExportDialog(samples);
+
+		} 
+			
+			
+	}
+	
+	
 	public static void importdb() {
 		String filename = "";
 		
@@ -388,10 +438,10 @@ public class FileMenu extends JMenu {
 
 			switch (action) {
 			case 0:
-				new ExportDialog(samples, null, false);
+				new ExportDialogLegacy(samples, null, false);
 				break;
 			case 1:
-				new ExportDialog(samples, null, true);
+				new ExportDialogLegacy(samples, null, true);
 				break;
 			case JOptionPane.CLOSED_OPTION:
 			case 2:

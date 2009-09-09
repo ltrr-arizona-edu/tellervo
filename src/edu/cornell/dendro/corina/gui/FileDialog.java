@@ -87,7 +87,7 @@ public class FileDialog {
 		// (don't instantiate me)
 	}
 
-	private static class ExtensionFilter extends FileFilter {
+	public static class ExtensionFilter extends FileFilter {
 		private String TLA, tla;
 
 		private String name;

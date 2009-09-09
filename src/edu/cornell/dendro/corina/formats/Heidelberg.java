@@ -33,6 +33,10 @@ import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasSample;
+
 /**
    Frank Rinn's "Heidelberg" format.  I believe this format is the
    default format for his TSAP program.
@@ -251,6 +255,12 @@ public class Heidelberg implements Filetype {
 
 
 	public void save(Sample s, BufferedWriter w) throws IOException {
+		
+		TridasObject tobj = s.getMeta(Metadata.OBJECT, TridasObject.class);
+		TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
+		TridasSample tsamp = s.getMeta(Metadata.SAMPLE, TridasSample.class);
+		
+		
 		// header
 		w.write("HEADER:");
 		//w.newLine();
@@ -268,12 +278,12 @@ public class Heidelberg implements Filetype {
 		w.newLine();
 		
 		String tmp;
-		if((tmp = (String) s.getMeta("title")) != null) {
-			w.write("Location=" + tmp);
+		if(tobj.getTitle() != null) {
+			w.write("Location=" + tobj.getTitle());
 			w.newLine();
 		}
-		if((tmp = (String) s.getMeta("species")) != null) {
-			w.write("Species=" + tmp);
+		if(telem.getTaxon().getNormalStd().toString() != null) {
+			w.write("Species=" + telem.getTaxon().getNormalStd().toString());
 			w.newLine();
 		}
 
@@ -398,5 +408,20 @@ public class Heidelberg implements Filetype {
 
 	private void writeDatum6(BufferedWriter w, Object o) throws IOException {
 		w.write(StringUtils.leftPad(o.toString(), 6));
+	}
+
+	public Boolean isMultiFileCapable() {
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format uses unstructured keyword-value pairs for metadata with no data type " +
+				"constraints.  Although the metadata is extensible it is unlikely that " +
+				"the sotware that you use to read these files will be able to manage " +
+				"all the Corina/TRiDaS metadata properly.";
+	}
+
+	public Boolean isLossless() {
+		return false;
 	}
 }

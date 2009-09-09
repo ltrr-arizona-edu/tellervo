@@ -251,4 +251,16 @@ public class Hohenheim implements Filetype {
 	    }
 	}
     }
+
+	public Boolean isMultiFileCapable() {
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format has limited metadata capabilities.";
+	}
+
+	public Boolean isLossless() {
+		return false;
+	}
 }

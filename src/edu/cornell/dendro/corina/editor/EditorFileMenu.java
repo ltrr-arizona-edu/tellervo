@@ -1,7 +1,8 @@
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.io.Exporter;
 import edu.cornell.dendro.corina.io.ExportDialog;
+import edu.cornell.dendro.corina.io.Exporter;
+import edu.cornell.dendro.corina.io.ExportDialogLegacy;
 import edu.cornell.dendro.corina.io.NativeSpawn;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.FileDialog;
@@ -58,7 +59,6 @@ public class EditorFileMenu extends FileMenu {
 	public void addIOMenus(){
 	
 		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()", "fileimport.png"));
-		addExportMenu();
 	}
 	
 	@Override
@@ -265,78 +265,12 @@ public class EditorFileMenu extends FileMenu {
 		add(corem);
 	}
 
-	private void addExportMenu() {
+	public void addExportMenus() {
 		// add "Export..." menuitem
 		JMenuItem export = Builder.makeMenuItem("export...", true, "fileexport.png");
 		export.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ev) {
-				Sample s = ((Editor) f).getSample();
-				if (s.isSummed()) {
-					String labels[] = { "Sum", "Elements", "Combined" };
-
-					int action = JOptionPane.showOptionDialog(
-									f,
-									"You are exporting a sum.\n"
-											+ "Would you like to export the summed values,\n"
-											+ "export the sum's elements in a packed file,\n"
-											+ "or export them combined in a packed file?",
-									I18n.getText("export..."),
-									JOptionPane.YES_NO_CANCEL_OPTION,
-									JOptionPane.QUESTION_MESSAGE, null,
-									labels, labels[0]);
-
-					Sample base = s;
-					List<Sample> samples = new ArrayList<Sample>();
-
-					switch (action) {
-					case JOptionPane.CLOSED_OPTION:
-						return;
-
-					case 0:
-						new ExportDialog(s, f);
-						break; // this case is normal. whew.
-
-					case 2: // export everything.
-						samples.add(s);
-
-					case 1: // export only the elements.
-						String errorsamples = "";
-						boolean problem = false;
-
-						ElementList elements = s.getElements();
-						for (int i = 0; i < elements.size(); i++) {
-							Element e = elements.get(i);
-
-							if (!elements.isActive(e)) // skip inactive
-								continue;
-
-							try {
-								Sample stmp = e.load();
-								samples.add(stmp);
-							} catch (IOException ioe) {
-								problem = true;
-								if (errorsamples.length() != 0)
-									errorsamples += ", ";
-								errorsamples += e.toString();
-							}
-						}
-
-						// problem?
-						if (problem) {
-							Alert.error("Error loading sample(s):",
-									errorsamples);
-							return;
-						}
-
-						// no samples => don't bother doing anything
-						if (samples.isEmpty()) {
-							return;
-						}
-
-						new ExportDialog(samples, f, true);
-					}
-				} else
-					new ExportDialog(s, f);
+				new ExportDialog(sample);
 			}
 		});
 		add(export);

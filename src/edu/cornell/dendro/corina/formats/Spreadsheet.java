@@ -106,7 +106,7 @@ public class Spreadsheet implements Filetype, PackedFileType {
 	// save
     // deprecated! this is a packed sample format!
 	public void save(Sample s, BufferedWriter w) throws IOException {
-		// verify it's a master
+	/*	// verify it's a master
 		if (s.getElements() == null)
 			throw new IOException("Spreadsheet format is only available "
 					+ "for summed samples with Elements");
@@ -120,10 +120,13 @@ public class Spreadsheet implements Filetype, PackedFileType {
 				String filename = (s.getElements().get(i)).toString();
 				throw new IOException("Can't load element " + filename);
 			}			
-		}
+		}*/
+		
+		ArrayList<Sample> sl = new ArrayList<Sample>();
+		sl.add(s);
 		
 		// and pass them to savesamples
-		saveSamples(slist, w);
+		saveSamples(sl, w);
 	}
 
 	// for PackedFileType
@@ -143,7 +146,7 @@ public class Spreadsheet implements Filetype, PackedFileType {
 		// write header
 		w.write(I18n.getText("year"));
 		for (int i = 0; i < n; i++)
-			w.write("\t" + ((Sample)sl.get(i)).getMeta("title"));
+			w.write("\t" + ((Sample)sl.get(i)).getDisplayTitle());
 		w.newLine();
 
 		// save line(=year)-at-a-time
@@ -169,5 +172,17 @@ public class Spreadsheet implements Filetype, PackedFileType {
 			// end-of-line
 			w.newLine();
 		}
+	}
+
+	public Boolean isMultiFileCapable() {
+		return true;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format has no metadata capabilities.";
+	}
+
+	public Boolean isLossless() {
+		return false;
 	}
 }

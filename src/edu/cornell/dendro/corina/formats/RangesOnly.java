@@ -28,6 +28,8 @@ import edu.cornell.dendro.corina.ui.I18n;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
    The name and range of a sum's elements (no data).
@@ -54,7 +56,7 @@ ZKB-3   1011    1099    89
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public class RangesOnly implements Filetype {
+public class RangesOnly implements Filetype, PackedFileType {
 
     @Override
 	public String toString() {
@@ -77,43 +79,61 @@ public class RangesOnly implements Filetype {
     }
 
     public void save(Sample s, BufferedWriter w) throws IOException {
-        // verify it's a master
-        if (s.getElements() == null)
-            throw new IOException("Ranges-only format is only available " +
-				  "for summed samples with Elements");
+		
+		ArrayList<Sample> sl = new ArrayList<Sample>();
+		sl.add(s);
+		
+		// and pass them to savesamples
+		saveSamples(sl, w);
 
-	// write a header
-	w.write(I18n.getText("sample"));
-	w.write("\t");
-	w.write(I18n.getText("browser_start"));
-	w.write("\t");
-	w.write(I18n.getText("browser_end"));
-	w.write("\t");
-	w.write(I18n.getText("browser_length"));
-	w.newLine();
 
-        int n = s.getElements().size();
-        for (int i=0; i<n; i++) {
-            Element e = s.getElements().get(i);
-            BaseSample bs;
-            try {
-                bs = e.loadBasic(); // this aborts if element can't be loaded.
-            } catch (IOException ioe) {
-                throw new IOException("Can't load element " + e);
-            }
-
-            // output (name, start, end)
-            if (bs.hasMeta("title"))
-                w.write(bs.getMeta("title").toString());
-            else
-                w.write(bs.getMeta("filename").toString());
-            w.write("\t");
-            w.write(bs.getRange().getStart().toString());
-            w.write("\t");
-            w.write(bs.getRange().getEnd().toString());
-            w.write("\t");
-            w.write(String.valueOf(bs.getRange().span()));
-	    w.newLine();
-        }
     }
+
+
+
+	public void saveSamples(List<Sample> sl, BufferedWriter w)
+			throws IOException {
+
+		// write a header
+		w.write(I18n.getText("sample"));
+		w.write("\t");
+		w.write(I18n.getText("browser_start"));
+		w.write("\t");
+		w.write(I18n.getText("browser_end"));
+		w.write("\t");
+		w.write(I18n.getText("browser_length"));
+		w.newLine();
+
+		
+		
+	        int n = sl.size();
+	        for (int i=0; i<n; i++) {
+	            Sample s = sl.get(i);
+
+	            // output (name, start, end)
+	            if (s.getDisplayTitle()!=null)
+	                w.write(s.getDisplayTitle());
+	            else
+	                w.write("unknown");
+	            w.write("\t");
+	            w.write(s.getRange().getStart().toString());
+	            w.write("\t");
+	            w.write(s.getRange().getEnd().toString());
+	            w.write("\t");
+	            w.write(String.valueOf(s.getRange().span()));
+		    w.newLine();
+	        }
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format has no metadata capabilities.";
+	}
+
+	public Boolean isLossless() {
+		return false;
+	}
+	
+	public Boolean isMultiFileCapable() {
+		return true;
+	}
 }

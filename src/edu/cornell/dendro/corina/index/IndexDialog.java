@@ -159,7 +159,7 @@ public class IndexDialog extends JDialog {
 	 */
 	public IndexDialog(Sample s, JFrame owner) {
 		super(owner, true);
-		// setModal(true); -- no, graph becomes unusable, then.
+		setModal(false); //-- no, graph becomes unusable, then.
 
 		// data
 		sample = s;
@@ -360,7 +360,7 @@ public class IndexDialog extends JDialog {
 
 		// help button
 		JButton help = Builder.makeButton("help");
-		Help.addToButton(help, "indexing");
+		Help.assignHelpPageToButton(help, "indexing");
 		
 
 		// cancel button

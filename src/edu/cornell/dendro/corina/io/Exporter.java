@@ -78,6 +78,32 @@ public class Exporter {
 		return saveSingleSample(exportee, format, title);
 	}
 
+	public void saveSingleSample2(Sample exportee, String format, String fn)
+	{
+		
+		Filetype f;
+		try {
+			BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+			f = (Filetype) Class.forName(format).newInstance();
+			f.save(exportee, w);
+			w.close();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+		
+	 
+	}
+	
 	public String saveSingleSample(Sample exportee, String format, String title) {
 		String fn = null;
 		
@@ -182,6 +208,30 @@ public class Exporter {
 		return fn;
 	}
 	
+	public Boolean savePackedSample2(List<Sample> samples, Filetype ft, File fn)
+	{
+		
+		BufferedWriter w = null;
+		try {
+			w = new BufferedWriter(new FileWriter(fn));
+			((PackedFileType)ft).saveSamples(samples, w);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				w.close();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+				return false;
+			}
+		}
+		
+		return true;
+		
+	}
+	
 	/**
 	 * Saves multiple samples.
 	 * Pops up a dialog box asking for a folder to save to;
@@ -193,6 +243,50 @@ public class Exporter {
 	 */
 	public List saveMultiSample(List slist, String format) {
 		return saveMultiSample(slist, format, "Choose an Export Folder");
+	}
+	
+	public Boolean saveMultiSample2(List<Sample> samples, Filetype ft, File folder)
+	{
+		try {
+						
+			if(!((folder.exists() && folder.isDirectory()) || folder.mkdirs())) {
+				Alert.error("Couldn't export", "Couldn't create/write to directory " + folder.getName());
+				return false;
+			}
+			
+			// for each sample, make a new filename and export it!
+			for (int i = 0; i < samples.size(); i++) {
+				Sample s = (Sample) samples.get(i);
+				String progress = "Processing "
+						+ ((String) s.getDisplayTitle() + " (" + i
+						+ "/" + samples.size() + ")");
+				
+				// so, we have things like "blah.pkw.TUC!"
+				// gross, but this is what people wanted.
+				String fn = folder.getAbsolutePath() +
+					File.separator +
+					new File((String)s.getDisplayTitle() +
+					ft.getDefaultExtension());		
+								
+				BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+				try {
+					ft.save(s, w);
+				} finally {
+					try {
+						w.close();
+					} catch (IOException ioe) {
+						ioe.printStackTrace();
+						return false;
+					}
+				}					
+				System.out.println("Exported " + fn);
+			}			
+			
+		} catch (Exception ex) {
+			// problem creating filetype, or npe, or whatever -- bug.
+			Bug.bug(ex);
+		}
+		return true;
 	}
 	
 	public List saveMultiSample(List slist, String format, String title) {		

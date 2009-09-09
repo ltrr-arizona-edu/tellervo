@@ -45,8 +45,8 @@ public class HelpWiki extends XFrame {
 		
         // make the frame medium to start off with
 		// but make it maximized
-        setSize(640, 480);
-		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        setSize(500, this.getToolkit().getScreenSize().height);
+		//setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
         
         mozillaPanel.load(page);
     }
@@ -65,6 +65,7 @@ public class HelpWiki extends XFrame {
 	public static void showHelp(String page) {
 		HelpWiki dialog = new HelpWiki(page);
 		dialog.setVisible(true);
+		dialog.setAlwaysOnTop(true);
 	}	
     
 	private MozillaPanel mozillaPanel;

@@ -132,7 +132,7 @@ public class PackedTucson extends Tucson implements PackedFileType {
     @Override
 	public void save(Sample s, BufferedWriter w) throws IOException {
         // make sure it's a master, else ioe
-        if (s.getElements() == null)
+/*        if (s.getElements() == null)
             throw new IOException("Packed Tucson format is only available " +
 				  "for summed samples with Elements");
 
@@ -163,7 +163,16 @@ public class PackedTucson extends Tucson implements PackedFileType {
             // BUG: might not be AD-only.  saveData() should call
             // verifyAD(), then, not save()
         }
-        // (shouldn't that be saveData(elem)?)
+        // (shouldn't that be saveData(elem)?)*/
+    	
+		ArrayList<Sample> sl = new ArrayList<Sample>();
+		sl.add(s);
+		
+		// and pass them to savesamples
+		saveSamples(sl, w);
+	
+    	
+    	
     }
 
     // save a 3-line header -- itrdb uses these.
@@ -186,5 +195,11 @@ public class PackedTucson extends Tucson implements PackedFileType {
 	w.newLine();
 	w.write(id + " 3 Exported from Corina");
 	w.newLine();
+    }
+    
+    @Override
+    public Boolean isMultiFileCapable()
+    {
+    	return true;
     }
 }

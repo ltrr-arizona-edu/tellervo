@@ -56,6 +56,7 @@ import org.xml.sax.helpers.DefaultHandler;
            cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+@Deprecated
 public class TRML implements Filetype {
 
 	@Override
@@ -347,5 +348,17 @@ public class TRML implements Filetype {
 			else
 				w.write(" ");
 		}
+	}
+
+	public Boolean isMultiFileCapable() {
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format is deprecated and should not but used.";
+	}
+
+	public Boolean isLossless() {
+		return false;
 	}
 }

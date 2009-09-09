@@ -55,6 +55,7 @@ import java.io.IOException;
  * @author Aaron Hamid arh14 at cornell.edu
  * @version $Id$
  */
+@Deprecated
 public class MultiColumn implements Filetype {
 
   @Override
@@ -339,4 +340,16 @@ public String toString() {
       w.newLine();
     }
   }
+
+public Boolean isMultiFileCapable() {
+	return false;
+}
+
+public String getDeficiencyDescription() {
+	return this.toString() + " file format has no metadata capabilities.";
+}
+
+public Boolean isLossless() {
+	return false;
+}
 }

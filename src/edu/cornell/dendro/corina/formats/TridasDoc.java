@@ -437,4 +437,16 @@ public class TridasDoc implements Filetype {
 		
 		r.reset();
 	}
+
+	public Boolean isMultiFileCapable() {
+		return true;
+	}
+
+	public String getDeficiencyDescription() {
+		return null;
+	}
+
+	public Boolean isLossless() {
+		return true;
+	}
 }
