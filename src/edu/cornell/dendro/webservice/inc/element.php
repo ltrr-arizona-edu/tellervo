@@ -251,7 +251,7 @@ class element extends elementEntity implements IDBAccessor
         if ($paramsClass->getSlopeAzimuth()!=NULL)			$this->setSlopeAzimuth($paramsClass->getSlopeAzimuth());
         if ($paramsClass->getSoilDepth()!=NULL)				$this->setSoilDepth($paramsClass->getSoilDepth());
         if ($paramsClass->getSoilDescription()!=NULL)		$this->setSoilDescription($paramsClass->getSoilDescription());
-        if ($paramsClass->getBedrockDescription()!=NULL)	$this->getBedrockDescription($paramsClass->getBedrockDescription());
+        if ($paramsClass->getBedrockDescription()!=NULL)	$this->setBedrockDescription($paramsClass->getBedrockDescription());
         if ($paramsClass->getCode()!=NULL)             		$this->setCode($paramsClass->getCode());																				 
         if ($paramsClass->parentID!=NULL)
         {
@@ -484,7 +484,7 @@ class element extends elementEntity implements IDBAccessor
                     if(($this->getSoilDepth()!=NULL) || ($this->getSoilDescription()!=NULL))
                     {
                     	$xml.="<tridas:soil>\n";
-                    	if($this->getSoilDescription()!=NULL) $xml.="<tridas:description>".dbHelper::escapeXMLChars($this->getSoilDescription())."</tridas:soilDescription>\n";
+                    	if($this->getSoilDescription()!=NULL) $xml.="<tridas:description>".dbHelper::escapeXMLChars($this->getSoilDescription())."</tridas:description>\n";
                     	if($this->getSoilDepth()!=NULL) $xml.="<tridas:depth>".$this->getSoilDepth()."</tridas:depth>\n";
                     	$xml.="<tridas:soil>\n";
                     }
