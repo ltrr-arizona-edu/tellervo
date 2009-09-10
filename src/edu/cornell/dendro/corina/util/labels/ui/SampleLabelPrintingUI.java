@@ -284,16 +284,18 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 				
 		availModel.replaceContents(sampList);	
 		availModel.setSelectedItem(null);
-		sortAvailableBoxList();
+		sortAvailableSamples();
     }
     
-    private void sortAvailableBoxList(){
+    private void sortAvailableSamples(){
 		// Sort list intelligently
-		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.SITE_CODES_THEN_TITLES, 
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
 				TridasComparator.NullBehavior.NULLS_LAST, 
 				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
 		
 		Collections.sort(availModel, numSorter);
+		
+		
 		
 
     }
@@ -320,7 +322,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 				TridasSample myobj = (TridasSample) obj;
 				selModel.add(myobj);
 				availModel.remove(myobj);
-				sortAvailableBoxList();
+				sortAvailableSamples();
 			}
 			
 			
@@ -333,7 +335,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 				TridasSample myobj = (TridasSample) obj;
 				availModel.add(myobj);
 				selModel.remove(myobj);
-				sortAvailableBoxList();
+				sortAvailableSamples();
 
 			}
 		}

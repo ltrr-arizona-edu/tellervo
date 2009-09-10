@@ -6,6 +6,11 @@ package edu.cornell.dendro.corina.tridasv2;
 import java.util.Comparator;
 
 import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasSample;
+
+import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.schema.WSIBox;
 
 /**
  * A simple comparator for sorting lists of ITridas objects by
@@ -21,7 +26,8 @@ public class TridasComparator implements Comparator<ITridas> {
 	 */
 	public enum Type {
 		SITE_CODES_THEN_TITLES,
-		TITLES
+		TITLES, 
+		LAB_CODE_THEN_TITLES
 	}
 
 	public enum CompareBehavior {
@@ -86,6 +92,26 @@ public class TridasComparator implements Comparator<ITridas> {
 				v2 = o2.getTitle();
 			
 			break;
+		}
+		
+		case LAB_CODE_THEN_TITLES: {
+			if(o1 instanceof TridasSample){
+				TridasSample s1 = (TridasSample) o1;
+				v1 = GenericFieldUtils.findField(s1, "corina.internal.labcodeText").getValue().toString();
+			}
+			else{
+				v1 =o1.getTitle();
+			}
+			if(o2 instanceof TridasSample){
+				TridasSample s2 = (TridasSample) o2;
+				v2 = GenericFieldUtils.findField(s2, "corina.internal.labcodeText").getValue().toString();
+			}
+			else{
+				v2 =o2.getTitle();
+			}
+			
+			break;
+			
 		}
 		
 		case TITLES:
