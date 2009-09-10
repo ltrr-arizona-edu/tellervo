@@ -486,7 +486,7 @@ class element extends elementEntity implements IDBAccessor
                     	$xml.="<tridas:soil>\n";
                     	if($this->getSoilDescription()!=NULL) $xml.="<tridas:description>".dbHelper::escapeXMLChars($this->getSoilDescription())."</tridas:description>\n";
                     	if($this->getSoilDepth()!=NULL) $xml.="<tridas:depth>".$this->getSoilDepth()."</tridas:depth>\n";
-                    	$xml.="<tridas:soil>\n";
+                    	$xml.="</tridas:soil>\n";
                     }
                     
                     if($this->getBedrockDescription()!=NULL)	$xml.= "<tridas:bedrock>\n<tridas:description>".$this->getBedrockDescription()."</tridas:description>\n</tridas:bedrock>\n";
