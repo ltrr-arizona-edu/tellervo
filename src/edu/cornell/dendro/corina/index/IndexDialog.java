@@ -360,7 +360,7 @@ public class IndexDialog extends JDialog {
 
 		// help button
 		JButton help = Builder.makeButton("help");
-		Help.assignHelpPageToButton(help, "indexing");
+		Help.assignHelpPageToButton(help, "Indexing");
 		
 
 		// cancel button

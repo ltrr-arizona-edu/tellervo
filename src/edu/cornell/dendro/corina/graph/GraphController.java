@@ -70,8 +70,23 @@ public class GraphController {
 		// viewportSize is the number of pixels.
 		// nyears = 
 		int ppy = viewportSize / nYears;
+		
 		info.setYearWidth(ppy);
 		scrollTo(grapher.getGraphingRange().getStart());
+	}
+	
+	
+	public void zoomInHorizontal(){
+		Double ppy = info.getYearWidth()*1.1;
+		if(ppy.intValue()==info.getYearWidth()) ppy++;
+		info.setYearWidth(ppy.intValue());
+		scrollTo(grapher.getGraphingRange().getStart());
+	}
+	
+	public void zoomOutHorizontal(){
+		Double ppy = info.getYearWidth()/1.1;
+		info.setYearWidth(ppy.intValue());
+		scrollTo(grapher.getGraphingRange().getStart());		
 	}
 
 	/**

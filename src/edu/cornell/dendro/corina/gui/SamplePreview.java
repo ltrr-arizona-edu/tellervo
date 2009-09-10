@@ -146,6 +146,8 @@ public class SamplePreview extends JPanel implements PropertyChangeListener {
 			*/
 
 			// get preview, and show it.
+			
+
 			showPreview(s.getPreview());
 
 			// TODO: if title is too long, wrap? use tooltip? (jlinedlabel?)

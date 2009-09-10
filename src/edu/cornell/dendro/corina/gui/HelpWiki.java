@@ -31,6 +31,7 @@ public class HelpWiki extends XFrame {
         mozillaPanel = new MozillaPanel(VisibilityMode.FORCED_HIDDEN, VisibilityMode.DEFAULT);
         mozillaPanel.setUpdateTitle(true);
         
+        
         // apparently, have to stick it in a dummy holder panel
         JPanel holder = new JPanel(new BorderLayout());
         holder.add(mozillaPanel, BorderLayout.CENTER);
@@ -49,6 +50,7 @@ public class HelpWiki extends XFrame {
 		//setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
         
         mozillaPanel.load(page);
+        
     }
         
     /**

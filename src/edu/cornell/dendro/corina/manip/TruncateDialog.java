@@ -227,7 +227,7 @@ public class TruncateDialog extends JDialog {
 		
 		GenericFieldUtils.setField(series, "corina.newStartYear", relStartYear);
 		GenericFieldUtils.setField(series, "corina.newEndYear", relEndYear);
-		GenericFieldUtils.setField(series, "justification", info.getJustification());
+		GenericFieldUtils.setField(series, "corina.justification", info.getJustification());
 		
 		// make a new 'truncate' dummy sample for saving
 		Sample tmp = new Sample(series);		

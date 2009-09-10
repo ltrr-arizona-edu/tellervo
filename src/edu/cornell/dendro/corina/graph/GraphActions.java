@@ -62,7 +62,7 @@ public class GraphActions {
 	
 	private void createGraphActions() throws IntrospectionException {
 		showVerticalAxis = new ToggleableBoundAction<GraphInfo>("vert_hide", "vert_show", 
-				info, GraphInfo.class, GraphInfo.SHOW_VERT_AXIS_PROPERTY, "axisshow.png", 
+				info, GraphInfo.class, GraphInfo.SHOW_VERT_AXIS_PROPERTY, "vaxisshow.png", 
 				Builder.ICONS, 22);
 
 		showGridlines = new ToggleableBoundAction<GraphInfo>("grid_hide", "grid_show",
@@ -101,6 +101,8 @@ public class GraphActions {
 	protected CorinaAction squishBaselines;
 	protected CorinaAction fitHorizontally;
 	protected CorinaAction fitBoth;
+	protected CorinaAction zoomInHorizontally;
+	protected CorinaAction zoomOutHorizontally;
 	
 	protected CorinaAction scaleUp;
 	protected CorinaAction scaleDown;
@@ -176,18 +178,32 @@ public class GraphActions {
 			}
 		};
 		
-		zoomIn = new CorinaAction("zoom_out", "axiszoomout.png", Builder.ICONS, 22){
+		zoomInHorizontally = new CorinaAction("hzoom_in", "haxiszoomin.png", Builder.ICONS, 22) {
+			public void actionPerformed(ActionEvent e) {
+				controller.squishTogether();
+				controller.zoomInHorizontal();
+			}
+		};		
+		
+		zoomOutHorizontally = new CorinaAction("hzoom_out", "haxiszoomout.png", Builder.ICONS, 22) {
+			public void actionPerformed(ActionEvent e) {
+				controller.squishTogether();
+				controller.zoomOutHorizontal();
+			}
+		};	
+		
+		zoomIn = new CorinaAction("vzoom_in", "vaxiszoomin.png", Builder.ICONS, 22){
 			public void actionPerformed(ActionEvent e) {
 				int height = info.getTenUnitHeight();
-				float fheight = ((float) height) / 1.25f;
+				float fheight = ((float) height) * 1.25f;
 				
 				info.setTenUnitHeight((height == (int) fheight) ? height - 1 : (int) fheight);
 			}
 		};
-		zoomOut = new CorinaAction("zoom_in", "axiszoomin.png", Builder.ICONS, 22){
+		zoomOut = new CorinaAction("vzoom_out", "vaxiszoomout.png", Builder.ICONS, 22){
 			public void actionPerformed(ActionEvent e) {
 				int height = info.getTenUnitHeight();
-				float fheight = ((float) height) * 1.25f;
+				float fheight = ((float) height) / 1.25f;
 				
 				info.setTenUnitHeight((height == (int) fheight) ? height + 1 : (int) fheight);
 			}

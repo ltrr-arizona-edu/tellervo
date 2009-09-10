@@ -145,6 +145,8 @@ public class FileElement implements SampleLoader {
 	public Sample load() throws IOException {
 		Sample s = Files.load(filename);
 
+		if(s==null) return null;
+		
 		s.setLoader(this);
 		
 		// lazily-load this...?

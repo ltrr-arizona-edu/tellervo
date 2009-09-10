@@ -42,6 +42,9 @@ public class GraphToolbar extends JToolBar {
 		
 			addButton(actions.zoomIn, "zoom_in");
 			addButton(actions.zoomOut, "zoom_out");
+			addButton(actions.zoomInHorizontally, "zoom_in2");
+			addButton(actions.zoomOutHorizontally, "zoom_out2");
+			
 		}
 	}
 	

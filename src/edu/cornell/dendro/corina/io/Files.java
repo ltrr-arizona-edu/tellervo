@@ -27,7 +27,7 @@ public class Files {
 		if (!f.exists())
 			throw new FileNotFoundException("File doesn't exist.");
 		if (f.isDirectory())
-			throw new IOException("Can't load a folder.");
+			return null;
 		if (!f.isFile())
 			throw new IOException("Not a file.");
 		if (!f.canRead())

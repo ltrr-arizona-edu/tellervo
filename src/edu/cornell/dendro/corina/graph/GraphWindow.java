@@ -109,6 +109,11 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// PrintableDocument,
 		Printable, PrefsListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5018275020308926052L;
+
 	// SampleListener
 	private void update(Sample s) {
 		// data/format changed, need to recheck getScale();

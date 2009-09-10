@@ -22,7 +22,9 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Filetype;
 import edu.cornell.dendro.corina.formats.PackedFileType;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.gui.FileDialog.ExtensionFilter;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -136,16 +138,20 @@ public class ExportUI extends javax.swing.JPanel{
 		});
 		btnBrowse.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				String fn;
-				int returnVal;
-				String title = null;
-				String suggestedfn = null;
 				
-				// Are we exporting multiple files - if so choose directory not file
+				// Are we exporting multiple files... 
 				if (exportMulti)
 				{
+					// ... if so choose directory not file
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);	
 					fc.setDialogTitle("Select a folder");
+				}
+				else
+				{
+					// ... otherwise set the file filter 
+					Filetype ft =  (Filetype) formatModel.getSelectedItem();
+					ExtensionFilter filter = new FileDialog.ExtensionFilter(ft.getDefaultExtension().substring(1), ft.toString());
+					fc.setFileFilter(filter);
 				}
 			
 				// Open at last used directory
@@ -155,6 +161,7 @@ public class ExportUI extends javax.swing.JPanel{
 				}
 
 				// Show dialog
+				int returnVal;
 				returnVal = fc.showSaveDialog(parent);
 		
 				// Set file/folder in text box
@@ -257,7 +264,14 @@ public class ExportUI extends javax.swing.JPanel{
     	}
 	
     }
-        
+     
+    /**
+     * Set up the aspects of the gui that change
+     * depending on whether the output is packed 
+     * into a single file or not.
+     * 
+     * @param packed
+     */
     public void setGuiForPacked(Boolean packed)
     {
     	if(packed)
@@ -273,6 +287,9 @@ public class ExportUI extends javax.swing.JPanel{
     }
     
     
+    /**
+     * Set up the combo box containing the output file formats
+     */
     public void setupFormatList()
     {
     	
@@ -294,22 +311,23 @@ public class ExportUI extends javax.swing.JPanel{
 
     }
     
-	// FIXME: sometimes the preview takes a while to create.  for example,
-	// a spreadsheet view of a 100-element master needs to load all 100
-	// elements.  yeowch.  i'll need to run this in a separate thread for that!
 
+    /**
+     * Actually do the export
+     */
     private void doExport(){
 		
     	Filetype ft =  (Filetype) formatModel.getSelectedItem();
     	
+    	// Caution user if using a legacy file format
     	if(!(ft.isLossless()))
     	{
     		Integer wraplength = 65;
     		
-    		String message = WordUtils.wrap(ft.getDeficiencyDescription(), wraplength);
+    		String message = WordUtils.wrap("Caution: " + ft.getDeficiencyDescription(), wraplength);
     		message+= "\n\n";
     		message+= WordUtils.wrap("Please be aware that the exported files will therefore " +
-    				"not be a complete representation of the rich data currently " +
+    				"not be a complete representation of the data currently " +
     				"stored in the Corina database.", wraplength);
     		message+= "\n\n";
     		message+= WordUtils.wrap("Would you like to continue with the export?", wraplength); 
@@ -317,7 +335,7 @@ public class ExportUI extends javax.swing.JPanel{
     		
     		int n = JOptionPane.showConfirmDialog(parent,
     				message, 
-    				"Deficient file format",
+    				"File format caution",
     				JOptionPane.OK_CANCEL_OPTION,
     				JOptionPane.QUESTION_MESSAGE);
     		if (n==JOptionPane.OK_OPTION){
@@ -327,14 +345,12 @@ public class ExportUI extends javax.swing.JPanel{
     		}
     	}
     	
-    	
-    	
+    	// Actually do export
     	try {
 			Boolean success;
 								
 			File outfile = new File(txtOutput.getText());
-				
-			
+
 			if(ft.isMultiFileCapable() && sampleList.size()>1)
 			{
 				// Do 'packed' save
@@ -354,6 +370,10 @@ public class ExportUI extends javax.swing.JPanel{
 		}
     }
     
+    
+	// FIXME: sometimes the preview takes a while to create.  for example,
+	// a spreadsheet view of a 100-element master needs to load all 100
+	// elements.  yeowch.  i'll need to run this in a separate thread for that!
 	private void updatePreview() {
 		
 		// Don't run if the preview panel is hidden
