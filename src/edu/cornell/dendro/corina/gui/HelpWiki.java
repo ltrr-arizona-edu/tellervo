@@ -28,6 +28,25 @@ public class HelpWiki extends XFrame {
         if(page == null || page == "") 
         	page = "http://dendro.cornell.edu/corina-manual/UserGuideContents";
         
+		// See if we have access to mozilla libs
+		try {
+			// this loads the DLL...
+			Class.forName("org.mozilla.browser");
+		}
+		catch (Exception e) {
+			// driver not installed...
+			System.out.println("No mozilla - no help");
+			System.out.println(e.toString());
+			return;
+		}
+		catch (Error e) {
+			// native interface not installed...
+			System.out.println("No mozilla - no help");
+			System.out.println(e.toString());
+			return;
+		}
+		
+        
         mozillaPanel = new MozillaPanel(VisibilityMode.FORCED_HIDDEN, VisibilityMode.DEFAULT);
         mozillaPanel.setUpdateTitle(true);
         
