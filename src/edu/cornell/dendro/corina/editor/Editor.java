@@ -448,6 +448,24 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		if(link == null)
 			return;
 		
+		// See if we have access to mozilla libs
+		try {
+			// this loads the DLL...
+			Class.forName("org.mozilla.browser");
+		}
+		catch (Exception e) {
+			// driver not installed...
+			System.out.println("No mozilla - no map");
+			System.out.println(e.toString());
+			return;
+		}
+		catch (Error e) {
+			// native interface not installed...
+			System.out.println("No mozilla - no map");
+			System.out.println(e.toString());
+			return;
+		}
+		
 		try {
 			mozillaMapPanel = new EditorMozillaMapPanel(link);
 		} catch (Throwable e) {
