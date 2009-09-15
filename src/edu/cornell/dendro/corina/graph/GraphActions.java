@@ -112,6 +112,10 @@ public class GraphActions {
 	protected CorinaAction zoomOut;
 	protected CorinaAction zoomReset;
 	
+	protected CorinaAction setToLogScale;
+	protected CorinaAction setToNormalScale;
+	
+	
 	@SuppressWarnings("serial")
 	private void createControllerActions() {
 		squeezeVertically = new CorinaAction("baselines_align", "squeezevertically.png", Builder.ICONS, 22) {
@@ -214,6 +218,7 @@ public class GraphActions {
 				info.setTenUnitHeight(GraphPrefs.TENUNIT_HEIGHT.get());
 			}
 		};
+		
 
 	}
 

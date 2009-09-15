@@ -6,10 +6,14 @@ package edu.cornell.dendro.corina.graph;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JMenu;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -28,6 +32,8 @@ public class GraphToolbar extends JToolBar {
 			addSeparator();
 		}
 		
+
+		addPlotTypeButtons(actions);
 		addToggle(actions.showVerticalAxis, "vert_show");
 		addToggle(actions.showGridlines, "grid_show");
 		addToggle(actions.showComponentNames, "compn_show");
@@ -47,6 +53,18 @@ public class GraphToolbar extends JToolBar {
 			
 		}
 	}
+	
+	private void addPlotTypeButtons(GraphActions actions)
+	{
+		for(int i = 0; i < actions.plotTypes.length; i++) {
+			JRadioButtonMenuItem sa = new JRadioButtonMenuItem(actions.plotTypes[i]);
+			actions.plotTypes[i].connectToggleableButton(sa);
+			
+			add(sa);
+		}
+		
+	}
+	
 	
 	private void addToggle(CorinaAction action, String key) {
 		AbstractButton button = new TitlelessToggleButton(action);

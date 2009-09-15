@@ -159,7 +159,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 				new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
 			}
 		});
-		sumMenu.setEnabled(!sample.isSummed());
+		
 		add(sumMenu);
 
 		// redate

@@ -37,13 +37,24 @@ public class SumCreationDialog {
 	private String sumName = "New sum";
 
 	@SuppressWarnings("serial")
-	public SumCreationDialog(Frame parent, ElementList el) {
+	public SumCreationDialog(final Frame parent, ElementList el) {
 		
 		// create the db browser, but make it create the sum first before closing
 		sum = new DBBrowser(parent, true, true) {
 			@Override
 			protected boolean finish() {
 				try {
+					sumName = JOptionPane.showInputDialog(parent,
+							"Please choose a name for your sum:",
+							sumName);
+			
+					if ((sumName == null) || (sumName == "newSeries") || (sumName == "New sum"))
+					{
+						JOptionPane.showMessageDialog(this, "Error: Please enter a valid name", 
+								"Invalid name", JOptionPane.ERROR_MESSAGE);
+						finish();
+					}
+					
 					return (applySum() && super.finish());
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(this, "Error: " + e, "Failed to create sum", 
@@ -55,13 +66,14 @@ public class SumCreationDialog {
 		
 		// must have two for a sum!
 		sum.setMinimumSelectedElements(2);
+
 		
 		// add the elements so they show in the dialog
 		for(Element e : el)
 			sum.addElement(e);
 		
 		// select the site in the first element
-		Element e = el.get(0);
+		/*Element e = el.get(0);
 		if(e != null) {
 			try	{
 				BaseSample bs = e.loadBasic();
@@ -74,15 +86,13 @@ public class SumCreationDialog {
 			} catch (Exception ex) {
 				// ignore...
 			}
-		}
+		}*/
 		
-		sumName = JOptionPane.showInputDialog(parent,
-				"Please choose a name for your sum:",
-				sumName);
+
 		
 		addButtons();
 		
-		sum.setTitle("Sum creation: " + sumName);
+		sum.setTitle("Creating a sum");
 		sum.setVisible(true);		
 	}
 	
@@ -101,6 +111,9 @@ public class SumCreationDialog {
 		ControlledVoc voc = new ControlledVoc();
 		voc.setValue(SampleType.SUM.toString());
 		series.setType(voc);
+		
+		// Default to version 1 - will give user gui if v1 is already taken
+		series.setVersion("1");
 		
 		// add each sum element to the sample...
 		for(Element sume : sum.getSelectedElements()) {
