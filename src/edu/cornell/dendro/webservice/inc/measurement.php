@@ -1704,7 +1704,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 					if($this->getVMeasurementOp()!=NULL)			$updateSQL.= "vmeasurementopid ='".pg_escape_string($this->vmeasurementOp->getID())."', ";
 					if($this->vmeasurementOp->getParamID()!=NULL)	$updateSQL.= "vmeasurementopparameter ='".pg_escape_string($this->vmeasurementOp->getParamID())."', ";
-					if($this->getCode()!=NULL)               		$updateSQL.= "code = '".pg_escape_string($this->getTitle())."', ";
+					if($this->getTitle()!=NULL)               		$updateSQL.= "code = '".pg_escape_string($this->getTitle())."', ";
 					if($this->getComments()!=NULL)        			$updateSQL.= "comments = '".pg_escape_string($this->getComments())."', ";
 					if($this->author->getID()!=NULL)				$updateSQL.= "owneruserid = '".pg_escape_string($this->author->getID())."', ";
 					if($this->objective!=NULL)						$updateSQL.= "objective= '".pg_escape_string($this->objective)."', ";

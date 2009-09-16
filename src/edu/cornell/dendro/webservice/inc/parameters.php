@@ -130,7 +130,8 @@ class searchParameters implements IParams
 									'elementdescription' => 				array('tbl' => 'vwtblelement', 'field' => 'description'),
 									'elementcreated' => 					array('tbl' => 'vwtblelement', 'field' => 'createdtimestamp'),
 									'elementlastmodified' =>	 			array('tbl' => 'vwtblelement', 'field' => 'lastmodifiedtimestamp'),
-
+									'elementcode' =>						array('tbl' => 'vwtblelement', 'field' => 'code'),
+		
 									'sampleid' => 							array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
 									//'sampledbid' => 						array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
 									'samplingdate' => 						array('tbl' => 'vwtblsample', 'field' => 'samplingdate'),
@@ -143,6 +144,7 @@ class searchParameters implements IParams
 									'samplelastmodified' => 				array('tbl' => 'vwtblsample', 'field' => 'lastmodifiedtimstamp'),
 									'samplingdatecertainty' => 				array('tbl' => 'vwtblsample', 'field' => 'datecertainty'),
 									'sampleboxid' =>						array('tbl' => 'vwtblsample', 'field' => 'boxid'),
+									'samplecode' =>							array('tbl' => 'vwtblsample', 'field' => 'code'),
 
                                     'radiusid' =>                           		array('tbl' => 'vwtblradius', 'field' => 'radiusid'),
 									//'radiusdbid' 
@@ -160,6 +162,7 @@ class searchParameters implements IParams
 									'radiuslastmodified'=>							array('tbl' => 'vwtblradius', 'field' => 'radiuslastmodified'),
 									'radiusazimuth'=>								array('tbl' => 'vwtblradius', 'field' => 'azimuth'),
 									'radiustitle'=>									array('tbl' => 'vwtblradius', 'field' => 'radiuscode'),
+									'radiuscode' =>									array('tbl' => 'vwtblradius', 'field' => 'radiuscode'),	
 		
 									'seriesid' =>                           array('tbl' => 'vwcomprehensivevm', 'field' => 'vmeasurementid'),
 									//'seriesmeasuringmethod' =>				array('tbl' => 'vwcomprehensivevm', 'field' => ''),
