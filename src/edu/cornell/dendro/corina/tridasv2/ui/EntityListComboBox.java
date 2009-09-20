@@ -18,43 +18,63 @@ import org.tridas.schema.TridasObject;
 import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
+import edu.cornell.dendro.corina.tridasv2.ui.support.NotPresent;
+import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 
-public class EntityListComboBox extends JComboBox {
+public class EntityListComboBox extends ComboBoxFilterable {
 	private static final long serialVersionUID = 1L;
 
-	public final static Object NEW_ITEM = new Object();
-	public final static Object SEPARATOR_ITEM = new Object();
+	/**
+	 * Silly inner class - assists in debugging and the filtering engine
+	 */
+	private static class IrrelevantEntity implements NotPresent {
+		private final String value;
+		
+		public IrrelevantEntity(String value) {
+			this.value = value;
+		}
+		
+		@Override
+		public String toString() {
+			return value;
+		}
+	}
+	
+	public final static Object NEW_ITEM = new IrrelevantEntity("New...");
+	public final static Object SEPARATOR_ITEM = new IrrelevantEntity("------");
 	
 	public EntityListComboBox(List<? extends ITridas> entities) {
-		ArrayListModel<Object> model = new ArrayListModel<Object>();
+		super(new FilterableComboBoxModel());
 		
-		model.add(NEW_ITEM);
-		model.add(SEPARATOR_ITEM);
-		model.addAll(entities);
+		FilterableComboBoxModel model = (FilterableComboBoxModel) getModel();
 		
-		setModel(model);
+		model.addElement(NEW_ITEM);
+		model.addElement(SEPARATOR_ITEM);
+		model.addElements(entities);
+		
 		finishInit();
 	}
 
 	public EntityListComboBox() {
-		ArrayListModel<Object> model = new ArrayListModel<Object>();
+		super(new FilterableComboBoxModel());
 		
-		model.add(NEW_ITEM);
-		model.add(SEPARATOR_ITEM);
+		FilterableComboBoxModel model = (FilterableComboBoxModel) getModel();
 		
-		setModel(model);
+		model.addElement(NEW_ITEM);
+		model.addElement(SEPARATOR_ITEM);
+		
 		finishInit();
 	}
 
 	public void setList(List<? extends ITridas> entities) {
-		ArrayListModel<Object> model = new ArrayListModel<Object>();
+		FilterableComboBoxModel model = (FilterableComboBoxModel) getModel();
+
+		model.clearElements();
+		model.addElement(NEW_ITEM);
+		model.addElement(SEPARATOR_ITEM);
+		model.addElements(entities);
 		
-		model.add(NEW_ITEM);
-		model.add(SEPARATOR_ITEM);
-		model.addAll(entities);
-		
-		setModel(model);
 		finishInit();
 	}
 	

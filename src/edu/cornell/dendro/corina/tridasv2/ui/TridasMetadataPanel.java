@@ -52,7 +52,6 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
-import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
@@ -64,6 +63,7 @@ import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityListHolder;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
@@ -835,17 +835,17 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				return;
 			}
 
-			ArrayListModel<Object> model = ((ArrayListModel<Object>) topChooser.getModel());
+			FilterableComboBoxModel model = (FilterableComboBoxModel) topChooser.getModel();
 
 			// find it in the list...
 			ITridas listEntity;
-			if ((listEntity = entityInList(entity, model)) != null) {
+			if ((listEntity = entityInList(entity, model.getElements())) != null) {
 				topChooser.setSelectedItem(listEntity);
 				return;
 			}
 
 			// blech, it wasn't in the list -> add it
-			model.add(2, entity);
+			model.insertElementAt(entity, 2);
 			topChooser.setSelectedItem(entity);
 		} finally {
 			// deal with the selection

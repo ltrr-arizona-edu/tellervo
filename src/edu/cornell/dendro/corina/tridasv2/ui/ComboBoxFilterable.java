@@ -27,8 +27,10 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.tridas.interfaces.ITridas;
 import org.tridas.schema.ControlledVoc;
 
+import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.ui.support.NotPresent;
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
 
@@ -54,6 +56,19 @@ public class ComboBoxFilterable extends JComboBox {
 		super();
 			
 		model = new FilterableComboBoxModel(Arrays.asList(data));
+		
+		initialize();
+	}
+
+	public ComboBoxFilterable(FilterableComboBoxModel model) {
+		super();
+		
+		this.model = model;
+		
+		initialize();
+	}
+	
+	private void initialize() {
 		setModel(model);
 		
 		filter = new ContainsFilter();
@@ -67,7 +82,8 @@ public class ComboBoxFilterable extends JComboBox {
 		    	  isComboPopupShowing = false;
 		    	  
 		    	  if(isPopupShowing) {
-		    		  cleanupPopup(false);
+		    		  cleanupPopup(true);
+		    		  isPopupShowing = false;
 		    	  }
 		      }
 		      public void popupMenuCanceled(PopupMenuEvent e) {
@@ -82,7 +98,7 @@ public class ComboBoxFilterable extends JComboBox {
 		addKeyListener(new KeyAdapter() {
 			
 			public void keyTyped(KeyEvent e) {	
-								
+				
 				// ignore it if the combo popup menu isn't showing
 				if(!isComboPopupShowing)
 					ComboBoxFilterable.this.showPopup();
@@ -125,7 +141,7 @@ public class ComboBoxFilterable extends JComboBox {
 				}				
 				searchField.forceProcessKeyEvent(e);
 			}
-		});
+		});		
 	}
 	
 	private void initPopup(Point p) {
@@ -219,6 +235,15 @@ public class ComboBoxFilterable extends JComboBox {
 				
 				// forward enter key onto combo box
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					
+					// don't forward it on if nothing has been selected
+					// instead, select the first item
+					if(ComboBoxFilterable.this.getSelectedIndex() == -1) {
+						ComboBoxFilterable.this.setSelectedIndex(0);
+						e.consume();
+						return;
+					}
+					
 					ComboBoxFilterable.this.processKeyEvent(e);
 					return;
 				}
@@ -243,11 +268,7 @@ public class ComboBoxFilterable extends JComboBox {
 		}
 
 		public void forceProcessKeyEvent(final KeyEvent k) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					ForcableJTextField.super.processKeyEvent(k);
-				}
-			});
+			ForcableJTextField.super.processKeyEvent(k);
 		}
 	}
 
@@ -289,6 +310,18 @@ public class ComboBoxFilterable extends JComboBox {
 			}
 			else if(o instanceof ControlledVoc) {
 				return ((ControlledVoc)o).getNormal();
+			}
+			else if(o instanceof ITridas) {
+				if(o instanceof TridasObjectEx) {
+					TridasObjectEx objex = (TridasObjectEx)o;
+					
+					if(objex.hasLabCode())
+						return objex.getLabCode() + "\n" + objex.getTitle();
+					
+					return objex.getTitle();
+				}
+				else
+					return ((ITridas)o).getTitle();
 			}
 			
 			return o.toString();

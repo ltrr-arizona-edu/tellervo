@@ -27,10 +27,20 @@ public class FilterableComboBoxModel extends AbstractListModel implements
 	private List<Object> filteredItems;
 	private Object selectedItem;
 
+	public FilterableComboBoxModel() {
+		items = new ArrayList<Object>();
+		filteredItems = new ArrayList<Object>();
+		updateFilteredItems();
+	}
+	
 	public FilterableComboBoxModel(List<Object> items) {
 		this.items = new ArrayList<Object>(items);
 		filteredItems = new ArrayList<Object>(items.size());
 		updateFilteredItems();
+	}
+
+	public List<Object> getElements() {
+		return items;
 	}
 
 	public void addElement(Object obj) {
@@ -38,7 +48,17 @@ public class FilterableComboBoxModel extends AbstractListModel implements
 		items.add(obj);
 		updateFilteredItems();
 	}
+	
+	public void addElements(List<?> objs) {
+		items.addAll(objs);
+		updateFilteredItems();
+	}
 
+	public void clearElements() {		
+		items.clear();
+		updateFilteredItems();
+	}
+	
 	public void removeElement(Object obj) {
 
 		items.remove(obj);
@@ -60,7 +80,7 @@ public class FilterableComboBoxModel extends AbstractListModel implements
 		this.filter = filter;
 		updateFilteredItems();
 	}
-
+	
 	protected void updateFilteredItems() {
 
 		fireIntervalRemoved(this, 0, filteredItems.size());
