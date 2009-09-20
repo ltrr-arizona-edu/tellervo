@@ -21,14 +21,14 @@ import edu.cornell.dendro.corina.ui.Builder;
 public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 	private JLabel lastMeasurement;
 	private Editor editor;
-	private CorinaMeasuringDevice dev;
+	private LegacyCorinaMeasuringDevice dev;
 	
 	/* audioclips to play... */
 	private AudioClip measure_one;
 	private AudioClip measure_dec;
 	private AudioClip measure_error;
 	
-	public EditorMeasurePanel(Editor myeditor, SerialSampleIO ioport) {
+	public EditorMeasurePanel(Editor myeditor, LegacySerialSampleIO ioport) {
 		super(new FlowLayout(FlowLayout.RIGHT));
 		
 		editor = myeditor;
@@ -60,7 +60,7 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 		} catch (Exception ae) { /* ignore this... */ }
 		
 		// now, watch for info!
-		dev = new CorinaMeasuringDevice(ioport, this);
+		dev = new LegacyCorinaMeasuringDevice(ioport, this);
 	}
 	
 	public void receiverUpdateStatus(String status) {

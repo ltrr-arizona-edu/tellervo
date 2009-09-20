@@ -10,7 +10,7 @@ import gnu.io.*;
  * 
  */
 
-public class SerialSampleIO 
+public class LegacySerialSampleIO 
 
 /*{
 	// for disabling this whole thing outright...
@@ -47,7 +47,7 @@ implements SerialPortEventListener {
 	private Set listeners = new HashSet();
 
 	// tie us to the port...
-	public SerialSampleIO(String portName) throws IOException {
+	public LegacySerialSampleIO(String portName) throws IOException {
 		
 		System.out.println("Opening port: " + portName);
 		
@@ -114,7 +114,7 @@ implements SerialPortEventListener {
 							try {
 								System.out.println("Initializing reader, try " + tryCount + "...");
 								fireSerialSampleEvent(SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
-								dataPort.getOutputStream().write(SerialSampleIO.EVE_ENQ);
+								dataPort.getOutputStream().write(LegacySerialSampleIO.EVE_ENQ);
 							}
 							catch (IOException e) {	}
 						} else {
@@ -328,7 +328,7 @@ implements SerialPortEventListener {
 		if (size == 0)
 			return;
 
-		SerialSampleIOEvent e = new SerialSampleIOEvent(SerialSampleIO.class,
+		SerialSampleIOEvent e = new SerialSampleIOEvent(LegacySerialSampleIO.class,
 				type, value);
 
 		for (int i = 0; i < size; i++) {

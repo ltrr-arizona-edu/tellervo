@@ -1,38 +1,52 @@
 package edu.cornell.dendro.corina.io;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 
-import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 
-public class CorinaMeasuringDevice implements SerialSampleIOListener {
-	private SerialSampleIO port;
+public class CorinaSerialMeasurementAdapter implements SerialSampleIOListener {
+	private AbstractSerialMeasuringDevice device;
 	private MeasurementReceiver receiver;
 	
 	/**
-	 * Opens a dataport for passing to a measuring device object!
+	 * Opens a device for passing to a measuring device object!
 	 * @return
 	 * @throws IOException
 	 */
-	public static SerialSampleIO initialize() throws IOException {
-		SerialSampleIO dataPort;
+	public static <T extends AbstractSerialMeasuringDevice> T create(Class<T> deviceClass) throws IOException {
+		T device;
 		
-		dataPort = new SerialSampleIO(App.prefs.getPref("corina.serialsampleio.port"));
-		dataPort.initialize();
+		// TODO: Make this remember ports per type
+		// add a better interface
+		// etc, etc
 		
-		return dataPort;
+		
+		String serialPortName = App.prefs.getPref("corina.serialsampleio.port", "COM1");		
+				
+		Constructor<T> constructor;
+		try {
+			constructor = deviceClass.getConstructor(String.class);
+			device = constructor.newInstance(serialPortName);
+		} catch (Exception ex) {
+			throw new IOException(ex);
+		}
+		
+		device.initialize();
+		
+		return device;
 	}
 	
-	public CorinaMeasuringDevice(SerialSampleIO port, MeasurementReceiver receiver) {
-		this.port = port;
+	public CorinaSerialMeasurementAdapter(AbstractSerialMeasuringDevice device, MeasurementReceiver receiver) {
+		this.device = device;
 		this.receiver = receiver;
 		
-		port.addSerialSampleIOListener(this);
+		device.addSerialSampleIOListener(this);
 	}
 	
 	public void close() {
-		port.removeSerialSampleIOListener(this);
-		port.close();
+		device.removeSerialSampleIOListener(this);
+		device.close();
 	}
 	
 	public void SerialSampleIONotify(SerialSampleIOEvent sse) {

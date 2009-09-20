@@ -22,9 +22,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.io.CorinaMeasuringDevice;
+import edu.cornell.dendro.corina.io.LegacyCorinaMeasuringDevice;
 import edu.cornell.dendro.corina.io.MeasurementReceiver;
-import edu.cornell.dendro.corina.io.SerialSampleIO;
+import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.sample.Sample;
 
 /**
@@ -40,7 +40,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 
 	private Integer finalValue;
 
-	private CorinaMeasuringDevice dev;
+	private LegacyCorinaMeasuringDevice dev;
 	private ArrayList<AMeasurement> measurements;
 
 	/* audioclips to play... */
@@ -161,9 +161,9 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 
 		// initialize our measuring device
 		try {
-			SerialSampleIO dataPort = CorinaMeasuringDevice.initialize();
+			LegacySerialSampleIO dataPort = LegacyCorinaMeasuringDevice.initialize();
 
-			dev = new CorinaMeasuringDevice(dataPort, this);
+			dev = new LegacyCorinaMeasuringDevice(dataPort, this);
 		} catch (IOException ioe) {
 			devStatus.setText("Initialization failed");
 		}

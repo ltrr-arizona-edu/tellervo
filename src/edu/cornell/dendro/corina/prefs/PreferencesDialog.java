@@ -16,7 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.io.SerialSampleIO;
+import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
@@ -90,12 +90,12 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 	
 	private void setupCOMPort()
 	{
-		if (SerialSampleIO.hasSerialCapability()) {
+		if (LegacySerialSampleIO.hasSerialCapability()) {
 
 			boolean addedPort = false;
 	
 			// first, enumerate all the ports.
-			Vector comportlist = SerialSampleIO.enumeratePorts();
+			Vector comportlist = LegacySerialSampleIO.enumeratePorts();
 	
 			// do we have a COM port selected that's not in the list? (ugh!)
 			String curport = App.prefs.getPref("corina.serialsampleio.port");

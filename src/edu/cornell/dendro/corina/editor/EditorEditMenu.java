@@ -36,7 +36,7 @@ import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
-import edu.cornell.dendro.corina.io.SerialSampleIO;
+import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.core.App;
 
 import java.io.File;
@@ -195,7 +195,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		addDelete();
 		addInsertYears();
 
-		if (SerialSampleIO.hasSerialCapability()
+		if (LegacySerialSampleIO.hasSerialCapability()
 				&& App.prefs.getPref("corina.serialsampleio.port") != null) {
 			addSeparator();
 			addMeasure();
