@@ -20,7 +20,6 @@ import com.lowagie.text.Font;
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 import edu.cornell.dendro.corina.tridasv2.ui.support.NotPresent;
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
-import edu.cornell.dendro.corina.util.ArrayListModel;
 
 public class EntityListComboBox extends ComboBoxFilterable {
 	private static final long serialVersionUID = 1L;

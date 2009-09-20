@@ -6,11 +6,7 @@ package edu.cornell.dendro.corina.tridasv2;
 import java.util.Comparator;
 
 import org.tridas.interfaces.ITridas;
-import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasSample;
-
-import edu.cornell.dendro.corina.formats.Metadata;
-import edu.cornell.dendro.corina.schema.WSIBox;
 
 /**
  * A simple comparator for sorting lists of ITridas objects by

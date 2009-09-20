@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina.tridasv2.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.IllegalComponentStateException;
 import java.awt.Point;
 import java.awt.Window;

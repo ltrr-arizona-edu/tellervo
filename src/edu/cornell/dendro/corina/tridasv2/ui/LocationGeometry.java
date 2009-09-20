@@ -23,7 +23,6 @@ import org.tridas.schema.TridasLocationGeometry;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.platform.Platform;
-import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 
 public class LocationGeometry extends LocationGeometryUI implements

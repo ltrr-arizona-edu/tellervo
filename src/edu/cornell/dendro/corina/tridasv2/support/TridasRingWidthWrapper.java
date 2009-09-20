@@ -1,7 +1,6 @@
 package edu.cornell.dendro.corina.tridasv2.support;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.tridas.schema.NormalTridasVariable;

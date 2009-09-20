@@ -64,7 +64,6 @@ import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityListHolder;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
-import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 
@@ -824,7 +823,6 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * 
 	 * @param entity
 	 */
-	@SuppressWarnings("unchecked")
 	private void selectInCombo(ITridas entity) {
 		// disable actionListener firing when we change combobox selection
 		topChooserListener.setEnabled(false);
