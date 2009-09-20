@@ -52,6 +52,7 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
@@ -915,9 +916,12 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				alreadyWarned = true;
 			}
 			
-			if(currentMode.isBrandNew(s)) {
+			if(currentMode.isBrandNew(s) 
+			   && !(currentMode == EditType.MEASUREMENT_SERIES 
+					|| currentMode == EditType.DERIVED_SERIES) )  {
 				// if it's brand new and the user has indicated they don't
 				// care about the changes, destroy it; it's useless!
+				// BUT only do this if it's a mid-level entity (don't touch samples!)
 				currentMode.setEntity(s, null);
 			}
 		
@@ -1032,7 +1036,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @return
 	 */
 	private AbstractButton addButton(final EditType type) {
-		Action action = new AbstractAction(type.getTitle(), type.getIcon()) {
+ 		Action action = new AbstractAction(type.getTitle(), type.getIcon()) {
 			public void actionPerformed(ActionEvent e) {				
 				buttonAction(type);
 			}
