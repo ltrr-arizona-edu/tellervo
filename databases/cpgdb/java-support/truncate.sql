@@ -19,8 +19,22 @@ BEGIN
     WHERE VMeasurementResultID=$2 AND (RelYear < XStartRelYear OR RelYear > XEndRelYear);
 
   -- 'redate' the relyears
-  UPDATE tblVMeasurementReadingResult SET RelYear=RelYear-XStartRelYear
+  -- 
+  -- Ugh, we have to do this in two steps
+  -- Otherwise, we violate the UNIQUE constraint because it's checked for every row
+  -- So, since a RelYear can never be negative... we cheat, and use that as an ugly workaround
+  --
+  
+  -- Step 1: Relyear = - (Relyear - XStartRelYear)
+  UPDATE tblVMeasurementReadingResult SET RelYear=-(RelYear-XStartRelYear)
     WHERE VMeasurementResultID=$2;
+
+  -- Step 2: Relyear = -Relyear
+  UPDATE tblVMeasurementReadingResult SET RelYear=-RelYear
+    WHERE VMeasurementResultID=$2;
+
+  -- Now, effectively, -(-(Relyear-XStartRelYear) cancels out the first two negatives
+  -- and we were unique the whole time!
 
   -- Mark the redating in vmeasurementresult (increment startyear)
   UPDATE tblVMeasurementResult SET StartYear=StartYear+XStartRelYear
