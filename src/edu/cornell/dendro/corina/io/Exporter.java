@@ -34,9 +34,9 @@ public class Exporter {
 		rememberExportDirectory = true;
 
 		// load the last export directory. If it doesn't exist, make a nice default.
-		exportDirectory = App.prefs.getPref("corina.dir.export");
+		exportDirectory = App.prefs.getPref("corina.dir.export", null);
 		if(exportDirectory == null)
-			exportDirectory = App.prefs.getPref("corina.dir.data");
+			exportDirectory = App.prefs.getPref("corina.dir.data", null);
 		if(exportDirectory == null)
 			exportDirectory = "";
 		
@@ -65,15 +65,8 @@ public class Exporter {
 	 */
 	public String saveSingleSample(Sample exportee, String format) {
 		
-		// use the default title...
-		
-		/**String etext = "";
-		if (exportee.getMeta("filename") != null) {
-			File oldfile = new File((String) exportee.getDisplayTitle());
-			etext = " (" + oldfile.getName() + ")";
-		}*/
-
-		String title = exportee.getDisplayTitle();
+		// use the default title...		
+		String title = I18n.getText("export") + " " + exportee.getDisplayTitle();
 		
 		return saveSingleSample(exportee, format, title);
 	}
@@ -117,7 +110,7 @@ public class Exporter {
 			
 			System.out.println(suggestedfn);
 			
-			fn = FileDialog.showSingle(title, suggestedfn, "export");
+			fn = FileDialog.showSingle(I18n.getText("export"), title, suggestedfn, "export");
 
 			// save the export directory. Remember, fn is the actual filename, so we need to chop off the file name bit.
 			if(rememberExportDirectory)

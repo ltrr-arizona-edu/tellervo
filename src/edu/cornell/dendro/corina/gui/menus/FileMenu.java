@@ -281,7 +281,7 @@ public class FileMenu extends JMenu {
 		String filename = "";
 		
 		try {
-			filename = FileDialog.showSingle("Choose a sample to import");
+			filename = FileDialog.showSingle(I18n.getText("dbimport..."), "Choose a series to import...");
 			// get filename, and load
 			Element e = ElementFactory.createElement(filename);
 		    Sample s = e.load();

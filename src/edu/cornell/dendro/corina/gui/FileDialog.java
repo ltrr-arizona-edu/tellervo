@@ -247,13 +247,23 @@ public class FileDialog {
 	public static String showSingle(String prompt) throws UserCancelledException {
 		return showSingle(prompt, getWorkingDirectory("general"), "general");
 	}
+
+	public static String showSingle(String title, String prompt) throws UserCancelledException {
+		return showSingle(title, prompt, getWorkingDirectory("general"), "general");
+	}
+	
+	public static String showSingle(String prompt, String workingDirectory, String function) throws UserCancelledException {
+		return showSingle(prompt, prompt, workingDirectory, function);
+	}
 	
 	/**
 	 * Show a file selection dialog. This allows the user to select one file. It
 	 * shows a preview component, and has the default filters available.
 	 * 
-	 * @param prompt
-	 *          the text string to use for both the title bar and approve button
+	 * @param buttonText
+	 *          the text to show in the approve button
+	 * @param title
+	 *          the text to show in the title bar
 	 * @param workingDirectory
 	 *          the directory to start in
 	 * @param function
@@ -263,7 +273,7 @@ public class FileDialog {
 	 * @exception UserCancelledException
 	 *              if the user cancelled
 	 */
-	public static String showSingle(String prompt, String workingDirectory, String function)
+	public static String showSingle(String buttonText, String title, String workingDirectory, String function)
 			throws UserCancelledException {
 		// create chooser
 		JFileChooser f = new JFileChooser();
@@ -290,9 +300,14 @@ public class FileDialog {
 		else		
 			f.setCurrentDirectory(workFile);
 		
+		
+		// set up some dialog UI properties
+		f.setApproveButtonText(buttonText);
+		f.setDialogTitle(title);
+		
 		// show the dialog
-		int result = f.showDialog(null, "Import");
-
+		int result = f.showDialog(null, null);
+		
 		try {
 			if (result == JFileChooser.APPROVE_OPTION) {
 				// ok: store wd, and return file
