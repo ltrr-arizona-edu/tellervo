@@ -29,7 +29,7 @@ public class CorinaSerialMeasurementAdapter implements SerialSampleIOListener {
 			constructor = deviceClass.getConstructor(String.class);
 			device = constructor.newInstance(serialPortName);
 		} catch (Exception ex) {
-			throw new IOException(ex);
+			throw new IOException();
 		}
 		
 		device.initialize();
