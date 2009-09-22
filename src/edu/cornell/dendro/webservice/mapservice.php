@@ -55,7 +55,7 @@ else
     die();
 }
 
-$xmldata = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<kml xmlns=\"http://earth.google.com/kml/2.0\">\n<Document>\n";
+$xmldata = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<kml xmlns=\"http://earth.google.com/kml/2.1\">\n<Document>\n<name>Corina Map</name>\n";
 $xmldata .= "<Style id=\"corinaDefault\">
               <IconStyle>
                <scale>1</scale>
@@ -65,18 +65,19 @@ $xmldata .= "<Style id=\"corinaDefault\">
                <hotSpot x=\"0.5\" y=\"0.5\" xunits=\"fraction\" yunits=\"fraction\"/>
               </IconStyle>
             <LabelStyle>
-              <scale>1</scale>
               <color>FFFFFFFF</color>
+            <scale>1</scale>
+
             </LabelStyle>
             <LineStyle>
-              <width>1.5</width>
               <color>ff030385</color>
+            
+            <width>1.5</width>
             </LineStyle>
             <PolyStyle>
               <color>7d030385</color>
             </PolyStyle>            
            </Style>";
-$xmldata.= "<name>Corina Map Data</name>\n";
 
 if(($reqID=="all") || ($reqID==NULL) || ($reqID==""))
 {
@@ -187,6 +188,8 @@ else
 $xmldata .= "\n</Document>\n";
 $xmldata .= "</kml>";
 
+global $firebug;
+
 switch($format)
 {
 	case "kml": 
@@ -201,6 +204,7 @@ switch($format)
 		
 
 		$tmpfname = tempnam($tempFolder, "CMS-Temp-").".kml";
+		$firebug->log($tmpfname, "Temp filename");
 		try
 		{
 			$handle = fopen($tmpfname, "w");
@@ -209,12 +213,12 @@ switch($format)
 		}
 		catch (Exception $exception)
 		{
-			echo $exception->getMessage();
+			$firebug->log($exception->getMessage(), "KML file write exception");
 			
 		}
 
 		
-		writeGMapOutput($tempFolderURL.basename($tmpfname));
+		writeOpenLayerOutput($tempFolderURL.basename($tmpfname));
 				
 }
         

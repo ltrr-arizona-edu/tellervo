@@ -166,29 +166,50 @@ class geometry
 	 * @param Integer $kmlversion
 	 * @return String
 	 */
-	function asKML($kmlversion=2)
+	function asKML($kmlversion=2, $returnDataType="POINT")
 	{
+		global $firebug;
 		$sql = "select geometrytype('".pg_escape_string($this->geometry)."') as thevalue";
-		$dataType = $this->runSQLCalculation($sql);
+		$actualDataType = $this->runSQLCalculation($sql);
 		$kml = "";
 		
-		switch($dataType)
+		$firebug->log($actualDataType, "GML datatype");
+		
+		switch($returnDataType)
 		{
+			case "POINT":
+				// Need to return point data
+				switch($actualDataType)
+				{
+					case "POINT":
+						// Actual datatype is point so simple
+						$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+						$kml .= $this->runSQLCalculation($sql);	
+						$firebug->log($kml, "Output KML for point:");
+						return $kml;
+					case "POLYGON":
+						// Data type is polygon so return centroid
+						$sql = "select st_askml(".pg_escape_string($kmlversion).", st_centroid(st_expand('".pg_escape_string($this->geometry)."'::geometry, 0.1))) as thevalue"; 
+						$kml .= $this->runSQLCalculation($sql);	
+						$firebug->log($kml, "Output KML for centroid of polygon:");
+						return $kml;						
+				}
 			case "POLYGON":
-				$sql = "select st_askml(".pg_escape_string($kmlversion).", st_centroid(st_expand('".pg_escape_string($this->geometry)."'::geometry, 0.1))) as thevalue"; 
-				//echo $sql."\n\n";
-				$kml .= $this->runSQLCalculation($sql);	
-				//echo $kml."\n";
-				
-			default:
-				$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
-				//echo $sql."\n\n";
-				$kml .= $this->runSQLCalculation($sql);
-				//echo $kml."\n";				
+				// Need to return polygon
+				switch($actualDataType)
+				{
+					case "POINT":
+						// Actual data type is point so can't return what was requested
+						return null;
+					case "POLYGON":
+						$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+						$kml .= $this->runSQLCalculation($sql);	
+						$firebug->log($kml, "Output KML for polygon:");
+						return $kml;						
+				}
 		}
-	
-
-		return $kml;
+		
+		return null;
 	}
 	
 	function getX()

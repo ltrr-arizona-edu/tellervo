@@ -166,7 +166,7 @@ class object extends objectEntity implements IDBAccessor
     {
     	if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());
     	if ($paramsClass->getComments()!=NULL)				$this->setComments($paramsClass->getComments());
-    	if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType());
+        if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType(true), $paramsClass->getType());
     	if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
     	if ($paramsClass->getFile()!=NULL)					$this->setFiles($paramsClass->getFile());      
         if ($paramsClass->getCreator()!=NULL)		  		$this->setCreator($paramsClass->getCreator());
@@ -282,10 +282,17 @@ class object extends objectEntity implements IDBAccessor
 	
 	public function asKML()
 	{
-		$kml = "<Placemark><name>".$this->getTitle()."</name><description><![CDATA[<br><b>Type</b>: ".$this->getType()."<br><b>Description</b>: ".dbHelper::escapeXMLChars($this->getDescription())."<br><b>Number of series:</b> ".$this->getCountOfChildVMeasurements()."]]></description>";
-		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
+		$kml = "<Placemark><name>".$this->getTitle()."</name>\n<description>\n<![CDATA[<br><b>Type</b>: ".$this->getType()."\n<br><b>Description</b>: ".dbHelper::escapeXMLChars($this->getDescription())."<br>\n<b>Number of series:</b> ".$this->getCountOfChildVMeasurements()."]]></description>\n";
+		$kml .= "<styleUrl>#corinaDefault</styleUrl>\n";
 		$kml .= $this->location->asKML();
-		$kml .= "</Placemark>";
+		$kml .= "</Placemark>\n";
+		if($this->location->asKML(2, "POLYGON")!=NULL)
+		{
+			$kml .= "<Placemark>\n<name>Extent of ".$this->getTitle()."</name>\n";
+			$kml .= "<styleUrl>#corinaDefault</styleUrl>\n";
+			$kml .= $this->location->asKML(2, "POLYGON");
+			$kml .= "</Placemark>\n";
+		}
 		return $kml;
 	}
 	

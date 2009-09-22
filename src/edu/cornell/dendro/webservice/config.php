@@ -40,10 +40,10 @@ $rngSchema = "/var/www/corina-webservice/dev/schemas/corina.rng";
 $corinaXSD = "/var/www/corina-webservice/dev/schemas/corina.xsd";
 
 // Web accessible temporary folder
-$tempFolder = "/var/www/website/corinaMSTemp/";
+$tempFolder = "/var/www/corina-webservice/dev/temp/";
 
 // Base URL of web accessible temporary folder
-$tempFolderURL = "http://dendro.cornell.edu/corinaMSTemp/";
+$tempFolderURL = "https://".$domain."temp/";
 
 // Corina Namespace URL
 $corinaNS = "http://dendro.cornell.edu/schema/corina/1.0";

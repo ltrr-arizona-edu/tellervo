@@ -368,7 +368,6 @@ class objectParameters extends objectEntity implements IParams
 		   switch ($child->tagName)
 		   {
 		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-		   	case "type":				$this->setType($child->nodeValue); break;
 		   	case "description":			$this->setDescription($child->nodeValue); break;
 		   	case "creator":				$this->setCreator($child->nodeValue); break;
 		   	case "title":				$this->setTitle($child->nodeValue); break;
@@ -379,6 +378,21 @@ class objectParameters extends objectEntity implements IParams
 		   	case "createdTimestamp":	break;
 		   	case "lastModifiedTimestamp": break;
 
+		    case "type": 				
+		   		if($child->hasAttribute("normalStd"))
+		   		{
+		   			if($child->getAttribute("normalStd")=="Corina")
+		   			{
+		   				$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
+		   			}
+		   			else
+		   			{
+		   				trigger_error("901"."Webservice only supports Corina vocabularies for element type", E_USER_ERROR);
+		   				break;
+		   			}
+		   		}
+				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+		   	
 		   	case "location": 
 				$locationTags = $child->childNodes;
 				foreach($locationTags as $tag)
@@ -996,7 +1010,7 @@ class measurementParameters extends measurementEntity implements IParams
 						   				foreach($seriesTags as $series)
 						   				{
 						   					if($series->nodeType != XML_ELEMENT_NODE) continue;
-						   					if($series->nodeName=='identifier')
+					   					if($series->nodeName=='identifier')
 						   					{						   
 						   						$this->setMasterVMeasurementID($series->nodeValue);  		
 						   					}
@@ -1009,7 +1023,9 @@ class measurementParameters extends measurementEntity implements IParams
 			   				$this->dating->setDatingType(null, $interpTag->getAttribute("type"));
 			   				break;
 		   					
-			   			case "firstYear": break;
+			   			case "firstYear": 
+			   				$this->setFirstYear($interpTag->nodeValue);
+			   				break;
 			   			case "sproutYear": break;
 			   			case "deathYear":  break;
 		   				default:

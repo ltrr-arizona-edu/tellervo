@@ -225,6 +225,150 @@ function writeKMLOutput($xmldata)
 }
 
 
+function writeOpenLayerOutput($xmldata)
+{
+	global $gMapAPIKey;
+    include('inc/mapFunctions.php');
+    echo "<html xmlns=\"http://www.w3.org/1999/xhtml\">
+    <head>
+        <title>Corina Map Service</title>        
+       <link rel=\"stylesheet\" href=\"css/openLayersStyle.css\" type=\"text/css\" />
+        <style type=\"text/css\">
+            body {
+                margin: 0;
+            }
+            #map {
+                width: 100%;
+                height: 100%;
+            }
+
+            #text {
+                position: absolute;
+                bottom: 1em;
+                left: 1em;
+                width: 512px;
+            }
+        </style>
+        
+        <style type=\"text/css\">
+            #controls
+            {
+                width: 512px;
+            }
+        </style>
+        
+        
+        <script src=\"jscript/OpenLayers.js\"></script>
+        <script src='http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1'></script>
+        <script src=\"http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers\"></script>
+        <script src='http://maps.google.com/maps?file=api&amp;v=3&amp;key=$gMapAPIKey'></script>
+        <!-- Localhost key -->
+        <!-- <script src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTS6gjckBmeABOGXIUiOiZObZESPg'></script>-->
+ 
+        <script type=\"text/javascript\">
+            var map;
+            function init(){
+           
+            var options = {
+                projection: new OpenLayers.Projection(\"EPSG:900913\"),
+                displayProjection: new OpenLayers.Projection(\"EPSG:4326\"),
+                units: \"m\",
+                numZoomLevels: 18,
+                maxResolution: 156543.0339,
+                maxExtent: new OpenLayers.Bounds(-20037508, -20037508,
+                                                 20037508, 20037508.34)
+            };
+            
+            
+              map = new OpenLayers.Map('map', options);
+
+            // create Google Mercator layers
+            var gmap = new OpenLayers.Layer.Google(
+                \"Google - Map\",
+                {'sphericalMercator': true}
+            );
+            var gsat = new OpenLayers.Layer.Google(
+                \"Google - Satellite\",
+                {type: G_SATELLITE_MAP, 'sphericalMercator': true, numZoomLevels: 22}
+            );
+            var ghyb = new OpenLayers.Layer.Google(
+                \"Google - Hybrid\",
+                {type: G_HYBRID_MAP, 'sphericalMercator': true}
+            );
+            var gphy = new OpenLayers.Layer.Google(
+                \"Google - Physical\",
+                {type: G_PHYSICAL_MAP, 'sphericalMercator': true}
+            );
+
+            // create Virtual Earth layers
+            var veroad = new OpenLayers.Layer.VirtualEarth(
+                \"Bing - Map\",
+                {'type': VEMapStyle.Road, 'sphericalMercator': true}
+            );
+            var veaer = new OpenLayers.Layer.VirtualEarth(
+                \"Bing - Satellite\",
+                {'type': VEMapStyle.Aerial, 'sphericalMercator': true}
+            );
+            var vehyb = new OpenLayers.Layer.VirtualEarth(
+                \"Bing - Hybrid\",
+                {'type': VEMapStyle.Hybrid, 'sphericalMercator': true}
+            );
+
+            // create Yahoo layer
+            var yahoo = new OpenLayers.Layer.Yahoo(
+                \"Yahoo - Map\",
+                {'sphericalMercator': true}
+            );
+            var yahoosat = new OpenLayers.Layer.Yahoo(
+                \"Yahoo - Satellite\",
+                {'type': YAHOO_MAP_SAT, 'sphericalMercator': true}
+            );
+            var yahoohyb = new OpenLayers.Layer.Yahoo(
+                \"Yahoo - Hybrid\",
+                {'type': YAHOO_MAP_HYB, 'sphericalMercator': true}
+            );
+
+            var olwms = new OpenLayers.Layer.WMS( \"OpenLayers WMS\",
+                \"http://labs.metacarta.com/wms/vmap0\", {layers: 'basic'} );
+            
+            
+            map.addLayer(new OpenLayers.Layer.GML(\"Dendro Data\", \"$xmldata\", 
+               {
+                projection: new OpenLayers.Projection(\"EPSG:4326\"),
+                displayProjection: new OpenLayers.Projection(\"EPSG:4326\"),
+                format: OpenLayers.Format.KML, 
+                formatOptions: {
+                  extractStyles: true, 
+                  extractAttributes: true,
+                  maxDepth: 2
+                }
+               }));
+
+
+             map.addLayers([gmap, gsat, ghyb, gphy, veroad, veaer, vehyb,
+                           yahoo, yahoosat, yahoohyb, olwms]);
+            
+            map.addControl(new OpenLayers.Control.LayerSwitcher());
+            //map.addControl(new OpenLayers.Control.EditingToolbar(vector));
+            //map.addControl(new OpenLayers.Control.Permalink());
+            //map.addControl(new OpenLayers.Control.MousePosition());
+  			map.zoomToMaxExtent();
+  			
+  			map.setBaseLayer(veaer);
+	         
+			}
+        </script>
+    </head>
+    <body onload=\"init()\">
+        <div id=\"map\" ></div>
+    </body>
+</html>";
+    
+    
+    
+}
+
+
 function writeGMapOutput($xmldata)
 {
 	global $gMapAPIKey;
