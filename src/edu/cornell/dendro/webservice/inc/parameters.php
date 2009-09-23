@@ -1024,7 +1024,9 @@ class measurementParameters extends measurementEntity implements IParams
 			   				break;
 		   					
 			   			case "firstYear": 
-			   				$this->setFirstYear($interpTag->nodeValue);
+			   				// Special case.  If the series is 'direct' then user may be redating in place
+			   				// Kludgey and gross.
+			   				if($this->getVMeasurementOp()=="Direct") $this->setFirstYear($interpTag->nodeValue);
 			   				break;
 			   			case "sproutYear": break;
 			   			case "deathYear":  break;

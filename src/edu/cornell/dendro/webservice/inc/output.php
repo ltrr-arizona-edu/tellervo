@@ -233,6 +233,7 @@ function writeOpenLayerOutput($xmldata)
     <head>
         <title>Corina Map Service</title>        
        <link rel=\"stylesheet\" href=\"css/openLayersStyle.css\" type=\"text/css\" />
+       <link rel=\"stylesheet\" href=\"css/google.css\" type=\"text/css\" />
         <style type=\"text/css\">
             body {
                 margin: 0;
@@ -262,11 +263,28 @@ function writeOpenLayerOutput($xmldata)
         <script src='http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1'></script>
         <script src=\"http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers\"></script>
         <script src='http://maps.google.com/maps?file=api&amp;v=3&amp;key=$gMapAPIKey'></script>
-        <!-- Localhost key -->
         <!-- <script src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTS6gjckBmeABOGXIUiOiZObZESPg'></script>-->
  
         <script type=\"text/javascript\">
-            var map;
+    var map, drawControls, selectControl, selectedFeature;
+    function onPopupClose(evt) {
+        selectControl.unselect(selectedFeature);
+    }
+    function onFeatureSelect(feature) {
+        selectedFeature = feature;
+        popup = new OpenLayers.Popup.FramedCloud(\"chicken\", 
+            feature.geometry.getBounds().getCenterLonLat(),
+                                         null,
+                                         \"<div style='font-size:.8em'>Feature: \" + feature.id +\"<br />Area: \" + feature.geometry.getArea()+\"</div>\",
+                                         null, true, onPopupClose);
+        feature.popup = popup;
+        map.addPopup(popup);
+    }
+    function onFeatureUnselect(feature) {
+        map.removePopup(feature.popup);
+        feature.popup.destroy();
+        feature.popup = null;
+    }
             function init(){
            
             var options = {
@@ -331,9 +349,19 @@ function writeOpenLayerOutput($xmldata)
             var olwms = new OpenLayers.Layer.WMS( \"OpenLayers WMS\",
                 \"http://labs.metacarta.com/wms/vmap0\", {layers: 'basic'} );
             
-            
-            map.addLayer(new OpenLayers.Layer.GML(\"Dendro Data\", \"$xmldata\", 
-               {
+            var mapnik = new OpenLayers.Layer.TMS(
+                \"OpenStreetMap\",
+                \"http://tile.openstreetmap.org/\",
+            {
+                type: 'png', getURL: osm_getTileURL,
+                    displayOutsideMaxExtent: true,
+                    attribution: '<a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>'
+            }
+            );
+
+            var kmldata = new OpenLayers.Layer.GML(\"Dendro Data\", \"$xmldata\", 
+            {
+                'displayInLayerSwitcher' : false,
                 projection: new OpenLayers.Projection(\"EPSG:4326\"),
                 displayProjection: new OpenLayers.Projection(\"EPSG:4326\"),
                 format: OpenLayers.Format.KML, 
@@ -341,22 +369,38 @@ function writeOpenLayerOutput($xmldata)
                   extractStyles: true, 
                   extractAttributes: true,
                   maxDepth: 2
+                  }
+
                 }
-               }));
+            );
 
 
              map.addLayers([gmap, gsat, ghyb, gphy, veroad, veaer, vehyb,
-                           yahoo, yahoosat, yahoohyb, olwms]);
+                           yahoo, yahoosat, yahoohyb, olwms, mapnik, kmldata]);
             
             map.addControl(new OpenLayers.Control.LayerSwitcher());
-            //map.addControl(new OpenLayers.Control.EditingToolbar(vector));
-            //map.addControl(new OpenLayers.Control.Permalink());
-            //map.addControl(new OpenLayers.Control.MousePosition());
+
+
   			map.zoomToMaxExtent();
   			
   			map.setBaseLayer(veaer);
 	         
 			}
+function osm_getTileURL(bounds) {
+    var res = this.map.getResolution();
+    var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
+    var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
+    var z = this.map.getZoom();
+    var limit = Math.pow(2, z);
+
+    if (y < 0 || y >= limit) {
+        return OpenLayers.Util.getImagesLocation() + \"404.png\";
+} else {
+    x = ((x % limit) + limit) % limit;
+    return this.url + z + \"/\" + x + \"/\" + y + \".\" + this.type;
+}
+}
+
         </script>
     </head>
     <body onload=\"init()\">
