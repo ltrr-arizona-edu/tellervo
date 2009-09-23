@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.manip;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import javax.swing.undo.AbstractUndoableEdit;
@@ -77,6 +78,10 @@ public class Redate extends AbstractUndoableEdit {
 		}
 		
 		s.getSeries().getInterpretation().setDating(dating);
+		
+		// Set the interpretation first year field to new value.  
+		// Required for redating in place.
+		s.getSeries().getInterpretation().setFirstYear(range.getStart().tridasYearValue());
 		
 		s.fireSampleRedated();
 		s.setModified();

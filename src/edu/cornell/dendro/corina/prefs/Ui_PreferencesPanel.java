@@ -15,6 +15,9 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
     /** Creates new form Ui_PreferencesPanel */
     public Ui_PreferencesPanel() {
         initComponents();
+        panelTestComms.setEnabled(false);
+        this.btnStartMeasuring.setEnabled(false);
+        this.txtComCheckLog.setEnabled(false);
     }
 
     /** This method is called from within the constructor to
@@ -65,6 +68,9 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         cboStopbits = new javax.swing.JComboBox();
         cboParity = new javax.swing.JComboBox();
         panelTestComms = new javax.swing.JPanel();
+        btnStartMeasuring = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtComCheckLog = new javax.swing.JTextArea();
         panelStatistics = new javax.swing.JPanel();
         panelCOFECHA = new javax.swing.JPanel();
         chkEnableCOFECHA = new javax.swing.JCheckBox();
@@ -303,7 +309,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
 
         panelPlatform.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measuring Platform"));
 
-        cboPlatformType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "EveIO", "Velmex TA UniSlide with QC10 Encoder", "Lintab", "Generic serial platform" }));
+        cboPlatformType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--none--]", "EveIO", "Velmex TA UniSlide with QC10 Encoder", "Lintab", "Generic serial platform" }));
 
         lblPlatformType.setText("Type:");
 
@@ -343,28 +349,28 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
             .add(panelPlatformLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(lblPlatformType)
+                    .add(lblPort)
+                    .add(lblPlatformUnits)
+                    .add(lblBaud)
+                    .add(lblDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(29, 29, 29)
+                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(cboPlatformType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 313, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(cboPlatformUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(panelPlatformLayout.createSequentialGroup()
-                        .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblPlatformType)
-                            .add(lblPort)
-                            .add(lblPlatformUnits))
-                        .add(59, 59, 59)
-                        .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboPlatformType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 313, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboPlatformUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                    .add(panelPlatformLayout.createSequentialGroup()
-                        .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblStopbits)
-                            .add(lblParity)
-                            .add(lblBaud)
-                            .add(lblDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 91, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .add(53, 53, 53)
+                        .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(lblStopbits)
+                            .add(lblParity))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(cboParity, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboStopbits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                            .add(cboStopbits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(171, Short.MAX_VALUE))
         );
         panelPlatformLayout.setVerticalGroup(
@@ -374,44 +380,57 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblPlatformType)
                     .add(cboPlatformType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblPort)
-                    .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblPort))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblPlatformUnits)
                     .add(cboPlatformUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(18, 18, 18)
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblBaud)
-                    .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblDatabits))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblStopbits)
                     .add(cboStopbits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(lblDatabits)
+                    .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblParity)
                     .add(cboParity, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panelTestComms.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Test Connection"));
+        panelTestComms.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Check Connection"));
+        panelTestComms.setEnabled(false);
+
+        btnStartMeasuring.setText("Start Measuring");
+
+        txtComCheckLog.setColumns(20);
+        txtComCheckLog.setRows(5);
+        jScrollPane1.setViewportView(txtComCheckLog);
 
         org.jdesktop.layout.GroupLayout panelTestCommsLayout = new org.jdesktop.layout.GroupLayout(panelTestComms);
         panelTestComms.setLayout(panelTestCommsLayout);
         panelTestCommsLayout.setHorizontalGroup(
             panelTestCommsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 600, Short.MAX_VALUE)
+            .add(panelTestCommsLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelTestCommsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+                    .add(btnStartMeasuring))
+                .addContainerGap())
         );
         panelTestCommsLayout.setVerticalGroup(
             panelTestCommsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 100, Short.MAX_VALUE)
+            .add(panelTestCommsLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(btnStartMeasuring)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         org.jdesktop.layout.GroupLayout panelHardwareLayout = new org.jdesktop.layout.GroupLayout(panelHardware);
@@ -420,19 +439,19 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
             panelHardwareLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelHardwareLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(panelHardwareLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelTestComms, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelPlatform, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(panelHardwareLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(panelTestComms, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(panelPlatform, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         panelHardwareLayout.setVerticalGroup(
             panelHardwareLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelHardwareLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelPlatform, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(panelTestComms, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(77, Short.MAX_VALUE))
+                .add(18, 18, 18)
+                .add(panelTestComms, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         propertiesTabs.addTab("Hardware", panelHardware);
@@ -898,98 +917,101 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JButton btnBrowseCOFECHA;
-    protected javax.swing.JButton btnCancel;
-    protected javax.swing.JRadioButton btnDefaultProxy;
-    protected javax.swing.JButton btnFont;
-    protected javax.swing.JRadioButton btnManualProxy;
-    protected javax.swing.JRadioButton btnNoProxy;
-    protected javax.swing.JButton btnOk;
-    protected javax.swing.JButton btnReloadDictionary;
-    protected javax.swing.JButton btnResetAll;
-    protected javax.swing.JComboBox cboAxisCursorColor;
-    protected javax.swing.JComboBox cboBaud;
-    protected javax.swing.JComboBox cboChartBGColor;
-    protected javax.swing.JComboBox cboDScore;
-    protected javax.swing.JComboBox cboDatabits;
-    protected javax.swing.JComboBox cboDisplayUnits;
-    protected javax.swing.JComboBox cboEditorBGColor;
-    protected javax.swing.JComboBox cboGridColor;
-    protected javax.swing.JComboBox cboHighlightColor;
-    protected javax.swing.JComboBox cboParity;
-    protected javax.swing.JComboBox cboPlatformType;
-    protected javax.swing.JComboBox cboPlatformUnits;
-    protected javax.swing.JComboBox cboPort;
-    protected javax.swing.JComboBox cboRValue;
-    protected javax.swing.JComboBox cboStopbits;
-    protected javax.swing.JComboBox cboTScore;
-    protected javax.swing.JComboBox cboTextColor;
-    protected javax.swing.JComboBox cboTrend;
-    protected javax.swing.JComboBox cboWJ;
-    protected javax.swing.JCheckBox chkEnableCOFECHA;
-    protected javax.swing.JCheckBox chkHighlightSig;
-    protected javax.swing.JCheckBox chkShowChartGrid;
-    protected javax.swing.JCheckBox chkShowEditorGrid;
-    protected javax.swing.JLabel lblAxisCursorColor;
-    protected javax.swing.JLabel lblBaud;
-    protected javax.swing.JLabel lblCOFECHAPath;
-    protected javax.swing.JLabel lblChartBGColor;
-    protected javax.swing.JLabel lblDScore;
-    protected javax.swing.JLabel lblDatabits;
-    protected javax.swing.JLabel lblDisplayUnits;
-    protected javax.swing.JLabel lblEditorBGColor;
-    protected javax.swing.JLabel lblFont;
-    protected javax.swing.JLabel lblGridColor;
-    protected javax.swing.JLabel lblHighlightColor;
-    protected javax.swing.JLabel lblMinOverlap;
-    protected javax.swing.JLabel lblMinOverlapDScore;
-    protected javax.swing.JLabel lblParity;
-    protected javax.swing.JLabel lblPlatformType;
-    protected javax.swing.JLabel lblPlatformUnits;
-    protected javax.swing.JLabel lblPort;
-    protected javax.swing.JLabel lblProxyPort;
-    protected javax.swing.JLabel lblProxyPort1;
-    protected javax.swing.JLabel lblProxyServer;
-    protected javax.swing.JLabel lblProxyServer1;
-    protected javax.swing.JLabel lblRValue;
-    protected javax.swing.JLabel lblSMTPServer;
-    protected javax.swing.JLabel lblShowChartGrid;
-    protected javax.swing.JLabel lblShowEditorGrid;
-    protected javax.swing.JLabel lblStopbits;
-    protected javax.swing.JLabel lblTScore;
-    protected javax.swing.JLabel lblTextColor;
-    protected javax.swing.JLabel lblTrend;
-    protected javax.swing.JLabel lblWJ;
-    protected javax.swing.JLabel lblWSURL;
-    protected javax.swing.JPanel panelAppearance;
-    protected javax.swing.JPanel panelButtons;
-    protected javax.swing.JPanel panelCOFECHA;
-    protected javax.swing.JPanel panelCharts;
-    protected javax.swing.JPanel panelEditor;
-    protected javax.swing.JPanel panelEmail;
-    protected javax.swing.JPanel panelHardware;
-    protected javax.swing.JPanel panelNetworkConnections;
-    protected javax.swing.JPanel panelNumberFormats;
-    protected javax.swing.JPanel panelPlatform;
-    protected javax.swing.JPanel panelProxy;
-    protected javax.swing.JPanel panelSigScores;
-    protected javax.swing.JPanel panelStatistics;
-    protected javax.swing.JPanel panelTestComms;
-    protected javax.swing.JPanel panelUI;
-    protected javax.swing.JPanel panelWebservice;
-    protected javax.swing.JTabbedPane propertiesTabs;
-    protected javax.swing.ButtonGroup proxyButtonGroup;
-    protected javax.swing.JScrollPane scrollPaneUIDefaults;
-    protected javax.swing.JSeparator seperatorButtons;
-    protected javax.swing.JSpinner spnMinOverlap;
-    protected javax.swing.JSpinner spnMinOverlapDScore;
-    protected javax.swing.JSpinner spnProxyPort;
-    protected javax.swing.JSpinner spnProxyPort1;
-    protected javax.swing.JTextField txtCOFECHAPath;
-    protected javax.swing.JTextField txtProxyURL;
-    protected javax.swing.JTextField txtProxyURL1;
-    protected javax.swing.JTextField txtSMTPServer;
-    protected javax.swing.JTextField txtWSURL;
+   protected javax.swing.JButton btnBrowseCOFECHA;
+   protected javax.swing.JButton btnCancel;
+   protected javax.swing.JRadioButton btnDefaultProxy;
+   protected javax.swing.JButton btnFont;
+   protected javax.swing.JRadioButton btnManualProxy;
+   protected javax.swing.JRadioButton btnNoProxy;
+   protected javax.swing.JButton btnOk;
+   protected javax.swing.JButton btnReloadDictionary;
+   protected javax.swing.JButton btnResetAll;
+   protected javax.swing.JButton btnStartMeasuring;
+   protected javax.swing.JComboBox cboAxisCursorColor;
+   protected javax.swing.JComboBox cboBaud;
+   protected javax.swing.JComboBox cboChartBGColor;
+   protected javax.swing.JComboBox cboDScore;
+   protected javax.swing.JComboBox cboDatabits;
+   protected javax.swing.JComboBox cboDisplayUnits;
+   protected javax.swing.JComboBox cboEditorBGColor;
+   protected javax.swing.JComboBox cboGridColor;
+   protected javax.swing.JComboBox cboHighlightColor;
+   protected javax.swing.JComboBox cboParity;
+   protected javax.swing.JComboBox cboPlatformType;
+   protected javax.swing.JComboBox cboPlatformUnits;
+   protected javax.swing.JComboBox cboPort;
+   protected javax.swing.JComboBox cboRValue;
+   protected javax.swing.JComboBox cboStopbits;
+   protected javax.swing.JComboBox cboTScore;
+   protected javax.swing.JComboBox cboTextColor;
+   protected javax.swing.JComboBox cboTrend;
+   protected javax.swing.JComboBox cboWJ;
+   protected javax.swing.JCheckBox chkEnableCOFECHA;
+   protected javax.swing.JCheckBox chkHighlightSig;
+   protected javax.swing.JCheckBox chkShowChartGrid;
+   protected javax.swing.JCheckBox chkShowEditorGrid;
+   protected javax.swing.JScrollPane jScrollPane1;
+   protected javax.swing.JLabel lblAxisCursorColor;
+   protected javax.swing.JLabel lblBaud;
+   protected javax.swing.JLabel lblCOFECHAPath;
+   protected javax.swing.JLabel lblChartBGColor;
+   protected javax.swing.JLabel lblDScore;
+   protected javax.swing.JLabel lblDatabits;
+   protected javax.swing.JLabel lblDisplayUnits;
+   protected javax.swing.JLabel lblEditorBGColor;
+   protected javax.swing.JLabel lblFont;
+   protected javax.swing.JLabel lblGridColor;
+   protected javax.swing.JLabel lblHighlightColor;
+   protected javax.swing.JLabel lblMinOverlap;
+   protected javax.swing.JLabel lblMinOverlapDScore;
+   protected javax.swing.JLabel lblParity;
+   protected javax.swing.JLabel lblPlatformType;
+   protected javax.swing.JLabel lblPlatformUnits;
+   protected javax.swing.JLabel lblPort;
+   protected javax.swing.JLabel lblProxyPort;
+   protected javax.swing.JLabel lblProxyPort1;
+   protected javax.swing.JLabel lblProxyServer;
+   protected javax.swing.JLabel lblProxyServer1;
+   protected javax.swing.JLabel lblRValue;
+   protected javax.swing.JLabel lblSMTPServer;
+   protected javax.swing.JLabel lblShowChartGrid;
+   protected javax.swing.JLabel lblShowEditorGrid;
+   protected javax.swing.JLabel lblStopbits;
+   protected javax.swing.JLabel lblTScore;
+   protected javax.swing.JLabel lblTextColor;
+   protected javax.swing.JLabel lblTrend;
+   protected javax.swing.JLabel lblWJ;
+   protected javax.swing.JLabel lblWSURL;
+   protected javax.swing.JPanel panelAppearance;
+   protected javax.swing.JPanel panelButtons;
+   protected javax.swing.JPanel panelCOFECHA;
+   protected javax.swing.JPanel panelCharts;
+   protected javax.swing.JPanel panelEditor;
+   protected javax.swing.JPanel panelEmail;
+   protected javax.swing.JPanel panelHardware;
+   protected javax.swing.JPanel panelNetworkConnections;
+   protected javax.swing.JPanel panelNumberFormats;
+   protected javax.swing.JPanel panelPlatform;
+   protected javax.swing.JPanel panelProxy;
+   protected javax.swing.JPanel panelSigScores;
+   protected javax.swing.JPanel panelStatistics;
+   protected javax.swing.JPanel panelTestComms;
+   protected javax.swing.JPanel panelUI;
+   protected javax.swing.JPanel panelWebservice;
+   protected javax.swing.JTabbedPane propertiesTabs;
+   protected javax.swing.ButtonGroup proxyButtonGroup;
+   protected javax.swing.JScrollPane scrollPaneUIDefaults;
+   protected javax.swing.JSeparator seperatorButtons;
+   protected javax.swing.JSpinner spnMinOverlap;
+   protected javax.swing.JSpinner spnMinOverlapDScore;
+   protected javax.swing.JSpinner spnProxyPort;
+   protected javax.swing.JSpinner spnProxyPort1;
+   protected javax.swing.JTextField txtCOFECHAPath;
+   protected javax.swing.JTextArea txtComCheckLog;
+   protected javax.swing.JTextField txtProxyURL;
+   protected javax.swing.JTextField txtProxyURL1;
+   protected javax.swing.JTextField txtSMTPServer;
+   protected javax.swing.JTextField txtWSURL;
     // End of variables declaration//GEN-END:variables
 
 }
