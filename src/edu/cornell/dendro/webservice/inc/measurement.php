@@ -1495,11 +1495,6 @@ class measurement extends measurementEntity implements IDBAccessor
 							if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "'".pg_escape_string($this->dating->getDatingErrorPositive())."', ";
 						}
 						if(isset($this->variable))							$sql.= "'".$this->variable->getID()."', ";
-						if(isset($this->units))
-						{
-							$sql.= "'".pg_escape_string($this->units->getID())."', ";
-							if($this->units->getPower()!=NULL)					$sql.= "'".pg_escape_string($this->units->getPower())."', ";
-						}
 						if($this->getProvenance()!=NULL)					$sql.= "'".pg_escape_string($this->getProvenance())."', ";
 						if(isset($this->measuringMethod))					$sql.= "'".pg_escape_string($this->measuringMethod->getID())."', ";
 						if($this->dendrochronologist->getID()!=NULL)		$sql.= "'".pg_escape_string($this->dendrochronologist->getID())."', ";
