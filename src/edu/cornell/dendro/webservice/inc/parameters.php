@@ -1149,7 +1149,7 @@ class measurementParameters extends measurementEntity implements IParams
 			   			}
 
 			   			// Mush all the reading and notes into the ReadingArray
-						$this->readingsArray[$i] = array('value' => $value, 
+						$this->readingsArray[$i] = array('value' => unit::unitsConverter($value, $this->getUnits(), "db-default"), 
 	                                                     'wjinc' => NULL, 
 	                                                     'wjdec' => NULL, 
 	                                                     'count' => NULL,

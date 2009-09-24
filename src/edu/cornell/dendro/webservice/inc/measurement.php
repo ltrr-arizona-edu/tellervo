@@ -228,6 +228,25 @@ class measurement extends measurementEntity implements IDBAccessor
 		
 		$this->vmeasurementResultID = $row2['vmeasurementresultid'];
 
+		
+		// Bodge for setting units by checking if any parents are 'indexes'	
+		//@TODO Should be replaced by extra field in getvmeasurementresult to say the extra query
+		$sql3 = "select * from cpgdb.findvmparents('".$this->getID()."', true) where op='Index'";
+		$dbconnstatus = pg_connection_status($dbconn);	
+		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+		{
+			$result3 = pg_query($dbconn, $sql3);			
+			if(pg_numrows($result3)>0)
+			{
+				$theUnits = null;
+			}
+			else
+			{
+				$theUnits = "db-default";
+				$this->setUnits(null, "micrometres");
+			}
+		}		
+		
 		// Call getVMeasurementReadingResult()
 		$sql  = "SELECT * FROM vwjsonnotedreadingresult where vmeasurementresultid='".pg_escape_string($this->getVMeasurementResultID())."' ".
         		"ORDER BY relyear ASC";
@@ -265,7 +284,7 @@ class measurement extends measurementEntity implements IDBAccessor
 							
 					
 					// Get all reading values to array
-					$this->readingsArray[$row['relyear']] = array('value' => $row['reading'],
+					$this->readingsArray[$row['relyear']] = array('value' => unit::unitsConverter($row['reading'], $theUnits, "db-default"),
                                                                   'wjinc' => $row['wjinc'], 
                                                                   'wjdec' => $row['wjdec'], 
                                                                   'count' => $row['count'],
@@ -414,27 +433,6 @@ class measurement extends measurementEntity implements IDBAccessor
 			array_push($this->parentEntityArray, $parentObj);
 		}
 
-		// Convert readings provided by user to microns
-		if (sizeof($paramsClass->readingsArray)>0)
-		{
-			foreach($this->readingsArray as $key => $value)
-			{
-				if (isset($this->units))
-				{
-					$power = $this->units->getPower();
-				}
-				else
-				{
-					$power = -5;
-				}
-
-				if($power!=NULL)
-				{
-					$convValue = $this->unitsHandler($value['value'], $power, 'db-default');
-					$this->readingsArray[$key]['value'] = $convValue;
-				}
-			}
-		}
 		return true;
 	}
 
@@ -1167,6 +1165,8 @@ class measurement extends measurementEntity implements IDBAccessor
 
 	private function getValuesXML($wj=false)
 	{
+		global $wsDefaultUnits;
+		
 		if (!$this->readingsArray)
 		{
 			return false;
@@ -1201,31 +1201,24 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		
 		// Set variable and units
-		if($this->getTridasSeriesType()=='measurementSeries')
+		if($wj===TRUE)
 		{
-			global $wsDefaultUnits;
+			$xml .="<tridas:variable normalStd=\"Corina\" normal=\"Weiserjahre\"/>\n";
+			$xml.="<tridas:unitless/>\n";
+		}
+		else
+		{
 			$xml .="<tridas:variable normalTridas=\"".$this->getVariable()."\"/>\n";
-			if($this->getUnits()!=NULL)
+			if( ($this->getUnits()!=NULL) && ($this->getUnits()!=''))
 			{
 				$xml.="<tridas:unit normalTridas=\"$wsDefaultUnits\" />\n";
 			}
 			else
 			{
 				$xml.="<tridas:unitless/>\n";
-			}
+			}				
 		}
-		else
-		{
-			if($wj===TRUE)
-			{
-				$xml .="<tridas:variable normalStd=\"Corina\" normal=\"Weiserjahre\"/>\n";
-			}
-			else
-			{
-				$xml .="<tridas:variable normalTridas=\"".$this->getVariable()."\"/>\n";
-			}
-			$xml.="<tridas:unitless/>\n";
-		}
+
 
 
 		// Set the actual value tags
@@ -1251,7 +1244,10 @@ class measurement extends measurementEntity implements IDBAccessor
 			}
 			else
 			{
-				$xml.= "value=\"".$this->unitsHandler($value['value'], "db-default", "ws-default")."\" ";
+				// Current units of values is null if unitless otherwise db-default
+				$currentUnits = null;
+				if($this->getUnits()!=null)	$currentUnits = "db-default";
+				$xml.= "value=\"".unit::unitsConverter($value['value'], $currentUnits, "ws-default")."\" ";
 			}
 			 
 			// Add count if appropriate
@@ -1482,11 +1478,6 @@ class measurement extends measurementEntity implements IDBAccessor
 							if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "datingerrorpositive, ";
 						}
 						if(isset($this->variable))							$sql.= "measurementvariableid, ";
-						if(isset($this->units))
-						{
-							$sql.= "unitid, ";
-							if($this->units->getPower()!=NULL)					$sql.= "power, ";
-						}
 						if($this->getProvenance()!=NULL)					$sql.= "provenance, ";
 						if(isset($this->measuringMethod))					$sql.= "measuringmethodid, ";
 						if($this->dendrochronologist->getID()!=NULL)				$sql.= "supervisedbyid, ";
@@ -1949,6 +1940,8 @@ class measurement extends measurementEntity implements IDBAccessor
 
 
 
+    
+        
 
 	// End of Class
 }

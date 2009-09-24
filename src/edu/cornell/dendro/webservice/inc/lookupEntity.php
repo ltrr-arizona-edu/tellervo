@@ -214,6 +214,12 @@ class unit extends lookupEntity
 		return $this->getPowerFromUnitName($this->getValue());
 	}
 	
+	/**
+	 * Turn a TRiDaS unit name into a power relative to metres
+	 *
+	 * @param String $name
+	 * @return Integer
+	 */
 	static public function getPowerFromUnitName($name)
 	{
 		switch($name)
@@ -227,6 +233,77 @@ class unit extends lookupEntity
 			default 					: return NULL;
 		}
 	}
+	
+	/**
+	 * This is a helper function to deal with the units of readings. 
+     * Internally Corina uses microns as this is (hopefully) the smallest 
+     * unit required in dendro
+     * 
+     * To use default units set $inputUnits or $outputUnits to "db-default"
+     * or "ws-default".
+	 *
+	 * @param Float $value
+	 * @param String $inputUnits
+	 * @param String $outputUnits
+	 * @return Float
+	 */
+   static public function unitsConverter($value, $inputUnits, $outputUnits)
+    {   
+    	global $dbDefaultUnits;
+    	global $wsDefaultUnits;
+    	    	       
+        if($inputUnits==NULL)
+        {
+        	// No units - series probably an index so don't mess with units
+    		$convFactor = 0;	
+        }
+        else
+        {
+	        // Get the 'power' for the units specified
+	        $inputUnitPower = unit::getPowerFromUnitName($inputUnits);
+	        $outputUnitPower = unit::getPowerFromUnitName($outputUnits);
+	        
+	        // Set units to default (microns) if requested
+	        if($inputUnits == 'db-default') $inputUnitPower = unit::getPowerFromUnitName($dbDefaultUnits);
+	        if($outputUnits == 'db-default') $outputUnitPower = unit::getPowerFromUnitName($dbDefaultUnits);
+	        if($inputUnits == 'ws-default') $inputUnitPower = unit::getPowerFromUnitName($wsDefaultUnits);
+	        if($outputUnits == 'ws-default') $outputUnitPower = unit::getPowerFromUnitName($wsDefaultUnits);
+	        
+        	// Calculate difference between input and output units
+        	$convFactor = $inputUnitPower - $outputUnitPower;
+        }
+    
+        switch($convFactor)
+        {
+            case 0:
+                return $value;
+            case -1:
+                return round($value/10);
+            case -2:
+                return round($value/100);
+            case -3:
+                return round($value/1000);
+            case -4:
+                return round($value/10000);
+            case -5:
+                return round($value/100000);
+            case 1:
+                return $value*10;
+            case 2:
+                return $value*100;
+            case 3:
+                return $value*1000;
+            case 4:
+                return $value*10000;
+            case 5:
+                return $value*100000;
+            default:
+                // Not supported
+                return false;
+        }
+    }
+	
+	
 }
 
 class vmeasurementOp extends lookupEntity

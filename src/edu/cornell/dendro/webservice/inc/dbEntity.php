@@ -3559,7 +3559,14 @@ class measurementEntity extends dbEntity
 	
 	function getUnits()
 	{
-		return $this->units->getValue();
+		if(isset($this->units))
+		{
+			return $this->units->getValue();
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 	function getComments()
@@ -3719,58 +3726,7 @@ class measurementEntity extends dbEntity
         }
     }
 
-    function unitsHandler($value, $inputUnits, $outputUnits)
-    {   
-    	global $dbDefaultUnits;
-    	global $wsDefaultUnits;
-    	
-        // This is a helper function to deal with the units of readings 
-        // Internally Corina uses microns as this is (hopefully) the smallest 
-        // unit required in dendro
-        //
-        // To use default units set $inputUnits or $outputUnits to "default"
-
-        // Set units to default (microns) if requested
-        if($inputUnits == 'db-default') $inputUnits = unit::getPowerFromUnitName($dbDefaultUnits);
-        if($outputUnits == 'db-default') $outputUnits = unit::getPowerFromUnitName($dbDefaultUnits);
-        if($inputUnits == 'ws-default') $inputUnits = unit::getPowerFromUnitName($wsDefaultUnits);
-        if($outputUnits == 'ws-default') $outputUnits = unit::getPowerFromUnitName($wsDefaultUnits);
-
-        // Calculate difference between input and output units
-        $convFactor = $inputUnits - $outputUnits;
-
-        switch($convFactor)
-        {
-            case 0:
-                return $value;
-            case -1:
-                return round($value/10);
-            case -2:
-                return round($value/100);
-            case -3:
-                return round($value/1000);
-            case -4:
-                return round($value/10000);
-            case -5:
-                return round($value/100000);
-            case 1:
-                return $value*10;
-            case 2:
-                return $value*100;
-            case 3:
-                return $value*1000;
-            case 4:
-                return $value*10000;
-            case 5:
-                return $value*100000;
-            default:
-                // Not supported
-                $this->setErrorMessage("905", "This level of units is not supported");
-                return false;
-        }
-    }
-    
-        
+ 
     
 }
 
