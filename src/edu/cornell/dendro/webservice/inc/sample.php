@@ -15,6 +15,7 @@ require_once('dbhelper.php');
 require_once('inc/element.php');
 require_once('inc/radius.php');
 require_once('inc/dbEntity.php');
+require_once('inc/box.php');
 
 class sample extends sampleEntity implements IDBAccessor
 {

@@ -44,6 +44,7 @@ class box extends boxEntity implements IDBAccessor
 		$this->setSampleCount($row['samplecount']);
 		$this->setCreatedTimestamp($row['createdtimestamp']);
 		$this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
+		$this->setID($row['boxid']);
 
         return true;
     }
@@ -58,6 +59,8 @@ class box extends boxEntity implements IDBAccessor
     {
         global $dbconn;
         global $firebug;
+        
+        if($theID==NULL) return FALSE;
         
         $this->setID($theID);
         $sql = "SELECT * from vwtblbox WHERE boxid='".pg_escape_string($this->getID())."'";
@@ -90,6 +93,45 @@ class box extends boxEntity implements IDBAccessor
 
         $this->cacheSelf();
         return TRUE;
+    }
+    
+    function setParamsFromDBFromName($name)
+    {
+        global $dbconn;
+        global $firebug;
+        
+        if($name==NULL) return FALSE;
+        
+        $sql = "SELECT * from vwtblbox WHERE title='".pg_escape_string($name)."'";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+            	$firebug->log(__LINE__, "line no");
+            	$firebug->log($sql, "sql is");
+                // No records match the id specified
+                trigger_error("903"."No records match the specified id", E_USER_ERROR);
+                return FALSE;
+            }
+            else
+            {
+                // Set parameters from db
+                $row = pg_fetch_array($result);
+                $this->setParamsFromDBRow($row);
+            }
+        }
+        else
+        {
+            // Connection bad
+            trigger_Error("001"."Error connecting to database", E_USER_ERROR);
+            return FALSE;
+        }
+
+        $this->cacheSelf();
+        return TRUE;    	
     }
 
     function setParentsFromDB()
@@ -364,14 +406,14 @@ class box extends boxEntity implements IDBAccessor
                 else
                 {
                     // Updating DB
-                    $sql.="UPDATE tblradius SET ";
+                    $sql.="UPDATE tblbox SET ";
                         if($this->getTitle()!=NULL)                   				$sql.="code='".pg_escape_string($this->getCode())."', ";
                         if($this->getComments()!=NULL)                   			$sql.="comments='".pg_escape_string($this->getComments())."', ";
 						if($this->getCurationLocation()!=NULL)						$sql.="curationlocation='".pg_escape_string($this->getCurationLocation())."', ";
 						if($this->getTrackingLocation()!=NULL)						$sql.="trackinglocation='".pg_escape_string($this->getCurationLocation()).", ";
 						
                     $sql = substr($sql, 0, -2);
-                    $sql.= " WHERE radiusid='".pg_escape_string($this->getID())."'";
+                    $sql.= " WHERE boxid='".pg_escape_string($this->getID())."'";
                 }
  
                 // Run SQL command

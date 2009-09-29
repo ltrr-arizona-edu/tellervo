@@ -309,7 +309,7 @@ class object extends objectEntity implements IDBAccessor
             	$xml.= "<tridas:object>\n";
                 $xml.= $this->getIdentifierXML(); 
                 if($this->getComments()!=NULL)		$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";    
-                if($this->getType()!=NULL)     		$xml.= "<tridas:type normal=\"".$this->getType()."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\" />\n";        	
+                									$xml.= "<tridas:type normal=\"".$this->getType()."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\" />\n";        	
             	if($this->getDescription()!=NULL)	$xml.= "<tridas:description>".dbHelper::escapeXMLChars($this->getDescription())."</tridas:description>";
                	if($this->getCreator()!=NULL)		$xml.= "<tridas:creator>".dbHelper::escapeXMLChars($this->getCreator())."</tridas:creator>";
             	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".dbHelper::escapeXMLChars($this->getOwner())."</tridas:owner>";         	

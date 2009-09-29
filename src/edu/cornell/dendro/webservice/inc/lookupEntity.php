@@ -41,6 +41,7 @@ class lookupEntity
 	protected function setLookupEntity($id, $value)
 	{
 		global $dbconn;
+		global $firebug;
 		
 		/*echo "\n\n****".$this->tablename."\n";
 		echo "id = $id\n";
@@ -87,7 +88,10 @@ class lookupEntity
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
-                $result = pg_query($dbconn, $sql);
+            	// Catch outstanding results on connection
+				$oldres = pg_get_result($dbconn);
+					
+            	$result = pg_query($dbconn, $sql);
                 if (pg_num_rows($result) == 0)
                 {
 					trigger_error("903"."The value '".$value."' was not found when doing a lookup in table ".$this->tablename, E_USER_ERROR);

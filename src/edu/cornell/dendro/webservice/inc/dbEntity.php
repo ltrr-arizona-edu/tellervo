@@ -20,6 +20,7 @@ require_once('geometry.php');
 require_once('taxon.php');
 require_once('lookupEntity.php');
 require_once('securityUser.php');
+require_once('box.php');
 
 /**
  * Interface for classes that inherit dbEntity and read/write to/from the database
@@ -60,7 +61,7 @@ class dbEntity
      *
      * @var Mixed
      */
-	protected $parentEntityArray = NULL;
+	var $parentEntityArray = NULL;
 	
 	/**
 	 * Array of classes representing this entities children
@@ -167,13 +168,7 @@ class dbEntity
      */
     private static $dbEntityCache = array();
     
-    /**
-     * Box this sample is stored in
-     *
-     * @var UUID
-     */
-    protected $boxID = NULL;
-    
+
     
     
     
@@ -187,6 +182,7 @@ class dbEntity
     	$this->setgroupXMLTag($groupXMLTag);
     	$this->parentEntityArray = array();
     	$this->childrenEntityArray = array();
+
     }
 
     
@@ -198,11 +194,7 @@ class dbEntity
     /* SETTERS */
     /***********/   
     
-    function setBoxID($id)
-    {
-    	$this->boxID = $id;
-    }
-    
+
 	/**
 	 * Set an array of associated file urls
 	 *
@@ -305,7 +297,7 @@ class dbEntity
      * @param String $title
      * @return Boolean
      */
-    protected function setTitle($title)
+    function setTitle($title)
     {
     	$this->title=$title;
     	return true;
@@ -353,10 +345,7 @@ class dbEntity
     /* GETTERS */
     /***********/    
     
-    function getBoxID()
-    {
-    	return $this->boxID;
-    }
+
     
 	/**
 	 * Get the array of associated files of this entity
@@ -1000,7 +989,7 @@ class elementEntity extends dbEntity
 	 *
 	 * @var taxon
 	 */
-	protected $taxon = NULL;
+	var $taxon = NULL;
 		
 	/**
 	 * Whether this element is original, a repair, or later addition
@@ -1614,7 +1603,13 @@ class elementEntity extends dbEntity
 class sampleEntity extends dbEntity
 {
 	protected $elementID = NULL;
-
+	 /**
+     * Box this sample is stored in
+     *
+     * @var Box
+     */
+    protected $box = NULL;
+    
 	/**
 	 * Type of sample 
 	 *
@@ -1658,12 +1653,28 @@ class sampleEntity extends dbEntity
         $groupXMLTag = "samples";
         parent::__construct($groupXMLTag);
         $this->type = new sampleType();  	
+        $this->box = new box();
 	}	
 	
 	/***********/
     /* SETTERS */
     /***********/ 
-
+    
+	function setBoxID($id)
+    {
+    	$this->box->setParamsFromDB($id);
+    }
+    
+    function setBoxFromName($name)
+    {
+    	$this->box->setParamsFromDBFromName($name);
+    }
+    
+    function setBoxComments($comments)
+    {
+    	$this->box->setComments($comments);
+    }
+    
 	/**
 	 * Set the sample type
 	 *
@@ -1768,7 +1779,12 @@ class sampleEntity extends dbEntity
 	/***********/
     /* GETTERS */
     /***********/  	
-	
+    
+	function getBoxID()
+    {
+    	return $this->box->getID();
+    }
+    
 	/**
 	 * Get the type of sample
 	 *
@@ -2247,7 +2263,7 @@ class boxEntity extends dbEntity
 	protected $curationLocation = NULL;
 	protected $sampleCount = NULL;
 	protected $sampleArray = array();
-	
+
     function __construct()
     {
 
@@ -2258,6 +2274,11 @@ class boxEntity extends dbEntity
     /* SETTERS */
     /***********/
 
+    
+    function setComments($comments)
+    {
+    	$this->comments = $comments;
+    }
     /**
      * Number of samples in this box
      *
