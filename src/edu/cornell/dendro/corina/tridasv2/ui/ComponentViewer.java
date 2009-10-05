@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -90,7 +91,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		updateContent();
 		
 		// default to this view...
-		btnTableView.doClick();
+		btnTreeView.doClick();
 	}
 	
 	private void initComponents() {
@@ -102,10 +103,10 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
 		label = new JLabel("View as: ");
-		btnTableView = new JRadioButton("table");
-		btnTableView.putClientProperty("cv.cardName", TABLEPANEL);
 		btnTreeView = new JRadioButton("tree");
 		btnTreeView.putClientProperty("cv.cardName", TREEPANEL);
+		btnTableView = new JRadioButton("table");
+		btnTableView.putClientProperty("cv.cardName", TABLEPANEL);
 		
 		ActionListener btnListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -120,15 +121,16 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		
 		// connect buttons
 		ButtonGroup group = new ButtonGroup();
-		group.add(btnTableView);
 		group.add(btnTreeView);
+		group.add(btnTableView);
+		
 		
 		// add it all to a panel
 		topPanel.add(label);
 		topPanel.add(Box.createHorizontalStrut(12));
-		topPanel.add(btnTableView);
-		topPanel.add(Box.createHorizontalStrut(8));
 		topPanel.add(btnTreeView);
+		topPanel.add(Box.createHorizontalStrut(8));
+		topPanel.add(btnTableView);
 		topPanel.add(Box.createHorizontalGlue());
 		
 		topPanel.setBorder(BorderFactory.createEmptyBorder(2, 8, 8, 8));
@@ -191,6 +193,11 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 				popup.show(tree, e.getX(), e.getY());
 			}
 		});
+		ToolTipManager.sharedInstance().setInitialDelay(0);
+		
+		tree.setToolTipText("");
+		
+		
 	}
 	
 	private void setupTable() {

@@ -3,13 +3,20 @@ package edu.cornell.dendro.corina.tridasv2.ui;
 import java.awt.Component;
 import java.io.IOException;
 import java.util.EnumMap;
+import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.tridas.interfaces.ITridasDerivedSeries;
+import org.tridas.schema.SeriesLink;
+import org.tridas.schema.SeriesLinks;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasRemark;
 
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
@@ -70,25 +77,78 @@ public class ComponentTreeCellRenderer extends DefaultTreeCellRenderer {
 			try {
 				Sample s = ce.load();
 				
-				StringBuilder builder = new StringBuilder();
+				setText(getFullTitle(s));
+						
+			
+				setToolTipText(getTooltipText(s));
 				
-				builder.append(s.getDisplayTitle());
-				if(s.getSampleType().isDerived()) {
-					ITridasDerivedSeries series = (ITridasDerivedSeries) s.getSeries();
-					
-					if(series.isSetVersion()) {
-						builder.append(" ver. ");
-						builder.append(series.getVersion());
-					}
-				}
-				builder.append(" ");
-				builder.append(s.getRange().toStringWithSpan());
-				
-				setText(builder.toString());
 			} catch (IOException e) {
 			}			
 		}
-		
+				
 		return this;
+	}
+	
+	private String getTooltipText(Sample s)
+	{
+		StringBuilder builder = new StringBuilder();
+		TridasDerivedSeries dSeries = null;
+		
+		builder.append("<html>"+getFullTitle(s)+"<br>is ");
+		
+		if(s.getSeries() instanceof TridasMeasurementSeries)
+		{
+			builder.append("raw measurement series");
+			return builder.toString();
+		}
+		else if (s.getSeries() instanceof TridasDerivedSeries)
+		{
+			dSeries = (TridasDerivedSeries) s.getSeries();
+				
+			if(dSeries.getType().getValue().toLowerCase().equals("index"))
+			{
+				builder.append("a "+ dSeries.getStandardizingMethod().toLowerCase());
+				builder.append(" "+ dSeries.getType().getValue().toLowerCase()+" of ");
+			}
+			else
+			{
+				System.out.println("'"+dSeries.getType().getValue().toLowerCase()+"'");
+				builder.append("a "+ dSeries.getType().getValue().toLowerCase()+" of ");
+			}
+			
+		}
+				
+		List<SeriesLink> ls = dSeries.getLinkSeries().getSeries();
+		
+		if(ls.size()>1)
+		{
+			builder.append(ls.size()+" series");
+		}
+		else
+		{
+			builder.append("its parent series");
+		}
+		
+		return builder.toString();
+		
+	}
+	
+	private String getFullTitle(Sample s)
+	{
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append(s.getDisplayTitle());
+		if(s.getSampleType().isDerived()) {
+			ITridasDerivedSeries series = (ITridasDerivedSeries) s.getSeries();
+			
+			if(series.isSetVersion()) {
+				builder.append(" ver. ");
+				builder.append(series.getVersion());
+			}
+		}
+		builder.append(" ");
+		builder.append(s.getRange().toStringWithSpan());
+		
+		return builder.toString();
 	}
 }
