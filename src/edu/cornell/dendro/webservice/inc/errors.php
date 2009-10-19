@@ -11,7 +11,7 @@
  * *******************************************************************
  */
 
-require_once('inc/FirePHPCore/FirePHP.class.php');
+require_once('FirePHPCore/FirePHP.class.php');
 
 // Set up FireBug debugging
 $firebug = FirePHP::getInstance(true);

@@ -82,7 +82,7 @@ class taxon extends taxonEntity implements IDBAccessor
 	 * @param String $webservice - either 'local' or 'remote'
 	 * @return Boolean
 	 */
-    function setParamsFromCoL($CoLID, $CoLNormalName, $webservice="local")
+    function setParamsFromCoL($CoLID, $CoLNormalName=NULL, $webservice="local")
     {
     	if($webservice=='local')
     	{
@@ -92,8 +92,13 @@ class taxon extends taxonEntity implements IDBAccessor
 	        
 	        $sql = "SELECT taxonid, colid, label 
 	        		FROM tlkptaxon 
-	        		WHERE colid='".pg_escape_string($CoLID)."' 
-	        		AND label='".pg_escape_string($CoLNormalName)."'";
+	        		WHERE colid='".pg_escape_string($CoLID)."'";
+
+	        if($CoLNormalName!=NULL)
+	        {
+	        	$sql.=" AND label='".pg_escape_string($CoLNormalName)."'";
+	        }
+	        
 	        //echo $sql;
 	        $dbconnstatus = pg_connection_status($dbconn);
 	        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
