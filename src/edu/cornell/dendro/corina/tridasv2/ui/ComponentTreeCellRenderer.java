@@ -94,7 +94,7 @@ public class ComponentTreeCellRenderer extends DefaultTreeCellRenderer {
 		StringBuilder builder = new StringBuilder();
 		TridasDerivedSeries dSeries = null;
 		
-		builder.append("<html>"+getFullTitle(s)+"<br>is ");
+		builder.append("<html><b>"+getFullTitle(s, false)+"</b><br>");
 		
 		if(s.getSeries() instanceof TridasMeasurementSeries)
 		{
@@ -105,15 +105,15 @@ public class ComponentTreeCellRenderer extends DefaultTreeCellRenderer {
 		{
 			dSeries = (TridasDerivedSeries) s.getSeries();
 				
+			//@TODO replace with customised text for each derivedSeries type
 			if(dSeries.getType().getValue().toLowerCase().equals("index"))
 			{
-				builder.append("a "+ dSeries.getStandardizingMethod().toLowerCase());
+				builder.append("is a "+ dSeries.getStandardizingMethod().toString());
 				builder.append(" "+ dSeries.getType().getValue().toLowerCase()+" of ");
 			}
 			else
 			{
-				System.out.println("'"+dSeries.getType().getValue().toLowerCase()+"'");
-				builder.append("a "+ dSeries.getType().getValue().toLowerCase()+" of ");
+				builder.append("is a "+ dSeries.getType().getValue().toLowerCase()+" of ");
 			}
 			
 		}
@@ -122,10 +122,11 @@ public class ComponentTreeCellRenderer extends DefaultTreeCellRenderer {
 		
 		if(ls.size()>1)
 		{
-			builder.append(ls.size()+" series");
+			builder.append(ls.size()+" series:");
 		}
 		else
 		{
+			//@TODO replace with title of parent series
 			builder.append("its parent series");
 		}
 		
@@ -134,6 +135,11 @@ public class ComponentTreeCellRenderer extends DefaultTreeCellRenderer {
 	}
 	
 	private String getFullTitle(Sample s)
+	{
+		return getFullTitle(s, true);
+	}
+	
+	private String getFullTitle(Sample s, Boolean includeRange)
 	{
 		StringBuilder builder = new StringBuilder();
 		
@@ -146,8 +152,12 @@ public class ComponentTreeCellRenderer extends DefaultTreeCellRenderer {
 				builder.append(series.getVersion());
 			}
 		}
-		builder.append(" ");
-		builder.append(s.getRange().toStringWithSpan());
+	
+		if(includeRange)
+		{
+			builder.append(" ");
+			builder.append(s.getRange().toStringWithSpan());
+		}
 		
 		return builder.toString();
 	}

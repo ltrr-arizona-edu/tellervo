@@ -14,8 +14,10 @@ import java.util.UUID;
 import javax.swing.table.AbstractTableModel;
 
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasLastRingUnderBark;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -657,6 +659,33 @@ public class SeriesReport extends ReportBase {
 		p.add(getHeartSapwoodDetails(woodCompleteness, WoodType.HEARTWOOD));
 		p.add(getHeartSapwoodDetails(woodCompleteness, WoodType.SAPWOOD));
 		
+		// Extract last ring under bark info
+		if(woodCompleteness.getSapwood().getLastRingUnderBark()!=null)
+		{
+			TridasLastRingUnderBark lastRing = woodCompleteness.getSapwood().getLastRingUnderBark();			
+			if(lastRing.getPresence()!=null){
+				if(lastRing.getPresence().equals(PresenceAbsence.PRESENT))
+				{
+					p.add(new Chunk("- Last ring under bark is present",  bodyFont));
+					
+					if(lastRing.getContent()!=null)
+					{
+						p.add(new Chunk(" and the user has noted that it is: " + lastRing.getContent().toString() + ".\n", bodyFont));
+					}
+					else
+					{
+						p.add(new Chunk(".\n", bodyFont));
+					}
+								
+				}
+				else if (lastRing.getPresence().equals(PresenceAbsence.ABSENT))
+				{
+					p.add(new Chunk("- Last ring under bark is absent.\n",  bodyFont));
+				}
+			}
+				
+		}
+		
 		// Extract bark info
 		if(woodCompleteness.getBark()!=null){			
 			if(woodCompleteness.getBark().getPresence().toString().toLowerCase()!=null){			
@@ -702,6 +731,8 @@ public class SeriesReport extends ReportBase {
 		String missingRingsStr = null;
 		String foundationStr = null;
 		String woodTypeStr = null;
+		String nrSapwoodRingsStr = null;
+		Integer nrSapwoodRings = null;
 		
 		// Extract data from woodcompleteness based on type
 		if(type==WoodType.HEARTWOOD)
@@ -747,7 +778,7 @@ public class SeriesReport extends ReportBase {
 				if(woodCompleteness.getSapwood().getPresence()!=null){
 					presence = woodCompleteness.getSapwood().getPresence().value();
 				}
-
+				
 				// Missing rings
 				if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBark()!=null){
 					missingRingsStr = woodCompleteness.getSapwood().getMissingSapwoodRingsToBark().toString();
@@ -757,6 +788,12 @@ public class SeriesReport extends ReportBase {
 					missingRingsStr = "an unknown number of";
 				}
 				
+				// No. of rings present
+				if(woodCompleteness.getSapwood().getNrOfSapwoodRings()!=null){
+					nrSapwoodRingsStr = woodCompleteness.getSapwood().getNrOfSapwoodRings().toString();
+					nrSapwoodRings = woodCompleteness.getSapwood().getNrOfSapwoodRings();
+				}
+					
 				// Missing rings foundation
 				if(woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation()!=null){
 					foundationStr = woodCompleteness.getSapwood().getMissingSapwoodRingsToBarkFoundation().toString().toLowerCase();
@@ -785,6 +822,10 @@ public class SeriesReport extends ReportBase {
 		}
 		else{
 			presenceStr = "- " + woodTypeStr.substring(0,1).toUpperCase() + woodTypeStr.substring(1) + " is " + presence;
+			if (woodTypeStr == "sapwood")
+			{
+				presenceStr += ". A total of " + nrSapwoodRings + " sapwood rings were identified";
+			}
 		}
 		
 	
@@ -801,6 +842,11 @@ public class SeriesReport extends ReportBase {
 				p.add(new Chunk(" rings are ", bodyFont));
 			}
 			p.add(new Chunk("missing, the justification of which is noted as: \"" + foundationStr + "\".", bodyFont));
+		}
+		else if (presence=="complete")
+		{
+			// Wood is complete so no mention required about missing rings
+			p.add(new Chunk(". ", bodyFont));
 		}
 		else
 		{
