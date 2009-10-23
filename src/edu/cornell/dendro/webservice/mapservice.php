@@ -35,10 +35,15 @@ $myMetaHeader   = new meta();
 $reqEntity = $_GET['entity'];
 $reqID = $_GET['id'];
 $format = $_GET['format'];
+$code = $_GET['code'];
 
+// Do basic error checking and set defaults
 if($format==NULL) $format = "gmap";
 
-// Extract the type of request from XML doc
+// If both id and code are given use id  
+if($reqID && $code) $code = NULL;
+
+
 $myMetaHeader->setRequestType('read');
 
 

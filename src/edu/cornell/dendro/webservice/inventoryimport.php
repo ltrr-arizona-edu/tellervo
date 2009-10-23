@@ -21,7 +21,7 @@
 
 ob_start();
 set_time_limit(0);
-?><HTML><?php 
+
 require_once("config.php");
 require_once("inc/meta.php");
 require_once("inc/auth.php");
@@ -39,13 +39,14 @@ require_once("inc/authenticate.php");
 require_once("inc/dictionaries.php");
 require_once("inc/search.php");
 require_once("inc/ProgressBar.php");
+?><HTML><?php 
 
 $importTable = "inventory";
 global $firebug;
 global $dbconn;
 
-$bar = new ProgressBar("Import in progress...", FALSE, 0, 800, 100);
-$bar2 = new ProgressBar("Assigning existing samples to boxes", FALSE, 0, 800, 100);
+if($debugFlag===FALSE) $bar = new ProgressBar("Import in progress...", FALSE, 0, 800, 100);
+if($debugFlag===FALSE) $bar2 = new ProgressBar("Assigning existing samples to boxes", FALSE, 0, 800, 100);
 
 
 
@@ -60,11 +61,11 @@ $boxFailureCount = 0;
 
 $progressCount=0;
 
-$limit = 5000;
+$limit = 999999;
 $offset = 0;
 $doBoxes = TRUE;
 $firstRun = TRUE;
-
+$doThird = TRUE;
 
 
 
@@ -111,10 +112,32 @@ if($firstRun)
 	  fixed boolean default false
 	)
 	WITH (OIDS=FALSE);
-	ALTER TABLE sampleimporterror OWNER TO webuser"
+	ALTER TABLE sampleimporterror OWNER TO webuser;
+	
+	CREATE TABLE sampleimportfixerror
+	(
+	  id integer,
+	  boxname character varying(50),
+	  regioncode character varying(5),
+	  elementstartnum integer,
+	  elementendnum integer,
+	  samplecode character varying(1),
+	  taxa character varying(50),
+	  sitecode character varying(50),
+	  missing character varying(255),
+	  notes text,
+	  sampletype character varying(50),
+	  currentelement character varying,
+	  error character varying,
+	  fixed boolean default false
+	)
+	WITH (OIDS=FALSE);
+	ALTER TABLE sampleimportfixerror OWNER TO webuser;"
 	;
 	
 	pg_query($dbconn, $droptblsql);
+	$oldres = pg_get_result($dbconn);
+	pg_query($dbconn, $tblsql);
 	$oldres = pg_get_result($dbconn);
 	pg_query($dbconn, $tblsql);
 	$oldres = pg_get_result($dbconn);
@@ -132,7 +155,7 @@ if($doBoxes)
   		if(pg_num_rows($result)==0)
 		{
 			// No records match the id specified
-			$firebug->log("No match", "Error");
+			if($debugFlag) $firebug->log("No match", "Error");
 			return FALSE;
 		}
 		else
@@ -168,10 +191,13 @@ if($doBoxes)
 }     
 
 	
-$bar->initialize( $limit*2); //print the empty bar
+if($debugFlag===FALSE) $bar->initialize( $limit*2); //print the empty bar
+
+
 
 // First Time around we do import the elements
 $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
+if($debugFlag) $firebug->log($sql, "Starting first loop"); 
 	$dbconnstatus = pg_connection_status($dbconn);
 	if ($dbconnstatus ===PGSQL_CONNECTION_OK)
 	{
@@ -188,7 +214,7 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 			
 			if(($elemEnd-$elemStart)<0)
 			{
-				$firebug->log($row, "Problem with element numbers"); 
+				if($debugFlag) $firebug->log($row, "Problem with element numbers"); 
 				continue;
 			}
 			
@@ -200,7 +226,7 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
        		$objresult = pg_get_result($dbconn);
            	if(pg_num_rows($result)<1)
            	{
-           		$firebug->log($objSQL, "no matches for ");
+           		if($debugFlag) $firebug->log($objSQL, "no matches for ");
            		continue;
            	}
 
@@ -250,10 +276,10 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 						        "'".$row['notes']."', ".
 						        "'".$row['sampletype']."', ".
 								"'".$thiselemnum."', ".
-								"'".addslashes($thisElement->getLastErrorMessage())."' ".
+								"'".pg_escape_string($thisElement->getLastErrorMessage())."' ".
 								")";
 						pg_send_query($dbconn, $insertsql);	
-						$firebug->log($thisElement->getID(), "Failed to write this element to db");
+						if($debugFlag) $firebug->log($thisElement->getID(), "Failed to write this element to db");
 						$elementFailureCount++;	
 					}		
 					else
@@ -267,7 +293,14 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 			// End object loop
 			}	
 			$progressCount++;
-			$bar->increase();
+			if($debugFlag===FALSE) 
+			{
+				$bar->increase();
+			}
+			else
+			{
+				printSummaryTable();
+			}
 		// End inventory row loop	
 		}
 
@@ -275,7 +308,7 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 	else
 	{
 		// Connection bad
-		$firebug->log("Error connecting to database", "Error");
+		if($debugFlag) $firebug->log("Error connecting to database", "Error");
 	}
 
 	
@@ -303,7 +336,7 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 			
 			if(($elemEnd-$elemStart)<0)
 			{
-				$firebug->log($row, "Problem with element numbers"); 
+				if($debugFlag) $firebug->log($row, "Problem with element numbers"); 
 				continue;
 			}
 			
@@ -323,7 +356,8 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 		       		$elemresult = pg_get_result($dbconn);
 		           	if(pg_num_rows($result)<1)
 		           	{
-		           		$firebug->log($elemSQL, "no matches for ");
+		           		if($debugFlag) $firebug->log($elemSQL, "no matches for ");
+		           		logSampleError($row, $thiselemnum, $error='no matches for this element in db');
 		           		continue;
 		           	}
 		
@@ -342,7 +376,7 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 					$foundBox = $thisSample->setBoxFromName(strtoupper($row['boxname']));
 					if($foundBox===FALSE) 
 					{
-						$firebug->log(strtoupper($row['boxname']), "Can't find box:");
+						if($debugFlag) $firebug->log(strtoupper($row['boxname']), "Can't find box:");
 					}
 					else
 					{
@@ -356,23 +390,8 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 					
 					if ($success3!=TRUE)
 					{
-						$insertsql = "insert into sampleimporterror (id, boxname, regioncode, elementstartnum, elementendnum, samplecode, taxa, sitecode, missing, notes, sampletype, currentelement)
-								values(".
-								"'".$row['id']."', ".
-						        "'".$row['boxname']."', ".
-						 		"'".$row['regioncode']."', ".
-						        "'".$row['elementstartnum']."', ".
-						        "'".$row['elementendnum']."', ".
-						        "'".$row['samplecode']."', ".
-        						"'".$row['taxa']."', ".
-						        "'".$row['sitecode']."', ".
-						        "'".$row['missing']."', ".
-						        "'".$row['notes']."', ".
-						        "'".$row['sampletype']."', ".
-								"'".$thiselemnum."' ".
-								")";
-						pg_send_query($dbconn, $insertsql);	
-						$firebug->log($thisSample->getID(), "Failed to write this sample to db");
+						if($debugFlag) $firebug->log($thisSample->getID(), "Failed to write this sample to db");
+						logSampleError($row, $thiselemnum, $thisSample->getLastErrorMessage());
 						$sampleFailureCount++;	
 					}		
 					else
@@ -386,8 +405,14 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 			
 				$progressCount++;
 				
-				$bar->increase();
-				//printSummaryTable();
+				if($debugFlag===FALSE) 
+				{
+					$bar->increase();
+				}
+				else
+				{
+					printSummaryTable();
+				}
 
 				
 		// End inventory row loop	
@@ -397,7 +422,7 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 	else
 	{
 		// Connection bad
-		$firebug->log("Error connecting to database", "Error");
+		if($debugFlag) $firebug->log("Error connecting to database", "Error");
 	}
 	
 	
@@ -406,22 +431,24 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 // THIRD TIME AROUND! 
 // Now we try and update the existing samples with their new box numbers
 
+
+if($doThird)
+{
 	$sql = "SELECT * from sampleimporterror where fixed='f' order by id asc";
 	$dbconnstatus = pg_connection_status($dbconn);
 	if ($dbconnstatus ===PGSQL_CONNECTION_OK)
 	{
 		pg_get_result($dbconn);
-				pg_get_result($dbconn);
-		
-						pg_get_result($dbconn);
+		pg_get_result($dbconn);
+		pg_get_result($dbconn);
 				
 		$result = pg_query($dbconn, $sql);
         
 		//echo "Number of failed samples found= ".pg_num_rows($result)."<br>";
-		$bar2->initialize( pg_num_rows($result)); //print the empty bar
+		if($debugFlag===FALSE) $bar2->initialize( pg_num_rows($result)); //print the empty bar
 		
-		ob_flush();
-		flush();
+		if($debugFlag===FALSE) ob_flush();
+		if($debugFlag===FALSE) flush();
 		
 		/**
 		 *   ERROR TABLE LOOP BEGINS
@@ -441,7 +468,8 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
        		$sampleresult = pg_get_result($dbconn);
            	if(pg_num_rows($sampleresult)<1)
            	{
-           		$firebug->log($sampleSQL, "no matches for ");
+           		if($debugFlag) $firebug->log($sampleSQL, "no matches for ");
+           		logSampleError($row, $row['currentelement'], $thisSample->getLastErrorMessage(), TRUE);	
            		continue;
            	}
 			else
@@ -460,8 +488,9 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
 				$success4 = $thisSample->writeToDB();
 				if($success4!=TRUE)
 				{
-					$firebug->log($thisSample->getID(), "Failed to update this sample to db");	
 					$sampleFixFailureCount++;
+					if($debugFlag) $firebug->log($thisSample->getID(), "Failed to update this sample to db");
+					logSampleError($row, $row['currentelement'], $thisSample->getLastErrorMessage(), TRUE);					
 				}
 				else
 				{
@@ -476,16 +505,17 @@ $sql = "SELECT * from $importTable order by id asc limit $limit offset $offset";
             }
 					
 		// End import error table row loop
-		$bar2->increase();	
+		if($debugFlag===FALSE) $bar2->increase();	
 		}
 
 	}
 	else
 	{
 		// Connection bad
-		$firebug->log("Error connecting to database", "Error");
+		if($debugFlag) $firebug->log("Error connecting to database", "Error");
 	}
 	
+}
 	printSummaryTable();
 	
 	
@@ -502,6 +532,7 @@ function printSummaryTable()
 	global $boxFailureCount;
 	global $progressCount;
 	global $limit;
+	global $debugFlag;
 	
 	echo "</div></div><div><br><br><br><br><h1>Summary of import</h1><table border=\"1\"><tr><td></td><td>           Success</td><td>Failure</td></tr>";
 	echo "<tr><td><b>Boxes</b></td><td> $boxSuccessCount </td><td> $boxFailureCount </td></tr>";
@@ -509,9 +540,55 @@ function printSummaryTable()
 	echo "<tr><td><b>Samples</b> </td><td>$sampleSuccessCount </td><td> $sampleFailureCount </td></tr>";
 	echo "<tr><td><b>Samples Fixed</b> </td><td>$sampleFixSuccessCount </td><td> $sampleFixFailureCount </td></tr></table><br></div>";
 	
-	ob_flush();
-	flush();
-	ob_clean();
+	if($debugFlag===FALSE)
+	{	
+		ob_flush();
+		flush();
+		ob_clean();
+	}
+
+}
+
+
+function logSampleError($row, $thiselemnum, $error=' ', $update=FALSE)
+{
+
+	global $dbconn;
+	global $debugFlag;
+	global $firebug;
+	
+	$insertsql = "insert into ";
+	
+	if($update)
+	{
+		$insertsql .= "sampleimportfixerror ";
+	}
+	else
+	{
+		$insertsql .= "sampleimporterror ";
+	}
+	
+	$insertsql .= "(id, boxname, regioncode, elementstartnum, elementendnum, samplecode, taxa, sitecode, missing, notes, sampletype, currentelement, error)
+				values(".
+				"'".$row['id']."', ".
+		        "'".$row['boxname']."', ".
+		 		"'".$row['regioncode']."', ".
+		        "'".$row['elementstartnum']."', ".
+		        "'".$row['elementendnum']."', ".
+		        "'".$row['samplecode']."', ".
+    						"'".$row['taxa']."', ".
+		        "'".$row['sitecode']."', ".
+		        "'".$row['missing']."', ".
+		        "'".$row['notes']."', ".
+		        "'".$row['sampletype']."', ".
+				"'".$thiselemnum."', ".
+				"'".pg_escape_string($error)."' ".				
+				")";
+	
+	pg_send_query($dbconn, $insertsql);	
+	if($debugFlag) $firebug->log($row['sitecode']."-".$thiselemnum."-".$row['samplecode'], "Failed to write this sample to db");
+	
+	
 }
 ?>
 </HTML>
