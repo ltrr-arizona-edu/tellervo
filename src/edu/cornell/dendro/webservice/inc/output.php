@@ -383,7 +383,7 @@ function writeOpenLayerOutput($xmldata)
 
   			map.zoomToMaxExtent();
   			
-  			map.setBaseLayer(veaer);
+  			map.setBaseLayer(gphy);
 	         
 			}
 function osm_getTileURL(bounds) {
@@ -404,7 +404,12 @@ function osm_getTileURL(bounds) {
         </script>
     </head>
     <body onload=\"init()\">
-        <div id=\"map\" ></div>
+        <div id=\"map\" >
+                <div id=\"link\" style=\"padding: 2px 2px 2px 2px; position: absolute; top: 140px; left: 13px; color: white; z-index: 99999\"><a href=\"$xmldata\" style=\"font-family: verdana, arial, helvetica, sans-serif; font-size : 10px; 
+     \"><img src=\"images/googleearth22x22.png\" border=0></a></div>
+        
+        </div>
+
     </body>
 </html>";
     
