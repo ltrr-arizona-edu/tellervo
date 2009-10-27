@@ -1,0 +1,15 @@
+@CHARSET "UTF-8";
+
+#weblogin {
+
+	text-align:left;
+    width:300px; 
+    height:100px; 
+    position:absolute; 
+    top:30%; 
+    left:50%; 
+    margin:-75px auto auto -150px; 
+	border:1px dashed #333;
+	background-color:#eee;
+	padding:15px;
+	}

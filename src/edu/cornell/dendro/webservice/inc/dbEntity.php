@@ -2794,7 +2794,7 @@ class measurementEntity extends dbEntity
 	 *
 	 * @var Array
 	 */
-    protected $summaryObjectArray = array();
+    public $summaryObjectArray = array();
     /**
      * Summerisation of the element title for this measurement
      *
@@ -2914,6 +2914,7 @@ class measurementEntity extends dbEntity
 	
 	function setSummaryObjectArray($juniorObjectID)
 	{
+				
 		if($juniorObjectID==NULL) return false;
 
 		if(($myObjectEntityArray = dbEntity::getCachedEntity("objectEntityArray", $juniorObjectID)) != NULL)
@@ -2953,7 +2954,7 @@ class measurementEntity extends dbEntity
 	{
 		$this->summaryElementTitle = $title;
 	}
-
+	
 	function setSummarySampleTitle($title)
 	{
 		$this->summarySampleTitle = $title;
@@ -3463,9 +3464,16 @@ class measurementEntity extends dbEntity
     	return $this->summaryObjectCount;
     }
     
-    function getSummaryObjectCode($level=1)
+    function getSummaryObjectCode($level=0)
     {
-    	return $this->summaryObjectArray[$level]['code'];
+    	if($this->summaryObjectArray[$level])
+    	{
+    		return $this->summaryObjectArray[$level]->getCode();
+    	}
+    	else
+    	{
+    		return null;
+    	}
     }
     
     function getSummaryTaxonName()

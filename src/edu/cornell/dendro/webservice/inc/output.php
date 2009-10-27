@@ -234,6 +234,7 @@ function writeOpenLayerOutput($xmldata)
         <title>Corina Map Service</title>        
        <link rel=\"stylesheet\" href=\"css/openLayersStyle.css\" type=\"text/css\" />
        <link rel=\"stylesheet\" href=\"css/google.css\" type=\"text/css\" />
+       
         <style type=\"text/css\">
             body {
                 margin: 0;
@@ -267,24 +268,26 @@ function writeOpenLayerOutput($xmldata)
  
         <script type=\"text/javascript\">
     var map, drawControls, selectControl, selectedFeature;
-    function onPopupClose(evt) {
-        selectControl.unselect(selectedFeature);
-    }
-    function onFeatureSelect(feature) {
-        selectedFeature = feature;
-        popup = new OpenLayers.Popup.FramedCloud(\"chicken\", 
-            feature.geometry.getBounds().getCenterLonLat(),
-                                         null,
-                                         \"<div style='font-size:.8em'>Feature: \" + feature.id +\"<br />Area: \" + feature.geometry.getArea()+\"</div>\",
-                                         null, true, onPopupClose);
-        feature.popup = popup;
-        map.addPopup(popup);
-    }
-    function onFeatureUnselect(feature) {
-        map.removePopup(feature.popup);
-        feature.popup.destroy();
-        feature.popup = null;
-    }
+        function onPopupClose(evt) {
+            selectControl.unselect(selectedFeature);
+        }
+        function onFeatureSelect(feature) {
+            selectedFeature = feature;
+            popup = new OpenLayers.Popup.FramedCloud(\"chicken\", 
+                                     feature.geometry.getBounds().getCenterLonLat(),
+                                     new OpenLayers.Size(400,300),
+                                     \"<div><h2>\"+feature.attributes.name+\"</h2>\"+feature.attributes.description+\"</div>\",
+                                     null, true, onPopupClose);
+            feature.popup = popup;
+            map.addPopup(popup);
+        }
+        function onFeatureUnselect(feature) {
+            map.removePopup(feature.popup);
+            feature.popup.destroy();
+            feature.popup = null;
+        }
+    
+    
             function init(){
            
             var options = {
@@ -357,7 +360,7 @@ function writeOpenLayerOutput($xmldata)
                     displayOutsideMaxExtent: true,
                     attribution: '<a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>'
             }
-            );
+            );          
 
             var kmldata = new OpenLayers.Layer.GML(\"Dendro Data\", \"$xmldata\", 
             {
@@ -374,6 +377,8 @@ function writeOpenLayerOutput($xmldata)
                 }
             );
 
+ 
+            
 
              map.addLayers([gmap, gsat, ghyb, gphy, veroad, veaer, vehyb,
                            yahoo, yahoosat, yahoohyb, olwms, mapnik, kmldata]);
@@ -384,7 +389,14 @@ function writeOpenLayerOutput($xmldata)
   			map.zoomToMaxExtent();
   			
   			map.setBaseLayer(gphy);
-	         
+  			
+             selectControl = new OpenLayers.Control.SelectFeature(kmldata,
+                {onSelect: onFeatureSelect, onUnselect: onFeatureUnselect});
+                
+                            map.addControl(selectControl);
+            selectControl.activate(); 
+  			
+
 			}
 function osm_getTileURL(bounds) {
     var res = this.map.getResolution();

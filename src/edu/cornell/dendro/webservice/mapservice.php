@@ -26,10 +26,20 @@ require_once("inc/radius.php");
 require_once("inc/measurement.php");
 require_once("inc/authenticate.php");
 
-
 $xmldata = NULL;
 $myAuth         = new auth();
 $myMetaHeader   = new meta();
+
+// Intercept login requests
+if($_POST['requesturl'])
+{
+	global $domain;
+	
+	$myAuth->login($_POST['user'], $_POST['password']);
+	
+	$redirect = "Location: https://dendro.cornell.edu".$_POST['requesturl'];
+	header( $redirect ) ;
+}
 
 // Get GET parameters
 $reqEntity = $_GET['entity'];
@@ -54,9 +64,23 @@ if($myAuth->isLoggedIn())
 }
 else
 {
+	echo "<html>
+	<link rel=\"stylesheet\" href=\"css/weblogin.css\" type=\"text/css\" />
+	<link rel=\"stylesheet\" href=\"css/openLayersStyle.css\" type=\"text/css\" />
+	<div id=\"weblogin\">Please login:
+	
+	<form method=\"POST\">
+	<table>
+	<tr><th>Username: </td><td><input type=\"text\" size=\"25\" name=\"user\"></td></tr>
+	<tr><th>Password: </td><td><input type=\"password\" size=\"25\" name=\"password\"></td></tr>
+	<tr><td></td><td><input type=\"submit\" value=\"Login\"/></td></tr>
+	</table>
+	<input type=\"hidden\" name=\"requesturl\" value=\"".$_SERVER['REQUEST_URI']."\"/>
+	</form>
+	</div>";
+	
     $seq = $myAuth->sequence();
     $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq);
-    echo "Not logged in";
     die();
 }
 

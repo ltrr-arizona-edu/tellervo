@@ -94,7 +94,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		
 		
 		// Only load summary fields if this is a summary...
-		if($format=='summary') $this->setSummaryObjectArray($row['objectid']);
+		//if($format=='summary') $this->setSummaryObjectArray($row['objectid']);
+		$this->setSummaryObjectArray($row['objectid']);		
 
 		// Deal with readings if we actually need them...
 		if($format!="summary") $this->setReadingsFromDB();
@@ -929,7 +930,19 @@ class measurement extends measurementEntity implements IDBAccessor
 
 	public function asKML()
 	{
-		$kml = "<Placemark><name>".$this->getSummaryObjectCode()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name><description><![CDATA[<br><b>Type</b>: ".$this->getType()."<br><b>Description</b>: ]]></description>";
+		global $firebug;
+		$firebug->log($this->getSummaryObjectCode(), "Summary object code");
+		$kml = "<Placemark><name>".$this->getSummaryObjectCode()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name>";
+		$kml.= "<description><![CDATA[<table>
+					<tr><td><b>Series Type:</b></td><td> ".$this->getType()."</td></tr>
+					<tr><td><b>Analyst:</b></td><td> ".$this->getAnalyst()."</td></tr>
+					<tr><td><b>Dendrochronologist:</b></td><td> ".$this->getDendrochronologist()."</td></tr>
+					<tr><td><b>Dating Type:</b></td><td> ".$this->dating->getValue()."</td></tr>
+					<tr><td><b>First Year:</b></td><td> ".$this->getFirstYear()."</td></tr>
+					<tr><td><b>Sprout Year:</b></td><td> ".$this->getSproutYear()."</td></tr>
+					<tr><td><b>Death Year:</b></td><td> ".$this->getDeathYear()."</td></tr>
+					</table>
+					<br><b>Other comments:</b><br> ".$this->getComments()."]]></description>";
 		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
 		$kml .= $this->location->asKML();
 		$kml .= "</Placemark>";

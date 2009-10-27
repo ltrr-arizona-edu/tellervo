@@ -88,3 +88,9 @@ h6 {
     position: absolute; 
     display: block;
 }
+
+.olPopupCloseBox {
+  background: url("../images/close.png") no-repeat;
+  cursor: pointer;
+}
+
