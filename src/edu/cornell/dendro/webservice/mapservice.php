@@ -67,8 +67,8 @@ else
 	echo "<html>
 	<link rel=\"stylesheet\" href=\"css/weblogin.css\" type=\"text/css\" />
 	<link rel=\"stylesheet\" href=\"css/openLayersStyle.css\" type=\"text/css\" />
-	<div id=\"weblogin\">Please login:
-	
+	<div id=\"weblogin\"><h1>Corina login:</h1>
+	<br/>
 	<form method=\"POST\">
 	<table>
 	<tr><th>Username: </td><td><input type=\"text\" size=\"25\" name=\"user\"></td></tr>

@@ -422,7 +422,7 @@ function osm_getTileURL(bounds) {
     </head>
     <body onload=\"init()\">
         <div id=\"map\" >
-                <div id=\"link\" style=\"padding: 2px 2px 2px 2px; position: absolute; top: 4px; right: 0px; color: white; z-index: 99999\"><a href=\"$xmldata\" style=\"font-family: verdana, arial, helvetica, sans-serif; font-size : 10px; 
+                <div id=\"link\" style=\"padding: 2px 2px 2px 2px; position: absolute; top: 8px; right: -2px; color: white; z-index: 99999\"><a href=\"$xmldata\" style=\"font-family: verdana, arial, helvetica, sans-serif; font-size : 10px; 
      \"><img src=\"images/googleearth18x18.png\" border=0></a></div>
         
         </div>
