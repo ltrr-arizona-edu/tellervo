@@ -358,12 +358,12 @@ function writeOpenLayerOutput($xmldata)
                 \"http://labs.metacarta.com/wms/vmap0\", {layers: 'basic'} );
             
             var mapnik = new OpenLayers.Layer.TMS(
-                \"OpenStreetMap\",
+                \"Open Street Map\",
                 \"http://tile.openstreetmap.org/\",
             {
                 type: 'png', getURL: osm_getTileURL,
                     displayOutsideMaxExtent: true,
-                    attribution: '<a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>'
+                    attribution: '<a href=\"http://www.openstreetmap.org/\">Open Street Map</a>'
             }
             );          
 
@@ -386,7 +386,7 @@ function writeOpenLayerOutput($xmldata)
             
 
              map.addLayers([gmap, gsat, ghyb, gphy, veroad, veaer, vehyb,
-                           yahoo, yahoosat, yahoohyb, olwms, mapnik, kmldata]);
+                           yahoo, yahoosat, yahoohyb, mapnik, olwms, kmldata]);
             
             map.addControl(new OpenLayers.Control.LayerSwitcher());
 
@@ -422,8 +422,8 @@ function osm_getTileURL(bounds) {
     </head>
     <body onload=\"init()\">
         <div id=\"map\" >
-                <div id=\"link\" style=\"padding: 2px 2px 2px 2px; position: absolute; top: 310px; left: 13px; color: white; z-index: 99999\"><a href=\"$xmldata\" style=\"font-family: verdana, arial, helvetica, sans-serif; font-size : 10px; 
-     \"><img src=\"images/googleearth22x22.png\" border=0></a></div>
+                <div id=\"link\" style=\"padding: 2px 2px 2px 2px; position: absolute; top: 4px; right: 0px; color: white; z-index: 99999\"><a href=\"$xmldata\" style=\"font-family: verdana, arial, helvetica, sans-serif; font-size : 10px; 
+     \"><img src=\"images/googleearth18x18.png\" border=0></a></div>
         
         </div>
 
