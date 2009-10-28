@@ -362,31 +362,31 @@ class radius extends radiusEntity implements IDBAccessor
             {
                 $xml.= "<tridas:radius>\n";
                 $xml.= $this->getIdentifierXML();          
-                if($this->getComments()!=NULL) 										$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
+                if($this->getComments()!=NULL) 										$xml.= "<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
                 if($format!="minimal")
                 {
                     $xml.= "<tridas:woodCompleteness>\n";
-                    if($this->getPith()!=NULL)											$xml.= "<tridas:pith presence=\"".$this->getPith()."\"></tridas:pith>\n";
+                    if($this->getPith()!=NULL)											$xml.= "<tridas:pith presence=\"".dbhelper::escapeXMLChars($this->getPith())."\"></tridas:pith>\n";
                     if( ($this->getHeartwood()!=NULL)  )    
                     {
-                        																$xml.= "<tridas:heartwood presence=\"".$this->getHeartwood()."\">";
-						if($this->getMissingHeartwoodRingsToPith()!=NULL)				$xml.= "<tridas:missingHeartwoodRingsToPith>".$this->getMissingHeartwoodRingsToPith()."</tridas:missingHeartwoodRingsToPith>\n";
-						if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)		$xml.= "<tridas:missingHeartwoodRingsToPithFoundation>".$this->getMissingHeartwoodRingsToPithFoundation()."</tridas:missingHeartwoodRingsToPithFoundation>\n";																				
+                        																$xml.= "<tridas:heartwood presence=\"".dbhelper::escapeXMLChars($this->getHeartwood())."\">";
+						if($this->getMissingHeartwoodRingsToPith()!=NULL)				$xml.= "<tridas:missingHeartwoodRingsToPith>".dbhelper::escapeXMLChars($this->getMissingHeartwoodRingsToPith())."</tridas:missingHeartwoodRingsToPith>\n";
+						if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)		$xml.= "<tridas:missingHeartwoodRingsToPithFoundation>".dbhelper::escapeXMLChars($this->getMissingHeartwoodRingsToPithFoundation())."</tridas:missingHeartwoodRingsToPithFoundation>\n";																				
 																						$xml.= "</tridas:heartwood>\n";
 					}
 
 					if($this->getSapwood()!=NULL)
 					{
-																						$xml.= "<tridas:sapwood presence=\"".$this->getSapwood()."\">";
-	                    if($this->getNumberOfSapwoodRings()!=NULL)						$xml.= "<tridas:nrOfSapwoodRings>".$this->getNumberOfSapwoodRings()."</tridas:nrOfSapwoodRings>\n";
-	                    if($this->getLastRingUnderBark()!=NULL)							$xml.= "<tridas:lastRingUnderBark presence=\"present\">".$this->getLastRingUnderBark()."</tridas:lastRingUnderBark>\n";
-	                    if($this->getMissingSapwoodRingsToBark()!=NULL)					$xml.= "<tridas:missingSapwoodRingsToBark>".$this->getMissingSapwoodRingsToBark()."</tridas:missingSapwoodRingsToBark>\n";
-	                    if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)		$xml.= "<tridas:missingSapwoodRingsToBarkFoundation>".$this->getMissingSapwoodRingsToBarkFoundation()."</tridas:missingSapwoodRingsToBarkFoundation>\n";	
+																						$xml.= "<tridas:sapwood presence=\"".dbhelper::escapeXMLChars($this->getSapwood())."\">";
+	                    if($this->getNumberOfSapwoodRings()!=NULL)						$xml.= "<tridas:nrOfSapwoodRings>".dbhelper::escapeXMLChars($this->getNumberOfSapwoodRings())."</tridas:nrOfSapwoodRings>\n";
+	                    if($this->getLastRingUnderBark()!=NULL)							$xml.= "<tridas:lastRingUnderBark presence=\"present\">".dbhelper::escapeXMLChars($this->getLastRingUnderBark())."</tridas:lastRingUnderBark>\n";
+	                    if($this->getMissingSapwoodRingsToBark()!=NULL)					$xml.= "<tridas:missingSapwoodRingsToBark>".dbhelper::escapeXMLChars($this->getMissingSapwoodRingsToBark())."</tridas:missingSapwoodRingsToBark>\n";
+	                    if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)		$xml.= "<tridas:missingSapwoodRingsToBarkFoundation>".dbhelper::escapeXMLChars($this->getMissingSapwoodRingsToBarkFoundation())."</tridas:missingSapwoodRingsToBarkFoundation>\n";	
 	                    																$xml.= "</tridas:sapwood>\n";
 					}
             		$xml.= "<tridas:bark presence=\"".dbHelper::formatBool($this->getBarkPresent(), "presentabsent")."\"/>\n";
                     $xml.= "</tridas:woodCompleteness>\n";
-					if($this->getAzimuth()!=NULL)									$xml.= "<tridas:azimuth>".$this->getAzimuth()."</tridas:azimuth>\n";
+					if($this->getAzimuth()!=NULL)									$xml.= "<tridas:azimuth>".dbhelper::escapeXMLChars($this->getAzimuth())."</tridas:azimuth>\n";
                 }
                 // Include permissions details if requested            
                 $xml .= $this->getPermissionsXML();                

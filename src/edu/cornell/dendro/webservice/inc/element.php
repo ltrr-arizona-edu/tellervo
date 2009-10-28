@@ -446,50 +446,50 @@ class element extends elementEntity implements IDBAccessor
                 // Only return XML when there are no errors.
                 $xml = "<tridas:element>";
                 $xml.= $this->getIdentifierXML();   
-                if($this->getComments()!=NULL)					$xml.="<tridas:comments>".$this->getComments()."</tridas:comments>\n";
-                $xml.="<tridas:type normal=\"".$this->getType()."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\"/>\n";
-                if($this->getDescription()!=NULL) $xml.="<tridas:description>".$this->getDescription()."</tridas:description>\n";
+                if($this->getComments()!=NULL)					$xml.="<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
+                $xml.="<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\"/>\n";
+                if($this->getDescription()!=NULL) $xml.="<tridas:description>".dbhelper::escapeXMLChars($this->getDescription())."</tridas:description>\n";
                 if($format!="minimal")
                 {
                 	$xml.= $this->getFileXML();
                     $xml.= $this->taxon->asXML();  
-                    if($this->getShape()!=NULL)             $xml.= "<tridas:shape normalTridas=\"".$this->getShape()."\" normalId=\"".$this->getShape(TRUE)."\" />\n";
+                    if($this->getShape()!=NULL)             $xml.= "<tridas:shape normalTridas=\"".dbhelper::escapeXMLChars($this->getShape())."\" normalId=\"".$this->getShape(TRUE)."\" />\n";
                     if($this->hasDimensions())
                     {
                     	$xml.="<tridas:dimensions>";
                     	/* @todo Units needs completing properly */
                     	$xml.="<tridas:unit>meter</tridas:unit>";
-                    	if($this->getDimension('height')!=NULL)   $xml.="<tridas:height>".$this->getDimension('height')."</tridas:height>\n";
-                    	if($this->getDimension('width')!=NULL)    $xml.="<tridas:width>".$this->getDimension('width')."</tridas:width>\n";
-                    	if($this->getDimension('depth')!=NULL)    $xml.="<tridas:depth>".$this->getDimension('depth')."</tridas:depth>\n";
-                    	if($this->getDimension('diameter')!=NULL) $xml.="<tridas:diameter>".$this->getDimension('diameter')."</tridas:diameter>\n";
+                    	if($this->getDimension('height')!=NULL)   $xml.="<tridas:height>".dbhelper::escapeXMLChars($this->getDimension('height'))."</tridas:height>\n";
+                    	if($this->getDimension('width')!=NULL)    $xml.="<tridas:width>".dbhelper::escapeXMLChars($this->getDimension('width'))."</tridas:width>\n";
+                    	if($this->getDimension('depth')!=NULL)    $xml.="<tridas:depth>".dbhelper::escapeXMLChars($this->getDimension('depth'))."</tridas:depth>\n";
+                    	if($this->getDimension('diameter')!=NULL) $xml.="<tridas:diameter>".dbhelper::escapeXMLChars($this->getDimension('diameter'))."</tridas:diameter>\n";
                     	$xml.="</tridas:dimensions>";                    	
                     }                                     
-                    if($this->getAuthenticity()!=NULL)      $xml.= "<tridas:authenticity>".$this->getAuthenticity()."</tridas:authenticity>\n";
+                    if($this->getAuthenticity()!=NULL)      $xml.= "<tridas:authenticity>".dbhelper::escapeXMLChars($this->getAuthenticity())."</tridas:authenticity>\n";
                     if($this->hasGeometry()) 
                     {
                         $xml.=$this->location->asXML();
                     }                 
                     
-                    if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".$this->getProcessing()."</tridas:processing>\n";
-                    if($this->getMarks()!=NULL) $xml.="<tridas:marks>".$this->getMarks()."</tridas:marks>\n";
-                    if($this->getAltitude()!=NULL) $xml.="<tridas:altitude>".$this->getAltitude()."</tridas:altitude>\n";
-                    if(($this->getSlopeAngle()!=NULL) || ($this->getSlopeAzimuth()!=NULL)) 
+                    if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".dbhelper::escapeXMLChars($this->getProcessing())."</tridas:processing>\n";
+                    if($this->getMarks()!=NULL) $xml.="<tridas:marks>".dbhelper::escapeXMLChars($this->getMarks())."</tridas:marks>\n";
+                    if($this->getAltitude()!=NULL) $xml.="<tridas:altitude>".dbhelper::escapeXMLChars($this->getAltitude())."</tridas:altitude>\n";
+                    if(($this->getSlopeAngle()!=NULL) || (dbhelper::escapeXMLChars($this->getSlopeAzimuth())!=NULL)) 
                     {
                     	$xml.="<tridas:slope>\n"; 
-                    	if($this->getSlopeAngle()!=NULL) $xml.="<tridas:angle>".$this->getSlopeAngle()."</tridas:angle>\n";
-                    	if($this->getSlopeAzimuth()!=NULL) $xml.="<tridas:azimuth>".$this->getSlopeAzimuth()."</tridas:azimuth>\n";
+                    	if($this->getSlopeAngle()!=NULL) $xml.="<tridas:angle>".dbhelper::escapeXMLChars($this->getSlopeAngle())."</tridas:angle>\n";
+                    	if($this->getSlopeAzimuth()!=NULL) $xml.="<tridas:azimuth>".dbhelper::escapeXMLChars($this->getSlopeAzimuth())."</tridas:azimuth>\n";
                     	$xml.="</tridas:slope>\n";
                     }
-                    if(($this->getSoilDepth()!=NULL) || ($this->getSoilDescription()!=NULL))
+                    if(($this->getSoilDepth()!=NULL) || (dbhelper::escapeXMLChars($this->getSoilDescription())!=NULL))
                     {
                     	$xml.="<tridas:soil>\n";
                     	if($this->getSoilDescription()!=NULL) $xml.="<tridas:description>".dbHelper::escapeXMLChars($this->getSoilDescription())."</tridas:description>\n";
-                    	if($this->getSoilDepth()!=NULL) $xml.="<tridas:depth>".$this->getSoilDepth()."</tridas:depth>\n";
+                    	if($this->getSoilDepth()!=NULL) $xml.="<tridas:depth>".dbhelper::escapeXMLChars($this->getSoilDepth())."</tridas:depth>\n";
                     	$xml.="</tridas:soil>\n";
                     }
                     
-                    if($this->getBedrockDescription()!=NULL)	$xml.= "<tridas:bedrock>\n<tridas:description>".$this->getBedrockDescription()."</tridas:description>\n</tridas:bedrock>\n";
+                    if($this->getBedrockDescription()!=NULL)	$xml.= "<tridas:bedrock>\n<tridas:description>".dbhelper::escapeXMLChars($this->getBedrockDescription())."</tridas:description>\n</tridas:bedrock>\n";
                     
 	                // Include permissions details if requested            
 	                $xml .= $this->getPermissionsXML();                      

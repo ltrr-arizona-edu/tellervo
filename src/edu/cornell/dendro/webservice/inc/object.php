@@ -311,8 +311,8 @@ class object extends objectEntity implements IDBAccessor
             { 
             	$xml.= "<tridas:object>\n";
                 $xml.= $this->getIdentifierXML(); 
-                if($this->getComments()!=NULL)		$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";    
-                									$xml.= "<tridas:type normal=\"".$this->getType()."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\" />\n";        	
+                if($this->getComments()!=NULL)		$xml.= "<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";    
+                									$xml.= "<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\" />\n";        	
             	if($this->getDescription()!=NULL)	$xml.= "<tridas:description>".dbHelper::escapeXMLChars($this->getDescription())."</tridas:description>";
                	if($this->getCreator()!=NULL)		$xml.= "<tridas:creator>".dbHelper::escapeXMLChars($this->getCreator())."</tridas:creator>";
             	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".dbHelper::escapeXMLChars($this->getOwner())."</tridas:owner>";         	
@@ -322,8 +322,8 @@ class object extends objectEntity implements IDBAccessor
             	if($this->getTemporalCoverage()!=NULL)
             	{
             		$xml .="<tridas:coverage>";
-            		$xml .="<tridas:coverageTemporal>".$this->getTemporalCoverage()."</tridas:coverageTemporal>";
-            		$xml .="<tridas:coverageTemporalFoundation>".$this->getTemporalCoverageFoundation()."</tridas:coverageTemporalFoundation>";
+            		$xml .="<tridas:coverageTemporal>".dbhelper::escapeXMLChars($this->getTemporalCoverage())."</tridas:coverageTemporal>";
+            		$xml .="<tridas:coverageTemporalFoundation>".dbhelper::escapeXMLChars($this->getTemporalCoverageFoundation())."</tridas:coverageTemporalFoundation>";
             		$xml .="</tridas:coverage>";
             	}
             	if($this->hasGeometry()) 			$xml.= $this->location->asXML();

@@ -1033,7 +1033,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".pg_escape_string($this->getComments())."</tridas:comments>\n";
 		if($this->getBirthDate()!=NULL)	$xml.= "<tridas:derivationDate>".pg_escape_string($this->getBirthDate())."</tridas:derivationDate>\n";	
 
-		if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".$this->vmeasurementOp->getValue()."</tridas:type>\n";
+		if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".dbhelper::escapeXMLChars($this->vmeasurementOp->getValue())."</tridas:type>\n";
 		if(isset($this->referencesArray))
 		{											$xml.= "<tridas:linkSeries>\n";
 		foreach($this->referencesArray as $ref)
@@ -1042,19 +1042,19 @@ class measurement extends measurementEntity implements IDBAccessor
 		}
 		$xml.= "</tridas:linkSeries>\n";
 		}
-		if($this->getObjective()!=NULL)				$xml.= "<tridas:objective>".addslashes($this->getObjective())."</tridas:objective>\n";
+		if($this->getObjective()!=NULL)				$xml.= "<tridas:objective>".dbhelper::escapeXMLChars($this->getObjective())."</tridas:objective>\n";
 		
-		if($this->getStandardizingMethod()!=NULL)	$xml.= "<tridas:standardizingMethod>".addslashes($this->getStandardizingMethod())."</tridas:standardizingMethod>\n";
-		if($this->getAuthor()!=NULL)				$xml.= "<tridas:author>".addslashes($this->getAuthor())."</tridas:author>\n";
-		if($this->getVersion()!=NULL)				$xml.= "<tridas:version>".addslashes($this->getVersion())."</tridas:version>\n";
+		if($this->getStandardizingMethod()!=NULL)	$xml.= "<tridas:standardizingMethod>".dbhelper::escapeXMLChars($this->getStandardizingMethod())."</tridas:standardizingMethod>\n";
+		if($this->getAuthor()!=NULL)				$xml.= "<tridas:author>".dbhelper::escapeXMLChars($this->getAuthor())."</tridas:author>\n";
+		if($this->getVersion()!=NULL)				$xml.= "<tridas:version>".dbhelper::escapeXMLChars($this->getVersion())."</tridas:version>\n";
 
 		$xml .= $this->getInterpretationXML();
 		
 		if($this->hasGeometry())				$xml.= $this->location->asGML()."\n<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
-		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"corina.justification\" type=\"xs:string\">".$this->getJustification()."</tridas:genericField>\n";
-		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"corina.crossdateConfidenceLevel\" type=\"xs:string\">".$this->getConfidenceLevel()."</tridas:genericField>\n";
-		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"corina.operationParameter\" type=\"xs:string\">".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."</tridas:genericField>\n";
-		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"corina.authorID\" type=\"xs:int\">".$this->author->getID()."</tridas:genericField>\n";
+		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"corina.justification\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getJustification())."</tridas:genericField>\n";
+		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"corina.crossdateConfidenceLevel\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getConfidenceLevel())."</tridas:genericField>\n";
+		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"corina.operationParameter\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getIndexNameFromParamID($this->vmeasurementOpParam))."</tridas:genericField>\n";
+		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"corina.authorID\" type=\"xs:int\">".dbhelper::escapeXMLChars($this->author->getID())."</tridas:genericField>\n";
 	    											$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
 		
 		$xml .= $this->getPermissionsXML();
@@ -1095,7 +1095,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		if ($format!="minimal")
 		{
 			if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".dbHelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
-			if($this->getBirthDate()!=NULL)				$xml.= "<tridas:measuringDate>".$this->getMeasuringDate()."</tridas:measuringDate>\n";
+			if($this->getBirthDate()!=NULL)				$xml.= "<tridas:measuringDate>".dbhelper::escapeXMLChars($this->getMeasuringDate())."</tridas:measuringDate>\n";
 			if($this->analyst->getFormattedName()!=NULL) $xml.= "<tridas:analyst>".dbHelper::escapeXMLChars($this->analyst->getFormattedName())."</tridas:analyst>\n";
 			if($this->dendrochronologist->getFormattedName()!=NULL) $xml.= "<tridas:dendrochronologist>".dbHelper::escapeXMLChars($this->dendrochronologist->getFormattedName())."</tridas:dendrochronologist>\n";
 		}

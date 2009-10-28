@@ -291,6 +291,11 @@ function writeOpenLayerOutput($xmldata)
             function init(){
            
             var options = {
+            	controls: [
+            		new OpenLayers.Control.Navigation(),
+            		new OpenLayers.Control.PanZoomBar(),
+            		new OpenLayers.Control.LayerSwitcher({'ascending':false}),
+            	 ],
                 projection: new OpenLayers.Projection(\"EPSG:900913\"),
                 displayProjection: new OpenLayers.Projection(\"EPSG:4326\"),
                 units: \"m\",
@@ -417,7 +422,7 @@ function osm_getTileURL(bounds) {
     </head>
     <body onload=\"init()\">
         <div id=\"map\" >
-                <div id=\"link\" style=\"padding: 2px 2px 2px 2px; position: absolute; top: 140px; left: 13px; color: white; z-index: 99999\"><a href=\"$xmldata\" style=\"font-family: verdana, arial, helvetica, sans-serif; font-size : 10px; 
+                <div id=\"link\" style=\"padding: 2px 2px 2px 2px; position: absolute; top: 310px; left: 13px; color: white; z-index: 99999\"><a href=\"$xmldata\" style=\"font-family: verdana, arial, helvetica, sans-serif; font-size : 10px; 
      \"><img src=\"images/googleearth22x22.png\" border=0></a></div>
         
         </div>

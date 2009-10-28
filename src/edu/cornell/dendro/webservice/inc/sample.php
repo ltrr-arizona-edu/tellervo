@@ -411,17 +411,17 @@ class sample extends sampleEntity implements IDBAccessor
             {
                 $xml.= "<tridas:sample>\n";
                 $xml.=  $this->getIdentifierXML();
-                $xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
-              	$xml.= "<tridas:type normal=\"".$this->getType()."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\" />\n";                     
+                $xml.= "<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
+              	$xml.= "<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\" />\n";                     
              
                 if($format!="minimal")
                 {
-                    if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".$this->getDescription()."</tridas:description>\n";
+                    if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".dbhelper::escapeXMLChars($this->getDescription())."</tridas:description>\n";
                 	if($this->getFile()!=NULL)					 $xml.= $this->getFileXML();
-                	if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate>".$this->getSamplingDate()."</tridas:samplingDate>\n";
-                    if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".$this->getPosition()."</tridas:position>\n";
-                    if($this->getState()!=NULL)					 $xml.= "<tridas:state>".$this->getState()."</tridas:state>\n";
-                    if($this->getKnots()!=NULL)					 $xml.= "<tridas:knots>".$this->getKnots('english')."</tridas:knots>\n";
+                	if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate>".dbhelper::escapeXMLChars($this->getSamplingDate())."</tridas:samplingDate>\n";
+                    if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".dbhelper::escapeXMLChars($this->getPosition())."</tridas:position>\n";
+                    if($this->getState()!=NULL)					 $xml.= "<tridas:state>".dbhelper::escapeXMLChars($this->getState())."</tridas:state>\n";
+                    if($this->getKnots()!=NULL)					 $xml.= "<tridas:knots>".dbhelper::escapeXMLChars($this->getKnots('english'))."</tridas:knots>\n";
 		        }
             }
 

@@ -70,7 +70,7 @@ h6 {
 }
 
 /**
- * Map Examples Specific
+ * Map Specific
  */
 .smallmap {
     width: 512px;
@@ -92,5 +92,10 @@ h6 {
 .olPopupCloseBox {
   background: url("../images/close.png") no-repeat;
   cursor: pointer;
+}
+
+.olPopupBox{
+  background-color : red;
+  
 }
 
