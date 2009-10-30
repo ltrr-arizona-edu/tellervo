@@ -74,21 +74,35 @@ BEGIN
        --            WHERE op='Direct');
 
    -- Calculate extent of vmeasurement by looking up locations of all associated direct Measurements
-   SELECT setsrid(extent(st_collect(tblelement.locationgeometry, tblobject.locationgeometry)), 4326)
-      INTO  ret.vmextent
-      FROM  tblobject, tblelement, tblsample, tblradius, tblMeasurement, tblvmeasurement
-      WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
-      AND   tblmeasurement.radiusid=tblradius.radiusid
-      AND   tblradius.sampleid=tblsample.sampleid
-      AND   tblsample.elementid=tblelement.elementid
-      AND   tblelement.objectid=tblobject.objectid
-      AND   tblvmeasurement.vmeasurementid
-            IN (SELECT vMeasurementid
-                   FROM  cpgdb.FindVMParents(vmid, true)
-                   WHERE op='Direct');
+   IF op = 'Direct' THEN
+   RAISE NOTICE 'Getting extents from element and object.  Measurement count is %', ret.MeasurementCount;
+	   SELECT setsrid(extent(st_collect(tblelement.locationgeometry, tblobject.locationgeometry)), 4326)
+	      INTO  ret.vmextent
+	      FROM  tblobject, tblelement, tblsample, tblradius, tblMeasurement, tblvmeasurement
+	      WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
+	      AND   tblmeasurement.radiusid=tblradius.radiusid
+	      AND   tblradius.sampleid=tblsample.sampleid
+	      AND   tblsample.elementid=tblelement.elementid
+	      AND   tblelement.objectid=tblobject.objectid
+	      AND   tblvmeasurement.vmeasurementid
+		    IN (SELECT vMeasurementid
+			   FROM  cpgdb.FindVMParents(vmid, true)
+			   WHERE op='Direct');
+   ELSE 
+	RAISE NOTICE 'Getting extent from component vmeasurements';
+	RAISE NOTICE 'Find all parents of %', vmid;
+	RAISE NOTICE 'Number of measurements is %',ret.MeasurementCount;
+	   SELECT setsrid(extent(tblvmeasurementmetacache.vmextent)::geometry, 4326)
+	   INTO  ret.vmextent
+	   FROM  tblvmeasurementmetacache
+	   WHERE tblvmeasurementmetacache.vmeasurementid
+		 IN (SELECT vMeasurementid
+		   FROM  cpgdb.FindVMParents(vmid, false)
+		   WHERE op='Direct');
+   END IF;
 
 
-   --RAISE NOTICE 'Extent is %', ret.vmextent;
+   RAISE NOTICE 'Extent is %', ret.vmextent;
 
    -- Store extent info
    UPDATE tblVMeasurementMetaCache SET vmextent = ret.vmextent WHERE VMeasurementID = ret.VMeasurementID;
