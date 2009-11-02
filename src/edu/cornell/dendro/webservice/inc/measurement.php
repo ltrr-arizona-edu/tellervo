@@ -932,7 +932,21 @@ class measurement extends measurementEntity implements IDBAccessor
 	{
 		global $firebug;
 		$firebug->log($this->getSummaryObjectCode(), "Summary object code");
-		$kml = "<Placemark><name>".$this->getSummaryObjectCode()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name>";
+		
+	
+
+			
+		$kml = "<Placemark>";
+			
+		if($this->getTridasSeriesType()=='measurementSeries')
+		{			
+			$kml.="<name>".$this->getSummaryObjectCode()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name>";
+		}
+		else
+		{
+			$kml.="<name>".$this->getTitle()."</name>";	
+		}
+		
 		$kml.= "<description><![CDATA[<table>
 					<tr><td><b>Series Type:</b></td><td> ".$this->getType()."</td></tr>
 					<tr><td><b>Analyst:</b></td><td> ".$this->getAnalyst()."</td></tr>
@@ -944,7 +958,20 @@ class measurement extends measurementEntity implements IDBAccessor
 					</table>
 					<br><b>Other comments:</b><br> ".$this->getComments()."]]></description>";
 		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
-		$kml .= $this->location->asKML();
+			
+
+			
+		if($this->getTridasSeriesType()=='measurementSeries')
+		{
+			// Should be a point
+			$kml .= $this->location->asKML();
+		}
+		else
+		{
+			// Hopefully a polygon
+			$kml .= $this->location->asKML("2", "POLYGON");
+		}
+		
 		$kml .= "</Placemark>";
 		return $kml;
 	}
@@ -1050,7 +1077,6 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		$xml .= $this->getInterpretationXML();
 		
-		if($this->hasGeometry())				$xml.= $this->location->asGML()."\n<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
 		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"corina.justification\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getJustification())."</tridas:genericField>\n";
 		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"corina.crossdateConfidenceLevel\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getConfidenceLevel())."</tridas:genericField>\n";
 		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"corina.operationParameter\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getIndexNameFromParamID($this->vmeasurementOpParam))."</tridas:genericField>\n";
@@ -1058,6 +1084,8 @@ class measurement extends measurementEntity implements IDBAccessor
 	    											$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
 		
 		$xml .= $this->getPermissionsXML();
+		if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
+		
 		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
 		$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
 
@@ -1105,8 +1133,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		if ($format!="minimal")
 		{		
 			$xml .= $this->getInterpretationXML();
-			if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
-			
+				
 			// Include permissions details if requested
 			$xml .= $this->getPermissionsXML();
 			if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;

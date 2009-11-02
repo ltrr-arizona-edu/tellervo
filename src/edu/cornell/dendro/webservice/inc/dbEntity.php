@@ -707,7 +707,7 @@ class objectEntity extends dbEntity
 	/**
 	 * Geometry object representing the location 
 	 *
-	 * @var Geometry
+	 * @var Location
 	 */
 	protected $location = NULL;
 	

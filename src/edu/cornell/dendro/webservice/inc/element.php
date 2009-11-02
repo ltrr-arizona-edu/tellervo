@@ -417,7 +417,7 @@ class element extends elementEntity implements IDBAccessor
 
 	public function asKML()
 	{
-		$kml = "<Placemark><name>".$this->getTitle()."</name><description><![CDATA[<br><b>Type</b>: ".$this->getType()."<br><b>Description</b>: ".dbHelper::escapeXMLChars($this->getDescription())."<br><br><font style=\"font-size: 8px; color: grey\">Created: ".$this->getCreatedTimeStamp('j M Y \a\t H:i')."<br>Last modified: ".$this->getLastModifiedTimestamp('j M Y \a\t H:i')."]]></description>";
+		$kml = "<Placemark><name>".dbHelper::escapeXMLChars($this->getTitle())."</name><description><![CDATA[<br><b>Type</b>: ".dbHelper::escapeXMLChars($this->getType())."<br><b>Description</b>: ".dbHelper::escapeXMLChars($this->getDescription())."<br><br><font style=\"font-size: 8px; color: grey\">Created: ".$this->getCreatedTimeStamp('j M Y \a\t H:i')."<br>Last modified: ".$this->getLastModifiedTimestamp('j M Y \a\t H:i')."]]></description>";
 		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
 		$kml .= $this->location->asKML();
 		$kml .= "</Placemark>";

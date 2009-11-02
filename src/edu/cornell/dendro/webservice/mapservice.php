@@ -53,6 +53,8 @@ if($format==NULL) $format = "gmap";
 // If both id and code are given use id  
 if($reqID && $code) $code = NULL;
 
+if($reqEntity==NULL) $reqEntity = 'object';
+
 
 $myMetaHeader->setRequestType('read');
 
@@ -104,7 +106,7 @@ $xmldata .= "<Style id=\"corinaDefault\">
             <width>1.5</width>
             </LineStyle>
             <PolyStyle>
-              <color>7d030385</color>
+              <color>33030385</color>
             </PolyStyle>            
            </Style>";
 
@@ -116,8 +118,8 @@ if(($reqID=="all") || ($reqID==NULL) || ($reqID==""))
         // Do SQL Query
         switch ($reqEntity)
         {
-        	case "object": 		$fullSQL = "select * from vwtblobject where locationgeometry is not null"; break;
-        	case "series":		$fullSQL = "select * from vwcomprehensivevm where extentgeometry is not null"; break;
+        	case "object": 		$fullSQL = "select * from vwtblobject where locationgeometry is not null order by code asc"; break;
+        	case "series":		$fullSQL = "select * from vwcomprehensivevm where extentgeometry is not null order by objectcode asc"; break;
         	default:	"unsupported entity type."; die();
         	
         }

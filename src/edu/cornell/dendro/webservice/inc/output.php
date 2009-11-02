@@ -294,8 +294,10 @@ function writeOpenLayerOutput($xmldata)
             	controls: [
             		new OpenLayers.Control.Navigation(),
             		new OpenLayers.Control.PanZoomBar(),
-            		new OpenLayers.Control.LayerSwitcher({'ascending':false}),
+            		new OpenLayers.Control.LayerSwitcher({'ascending':false})
             	 ],
+            	 
+            	 
                 projection: new OpenLayers.Projection(\"EPSG:900913\"),
                 displayProjection: new OpenLayers.Projection(\"EPSG:4326\"),
                 units: \"m\",
