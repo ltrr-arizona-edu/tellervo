@@ -73,7 +73,7 @@ BEGIN
       --             FROM  cpgdb.FindVMParents(vmid, true)
        --            WHERE op='Direct');
 
-   -- Calculate extent of vmeasurement by looking up locations of all associated direct Measurements
+   -- Calculate extent using all associated element and object geometries
    IF op = 'Direct' THEN
    RAISE NOTICE 'Getting extents from element and object.  Measurement count is %', ret.MeasurementCount;
 	   SELECT setsrid(extent(st_collect(tblelement.locationgeometry, tblobject.locationgeometry)), 4326)
@@ -88,6 +88,8 @@ BEGIN
 		    IN (SELECT vMeasurementid
 			   FROM  cpgdb.FindVMParents(vmid, true)
 			   WHERE op='Direct');
+   
+   -- Calculate extent of vmeasurement by looking up locations of all associated direct VMeasurements
    ELSE 
 	RAISE NOTICE 'Getting extent from component vmeasurements';
 	RAISE NOTICE 'Find all parents of %', vmid;
@@ -97,8 +99,7 @@ BEGIN
 	   FROM  tblvmeasurementmetacache
 	   WHERE tblvmeasurementmetacache.vmeasurementid
 		 IN (SELECT vMeasurementid
-		   FROM  cpgdb.FindVMParents(vmid, false)
-		   WHERE op='Direct');
+		   FROM  cpgdb.FindVMParents(vmid, false));
    END IF;
 
 
