@@ -776,32 +776,32 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			reason = iae.getMessage();
 		}
 		
-		
 		// Do the search
 		SeriesSearchResource searchResource = new SeriesSearchResource(search);
 		CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(glue, searchResource);
-		
-		// start our query (remotely)
 		searchResource.query();
 		dlg.setVisible(true);
 		
+		
 		if(!dlg.isSuccessful()) {
+			// Search failed
 			new Bug(dlg.getFailException());
 			return false;
 		} else {
+			// Search successful
+			
 			ElementList elements = searchResource.getAssociatedResult();
 			
-			if(elements.size()==1)
+			if(elements.size()==1 & barcode.uuidType == LabBarcode.Type.SERIES)
 			{
-				// Only one found so go ahead and load
+				// Series scanned and found so go ahead and load
 				selectedElements = elements;
 				returnStatus = RET_OK;
-				dispose();
-				
+				dispose();	
 			}
 			else
 			{	
-				// Several found so show in table
+				// Several found so show results in table
 				((ElementListTableModel)tblAvailMeas.getModel()).setElements(elements);
 				availableSorter.reSort();
 			}
