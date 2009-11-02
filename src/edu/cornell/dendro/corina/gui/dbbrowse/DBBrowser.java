@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.UUID;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -37,6 +38,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
+import org.tridas.schema.TridasObject;
+
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.CachedElement;
@@ -48,10 +51,12 @@ import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.PopupListener;
+import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.wsi.ResourceEvent;
 import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -164,6 +169,27 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         		
         	}        	
         	public void keyReleased(KeyEvent txt){
+        		
+        		if(txtFilterInput.getText().length()==24)
+        		{
+        			// A barcode was probably just scanned		
+        			String barcodeText = txtFilterInput.getText();
+        			txtFilterInput.setText("");
+        			
+    				// Decode the barcode string
+    				LabBarcode.DecodedBarcode barcode = LabBarcode.decode(barcodeText);
+        			
+    				// Search for associated series
+        			Boolean searchSuccessful = searchByBarcode(barcode);
+
+        			// If search was successful and was a series then select and load
+    				//if(searchSuccessful && barcode.uuidType == LabBarcode.Type.SERIES) {
+    				//	tblAvailMeas.setRowSelectionInterval(1, 2);
+    				//	finish();
+    				//}
+        			
+        		}
+        		
         		// Unselect any site selection then filter
         		// site list 
            		lstSites.clearSelection();
@@ -716,6 +742,71 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 		public String toString() {
 			return value;
 		}
+	}
+	
+	/**
+	 * Search for series using a Series, Sample or Box barcode
+	 * 
+	 * @param barcode
+	 * @return boolean 
+	 */
+	private boolean searchByBarcode(LabBarcode.DecodedBarcode barcode)
+	{
+		String reason = "No error";
+		final DBBrowser glue = this;
+		
+		// set up our query...
+		SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
+		
+		boolean success;
+
+		try {				
+			// Add search constraints depending of barcode type
+			if(barcode.uuidType == LabBarcode.Type.SERIES) {
+				search.addSearchConstraint(SearchParameterName.SERIESDBID, SearchOperator.EQUALS, barcode.uuid.toString());
+			}
+			else if (barcode.uuidType == LabBarcode.Type.SAMPLE){
+				search.addSearchConstraint(SearchParameterName.SAMPLEDBID, SearchOperator.EQUALS, barcode.uuid.toString());
+			}
+			else if (barcode.uuidType == LabBarcode.Type.BOX){
+				search.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, barcode.uuid.toString());
+			}
+
+		} catch (IllegalArgumentException iae) {
+			reason = iae.getMessage();
+		}
+		
+		
+		// Do the search
+		SeriesSearchResource searchResource = new SeriesSearchResource(search);
+		CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(glue, searchResource);
+		
+		// start our query (remotely)
+		searchResource.query();
+		dlg.setVisible(true);
+		
+		if(!dlg.isSuccessful()) {
+			new Bug(dlg.getFailException());
+			return false;
+		} else {
+			ElementList elements = searchResource.getAssociatedResult();
+			
+			if(elements.size()==1)
+			{
+				// Only one found so go ahead and load
+				selectedElements = elements;
+				returnStatus = RET_OK;
+				dispose();
+				
+			}
+			else
+			{	
+				// Several found so show in table
+				((ElementListTableModel)tblAvailMeas.getModel()).setElements(elements);
+				availableSorter.reSort();
+			}
+			return true;
+		}		
 	}
 	
 	/**
