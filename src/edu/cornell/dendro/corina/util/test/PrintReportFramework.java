@@ -90,4 +90,9 @@ public class PrintReportFramework {
 		System.out.println("Loaded " + s.toString());
 	}
 
+	public static TridasObject getCorinaObjectFromID(String domain, String objid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

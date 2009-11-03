@@ -18,12 +18,12 @@ import edu.cornell.dendro.corina.schema.WSIBox;
  *
  * @author  peterbrewer
  */
-public class LabelPrintingUI extends javax.swing.JPanel {
+public class PrintSettingsUI extends javax.swing.JPanel {
 
 	private static final long serialVersionUID = 3484086245445229624L;
 
 	/** Creates new form LabelPrintingUI */
-    public LabelPrintingUI() {
+    public PrintSettingsUI() {
         initComponents();
     }
     
@@ -38,7 +38,7 @@ public class LabelPrintingUI extends javax.swing.JPanel {
         btnPreview = new javax.swing.JButton();
         btnPrint = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        tabLabels = new javax.swing.JPanel();
+        tabContent = new javax.swing.JPanel();
         tabLayout = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
 
@@ -46,8 +46,8 @@ public class LabelPrintingUI extends javax.swing.JPanel {
 
         btnPrint.setText("Print");
 
-        org.jdesktop.layout.GroupLayout tabLabelsLayout = new org.jdesktop.layout.GroupLayout(tabLabels);
-        tabLabels.setLayout(tabLabelsLayout);
+        org.jdesktop.layout.GroupLayout tabLabelsLayout = new org.jdesktop.layout.GroupLayout(tabContent);
+        tabContent.setLayout(tabLabelsLayout);
         tabLabelsLayout.setHorizontalGroup(
             tabLabelsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(0, 472, Short.MAX_VALUE)
@@ -57,7 +57,7 @@ public class LabelPrintingUI extends javax.swing.JPanel {
             .add(0, 286, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("Labels", tabLabels);
+        jTabbedPane1.addTab("Content", tabContent);
 
         org.jdesktop.layout.GroupLayout tabLayoutLayout = new org.jdesktop.layout.GroupLayout(tabLayout);
         tabLayout.setLayout(tabLayoutLayout);
@@ -109,7 +109,7 @@ public class LabelPrintingUI extends javax.swing.JPanel {
     protected javax.swing.JButton btnPreview;
     protected javax.swing.JButton btnPrint;
     protected javax.swing.JTabbedPane jTabbedPane1;
-    protected javax.swing.JPanel tabLabels;
+    protected javax.swing.JPanel tabContent;
     protected javax.swing.JPanel tabLayout;
     // End of variables declaration//GEN-END:variables
     

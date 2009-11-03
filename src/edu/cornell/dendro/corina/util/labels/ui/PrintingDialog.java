@@ -17,35 +17,41 @@ import edu.cornell.dendro.corina.platform.Platform;
 
 import edu.cornell.dendro.corina.util.Center;
 
-public class LabelPrintingDialog extends JDialog{
+public class PrintingDialog extends JDialog{
 
 	private static final long serialVersionUID = 1428573868641877953L;
 	private JFrame dialog;
-	private LabelPrinting lp;
+	private PrintSettings lp;
 		
-    public LabelPrintingDialog(java.awt.Frame parent, boolean modal, LabelPrinting.LabelType lt) {
+    public PrintingDialog(java.awt.Frame parent, boolean modal, PrintSettings.PrintType lt) {
         super(parent, modal);
-        lp = new LabelPrinting(lt, this);
+        lp = new PrintSettings(lt, this);
         
-        this.setTitle("Print " + lt.toString().toLowerCase() + " labels" );
+        this.setTitle("Print " + lt.toString().toLowerCase() );
 		this.setContentPane(lp);
 		this.pack();
     }
 		
 	public static void boxLabelDialog()
 	{
-		LabelPrintingDialog.main(LabelPrinting.LabelType.BOX);
+		PrintingDialog.main(PrintSettings.PrintType.BOX);
 	}
 	
 	public static void sampleLabelDialog()
 	{
-		LabelPrintingDialog.main(LabelPrinting.LabelType.SAMPLE);
+		PrintingDialog.main(PrintSettings.PrintType.SAMPLE);
 	}
 	
-    public static void main(final LabelPrinting.LabelType lt) {
+	public static void proSheetPrintingDialog()
+	{
+		PrintingDialog.main(PrintSettings.PrintType.PROSHEET);
+		
+	}
+	
+    public static void main(final PrintSettings.PrintType lt) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-            	LabelPrintingDialog dialog = new LabelPrintingDialog(null, true, lt);
+            	PrintingDialog dialog = new PrintingDialog(null, true, lt);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
 

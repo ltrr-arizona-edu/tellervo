@@ -9,26 +9,30 @@ import java.io.IOException;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import org.tridas.schema.TridasObject;
+
 import com.lowagie.text.DocumentException;
 
 import edu.cornell.dendro.corina.print.BoxLabel;
+import edu.cornell.dendro.corina.print.ProSheet;
 import edu.cornell.dendro.corina.util.labels.CornellSampleLabelPage;
 import edu.cornell.dendro.corina.util.labels.PDFLabelMaker;
 
-public class LabelPrinting extends LabelPrintingUI implements ActionListener{
+public class PrintSettings extends PrintSettingsUI implements ActionListener{
 
 	private static final long serialVersionUID = -5470599627007265539L;
 
-	LabelPrinting.LabelType labeltype;
+	PrintSettings.PrintType printtype;
 	
 	LabelLayoutUI layoutPanel = new LabelLayoutUI();
 	BoxLabelPrintingUI boxlabelpanel = new BoxLabelPrintingUI();
 	SampleLabelPrintingUI samplelabelpanel = new SampleLabelPrintingUI();
+	ProSheetPrintingUI prosheetpanel = new ProSheetPrintingUI();
 	JDialog parent;
 	
-	public LabelPrinting(LabelPrinting.LabelType lt, JDialog p)
+	public PrintSettings(PrintSettings.PrintType lt, JDialog p)
 	{
-		labeltype = lt;
+		printtype = lt;
 		parent = p;
 		
 		setupDialog();
@@ -44,17 +48,23 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 		this.tabLayout.setLayout(new BorderLayout());
 		this.tabLayout.add(layoutPanel, BorderLayout.CENTER);
 		
-		// Add Label panel to tab
-		this.tabLabels.setLayout(new BorderLayout());
-		if(labeltype==LabelPrinting.LabelType.BOX)
+		// Add content panel to tab
+		this.tabContent.setLayout(new BorderLayout());
+		if(printtype==PrintSettings.PrintType.BOX)
 		{
 			boxlabelpanel = new BoxLabelPrintingUI();
-			this.tabLabels.add(boxlabelpanel, BorderLayout.CENTER);
+			this.tabContent.add(boxlabelpanel, BorderLayout.CENTER);
 		}
-		else if (labeltype==LabelPrinting.LabelType.SAMPLE)
+		else if (printtype==PrintSettings.PrintType.SAMPLE)
 		{
 			samplelabelpanel = new SampleLabelPrintingUI();
-			this.tabLabels.add(samplelabelpanel, BorderLayout.CENTER);
+			this.tabContent.add(samplelabelpanel, BorderLayout.CENTER);
+		}
+		else if (printtype==PrintSettings.PrintType.PROSHEET)
+		{
+			prosheetpanel = new ProSheetPrintingUI();
+			this.tabContent.add(prosheetpanel, BorderLayout.CENTER);
+			
 		}
 
 	}
@@ -72,9 +82,10 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 		
 		if (evt.getSource() == btnPrint){
 			
-			if(labeltype == LabelType.BOX)
-			{
-				this.parent.setVisible(false);
+			this.parent.setVisible(false);
+			
+			if(printtype == PrintType.BOX)
+			{		
 				if(boxlabelpanel.selModel.getSize()>0)
 				{
 					System.out.println("Print box label");
@@ -84,10 +95,8 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 					this.parent.dispose();
 				}
 			}
-			else if(labeltype == LabelType.SAMPLE)
-			{
-				this.parent.setVisible(false);
-				System.out.println("Print sample labels");				
+			else if(printtype == PrintType.SAMPLE)
+			{			
 				try {
 					PDFLabelMaker.print(samplelabelpanel.selModel);
 				} catch (DocumentException e1) {
@@ -98,16 +107,24 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 					e1.printStackTrace();
 				}
 			}
+			else if(printtype == PrintType.PROSHEET)
+			{
+				
+			}
+			
 		}
 		
 		
 		if (evt.getSource() == btnPreview){
 
-			if(labeltype == LabelType.BOX)
-			{		
+			this.parent.setVisible(false);
+			
+			if(printtype == PrintType.BOX)
+			{	
+				this.parent.setVisible(false);
 				if(boxlabelpanel.selModel.getSize()>0)
 				{
-					this.parent.setVisible(false);
+					
 					System.out.println("Preview box label");
 					BoxLabel label = new BoxLabel(boxlabelpanel.selModel);
 					
@@ -115,11 +132,10 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 					this.parent.dispose();
 				}	
 			}
-			else if(labeltype == LabelType.SAMPLE)
+			else if(printtype == PrintType.SAMPLE)
 			{
 				if(samplelabelpanel.selModel.getSize()>0)
 				{
-					this.parent.setVisible(false);
 					System.out.println("Preview sample labels");
 					try {
 						PDFLabelMaker.preview(samplelabelpanel.selModel);
@@ -129,13 +145,21 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-					}
+					}	
+				}	
+			}	
+			else if (printtype == PrintType.PROSHEET)
+			{
+				if(prosheetpanel.selModel.getSize()>0)
+				{
+					System.out.println("Preview provenience sheet");
 					
-					
-					
-				}
+					ProSheet.viewReport((TridasObject) prosheetpanel.cboObject.getSelectedItem(), prosheetpanel.selModel);
+
+					this.parent.dispose();
+				}					
 				
-			}			
+			}
 
 			
 			
@@ -144,8 +168,8 @@ public class LabelPrinting extends LabelPrintingUI implements ActionListener{
 	
 	
 	
-	public enum LabelType {
-		BOX, SAMPLE
+	public enum PrintType {
+		BOX, SAMPLE, PROSHEET
 	}
 	
 

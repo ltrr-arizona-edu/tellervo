@@ -163,12 +163,16 @@ public class EditMenu extends JMenu {
         
         
     	JMenuItem boxlabel = Builder.makeMenuItem("boxlabels",
-                "edu.cornell.dendro.corina.util.labels.ui.LabelPrintingDialog.boxLabelDialog()", "box.png");
+                "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.boxLabelDialog()", "box.png");
         adminmenu.add(boxlabel);
     	
         JMenuItem samplelabel = Builder.makeMenuItem("samplelabels",
-                "edu.cornell.dendro.corina.util.labels.ui.LabelPrintingDialog.sampleLabelDialog()", "sample.png");
+                "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.sampleLabelDialog()", "sample.png");
         adminmenu.add(samplelabel);    
+        
+        JMenuItem prosheet = Builder.makeMenuItem("prosheet",
+                "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.proSheetPrintingDialog()", "prosheet.png");
+        adminmenu.add(prosheet); 
         
         // kludge, remove me when the new prefs dialog works well
         JMenuItem legacyPrefs = Builder.makeMenuItem("preferences", 

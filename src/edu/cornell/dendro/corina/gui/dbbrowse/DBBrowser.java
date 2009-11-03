@@ -774,7 +774,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			reason = iae.getMessage();
 		}
 		
-		// Do the search
+		// Do the search 
 		SeriesSearchResource searchResource = new SeriesSearchResource(search);
 		CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(glue, searchResource);
 		searchResource.query();
