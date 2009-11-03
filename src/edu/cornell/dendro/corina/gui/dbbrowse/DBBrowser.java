@@ -179,20 +179,13 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     				// Decode the barcode string
     				LabBarcode.DecodedBarcode barcode = LabBarcode.decode(barcodeText);
         			
-    				// Search for associated series
-        			Boolean searchSuccessful = searchByBarcode(barcode);
-
-        			// If search was successful and was a series then select and load
-    				//if(searchSuccessful && barcode.uuidType == LabBarcode.Type.SERIES) {
-    				//	tblAvailMeas.setRowSelectionInterval(1, 2);
-    				//	finish();
-    				//}
-        			
+    				// Do search
+    				searchByBarcode(barcode);
         		}
         		
         		// Unselect any site selection then filter
         		// site list 
-           		lstSites.clearSelection();
+        		lstSites.clearSelection();
         		populateSiteList();
         	}
         });
@@ -341,13 +334,15 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     		// when adding, just add things to our selectedElements list
     		btnAdd.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ev) {
+
+					
 					int rows[] = tblAvailMeas.getSelectedRows();
 					
 					for(int i = 0; i < rows.length; i++) {
-						Element e = ((ElementListTableModel)tblAvailMeas.getModel()).getElementAt(rows[i]);
+						Element e = ((ElementListTableModel)tblAvailMeas.getModel()).getElementAt(rows[i]);		
 						
-						if(!selectedElements.contains(e))
-							selectedElements.add(e);
+						if(!selectedElements.contains(e)) selectedElements.add(e);
+
 					}
 					
 					// tell the table it's changed!
@@ -365,6 +360,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 						btnOk.setEnabled(false);
 				}
     		});
+    		
+    		
+
 
     		// removing is similar...
     		btnRemove.addActionListener(new ActionListener() {
@@ -761,7 +759,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 		boolean success;
 
 		try {				
-			// Add search constraints depending of barcode type
+			// Add search constraints depending on barcode type
 			if(barcode.uuidType == LabBarcode.Type.SERIES) {
 				search.addSearchConstraint(SearchParameterName.SERIESDBID, SearchOperator.EQUALS, barcode.uuid.toString());
 			}
@@ -792,12 +790,29 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			
 			ElementList elements = searchResource.getAssociatedResult();
 			
-			if(elements.size()==1 & barcode.uuidType == LabBarcode.Type.SERIES)
+			if(elements.size()==0)
 			{
-				// Series scanned and found so go ahead and load
+				Alert.message("None found", "No records found for this barcode");
+				return false;
+			}
+			else if(elements.size()==1 & barcode.uuidType == LabBarcode.Type.SERIES & !isMultiDialog) 
+			{
+				// Series scanned and found, and not a multi dialog so go ahead and load
 				selectedElements = elements;
 				returnStatus = RET_OK;
 				dispose();	
+			}
+			else if (elements.size()==1 & barcode.uuidType == LabBarcode.Type.SERIES & isMultiDialog)
+			{
+				// Series scanned and found, but it's a multi dialog so just add to selected list
+				
+				for (Element e : elements)
+				{
+					if(!selectedElements.contains(e)) selectedElements.add(e);
+				}
+				
+				((ElementListTableModel)tblChosenMeas.getModel()).fireTableDataChanged();				
+
 			}
 			else
 			{	
@@ -808,6 +823,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			return true;
 		}		
 	}
+
 	
 	/**
 	 * Class implementing search support for DB browser
