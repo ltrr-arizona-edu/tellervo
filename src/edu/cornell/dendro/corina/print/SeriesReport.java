@@ -139,7 +139,6 @@ public class SeriesReport extends ReportBase {
 		    	// MEASUREMENT SERIES
   
 		    	//document.add(getRingRemarks());
-		        document.add(getParagraphSpace());
 		    	document.add(getSeriesComments());
 		        document.add(getParagraphSpace());
 		        document.add(getInterpretationPDF());
@@ -669,18 +668,22 @@ public class SeriesReport extends ReportBase {
 	private Paragraph getSeriesComments() 
 	{
 	
+
 		Paragraph p = new Paragraph();
-		p.setLeading(0, 1.2f);
 		
-		p.add(new Chunk("Comments: \n", subSubSectionFont));
 		if(s.getSeries().getComments()!=null){
+			
+			p.setLeading(0, 1.2f);
+			p.add(new Chunk("Comments: \n", subSubSectionFont));
 			p.add(new Chunk(s.getSeries().getComments(), bodyFont));
+			return p;
 		}
-		else{
-			p.add(new Chunk("No comments recorded", bodyFont));
+		else
+		{
+			return p;
 		}
 		
-		return p;
+		
 	}
 	
 	private Paragraph getInterpretationPDF()

@@ -45,12 +45,20 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.editor.WJTableModel;
 import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.schema.SearchOperator;
+import edu.cornell.dendro.corina.schema.SearchParameterName;
+import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
 import edu.cornell.dendro.corina.util.test.PrintReportFramework;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
+import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 
 public class ProSheet extends ReportBase {
@@ -59,7 +67,17 @@ public class ProSheet extends ReportBase {
 	private ArrayListModel<edu.cornell.dendro.corina.sample.Element> elements;
 	
 	public ProSheet(TridasObject o, ArrayListModel<edu.cornell.dendro.corina.sample.Element> elements){
-		this.o = o;
+		
+		// Find all series for an object 
+    	SearchParameters sampparam = new SearchParameters(SearchReturnObject.OBJECT);
+    	sampparam.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
+
+    	// we want a series returned here    	
+		EntitySearchResource<TridasObject> searchResource = new EntitySearchResource<TridasObject>(sampparam);
+		searchResource.query();	
+	
+		
+		this.o = (TridasObject) searchResource.getAssociatedResult();
 		this.elements = elements;
 	}
 		
@@ -91,12 +109,7 @@ public class ProSheet extends ReportBase {
 			ct3.addText(getTimestampPDF());
 			ct3.go();
 			
-			// Authorship
-			ColumnText ct4 = new ColumnText(cb);
-			ct4.setSimpleColumn(284, document.top()-223, document.right(10), document.top()-60, 20, Element.ALIGN_RIGHT);
-			ct4.setLeading(0, 1.2f);
-			ct4.addText(new Phrase(""));
-			ct4.go();			
+		
 			
 			
 			// Pad text
@@ -140,7 +153,9 @@ public class ProSheet extends ReportBase {
 		PdfPCell headerCell = new PdfPCell();
 
 		tbl.setWidthPercentage(100f);
-				
+		float[] widths = {0.15f, 0.55f, 0.1f, 0.2f};
+		
+		tbl.setWidths(widths);
 
 		// Set up header
 		headerCell.setPhrase(new Phrase("Element", tableHeaderFont));
@@ -163,10 +178,6 @@ public class ProSheet extends ReportBase {
 		// Loop through rows
 		for(edu.cornell.dendro.corina.sample.Element e: this.elements)
 		{	
-	
-			
-	
-			
 			PdfPCell dataCell = new PdfPCell();
 			dataCell.setBorderWidthBottom(0);
 			dataCell.setBorderWidthTop(0);
@@ -174,16 +185,18 @@ public class ProSheet extends ReportBase {
 			dataCell.setBorderWidthRight(0);
 			dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 							
-			dataCell.setPhrase(new Phrase("ABC-1", bodyFont));		
+			dataCell.setPhrase(new Phrase("ABC-1", tableBodyFont));		
             tbl.addCell(dataCell);
             
-			dataCell.setPhrase(new Phrase("Some info about sample", bodyFont));		
+			dataCell.setPhrase(new Phrase("Some info about sample", tableBodyFont));		
             tbl.addCell(dataCell);
             
-			dataCell.setPhrase(new Phrase("210", bodyFont));		
+            dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			dataCell.setPhrase(new Phrase("210", tableBodyFont));		
             tbl.addCell(dataCell);
             
-			dataCell.setPhrase(new Phrase("930BC - 101AD", bodyFont));		
+            dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+			dataCell.setPhrase(new Phrase("930BC - 101AD", tableBodyFont));		
             tbl.addCell(dataCell);
             
 	
@@ -197,7 +210,6 @@ public class ProSheet extends ReportBase {
 	}
 		
 	
-	
 	/**
 	 * iText paragraph containing created and lastmodified timestamps
 	 * 
@@ -205,21 +217,15 @@ public class ProSheet extends ReportBase {
 	 */
 	private Paragraph getTimestampPDF()
 	{
-		// Set up calendar
-		Date createdTimestamp = o.getCreatedTimestamp().getValue()
-				.toGregorianCalendar().getTime();
-		Date lastModifiedTimestamp = o.getLastModifiedTimestamp()
-				.getValue().toGregorianCalendar().getTime();
+
+		Date now = new Date();
+		
 		DateFormat df1 = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
 		
 		Paragraph p = new Paragraph();
 
-	
-		p.add(new Chunk("Created: ", subSubSectionFont));
-		p.add(new Chunk(df1.format(createdTimestamp), bodyFont));
-		p.add(new Chunk("\nLast Modified: ", subSubSectionFont));
-		p.add(new Chunk(df1.format(lastModifiedTimestamp), bodyFont));
-
+		p.add(new Chunk("Printed: ", subSubSectionFont));
+		p.add(new Chunk(df1.format(now), bodyFont));
 		
 		return p;
 		
@@ -266,6 +272,7 @@ public class ProSheet extends ReportBase {
 	
 		Paragraph p = new Paragraph();
 		p.setLeading(0, 1.2f);
+		
 		
 		if(o.getDescription()!=null){
 			p.add(new Chunk(o.getDescription(), bodyFont));
