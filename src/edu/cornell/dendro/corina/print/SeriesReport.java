@@ -1046,7 +1046,7 @@ public class SeriesReport extends ReportBase {
 		if(icon == null) {
 			// lazy-load the icon
 			try {
-				String iconURL = Builder.getBodgeIconURL(iconName, "Icons", 48);
+				String iconURL = Builder.getIconURL(iconName, "Icons", 48);
 				icon = Image.getInstance(iconURL);
 			} catch (BadElementException e) {
 				// TODO Auto-generated catch block

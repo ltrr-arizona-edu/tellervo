@@ -3,6 +3,7 @@ package edu.cornell.dendro.corina.ui;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.util.StringTokenizer;
 
 import javax.swing.AbstractAction;
@@ -226,7 +227,20 @@ public class Builder {
 		urlBuffer.append('/');		
 		urlBuffer.append(name);
 		
-		return urlBuffer.toString();
+		java.net.URL url = cl.getResource(urlBuffer.toString());
+		if (url != null)
+			try {
+				return url.toURI().toString();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		else {
+			IllegalStateException ise = new IllegalStateException("Can't load missing icon icon!");
+			new Bug(ise);
+			throw ise;
+		}
+		return null;
 		
 	}
 	

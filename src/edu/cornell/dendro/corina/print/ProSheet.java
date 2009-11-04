@@ -14,6 +14,7 @@ import java.util.UUID;
 import javax.swing.table.AbstractTableModel;
 
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.BaseSeries;
 import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -66,7 +67,7 @@ public class ProSheet extends ReportBase {
 	private TridasObject o = new TridasObject();
 	private ArrayListModel<edu.cornell.dendro.corina.sample.Element> elements;
 	
-	public ProSheet(TridasObject o, ArrayListModel<edu.cornell.dendro.corina.sample.Element> elements){
+	public ProSheet(TridasObject o, TridasDerivedSeries master, ArrayListModel<edu.cornell.dendro.corina.sample.Element> elements){
 		
 		// Find all series for an object 
     	SearchParameters sampparam = new SearchParameters(SearchReturnObject.OBJECT);
@@ -76,8 +77,12 @@ public class ProSheet extends ReportBase {
 		EntitySearchResource<TridasObject> searchResource = new EntitySearchResource<TridasObject>(sampparam);
 		searchResource.query();	
 	
-		
-		this.o = (TridasObject) searchResource.getAssociatedResult();
+		List<TridasObject> objlist = searchResource.getAssociatedResult();
+
+		if(objlist.size()>0)
+		{
+			this.o = objlist.get(0);
+		}
 		this.elements = elements;
 	}
 		
@@ -307,10 +312,10 @@ public class ProSheet extends ReportBase {
 	 * @param printReport Boolean
 	 * @param vmid String
 	 */
-	private static void getReport(Boolean printReport, TridasObject master, ArrayListModel<edu.cornell.dendro.corina.sample.Element> elements)
+	private static void getReport(Boolean printReport, TridasObject obj, TridasDerivedSeries master, ArrayListModel<edu.cornell.dendro.corina.sample.Element> elements)
 	{
 		// create the series report
-		ProSheet report = new ProSheet(master, elements);		
+		ProSheet report = new ProSheet(obj, master, elements);		
 		
 		if(printReport) {
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -350,18 +355,22 @@ public class ProSheet extends ReportBase {
 	 *  
 	 * @param vmid
 	 */
-	public static void printReport(TridasObject master, ArrayListModel<edu.cornell.dendro.corina.sample.Element> series)
+	public static void printReport(TridasObject obj, ArrayListModel<edu.cornell.dendro.corina.sample.Element> series)
 	{
-		getReport(true, master, series);	
+		TridasDerivedSeries master = new TridasDerivedSeries();
+		getReport(true, obj, master, series);	
 	}
 	
 	/**
 	 * Wrapper function to view report
 	 * @param vmid
 	 */
-	public static void viewReport(TridasObject master, ArrayListModel<edu.cornell.dendro.corina.sample.Element> series)
+	public static void viewReport(TridasObject obj, ArrayListModel<edu.cornell.dendro.corina.sample.Element> series)
 	{
-		getReport(false, master, series);
+		
+		TridasDerivedSeries master = new TridasDerivedSeries();
+		
+		getReport(false, obj, master, series);
 	}
 	
 	
