@@ -6,14 +6,19 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import javax.swing.Icon;
 import javax.swing.table.AbstractTableModel;
 
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -26,6 +31,7 @@ import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasWoodCompleteness;
 import org.tridas.schema.Year;
 
+import com.lowagie.text.BadElementException;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -45,19 +51,33 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.editor.WJTableModel;
 import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.remarks.Remarks;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
 import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 
 public class SeriesReport extends ReportBase {
 	
+	/** A map for the lazy-loading of icons */
+	private HashMap<String, Image> lazyIconMap;
+	
+	/** For showing an icon we don't have */
+	private final String missingIconURL = Builder.getBodgeMissingIconURL(48);
+	
+	/** The list of icons to draw */
+	private List<Icon> icons;
+
+	
 	private Sample s = new Sample();
 
 	public SeriesReport(Sample s){
 		this.s = s;
-
+		
+		// lazily load icons
+	    lazyIconMap = new HashMap<String, Image>();
 	}
 		
 	private void generateSeriesReport(OutputStream output) {
@@ -82,7 +102,8 @@ public class SeriesReport extends ReportBase {
 			
 			// Barcode
 			ColumnText ct2 = new ColumnText(cb);
-			ct2.setSimpleColumn(284, document.top()-163, document.right(10), document.top(), 20, Element.ALIGN_RIGHT);
+			ct2.setAlignment(Element.ALIGN_RIGHT);
+			ct2.setSimpleColumn(324, document.top()-163, document.right(10), document.top(), 20, Element.ALIGN_RIGHT);
 			ct2.addElement(getBarCode());
 			ct2.go();			
 				
@@ -117,7 +138,7 @@ public class SeriesReport extends ReportBase {
 		    {
 		    	// MEASUREMENT SERIES
   
-		    	document.add(getRingRemarks());
+		    	//document.add(getRingRemarks());
 		        document.add(getParagraphSpace());
 		    	document.add(getSeriesComments());
 		        document.add(getParagraphSpace());
@@ -134,7 +155,7 @@ public class SeriesReport extends ReportBase {
 		        document.add(getParagraphSpace());
 		        document.add(getSeriesComments());
 		        document.add(getParagraphSpace());
-		        document.add(getRingRemarks());
+		        //document.add(getRingRemarks());
 		       		       
 				
 		    }
@@ -180,13 +201,17 @@ public class SeriesReport extends ReportBase {
 		UUID uuid = UUID.fromString(s.getSeries().getIdentifier().getValue());
 		LabBarcode barcode = new LabBarcode(LabBarcode.Type.SERIES, uuid);
 
-		barcode.setX(0.8f);
-		barcode.setSize(5f);
-		barcode.setBarHeight(20f);
+		//barcode.setX(0.4f);
+		//barcode.setSize(1f);
+		//barcode.setBarHeight(10f);
 		barcode.setBaseline(-1f);	
+		//barcode.setFont(null);
+
 		
 		Image image = barcode.createImageWithBarcode(cb, null, null);
 	
+		image.setWidthPercentage(95);
+		
 		return image;
 	
 	}
@@ -210,7 +235,15 @@ public class SeriesReport extends ReportBase {
 	private void getRingWidthTable() throws DocumentException
 	{
 		
-		getDataTable(false);
+		try {
+			getDataTable(false);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -221,7 +254,15 @@ public class SeriesReport extends ReportBase {
 	 */
 	private void getWJTable() throws DocumentException
 	{
-		getDataTable(true);
+		try {
+			getDataTable(true);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -229,13 +270,15 @@ public class SeriesReport extends ReportBase {
 	 * 
 	 * @return PdfPTable
 	 * @throws DocumentException 
+	 * @throws IOException 
+	 * @throws MalformedURLException 
 	 */
-	private void getDataTable(Boolean wj) throws DocumentException
+	private void getDataTable(Boolean wj) throws DocumentException, MalformedURLException, IOException
 	{
 		
 		PdfPTable tbl = new PdfPTable(11);
 		PdfPCell headerCell = new PdfPCell();
-		AbstractTableModel model;
+		DecadalModel model;
 		
 		if(wj==true)
 		{
@@ -293,17 +336,118 @@ public class SeriesReport extends ReportBase {
 			// Loop through columns
 			for(int col = 0; col < 11; col++) {
 				
+				// Get ring value
 				Object value = model.getValueAt(row, col);
 				Phrase cellPhrase;
-				
-				// Set value of cell
 				if(value==null){
 					cellPhrase = new Phrase("");
 				}
 				else
 				{
 					cellPhrase = new Phrase(value.toString(), getTableFont(col));
-				}								
+				}	
+				
+				
+				// Get any remarks
+				edu.cornell.dendro.corina.Year year = model.getYear(row, col);
+				List<TridasRemark> remarks = s.getRemarksForYear(year);
+				PdfPTable tblremarks = null;
+				
+				// If there are remarks cycle through them making a nested table
+				if(remarks.size()>0)
+				{
+					tblremarks = new PdfPTable(3);
+					float[] widths = {0.3f, 0.3f, 0.6f};
+					tblremarks.setWidths(widths);
+					tblremarks.setWidthPercentage(100);
+					
+					int cellnum = 1;
+					int remarknum = 0;
+					// Get icons for remarks
+					for(TridasRemark remark : remarks)
+					{
+						remarknum++;
+						String remstr = "?";						
+						Image icon;
+						PdfPCell remarkCell = new PdfPCell();
+						PdfPCell valueCell = new PdfPCell();
+						
+						remarkCell.setBorderWidthBottom(0);
+						remarkCell.setBorderWidthTop(0);
+						remarkCell.setBorderWidthLeft(0);
+						remarkCell.setBorderWidthRight(0);
+						remarkCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+						remarkCell.setPadding(0);
+						remarkCell.setUseBorderPadding(true);
+						valueCell = remarkCell;	
+
+						if(remark.isSetNormalTridas()) {
+							// Normal TRiDaS Icon
+							remstr = remark.getNormalTridas().toString();
+							icon = getTridasIcon(remark.getNormalTridas());	
+							if(icon==null) icon = Image.getInstance(missingIconURL);
+						}
+						else if(CORINA.equals(remark.getNormalStd())) {
+							remstr = remark.getNormal();
+							icon = getCorinaIcon(remark.getNormal());	
+							if(icon==null) icon = Image.getInstance(missingIconURL);
+						}
+						else {
+							icon = Image.getInstance(missingIconURL);
+						}
+						
+						String errStr = "Getting icon for "+remstr+" for year "+year.toString() + "(cell value = "+cellnum+")";
+						System.out.print(errStr);
+						
+						// Shrink a bit
+						icon.scalePercent(20);
+
+						remarkCell.addElement(icon);
+						tblremarks.addCell(remarkCell);
+						cellnum++;
+						
+						if (cellnum==1 && remarks.size()<cellnum)
+						{
+							// First cell and no remark so print blank
+							valueCell.setPhrase(new Phrase(""));
+							tblremarks.addCell(valueCell);
+							cellnum++;
+						}						
+						if (cellnum==2 && remarks.size()<cellnum)
+						{
+							// Second cell and no remark so print blank
+							valueCell.setPhrase(new Phrase(""));
+							tblremarks.addCell(valueCell);
+							cellnum++;
+						}
+						if(cellnum==3)
+						{
+							// In third cell so print value
+							valueCell.setPhrase(cellPhrase);
+							tblremarks.addCell(valueCell);
+							cellnum++;
+						}
+						else if (cellnum % 3 == 0)
+						{
+							// In third column so print blank
+							valueCell.setPhrase(new Phrase(""));
+							tblremarks.addCell(valueCell);
+							cellnum++;
+						}
+						
+						if(remarknum==remarks.size())
+						{
+							valueCell.setPhrase(new Phrase(""));
+							tblremarks.addCell(valueCell);
+							tblremarks.addCell(valueCell);
+						}
+						
+					}
+					
+
+					
+				}
+	
 				// Set border styles depending on where we are in the table
 				
 				// Defaults
@@ -338,17 +482,21 @@ public class SeriesReport extends ReportBase {
 				{
 					dataCell.setBorderWidthBottom(headerLineWidth);				
 				}
-							
-				// Write phrase to cell and cell to table
-				dataCell.setPhrase(cellPhrase);
+	
+				// Write phrase to cell 		
+				if(remarks.size()>0)
+				{
+					dataCell.addElement(tblremarks);
+				}
+				else
+				{
+					dataCell.setPhrase(cellPhrase);
+				}
 				
-
-				
+				// Write cell to main table
 	            tbl.addCell(dataCell);
 
 	        }
-			
-		
 		}
 		
 		// Add table to document
@@ -509,12 +657,11 @@ public class SeriesReport extends ReportBase {
 	 */
 	private  Font getTableFont(int col)
 	{
-		
 		if (col==0)	{
 			return tableHeaderFont;
 		}
 		else {
-			return bodyFont;
+			return tableBodyFont;
 		}
 				
 	}
@@ -881,7 +1028,65 @@ public class SeriesReport extends ReportBase {
 		return p;
 		
 	}	
+	
+	/**
+	 * Lazily-load this icon
+	 * 
+	 * @param iconName
+	 * @return the icon, or null if iconName was null
+	 */
+	private Image lazyLoadIcon(String iconName) {
+		if(iconName == null)
+			return null;
 		
+		Image icon = lazyIconMap.get(iconName);
+		if(icon == null) {
+			// lazy-load the icon
+			try {
+				String iconURL = Builder.getBodgeIconURL(iconName, "Icons", 48);
+				icon = Image.getInstance(iconURL);
+			} catch (BadElementException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			lazyIconMap.put(iconName, icon);
+		}
+		
+		return icon;		
+	}
+	
+	/**
+	 * Get an icon for this tridas remark
+	 * @param remark
+	 * @return the icon, lazily loaded, or null
+	 */
+	private Image getTridasIcon(NormalTridasRemark remark) {
+		return lazyLoadIcon(Remarks.getTridasRemarkIcons().get(remark));
+	}
+	
+	/**
+	 * Get an icon for this Corina remark (text)
+	 * @param remark
+	 * @return the icon, lazily loaded, or null
+	 */
+	private Image getCorinaIcon(String remark) {
+		
+		String iconName = Remarks.getCorinaRemarkIcons().get(remark);
+		
+		return lazyLoadIcon(iconName);
+	}
+	
+	
+	private final static String CORINA = "Corina";
+	
+
+	
 	
 	/**
 	 * Function for printing or viewing series report

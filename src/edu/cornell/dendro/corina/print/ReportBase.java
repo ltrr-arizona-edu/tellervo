@@ -28,6 +28,7 @@ public class ReportBase {
 	// Table fonts
 	Font tableHeaderFont = new Font(Font.HELVETICA, 10f, Font.BOLD);
 	Font tableHeaderFontLarge = new Font(Font.HELVETICA, 14f, Font.BOLD);
+	Font tableBodyFont = new Font(Font.HELVETICA, 8f);
 	
 	// Line widths
 	Float lineWidth = new Float(0.05);

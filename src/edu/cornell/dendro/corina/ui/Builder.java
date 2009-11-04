@@ -229,6 +229,21 @@ public class Builder {
 		return urlBuffer.toString();
 		
 	}
+	
+	public static String getBodgeMissingIconURL(int size){
+		return getIconURL("missingicon.png", "ICONS", size);
+	}
+	
+	public static String getBodgeIconURL(String name, String packagename, int size){
+		StringBuffer urlBuffer = new StringBuffer();
+		urlBuffer.append("src/");
+		urlBuffer.append(getIconURL(name, packagename, size));
+		return urlBuffer.toString();
+		
+	}
+	
+	
+	
 	/**
 	 * Retrieve the "missing icon" icon
 	 * @return
