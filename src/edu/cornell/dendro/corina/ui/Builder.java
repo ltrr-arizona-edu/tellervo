@@ -236,9 +236,11 @@ public class Builder {
 	
 	public static String getBodgeIconURL(String name, String packagename, int size){
 		StringBuffer urlBuffer = new StringBuffer();
-
-		urlBuffer.append(getIconURL(name, packagename, size));
-		return urlBuffer.toString();
+		
+		String returnurl = cl.getResource(urlBuffer.append(getIconURL(name, packagename, size)).toString()).toString();
+		
+		System.out.println("Icon: "+returnurl.substring(5));
+		return returnurl.substring(5);
 		
 	}
 	
