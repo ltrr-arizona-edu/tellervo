@@ -1045,19 +1045,8 @@ public class SeriesReport extends ReportBase {
 		Image icon = lazyIconMap.get(iconName);
 		if(icon == null) {
 			// lazy-load the icon
-			try {
-				String iconURL = Builder.getBodgeIconURL(iconName, "Icons", 48);
-				icon = Image.getInstance(iconURL);
-			} catch (BadElementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			icon = Builder.getITextImageIcon(iconName);
+
 			lazyIconMap.put(iconName, icon);
 		}
 		

@@ -2,7 +2,9 @@ package edu.cornell.dendro.corina.ui;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.util.StringTokenizer;
 
 import javax.swing.AbstractAction;
@@ -17,6 +19,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.KeyStroke;
+
+import com.lowagie.text.BadElementException;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
@@ -213,6 +217,55 @@ public class Builder {
 		else
 			return getMissingIcon(size);
 	}	
+	
+	
+	
+	public static com.lowagie.text.Image getITextImageIcon(String name){
+		
+		java.net.URL url = cl.getResource(getIconURL(name, ICONS, 48));
+		
+		if (url != null){
+			try {
+				return com.lowagie.text.Image.getInstance(url);
+			} catch (BadElementException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return getITextImageMissingIcon();
+		
+	}
+	
+	public static com.lowagie.text.Image getITextImageMissingIcon(){
+		
+		java.net.URL url = cl.getResource(getIconURL("missingicon.png", ICONS, 48));
+		
+		if (url != null){
+			try {
+				return com.lowagie.text.Image.getInstance(url);
+			} catch (BadElementException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return null;
+		
+	}
+	
 
 	public static String getIconURL(String name, String packagename, int size){
 		StringBuffer urlBuffer = new StringBuffer();
@@ -231,10 +284,11 @@ public class Builder {
 	}
 	
 	public static String getBodgeMissingIconURL(int size){
-		return getIconURL("missingicon.png", "ICONS", size);
+		return getIconURL("missingicon.png", ICONS, size);
 	}
 	
 	public static String getBodgeIconURL(String name, String packagename, int size){
+				
 		StringBuffer urlBuffer = new StringBuffer();
 		
 		String returnurl = cl.getResource(urlBuffer.append(getIconURL(name, packagename, size)).toString()).toString();
