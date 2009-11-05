@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -172,6 +174,10 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         		
         		if(txtFilterInput.getText().length()==24)
         		{
+
+        			playBarcodeBeep();
+        			
+        			
         			// A barcode was probably just scanned		
         			String barcodeText = txtFilterInput.getText();
         			txtFilterInput.setText("");
@@ -193,6 +199,20 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         txtFilterInput.requestFocusInWindow();
     }
 
+    public void playBarcodeBeep(){
+		AudioClip beep;
+		try {	
+			// play this to indicate measuring is on...
+			beep = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/checkout.wav"));
+			if(beep != null)
+				beep.play();
+		} catch (Exception ae) { 
+			System.out.println("Failed to play sound");
+			System.out.println(ae.getMessage());
+			}
+		
+    }
+    
     /**
      * Fully loads all elements back into the list
      * Only works for multi dialogs

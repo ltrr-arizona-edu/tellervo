@@ -57,7 +57,12 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 			measInit = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/measinit.wav"));
 			if(measInit != null)
 				measInit.play();
-		} catch (Exception ae) { /* ignore this... */ }
+			 	System.out.println("Sound played");
+		} catch (Exception ae) { 
+			System.out.println("Failed to play sound");
+			System.out.println(ae.getMessage());
+			
+		/* ignore this... */ }
 		
 		// now, watch for info!
 		dev = new LegacyCorinaMeasuringDevice(ioport, this);
