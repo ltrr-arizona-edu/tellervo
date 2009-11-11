@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 
@@ -308,8 +309,9 @@ public class ProSheetPrintingUI extends javax.swing.JPanel implements ActionList
 			return;
 		}
 		
+		
 		ElementList seriesList = searchResource.getAssociatedResult();
-				
+		
 		availModel.replaceContents(seriesList);	
 		availModel.setSelectedItem(null);
 		sortAvailableSeries();

@@ -23,6 +23,7 @@ public class ReportBase {
 	Font bodyFontLarge = new Font(Font.HELVETICA, 14f);
 	Font bodyFont = new Font(Font.HELVETICA, 10f);
 	Font bodyFontItalic = new Font(Font.HELVETICA, 10f, Font.ITALIC);
+	Font commentFont = new Font(Font.HELVETICA, 9f, Font.ITALIC);
 	Font superBodyFont = new Font(Font.HELVETICA, 6f);
 	
 	// Table fonts

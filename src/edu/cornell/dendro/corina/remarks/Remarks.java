@@ -128,6 +128,7 @@ public class Remarks {
 		corinaRemarkIconMap.put("Radius shift up", "up.png");
 		corinaRemarkIconMap.put("Radius shift down", "down.png");
 		corinaRemarkIconMap.put("Moon ring(s)", "moon.png");
+		corinaRemarkIconMap.put("Diffuse latewood", "note.png");
 
 	}
 	

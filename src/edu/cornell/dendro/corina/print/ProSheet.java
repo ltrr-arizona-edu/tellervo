@@ -18,6 +18,7 @@ import org.tridas.schema.BaseSeries;
 import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasLastRingUnderBark;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
@@ -32,6 +33,7 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
+import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
@@ -48,15 +50,20 @@ import edu.cornell.dendro.corina.editor.WJTableModel;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
+import edu.cornell.dendro.corina.tridasv2.LabCode;
+import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
+import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
 import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
@@ -64,7 +71,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 public class ProSheet extends ReportBase {
 	
-	private TridasObject o = new TridasObject();
+	private TridasObjectEx o = new TridasObjectEx();
 	private ArrayListModel<edu.cornell.dendro.corina.sample.Element> elements;
 	
 	public ProSheet(TridasObject o, TridasDerivedSeries master, ArrayListModel<edu.cornell.dendro.corina.sample.Element> elements){
@@ -72,37 +79,55 @@ public class ProSheet extends ReportBase {
 		// Find all series for an object 
     	SearchParameters sampparam = new SearchParameters(SearchReturnObject.OBJECT);
     	sampparam.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
-
+    	
+    	
     	// we want a series returned here    	
 		EntitySearchResource<TridasObject> searchResource = new EntitySearchResource<TridasObject>(sampparam);
+		searchResource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(searchResource);
 		searchResource.query();	
+		dialog.setVisible(true);
 	
 		List<TridasObject> objlist = searchResource.getAssociatedResult();
 
 		if(objlist.size()>0)
 		{
-			this.o = objlist.get(0);
+			this.o = (TridasObjectEx) objlist.get(0);
 		}
 		this.elements = elements;
 	}
 		
 	private void generateProSheet(OutputStream output) {
 	
+        Paragraph spacingPara = new Paragraph();
+        spacingPara.setSpacingBefore(10);
+	    spacingPara.add(new Chunk(" ", bodyFont)); 
 		
 		try {
 		
 			PdfWriter writer = PdfWriter.getInstance(document, output);
 			document.setPageSize(PageSize.LETTER);
-			document.open();
-			cb = writer.getDirectContent();			
-			
+
 			// Set basic metadata
 		    document.addAuthor("Peter Brewer"); 
 		    document.addSubject("Corina Provenience Sheet for " + o.getTitle()); 
-				   
+		    
+		    HeaderFooter footer = new HeaderFooter(new Phrase(""), new Phrase(""));
+		    footer.setAlignment(Element.ALIGN_RIGHT);
+		    footer.setBorder(0);  
+		    document.setFooter(footer);
+		    
+		    HeaderFooter header = new HeaderFooter(new Phrase(o.getLabCode()+ " - "+o.getTitle(), bodyFont), false);
+		    header.setAlignment(Element.ALIGN_RIGHT);
+		    header.setBorder(0);
+		    document.setHeader(header);
+		    			
+		    document.open();
+			cb = writer.getDirectContent();	
+			
 			// Title Left		
 			ColumnText ct = new ColumnText(cb);
-			ct.setSimpleColumn(document.left(), document.top()-163, 400, document.top(), 20, Element.ALIGN_LEFT);
+			ct.setSimpleColumn(document.left(), document.top()-193, document.right(), document.top()-20, 20, Element.ALIGN_LEFT);
 			ct.addText(getTitlePDF());
 			ct.go();
 						
@@ -118,21 +143,11 @@ public class ProSheet extends ReportBase {
 			
 			
 			// Pad text
-	        document.add(new Paragraph(" "));      
-	        Paragraph p2 = new Paragraph();
-	        p2.setSpacingBefore(50);
-		    p2.setSpacingAfter(10);
-		    p2.add(new Chunk(" ", bodyFont));  
-	        document.add(new Paragraph(p2));
-
-	        document.add(getObjectDescription());
+			document.add(spacingPara);   
+	        document.add(getObjectDescription());   
 	        document.add(getObjectComments());
-		    
-	        document.add(new Paragraph(" ")); 
-	        p2.setSpacingBefore(10);
-		    p2.setSpacingAfter(10);
-		    p2.add(new Chunk(" ", bodyFont));  
-	        document.add(new Paragraph(p2));
+		     
+	        document.add(spacingPara);
 	        
 	        getElementTable();
 
@@ -154,11 +169,12 @@ public class ProSheet extends ReportBase {
 	private void getElementTable() throws DocumentException
 	{
 		
-		PdfPTable tbl = new PdfPTable(4);
+		PdfPTable tbl = new PdfPTable(5);
+		
 		PdfPCell headerCell = new PdfPCell();
 
 		tbl.setWidthPercentage(100f);
-		float[] widths = {0.15f, 0.55f, 0.1f, 0.2f};
+		float[] widths = {0.1f, 0.4f, 0.2f, 0.1f, 0.2f};
 		
 		tbl.setWidths(widths);
 
@@ -168,9 +184,14 @@ public class ProSheet extends ReportBase {
 		headerCell.setBorderWidthTop(headerLineWidth);
 		headerCell.setBorderWidthLeft(0);
 		headerCell.setBorderWidthRight(0);
+		headerCell.setPaddingTop(5);
+		headerCell.setPaddingBottom(5);
 		tbl.addCell(headerCell);
 		
 		headerCell.setPhrase(new Phrase("Comments", tableHeaderFont));
+		tbl.addCell(headerCell);
+	
+		headerCell.setPhrase(new Phrase("Taxon", tableHeaderFont));
 		tbl.addCell(headerCell);
 		
 		headerCell.setPhrase(new Phrase("# Rings", tableHeaderFont));
@@ -183,31 +204,97 @@ public class ProSheet extends ReportBase {
 		// Loop through rows
 		for(edu.cornell.dendro.corina.sample.Element e: this.elements)
 		{	
+			Sample s = null;
+			
+			try {
+				s = e.load();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				continue;
+			}
+			
+			
+			// Find element details for this series 
+	    	SearchParameters param = new SearchParameters(SearchReturnObject.DERIVED_SERIES);
+			param.addSearchConstraint(SearchParameterName.SERIESDBID, SearchOperator.EQUALS, s.getIdentifier().getValue().toString());
+	    		
+			EntitySearchResource<TridasObject> searchResource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
+			searchResource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
+			CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(searchResource);
+			searchResource.query();	
+			dialog.setVisible(true);
+		
+			List<TridasObject> oblist = searchResource.getAssociatedResult();
+			
+			if(oblist.size()!=1)
+			{
+				System.out.println(e.getName()+ " has more than one (or no) associated objects so skipping");
+				continue;				
+			}
+			TridasObject obj = oblist.get(0);
+			
+			List<TridasElement> ellist = obj.getElements();
+			if(ellist.size()!=1)
+			{
+				System.out.println(e.getName()+ " has more than one (or no) associated element so skipping");
+				continue;
+			}
+			TridasElement el = ellist.get(0);
+			
+			// make lab code
+			LabCode labcode = new LabCode();
+			labcode.appendSiteCode(((TridasObjectEx) obj).getLabCode());
+			labcode.setElementCode(el.getTitle());
+					
+			
 			PdfPCell dataCell = new PdfPCell();
 			dataCell.setBorderWidthBottom(0);
 			dataCell.setBorderWidthTop(0);
 			dataCell.setBorderWidthLeft(0);
 			dataCell.setBorderWidthRight(0);
+			dataCell.setPaddingTop(5);
+			dataCell.setPaddingBottom(5);			
 			dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
-							
-			dataCell.setPhrase(new Phrase("ABC-1", tableBodyFont));		
-            tbl.addCell(dataCell);
-            
-			dataCell.setPhrase(new Phrase("Some info about sample", tableBodyFont));		
-            tbl.addCell(dataCell);
-            
-            dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			dataCell.setPhrase(new Phrase("210", tableBodyFont));		
-            tbl.addCell(dataCell);
-            
-            dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
-			dataCell.setPhrase(new Phrase("930BC - 101AD", tableBodyFont));		
-            tbl.addCell(dataCell);
-            
-	
-	        
 			
-		
+			// Title Column
+			dataCell.setPhrase(new Phrase(LabCodeFormatter.getSamplePrefixFormatter().format(labcode).toString(), tableBodyFont));		
+            tbl.addCell(dataCell);
+                        
+            // Comments Column
+            if(el.getComments()!=null)
+            	dataCell.setPhrase(new Phrase(el.getComments(), tableBodyFont));		
+            else
+            	dataCell.setPhrase(new Phrase(" ", tableBodyFont));		
+        	tbl.addCell(dataCell);
+        	
+        	// Taxon Column
+            dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+			dataCell.setPhrase(new Phrase(el.getTaxon().getNormal().toString(), tableBodyFont));		
+            tbl.addCell(dataCell);        	
+        	
+        	// Rings Column
+            dataCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+			dataCell.setPhrase(new Phrase(String.valueOf(s.countRings()), tableBodyFont));		
+            tbl.addCell(dataCell);
+            
+            // Dates column
+            String datingLabel;
+            String datingType = s.getSeries().getInterpretation().getDating().getType().value().toString();  
+            datingLabel = s.getSeries().getInterpretation().getFirstYear().getValue().toString();
+            if(datingType=="Absolute")
+            {
+            	datingLabel += s.getSeries().getInterpretation().getFirstYear().getSuffix().toString();
+            }
+            datingLabel += " - "+ String.valueOf(s.getSeries().getInterpretation().getFirstYear().getValue().intValue() + s.countRings()-1);
+            if(datingType=="Relative")
+            {
+            	datingLabel += " (Rel. Date)";
+            }
+ 
+            dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+			dataCell.setPhrase(new Phrase(datingLabel, tableBodyFont));		
+            tbl.addCell(dataCell);
 		}
 		
 		// Add table to document
@@ -245,7 +332,7 @@ public class ProSheet extends ReportBase {
 	{
 		Paragraph p = new Paragraph();
 		
-		p.add(new Chunk(o.getTitle()+"\n", titleFont));
+		p.add(new Chunk(o.getLabCode()+" - "+o.getTitle()+"\n", titleFont));
 
 		//p.add(new Chunk(i.getCode(), subTitleFont));
 				
@@ -254,31 +341,15 @@ public class ProSheet extends ReportBase {
 	
 	
 	
-	
-	private Paragraph getObjectComments() 
-	{
-	
-		Paragraph p = new Paragraph();
-		p.setLeading(0, 1.2f);
-		
-		p.add(new Chunk("Notes: ", bodyFontItalic));
-		if(o.getComments()!=null){
-			p.add(new Chunk(o.getComments(), bodyFontItalic));
-		}
-		else{
-			p.add(new Chunk("No comments recorded", bodyFont));
-		}
-		
-		return p;
-	}
-	
 	private Paragraph getObjectDescription() 
 	{
 	
 		Paragraph p = new Paragraph();
 		p.setLeading(0, 1.2f);
-		
-		
+		p.setAlignment(Element.ALIGN_JUSTIFIED);
+        p.setSpacingAfter(10);
+        p.setSpacingBefore(50);
+        
 		if(o.getDescription()!=null){
 			p.add(new Chunk(o.getDescription(), bodyFont));
 		}
@@ -288,6 +359,24 @@ public class ProSheet extends ReportBase {
 		
 		return p;
 	}
+
+	private Paragraph getObjectComments() 
+	{
+	
+		Paragraph p = new Paragraph();
+		p.setLeading(0, 1.2f);
+		p.setAlignment(Element.ALIGN_JUSTIFIED);
+        p.setSpacingAfter(10);
+		
+		if(o.getComments()!=null){
+			p.add(new Chunk("Notes: ", commentFont));
+			p.add(new Chunk(o.getComments(), commentFont));
+		}
+
+		
+		return p;
+	}
+	
 
 	
 	/**
