@@ -8,15 +8,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.swing.Icon;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang.WordUtils;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.PresenceAbsence;
@@ -264,6 +268,93 @@ public class SeriesReport extends ReportBase {
 		}
 	}
 	
+	@SuppressWarnings("null")
+	private PdfPTable getTableKey() throws DocumentException, IOException, IOException
+	{
+		PdfPTable mainTable = new PdfPTable(12);
+		float[] widths = {0.1f, 0.1f, 0.8f, 0.1f, 0.1f, 0.8f, 0.1f, 0.1f, 0.8f, 0.1f, 0.1f, 0.8f};
+		mainTable.setWidths(widths);
+		mainTable.setWidthPercentage(100);		
+		
+		DecadalModel model;
+		model = new DecadalModel(s);
+		int rows = model.getRowCount();
+		List<TridasRemark> masterList = null;
+	
+		// Loop through rows
+		for(int row =0; row < rows; row++)
+		{				
+			// Loop through columns
+			for(int col = 0; col < 11; col++) 
+			{
+				edu.cornell.dendro.corina.Year year = model.getYear(row, col);
+				List<TridasRemark> remarksList = null;
+				remarksList = s.getRemarksForYear(year);
+				
+				// If masterlist is still null initialize it with this remarks list
+				if(remarksList.size()>0 && masterList==null) masterList = remarksList;
+				
+				for(TridasRemark remark : remarksList)
+				{
+					if(!masterList.contains(remark)) masterList.add(remark);
+				}
+			}
+		}
+		
+		for(TridasRemark remark: masterList)	
+		{
+			PdfPCell iconCell = new PdfPCell();
+			PdfPCell equalsCell = new PdfPCell();
+			PdfPCell descriptionCell = new PdfPCell();
+
+			iconCell.setBorder(0);
+			equalsCell.setBorder(0);
+			descriptionCell.setBorder(0);
+
+
+			iconCell.setVerticalAlignment(Element.ALIGN_TOP);
+			equalsCell.setVerticalAlignment(Element.ALIGN_TOP);
+			descriptionCell.setVerticalAlignment(Element.ALIGN_TOP);
+			
+			Image icon = null;
+			String remarkStr = null;
+			
+			// Get actual icon (either tridas or corina)
+			if(remark.isSetNormalTridas()) {
+				remarkStr = remark.getNormalTridas().toString().toLowerCase();
+				remarkStr = remarkStr.replace("_", " ");
+				icon = getTridasIcon(remark.getNormalTridas());	
+				if(icon==null) icon = Image.getInstance(missingIconURL);
+			}
+			else if(CORINA.equals(remark.getNormalStd())) {
+				remarkStr = remark.getNormal();
+				icon = getCorinaIcon(remark.getNormal());	
+				if(icon==null) icon = Image.getInstance(missingIconURL);
+			}
+			
+			
+			iconCell.addElement(icon);
+			equalsCell.addElement(new Phrase("=", tableBodyFont));
+			descriptionCell.addElement(new Phrase(WordUtils.capitalize(remarkStr), tableBodyFont));
+			
+			mainTable.addCell(iconCell);
+			mainTable.addCell(equalsCell);
+			mainTable.addCell(descriptionCell);
+		}
+
+		// Pad out empty cells
+		PdfPCell blankCell = new PdfPCell();
+		blankCell.addElement(new Phrase(""));	
+		blankCell.setBorder(0);
+		for(int i=0; i<12; i++)
+		{
+			mainTable.addCell(blankCell);
+		}
+		
+		
+		return mainTable;
+	}
+	
 	/**
 	 * Get PdfPTable containing the ring width data for this series
 	 * 
@@ -274,10 +365,15 @@ public class SeriesReport extends ReportBase {
 	 */
 	private void getDataTable(Boolean wj) throws DocumentException, MalformedURLException, IOException
 	{
-		
-		PdfPTable tbl = new PdfPTable(11);
-		PdfPCell headerCell = new PdfPCell();
+		// THE actual table
+		PdfPTable mainTable = new PdfPTable(11);
+		// Cell for column headers
+		PdfPCell colHeadCell = new PdfPCell();
+		// Model for data
 		DecadalModel model;
+		
+
+		mainTable.setWidthPercentage(100f);
 		
 		if(wj==true)
 		{
@@ -286,7 +382,7 @@ public class SeriesReport extends ReportBase {
 				document.add(new Chunk("Weiserjahre:", subSubSectionFont));
 			}
 			else{
-				return;				
+				return;					
 			}
 		}
 		else
@@ -296,81 +392,83 @@ public class SeriesReport extends ReportBase {
 		}
 		
 		int rows = model.getRowCount();
-
-		tbl.setWidthPercentage(100f);
 				
 		// Do column headers
 		if(wj==true)
 		{
-			headerCell.setPhrase(new Phrase("inc/dec", tableHeaderFont));
+			colHeadCell.setPhrase(new Phrase("inc/dec", tableHeaderFont));
 		}
 		else
 		{
-			headerCell.setPhrase(new Phrase("1/100th mm", tableHeaderFont));
+			colHeadCell.setPhrase(new Phrase("1/100th mm", tableHeaderFont));
 		}
-		headerCell.setBorderWidthBottom(headerLineWidth);
-		headerCell.setBorderWidthTop(headerLineWidth);
-		headerCell.setBorderWidthLeft(headerLineWidth);
-		headerCell.setBorderWidthRight(headerLineWidth);
-		tbl.addCell(headerCell);
-		for(int i=0; i<10; i++){
-
-			headerCell.setPhrase(new Phrase(Integer.toString(i), tableHeaderFont));   
-			headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-			headerCell.setBorderWidthBottom(headerLineWidth);
-			headerCell.setBorderWidthTop(headerLineWidth);
-			headerCell.setBorderWidthLeft(lineWidth);
-			headerCell.setBorderWidthRight(lineWidth);
+		colHeadCell.setBorderWidthBottom(headerLineWidth);
+		colHeadCell.setBorderWidthTop(headerLineWidth);
+		colHeadCell.setBorderWidthLeft(headerLineWidth);
+		colHeadCell.setBorderWidthRight(headerLineWidth);
+		mainTable.addCell(colHeadCell);
+		for(int i=0; i<10; i++)
+		{
+			colHeadCell.setPhrase(new Phrase(Integer.toString(i), tableHeaderFont));   
+			colHeadCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+			colHeadCell.setBorderWidthBottom(headerLineWidth);
+			colHeadCell.setBorderWidthTop(headerLineWidth);
+			colHeadCell.setBorderWidthLeft(lineWidth);
+			colHeadCell.setBorderWidthRight(lineWidth);
 			
-			if(i==0) headerCell.setBorderWidthLeft(headerLineWidth);
-			if(i==9) headerCell.setBorderWidthRight(headerLineWidth);
-            tbl.addCell(headerCell);          
+			if(i==0) colHeadCell.setBorderWidthLeft(headerLineWidth);
+			if(i==9) colHeadCell.setBorderWidthRight(headerLineWidth);
+            mainTable.addCell(colHeadCell);          
         }
 		
 		
 		// Loop through rows
 		for(int row =0; row < rows; row++)
-		{	
-			PdfPCell dataCell = new PdfPCell();
+		{				
 			// Loop through columns
-			for(int col = 0; col < 11; col++) {
+			for(int col = 0; col < 11; col++) 
+			{
+				// Mini table to hold remark icons
+				PdfPTable remarksMiniTable = new PdfPTable(3);
+				float[] widths = {0.3f, 0.3f, 0.6f};
+				remarksMiniTable.setWidths(widths);
+				remarksMiniTable.setWidthPercentage(100);			
 				
-				// Get ring value
+				// Get ring value or year number for first column
+				Phrase cellValuePhrase;
 				Object value = model.getValueAt(row, col);
-				Phrase cellPhrase;
 				if(value==null){
-					cellPhrase = new Phrase("");
+					cellValuePhrase = new Phrase("");
 				}
 				else
 				{
-					cellPhrase = new Phrase(value.toString(), getTableFont(col));
+					cellValuePhrase = new Phrase(value.toString(), getTableFont(col));
 				}	
 				
 				
-				// Get any remarks
+				// Get any remarks and compile them into a mini table
 				edu.cornell.dendro.corina.Year year = model.getYear(row, col);
-				List<TridasRemark> remarks = s.getRemarksForYear(year);
-				PdfPTable tblremarks = null;
-				
-				// If there are remarks cycle through them making a nested table
-				if(remarks.size()>0)
+				List<TridasRemark> remarksList = null;
+				remarksList = s.getRemarksForYear(year);
+								
+				// If there are remarks, cycle through them adding cells to the mini table
+				if(col!=0 && remarksList.size()>0)
 				{
-					tblremarks = new PdfPTable(3);
-					float[] widths = {0.3f, 0.3f, 0.6f};
-					tblremarks.setWidths(widths);
-					tblremarks.setWidthPercentage(100);
-					
+					// Get icons for remarks
 					int cellnum = 1;
 					int remarknum = 0;
-					// Get icons for remarks
-					for(TridasRemark remark : remarks)
+					for(TridasRemark remark : remarksList)
 					{
+						// Keep track of which remark we are on.
 						remarknum++;
+						// String for holding remark name for debugging
 						String remstr = "?";						
-						Image icon;
+						// The actual remark icon
+						Image icon = null;
+						// A table cell for the remark
 						PdfPCell remarkCell = new PdfPCell();
-						PdfPCell valueCell = new PdfPCell();
-						
+
+						// Set default attributes for remark and value cells
 						remarkCell.setBorderWidthBottom(0);
 						remarkCell.setBorderWidthTop(0);
 						remarkCell.setBorderWidthLeft(0);
@@ -378,10 +476,13 @@ public class SeriesReport extends ReportBase {
 						remarkCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 						remarkCell.setPadding(0);
 						remarkCell.setUseBorderPadding(true);
+						
+						// A table cell for the ring width value
+						PdfPCell valueCell = new PdfPCell();	
 						valueCell = remarkCell;	
 
+						// Get actual icon (either tridas or corina)
 						if(remark.isSetNormalTridas()) {
-							// Normal TRiDaS Icon
 							remstr = remark.getNormalTridas().toString();
 							icon = getTridasIcon(remark.getNormalTridas());	
 							if(icon==null) icon = Image.getInstance(missingIconURL);
@@ -391,115 +492,135 @@ public class SeriesReport extends ReportBase {
 							icon = getCorinaIcon(remark.getNormal());	
 							if(icon==null) icon = Image.getInstance(missingIconURL);
 						}
-						else {
-							icon = Image.getInstance(missingIconURL);
-						}
-						
+
+						// Print debug info for this remark
 						String errStr = "Getting icon for "+remstr+" for year "+year.toString() + "(cell value = "+cellnum+")";
 						System.out.print(errStr);
 						
-						// Shrink a bit
+						// Shrink the icon a bit
 						icon.scalePercent(20);
 
+						// Add icon to minitable
 						remarkCell.addElement(icon);
-						tblremarks.addCell(remarkCell);
+						remarksMiniTable.addCell(remarkCell);
 						cellnum++;
 						
-						if (cellnum==1 && remarks.size()<cellnum)
+						if (cellnum==1 && remarksList.size()<cellnum)
 						{
 							// First cell and no remark so print blank
 							valueCell.setPhrase(new Phrase(""));
-							tblremarks.addCell(valueCell);
+							remarksMiniTable.addCell(valueCell);
 							cellnum++;
 						}						
-						if (cellnum==2 && remarks.size()<cellnum)
+						if (cellnum==2 && remarksList.size()<cellnum)
 						{
 							// Second cell and no remark so print blank
 							valueCell.setPhrase(new Phrase(""));
-							tblremarks.addCell(valueCell);
+							remarksMiniTable.addCell(valueCell);
 							cellnum++;
 						}
 						if(cellnum==3)
 						{
 							// In third cell so print value
-							valueCell.setPhrase(cellPhrase);
-							tblremarks.addCell(valueCell);
+							valueCell.setPhrase(cellValuePhrase);
+							remarksMiniTable.addCell(valueCell);
 							cellnum++;
 						}
 						else if (cellnum % 3 == 0)
 						{
 							// In third column so print blank
 							valueCell.setPhrase(new Phrase(""));
-							tblremarks.addCell(valueCell);
+							remarksMiniTable.addCell(valueCell);
 							cellnum++;
 						}
 						
-						if(remarknum==remarks.size())
+						if(remarknum==remarksList.size())
 						{
 							valueCell.setPhrase(new Phrase(""));
-							tblremarks.addCell(valueCell);
-							tblremarks.addCell(valueCell);
+							remarksMiniTable.addCell(valueCell);
+							remarksMiniTable.addCell(valueCell);
 						}
 						
-					}
-					
-
-					
+						remarkCell = null;
+						valueCell = null;
+					}	
 				}
-	
+				else
+				{
+					// No remarks so make mini table have blank, blank, value
+					
+					// Create blank and value cells
+					PdfPCell blankCell = new PdfPCell();
+					PdfPCell valueCell = new PdfPCell();
+					
+					// Set up style
+					blankCell.setBorderWidthBottom(0);
+					blankCell.setBorderWidthTop(0);
+					blankCell.setBorderWidthLeft(0);
+					blankCell.setBorderWidthRight(0);
+					blankCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+					blankCell.setPadding(0);
+					blankCell.setUseBorderPadding(true);
+					valueCell = blankCell;
+					
+					// Add cells to mini table
+					remarksMiniTable.addCell(blankCell);
+					remarksMiniTable.addCell(blankCell);
+					valueCell.setPhrase(cellValuePhrase);
+					remarksMiniTable.addCell(valueCell);
+				}
+				
+				
+				
 				// Set border styles depending on where we are in the table
 				
 				// Defaults
-				dataCell.setBorderWidthBottom(lineWidth);
-				dataCell.setBorderWidthTop(lineWidth);
-				dataCell.setBorderWidthLeft(lineWidth);
-				dataCell.setBorderWidthRight(lineWidth);
-				dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				PdfPCell mainTableCell = new PdfPCell();
+				mainTableCell.setBorderWidthBottom(lineWidth);
+				mainTableCell.setBorderWidthTop(lineWidth);
+				mainTableCell.setBorderWidthLeft(lineWidth);
+				mainTableCell.setBorderWidthRight(lineWidth);
+				mainTableCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 				
 				// Row headers
 				if(col==0)
 				{	
-					dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
-					dataCell.setBorderWidthLeft(headerLineWidth);
-					dataCell.setBorderWidthRight(headerLineWidth);
+					mainTableCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+					mainTableCell.setBorderWidthLeft(headerLineWidth);
+					mainTableCell.setBorderWidthRight(headerLineWidth);
 				}				
 				
 				// First data column
 				if(col==1)
 				{
-					dataCell.setBorderWidthLeft(headerLineWidth);
+					mainTableCell.setBorderWidthLeft(headerLineWidth);
 				}
 				
 				// Last data column
 				if(col==10)
 				{
-					dataCell.setBorderWidthRight(headerLineWidth);
+					mainTableCell.setBorderWidthRight(headerLineWidth);
 				}
 
 				// Last row
 				if(row==model.getRowCount()-1)
 				{
-					dataCell.setBorderWidthBottom(headerLineWidth);				
+					mainTableCell.setBorderWidthBottom(headerLineWidth);				
 				}
 	
-				// Write phrase to cell 		
-				if(remarks.size()>0)
-				{
-					dataCell.addElement(tblremarks);
-				}
-				else
-				{
-					dataCell.setPhrase(cellPhrase);
-				}
+				// Write mini table to cell 		
+				mainTableCell.addElement(remarksMiniTable);
 				
 				// Write cell to main table
-	            tbl.addCell(dataCell);
+	            mainTable.addCell(mainTableCell);
 
 	        }
 		}
 		
 		// Add table to document
-		document.add(tbl);		
+		document.add(mainTable);
+		
+		if(!wj)	document.add(getTableKey());
 	}
 		
 	
