@@ -55,7 +55,7 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 			throw new IllegalArgumentException("output and input are not the same size!");
 		
 		Logger logger = Logger.getAnonymousLogger();
-		boolean logData = logger.isLoggable(Level.FINEST);
+		boolean logData = logger.isLoggable(Level.FINER);
 		
 		
 		/*
@@ -85,7 +85,7 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 								 	.append("val", val)
 								 	.toString();
 				
-				logger.finest(msg);
+				logger.finer(msg);
 			}
 			
 			output.add(val);
