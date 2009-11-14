@@ -39,8 +39,18 @@ public class DBQuery {
 	private void beVerbose(String queryName, String action, Object[] args) {
 		Logger logger = Logger.getAnonymousLogger();
 		
-		if(logger.isLoggable(Level.FINER))
-			logger.log(Level.FINER, action + " " + queryName, args );		
+		if(logger.isLoggable(Level.FINER)) 
+		{
+			ParamStringBuilder params = new ParamStringBuilder();
+			int pidx = 0;
+			
+			for(Object arg : args) {
+				params.append("arg" + (++pidx), arg);
+			}
+			
+			logger.log(Level.FINER, action + " " + queryName + " {"
+					   + params.toString() + "}");		
+		}
 	}
 	
 	public void execute(String queryName, Object ... args) throws SQLException {

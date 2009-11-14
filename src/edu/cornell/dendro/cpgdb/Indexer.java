@@ -73,7 +73,15 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 	
 	private IndexFunction getIndexFunction() throws SQLException  {
 		
-		Logger.getAnonymousLogger().log(Level.FINE, "getIndexFunction()", indexType );
+		Logger logger = Logger.getAnonymousLogger();
+		
+		if(logger.isLoggable(Level.FINE)) {
+			String msg = new ParamStringBuilder()
+				.append("indexType", indexType)
+				.toString();
+			
+			logger.fine("getIndexFunction(): " + msg );
+		}
 		
 		switch(indexType) {
 		case 0:

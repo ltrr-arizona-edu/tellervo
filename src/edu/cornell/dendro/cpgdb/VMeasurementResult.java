@@ -106,12 +106,14 @@ public class VMeasurementResult {
 			UUID VMeasurementResultMasterID, int recursionDepth) throws SQLException {
 
 		if(logger.isLoggable(Level.FINE)) {
-			logger.log(Level.FINE,
-					   "recursiveGetVMeasurementResult",
-					   new Object[] {
-							VMeasurementID, VMeasurementResultGroupID,
-							VMeasurementResultMasterID, recursionDepth
-					   });
+			String params = new ParamStringBuilder()
+				.append("VMeasurementID", VMeasurementID)
+				.append("VMeasurementResultGroupID", VMeasurementResultGroupID)
+				.append("VMeasurementResultMasterID", VMeasurementResultMasterID)
+				.append("recursionDepth", recursionDepth)
+				.toString();
+			
+			logger.fine("recursiveGETVMR() {" + params + "}");
 		}
 		
 		ResultSet res;
@@ -137,13 +139,14 @@ public class VMeasurementResult {
 			VMeasurementOpParameter = (Integer) res.getObject("VMeasurementOpParameter");
 			
 			if(logger.isLoggable(Level.FINE)) {
-				logger.log(Level.FINE, "qryVMeasurementType success",
-						   new Object[] {
-						       op,
-						       MeasurementID,
-						       VMeasurementsInGroup,
-						       VMeasurementOpParameter
-						   } ); 
+				String params = new ParamStringBuilder()
+					.append("op", op)
+					.append("MeasurementID", MeasurementID)
+					.append("VMeasurementsInGroup", VMeasurementsInGroup)
+					.append("VMeasurementOpParameter", VMeasurementOpParameter)
+					.toString();
+				
+				logger.fine("qryVMeasurementType values {" + params + "}");
 			}
 			
 			if(op == VMeasurementOperation.DIRECT && VMeasurementsInGroup == 0 && MeasurementID != 0) {
@@ -390,7 +393,8 @@ public class VMeasurementResult {
 			dbq.execute("qdelVMeasurementResultRemoveMasterID", VMeasurementResultMasterID, newVMeasurementResultID);
 		}
 		
-		logger.log(Level.FINE, "recursiveGetVMID returning", newVMeasurementResultID);
+		if(logger.isLoggable(Level.FINE))
+			logger.finer("recursiveGetVMID returning ["+ newVMeasurementResultID + "]");
 		
 		return newVMeasurementResultID;
 	}
@@ -413,14 +417,6 @@ public class VMeasurementResult {
 	private UUID doDirectCase(UUID VMeasurementID, UUID VMeasurementResultGroupID, 
 			UUID VMeasurementResultMasterID, int MeasurementID) throws SQLException {
 		
-		if(logger.isLoggable(Level.FINE)) {
-			logger.log(Level.FINE, "doDirectCase",
-					   new Object[] {
-					       VMeasurementID, VMeasurementResultGroupID,
-					       VMeasurementResultMasterID, MeasurementID
-					   });
-		}
-		
 		UUID newVMeasurementResultID = UUID.randomUUID();
 		
 		// Create a new VMeasurementResult
@@ -434,7 +430,8 @@ public class VMeasurementResult {
 		// Copy over any ReadingNotes
 		dbq.execute("qappVMeasurementReadingNoteResult", newVMeasurementResultID);
 		
-		logger.log(Level.FINE, "doDirectCase returning", newVMeasurementResultID);		
+		if(logger.isLoggable(Level.FINE))
+			logger.finer("doDirectCase returning ["+ newVMeasurementResultID + "]");
 		return newVMeasurementResultID;		
 	}
 
