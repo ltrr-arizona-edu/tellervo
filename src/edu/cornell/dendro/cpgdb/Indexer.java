@@ -20,7 +20,7 @@ import edu.cornell.dendro.corina_indexing.*;
  */
 public class Indexer extends ReadingResultHolder implements Indexable {
 
-	private int indexType;
+	private final int indexType;
 	
 	/**
 	 * @param readingResults
@@ -44,7 +44,7 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 	}
 
 	@Override
-	protected void operate() throws SQLException {
+	public void operate() throws SQLException {
 		IndexFunction func;
 		
 		func = getIndexFunction();

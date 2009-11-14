@@ -27,8 +27,6 @@ public class ReadingResultHolder {
 		reading = new ArrayList<Integer>();
 			
 		populate(readingResults);
-		
-		operate();
 	}
 	
 	private void populate(ResultSet res) throws SQLException {
@@ -41,7 +39,7 @@ public class ReadingResultHolder {
 		}
 	}
 	
-	protected void operate() throws SQLException {
+	public void operate() throws SQLException {
 		// do something useful?
 		output = reading;
 	}	

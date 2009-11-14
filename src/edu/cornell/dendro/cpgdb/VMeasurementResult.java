@@ -251,7 +251,9 @@ public class VMeasurementResult {
 			res = dbq.query("qacqVMeasurementReadingResult", lastWorkingVMeasurementResultID);
 			Indexer idx = new Indexer(res, VMeasurementOpParameter);
 			res.close();
-
+			
+			// run the actual index on the data
+			idx.operate();
 
 			// prepare a statement for inserting our rows	
 			PreparedStatement bulkInsert = dbq.getConnection().prepareStatement(
