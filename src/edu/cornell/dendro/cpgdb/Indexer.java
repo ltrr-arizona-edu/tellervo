@@ -83,7 +83,7 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 			logger.fine("getIndexFunction(): " + msg );
 		}
 		
-		switch(indexType) {
+		switch(indexType - 1) {
 		case 0:
 			return new Horizontal(this);
 			
