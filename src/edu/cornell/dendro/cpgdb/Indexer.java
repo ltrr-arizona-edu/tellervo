@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.cornell.dendro.corina_indexing.*;
 
@@ -70,6 +72,9 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 	}
 	
 	private IndexFunction getIndexFunction() throws SQLException  {
+		
+		Logger.getAnonymousLogger().log(Level.FINE, "getIndexFunction()", indexType );
+		
 		switch(indexType) {
 		case 0:
 			return new Horizontal(this);

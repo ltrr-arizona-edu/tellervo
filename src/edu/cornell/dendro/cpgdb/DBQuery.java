@@ -1,6 +1,8 @@
 package edu.cornell.dendro.cpgdb;
 
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 
@@ -9,10 +11,7 @@ import com.sun.rowset.CachedRowSetImpl;
 public class DBQuery {
 	// our connection via jdbc to the server
 	private Connection sqlConnection;
-	
-	// in debug mode, we print out a bunch of stuff to stdout.
-	private boolean debug = true;
-	
+		
 	public DBQuery(Connection sqlConnection) throws SQLException {
 		this.sqlConnection = sqlConnection;
 	}
@@ -37,20 +36,15 @@ public class DBQuery {
 		return ret;
 	}
 	
-	private void beVerbose(String queryName, Object[] args) {
-		System.out.print("Executing " + queryName + ": ");
-		for(Object arg:args) {
-			if(arg == null)
-				System.out.print("<null>, ");
-			else
-				System.out.print(arg.toString() + ", ");
-		}
-		System.out.println(".");
+	private void beVerbose(String queryName, String action, Object[] args) {
+		Logger logger = Logger.getAnonymousLogger();
+		
+		if(logger.isLoggable(Level.FINER))
+			logger.log(Level.FINER, action + " " + queryName, args );		
 	}
 	
 	public void execute(String queryName, Object ... args) throws SQLException {
-		if(debug)
-			beVerbose(queryName, args);
+		beVerbose(queryName, "execute", args);
 		
 		PreparedStatement q = prepareStatement(queryName, args);
 
@@ -65,8 +59,7 @@ public class DBQuery {
 	}
 		
 	public ResultSet query(String queryName, Object ... args) throws SQLException {
-		if(debug)
-			beVerbose(queryName, args);
+		beVerbose(queryName, "query", args);
 		
 		PreparedStatement q = prepareStatement(queryName, args);
 

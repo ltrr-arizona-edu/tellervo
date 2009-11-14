@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VMeasurementResult {
 	// Internal values
@@ -18,6 +20,8 @@ public class VMeasurementResult {
 	
 	// owner user ID (for later extension...)
 	private int ownerUserID = 1234;
+	
+	private final Logger logger;
 
 	/**
 	 * 
@@ -37,7 +41,9 @@ public class VMeasurementResult {
 	 * @throws SQLException
 	 */
 	public VMeasurementResult(UUID VMeasurementID, boolean safe, boolean cleanup) throws SQLException {
-		this.dbq = new DBQuery();
+		logger = Logger.getAnonymousLogger();
+		dbq = new DBQuery();
+		
 		try {
 			acquireVMeasurementResult(VMeasurementID, safe);
 		} finally {
@@ -56,6 +62,7 @@ public class VMeasurementResult {
 	 */
 	public VMeasurementResult(UUID VMeasurementID, boolean safe, DBQuery dbQuery) throws SQLException {
 		this.dbq = dbQuery;		
+		logger = Logger.getAnonymousLogger();
 		acquireVMeasurementResult(VMeasurementID, safe);
 	}
 
@@ -97,6 +104,15 @@ public class VMeasurementResult {
 	 */
 	private UUID recursiveGetVMeasurementResult(UUID VMeasurementID, UUID VMeasurementResultGroupID,	
 			UUID VMeasurementResultMasterID, int recursionDepth) throws SQLException {
+
+		if(logger.isLoggable(Level.FINE)) {
+			logger.log(Level.FINE,
+					   "recursiveGetVMeasurementResult",
+					   new Object[] {
+							VMeasurementID, VMeasurementResultGroupID,
+							VMeasurementResultMasterID, recursionDepth
+					   });
+		}
 		
 		ResultSet res;
 		VMeasurementOperation op;
@@ -119,6 +135,16 @@ public class VMeasurementResult {
 
 			// If VMeasurementOpParameter is NULL, getInt turns NULL to 0
 			VMeasurementOpParameter = (Integer) res.getObject("VMeasurementOpParameter");
+			
+			if(logger.isLoggable(Level.FINE)) {
+				logger.log(Level.FINE, "qryVMeasurementType success",
+						   new Object[] {
+						       op,
+						       MeasurementID,
+						       VMeasurementsInGroup,
+						       VMeasurementOpParameter
+						   } ); 
+			}
 			
 			if(op == VMeasurementOperation.DIRECT && VMeasurementsInGroup == 0 && MeasurementID != 0) {
 				// Ah, the clean base case. Just drop out nicely, after we clean up.
@@ -364,6 +390,8 @@ public class VMeasurementResult {
 			dbq.execute("qdelVMeasurementResultRemoveMasterID", VMeasurementResultMasterID, newVMeasurementResultID);
 		}
 		
+		logger.log(Level.FINE, "recursiveGetVMID returning", newVMeasurementResultID);
+		
 		return newVMeasurementResultID;
 	}
 
@@ -385,6 +413,14 @@ public class VMeasurementResult {
 	private UUID doDirectCase(UUID VMeasurementID, UUID VMeasurementResultGroupID, 
 			UUID VMeasurementResultMasterID, int MeasurementID) throws SQLException {
 		
+		if(logger.isLoggable(Level.FINE)) {
+			logger.log(Level.FINE, "doDirectCase",
+					   new Object[] {
+					       VMeasurementID, VMeasurementResultGroupID,
+					       VMeasurementResultMasterID, MeasurementID
+					   });
+		}
+		
 		UUID newVMeasurementResultID = UUID.randomUUID();
 		
 		// Create a new VMeasurementResult
@@ -398,6 +434,7 @@ public class VMeasurementResult {
 		// Copy over any ReadingNotes
 		dbq.execute("qappVMeasurementReadingNoteResult", newVMeasurementResultID);
 		
+		logger.log(Level.FINE, "doDirectCase returning", newVMeasurementResultID);		
 		return newVMeasurementResultID;		
 	}
 
