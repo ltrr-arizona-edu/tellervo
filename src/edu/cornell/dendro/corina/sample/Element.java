@@ -132,10 +132,11 @@ public class Element implements Comparable<Element> {
 		
 		if(o instanceof Element) {
 			Element e = (Element) o;
-			
-			// compare loaders first
-			if(loader.equals(e.loader))
-				return true;
+	
+			// compare loaders first, if they're the same class
+			if(loader.getClass().isInstance(e.loader)) {
+				return loader.equals(e.loader);
+			}
 			
 			// otherwise, try name
 			return (compareTo(e) == 0);
@@ -147,7 +148,6 @@ public class Element implements Comparable<Element> {
 	@Override
 	public int hashCode() {
 		int hv = loader.hashCode();
-		hv += getName().toString().hashCode();
 		
 		return hv;
 	}
