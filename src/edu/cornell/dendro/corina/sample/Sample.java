@@ -43,6 +43,7 @@ import java.lang.reflect.Method;
 
 import javax.swing.undo.*;
 
+import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.NormalTridasVariable;
@@ -764,7 +765,17 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 @return the "title" tag from meta */
 	@Override
 	public String toString() {
-		String name = getDisplayTitle() + " " + getRange().toStringWithSpan();
+		String title = getDisplayTitle();
+		
+		if(getSeries() instanceof ITridasDerivedSeries) {
+			String version = ((ITridasDerivedSeries) getSeries()).getVersion();
+			
+			if(version != null && version.length() > 0) {
+				title += ": " + version; 
+			}
+		}
+		
+		String name = title + " " + getRange().toStringWithSpan();
 		if (isModified()) // not aqua-ish, but how to do it the real way?
 			name = "* " + name;
 		return name;
