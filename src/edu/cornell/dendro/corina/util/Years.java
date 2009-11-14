@@ -44,7 +44,7 @@ public final class Years {
 	 */
 	public static Year valueOf(int value) {
 		// outside of our range
-		if(value < MIN_CACHE_YEAR || value > MAX_CACHE_YEAR)
+		if(value < MIN_CACHE_YEAR || value >= MAX_CACHE_YEAR)
 			return new Year(value);
 		
 		// subtract the minimum cache year to get an index
@@ -78,7 +78,7 @@ public final class Years {
 	}
 	
 	// these should cover the range of everything we use
-	private final static int MIN_CACHE_YEAR = -2000;
+	private final static int MIN_CACHE_YEAR = -1000;
 	private final static int MAX_CACHE_YEAR = MIN_CACHE_YEAR + 4096;
 	
 	private static final WeakReference<Year> years[] = new WeakReference[MAX_CACHE_YEAR - MIN_CACHE_YEAR];	
