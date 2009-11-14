@@ -41,15 +41,14 @@ public class DBQuery {
 		
 		if(logger.isLoggable(Level.FINER)) 
 		{
-			ParamStringBuilder params = new ParamStringBuilder();
+			ParamStringBuilder params = new ParamStringBuilder(ParamStringBuilder.Mode.SQL);
 			int pidx = 0;
 			
 			for(Object arg : args) {
 				params.append("arg" + (++pidx), arg);
 			}
 			
-			logger.log(Level.FINER, action + " " + queryName + " {"
-					   + params.toString() + "}");		
+			logger.log(Level.FINER, action + " " + queryName + params.toString());
 		}
 	}
 	

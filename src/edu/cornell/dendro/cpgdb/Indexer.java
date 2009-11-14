@@ -54,16 +54,39 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 		if(indexedData.size() != reading.size())
 			throw new IllegalArgumentException("output and input are not the same size!");
 		
+		Logger logger = Logger.getAnonymousLogger();
+		boolean logData = logger.isLoggable(Level.FINEST);
+		
+		
 		/*
 		 * Traverse the indexed data and create our output.
 		 */
 		int len = indexedData.size();
+		
+		if(logger.isLoggable(Level.FINE)) {
+			logger.fine("Indexing " + len + " datapoints using " 
+					    + func.getDatabaseRepresentation());
+		}
+		
 		List<Integer> output = new ArrayList<Integer>(len);
 		for(int i = 0; i < len; i++) {
 			double ind = ((Number) indexedData.get(i)).doubleValue();
 			double raw = ((Number) reading.get(i)).doubleValue();
 			double ratio = raw / ind;
 			int val = (int) Math.round(ratio * 1000.0d);			
+			
+			if(logData)
+			{
+				String msg = new ParamStringBuilder()
+								 	.append("i", i)
+								 	.append("ind", ind)
+								 	.append("raw", raw)
+								 	.append("ratio", ratio)
+								 	.append("val", val)
+								 	.toString();
+				
+				logger.finest(msg);
+			}
 			
 			output.add(val);
 		}
