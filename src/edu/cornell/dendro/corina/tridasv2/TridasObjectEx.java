@@ -142,4 +142,9 @@ public class TridasObjectEx extends TridasObject {
 			}
 		}
 	}
+
+	@Override
+    public Object createCopy() {
+        return new TridasObjectEx();
+    }
 }
