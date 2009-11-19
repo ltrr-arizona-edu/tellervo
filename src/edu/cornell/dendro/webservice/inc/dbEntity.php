@@ -1667,12 +1667,13 @@ class sampleEntity extends dbEntity
     
     function setBoxFromName($name)
     {
-    	$this->box->setParamsFromDBFromName($name);
+    	return $this->box->setParamsFromDBFromName($name);
     }
     
     function setBoxComments($comments)
     {
     	$this->box->setComments($comments);
+    	return true;
     }
     
 	/**

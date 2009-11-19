@@ -540,7 +540,7 @@ class object extends objectEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblobject where objectid=".$this->getID();
+                $sql = "DELETE FROM tblobject WHERE objectid='".$this->getID()."'";
                 // Run SQL 
                 pg_send_query($dbconn, $sql);
                 $result = pg_get_result($dbconn);

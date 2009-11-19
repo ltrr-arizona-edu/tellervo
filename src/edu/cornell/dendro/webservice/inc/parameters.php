@@ -133,7 +133,7 @@ class searchParameters implements IParams
 									'elementcode' =>						array('tbl' => 'vwtblelement', 'field' => 'code'),
 		
 									'sampleid' => 							array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
-									//'sampledbid' => 						array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
+									'sampledbid' => 						array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
 									'samplingdate' => 						array('tbl' => 'vwtblsample', 'field' => 'samplingdate'),
 									'samplefile' => 						array('tbl' => 'vwtblsample', 'field' => 'file'),
 									'sampleposition' => 					array('tbl' => 'vwtblsample', 'field' => 'position'),
@@ -165,6 +165,8 @@ class searchParameters implements IParams
 									'radiuscode' =>									array('tbl' => 'vwtblradius', 'field' => 'radiuscode'),	
 		
 									'seriesid' =>                           array('tbl' => 'vwcomprehensivevm', 'field' => 'vmeasurementid'),
+									'seriesdbid' =>                           array('tbl' => 'vwcomprehensivevm', 'field' => 'vmeasurementid'),
+		
 									//'seriesmeasuringmethod' =>				array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									//'seriesvariable'=>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									//'seriesunit'=>							array('tbl' => 'vwcomprehensivevm', 'field' => ''),

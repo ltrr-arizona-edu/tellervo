@@ -96,7 +96,7 @@ class geometry
 		     
 		   
 		   // Calculate geometry value and store
-		   $this->setPointGeometryFromLatLong($coords[0], $coords[1]);	
+		   $this->setPointGeometryFromLatLong($coords[1], $coords[0]);	
 		   return true;	   
         }
   
