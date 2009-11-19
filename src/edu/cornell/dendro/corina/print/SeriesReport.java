@@ -22,6 +22,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.WordUtils;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.ComplexPresenceAbsence;
 import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasDerivedSeries;
@@ -143,12 +144,12 @@ public class SeriesReport extends ReportBase {
 		    	// MEASUREMENT SERIES
   
 		    	//document.add(getRingRemarks());
+		        document.add(getWoodCompletenessPDF());
+		        document.add(getParagraphSpace());	
 		    	document.add(getSeriesComments());
 		        document.add(getParagraphSpace());
 		        document.add(getInterpretationPDF());
 		        document.add(getParagraphSpace());	        
-		        document.add(getWoodCompletenessPDF());
-		        document.add(getParagraphSpace());	
 		        document.add(getElementAndSampleInfo());
 		    }
 		    else
@@ -268,7 +269,6 @@ public class SeriesReport extends ReportBase {
 		}
 	}
 	
-	@SuppressWarnings("null")
 	private PdfPTable getTableKey() throws DocumentException, IOException, IOException
 	{
 		PdfPTable mainTable = new PdfPTable(12);
@@ -371,7 +371,8 @@ public class SeriesReport extends ReportBase {
 		PdfPCell colHeadCell = new PdfPCell();
 		// Model for data
 		DecadalModel model;
-		
+		// Flag to show if there are *any* ring remarks
+		Boolean hasRemarks = false;
 
 		mainTable.setWidthPercentage(100f);
 		
@@ -454,6 +455,7 @@ public class SeriesReport extends ReportBase {
 				// If there are remarks, cycle through them adding cells to the mini table
 				if(col!=0 && remarksList.size()>0)
 				{
+					hasRemarks=true;
 					// Get icons for remarks
 					int cellnum = 1;
 					int remarknum = 0;
@@ -620,7 +622,7 @@ public class SeriesReport extends ReportBase {
 		// Add table to document
 		document.add(mainTable);
 		
-		if(!wj)	document.add(getTableKey());
+		if(!wj && hasRemarks)	document.add(getTableKey());
 	}
 		
 	
@@ -926,10 +928,15 @@ public class SeriesReport extends ReportBase {
 			p.add(new Chunk("- No pith details were recorded.\n", bodyFont));
 		}
 		
+		// Ring count 
+		p.add(new Chunk("- A total of "+ String.valueOf(s.countRings()) + " rings were measured.\n",bodyFont));
+		
+
+		
 		// Extract Heartwood and sapwood info
 		p.add(getHeartSapwoodDetails(woodCompleteness, WoodType.HEARTWOOD));
 		p.add(getHeartSapwoodDetails(woodCompleteness, WoodType.SAPWOOD));
-		
+				
 		// Extract last ring under bark info
 		if(woodCompleteness.getSapwood().getLastRingUnderBark()!=null)
 		{
@@ -974,7 +981,16 @@ public class SeriesReport extends ReportBase {
 				}
 				else if (woodCompleteness.getBark().getPresence().value()=="absent")
 				{
-					p.add(new Chunk("- Bark is absent.\n", bodyFont));
+					
+					// Calculate if we have waney edge
+					if(woodCompleteness.getSapwood().getPresence().equals(ComplexPresenceAbsence.COMPLETE))
+					{
+						p.add(new Chunk("- Waney edge present\n", bodyFont));
+					}
+					else
+					{
+						p.add(new Chunk("- Bark is absent.\n", bodyFont));
+					}
 				}
 				else
 				{
@@ -1013,8 +1029,15 @@ public class SeriesReport extends ReportBase {
 			if(woodCompleteness.getHeartwood()!=null){
 
 				// Presence / Absence
-				if(woodCompleteness.getHeartwood().getPresence()!=null){
-					presence = woodCompleteness.getHeartwood().getPresence().value();
+				if(woodCompleteness.getHeartwood().getPresence()!=null){				
+					if(woodCompleteness.getHeartwood().getPresence().equals(ComplexPresenceAbsence.UNKNOWN)){
+						// if heartwood presence is unknown all other details are irrelevant
+						p.add(new Chunk("- No " + woodTypeStr + " details recorded.", bodyFont));
+						return p;
+					}
+					else{
+						presence = woodCompleteness.getHeartwood().getPresence().value();
+					}
 				}
 
 				// Missing rings
@@ -1036,7 +1059,8 @@ public class SeriesReport extends ReportBase {
 			
 			}
 			else{
-				p.add(new Chunk("- No " + woodTypeStr + " details recorded."));
+				p.add(new Chunk("- No " + woodTypeStr + " details recorded.", bodyFont));
+				return p;
 			}	
 		}
 		else if (type==WoodType.SAPWOOD)
@@ -1047,7 +1071,14 @@ public class SeriesReport extends ReportBase {
 
 				// Presence / Absence
 				if(woodCompleteness.getSapwood().getPresence()!=null){
-					presence = woodCompleteness.getSapwood().getPresence().value();
+					if(woodCompleteness.getSapwood().getPresence().equals(ComplexPresenceAbsence.UNKNOWN)){
+						// if sapwood presence is unknown all other details are irrelevant
+						p.add(new Chunk("- No " + woodTypeStr + " details recorded.", bodyFont));
+						return p;
+					}			
+					else {
+						presence = woodCompleteness.getSapwood().getPresence().value();
+					}
 				}
 				
 				// Missing rings
@@ -1071,12 +1102,13 @@ public class SeriesReport extends ReportBase {
 				}
 				else{
 					foundationStr = "unspecified reasons";
-				}
-			
+				}		
 			}
 			else{
-				p.add(new Chunk("- No " + woodTypeStr + " details recorded."));
-			}			
+				p.add(new Chunk("- No " + woodTypeStr + " details recorded.", bodyFont));
+				return p;
+			}	
+						
 		}
 		else
 		{
@@ -1085,15 +1117,17 @@ public class SeriesReport extends ReportBase {
 		
 		// Set output strings for presence/absence
 		if(presence=="unknown"){
-			presenceStr = "- Whether " + woodTypeStr + " is present or not is unknown";
+			//presenceStr = "- Whether " + woodTypeStr + " is present or not is unknown";
+			presenceStr = "";
 		}
 		else if (presence == null)
 		{
-			presenceStr = "- Presence of " + woodTypeStr + " has not been specified";
+			//presenceStr = "- Presence of " + woodTypeStr + " has not been specified";
+			presenceStr = "";
 		}
 		else{
 			presenceStr = "- " + woodTypeStr.substring(0,1).toUpperCase() + woodTypeStr.substring(1) + " is " + presence;
-			if (woodTypeStr == "sapwood")
+			if (woodTypeStr == "sapwood" && nrSapwoodRings!=null)
 			{
 				presenceStr += ". A total of " + nrSapwoodRings + " sapwood rings were identified";
 			}
@@ -1121,7 +1155,8 @@ public class SeriesReport extends ReportBase {
 		}
 		else
 		{
-			p.add(new Chunk(". Details about missing " + woodTypeStr + " rings was not recorded.", bodyFont));
+			//p.add(new Chunk(". Details about missing " + woodTypeStr + " rings was not recorded.", bodyFont));
+			p.add(new Chunk("", bodyFont));
 		}
 		
 		return p;
