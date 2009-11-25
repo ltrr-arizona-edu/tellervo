@@ -130,6 +130,7 @@
 			<xs:enumeration value="elementdescription"/>
 			<xs:enumeration value="elementcreated" />
 			<xs:enumeration value="elementlastmodified"/>
+			<xs:enumeration value="elementcode"/>
 			
 			<!-- SAMPLE ATTRIBUTES -->
 			<xs:enumeration value="sampleid"/>
@@ -144,6 +145,7 @@
 			<xs:enumeration value="samplelastmodified"/>
 			<xs:enumeration value="samplingdatecertainty"/>
 			<xs:enumeration value="sampleboxid"/>
+			<xs:enumeration value="samplecode"/>
 			
 			
 			<!-- RADIUS ATTRIBUTES -->
@@ -193,6 +195,15 @@
 			<xs:enumeration value="seriesdatingerrornegative"/>
 			<xs:enumeration value="seriesvaluecount"/>
 			<xs:enumeration value="seriescount"/>
+			
+			<!-- BOX ATTRIBUTES -->
+			<xs:enumeration value="boxid"/>
+			<xs:enumeration value="boxcode"/>
+			<xs:enumeration value="boxcurationlocation"/>
+			<xs:enumeration value="boxtrackinglocation"/>
+			<xs:enumeration value="boxcomments"/>
+			<xs:enumeration value="boxlastmodified"/>
+			<xs:enumeration value="boxcreated"/>		
 
 		</xs:restriction>
 	</xs:simpleType>

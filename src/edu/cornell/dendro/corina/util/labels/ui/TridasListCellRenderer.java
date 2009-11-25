@@ -5,6 +5,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasSample;
 
@@ -30,6 +31,13 @@ public class TridasListCellRenderer extends DefaultListCellRenderer {
                 	
         	value = (f != null) ? f.getValue() : s.getTitle();
         }
+        
+        if(value instanceof TridasElement){
+        	TridasElement e = (TridasElement) value;
+        	TridasGenericField f = GenericFieldUtils.findField(e, "corina.internal.labcodeText");
+                	
+        	value = (f != null) ? f.getValue() : e.getTitle();
+        } 
         
         else
         {

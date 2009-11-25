@@ -101,7 +101,6 @@ public class EditMenu extends JMenu {
         addSelectAll();
 
         addPreferences();
-        addAdmin();
     }
 
     protected void addUndoRedo() {
@@ -151,41 +150,6 @@ public class EditMenu extends JMenu {
 
     }
     
-    protected void addAdmin(){
-        JMenu adminmenu = Builder.makeMenu("admin", "agent.png");
-        
-    	
-    	JMenuItem usergroup = Builder.makeMenuItem("usersandgroups",
-                                               "edu.cornell.dendro.corina.gui.AdminPanel.main()", "edit_group.png");
-     
-    	usergroup.setEnabled(false);
-    	adminmenu.add(usergroup);
-        
-        
-    	JMenuItem boxlabel = Builder.makeMenuItem("boxlabels",
-                "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.boxLabelDialog()", "box.png");
-        adminmenu.add(boxlabel);
-    	
-        JMenuItem samplelabel = Builder.makeMenuItem("samplelabels",
-                "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.sampleLabelDialog()", "sample.png");
-        adminmenu.add(samplelabel);    
-        
-        JMenuItem prosheet = Builder.makeMenuItem("prosheet",
-                "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.proSheetPrintingDialog()", "prosheet.png");
-        adminmenu.add(prosheet); 
-        
-        // kludge, remove me when the new prefs dialog works well
-        JMenuItem legacyPrefs = Builder.makeMenuItem("preferences", 
-                "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()", "advancedsettings.png");
-        
-        legacyPrefs.setText("Legacy Preferences Dialog");
-        legacyPrefs.setVisible(false);
-        
-        adminmenu.add(legacyPrefs);
-        
-        
-        add(adminmenu);
-    }
-    
+
 
 }

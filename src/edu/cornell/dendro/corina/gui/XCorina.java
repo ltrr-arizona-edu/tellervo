@@ -51,6 +51,7 @@ import javax.swing.JPanel;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.EditorFactory;
+import edu.cornell.dendro.corina.gui.menus.AdminMenu;
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
@@ -155,6 +156,7 @@ public class XCorina extends JFrame {
 			JMenuBar menubar = new JMenuBar();
 			menubar.add(new FileMenu(this));
 			menubar.add(new EditMenu(this));
+			menubar.add(new AdminMenu(this));
 			//menubar.add(new OldCrossdateMenu());
 			if (App.platform.isMac())
 				menubar.add(new WindowMenu(this));
