@@ -427,6 +427,16 @@ class sample extends sampleEntity implements IDBAccessor
 
             if($this->getBoxID()!=NULL)							$xml.="<tridas:genericField name=\"corina.boxID\" type=\"xs:string\">".$this->getBoxID()."</tridas:genericField>\n";
             
+            if ($this->getBoxID()!=NULL && $format=="summary")
+            {
+            	$thisbox = new Box();
+            	$thisbox->setParamsFromDB($this->getBoxID());
+            	$xml.="<tridas:genericField name=\"corina.boxCode\" type=\"xs:string\">".$thisbox->getTitle()."</tridas:genericField>\n";
+            	$xml.="<tridas:genericField name=\"corina.boxCurationLocation\" type=\"xs:string\">".$thisbox->getCurationLocation()."</tridas:genericField>\n";
+            	$xml.="<tridas:genericField name=\"corina.boxCurrentLocation\" type=\"xs:string\">".$thisbox->getCurationLocation()."</tridas:genericField>\n";
+            }
+            
+            
             // Include permissions details if requested            
             $xml .= $this->getPermissionsXML();            
             
