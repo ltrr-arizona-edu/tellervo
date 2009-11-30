@@ -59,6 +59,9 @@ class sample extends sampleEntity implements IDBAccessor
 		$this->setElementID($row['elementid']);
 		$this->setCode($row['code']);
 		$this->setBoxID($row['boxid']);
+		$this->setSummaryObjectCode($row['objectcode']);
+		$this->setSummaryElementCode($row['elementcode']);
+		
         return true;
     }
     
@@ -433,9 +436,14 @@ class sample extends sampleEntity implements IDBAccessor
             	$thisbox->setParamsFromDB($this->getBoxID());
             	$xml.="<tridas:genericField name=\"corina.boxCode\" type=\"xs:string\">".$thisbox->getTitle()."</tridas:genericField>\n";
             	$xml.="<tridas:genericField name=\"corina.boxCurationLocation\" type=\"xs:string\">".$thisbox->getCurationLocation()."</tridas:genericField>\n";
-            	$xml.="<tridas:genericField name=\"corina.boxCurrentLocation\" type=\"xs:string\">".$thisbox->getCurationLocation()."</tridas:genericField>\n";
+            	$xml.="<tridas:genericField name=\"corina.boxTrackingLocation\" type=\"xs:string\">".$thisbox->getTrackingLocation()."</tridas:genericField>\n";
             }
             
+            if ($format=="summary")
+            {
+            	$xml.="<tridas:genericField name=\"corina.objectLabCode\" type=\"xs:string\">".$this->getSummaryObjectCode()."</tridas:genericField>\n";           
+            	$xml.="<tridas:genericField name=\"corina.elementLabCode\" type=\"xs:string\">".$this->getSummaryElementCode()."</tridas:genericField>\n";           
+            }
             
             // Include permissions details if requested            
             $xml .= $this->getPermissionsXML();            

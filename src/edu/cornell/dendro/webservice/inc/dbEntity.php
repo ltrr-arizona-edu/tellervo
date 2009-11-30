@@ -1646,6 +1646,9 @@ class sampleEntity extends dbEntity
 	 * @var Boolean
 	 */
 	protected $knots = NULL;
+	
+	protected $summaryObjectCode = NULL;
+	protected $summaryElementCode = NULL;
 
 	
     function __construct()
@@ -1660,6 +1663,16 @@ class sampleEntity extends dbEntity
     /* SETTERS */
     /***********/ 
     
+	function setSummaryObjectCode($code)
+	{
+		$this->summaryObjectCode=$code;
+	}
+	
+	function setSummaryElementCode($code)
+	{
+		$this->summaryElementCode=$code;
+	}
+	
 	function setBoxID($id)
     {
     	$this->box->setParamsFromDB($id);
@@ -1781,6 +1794,17 @@ class sampleEntity extends dbEntity
     /* GETTERS */
     /***********/  	
     
+	function getSummaryObjectCode()
+	{
+		return $this->summaryObjectCode;
+	}
+	
+	function getSummaryElementCode()
+	{
+		return $this->summaryElementCode;
+	}
+	
+	
 	function getBoxID()
     {
     	return $this->box->getID();
@@ -2338,8 +2362,7 @@ class boxEntity extends dbEntity
     {
     	return $this->curationLocation;
     }
-    
-    
+        
     
 }
 
