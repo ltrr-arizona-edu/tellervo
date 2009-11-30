@@ -1,7 +1,11 @@
 package edu.cornell.dendro.corina.curation;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,6 +30,8 @@ import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.ui.ListComboBoxRenderer;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.ArrayListModel;
+import edu.cornell.dendro.corina.util.labels.LabBarcode;
+import edu.cornell.dendro.corina.util.labels.LabBarcode.DecodedBarcode;
 import edu.cornell.dendro.corina.util.labels.ui.TridasListCellRenderer;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
@@ -57,6 +63,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     public SampleCuration(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
     }
     
 
@@ -71,9 +78,12 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
                 });
         
                 dialog.setupGui();
+            
                 dialog.pack();
+                dialog.txtBarcode.requestFocusInWindow();
                 dialog.setLocationRelativeTo(null);
                 dialog.setVisible(true);
+
             }
         });
     }
@@ -98,6 +108,38 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         btnPopulateSamples.addActionListener(this);
         btnSearch.addActionListener(this);
         
+        txtBarcode.addKeyListener(new KeyListener() {
+        	public void keyPressed(KeyEvent txt){
+        		
+     
+        	}
+        	public void keyTyped(KeyEvent txt){
+
+        		
+        	}        	
+        	public void keyReleased(KeyEvent txt){
+        		
+        		if(txtBarcode.getText().length()==24)
+        		{
+
+        			playBarcodeBeep();
+        			
+        			// A barcode was probably just scanned	
+        			String barcodeText = txtBarcode.getText();
+    				try {
+    					LabBarcode.DecodedBarcode barcode = LabBarcode.decode(barcodeText);
+    					txtBarcode.setText("");
+    					doBarcodeSearch(barcode);
+    					
+    				} catch (IllegalArgumentException iae) {
+    					Alert.message("Barcode error", "There was a problem with the barcode you scanned:\n"+iae.getMessage());
+    				}	
+        		}
+ 
+        	}
+
+        });
+        
         
         
         // Set models 
@@ -110,7 +152,32 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         // Set renderers
         cboElement.setRenderer(new TridasListCellRenderer());
         cboSample.setRenderer(new TridasListCellRenderer());
+        
+        
+        // Temporary bodge so only populate combo (not free text) search works
+        cboElement.setEditable(false);
+        cboSample.setEditable(false);
+              
+        
     }
+    
+
+    
+    
+    public void playBarcodeBeep(){
+		AudioClip beep;
+		try {	
+			// play this to indicate measuring is on...
+			beep = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/checkout.wav"));
+			if(beep != null)
+				beep.play();
+		} catch (Exception ae) { 
+			System.out.println("Failed to play sound");
+			System.out.println(ae.getMessage());
+			}
+		
+    }
+    
     
     /**
      * Enable or disable manual sample searching
@@ -201,6 +268,8 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 		
 		elModel.replaceContents(elList); 	
     	
+		// Pick first in list
+		if(elModel.size()>0) cboElement.setSelectedIndex(0);
     	
     }
     
@@ -208,14 +277,14 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     {
     	TridasElement el = null;
     	
-    	if (cboElement.getSelectedItem()!=null)
-    	{
+    	/*if (cboElement.getSelectedItem()!=null)
+    	{*/
     		el = (TridasElement) cboElement.getSelectedItem();
-    	}
+    	/*}
     	else
     	{
     		return;
-    	}
+    	}*/
     	    	    	
 		// Find all samples for an element 
     	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
@@ -237,16 +306,62 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 		
 		List<TridasSample> sampList = resource.getAssociatedResult();
 		
-		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+		/*TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
 				TridasComparator.NullBehavior.NULLS_LAST, 
 				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
 		Collections.sort(sampList, numSorter);
-		
+		*/
 		sampModel.replaceContents(sampList); 	
     	
+		// Pick first in list
+		if(sampModel.size()>0) cboSample.setSelectedIndex(0);
     	
     	
     }
+    
+	private void doBarcodeSearch(LabBarcode.DecodedBarcode barcode) {
+
+		// Set return type to samples
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
+		
+    	// Set search parameters
+		if (barcode.uuidType == LabBarcode.Type.SAMPLE){	
+	    	param.addSearchConstraint(SearchParameterName.SAMPLEDBID, SearchOperator.EQUALS, barcode.uuid.toString());
+		}
+		else if (barcode.uuidType == LabBarcode.Type.BOX){
+	    	param.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, barcode.uuid.toString());	
+		}
+		else if (barcode.uuidType == LabBarcode.Type.SERIES){
+	    	param.addSearchConstraint(SearchParameterName.SERIESDBID, SearchOperator.EQUALS, barcode.uuid.toString());	
+		}
+		
+    	// we want a sample returned here
+		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
+		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.SUMMARY);
+		
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			System.out.println("oopsey doopsey.  Error getting samples");
+			return;
+		}
+		
+		List<TridasSample> sampList = resource.getAssociatedResult();
+		
+		// Check to see if any samples were found
+		if (sampList.size()==0) 
+		{
+			Alert.error("None found", "No samples were found");
+			return;
+		}
+						
+		resultModel.setSamples(sampList); 
+		resultModel.fireTableDataChanged();		
+		
+	}
     
     private void doManualSearch()
     {
@@ -255,6 +370,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	
     	TridasObject obj = null;
     	TridasElement el = null;
+    	TridasSample samp = null;
 
     	// Get Object 
     	if(cboObject.getSelectedItem()!=null)
@@ -293,7 +409,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	{
     		if(cboSample.getSelectedItem()!=null)
     		{
-    			TridasSample samp = (TridasSample) cboSample.getSelectedItem();
+    			samp = (TridasSample) cboSample.getSelectedItem();
     			sampcode = samp.getTitle().toString();
     		}
 
@@ -305,7 +421,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	// Set parameters
     	if(obj!=null) param.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
     	if(el!=null) param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, el.getIdentifier().getValue().toString());
-    	//if(sampcode!=null) param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, sampcode);
+    	if(samp!=null) param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, samp.getIdentifier().getValue().toString());
 
     	// we want a sample returned here
 		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
@@ -360,8 +476,8 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         cboObject = new javax.swing.JComboBox();
         btnSearch = new javax.swing.JButton();
         cboSample = new javax.swing.JComboBox();
-        btnPopulateElements = new javax.swing.JToggleButton();
-        btnPopulateSamples = new javax.swing.JToggleButton();
+        btnPopulateElements = new javax.swing.JButton();
+        btnPopulateSamples = new javax.swing.JButton();
         btnOk = new javax.swing.JButton();
         scrollResults = new javax.swing.JScrollPane();
         tblResults = new javax.swing.JTable();
@@ -507,8 +623,8 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JButton btnOk;
-    protected javax.swing.JToggleButton btnPopulateElements;
-    protected javax.swing.JToggleButton btnPopulateSamples;
+    protected javax.swing.JButton btnPopulateElements;
+    protected javax.swing.JButton btnPopulateSamples;
     protected javax.swing.JButton btnSearch;
     protected javax.swing.JComboBox cboElement;
     protected javax.swing.JComboBox cboObject;
@@ -539,29 +655,30 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 		}
 		else if (btn==btnPopulateElements)
 		{
-			if(btnPopulateElements.isSelected())
+			/*if(btnPopulateElements.isSelected())
 			{
+			*/
 				cboElement.setEditable(false);
 				populateElementCombo();
-			}
+			/*}
 			else
 			{
 				elModel.clear();
 				cboElement.setEditable(true);
-			}
+			}*/
 		}
 		else if (btn==btnPopulateSamples)
 		{
-			if(btnPopulateSamples.isSelected())
-			{
+			/*if(btnPopulateSamples.isSelected())
+			{*/
 				cboSample.setEditable(false);
 				populateSampleCombo();
-			}
+			/*}
 			else
 			{
-				elModel.clear();
-				cboSample.setEditable(true);
-			}			
+				//elModel.clear();
+				//cboSample.setEditable(true);
+			}*/			
 			
 		}
 		else if (btn==btnSearch)

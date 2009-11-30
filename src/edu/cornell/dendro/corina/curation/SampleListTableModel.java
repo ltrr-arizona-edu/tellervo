@@ -20,6 +20,8 @@ import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.tridasv2.LabCode;
+import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasSample;
@@ -31,8 +33,8 @@ public class SampleListTableModel extends AbstractTableModel {
     private final String[] columnNames = {
             "Name", 
             "Box", 
-            "Curation Location", 
-            "Current Location"
+            "Box Curation Location", 
+            "Box Tracking Location"
         };
     
     /**
@@ -48,8 +50,8 @@ public class SampleListTableModel extends AbstractTableModel {
 		
 		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX"));
 		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("2009-9999"));
-		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("Curation Location"));
-		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Current Location"));
+		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("Box Curation Location"));
+		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Box Tracking Location"));
     }
     
 	/**
@@ -94,19 +96,40 @@ public class SampleListTableModel extends AbstractTableModel {
 		
 		String boxCode = null;
 		String boxCurationLocation = null;
-		String boxCurrentLocation = null;
+		String boxTrackingLocation = null;
+		String objectCode = null;
+		String elementCode = null;
 		
 		for(TridasGenericField gf : gflist)
 		{
-			if (gf.getName()=="corina.boxCode") boxCode = gf.getValue();
-			if (gf.getName()=="corina.boxCurationLocation") boxCurationLocation = gf.getValue();
-			if (gf.getName()=="corina.boxCurrentLocation") boxCurrentLocation = gf.getValue();
+			if (gf.getName().equals("corina.boxCode")){
+				boxCode = gf.getValue().toString();
+			}
+			if (gf.getName().equals("corina.boxCurationLocation")){
+				boxCurationLocation = gf.getValue().toString();
+			}
+			if (gf.getName().equals("corina.boxTrackingLocation")) {
+				boxTrackingLocation = gf.getValue().toString();
+			}
+			if (gf.getName().equals("corina.objectLabCode")){
+				objectCode = gf.getValue().toString();
+			}
+			if (gf.getName().equals("corina.elementLabCode")){
+				elementCode = gf.getValue().toString();
+			}
+					
 		}
 		
 		
 		switch(columnIndex) {
 		case 0: 
-			return s.getTitle().toString();
+			LabCode labCode = new LabCode();
+			labCode.setElementCode(elementCode);
+			labCode.setSampleCode(s.getTitle());
+			labCode.appendSiteCode(objectCode);
+				
+			
+			return LabCodeFormatter.getRadiusPrefixFormatter().format(labCode);
 
 		case 1:
 			return boxCode;
@@ -116,7 +139,7 @@ public class SampleListTableModel extends AbstractTableModel {
 
 		// taxon
 		case 3: {
-			return boxCurrentLocation;
+			return boxTrackingLocation;
 		}
 		
 		default:

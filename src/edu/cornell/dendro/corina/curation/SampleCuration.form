@@ -174,12 +174,12 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="btnPopulateElements">
+        <Component class="javax.swing.JButton" name="btnPopulateElements">
           <Properties>
             <Property name="text" type="java.lang.String" value="Populate"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="btnPopulateSamples">
+        <Component class="javax.swing.JButton" name="btnPopulateSamples">
           <Properties>
             <Property name="text" type="java.lang.String" value="Populate"/>
           </Properties>
