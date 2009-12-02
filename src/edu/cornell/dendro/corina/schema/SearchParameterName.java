@@ -92,6 +92,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="radiuslastmodified"/>
  *     &lt;enumeration value="radiusazimuth"/>
  *     &lt;enumeration value="radiustitle"/>
+ *     &lt;enumeration value="radiuscode"/>
  *     &lt;enumeration value="seriesid"/>
  *     &lt;enumeration value="seriesdbid"/>
  *     &lt;enumeration value="seriesmeasuringmethod"/>
@@ -120,6 +121,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="seriesdatingerrornegative"/>
  *     &lt;enumeration value="seriesvaluecount"/>
  *     &lt;enumeration value="seriescount"/>
+ *     &lt;enumeration value="seriescode"/>
  *     &lt;enumeration value="boxid"/>
  *     &lt;enumeration value="boxcode"/>
  *     &lt;enumeration value="boxcurationlocation"/>
@@ -292,6 +294,8 @@ public enum SearchParameterName {
     RADIUSAZIMUTH("radiusazimuth"),
     @XmlEnumValue("radiustitle")
     RADIUSTITLE("radiustitle"),
+    @XmlEnumValue("radiuscode")
+    RADIUSCODE("radiuscode"),
     @XmlEnumValue("seriesid")
     SERIESID("seriesid"),
     @XmlEnumValue("seriesdbid")
@@ -348,6 +352,8 @@ public enum SearchParameterName {
     SERIESVALUECOUNT("seriesvaluecount"),
     @XmlEnumValue("seriescount")
     SERIESCOUNT("seriescount"),
+    @XmlEnumValue("seriescode")
+    SERIESCODE("seriescode"),
     @XmlEnumValue("boxid")
     BOXID("boxid"),
     @XmlEnumValue("boxcode")
