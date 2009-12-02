@@ -247,7 +247,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 
     	// we want an object return here, so we get a list of object->elements->samples when we use comprehensive
 		EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
-		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.SUMMARY);
+		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
 		
 		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
 		resource.query();	
@@ -292,7 +292,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 
     	// we want a sample return here
 		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
-		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.SUMMARY);
+		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
 		
 		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
 		resource.query();	

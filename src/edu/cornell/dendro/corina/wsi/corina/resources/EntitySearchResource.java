@@ -13,6 +13,7 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
+import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
@@ -22,6 +23,7 @@ import edu.cornell.dendro.corina.schema.WSIRootElement;
 import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaAssociatedResource;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 
 
@@ -46,9 +48,27 @@ public class EntitySearchResource<T extends ITridas> extends
 		
 		searchParameters = new SearchParameters(getDirectChildSearchType(parent));
 		searchParameters.addSearchConstraint(getIdNameForEntity(parent), SearchOperator.EQUALS, parent.getIdentifier().getValue());
+		this.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
 		
 		returnType = entityForSearchReturnObject(searchParameters.getReturnObject());
 	}
+	
+	/**
+	 * Search for all direct children of this entity but just return minimal data
+	 * Works only for: object, element, sample
+	 * (children: element, sample, radius)
+	 * @param parent
+	 */
+	public EntitySearchResource(ITridas parent, Boolean minimal) {
+		super(getDirectChildSearchType(parent) + "Search", CorinaRequestType.SEARCH);
+		
+		searchParameters = new SearchParameters(getDirectChildSearchType(parent));
+		searchParameters.addSearchConstraint(getIdNameForEntity(parent), SearchOperator.EQUALS, parent.getIdentifier().getValue());
+		if(minimal) this.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+		
+		returnType = entityForSearchReturnObject(searchParameters.getReturnObject());
+	}
+	
 	
 	/**
 	 * Search for an entity based on searchParameters, guessing the return type

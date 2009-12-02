@@ -8,6 +8,8 @@ CREATE OR REPLACE VIEW vwlabcodesforsamples AS
 
 ALTER TABLE vwlabcodesforsamples OWNER TO aps03pwb;
 
+
+
 ALTER TABLE vwlabcodesforsamples OWNER TO aps03pwb;
 GRANT ALL ON TABLE vwlabcodesforsamples TO aps03pwb;
 GRANT ALL ON TABLE vwlabcodesforsamples TO "Webgroup";

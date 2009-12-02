@@ -72,7 +72,7 @@ public class TridasEntityListHolder {
 		ListQueryHolder qh = new ListQueryHolder();
 
 		// make the resource (easy)
-		qh.resource = new EntitySearchResource<ITridas>(parentObject);
+		qh.resource = new EntitySearchResource<ITridas>(parentObject, true);
 		
 		// make the dialog
 		if(parentWindow == null || parentWindow instanceof Frame)
