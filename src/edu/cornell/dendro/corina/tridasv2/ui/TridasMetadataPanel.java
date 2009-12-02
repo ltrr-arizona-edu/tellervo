@@ -779,10 +779,12 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 */
 	private void handleComboSelection(boolean loadChildren) {
 		Object obj = topChooser.getSelectedItem();
+		
 		//fixes bug where combobox is hidden in derived series
 		if(obj == null){
 			return;
 		}
+		
 		// if it's new, create a new, empty instance
 		if(obj == EntityListComboBox.NEW_ITEM) {
 			temporarySelectingEntity = currentMode.newInstance(s);
@@ -811,6 +813,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			//
 			// END HACK
 			//
+						
+			
+			
 			
 			// start loading the list of children right away
 			if(loadChildren && currentMode != EditType.RADIUS)
