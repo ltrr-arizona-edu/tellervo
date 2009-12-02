@@ -62,6 +62,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="elementdescription"/>
  *     &lt;enumeration value="elementcreated"/>
  *     &lt;enumeration value="elementlastmodified"/>
+ *     &lt;enumeration value="elementcode"/>
  *     &lt;enumeration value="sampleid"/>
  *     &lt;enumeration value="sampledbid"/>
  *     &lt;enumeration value="samplingdate"/>
@@ -74,6 +75,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="samplelastmodified"/>
  *     &lt;enumeration value="samplingdatecertainty"/>
  *     &lt;enumeration value="sampleboxid"/>
+ *     &lt;enumeration value="samplecode"/>
  *     &lt;enumeration value="radiusid"/>
  *     &lt;enumeration value="radiusdbid"/>
  *     &lt;enumeration value="radiuspith"/>
@@ -118,6 +120,13 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="seriesdatingerrornegative"/>
  *     &lt;enumeration value="seriesvaluecount"/>
  *     &lt;enumeration value="seriescount"/>
+ *     &lt;enumeration value="boxid"/>
+ *     &lt;enumeration value="boxcode"/>
+ *     &lt;enumeration value="boxcurationlocation"/>
+ *     &lt;enumeration value="boxtrackinglocation"/>
+ *     &lt;enumeration value="boxcomments"/>
+ *     &lt;enumeration value="boxlastmodified"/>
+ *     &lt;enumeration value="boxcreated"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -223,6 +232,8 @@ public enum SearchParameterName {
     ELEMENTCREATED("elementcreated"),
     @XmlEnumValue("elementlastmodified")
     ELEMENTLASTMODIFIED("elementlastmodified"),
+    @XmlEnumValue("elementcode")
+    ELEMENTCODE("elementcode"),
     @XmlEnumValue("sampleid")
     SAMPLEID("sampleid"),
     @XmlEnumValue("sampledbid")
@@ -247,6 +258,8 @@ public enum SearchParameterName {
     SAMPLINGDATECERTAINTY("samplingdatecertainty"),
     @XmlEnumValue("sampleboxid")
     SAMPLEBOXID("sampleboxid"),
+    @XmlEnumValue("samplecode")
+    SAMPLECODE("samplecode"),
     @XmlEnumValue("radiusid")
     RADIUSID("radiusid"),
     @XmlEnumValue("radiusdbid")
@@ -334,7 +347,21 @@ public enum SearchParameterName {
     @XmlEnumValue("seriesvaluecount")
     SERIESVALUECOUNT("seriesvaluecount"),
     @XmlEnumValue("seriescount")
-    SERIESCOUNT("seriescount");
+    SERIESCOUNT("seriescount"),
+    @XmlEnumValue("boxid")
+    BOXID("boxid"),
+    @XmlEnumValue("boxcode")
+    BOXCODE("boxcode"),
+    @XmlEnumValue("boxcurationlocation")
+    BOXCURATIONLOCATION("boxcurationlocation"),
+    @XmlEnumValue("boxtrackinglocation")
+    BOXTRACKINGLOCATION("boxtrackinglocation"),
+    @XmlEnumValue("boxcomments")
+    BOXCOMMENTS("boxcomments"),
+    @XmlEnumValue("boxlastmodified")
+    BOXLASTMODIFIED("boxlastmodified"),
+    @XmlEnumValue("boxcreated")
+    BOXCREATED("boxcreated");
     private final String value;
 
     SearchParameterName(String v) {
