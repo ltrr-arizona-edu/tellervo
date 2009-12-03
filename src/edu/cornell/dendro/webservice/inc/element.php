@@ -107,9 +107,7 @@ class element extends elementEntity implements IDBAccessor
         $this->setType($row['elementtypeid'], $row['elementtype']);
         $this->setDescription($row['description']);
         $this->setFiles($row['file']);    
-        $this->taxon->setParamsFromDB($row['taxonid']);
-        $this->taxon->setOriginalTaxon($row['originaltaxonname']);
-        $this->taxon->setHigherTaxonomy();
+        
         $this->setShape($row['elementshapeid'], $row['elementshape']);        
         $this->setDimensions($row['units'],$row['height'], $row['width'], $row['depth']);       
         $this->setDiameter($row['diameter']);        
@@ -124,6 +122,11 @@ class element extends elementEntity implements IDBAccessor
         $this->setBedrockDescription($row['bedrockdescription']);                      
         $this->setCode($row['code']);
         $this->setObjectID($row['objectid']);
+        
+        $this->taxon->setParamsFromDBRow($row);
+
+
+        
         return true;
     }
    
@@ -452,7 +455,12 @@ class element extends elementEntity implements IDBAccessor
                 if($format!="minimal")
                 {
                 	$xml.= $this->getFileXML();
-                    $xml.= $this->taxon->asXML();  
+                }
+                
+                $xml.= $this->taxon->asXML();
+
+                if($format!="minimal")
+                {                
                     if($this->getShape()!=NULL)             $xml.= "<tridas:shape normalTridas=\"".dbhelper::escapeXMLChars($this->getShape())."\" normalId=\"".$this->getShape(TRUE)."\" />\n";
                     if($this->hasDimensions())
                     {
@@ -474,7 +482,7 @@ class element extends elementEntity implements IDBAccessor
                     if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".dbhelper::escapeXMLChars($this->getProcessing())."</tridas:processing>\n";
                     if($this->getMarks()!=NULL) $xml.="<tridas:marks>".dbhelper::escapeXMLChars($this->getMarks())."</tridas:marks>\n";
                     if($this->getAltitude()!=NULL) $xml.="<tridas:altitude>".dbhelper::escapeXMLChars($this->getAltitude())."</tridas:altitude>\n";
-                    if(($this->getSlopeAngle()!=NULL) || (dbhelper::escapeXMLChars($this->getSlopeAzimuth())!=NULL)) 
+                    if(($this->getSlopeAngle()!=NULL) || ($this->getSlopeAzimuth())!=NULL) 
                     {
                     	$xml.="<tridas:slope>\n"; 
                     	if($this->getSlopeAngle()!=NULL) $xml.="<tridas:angle>".dbhelper::escapeXMLChars($this->getSlopeAngle())."</tridas:angle>\n";
@@ -492,8 +500,10 @@ class element extends elementEntity implements IDBAccessor
                     if($this->getBedrockDescription()!=NULL)	$xml.= "<tridas:bedrock>\n<tridas:description>".dbhelper::escapeXMLChars($this->getBedrockDescription())."</tridas:description>\n</tridas:bedrock>\n";
                     
 	                // Include permissions details if requested            
-	                $xml .= $this->getPermissionsXML();                      
-                    $xml.= $this->taxon->getHigherTaxonomyXML();
+	                $xml .= $this->getPermissionsXML();    
+
+	                
+	                if($format!="minimal") $xml.= $this->taxon->getHigherTaxonomyXML();
         
                     if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
 

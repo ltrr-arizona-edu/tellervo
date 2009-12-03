@@ -193,7 +193,8 @@ class searchParameters implements IParams
 									//'seriesdatingerrorpositive' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									//'seriesdatingerrornegative' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									//'seriesvaluecount' =>					array('tbl' => 'vwcomprehensivevm', 'field' => ''),
-									'seriescount' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'directchildcount')
+									'seriescount' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'directchildcount'),
+									'seriescode' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'code')
 		
 								
 								  );

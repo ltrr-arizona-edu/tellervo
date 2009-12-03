@@ -29,16 +29,25 @@ class taxon extends taxonEntity implements IDBAccessor
     /* SETTERS */
     /***********/
 
+    function setParamsFromDBRow($row)
+    {
+    	$this->setID($row['taxonid']);
+     	$this->setLabel($row['taxonlabel']);
+        $this->setCoLID($row['colid']);
+        $this->setCoLParentID($row['colparentid']);
+        $this->setTaxonRank($row['taxonrank']);
+        //$this->setParentID($row['parenttaxonid']);
+        //$this->setHigherTaxonomy();
+    }
+    
     function setParamsFromDB($theID)
     {
         // Set the current objects parameters from the database
 
         global $dbconn;
         
-        $this->setID($theID);
-        $sql = "SELECT taxon.taxonid, taxon.label, taxon.parentTaxonID, taxon.colID, taxon.colParentID, rank.taxonrank
-				FROM tlkpTaxon taxon
-				INNER JOIN tlkpTaxonRank rank on rank.taxonrankid=taxon.taxonrankid where taxonid=".pg_escape_string($this->getID());
+        
+        $sql = "SELECT * FROM vwtlkptaxon WHERE taxonid=".pg_escape_string($this->getID());
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -55,12 +64,8 @@ class taxon extends taxonEntity implements IDBAccessor
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->setLabel($row['label']);
-                $this->setCoLID($row['colid']);
-                $this->setCoLParentID($row['colparentid']);
-                $this->setTaxonRank($row['taxonrank']);
-                $this->setParentID($row['parenttaxonid']);
-                $this->setHigherTaxonomy();
+                $this->setParamsFromDBRow($row);
+
             }
         }
         else
@@ -251,6 +256,7 @@ class taxon extends taxonEntity implements IDBAccessor
     
     function getHigherTaxonomyXML()
     {
+    	$this->setHigherTaxonomy();
     	$xml = NULL;
  		$xml.= $this->getHigherTaxonXML('kingdom')."\n";   
         $xml.= $this->getHigherTaxonXML('phylum')."\n";   
