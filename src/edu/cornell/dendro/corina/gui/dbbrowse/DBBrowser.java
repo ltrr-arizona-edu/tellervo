@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.UUID;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -39,8 +38,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
-
-import org.tridas.schema.TridasObject;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
@@ -166,39 +163,148 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         		
      
         	}
+        	
         	public void keyTyped(KeyEvent txt){
 
         		
         	}        	
         	public void keyReleased(KeyEvent txt){
+        		         		
+		    	
+   		    	if(txtFilterInput.getText().length()==0) {
+   		    	    // Filter text is empty so reset object list
+   		    		lstSites.clearSelection();
+   		    		populateSiteList("");
+   		    		return;
+   		    	}
         		
-        		if(txtFilterInput.getText().length()==24)
-        		{
+	       		if(txtFilterInput.getText().length()==24)
+	       		{
+	       			// A barcode was probably just scanned
+	       			playBarcodeBeep();		
+	       			String barcodeText = txtFilterInput.getText();
+	       			txtFilterInput.setText("");
+	       			
+	       			// Decode the barcode string
+	       			LabBarcode.DecodedBarcode barcode = LabBarcode.decode(barcodeText);
+	       			
+	       			// Do search
+	       			searchByBarcode(barcode);
+	       		}
+	       		else {
+	      	    	// User is typing a lab code
+         			int key = txt.getKeyCode();
+           		    if (key == KeyEvent.VK_ENTER)
+           		    {
+           		    	 // User typed lab code followed by enter so search for it!
+           		    	 doLabCodeSearch(txtFilterInput.getText());
+           		    }
+	           		     
+	           		// Enter has not been pressed so user is 
+           		    // still typing lab code    
+	           		return;
+	      			 
+	      		 }
 
-        			playBarcodeBeep();
-        			
-        			
-        			// A barcode was probably just scanned		
-        			String barcodeText = txtFilterInput.getText();
-        			txtFilterInput.setText("");
-        			
-    				// Decode the barcode string
-    				LabBarcode.DecodedBarcode barcode = LabBarcode.decode(barcodeText);
-        			
-    				// Do search
-    				searchByBarcode(barcode);
-        		}
-        		
-        		// Unselect any site selection then filter
-        		// site list 
-        		lstSites.clearSelection();
-        		populateSiteList();
         	}
+
+
         });
      
         txtFilterInput.requestFocusInWindow();
     }
+    
+    
+	private Boolean doLabCodeSearch(String text) {
+		
+		  String [] strarray = null;
+		  String objcode = null;
+		  String elemcode = null;
+		  String sampcode = null;
+		  String radcode = null;
+		  String seriescode = null;
+		  
+		  // Remove the "C-" from beginning if present
+		  if (text.substring(0, 2).compareToIgnoreCase("C-")==0) text = text.substring(2, text.length());
+		  
+		  // Explode based on '-' delimiter
+		  strarray = text.split("-");
+		  
+		  // Get codes from array
+		  if (strarray.length==0) return null;
+		  if (strarray.length>=1) objcode = strarray[0];
+		  if (strarray.length>=2) elemcode = strarray[1];
+		  if (strarray.length>=3) sampcode = strarray[2];
+		  if (strarray.length>=4) radcode = strarray[3];
+		  if (strarray.length>=5) seriescode = strarray[4];
+		  
+		  
+		  // Only site code included so filter site list and go
+		  if (strarray.length==1){
+			  
+			  // Unselect any site selection then filter site list 
+			  lstSites.clearSelection();
+			  populateSiteList(objcode);
+			  
+			  // Check to see if any sites were found
+			  if (lstSites.getModel().getSize()==0) {
+				  Alert.message("Error", "No sites were found that match\n the requested search");
+				  populateSiteList("");
+				  return false;
+			  }
+			  
+			  return true;
+		  }
+		  
+			final DBBrowser glue = this;
+			
+			// set up our query...
+			SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
 
+			if(objcode!=null) search.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.LIKE, objcode);		
+			if(elemcode!=null) search.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, elemcode);
+			if(sampcode!=null) search.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, sampcode);
+			if(radcode!=null) search.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.EQUALS, radcode);
+			if(seriescode!=null) search.addSearchConstraint(SearchParameterName.SERIESCODE, SearchOperator.EQUALS, seriescode);
+
+			
+			// Do the search 
+			SeriesSearchResource searchResource = new SeriesSearchResource(search);
+			CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(glue, searchResource);
+			searchResource.query();
+			dlg.setVisible(true);
+			
+			
+			if(!dlg.isSuccessful()) {
+				// Search failed
+				new Bug(dlg.getFailException());
+				return false;
+			} else {
+				// Search successful
+				
+				ElementList elements = searchResource.getAssociatedResult();
+				
+				if(elements.size()==0)
+				{
+					Alert.message("None found", "No records were found that \nmatch this lab code");
+					populateSiteList("");
+					return false;
+				}
+				else
+				{	
+					// Several found so show results in table
+					((ElementListTableModel)tblAvailMeas.getModel()).setElements(elements);
+					availableSorter.reSort();
+				}
+				return true;
+			}		
+		  
+		  
+		
+	}
+
+    
+    
     public void playBarcodeBeep(){
 		AudioClip beep;
 		try {	
@@ -587,8 +693,13 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 		});
 	}
     
+	@SuppressWarnings("unchecked")
+	private void populateSiteList(){
+		populateSiteList(txtFilterInput.getText());
+	}
+	
     @SuppressWarnings("unchecked")
-	private void populateSiteList() {
+	private void populateSiteList(String objectCode) {
     	Collection<TridasObjectEx> sites; // = App.tridasObjects.getObjectList();
     	TridasObjectEx selectedSite = (TridasObjectEx) lstSites.getSelectedValue();
     	
@@ -611,7 +722,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	}
     	
 		// User has NOT entered filter text
-		if (txtFilterInput.getText().equals("")) {
+		if (objectCode.equals("")) {
 			((ArrayListModel<TridasObjectEx>) lstSites.getModel())
 					.replaceContents(sites);
 
@@ -620,7 +731,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			List<TridasObjectEx> filteredSites = new ArrayList<TridasObjectEx>();
 
 			// Loop through master site list and check if filter matches
-			String filter = txtFilterInput.getText().toLowerCase();
+			String filter = objectCode.toLowerCase();
 			for (TridasObjectEx s : sites) {
 				String search = s.toTitleString().toLowerCase();
 				if (search.indexOf(filter) != -1)
@@ -628,6 +739,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			}
 			((ArrayListModel<TridasObjectEx>) lstSites.getModel())
 					.replaceContents(filteredSites);
+			
 		}
     	
     	// if our site list was updated in the background,
@@ -644,6 +756,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	
     	// If there is only one item in list then select it!
     	if (lstSites.getModel().getSize()==1) lstSites.setSelectedIndex(0);
+
     }
     
     /**
