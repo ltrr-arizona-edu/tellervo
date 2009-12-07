@@ -212,6 +212,22 @@ class geometry
 		return null;
 	}
 	
+	function asKMLValue($kmlversion=2, $value)
+	{
+		global $firebug;
+
+		// Actual datatype is point so simple
+		$value = $value/20;
+		$sql = "select st_askml(".pg_escape_string($kmlversion).", ST_Buffer('".pg_escape_string($this->geometry)."', ".$value.")) as thevalue";
+		$kml .= $this->runSQLCalculation($sql);				
+		$firebug->log($kml, "Output KML for point value:");
+		return $kml;
+
+		
+		
+		return null;
+	}
+	
 	function getX()
 	{
 		$sql = "select x(centroid('".$this->geometry."')) as thevalue";

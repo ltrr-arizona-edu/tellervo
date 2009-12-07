@@ -427,6 +427,28 @@ class element extends elementEntity implements IDBAccessor
 		return $kml;
 	}
     
+	public function asKMLWithValue($value)
+	{
+		$kml = "<Placemark><name>".dbHelper::escapeXMLChars($this->getTitle())."</name><description><![CDATA[<br><b>Type</b>: ".dbHelper::escapeXMLChars($this->getType())."<br><b>Description</b>: ".dbHelper::escapeXMLChars($this->getDescription())."<br><br><font style=\"font-size: 8px; color: grey\">Created: ".$this->getCreatedTimeStamp('j M Y \a\t H:i')."<br>Last modified: ".$this->getLastModifiedTimestamp('j M Y \a\t H:i')."]]></description>";
+				
+		$roundvalue = round($value);
+		
+		if($roundvalue>=10) $tagstyle = "#tscore10";
+		else if($roundvalue>=9)  $tagstyle = "#tscore9";
+		else if($roundvalue>=8) $tagstyle = "#tscore8";
+		else if($roundvalue>=7) $tagstyle = "#tscore7";
+		else if($roundvalue>=6) $tagstyle = "#tscore6";
+		else if($roundvalue>=5) $tagstyle = "#tscore5";
+		else if($roundvalue>=4) $tagstyle = "#tscore4";
+		else  					$tagstyle = "#tscore3";
+
+		$kml .= "<styleUrl>$tagstyle</styleUrl>\n";
+		$kml .= $this->location->asKML();	
+		$kml .= "</Placemark>\n";
+		return $kml;
+	}	
+	
+	
    /**
     * Internal function for getting the XML representation of this element.  Use asXML instead.
     *

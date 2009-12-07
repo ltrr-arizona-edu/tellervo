@@ -18,6 +18,7 @@ require_once("inc/parameters.php");
 require_once("inc/search.php");
 require_once("inc/errors.php");
 require_once("inc/output.php");
+require_once("inc/olStyles.php");
 
 require_once("inc/object.php");
 require_once("inc/element.php");
@@ -43,17 +44,33 @@ if($_POST['requesturl'])
 
 // Get GET parameters
 $reqEntity = $_GET['entity'];
-$reqID = $_GET['id'];
+$reqID = explode(",", $_GET['id']);
 $format = $_GET['format'];
-$code = $_GET['code'];
+$code = explode(",", $_GET['code']);
+$values = explode(",", $_GET['values']);
+
+$firebug->log($reqID, "IDs requested");
+$firebug->log($code, "Codes requested");
+
 
 // Do basic error checking and set defaults
 if($format==NULL) $format = "gmap";
+if($reqID[0]=='') $reqID = null;
+if($code[0]=='') $code = null;
+if(count($values)>0)
+{
+	if(count($values)!=count($reqID)) {
+		$firebug->log("Different number of values to ids"); die(); 
+	}
+}
 
-// If both id and code are given use id  
-if($reqID && $code) $code = NULL;
+
+$firebug->log($reqID, "IDs requested");
+$firebug->log($code, "Codes requested");
+$firebug->log($values, "Values for each point");
 
 if($reqEntity==NULL) $reqEntity = 'object';
+
 
 
 $myMetaHeader->setRequestType('read');
@@ -87,134 +104,208 @@ else
 }
 
 $xmldata = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<kml xmlns=\"http://earth.google.com/kml/2.1\">\n<Document>\n<name>Corina Map</name>\n";
-$xmldata .= "<Style id=\"corinaDefault\">
-              <IconStyle>
-               <scale>1</scale>
-               <Icon>
-                <href>http://dendro.cornell.edu/temp/pin.png</href>
-               </Icon>
-               <hotSpot x=\"0.5\" y=\"0.5\" xunits=\"fraction\" yunits=\"fraction\"/>
-              </IconStyle>
-            <LabelStyle>
-              <color>FFFFFFFF</color>
-            <scale>1</scale>
+$xmldata .= getTScoreStyle();
 
-            </LabelStyle>
-            <LineStyle>
-              <color>ff030385</color>
-            
-            <width>1.5</width>
-            </LineStyle>
-            <PolyStyle>
-              <color>33030385</color>
-            </PolyStyle>            
-           </Style>";
+$fullSQL = null;
 
-if(($reqID=="all") || ($reqID==NULL) || ($reqID==""))
+if((count($reqID)==0) && (count($code)==0))
 {
-
+		$firebug->log("Doing all objects");
 		global $dbconn;
 		$deniedRecArray = array();
         // Do SQL Query
         switch ($reqEntity)
         {
         	case "object": 		$fullSQL = "select * from vwtblobject where locationgeometry is not null order by code asc"; break;
+        	case "element": 	$fullSQL = "select * from vwtblelement where locationgeometry is not null order by code asc"; break;
+        	case "sample": 	    $fullSQL = "select * from vwtblsample where locationgeometry is not null order by code asc"; break;   	
         	case "series":		$fullSQL = "select * from vwcomprehensivevm where extentgeometry is not null order by objectcode asc"; break;
         	default:	"unsupported entity type."; die();
         	
         }
-        
-                    
-    	$result = pg_query($dbconn, $fullSQL);
-
-        while ($row = pg_fetch_array($result))
-        {
-                     	
-            // Check user has permission to read then create a new object
-            if($reqEntity=="object") 
-            {
-                $myReturnObject = new object();
-                $hasPermission = $myAuth->getPermission("read", "object", $row['objectid']);
-            }
-            elseif($reqEntity=="element")
-            {
-                $myReturnObject = new element();
-                $hasPermission = $myAuth->getPermission("read", "element", $row['elementid']);
-            }
-            elseif($reqEntity=="sample") 
-            {
-                $myReturnObject = new sample();
-                $hasPermission = $myAuth->getPermission("read", "sample", $row['sampleid']);
-            }
-            elseif($reqEntity=="radius") 
-            {
-                $myReturnObject = new radius();
-                $hasPermission = $myAuth->getPermission("read", "radius", $row['radiusid']);
-            }
-            elseif($reqEntity=="series")
-            {
-                $myReturnObject = new measurement();
-                $hasPermission = $myAuth->getPermission("read", "measurement", $row['vmeasurementid']);
-            }
-            else
-            {
-                echo "Invalid return object ".$reqEntity." specified.";
-            }
-    
-            if($hasPermission===FALSE)
-            {
-                array_push($deniedRecArray, $row['id']); 
-                continue;
-            }
-
-            // Set parameters on new object and return XML
-            $success = $myReturnObject->setParamsFromDBRow($row);
-
-            if($success)
-            {
-                $xmldata.=$myReturnObject->asKML($format);
-            }
-            else
-            {
-                echo $myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage();
-                die();
-            }
-        }
-	
-	
 }
-else
+
+else if (count($reqID)==1)
 {
-	switch($reqEntity)
-	{
-	    case "object": 				$myEntity = new object(); break;      
-	    case "element": 			$myEntity = new element(); break;   
-	    case "measurementSeries" :	$myEntity = new measurement(); break;
-	    case "derivedSeries" :  	$myEntity = new measurement(); break;	    
-	    case "series":				$myEntity = new measurement(); break;
-	
-	    default:
-	    	echo "Unknown entity $reqEntity";
-	    	die();
-	}
-	
-	$myEntity->__construct();
-	
-	if($myAuth->getPermission('read', $reqEntity, $reqID)===FALSE)
-	{
-		echo "Permission denied";
-		die();
-	}
-	
-	
-	$success = $myEntity->setParamsFromDB($reqID);
-	if(!$success)
-	{
-		echo $myEntity->getLastErrorCode().$myEntity->getLastErrorMessage();
-	}
-		
-	$xmldata .= $myEntity->asKML();
+	$firebug->log("Doing single object from ID");
+
+	global $dbconn;
+	$deniedRecArray = array();
+    // Do SQL Query
+    switch ($reqEntity)
+    {
+    	case "object": 		$fullSQL = "select * from vwtblobject where locationgeometry is not null and objectid='".$reqID[0]."' order by code asc"; break;
+    	case "element":     $fullSQL = "select * from vwtblelement where locationgeometry is not null and elementid='".$reqID[0]."' order by code asc"; break;
+    	case "sample":      $fullSQL = "select * from vwtblsample where locationgeometry is not null and sampleid='".$reqID[0]."' order by code asc"; break;
+    	
+    	case "series":		$fullSQL = "select * from vwcomprehensivevm where extentgeometry is not null and vmeasurementid='".$reqID[0]."' order by objectcode asc"; break;
+    	default:	"unsupported entity type."; die();
+    	
+    }
 }
+
+else if (count($reqID)>1)
+{
+	$firebug->log("Doing multiple entities from id list");
+	global $dbconn;
+	$deniedRecArray = array();
+    // Do SQL Query
+    switch ($reqEntity)
+    {
+    	case "object": 		
+    		$fullSQL = "select * from vwtblobject where locationgeometry is not null and (";
+    		foreach ($reqID as $id)
+    		{
+    			$fullSQL.=" objectid='".trim($id)."' or ";
+    		}
+    		// Trim off last 'or'
+    		$fullSQL = substr($fullSQL, 0, -4);
+    		$fullSQL .= ") order by code asc"; 
+    		$firebug->log($fullSQL, "SQL");
+    		break;  
+    	case "element": 		
+    		$fullSQL = "select * from vwtblelement where locationgeometry is not null and (";
+    		foreach ($reqID as $id)
+    		{
+    			$fullSQL.=" elementid='".trim($id)."' or ";
+    		}
+    		// Trim off last 'or'
+    		$fullSQL = substr($fullSQL, 0, -4);
+    		$fullSQL .= ") order by code asc"; 
+    		$firebug->log($fullSQL, "SQL");
+    		break;    		
+    	case "series": 		
+    		$fullSQL = "select * from vwcomprehensivevm where locationgeometry is not null and (";
+    		foreach ($reqID as $id)
+    		{
+    			$fullSQL.=" vmeasurementid='".trim($id)."' or ";
+    		}
+    		// Trim off last 'or'
+    		$fullSQL = substr($fullSQL, 0, -4);
+    		$fullSQL .= ") order by objectcode asc"; 
+    		$firebug->log($fullSQL, "SQL");
+    		break; 
+    	default:	"unsupported entity type."; die();
+    	
+    }
+}
+
+else if (count($code)==1)
+{
+	$firebug->log("Doing single object from code");
+	global $dbconn;
+	$deniedRecArray = array();
+    // Do SQL Query
+    switch ($reqEntity)
+    {
+    	case "object": 		$fullSQL = "select * from vwtblobject where locationgeometry is not null and code = '".$code[0]."' order by code asc"; break;
+    	case "series":		$fullSQL = "select * from vwcomprehensivevm where extentgeometry is not null and code = '".$code[0]."' order by objectcode asc"; break;
+    	default:	"unsupported entity type."; die();
+    	
+    }
+	
+}
+
+else if (count($code)>1)
+{
+	$firebug->log("Doing multiple objects from code list");
+	global $dbconn;
+	$deniedRecArray = array();
+    // Do SQL Query
+    switch ($reqEntity)
+    {
+    	case "object": 		
+    		$fullSQL = "select * from vwtblobject where locationgeometry is not null and (";
+    		foreach ($code as $thecode)
+    		{
+    			$fullSQL.=" code='".trim($thecode)."' or ";
+    		}
+    		// Trim off last 'or'
+    		$fullSQL = substr($fullSQL, 0, -4);
+    		$fullSQL .= ") order by code asc"; 
+    		$firebug->log($fullSQL, "SQL");
+    		break;  		
+    	default:	"unsupported entity type."; die();
+    	
+    }
+}
+
+
+// DO SEARCH
+   $result = pg_query($dbconn, $fullSQL);
+
+   $i = 0;
+   while ($row = pg_fetch_array($result))
+   {
+                	
+       // Check user has permission to read then create a new object
+       if($reqEntity=="object") 
+       {
+           $myReturnObject = new object();
+           $hasPermission = $myAuth->getPermission("read", "object", $row['objectid']);
+       }
+       elseif($reqEntity=="element")
+       {
+           $myReturnObject = new element();
+           $hasPermission = $myAuth->getPermission("read", "element", $row['elementid']);
+       }
+       elseif($reqEntity=="sample") 
+       {
+           $myReturnObject = new sample();
+           $hasPermission = $myAuth->getPermission("read", "sample", $row['sampleid']);
+       }
+       elseif($reqEntity=="radius") 
+       {
+           $myReturnObject = new radius();
+           $hasPermission = $myAuth->getPermission("read", "radius", $row['radiusid']);
+       }
+       elseif($reqEntity=="series")
+       {
+           $myReturnObject = new measurement();
+           $hasPermission = $myAuth->getPermission("read", "measurement", $row['vmeasurementid']);
+       }
+       else
+       {
+           echo "Invalid return object ".$reqEntity." specified.";
+       }
+
+       if($hasPermission===FALSE)
+       {
+           array_push($deniedRecArray, $row['id']); 
+           continue;
+       }
+
+       // Set parameters on new object and return XML
+       $success = $myReturnObject->setParamsFromDBRow($row);
+
+       if($success)
+       {     	 
+       	   if($values[$i]!=NULL)
+       	   {
+       	   		// Values associated 
+       	   		$firebug->log("Point with value");
+           		$xmldata.=$myReturnObject->asKMLWithValue($values[$i]);
+       	   }
+       	   else
+       	   {
+       	   		// No values just points
+       	   		$firebug->log("Point without value");
+       	   		$xmldata.=$myReturnObject->asKML();
+       	   }
+       }
+       else
+       {
+           echo $myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage();
+           die();
+       }
+       
+       $i++;
+    }
+
+
+
+
+
 
 $xmldata .= "\n</Document>\n";
 $xmldata .= "</kml>";

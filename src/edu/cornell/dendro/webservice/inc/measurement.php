@@ -932,10 +932,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	{
 		global $firebug;
 		$firebug->log($this->getSummaryObjectCode(), "Summary object code");
-		
 	
-
-			
 		$kml = "<Placemark>";
 			
 		if($this->getTridasSeriesType()=='measurementSeries')
@@ -975,6 +972,59 @@ class measurement extends measurementEntity implements IDBAccessor
 		$kml .= "</Placemark>";
 		return $kml;
 	}
+	
+	public function asKMLWithValue($value)
+	{
+		$kml = "<Placemark>";
+			
+		if($this->getTridasSeriesType()=='measurementSeries')
+		{			
+			$kml.="<name>".$this->getSummaryObjectCode()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name>";
+		}
+		else
+		{
+			$kml.="<name>".$this->getTitle()."</name>";	
+		}
+		
+		$kml.= "<description><![CDATA[<table>
+					<tr><td><b>Series Type:</b></td><td> ".$this->getType()."</td></tr>
+					<tr><td><b>Analyst:</b></td><td> ".$this->getAnalyst()."</td></tr>
+					<tr><td><b>Dendrochronologist:</b></td><td> ".$this->getDendrochronologist()."</td></tr>
+					<tr><td><b>Dating Type:</b></td><td> ".$this->dating->getValue()."</td></tr>
+					<tr><td><b>First Year:</b></td><td> ".$this->getFirstYear()."</td></tr>
+					<tr><td><b>Sprout Year:</b></td><td> ".$this->getSproutYear()."</td></tr>
+					<tr><td><b>Death Year:</b></td><td> ".$this->getDeathYear()."</td></tr>
+					</table>
+					<br><b>Other comments:</b><br> ".$this->getComments()."]]></description>";				
+		$roundvalue = round($value);
+		
+		if($roundvalue>=10) $tagstyle = "#tscore10";
+		else if($roundvalue>=9)  $tagstyle = "#tscore9";
+		else if($roundvalue>=8) $tagstyle = "#tscore8";
+		else if($roundvalue>=7) $tagstyle = "#tscore7";
+		else if($roundvalue>=6) $tagstyle = "#tscore6";
+		else if($roundvalue>=5) $tagstyle = "#tscore5";
+		else if($roundvalue>=4) $tagstyle = "#tscore4";
+		else  					$tagstyle = "#tscore3";
+
+		$kml .= "<styleUrl>$tagstyle</styleUrl>\n";
+					
+		if($this->getTridasSeriesType()=='measurementSeries')
+		{
+			// Should be a point
+			$kml .= $this->location->asKML();
+		}
+		else
+		{
+			// Hopefully a polygon
+			$kml .= $this->location->asKML("2", "POLYGON");
+		}
+		
+		$kml .= "</Placemark>";
+		return $kml;
+	}	
+	
+	
 
 	private function _asXML($format, $parts, $recurseLevel=2)
 	{

@@ -300,6 +300,32 @@ class object extends objectEntity implements IDBAccessor
 		return $kml;
 	}
 	
+	public function asKMLWithValue($value)
+	{
+		$kml = "<Placemark><name>".$this->getCode()." - ".dbHelper::escapeXMLChars($this->getTitle())."</name>\n
+		<description><![CDATA[<b>Type</b>: ".dbHelper::escapeXMLChars($this->getType())."\n<br>
+		<b>Location type:</b> ".dbHelper::escapeXMLChars($this->location->getType())."\n<br>
+		<b>Associated series:</b> ".$this->getCountOfChildVMeasurements()."<br>
+		<b>Description</b>: ".dbHelper::escapeXMLChars($this->getDescription())."\n]]></description>\n";
+		
+		$roundvalue = round($value);
+		
+		if($roundvalue>=10) $tagstyle = "#tscore10";
+		else if($roundvalue>=9)  $tagstyle = "#tscore9";
+		else if($roundvalue>=8) $tagstyle = "#tscore8";
+		else if($roundvalue>=7) $tagstyle = "#tscore7";
+		else if($roundvalue>=6) $tagstyle = "#tscore6";
+		else if($roundvalue>=5) $tagstyle = "#tscore5";
+		else if($roundvalue>=4) $tagstyle = "#tscore4";
+		else  					$tagstyle = "#tscore3";
+
+		$kml .= "<styleUrl>$tagstyle</styleUrl>\n";
+		$kml .= $this->location->asKML();	
+		$kml .= "</Placemark>\n";
+		return $kml;
+	}	
+	
+	
 	private function _asXML($format='standard', $parts='all')
 	{
         $xml = NULL;

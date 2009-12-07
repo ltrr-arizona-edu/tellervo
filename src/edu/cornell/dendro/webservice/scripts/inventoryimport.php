@@ -63,8 +63,8 @@ $progressCount=0;
 
 $limit = 999999;
 $offset = 0;
-$doBoxes = TRUE;
-$firstRun = TRUE;
+$doBoxes = FALSE;
+$firstRun = FALSE;
 $doThird = TRUE;
 
 
