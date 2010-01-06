@@ -47,7 +47,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 		dialog.setContentPane(this);
 		setDefaults();
 
-		if(geometry != null)
+		if(geometry != null)	
 			setFromGeometry(geometry);
 		
 		dialog.pack();
@@ -82,8 +82,8 @@ public class LocationGeometry extends LocationGeometryUI implements
 		Pos pos = new Pos();
 		point.setPos(pos);
 		
-		pos.getValues().add(Double.valueOf(spnDDLat.getValue().toString()));
 		pos.getValues().add(Double.valueOf(spnDDLong.getValue().toString()));
+		pos.getValues().add(Double.valueOf(spnDDLat.getValue().toString()));
 		
 		return geometry;
 	}
