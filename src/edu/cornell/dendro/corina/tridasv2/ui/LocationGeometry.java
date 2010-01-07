@@ -117,6 +117,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 
 		cboLatLongStyle.setEnabled(true);
 		radGPS.setEnabled(false);
+		btnViewMap.setEnabled(false);
 
 		// Poke the radio buttons and lat long style to set fields
 		radManualActionPerformed(null);

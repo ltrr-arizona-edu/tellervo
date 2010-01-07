@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.cornell.dendro.corina.curation;
+package edu.cornell.dendro.corina.admin;
 
 import java.awt.Color;
 import java.awt.FontMetrics;

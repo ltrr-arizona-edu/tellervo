@@ -79,6 +79,11 @@ private JFrame frame;
   protected void init() {
 
 	  addUserGroupMenu();
+     
+	  JMenuItem changepwd = Builder.makeMenuItem("changepwd",
+            "edu.cornell.dendro.corina.admin.SetPasswordUI.loadDialog()", "password.png");
+ 	  add(changepwd); 
+	  
       addSeparator();
 	  addReportsMenu();
 	  addLabelMenu();
@@ -130,7 +135,7 @@ private JFrame frame;
 	  	JMenuItem usergroup = Builder.makeMenuItem("usersandgroups",
 	            "edu.cornell.dendro.corina.gui.AdminPanel.main()", "edit_group.png");
 	
-		usergroup.setEnabled(false);
+		usergroup.setEnabled(true);
 		add(usergroup);
 	}
 
@@ -143,7 +148,7 @@ private JFrame frame;
 	 	
 	 	
 	    JMenuItem findsample = Builder.makeMenuItem("findsample",
-	            "edu.cornell.dendro.corina.curation.SampleCuration.showDialog()", "findsample.png");
+	            "edu.cornell.dendro.corina.admin.SampleCuration.showDialog()", "findsample.png");
 	    curationmenu.add(findsample); 
 	    
 	    

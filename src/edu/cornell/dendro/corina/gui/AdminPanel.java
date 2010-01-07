@@ -11,11 +11,16 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.dictionary.User;
 
 
 public class AdminPanel extends javax.swing.JDialog {
     
+
+	private UserTableModel utm;
+	
+	
     /** Creates new form Admin */
     public AdminPanel(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -23,7 +28,8 @@ public class AdminPanel extends javax.swing.JDialog {
         populateComponents();
     }
     
-    private void initComponents() {
+    @SuppressWarnings("unchecked")
+	private void initComponents() {
 
         accountsTabPane = new javax.swing.JTabbedPane();
         userPanel = new javax.swing.JPanel();
@@ -65,7 +71,12 @@ public class AdminPanel extends javax.swing.JDialog {
             }
         });
         */
-        tblUsers.setModel(new UserTableModel());
+        
+        List<User> lstofUsers = (List<User>) App.dictionary.getDictionary("securityUserDictionary");
+        
+        utm = new UserTableModel(lstofUsers);
+        
+        tblUsers.setModel(utm);
         
                 
         tblUsers.setShowVerticalLines(false);
@@ -238,16 +249,12 @@ public class AdminPanel extends javax.swing.JDialog {
         
     }
     
-    
-    private void populateComponents() {
-    	List<User> users = (List<User>) App.dictionary.getDictionary("Users");
-    	List<User> userList = new ArrayList<User>();
-    	
-    	
+    @SuppressWarnings("unchecked")
+	private void populateComponents() {
+    	     		
     }
     
-    
-
+   
     private void chkShowDisabledUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledUsersActionPerformed
         // TODO add your handling code here:
 }
@@ -256,7 +263,7 @@ public class AdminPanel extends javax.swing.JDialog {
     }
     
     public class UserTableModel extends AbstractTableModel {
-    
+        	
     	private List<User> userList = new ArrayList<User>();
     	    	
         private final String[] columnNames = {
@@ -268,6 +275,11 @@ public class AdminPanel extends javax.swing.JDialog {
                 "Enabled",
             };
     	
+    	public UserTableModel(List<User> usrLst)
+    	{
+    		userList = usrLst;
+    	}
+        
         public void showDisabledUsers(boolean show){
         	
         }
@@ -281,7 +293,7 @@ public class AdminPanel extends javax.swing.JDialog {
 		};
 		
 		public int getRowCount() {
-			return 1;
+			return userList.size();
 		};		
 		
         public Class<?> getColumnClass(int c) {
@@ -294,12 +306,28 @@ public class AdminPanel extends javax.swing.JDialog {
 		
 		public User getUserAt(int rowIndex) {
 			//TODO: Implement this!
-			return this.userList.get(rowIndex);
+			User usr = userList.get(rowIndex);
+			return usr;
 		}		
 		
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			//TODO: Implement this!
-			return true;
+			User usr = getUserAt(rowIndex+1);
+			
+			return "000";
+			/*
+			if(columnIndex==0)
+			{
+				return usr.getId();
+			}
+			else if(columnIndex==1)
+			{
+				return usr.getUsername().toString();
+			}
+			else
+			{
+				return "---";
+			}*/
 		}
     
     

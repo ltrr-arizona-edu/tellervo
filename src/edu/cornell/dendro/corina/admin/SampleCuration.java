@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.curation;
+package edu.cornell.dendro.corina.admin;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
-import javax.swing.ListCellRenderer;
 
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -22,16 +21,10 @@ import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
-import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
-import edu.cornell.dendro.corina.tridasv2.LabCode;
-import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
-import edu.cornell.dendro.corina.tridasv2.ui.ListComboBoxRenderer;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
-import edu.cornell.dendro.corina.util.labels.LabBarcode.DecodedBarcode;
 import edu.cornell.dendro.corina.util.labels.ui.TridasListCellRenderer;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
@@ -90,9 +83,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 
     
     private void setupGui()
-    {
-    	this.setTitle("Sample Curation");
-    	
+    {    	
     	// Default to barcode searching
     	setManualSearch(false);
     	
@@ -190,8 +181,13 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
    		cboElement.setEnabled(e);
    		cboSample.setEnabled(e);
    		btnSearch.setEnabled(e);
-  
-    	
+   		lblObject.setEnabled(e);
+   		lblElement.setEnabled(e);
+   		lblSample.setEnabled(e);
+    	btnPopulateElements.setEnabled(e);
+    	btnPopulateSamples.setEnabled(e);
+    	btnSearch.setEnabled(e);
+   		
     	if(e)
     	{
     		// Manual items enabled
@@ -474,13 +470,21 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         panelManualSearch = new javax.swing.JPanel();
         cboElement = new javax.swing.JComboBox();
         cboObject = new javax.swing.JComboBox();
-        btnSearch = new javax.swing.JButton();
         cboSample = new javax.swing.JComboBox();
         btnPopulateElements = new javax.swing.JButton();
         btnPopulateSamples = new javax.swing.JButton();
-        btnOk = new javax.swing.JButton();
+        lblObject = new javax.swing.JLabel();
+        lblElement = new javax.swing.JLabel();
+        lblSample = new javax.swing.JLabel();
+        btnSearch = new javax.swing.JButton();
+        panelResults = new javax.swing.JPanel();
         scrollResults = new javax.swing.JScrollPane();
         tblResults = new javax.swing.JTable();
+        panelButtons = new javax.swing.JPanel();
+        btnOk = new javax.swing.JButton();
+        sep = new javax.swing.JSeparator();
+
+        setTitle("Find a sample...");
 
         radBarcode.setSelected(true);
         radBarcode.setText("Lookup sample by barcode:");
@@ -495,19 +499,23 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 
         panelManualSearch.setEnabled(false);
 
-        cboElement.setEditable(true);
         cboElement.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--all--]" }));
 
         cboObject.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--select--]" }));
 
-        btnSearch.setText("Search");
-
-        cboSample.setEditable(true);
         cboSample.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--all--]" }));
 
         btnPopulateElements.setText("Populate");
 
         btnPopulateSamples.setText("Populate");
+
+        lblObject.setText("Object:");
+
+        lblElement.setText("Element:");
+
+        lblSample.setText("Sample:");
+
+        btnSearch.setText("Search");
 
         org.jdesktop.layout.GroupLayout panelManualSearchLayout = new org.jdesktop.layout.GroupLayout(panelManualSearch);
         panelManualSearch.setLayout(panelManualSearchLayout);
@@ -515,37 +523,47 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
             panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelManualSearchLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(cboObject, 0, 146, Short.MAX_VALUE)
+                .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                    .add(lblObject, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
+                    .add(lblElement, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(lblSample, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(cboElement, 0, 146, Short.MAX_VALUE)
-                    .add(btnPopulateElements))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(panelManualSearchLayout.createSequentialGroup()
-                        .add(cboSample, 0, 147, Short.MAX_VALUE)
+                        .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(cboSample, 0, 270, Short.MAX_VALUE)
+                            .add(cboElement, 0, 270, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnSearch))
-                    .add(btnPopulateSamples))
-                .addContainerGap())
+                        .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                            .add(btnPopulateElements, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(btnPopulateSamples, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, btnSearch, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .add(5, 5, 5))
+                    .add(panelManualSearchLayout.createSequentialGroup()
+                        .add(cboObject, 0, 373, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         panelManualSearchLayout.setVerticalGroup(
             panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelManualSearchLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnSearch)
-                    .add(cboSample, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(cboElement, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblObject)
                     .add(cboObject, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnPopulateElements)
-                    .add(btnPopulateSamples))
+                    .add(lblElement)
+                    .add(cboElement, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(btnPopulateSamples)
+                    .add(lblSample)
+                    .add(cboSample, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(btnSearch)
                 .addContainerGap())
         );
-
-        btnOk.setText("Ok");
 
         tblResults.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -565,32 +583,76 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         });
         scrollResults.setViewportView(tblResults);
 
+        org.jdesktop.layout.GroupLayout panelResultsLayout = new org.jdesktop.layout.GroupLayout(panelResults);
+        panelResults.setLayout(panelResultsLayout);
+        panelResultsLayout.setHorizontalGroup(
+            panelResultsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelResultsLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(scrollResults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        panelResultsLayout.setVerticalGroup(
+            panelResultsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelResultsLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(scrollResults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        btnOk.setText("Ok");
+
+        sep.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        sep.setMaximumSize(new java.awt.Dimension(9999, 2));
+        sep.setMinimumSize(new java.awt.Dimension(30, 2));
+        sep.setPreferredSize(new java.awt.Dimension(50, 2));
+
+        org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
+        panelButtons.setLayout(panelButtonsLayout);
+        panelButtonsLayout.setHorizontalGroup(
+            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelButtonsLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(sep, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, btnOk))
+                .addContainerGap())
+        );
+        panelButtonsLayout.setVerticalGroup(
+            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelButtonsLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(sep, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(btnOk)
+                .addContainerGap())
+        );
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
+                .add(35, 35, 35)
+                .add(panelManualSearch, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .add(layout.createSequentialGroup()
+                .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(scrollResults, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 583, Short.MAX_VALUE))
+                        .add(panelResults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
                     .add(layout.createSequentialGroup()
-                        .add(35, 35, 35)
-                        .add(txtBarcode, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE))
-                    .add(layout.createSequentialGroup()
-                        .addContainerGap()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(layout.createSequentialGroup()
-                                .add(29, 29, 29)
-                                .add(panelManualSearch, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .add(layout.createSequentialGroup()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(radBarcode)
-                                    .add(radManual))
-                                .add(319, 319, 319))))
+                            .add(radBarcode)
+                            .add(radManual))
+                        .add(100, 100, 100))
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(btnOk)))
+                        .add(29, 29, 29)
+                        .add(txtBarcode, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+                        .addContainerGap())))
+            .add(layout.createSequentialGroup()
+                .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -604,10 +666,10 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
                 .add(radManual)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelManualSearch, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(18, 18, 18)
-                .add(scrollResults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
-                .add(18, 18, 18)
-                .add(btnOk)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelResults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 59, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -629,16 +691,22 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     protected javax.swing.JComboBox cboElement;
     protected javax.swing.JComboBox cboObject;
     protected javax.swing.JComboBox cboSample;
+    protected javax.swing.JLabel lblElement;
+    protected javax.swing.JLabel lblObject;
+    protected javax.swing.JLabel lblSample;
+    protected javax.swing.JPanel panelButtons;
     protected javax.swing.JPanel panelManualSearch;
+    protected javax.swing.JPanel panelResults;
     protected javax.swing.JRadioButton radBarcode;
     protected javax.swing.JRadioButton radManual;
     protected javax.swing.JScrollPane scrollResults;
+    protected javax.swing.JSeparator sep;
     protected javax.swing.JTable tblResults;
     protected javax.swing.JTextField txtBarcode;
     // End of variables declaration//GEN-END:variables
 
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+
 		Object btn = e.getSource();
 		
 		if(btn==radManual)

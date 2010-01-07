@@ -7,7 +7,17 @@ public class User extends DictionaryElement {
 		super(DictionaryElement.Type.User, e);
 		
 		fullname = e.getAttributeValue("lastName") + ", " + e.getAttributeValue("firstName");
+		firstname = e.getAttributeValue("firstName");
+		lastname = e.getAttributeValue("lastName");
+		username = e.getAttributeValue("username");
+		
 	}
+
+	private String fullname;
+    private String firstname;
+    private String lastname;
+    private String username;
+    
 	
 	/**
 	 * Only for creating a user when we don't have one in the dictionary
@@ -18,7 +28,6 @@ public class User extends DictionaryElement {
 		fullname = name;
 	}
 	
-	private String fullname;
 	
 	/**
 	 * @return the username
