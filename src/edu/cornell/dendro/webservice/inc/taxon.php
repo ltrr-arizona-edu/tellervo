@@ -47,7 +47,7 @@ class taxon extends taxonEntity implements IDBAccessor
         global $dbconn;
         
         
-        $sql = "SELECT * FROM vwtlkptaxon WHERE taxonid=".pg_escape_string($this->getID());
+        $sql = "SELECT * FROM vwtlkptaxon WHERE taxonid=".pg_escape_string($theID);
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -57,7 +57,7 @@ class taxon extends taxonEntity implements IDBAccessor
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified taxon ID");
+                $this->setErrorMessage("903", "No records match the specified taxon ID. SQL was ".dbhelper::xmlSpecialCharReplace($sql));
                 return FALSE;
             }
             else

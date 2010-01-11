@@ -113,7 +113,7 @@ order by objectcode, elementcode, samplecode";
 ?>
 
 <html>
-		<link rel="stylesheet" href="http://blogs.su.se/~matlin/cnc.css" type="text/css" />
+		<link rel="stylesheet" href="css/cnc.css" type="text/css" />
 
 	
 <table border="0"><thead><tr><th></th><th colspan="3">Radius A</th><th colspan="3">Radius B</th><th colspan="3">Radius C</th></tr>

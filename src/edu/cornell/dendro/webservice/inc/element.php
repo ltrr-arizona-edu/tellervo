@@ -226,7 +226,8 @@ class element extends elementEntity implements IDBAccessor
      * @return unknown
      */
     function setParamsFromParamsClass($paramsClass)
-    {    	    	    	
+    {   
+   	
         // Alter the parameter values based upon values supplied by the user and passed as a parameters class
         if ($paramsClass->getTitle()!=NULL)             	$this->setTitle($paramsClass->getTitle());
         if ($paramsClass->getComments()!=NULL)             	$this->setComments($paramsClass->getComments());
@@ -722,6 +723,8 @@ class element extends elementEntity implements IDBAccessor
                     $sql = substr($sql, 0, -2);
                     $sql .= " where elementid='".pg_escape_string($this->getID())."'";
                 }
+                
+                $firebug->log($sql, "SQL");
                 //echo $sql;
 
                 // Run SQL command

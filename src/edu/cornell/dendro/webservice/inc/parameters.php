@@ -491,6 +491,7 @@ class elementParameters extends elementEntity implements IParams
 		global $corinaNS;
         global $tridasNS;
         global $taxonomicAuthorityEdition;
+        global $firebug;
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
                
