@@ -9,14 +9,20 @@ public class User extends DictionaryElement {
 		fullname = e.getAttributeValue("lastName") + ", " + e.getAttributeValue("firstName");
 		firstname = e.getAttributeValue("firstName");
 		lastname = e.getAttributeValue("lastName");
-		username = e.getAttributeValue("username");
+		
+		if (e.getAttributeValue("enabled").compareTo("true")==1){
+			enabled = true;
+		}
+		else{
+			enabled = false;
+		}
 		
 	}
 
 	private String fullname;
     private String firstname;
     private String lastname;
-    private String username;
+    private Boolean enabled; 
     
 	
 	/**
@@ -42,6 +48,18 @@ public class User extends DictionaryElement {
 	public String getFullname() {
 		return fullname;
 	}
+	
+	public String getFirstname(){
+		return firstname;
+	}
+	
+	public String getLastname(){
+		return lastname;
+	}
+	
+	public Boolean isEnabled(){
+		return enabled;
+	}		
 		
 	public String toString() {
 		return fullname;

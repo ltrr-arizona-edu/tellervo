@@ -133,7 +133,7 @@ private JFrame frame;
 	protected void addUserGroupMenu() {
 		
 	  	JMenuItem usergroup = Builder.makeMenuItem("usersandgroups",
-	            "edu.cornell.dendro.corina.gui.AdminPanel.main()", "edit_group.png");
+	            "edu.cornell.dendro.corina.admin.UserGroupAdmin.main()", "edit_group.png");
 	
 		usergroup.setEnabled(true);
 		add(usergroup);

@@ -11,8 +11,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import edu.cornell.dendro.corina.admin.UserGroupAdminOld;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gui.AdminPanel;
 import edu.cornell.dendro.corina.platform.Platform;
 
 import edu.cornell.dendro.corina.util.Center;
