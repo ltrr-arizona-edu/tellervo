@@ -1,20 +1,26 @@
 package edu.cornell.dendro.corina.admin;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.dictionary.User;
+import edu.cornell.dendro.corina.schema.SecurityGroup;
+import edu.cornell.dendro.corina.schema.SecurityUser;
+import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 
 /**
  *
  * @author  peterbrewer
  */
-public class UserGroupAdmin extends javax.swing.JDialog {
+public class UserGroupAdmin extends javax.swing.JDialog implements ActionListener {
     
 	private static final long serialVersionUID = -7039984838996355038L;
-	private UserTableModel utm;
+	private SecurityUserTableModel utm;
 	
     /** Creates new form UserGroupAdmin2 */
     public UserGroupAdmin(java.awt.Frame parent, boolean modal) {
@@ -30,9 +36,14 @@ public class UserGroupAdmin extends javax.swing.JDialog {
         this.setTitle("Users and Groups");
         
         // Populate user list
-        List<User> lstofUsers = (List<User>) Dictionary.getDictionary("securityUserDictionary");   
-        utm = new UserTableModel(lstofUsers);
+        List<SecurityUser> lstofUsers = (List<SecurityUser>) Dictionary.getDictionary("securityUserDictionary");  
+        
+        
+        utm = new SecurityUserTableModel(lstofUsers);
         tblUsers.setModel(utm);
+        
+        btnOk.addActionListener(this);
+        
         
     }
     
@@ -287,71 +298,7 @@ public class UserGroupAdmin extends javax.swing.JDialog {
             }
         });
     }
-    
-    public class UserTableModel extends AbstractTableModel {
-    	
-
-		private static final long serialVersionUID = -8612040164917147271L;
-		private List<User> userList;
-    	    	
-        private final String[] columnNames = {
-                "#",
-                "User",
-                "First name",
-                "Last name",
-                "Groups",
-                "Enabled",
-            };
-    	
-    	public UserTableModel(List<User> usrLst){
-    		userList = usrLst;
-    	}
-        
-        public void setUsers(List<User> usrList){
-        	userList = usrList;        	
-        }
-        
-		public int getColumnCount() {
-			return columnNames.length;
-		};
-		
-		public int getRowCount() {
-			return userList.size();
-		};		
-		
-        public Class<?> getColumnClass(int c) {
-        	if (c==5){
-        		return Boolean.class;
-        	} else {
-        		return String.class;
-        	}
-        }
-        
-		public String getColumnName(int index) {
-			return columnNames[index];
-		}
-		
-		public User getUserAt(int rowIndex) {
-			return userList.get(rowIndex);						
-		}		
-		
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			User usr = getUserAt(rowIndex);
-
-			switch (columnIndex) {
-				case 0: return usr.getId();
-				case 1: return usr.getUsername();
-				case 2: return usr.getFirstname();
-				case 3: return usr.getLastname();
-				case 4: return "n/a";
-				case 5: return usr.isEnabled();
-				default: return null;
-			}
-		}
-    
-    
-    }
-    
+  
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JTabbedPane accountsTabPane;
@@ -374,5 +321,9 @@ public class UserGroupAdmin extends javax.swing.JDialog {
     protected javax.swing.JTable tblUsers;
     protected javax.swing.JPanel userPanel;
     // End of variables declaration//GEN-END:variables
+
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==this.btnOk) this.dispose();
+	}
     
 }
