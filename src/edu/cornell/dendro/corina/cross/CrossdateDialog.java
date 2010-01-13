@@ -288,11 +288,13 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     			// show scores for this class...
     			if(score != null)
     				allScoresModel.setScoreClass(score.scoreClass);
+    				histogramModel.setScoreClass(score.scoreClass);
+    			
     		}
     	});
 
     	// when the score type selected on our histogram table changes
-    	cboDisplayHistogram.addActionListener(new ActionListener() {
+    	/*cboDisplayHistogram.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			ScoreType score = (ScoreType) cboDisplayHistogram.getSelectedItem();
     			
@@ -301,9 +303,10 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     				histogramModel.setScoreClass(score.scoreClass);
     		}
     	});
+    	*/
     	
     	// swap button...
-    	btnSwap.addActionListener(new ActionListener() {
+    	/*btnSwap.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			int i1 = cboPrimary.getSelectedIndex();
     			int i2 = cboSecondary.getSelectedIndex();
@@ -312,8 +315,16 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     			cboSecondary.setSelectedIndex(i1);
     		}
     	});
-
-    	btnAddMeasurement.addActionListener(new ActionListener() {
+*/
+    	
+    	// reset button...
+    	btnResetPosition.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			cboPrimary.setSelectedIndex(cboPrimary.getSelectedIndex());
+    		}
+    	});
+    	
+    	btnAddRemoveSeries.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     	    	// let user choose crossdates, exit if they close quietly
     			ElementList tmpElements;
@@ -470,10 +481,10 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	
     	// and set the model
     	cboDisplayStats.setModel(new DefaultComboBoxModel(scoreTypes.toArray()));
-    	cboDisplayHistogram.setModel(new DefaultComboBoxModel(scoreTypes.toArray()));
+    	//cboDisplayHistogram.setModel(new DefaultComboBoxModel(scoreTypes.toArray()));
     	
     	cboDisplayStats.setSelectedIndex(0);
-    	cboDisplayHistogram.setSelectedIndex(0);
+    	//cboDisplayHistogram.setSelectedIndex(0);
     }
 
     /**
