@@ -1,17 +1,20 @@
-DECLARE
-goodseriesid ALIAS FOR $1;             -- The ID of the series with correct entities 
-gooduuids cpgdb.typfulluuids%ROWTYPE;  -- The UUIDs of the entities for this series
+-- Function: cpgdb.graftseries(uuid, uuid, cpgdb.graftpoint)
 
-badseriesid ALIAS FOR $2;              -- The ID of the series with incorrect entities
-baduuids cpgdb.typfulluuids%ROWTYPE;   -- The UUIDs of the entities for this series
-badseries vwcomprehensivevm%ROWTYPE;   -- The series itself
+-- DROP FUNCTION cpgdb.graftseries(uuid, uuid, cpgdb.graftpoint);
 
-graftpoint ALIAS FOR $3;               -- The entity at which the graft should be performed
-
+CREATE OR REPLACE FUNCTION cpgdb.graftseries(goodseriesid uuid, badseriesid uuid, graftpoint cpgdb.graftpoint)
+  RETURNS vwcomprehensivevm AS
+$BODY$DECLARE
+goodseriesid ALIAS FOR $1;               -- The ID of the series with correct entities 
+gooduuids cpgdb.typfulluuids%ROWTYPE;    -- The UUIDs of the entities for this series
+badseriesid ALIAS FOR $2;                -- The ID of the series with incorrect entities
+baduuids cpgdb.typfulluuids%ROWTYPE;     -- The UUIDs of the entities for this series
+graftpoint ALIAS FOR $3;                 -- The entity at which point the graft should be done
+cleanedseries vwcomprehensivevm%ROWTYPE; -- The cleaned up series
 
 BEGIN
 
--- Get good and bad id's for all entities
+-- Get good and bad id's for all entities associated with these series
 SELECT e.elementid, s.sampleid, r.radiusid, vm.vmeasurementid as seriesid INTO gooduuids
 FROM tblvmeasurement vm 
 LEFT JOIN tblmeasurement m ON vm.measurementid=m.measurementid
@@ -36,8 +39,11 @@ ELSIF (graftpoint='radius'::cpgdb.graftpoint) THEN
    PERFORM cpgdb.mergeradii(gooduuids.radiusid, baduuids.radiusid); 
 END IF;
 
--- Requiry to get updated details of the 'bad' series
-SELECT * INTO badseries FROM vwcomprehensivevm WHERE vmeasurementid=badseriesid;
+-- Requery to get updated details of the 'bad' series once it has been merged 
+SELECT * INTO cleanedseries FROM vwcomprehensivevm WHERE vmeasurementid=badseriesid;
 
-RETURN badseries;
-END;
+RETURN cleanedseries;
+END;$BODY$
+  LANGUAGE 'plpgsql' VOLATILE
+  COST 100;
+ALTER FUNCTION cpgdb.graftseries(uuid, uuid, cpgdb.graftpoint) OWNER TO aps03pwb;

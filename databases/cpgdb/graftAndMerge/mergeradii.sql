@@ -5,14 +5,14 @@
 CREATE OR REPLACE FUNCTION cpgdb.mergeradii(goodradiusid uuid, badradiusid uuid)
   RETURNS tblradius AS
 $BODY$DECLARE
-goodradiusid ALIAS FOR $1;
-badradiusid ALIAS FOR $2;
-goodradius tblradius%ROWTYPE;
-badradius tblradius%ROWTYPE;
-commentstr varchar;
-lookup varchar;
-discrepstr varchar;
-discrepancycount integer;
+goodradiusid ALIAS FOR $1;    -- ID of radius with correct entities
+goodradius tblradius%ROWTYPE; -- The radius itself
+badradiusid ALIAS FOR $2;     -- ID of radius with incorrect entities
+badradius tblradius%ROWTYPE;  -- The radius itself
+commentstr varchar;           -- Used to compile comments for indicating discrepancies 
+lookup varchar;               -- Temporary variable for storing values from lookup tables
+discrepstr varchar;           -- Basic comment to highlight discrepancies
+discrepancycount integer;     -- Count of number of fields that aren't the same
 BEGIN
 
 -- Initialize vars
@@ -118,14 +118,16 @@ IF goodradius.comments!=badradius.comments THEN
    discrepancycount:=discrepancycount+1;
 END IF;
 
-IF discrepancycount=1 THEN
-  RAISE NOTICE '1 discrepancy detected when merging radii';
-ELSIF discrepancycount > 1 THEN
-  RAISE NOTICE '% discrepancies detected when mergin radii', discrepancycount;
-ELSE 
+-- Show notices for any discrepancies
+--IF discrepancycount=1 THEN
+--  RAISE NOTICE '1 discrepancy detected when merging radii';
+--ELSIF discrepancycount > 1 THEN
+--  RAISE NOTICE '% discrepancies detected when mergin radii', discrepancycount;
+--ELSE 
 --  RAISE NOTICE 'No discrepancies detected';
-END IF;
+--END IF;
 
+-- If there are discrepancies either set or update the comments field to highlight issues
 IF discrepancycount>0 THEN
   IF goodradius.comments IS NOT NULL THEN
     UPDATE tblradius SET comments=goodradius.comments || discrepstr || commentstr || '***' WHERE radiusid=goodradiusid;
@@ -134,12 +136,11 @@ IF discrepancycount>0 THEN
   END IF;
 END IF;
 
--- Get updated radius info
-SELECT * INTO goodradius FROM tblradius WHERE radiusid=goodradiusid;
-
 -- Delete old radius record
 DELETE FROM tblradius WHERE radiusid=badradiusid;
 
+-- Get updated radius info and return it
+SELECT * INTO goodradius FROM tblradius WHERE radiusid=goodradiusid;
 RETURN goodradius;
 END;$BODY$
   LANGUAGE 'plpgsql' VOLATILE

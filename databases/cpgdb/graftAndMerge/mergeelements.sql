@@ -5,18 +5,18 @@
 CREATE OR REPLACE FUNCTION cpgdb.mergeelements(goodelementid uuid, badelementid uuid)
   RETURNS tblelement AS
 $BODY$DECLARE
-goodelementid ALIAS FOR $1;
-badelementid ALIAS FOR $2;
-goodelement tblelement%ROWTYPE;
-badelement tblelement%ROWTYPE;
-commentstr varchar;
-lookup varchar;
-discrepstr varchar;
-discrepancycount integer;
 
-badsamp RECORD;
-matchCount integer;
-goodsampleid uuid;
+goodelementid ALIAS FOR $1;      -- UUID of the element with correct entities
+goodelement tblelement%ROWTYPE;  -- The series itself
+badelementid ALIAS FOR $2;       -- UUID of the element with incorrect entities
+badelement tblelement%ROWTYPE;   -- The series itself
+commentstr varchar;              -- Used to compile comments for indicating discrepancies 
+discrepstr varchar;              -- Basic comment to highlight discrepancies
+discrepancycount integer;        -- Count of number of fields that aren't the same
+
+lookup varchar;                  -- Temporary variable for storing values from lookup tables
+badsamp RECORD;                  -- Temporary variable for storing associated samples
+goodsampleid uuid;               -- Temporary variable for storing uuid of good associated sample
 BEGIN
 
 -- Initialize vars
@@ -24,7 +24,7 @@ discrepancycount:=0;
 commentstr:= '';
 discrepstr:='*** Another record was automatically merged with this one and discrepancies were detected.  Please check the following issues: ';
 
--- Get the two samples in question
+-- Get the two elements in question
 SELECT * INTO goodelement FROM tblelement WHERE elementid=goodelementid;
 IF NOT FOUND THEN
    RAISE NOTICE 'The good element with id % was not found', goodelementid;
@@ -46,11 +46,10 @@ END IF;
 FOR badsamp IN SELECT * FROM tblsample WHERE elementid=badelementid ORDER BY code LOOP 
    SELECT sampleid INTO goodsampleid FROM tblsample WHERE elementid=goodelementid AND code=badsamp.code;
    IF goodsampleid IS NOT NULL THEN
-       RAISE NOTICE 'Recursing into mergeSample() as mergeElement() will cause conflict with sample % (code %)', 
-                     badsamp.sampleid, badsamp.code; 
+       --RAISE NOTICE 'Recursing into mergeSample() as mergeElement() will cause conflict with sample % (code %)', badsamp.sampleid, badsamp.code; 
        PERFORM cpgdb.mergesamples(goodsampleid, badsamp.sampleid);
    ELSE
-       RAISE NOTICE 'No conflict here so just go ahead a relink sample to new element';
+       --RAISE NOTICE 'No conflict here so just go ahead a relink sample to new element';
        UPDATE tblsample SET elementid=goodelementid WHERE sampleid=badsamp.sampleid;
    END IF;
 END LOOP;
@@ -201,15 +200,16 @@ IF goodelement.bedrockdescription!=badelement.bedrockdescription THEN
    discrepancycount:=discrepancycount+1;
 END IF;
 
-
-IF discrepancycount=1 THEN
-  RAISE NOTICE '1 discrepancy detected when merging elements';
-ELSIF discrepancycount > 1 THEN
-  RAISE NOTICE '% discrepancies detected when merging elements', discrepancycount;
-ELSE 
+-- Show notices for any discrepancies
+--IF discrepancycount=1 THEN
+--  RAISE NOTICE '1 discrepancy detected when merging elements';
+--ELSIF discrepancycount > 1 THEN
+--  RAISE NOTICE '% discrepancies detected when merging elements', discrepancycount;
+--ELSE 
 --  RAISE NOTICE 'No discrepancies detected';
-END IF;
+--END IF;
 
+-- If there are discrepancies either set or update the comments field to highlight issues
 IF discrepancycount>0 THEN
   IF goodelement.comments IS NOT NULL THEN
     --RAISE NOTICE 'Adding discrepency description to comments field';
@@ -220,12 +220,11 @@ IF discrepancycount>0 THEN
   END IF;
 END IF;
 
--- Get updated element info
-SELECT * INTO goodelement FROM tblelement WHERE elementid=goodelementid;
-
 -- Delete old element record
 DELETE FROM tblelement WHERE elementid=badelementid;
 
+-- Get updated element info and return it
+SELECT * INTO goodelement FROM tblelement WHERE elementid=goodelementid;
 RETURN goodelement;
 END;$BODY$
   LANGUAGE 'plpgsql' VOLATILE

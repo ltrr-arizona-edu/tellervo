@@ -5,18 +5,17 @@
 CREATE OR REPLACE FUNCTION cpgdb.mergesamples(goodsample uuid, badsample uuid)
   RETURNS tblsample AS
 $BODY$DECLARE
-goodsampleid ALIAS FOR $1;
-badsampleid ALIAS FOR $2;
-goodsample tblsample%ROWTYPE;
-badsample tblsample%ROWTYPE;
-commentstr varchar;
-lookup varchar;
-discrepstr varchar;
-discrepancycount integer;
+goodsampleid ALIAS FOR $1;    -- ID of sample with correct entities
+goodsample tblsample%ROWTYPE; -- The series itself
+badsampleid ALIAS FOR $2;     -- ID of sample with incorrect entities
+badsample tblsample%ROWTYPE;  -- The series itself
+commentstr varchar;           -- Used to compile comments for indicating discrepancies 
+discrepstr varchar;           -- Basic comment to highlight discrepancies
+discrepancycount integer;     -- Count of number of fields that aren't the same
 
-badrad RECORD;
-matchCount integer;
-goodradiusid uuid;
+lookup varchar;               -- Temporary variable for storing values from lookup tables
+badrad RECORD;                -- Temporary variable for storing associated radii
+goodradiusid uuid;            -- Temporary variable for storing uuid of good associatedradii
 BEGIN
 
 -- Initialize vars
@@ -42,16 +41,14 @@ IF goodsample.sampleid=badsample.sampleid THEN
    RETURN goodsample;
 END IF;
 
-
 -- Before we go any further we need to check that any associated radii don't need merging first
 FOR badrad IN SELECT * FROM tblradius WHERE sampleid=badsampleid ORDER BY code LOOP 
    SELECT radiusid INTO goodradiusid FROM tblradius WHERE sampleid=goodsampleid AND code=badrad.code;
    IF goodradiusid IS NOT NULL THEN
-       RAISE NOTICE 'Recursing into mergeRadii() as mergeSample() will cause conflict with radius % (code %)', 
-                     badrad.radiusid, badrad.code; 
+       --RAISE NOTICE 'Recursing into mergeRadii() as mergeSample() will cause conflict with radius % (code %)', badrad.radiusid, badrad.code; 
        PERFORM cpgdb.mergeradii(goodradiusid, badrad.radiusid);
    ELSE
-       RAISE NOTICE 'No conflict here so just go ahead a relink radius to new sample';
+       --RAISE NOTICE 'No conflict here so just go ahead a relink radius to new sample';
        UPDATE tblradius SET sampleid=goodsampleid WHERE radiusid=badrad.radiusid;
    END IF;
 END LOOP;
@@ -128,15 +125,16 @@ IF goodsample.comments!=badsample.comments THEN
    discrepancycount:=discrepancycount+1;
 END IF;
 
-
-IF discrepancycount=1 THEN
-  RAISE NOTICE '1 discrepancy detected when merging samples';
-ELSIF discrepancycount > 1 THEN
-  RAISE NOTICE '% discrepancies detected when merging samples', discrepancycount;
-ELSE 
+-- Show notices for any discrepancies
+--IF discrepancycount=1 THEN
+--  RAISE NOTICE '1 discrepancy detected when merging samples';
+--ELSIF discrepancycount > 1 THEN
+--  RAISE NOTICE '% discrepancies detected when merging samples', discrepancycount;
+--ELSE 
 --  RAISE NOTICE 'No discrepancies detected';
-END IF;
+--END IF;
 
+-- If there are discrepancies either set or update the comments field to highlight issues
 IF discrepancycount>0 THEN
   IF goodsample.comments IS NOT NULL THEN
     --RAISE NOTICE 'Adding discrepency description to comments field';
@@ -147,12 +145,11 @@ IF discrepancycount>0 THEN
   END IF;
 END IF;
 
--- Get updated sample info
-SELECT * INTO goodsample FROM tblsample WHERE sampleid=goodsampleid;
-
 -- Delete old sample record
 DELETE FROM tblsample WHERE sampleid=badsampleid;
 
+-- Get updated sample info and return it
+SELECT * INTO goodsample FROM tblsample WHERE sampleid=goodsampleid;
 RETURN goodsample;
 END;$BODY$
   LANGUAGE 'plpgsql' VOLATILE
