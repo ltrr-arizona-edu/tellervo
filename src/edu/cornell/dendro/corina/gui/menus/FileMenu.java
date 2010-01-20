@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -22,6 +23,8 @@ import javax.swing.JOptionPane;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.editor.ScanBarcodeUI;
+import edu.cornell.dendro.corina.editor.EditorFactory.BarcodeDialogResult;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.CanOpener;
@@ -42,6 +45,7 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
 import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
@@ -126,7 +130,7 @@ public class FileMenu extends JMenu {
 	
 	public void addIOMenus(){
 		
-		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()", "fileimport.png"));		
+		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png"));		
 	}
 	
 	public void addNewOpenMenus() {
@@ -278,6 +282,57 @@ public class FileMenu extends JMenu {
 			
 	}
 	
+	public static void importdbwithbarcode(){
+		String filename = "";
+		
+		try {
+			filename = FileDialog.showSingle(I18n.getText("dbimport..."), "Choose a series to import...");
+			// get filename, and load
+			Element e = ElementFactory.createElement(filename);
+		    Sample s = e.load();
+		    
+			// should we get this elsewhere?
+			String title = "[New series]";
+
+			final JDialog dialog = new JDialog();
+			final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
+			
+			dialog.setContentPane(barcodeUI);
+			dialog.setResizable(false);
+			dialog.pack();
+			dialog.setModal(true);
+			Center.center(dialog);
+			dialog.setVisible(true);
+			BarcodeDialogResult result = barcodeUI.getResult();
+
+			if(!result.success)
+			{
+				// start the import dialog with no barcode info   
+			    ImportFrame importdialog = new ImportFrame(s);
+			    importdialog.setVisible(true);
+			}
+			else{
+				// start the import dialog with barcode info 
+			    ImportFrame importdialog = new ImportFrame(s, result);
+			    importdialog.setVisible(true);
+			}
+			
+			
+		    
+		} catch (UserCancelledException uce) {
+			// do nothing
+		} catch (WrongFiletypeException wfte) {
+			Alert.error("Can't open file", "Can't open the file " + 
+					new File(filename).getName() + ".\n" +
+					"Corina does not recognize that file type.");
+		} catch (IOException ioe) {
+			// BUG: this should never happen.  loading is so fast, it'll get displayed
+			// in the preview component, and if it can't be loaded, "ok" should be dimmed.
+			// (is that possible with jfilechooser?)
+			Alert.error("I/O Error", "Can't open file " + filename + ":\n" + ioe.getMessage());
+			// (so why not use Bug.bug()?)
+		}
+	}
 	
 	public static void importdb() {
 		String filename = "";

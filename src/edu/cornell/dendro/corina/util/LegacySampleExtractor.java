@@ -32,6 +32,7 @@ import org.tridas.schema.TridasWoodCompleteness;
 
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.dictionary.Taxon;
+import edu.cornell.dendro.corina.editor.EditorFactory.BarcodeDialogResult;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.SecurityUser;
@@ -52,8 +53,25 @@ public class LegacySampleExtractor {
 			throw new UnsupportedOperationException("Legacy samples must be file-based samples");
 		
 		this.s = s;
-		
+		this.barcodeSupplied = false;
 		extractFromFilename();		
+	}
+	
+	/**
+	 * For use when you have a barcode to set the object, element and sample
+	 * @param s
+	 * @param result
+	 */
+	public LegacySampleExtractor(Sample s, BarcodeDialogResult result){
+		if(!(s.getLoader() instanceof FileElement))
+			throw new UnsupportedOperationException("Legacy samples must be file-based samples");
+		
+		
+		this.barcodeSupplied = true;
+		result.popupateCorinaSample(s);
+		this.s = s;
+		extractFromFilename();		
+		
 	}
 
 	private String objectCode;
@@ -61,16 +79,19 @@ public class LegacySampleExtractor {
 	private String sampleName;
 	private String radiusName;
 	private String measurementName;
+	private Boolean barcodeSupplied;
 
-	private void extractFromFilename() {
+	
+	public void extractFromFilename() {
+	
 		String filename = (String) s.getMeta("filename");
 		File f = new File(filename);
 		String basename = f.getName();
 		
-		Pattern patterns[] = new Pattern[6];
+		Pattern patterns[] = new Pattern[7];
 		
 		// default some stuff to A
-		sampleName = "A";
+		if (barcodeSupplied=false) sampleName = "A";
 		radiusName = "A";
 		measurementName = "A";
 		
@@ -86,7 +107,9 @@ public class LegacySampleExtractor {
         patterns[4]  = Pattern.compile("([a-zA-Z]{3})([0-9]*)\\&([0-9]*)\\.");
         // Site code, Three digits representing number of specimens in this sum
         patterns[5]  = Pattern.compile("([a-zA-Z]{3})[000|111|222|333|444|555|666|777|888|999]\\.");
-
+        // Modern Corina TRiDaS code C-ABC-1-A-A-A 
+        patterns[6]  = Pattern.compile("C-([a-zA-Z]{3})-([0-9]*)-([a-zA-Z]{1})-([a-zA-Z]{1})-([a-zA-Z]{1})\\.");
+        
         for(int i = 0; i < patterns.length; i++) {
         	Matcher matcher = patterns[i].matcher(basename);
         	
@@ -100,10 +123,10 @@ public class LegacySampleExtractor {
         		
         		switch (j) {
         		case 1:
-        			objectCode = val.toUpperCase();
+        			if (barcodeSupplied=false) objectCode = val.toUpperCase();
         			break;
         		case 2:
-        			elementName = val.toUpperCase();
+        			if (barcodeSupplied=false) elementName = val.toUpperCase();
         			break;
         		case 3:
         			switch(i) {
@@ -117,8 +140,8 @@ public class LegacySampleExtractor {
         					measurementName = val.substring(1, 2).toUpperCase();
         				}
         				else if(val.length() == 3) {
-        					sampleName = val.substring(0, 1).toUpperCase();
-        					radiusName = val.substring(1, 2).toUpperCase();
+        					if (barcodeSupplied=false) sampleName = val.substring(0, 1).toUpperCase();
+        				    radiusName = val.substring(1, 2).toUpperCase();
         					measurementName = val.substring(2, 3).toUpperCase();
         				}
         				break;
@@ -128,7 +151,19 @@ public class LegacySampleExtractor {
         			// should we implement case 4? it's not useful, I think
         			case 4:
         				break;
+        			case 6:
+        				if (barcodeSupplied=false) sampleName = val.toUpperCase();
+    					break;
+        			default:
+        				break;
         			}
+     					
+				case 4:
+					radiusName = val.toUpperCase();
+					break;
+				case 5:
+					measurementName = val.toUpperCase();
+    				break;
         		}
         	}
         	

@@ -56,7 +56,7 @@ public class EditorFactory {
 		// don't instantiate!
 	}
 
-	private static class BarcodeDialogResult {
+	public static class BarcodeDialogResult {
 		public boolean success = false;
 		
 		public TridasObject object;
@@ -281,41 +281,16 @@ public class EditorFactory {
 		// should we get this elsewhere?
 		String title = "[New series]";
 
-		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI();
-		barcodeUI.jLabel2.setIcon(Builder.getIcon("barcode.png", 128));
-
 		final JDialog dialog = new JDialog();
-		final BarcodeDialogResult result = new BarcodeDialogResult(dialog);
-
-		ActionListener al1 = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String barcodeText = barcodeUI.txtBarcode.getText();
-				
-				if(result.loadFromBarcode(barcodeText))
-					dialog.dispose();
-			}
-		};
-
-		ActionListener al2 = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (barcodeUI.chkAlwaysManual.isSelected()) {
-					// Set in prefs
-					System.out.println("Requested to never show barcode gui again");
-				}
-				result.success = true;
-				dialog.dispose();
-			}
-		};
-
-		barcodeUI.txtBarcode.addActionListener(al1);
-		barcodeUI.btnManual.addActionListener(al2);
-
+		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
+		
 		dialog.setContentPane(barcodeUI);
 		dialog.setResizable(false);
 		dialog.pack();
 		dialog.setModal(true);
 		Center.center(dialog);
 		dialog.setVisible(true);
+		BarcodeDialogResult result = barcodeUI.getResult();
 
 		// no success, so just ignore..
 		if(!result.success)
@@ -348,4 +323,6 @@ public class EditorFactory {
 		// start the editor
 		new Editor(sample).setVisible(true);
 	}
+	
+
 }

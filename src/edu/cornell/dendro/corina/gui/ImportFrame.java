@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.editor.EditorFactory.BarcodeDialogResult;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleAdapter;
@@ -40,15 +41,39 @@ public class ImportFrame extends XFrame {
 	/**
 	 * @param owner
 	 */
-	public ImportFrame(Sample s) {
+	public ImportFrame(Sample samp) {
 		super();
+		
+		extractor = new LegacySampleExtractor(samp);
+		importer = new TridasImportPanel(samp, extractor);
+		this.s = samp;
+		setupGUI();
+	}
 	
-		this.s = s;
-
+	/**
+	 * Use when you also have barcode information to set the object, element and sample
+	 * @param samp
+	 * @param result
+	 */
+	
+	public ImportFrame(Sample samp, BarcodeDialogResult result){
+		super();
+		
+		extractor = new LegacySampleExtractor(samp, result);
+		importer = new TridasImportPanel(samp, extractor);
+		this.s = samp;
+		
+		setupGUI();
+		
+	}   
+	
+	private void setupGUI()
+	{
+		
+		
 		setTitle("Importing " + s.getMetaString("title"));
 
-		extractor = new LegacySampleExtractor(s);
-		importer = new TridasImportPanel(s, extractor);
+
 				
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
@@ -115,4 +140,6 @@ public class ImportFrame extends XFrame {
 		
 		return panel;
 	}
+	
+	
 }

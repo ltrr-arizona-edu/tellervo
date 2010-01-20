@@ -1,4 +1,12 @@
 package edu.cornell.dendro.corina.editor;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JDialog;
+
+import edu.cornell.dendro.corina.editor.EditorFactory.BarcodeDialogResult;
+import edu.cornell.dendro.corina.ui.Builder;
 /*
  * ScanBarcodeUI.java
  *
@@ -13,9 +21,42 @@ package edu.cornell.dendro.corina.editor;
  */
 public class ScanBarcodeUI extends javax.swing.JPanel {
     
+	final BarcodeDialogResult result;
+	
     /** Creates new form ScanBarcodeUI */
-    public ScanBarcodeUI() {
+    public ScanBarcodeUI(final JDialog parent) {
         initComponents();
+        jLabel2.setIcon(Builder.getIcon("barcode.png", 128));
+        
+        result = new BarcodeDialogResult(parent);
+
+		ActionListener al1 = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String barcodeText = txtBarcode.getText();
+				
+				if(result.loadFromBarcode(barcodeText))
+					parent.dispose();
+			}
+		};
+
+		ActionListener al2 = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (chkAlwaysManual.isSelected()) {
+					// Set in prefs
+					System.out.println("Requested to never show barcode gui again");
+				}
+				//result.success = true;
+				parent.dispose();
+			}
+		};
+
+		txtBarcode.addActionListener(al1);
+		btnManual.addActionListener(al2);
+    }
+
+    public BarcodeDialogResult getResult()
+    {
+    	return result;
     }
     
     /** This method is called from within the constructor to
