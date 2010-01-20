@@ -566,7 +566,7 @@ public class Tucson implements Filetype {
 		saveData(s, w);
 	}
 
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		return false;
 	}
 

@@ -240,7 +240,8 @@ public class FileMenu extends JMenu {
 		
 		if(browser.getReturnStatus() == DBBrowser.RET_OK) {
 			ElementList toOpen = browser.getSelectedElements();
-			
+		
+			/*
 			List<Sample> samples = new ArrayList<Sample>();
 
 			for(Element e : toOpen) {
@@ -268,8 +269,9 @@ public class FileMenu extends JMenu {
 
 			// ok, now we have a list of valid samples in 'samples'...
 			// so open export dialog box
-
-			new ExportDialog(samples);
+			*/
+			
+			new ExportDialog(toOpen);
 
 		} 
 			

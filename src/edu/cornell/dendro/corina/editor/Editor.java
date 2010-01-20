@@ -67,6 +67,7 @@ import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.graph.BargraphFrame.BargraphPanel;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Layout;
@@ -179,6 +180,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private JComponent metaView;
 
 	private ComponentViewer componentsPanel = null;
+	
+	private BargraphPanel bargraphPanel = null;
 	
 	// gui -- new
 	private SampleDataView dataView; // (a jpanel)
@@ -440,6 +443,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		if(sample.getSampleType().isDerived())
 			componentsPanel = new ComponentViewer(sample);
 	}
+
 		
 	private void initMozillaMapPanel() {
 		MapLink link = new MapLink(sample.getSeries());

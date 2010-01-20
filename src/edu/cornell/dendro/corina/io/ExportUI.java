@@ -7,6 +7,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -25,12 +26,16 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.FileDialog.ExtensionFilter;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.PureStringWriter;
 import edu.cornell.dendro.corina.util.TextClipboard;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 
 /*
  * ExportUI.java
@@ -57,7 +62,7 @@ public class ExportUI extends javax.swing.JPanel{
 		"edu.cornell.dendro.corina.formats.RangesOnly", };
 	
 	private StringWriter writer = new PureStringWriter(10240); // 10K	
-	private List<Sample> sampleList;
+	private ElementList elements;
 	private String exportDirectory;
 	private boolean rememberExportDirectory;
 	private Boolean exportMulti = true;
@@ -68,9 +73,9 @@ public class ExportUI extends javax.swing.JPanel{
 	final JFileChooser fc = new JFileChooser();
 	
     /** Creates new form ExportUI */
-    public ExportUI(ExportDialog p, List<Sample> samples) {
+    public ExportUI(ExportDialog p, ElementList els) {
     	parent = p;
-    	sampleList = samples;
+    	elements = els;
     	
 		rememberExportDirectory = true;
 
@@ -96,6 +101,10 @@ public class ExportUI extends javax.swing.JPanel{
     
     private void setupGui()
     {
+    	// Hide preview button - not sure we want it any more
+    	btnPreview.setVisible(false);
+    	
+    	
     	// Disable ok button until file/folder has been selected
     	btnOK.setEnabled(false);
         
@@ -204,7 +213,7 @@ public class ExportUI extends javax.swing.JPanel{
 			public void actionPerformed(ActionEvent e) {
 				
 				Filetype ft =  (Filetype) formatModel.getSelectedItem();	
-				if(ft.isMultiFileCapable()){				
+				if(ft.isPackedFileCapable()){				
 					exportMulti=false;
 				 	setGuiForPacked(true);
 				} else {
@@ -236,7 +245,7 @@ public class ExportUI extends javax.swing.JPanel{
      */
     public void setWhatModel()
     {
-    	if(sampleList.size()>1)
+    	if(elements.size()>1)
     	{
         	String whatOptionsPl[] = new String[] {
         		"Just these series",
@@ -351,15 +360,16 @@ public class ExportUI extends javax.swing.JPanel{
 								
 			File outfile = new File(txtOutput.getText());
 
-			if(ft.isMultiFileCapable() && sampleList.size()>1)
+			if(ft.isPackedFileCapable() && elements.size()>1)
 			{
 				// Do 'packed' save
-				success = new Exporter().savePackedSample2(sampleList, ft, outfile);
+				new Exporter().savePackedSample2(elements, ft, outfile);				
 			}
 			else
 			{
-				// Do standard save
-				success = new Exporter().saveMultiSample2(sampleList, ft, outfile);
+				// Do standard save	
+				new Exporter().saveMultiSample2(elements, ft, outfile);
+			
 			}
 			
 			if(success=false)
@@ -386,7 +396,8 @@ public class ExportUI extends javax.swing.JPanel{
 
 		// Don't run if an export format hasn't been selected
 		if(i<0) return;
-		
+	
+		/*
 		try {
 			// save to buffer
 			setCursor(new Cursor(Cursor.WAIT_CURSOR)); // this could take a second...
@@ -401,13 +412,13 @@ public class ExportUI extends javax.swing.JPanel{
 			
 			// if the sample list has multi samples in it and the file type is 
 			// capable of writing multiple files we want a packed file. 
-			if (f.isMultiFileCapable() && sampleList.size()>1)
+			if (f.isMultiFileCapable() && elements.size()>1)
 			{
 				System.out.println("Saving packed samples as " + f.toString() + "format");
 				((PackedFileType)f).saveSamples(sampleList, b);
 				lblPreview.setText("Preview:");
 			}
-			else if (sampleList != null)
+			else if (elements != null)
 			{	
 				f.save(sampleList.get(0), b);
 				lblPreview.setText("Previewing file 1 of "+ Integer.toString(sampleList.size()) ); 
@@ -431,6 +442,7 @@ public class ExportUI extends javax.swing.JPanel{
 			// problem creating the filetype -- bug
 			Bug.bug(e);
 		}
+		*/
 	}
     
     /** This method is called from within the constructor to

@@ -440,7 +440,7 @@ public class HTML implements Filetype {
 	throw new IOException("HTML is a write-only format for samples");
     }
 
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		return false;
 	}
 

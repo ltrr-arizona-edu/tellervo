@@ -438,7 +438,7 @@ public class TridasDoc implements Filetype {
 		r.reset();
 	}
 
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		return true;
 	}
 

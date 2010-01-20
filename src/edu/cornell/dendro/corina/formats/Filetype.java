@@ -91,7 +91,7 @@ public interface Filetype {
     */
     public String getDefaultExtension();
     
-    public Boolean isMultiFileCapable();
+    public Boolean isPackedFileCapable();
  
     public Boolean isLossless();
     

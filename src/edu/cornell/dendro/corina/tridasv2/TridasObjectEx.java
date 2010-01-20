@@ -81,6 +81,18 @@ public class TridasObjectEx extends TridasObject {
 	public String getLabCode() {
 		return (labCode != null) ? labCode : "(n/a)";
 	}
+	
+	/**
+	 * Get the parent lab code, or (n/a) if there is no code
+	 * @return The "lab code" of the parent of this object
+	 */
+	@XmlTransient
+	public String getParentLabCode() {
+		if (parentObject!=null)		
+			return (parentObject.getLabCode() != null) ? parentObject.getLabCode() : null;
+		else
+			return null;
+	}
 
 	/**
 	 * Get a text representation of this site
@@ -91,6 +103,26 @@ public class TridasObjectEx extends TridasObject {
 			return title;
 		
 		return "[" + labCode + "] " + title;
+	}
+	
+	/**
+	 * Get a text representation of this site
+	 * @return A string in the form of '[PARENTCODE] [CODE] title'
+	 */
+	public String toTitleStringWithParentCode() {	
+		// No parent
+		if (getParentLabCode()==null) return toTitleString();
+		
+		String returnStr = null;
+			
+		returnStr = "[" + getParentLabCode() + "] ";
+		
+		if(labCode == null || labCode.equals(title))
+			returnStr += title;
+		else
+			returnStr += "[" + labCode + "] " + title;
+		 
+		return returnStr;
 	}
 		
 	

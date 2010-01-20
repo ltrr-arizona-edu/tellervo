@@ -341,7 +341,7 @@ public String toString() {
     }
   }
 
-public Boolean isMultiFileCapable() {
+public Boolean isPackedFileCapable() {
 	return false;
 }
 

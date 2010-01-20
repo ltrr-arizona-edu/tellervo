@@ -699,7 +699,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	}
 	
     @SuppressWarnings("unchecked")
-	private void populateSiteList(String objectCode) {
+	private void populateSiteList(String searchStr) {
     	Collection<TridasObjectEx> sites; // = App.tridasObjects.getObjectList();
     	TridasObjectEx selectedSite = (TridasObjectEx) lstSites.getSelectedValue();
     	
@@ -722,7 +722,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	}
     	
 		// User has NOT entered filter text
-		if (objectCode.equals("")) {
+		if (searchStr.equals("")) {
 			((ArrayListModel<TridasObjectEx>) lstSites.getModel())
 					.replaceContents(sites);
 
@@ -731,9 +731,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			List<TridasObjectEx> filteredSites = new ArrayList<TridasObjectEx>();
 
 			// Loop through master site list and check if filter matches
-			String filter = objectCode.toLowerCase();
+			String filter = searchStr.toLowerCase();
 			for (TridasObjectEx s : sites) {
-				String search = s.toTitleString().toLowerCase();
+				String search = s.toTitleStringWithParentCode().toLowerCase();
 				if (search.indexOf(filter) != -1)
 					filteredSites.add(s);
 			}

@@ -90,44 +90,67 @@ public class TridasObjectList extends CorinaResource {
 	public static class SiteComparator implements Comparator<TridasObjectEx> {
 		public static enum Mode {
 			POPULATED_FIRST,
-			ALPHABETICAL
+			ALPHABETICAL,
 		}
 		
 		private final Mode mode;
+		private Boolean incParentCode = true;
 		
 		public SiteComparator(Mode mode) {
 			this.mode = mode;
+		}
+		
+		public SiteComparator(Mode mode, Boolean incParentCode){
+			this.mode = mode;
+			this.incParentCode = incParentCode;
 		}
 		
 		public SiteComparator() {
 			this(Mode.ALPHABETICAL);
 		}
 		
+		public void setIncParentCode(Boolean incParentCode){
+			this.incParentCode = incParentCode;
+		}
+		
 		public int compare(TridasObjectEx o1, TridasObjectEx o2) {
+			
+			// ones with children first
 			Integer s1 = o1.getSeriesCount();
 			Integer s2 = o2.getSeriesCount();
 			boolean c1 = (s1 != null && s1 > 0);
 			boolean c2 = (s2 != null && s2 > 0);
-			
-			// ones with children first
 			if(mode == Mode.POPULATED_FIRST) {
 				if(c1 && !c2)
 					return -1;
 				else if(!c1 && c2)
 					return 1;
 			}
-			
+					
+			// ones with lab codes first
 			c1 = o1.hasLabCode();
 			c2 = o2.hasLabCode();
-
-			// ones with lab codes first
 			if(c1 && !c2)
 				return -1;
 			else if(!c1 && c2)
 				return 1;
 		
+			// get lab codes (including parents if applicable)
+			TridasObjectEx p1;
+			String code1;
+			TridasObjectEx p2;
+			String code2;
+			if((p1 = o1.getParent()) != null && this.incParentCode) 
+				code1 = p1.getLabCode()+o1.getLabCode();
+			else
+				code1 = o1.getLabCode();
+			if((p2 = o2.getParent()) !=null && this.incParentCode)
+				code2 = p2.getLabCode()+o2.getLabCode();
+			else
+				code2 = o2.getLabCode();
+						
 			if(c1 && c2)
-				return o1.getLabCode().compareToIgnoreCase(o2.getLabCode());
+				return code1.compareToIgnoreCase(code2);
 			else
 				return o1.getTitle().compareToIgnoreCase(o2.getTitle());
 		}

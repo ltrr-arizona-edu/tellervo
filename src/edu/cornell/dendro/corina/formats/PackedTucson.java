@@ -198,7 +198,7 @@ public class PackedTucson extends Tucson implements PackedFileType {
     }
     
     @Override
-    public Boolean isMultiFileCapable()
+    public Boolean isPackedFileCapable()
     {
     	return true;
     }

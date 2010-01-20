@@ -289,34 +289,10 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     			if(score != null)
     				allScoresModel.setScoreClass(score.scoreClass);
     				histogramModel.setScoreClass(score.scoreClass);
-    			
+    				
     		}
     	});
-
-    	// when the score type selected on our histogram table changes
-    	/*cboDisplayHistogram.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent ae) {
-    			ScoreType score = (ScoreType) cboDisplayHistogram.getSelectedItem();
-    			
-    			// show scores for this class...
-    			if(score != null)
-    				histogramModel.setScoreClass(score.scoreClass);
-    		}
-    	});
-    	*/
-    	
-    	// swap button...
-    	/*btnSwap.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent ae) {
-    			int i1 = cboPrimary.getSelectedIndex();
-    			int i2 = cboSecondary.getSelectedIndex();
-    			
-    			cboPrimary.setSelectedIndex(i2);
-    			cboSecondary.setSelectedIndex(i1);
-    		}
-    	});
-*/
-    	
+   	
     	// reset button...
     	btnResetPosition.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {

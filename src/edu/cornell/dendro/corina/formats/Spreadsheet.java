@@ -174,7 +174,7 @@ public class Spreadsheet implements Filetype, PackedFileType {
 		}
 	}
 
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		return true;
 	}
 

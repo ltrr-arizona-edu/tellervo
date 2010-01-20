@@ -235,7 +235,7 @@ public class TwoColumn implements Filetype {
         }
     }
 
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		return false;
 	}
 

@@ -410,7 +410,7 @@ public class Heidelberg implements Filetype {
 		w.write(StringUtils.leftPad(o.toString(), 6));
 	}
 
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		return false;
 	}
 

@@ -91,12 +91,18 @@ public class LabCodeFormatter {
 		if(objects.size() > 0) {
 			StringBuffer objectList = new StringBuffer();
 			
+			// PWB - Ignoring subobjects in lab code
+			// So that style is always the C-ABC-1-A-A-A 
+			// that is expected.
+			/*
 			for(String s : objects) {
 				if(objectList.length() > 0)
 					objectList.append(siteDelimiter);
 				objectList.append(s);
-			}
-					
+			}*/	
+			objectList.append(objects.get(0));
+			
+			
 			replace(format, "%SITES%", objectList.toString());
 			replace(format, "%SITE%", objects.get(objects.size() - 1));
 		}

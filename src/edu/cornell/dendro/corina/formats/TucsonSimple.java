@@ -253,7 +253,7 @@ public class TucsonSimple implements Filetype {
 		saveData(s, w);
 	}
 
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		return false;
 	}
 

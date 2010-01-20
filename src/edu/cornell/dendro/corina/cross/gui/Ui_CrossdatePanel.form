@@ -21,10 +21,14 @@
                   <Component id="paneTablesAndCharts" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="lblPrimary" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="cboPrimary" pref="523" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="cboPrimary" pref="288" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnResetPosition" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="lblStat" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="cboDisplayStats" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
@@ -41,6 +45,8 @@
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="lblPrimary" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cboDisplayStats" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblStat" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnResetPosition" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cboPrimary" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -136,21 +142,13 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="panelStats" alignment="0" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="lblViewType" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="lblSecondary" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  </Group>
+                                  <Component id="lblSecondary" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="cboViewType" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="lblStat" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="cboDisplayStats" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Component id="cboSecondary" alignment="0" min="-2" pref="264" max="-2" attributes="0"/>
-                                  </Group>
+                                  <Component id="cboSecondary" min="-2" pref="264" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="lblViewType" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="cboViewType" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -164,13 +162,8 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="cboSecondary" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="lblSecondary" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="lblViewType" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="cboViewType" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="lblStat" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="cboDisplayStats" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="panelStats" max="32767" attributes="0"/>
@@ -196,7 +189,7 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="lblViewType">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="View type:"/>
+                    <Property name="text" type="java.lang.String" value="View as:"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JComboBox" name="cboViewType">
@@ -206,22 +199,6 @@
                         <StringItem index="0" value="Significant scores only"/>
                         <StringItem index="1" value="All scores"/>
                         <StringItem index="2" value="Histogram of scores"/>
-                      </StringArray>
-                    </Property>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JLabel" name="lblStat">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Preferred statistic type:"/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JComboBox" name="cboDisplayStats">
-                  <Properties>
-                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="3">
-                        <StringItem index="0" value="T-Score"/>
-                        <StringItem index="1" value="R-Score"/>
-                        <StringItem index="2" value="D-Score"/>
                       </StringArray>
                     </Property>
                   </Properties>
@@ -273,7 +250,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jScrollPane6" pref="100" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane6" pref="133" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -321,7 +298,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jScrollPane2" pref="100" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane2" pref="133" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -373,7 +350,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jScrollPane5" pref="100" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane5" pref="133" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -706,6 +683,22 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnResetPositionActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblStat">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Preferred statistic:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cboDisplayStats">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="3">
+            <StringItem index="0" value="T-Score"/>
+            <StringItem index="1" value="R-Score"/>
+            <StringItem index="2" value="D-Score"/>
+          </StringArray>
+        </Property>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

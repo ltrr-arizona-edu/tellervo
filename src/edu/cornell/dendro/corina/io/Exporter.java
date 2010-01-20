@@ -17,10 +17,14 @@ import edu.cornell.dendro.corina.formats.PackedFileType;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Overwrite;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 
 /**
  * @author Lucas Madar
@@ -94,7 +98,6 @@ public class Exporter {
 				e.printStackTrace();
 		}
 		
-	 
 	}
 	
 	public String saveSingleSample(Sample exportee, String format, String title) {
@@ -225,6 +228,55 @@ public class Exporter {
 		
 	}
 	
+	
+	public Boolean savePackedSample2(ElementList elements, Filetype ft, File fn)
+	{
+		
+		List<Sample> samples = new ArrayList<Sample>();
+
+		for(Element e : elements) {
+			// load it
+			Sample s;
+			try {
+				s = e.load();
+				
+			} catch (IOException ioe) {
+				Alert.error("Error Loading Sample",
+						"Can't open this file: " + ioe.getMessage());
+				continue;
+			}
+			samples.add(s);
+
+			OpenRecent.sampleOpened(new SeriesDescriptor(s));
+		}
+		
+		// no samples => don't bother doing anything
+		if (samples.isEmpty()) {
+			return null;
+		}
+		
+		
+		BufferedWriter w = null;
+		try {
+			w = new BufferedWriter(new FileWriter(fn));
+			((PackedFileType)ft).saveSamples(samples, w);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				w.close();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+				return false;
+			}
+		}
+		
+		return true;
+		
+	}
+	
 	/**
 	 * Saves multiple samples.
 	 * Pops up a dialog box asking for a folder to save to;
@@ -281,6 +333,64 @@ public class Exporter {
 		}
 		return true;
 	}
+	
+	public Boolean saveMultiSample2(ElementList elements, Filetype ft, File folder)
+	{
+		try {
+						
+			if(!((folder.exists() && folder.isDirectory()) || folder.mkdirs())) {
+				Alert.error("Couldn't export", "Couldn't create/write to directory " + folder.getName());
+				return false;
+			}
+			
+			int i=0;
+			for(Element e : elements) {
+				i++;
+				// load it
+				Sample s;
+				try {
+					s = e.load();
+					
+				} catch (IOException ioe) {
+					Alert.error("Error Loading Sample",
+							"Can't open this file: " + ioe.getMessage());
+					continue;
+				}
+				
+				String progress = "Processing "
+					+ ((String) s.getDisplayTitle() + " (" + i
+					+ "/" + elements.size() + ")");
+				
+				// so, we have things like "blah.pkw.TUC!"
+				// gross, but this is what people wanted.
+				String fn = folder.getAbsolutePath() +
+					File.separator +
+					new File((String)s.getDisplayTitle() +
+					ft.getDefaultExtension());					
+				
+				OpenRecent.sampleOpened(new SeriesDescriptor(s));
+				
+				BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+				try {
+					ft.save(s, w);
+				} finally {
+					try {
+						w.close();
+					} catch (IOException ioe) {
+						ioe.printStackTrace();
+						return false;
+					}
+				}					
+				System.out.println("Exported " + fn);
+				
+			}		
+			
+		} catch (Exception ex) {
+			// problem creating filetype, or npe, or whatever -- bug.
+			Bug.bug(ex);
+		}
+		return true;
+	}	
 	
 	public List saveMultiSample(List slist, String format, String title) {		
 		List savedNames = new ArrayList();

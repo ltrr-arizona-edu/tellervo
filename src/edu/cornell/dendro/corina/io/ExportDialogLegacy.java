@@ -252,7 +252,7 @@ public class ExportDialogLegacy extends JDialog {
 				dispose();
 
 				String format = exporters[popup.getSelectedIndex()];
-				new Exporter().saveSingleSample(sample, format);
+				//new Exporter().saveSingleSample(sample, format);
 			}
 		});		
 

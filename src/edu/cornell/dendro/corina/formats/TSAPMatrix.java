@@ -214,7 +214,7 @@ public class TSAPMatrix implements Filetype {
         }
     }
 
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		return false;
 	}
 

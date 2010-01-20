@@ -814,7 +814,7 @@ public class Corina implements Filetype {
 		return ".RAW";
 	}
 
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		// TODO Auto-generated method stub
 		return false;
 	}

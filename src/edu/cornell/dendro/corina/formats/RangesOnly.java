@@ -133,7 +133,7 @@ public class RangesOnly implements Filetype, PackedFileType {
 		return false;
 	}
 	
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		return true;
 	}
 }

@@ -834,8 +834,8 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		});
 		JToolBar tb = new JToolBar();
 		tb.setFloatable(false);
-		tb.add(Layout.flowLayoutL(new JLabel("Scale:"), new JLabel(Builder.getIcon("Narrower.png")), zoomer, new JLabel(Builder
-				.getIcon("Wider.png"))));
+		tb.add(Layout.flowLayoutL(new JLabel("Scale:"), new JLabel(Builder.getIcon("viewmag-.png")), zoomer, new JLabel(Builder
+				.getIcon("viewmag+.png"))));
 		getContentPane().add(tb, BorderLayout.NORTH);
 
 		// create popup

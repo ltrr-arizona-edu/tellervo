@@ -51,18 +51,36 @@ public class SiteRenderer implements ListCellRenderer {
 		if(value instanceof TridasObjectEx) {
 			TridasObjectEx site = (TridasObjectEx) value;
 			
+			// Full name of site
 			String name = site.getTitle();
+			
+			// Compile code for object, giving parent codes also where applicable
+			String code = null;
+			TridasObjectEx parent;
+			if((parent = site.getParent()) != null) {
+				// Site code with parent code
+				if(parent.hasLabCode())	{
+					code = parent.getLabCode()+">"+site.getLabCode();
+				}else{
+					code = site.getLabCode();
+				}
+			}
+			else{
+				// Code for this site
+				code = site.getLabCode();
+			}
 			
 			if(maximumTitleLength > 0 && name.length() > maximumTitleLength)
 				name = name.substring(0, maximumTitleLength) + "..."; 
 			
-			lblCode.setText(site.getLabCode());
+			// Set main info in table
+			lblCode.setText(code);
 			lblName.setText(name);
-			
 			Font font = list.getFont();
 			lblCode.setFont(font);
 			lblName.setFont(font.deriveFont(font.getSize() - 2.0f));			
 		
+			// Build a more comprehensive tool tip for object
 			StringBuffer sb = new StringBuffer();
 			sb.append("<html>");
 			if(site.hasLabCode()) {
@@ -75,7 +93,6 @@ public class SiteRenderer implements ListCellRenderer {
 			sb.append("<br>");
 			
 			// add parent info, if we can...
-			TridasObjectEx parent;
 			if((parent = site.getParent()) != null) {
 				if(parent.hasLabCode()) {
 					sb.append("<b>Parent Code:</b> ");

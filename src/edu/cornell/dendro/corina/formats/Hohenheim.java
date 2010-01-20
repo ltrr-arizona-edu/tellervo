@@ -252,7 +252,7 @@ public class Hohenheim implements Filetype {
 	}
     }
 
-	public Boolean isMultiFileCapable() {
+	public Boolean isPackedFileCapable() {
 		return false;
 	}
 

@@ -27,6 +27,9 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
+import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -46,24 +49,28 @@ public class ExportDialog extends JDialog {
 	 @param samples the list of samples to export
 	 @param parent window
 	 */
-	public ExportDialog(List<Sample> samples){
+	public ExportDialog(ElementList elements){
 		//super(parent, I18n.getText("export"), true);
 			
-		setupGui(samples);
+		setupGui(elements);
 
 	}
 
-	public ExportDialog(Sample sample){
-		ArrayList<Sample> samples = new ArrayList<Sample>();
-		samples.add(sample);
+	public ExportDialog(Element element){
+		ElementList elements = ElementList.singletonList(element);
+		setupGui(elements);
+	}
+	
+	public ExportDialog(Sample s){
 		
-		setupGui(samples);
+		ElementList elements = ElementList.singletonList(new Element((BaseSample) s));
+		setupGui(elements);
 	}
 	
 
-	public void setupGui(List<Sample> samples)
+	public void setupGui(ElementList elements)
 	{
-		mainPanel = new ExportUI(this, samples);
+		mainPanel = new ExportUI(this, elements);
 		this.setContentPane(mainPanel);
 		mainPanel.panelPreview.setVisible(false);
 		
