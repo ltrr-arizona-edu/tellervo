@@ -71,12 +71,20 @@ END LOOP;
 
 
 -- Location precision 
+IF goodobject.locationprecision IS NULL THEN
+   goodobject.locationprecision=badobject.locationprecision;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.locationprecision!=badobject.locationprecision THEN
    commentstr:= commentstr || 'Location precision differs (other record = ' || badobject.locationprecision::varchar || '). ';
    discrepancycount:=discrepancycount+1;
 END IF;
 
 --locationgeometry
+IF goodobject.locationgeometry IS NULL THEN
+   goodobject.locationgeometry=badobject.locationgeometry;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.locationgeometry!=badobject.locationgeometry THEN
    SELECT 'Long: ' || x(locationgeometry) || ', Lat: ' ||  y(locationgeometry) INTO lookup FROM tblobject WHERE objectid=badobject.objectid;   
    commentstr:= commentstr || 'Location geometry differs (other record = ' || lookup::varchar || '). ';
@@ -84,6 +92,10 @@ IF goodobject.locationgeometry!=badobject.locationgeometry THEN
 END IF;
 
 -- locationtypeid
+IF goodobject.locationtypeid IS NULL THEN
+   goodobject.locationtypeid=badobject.locationtypeid;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.locationtypeid!=badobject.locationtypeid THEN
    SELECT locationtype INTO lookup FROM tlkplocationtype WHERE locationtypeid=badobject.locationtypeid;
    commentstr:= commentstr || 'Location type differs (other record = ' || lookup::varchar || '). ';
@@ -91,36 +103,60 @@ IF goodobject.locationtypeid!=badobject.locationtypeid THEN
 END IF;
 
 -- locationcomment
+IF goodobject.locationcomment IS NULL THEN
+   goodobject.locationcomment=badobject.locationcomment;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.locationcomment!=badobject.locationcomment THEN
    commentstr:= commentstr || 'Location comments differ (other record = ' || badobject.locationcomment::varchar || '). ';
    discrepancycount:=discrepancycount+1;
 END IF;
 
 -- file
+IF goodobject.file IS NULL THEN
+   goodobject.file=badobject.file;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.file!=badobject.file THEN
    commentstr:= commentstr || 'File links differ (other record = ' || badobject.file::varchar || ')';
    discrepancycount:=discrepancycount+1;
 END IF;
 
 -- creator
+IF goodobject.creator IS NULL THEN
+   goodobject.creator=badobject.creator;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.creator!=badobject.creator THEN
    commentstr:= commentstr || 'Creator differs (other record = ' || badobject.creator::varchar || ')';
    discrepancycount:=discrepancycount+1;
 END IF;
 
 -- owner
+IF goodobject.owner IS NULL THEN
+   goodobject.owner=badobject.owner;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.owner!=badobject.owner THEN
    commentstr:= commentstr || 'Owner differs (other record = ' || badobject.owner::varchar || ')';
    discrepancycount:=discrepancycount+1;
 END IF;
 
 -- description
+IF goodobject.description IS NULL THEN
+   goodobject.description=badobject.description;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.description!=badobject.description THEN
    commentstr:= commentstr || 'Description differs (other record = ' || badobject.file::varchar || ')';
    discrepancycount:=discrepancycount+1;
 END IF;
  
 -- objectypeid
+IF goodobject.objecttypeid IS NULL THEN
+   goodobject.objecttypeid=badobject.objecttypeid;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.objecttypeid!=badobject.objecttypeid THEN
    SELECT objecttype INTO lookup FROM tlkpobjecttype WHERE objecttypeid=badobject.objecttypeid;
    commentstr:= commentstr || 'Object type differs (other record = ' || lookup::varchar || '). ';
@@ -128,6 +164,10 @@ IF goodobject.objecttypeid!=badobject.objecttypeid THEN
 END IF;
 
 -- coveragetemporalid
+IF goodobject.coveragetemporalid IS NULL THEN
+   goodobject.coveragetemporalid=badobject.coveragetemporalid;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.coveragetemporalid!=badobject.coveragetemporalid THEN
    SELECT coveragetemporal INTO lookup FROM tlkpcoveragetemporal WHERE coveragetemporalid=badobject.coveragetemporalid;
    commentstr:= commentstr || 'Temporal coverage differs (other record = ' || lookup::varchar || '). ';
@@ -135,6 +175,10 @@ IF goodobject.coveragetemporalid!=badobject.coveragetemporalid THEN
 END IF;
 
 -- coveragetemporalfoundationid
+IF goodobject.coveragetemporalfoundationid IS NULL THEN
+   goodobject.coveragetemporalfoundationid=badobject.coveragetemporalfoundationid;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodobject.coveragetemporalfoundationid!=badobject.coveragetemporalfoundationid THEN
    SELECT coveragetemporalfoundation INTO lookup FROM tlkpcoveragetemporalfoundation WHERE coveragetemporalfoundationid=badobject.coveragetemporalfoundationid;
    commentstr:= commentstr || 'Temporal coverage foundation differs (other record = ' || lookup::varchar || '). ';
@@ -155,11 +199,28 @@ END IF;
 IF discrepancycount>0 THEN
   IF goodobject.comments IS NOT NULL THEN
     --RAISE NOTICE 'Adding discrepency description to comments field';
-    UPDATE tblobject SET comments=goodobject.comments || discrepstr || commentstr || '***' WHERE objectid=goodobjectid;
+    commentstr:= goodobject.comments || discrepstr || commentstr || '***';
   ELSE
     --RAISE NOTICE 'Putting discrepency description in comments field';
-    UPDATE tblobject SET comments=discrepstr || commentstr || '***' WHERE objectid=goodobjectid;
+    commentstr:= discrepstr || commentstr || '***';
   END IF;
+
+  UPDATE tblobject SET
+    title=goodobject.title,
+    code=goodobject.code,
+    locationgeometry=goodobject.locationgeometry,
+    locationtypeid=goodobject.locationtypeid,
+    locationprecision=goodobject.locationprecision,
+    locationcomment=goodobject.locationcomment,
+    file=goodobject.file,
+    creator=goodobject.creator,
+    owner=goodobject.owner,
+    description=goodobject.description,
+    objecttypeid=goodobject.objecttypeid,
+    coveragetemporalid=goodobject.coveragetemporalid,
+    coveragetemporalfoundation=goodobject.coveragetemporalfoundation,
+    comments= commentstr
+    WHERE objectid=goodobjectid;
 END IF;
 
 -- Delete old object record

@@ -57,48 +57,70 @@ END LOOP;
 -- COMPARE EACH FIELD TO CHECK FOR DISPARITIES
 
 -- Sampling date
+IF goodsample.samplingdate IS NULL THEN
+   goodsample.samplingdate=badsample.samplingdate;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodsample.samplingdate!=badsample.samplingdate THEN
    commentstr:= commentstr || 'Sampling date differs (other record = ' || badsample.samplingdate::varchar || '). ';
    discrepancycount:=discrepancycount+1;
 END IF;
 
--- Identifier domain
-IF goodsample.identifierdomain!=badsample.identifierdomain THEN
-   commentstr:= commentstr || 'Identifier domain differs (other record = ' || badsample.identifierdomain::varchar || '). ';
+-- File
+IF goodsample.file IS NULL THEN
+   goodsample.file=badsample.file;
    discrepancycount:=discrepancycount+1;
 END IF;
-
--- File
 IF goodsample.file!=badsample.file THEN
    commentstr:= commentstr || 'File links differ (other record = ' || badsample.file::varchar || '). ';
    discrepancycount:=discrepancycount+1;
 END IF;
 
 -- Position
+IF goodsample.position IS NULL THEN
+   goodsample.position=badsample.position;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodsample.position!=badsample.position THEN
    commentstr:= commentstr || 'Position of sample differs (other record = ' || badsample.position::varchar || ')';
    discrepancycount:=discrepancycount+1;
 END IF;
 
 -- State
+IF goodsample.state IS NULL THEN
+   goodsample.state=badsample.state;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodsample.state!=badsample.state THEN
    commentstr:= commentstr || 'State of sample differs (other record = ' || badsample.state::varchar || '). ';
    discrepancycount:=discrepancycount+1;
 END IF;
 
 -- Knots
+IF goodsample.knots IS NULL THEN
+   goodsample.knots=badsample.knots;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodsample.knots!=badsample.knots THEN
    commentstr:= commentstr || 'Presence of knots differs (other record = ' || badsample.knots::varchar || '). ';
    discrepancycount:=discrepancycount+1;
 END IF;
 
 -- Description differs
+IF goodsample.description IS NULL THEN
+   goodsample.description=badsample.description;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodsample.description!=badsample.description THEN
    commentstr:= commentstr || 'Description differs (other record = ''' || badsample.description::varchar || '''). ';
    discrepancycount:=discrepancycount+1;
 END IF;
 
 -- Date certainty
+IF goodsample.datecertaintyid IS NULL THEN
+   goodsample.datecertaintyid=badsample.datecertaintyid;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodsample.datecertaintyid!=badsample.datecertaintyid THEN
    SELECT datecertainty INTO lookup FROM tlkpdatecertainty WHERE datecertaintyid=badsample.datecertaintyid;
    commentstr:= commentstr || 'Date certainty differs (other record = ' || lookup::varchar || '). ';
@@ -106,6 +128,10 @@ IF goodsample.datecertaintyid!=badsample.datecertaintyid THEN
 END IF;
 
 -- Type
+IF goodsample.typeid IS NULL THEN
+   goodsample.typeid=badsample.typeid;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodsample.typeid!=badsample.typeid THEN
    SELECT sampletype INTO lookup FROM tlkpsampletype WHERE sampletypeid=badsample.typeid;
    commentstr:= commentstr || 'Sample type differs (other record = ' || lookup::varchar || '). ';
@@ -113,15 +139,13 @@ IF goodsample.typeid!=badsample.typeid THEN
 END IF;
 
 -- Box
+IF goodsample.boxid IS NULL THEN
+   goodsample.boxid=badsample.boxid;
+   discrepancycount:=discrepancycount+1;
+END IF;
 IF goodsample.boxid!=badsample.boxid THEN
    SELECT title INTO lookup FROM tblbox WHERE boxid=badsample.boxid;
    commentstr:= commentstr || 'Box differs (other record = ' || lookup::varchar || '). ';
-   discrepancycount:=discrepancycount+1;
-END IF;
-
--- Box
-IF goodsample.comments!=badsample.comments THEN
-   commentstr:= commentstr || 'Comments differ (other record = ' || badsample.comments::varchar || '). ';
    discrepancycount:=discrepancycount+1;
 END IF;
 
@@ -138,11 +162,26 @@ END IF;
 IF discrepancycount>0 THEN
   IF goodsample.comments IS NOT NULL THEN
     --RAISE NOTICE 'Adding discrepency description to comments field';
-    UPDATE tblsample SET comments=goodsample.comments || discrepstr || commentstr || '***' WHERE sampleid=goodsampleid;
+    commentstr:=goodsample.comments || discrepstr || commentstr || '***';
   ELSE
     --RAISE NOTICE 'Putting discrepency description in comments field';
-    UPDATE tblsample SET comments=discrepstr || commentstr || '***' WHERE sampleid=goodsampleid;
+    commentstr:= discrepstr || commentstr || '***';
   END IF;
+  
+  UPDATE tblsample SET
+    code=goodsample.code,
+    samplingdate=goodsample.samplingdate,
+    file=goodsample.file,
+    position=goodsample.position,
+    state=goodsample.state,
+    knots=goodsample.knots,
+    description=goodsample.description,
+    datecertaintyid=goodsample.datecertaintyid,
+    typeid=goodsample.typeid,
+    boxid=goodsample.boxid,
+    comments=commentstr
+    WHERE sampleid=goodsample.sampleid;
+  
 END IF;
 
 -- Delete old sample record
