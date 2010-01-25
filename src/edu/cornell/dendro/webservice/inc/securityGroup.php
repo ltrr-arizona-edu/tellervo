@@ -202,7 +202,7 @@ class securityGroup
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "name=\"".$this->name."\" ";
                 $xml.= "description=\"".$this->description."\" ";
-                $xml.= "isActive=\"".fromPGtoStringBool($this->isActive)."\" ";
+                $xml.= "isActive=\"".dbHelper::fromPGtoStringBool($this->isActive)."\" ";
                 $xml.= ">";
             }
 

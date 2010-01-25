@@ -131,6 +131,8 @@ class securityUser
     {
         global $dbconn;
         
+        $this->groupArray = array();
+        
         $sql = "SELECT DISTINCT SecurityGroupID FROM cpgdb.GetGroupMembership(".$this->id.") ORDER BY SecurityGroupID ASC";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)

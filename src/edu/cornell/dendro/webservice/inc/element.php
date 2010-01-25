@@ -490,10 +490,22 @@ class element extends elementEntity implements IDBAccessor
                     	$xml.="<tridas:dimensions>";
                     	/* @todo Units needs completing properly */
                     	$xml.="<tridas:unit>meter</tridas:unit>";
-                    	if($this->getDimension('height')!=NULL)   $xml.="<tridas:height>".dbhelper::escapeXMLChars($this->getDimension('height'))."</tridas:height>\n";
-                    	if($this->getDimension('width')!=NULL)    $xml.="<tridas:width>".dbhelper::escapeXMLChars($this->getDimension('width'))."</tridas:width>\n";
-                    	if($this->getDimension('depth')!=NULL)    $xml.="<tridas:depth>".dbhelper::escapeXMLChars($this->getDimension('depth'))."</tridas:depth>\n";
-                    	if($this->getDimension('diameter')!=NULL) $xml.="<tridas:diameter>".dbhelper::escapeXMLChars($this->getDimension('diameter'))."</tridas:diameter>\n";
+                    	if($this->getDimension('width')!=NULL)
+                    	{
+                    		// Doing height, width, depth
+                    		$xml.="<tridas:height>".dbhelper::escapeXMLChars($this->getDimension('height'))."</tridas:height>\n";
+                    	    $xml.="<tridas:width>".dbhelper::escapeXMLChars($this->getDimension('width'))."</tridas:width>\n";
+                    	    $xml.="<tridas:depth>".dbhelper::escapeXMLChars($this->getDimension('depth'))."</tridas:depth>\n";
+                    		
+                    	}
+                    	else
+                    	{
+                    		// Doing height and diameter
+                    		$xml.="<tridas:height>".dbhelper::escapeXMLChars($this->getDimension('height'))."</tridas:height>\n";
+                    		$xml.="<tridas:diameter>".dbhelper::escapeXMLChars($this->getDimension('diameter'))."</tridas:diameter>\n";
+                    		
+                    	}
+                    	
                     	$xml.="</tridas:dimensions>";                    	
                     }                                     
                     if($this->getAuthenticity()!=NULL)      $xml.= "<tridas:authenticity>".dbhelper::escapeXMLChars($this->getAuthenticity())."</tridas:authenticity>\n";
@@ -724,7 +736,7 @@ class element extends elementEntity implements IDBAccessor
                     $sql .= " where elementid='".pg_escape_string($this->getID())."'";
                 }
                 
-                $firebug->log($sql, "SQL");
+                //$firebug->log($sql, "SQL");
                 //echo $sql;
 
                 // Run SQL command

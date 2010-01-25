@@ -160,6 +160,10 @@ class dictionaries
                 {
                 	$success = $myObj->setParamsFromDB($row['id']);
                 	
+                	if ($item=="securityUser"){
+                		$myObj->setChildParamsFromDB();
+                	}
+                	                	
                 	if($success)
                 	{
                 		$xmldata.=$myObj->asXML("minimal");

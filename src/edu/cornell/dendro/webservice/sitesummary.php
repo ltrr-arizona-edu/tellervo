@@ -48,7 +48,7 @@ $site = $_GET['site'];
 // Do basic error checking and set defaults
 if($site==null) 
 {
-	echo "no site";
+	echo "No site has been specified in the URL.  Please include the site code in the url e.g.: https://dendro.cornell.edu/sitesummary.php?site=AQS";
 	die();
 }
 
@@ -182,6 +182,7 @@ global $dbconn;
    	   				and elementcode='".$row['elementcode']."' 
    	   				and samplecode='".$row['samplecode']."' 
 					and radiuscode='$radiusCode'
+					and opname='Direct'
 					order by objectcode, elementcode, samplecode, radiuscode, code
 					limit 3"; 					
    	   		
