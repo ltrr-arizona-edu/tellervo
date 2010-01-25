@@ -13,12 +13,15 @@ commentstr varchar;           -- Used to compile comments for indicating discrep
 lookup varchar;               -- Temporary variable for storing values from lookup tables
 discrepstr varchar;           -- Basic comment to highlight discrepancies
 discrepancycount integer;     -- Count of number of fields that aren't the same
+doupdate boolean;             -- Temporary variable for flagging whether to update this record
+
 BEGIN
 
 -- Initialize vars
 discrepancycount:=0;
 commentstr:= '';
 discrepstr:='*** Another record was automatically merged with this one and discrepancies were detected.  Please check the following issues: ';
+doupdate:=false;
 
 -- Get the two radii in question
 SELECT * INTO goodradius FROM tblradius WHERE radiusid=goodradiusid;
@@ -46,7 +49,7 @@ UPDATE tblmeasurement SET radiusid=goodradiusid WHERE radiusid=badradiusid;
 -- Sapwood count
 IF goodradius.numberofsapwoodrings IS NULL THEN
    goodradius.numberofsapwoodrings=badradius.numberofsapwoodrings;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.numberofsapwoodrings!=badradius.numberofsapwoodrings THEN
    commentstr:= commentstr || 'Sapwood rings differ (other record = ' || badradius.numberofsapwoodrings::varchar || '). ';
@@ -56,7 +59,7 @@ END IF;
 -- Pith id
 IF goodradius.pithid IS NULL THEN
    goodradius.pithid=badradius.pithid;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.pithid!=badradius.pithid THEN
    SELECT complexpresenceabsence INTO lookup FROM tlkpcomplexpresenceabsence WHERE complexpresenceabsenceid=badradius.pithid;
@@ -67,7 +70,7 @@ END IF;
 -- Bark present
 IF goodradius.barkpresent IS NULL THEN
    goodradius.barkpresent=badradius.barkpresent;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.barkpresent!=badradius.barkpresent THEN
    commentstr:= commentstr || 'Bark presence differs (other record = ' || badradius.barkpresent::varchar || ')';
@@ -77,7 +80,7 @@ END IF;
 -- lastringunderbark
 IF goodradius.lastringunderbark IS NULL THEN
    goodradius.lastringunderbark=badradius.lastringunderbark;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.lastringunderbark!=badradius.lastringunderbark THEN
    commentstr:= commentstr || 'Last ring under bark differs (other record = ' || badradius.lastringunderbark::varchar || ')';
@@ -87,7 +90,7 @@ END IF;
 -- missingheartwoodringstopith
 IF goodradius.missingheartwoodringstopith IS NULL THEN
    goodradius.missingheartwoodringstopith=badradius.missingheartwoodringstopith;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.missingheartwoodringstopith!=badradius.missingheartwoodringstopith THEN
    commentstr:= commentstr || 'Missing heartwood rings differ (other record = ' || badradius.missingheartwoodringstopith::varchar || ')';
@@ -97,7 +100,7 @@ END IF;
 -- missingsapwoodringstobark
 IF goodradius.missingsapwoodringstobark IS NULL THEN
    goodradius.missingsapwoodringstobark=badradius.missingsapwoodringstobark;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.missingsapwoodringstobark!=badradius.missingsapwoodringstobark THEN
    commentstr:= commentstr || 'Missing sapwood rings differ (other record = ' || badradius.missingsapwoodringstobark::varchar || ')';
@@ -107,7 +110,7 @@ END IF;
 -- missingheartwoodringstopithfoundation
 IF goodradius.missingheartwoodringstopithfoundation IS NULL THEN
    goodradius.missingheartwoodringstopithfoundation=badradius.missingheartwoodringstopithfoundation;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.missingheartwoodringstopithfoundation!=badradius.missingheartwoodringstopithfoundation THEN
    commentstr:= commentstr || 'Missing heartwood rings foundation differs (other record = ' || badradius.missingheartwoodringstopithfoundation::varchar || ')';
@@ -117,7 +120,7 @@ END IF;
 -- missingsapwoodringstobarkfoundation
 IF goodradius.missingsapwoodringstobarkfoundation IS NULL THEN
    goodradius.missingsapwoodringstobarkfoundation=badradius.missingsapwoodringstobarkfoundation;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.missingsapwoodringstobarkfoundation!=badradius.missingsapwoodringstobarkfoundation THEN
    commentstr:= commentstr || 'Missing sapwood rings foundation differs (other record = ' || badradius.missingsapwoodringstobarkfoundation::varchar || ')';
@@ -127,7 +130,7 @@ END IF;
 -- Sapwood id
 IF goodradius.sapwoodid IS NULL THEN
    goodradius.sapwoodid=badradius.sapwoodid;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.sapwoodid!=badradius.sapwoodid THEN
    SELECT complexpresenceabsence INTO lookup FROM tlkpcomplexpresenceabsence WHERE complexpresenceabsenceid=badradius.sapwoodid;
@@ -138,7 +141,7 @@ END IF;
 -- Heartwood id
 IF goodradius.heartwoodid IS NULL THEN
    goodradius.heartwoodid=badradius.heartwoodid;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.heartwoodid!=badradius.heartwoodid THEN
    SELECT complexpresenceabsence INTO lookup FROM tlkpcomplexpresenceabsence WHERE complexpresenceabsenceid=badradius.heartwoodid;
@@ -149,7 +152,7 @@ END IF;
 -- Azimuth
 IF goodradius.azimuth IS NULL THEN
    goodradius.azimuth=badradius.azimuth;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodradius.azimuth!=badradius.azimuth THEN
    commentstr:= commentstr || 'Azimuth differs (other record = ' || badradius.azimuth::varchar || ')';
@@ -166,11 +169,15 @@ END IF;
 --END IF;
 
 -- If there are discrepancies either set or update the comments field to highlight issues
-IF discrepancycount>0 THEN
-  IF goodradius.comments IS NOT NULL THEN
-    commentstr:= goodradius.comments || discrepstr || commentstr || '***';
+IF (discrepancycount>0 OR doupdate=true) THEN
+  IF (discrepancycount>0 AND goodradius.comments IS NOT NULL) THEN
+    --RAISE NOTICE 'Adding discrepency description to comments field';
+    commentstr := goodradius.comments || discrepstr || commentstr || '***';
+  ELSIF (discrepancycount>0) THEN
+    --RAISE NOTICE 'Putting discrepency description in comments field';
+    commentstr := discrepstr || commentstr || '***';
   ELSE
-    commentstr:= discrepstr || commentstr || '***';
+    commentstr := goodradius.comments;
   END IF;
   
   UPDATE tblradius SET

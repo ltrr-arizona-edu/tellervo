@@ -17,12 +17,16 @@ discrepancycount integer;       -- Count of number of fields that aren't the sam
 lookup varchar;                 -- Temporary variable for storing values from lookup tables
 badchild RECORD;                -- Temporary variable for storing associated subobjects/elements
 goodchildid uuid;               -- Temporary variable for storing uuid of good associated subobjects/elements
+doupdate boolean;               -- Temporary variable for flagging whether to update this record
+
 BEGIN
 
 -- Initialize vars
 discrepancycount:=0;
 commentstr:= '';
 discrepstr:='*** Another record was automatically merged with this one and discrepancies were detected.  Please check the following issues: ';
+doupdate:=false;
+
 
 -- Get the two objects in question
 SELECT * INTO goodobject FROM tblobject WHERE objectid=goodobjectid;
@@ -73,7 +77,7 @@ END LOOP;
 -- Location precision 
 IF goodobject.locationprecision IS NULL THEN
    goodobject.locationprecision=badobject.locationprecision;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.locationprecision!=badobject.locationprecision THEN
    commentstr:= commentstr || 'Location precision differs (other record = ' || badobject.locationprecision::varchar || '). ';
@@ -83,7 +87,7 @@ END IF;
 --locationgeometry
 IF goodobject.locationgeometry IS NULL THEN
    goodobject.locationgeometry=badobject.locationgeometry;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.locationgeometry!=badobject.locationgeometry THEN
    SELECT 'Long: ' || x(locationgeometry) || ', Lat: ' ||  y(locationgeometry) INTO lookup FROM tblobject WHERE objectid=badobject.objectid;   
@@ -94,7 +98,7 @@ END IF;
 -- locationtypeid
 IF goodobject.locationtypeid IS NULL THEN
    goodobject.locationtypeid=badobject.locationtypeid;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.locationtypeid!=badobject.locationtypeid THEN
    SELECT locationtype INTO lookup FROM tlkplocationtype WHERE locationtypeid=badobject.locationtypeid;
@@ -105,7 +109,7 @@ END IF;
 -- locationcomment
 IF goodobject.locationcomment IS NULL THEN
    goodobject.locationcomment=badobject.locationcomment;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.locationcomment!=badobject.locationcomment THEN
    commentstr:= commentstr || 'Location comments differ (other record = ' || badobject.locationcomment::varchar || '). ';
@@ -115,7 +119,7 @@ END IF;
 -- file
 IF goodobject.file IS NULL THEN
    goodobject.file=badobject.file;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.file!=badobject.file THEN
    commentstr:= commentstr || 'File links differ (other record = ' || badobject.file::varchar || ')';
@@ -125,7 +129,7 @@ END IF;
 -- creator
 IF goodobject.creator IS NULL THEN
    goodobject.creator=badobject.creator;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.creator!=badobject.creator THEN
    commentstr:= commentstr || 'Creator differs (other record = ' || badobject.creator::varchar || ')';
@@ -135,7 +139,7 @@ END IF;
 -- owner
 IF goodobject.owner IS NULL THEN
    goodobject.owner=badobject.owner;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.owner!=badobject.owner THEN
    commentstr:= commentstr || 'Owner differs (other record = ' || badobject.owner::varchar || ')';
@@ -145,7 +149,7 @@ END IF;
 -- description
 IF goodobject.description IS NULL THEN
    goodobject.description=badobject.description;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.description!=badobject.description THEN
    commentstr:= commentstr || 'Description differs (other record = ' || badobject.file::varchar || ')';
@@ -155,7 +159,7 @@ END IF;
 -- objectypeid
 IF goodobject.objecttypeid IS NULL THEN
    goodobject.objecttypeid=badobject.objecttypeid;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.objecttypeid!=badobject.objecttypeid THEN
    SELECT objecttype INTO lookup FROM tlkpobjecttype WHERE objecttypeid=badobject.objecttypeid;
@@ -166,7 +170,7 @@ END IF;
 -- coveragetemporalid
 IF goodobject.coveragetemporalid IS NULL THEN
    goodobject.coveragetemporalid=badobject.coveragetemporalid;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.coveragetemporalid!=badobject.coveragetemporalid THEN
    SELECT coveragetemporal INTO lookup FROM tlkpcoveragetemporal WHERE coveragetemporalid=badobject.coveragetemporalid;
@@ -177,7 +181,7 @@ END IF;
 -- coveragetemporalfoundationid
 IF goodobject.coveragetemporalfoundationid IS NULL THEN
    goodobject.coveragetemporalfoundationid=badobject.coveragetemporalfoundationid;
-   discrepancycount:=discrepancycount+1;
+   doupdate:=true;
 END IF;
 IF goodobject.coveragetemporalfoundationid!=badobject.coveragetemporalfoundationid THEN
    SELECT coveragetemporalfoundation INTO lookup FROM tlkpcoveragetemporalfoundation WHERE coveragetemporalfoundationid=badobject.coveragetemporalfoundationid;
@@ -196,13 +200,15 @@ END IF;
 --END IF;
 
 -- If there are discrepancies either set or update the comments field to highlight issues
-IF discrepancycount>0 THEN
-  IF goodobject.comments IS NOT NULL THEN
+IF (discrepancycount>0 OR doupdate=true) THEN
+  IF (discrepancycount>0 AND goodobject.comments IS NOT NULL) THEN
     --RAISE NOTICE 'Adding discrepency description to comments field';
-    commentstr:= goodobject.comments || discrepstr || commentstr || '***';
-  ELSE
+    commentstr := goodobject.comments || discrepstr || commentstr || '***';
+  ELSIF (discrepancycount>0) THEN
     --RAISE NOTICE 'Putting discrepency description in comments field';
-    commentstr:= discrepstr || commentstr || '***';
+    commentstr := discrepstr || commentstr || '***';
+  ELSE
+    commentstr := goodobject.comments;
   END IF;
 
   UPDATE tblobject SET
