@@ -71,6 +71,15 @@ public class EditorFactory {
 			this.dialog = dialog;
 		}
 		
+		public boolean barcodeScanSuccessful(){
+			if(object!=null)
+			{
+				return true;
+			}
+			
+			return false;
+		}
+		
 		/**
 		 * Populate the given Corina sample from the information we acquired
 		 * @param s
@@ -294,10 +303,18 @@ public class EditorFactory {
 
 		// no success, so just ignore..
 		if(!result.success){
-			new Editor(new Sample()).setVisible(true);
 			return;
 		}
-				
+
+		/*
+		if(!result.barcodeScanSuccessful())
+		{
+			Sample sample = new Sample();
+			new Editor(sample).setVisible(true);
+		}
+		*/
+		
+		
 		// make a new measurement series
 		TridasMeasurementSeries series = new TridasMeasurementSeries();
 		series.setTitle(title);

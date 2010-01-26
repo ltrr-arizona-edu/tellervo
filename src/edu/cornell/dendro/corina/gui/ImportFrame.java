@@ -45,8 +45,9 @@ public class ImportFrame extends XFrame {
 		super();
 		
 		extractor = new LegacySampleExtractor(samp);
-		importer = new TridasImportPanel(samp, extractor);
 		this.s = samp;
+		importer = new TridasImportPanel(samp, extractor);
+		
 		setupGUI();
 	}
 	

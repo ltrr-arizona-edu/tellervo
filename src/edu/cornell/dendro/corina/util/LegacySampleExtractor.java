@@ -91,7 +91,7 @@ public class LegacySampleExtractor {
 		Pattern patterns[] = new Pattern[7];
 		
 		// default some stuff to A
-		if (barcodeSupplied=false) sampleName = "A";
+		if (barcodeSupplied==false) sampleName = "A";
 		radiusName = "A";
 		measurementName = "A";
 		
@@ -123,10 +123,10 @@ public class LegacySampleExtractor {
         		
         		switch (j) {
         		case 1:
-        			if (barcodeSupplied=false) objectCode = val.toUpperCase();
+        			if (barcodeSupplied==false) objectCode = val.toUpperCase();
         			break;
         		case 2:
-        			if (barcodeSupplied=false) elementName = val.toUpperCase();
+        			if (barcodeSupplied==false) elementName = val.toUpperCase();
         			break;
         		case 3:
         			switch(i) {
@@ -140,7 +140,7 @@ public class LegacySampleExtractor {
         					measurementName = val.substring(1, 2).toUpperCase();
         				}
         				else if(val.length() == 3) {
-        					if (barcodeSupplied=false) sampleName = val.substring(0, 1).toUpperCase();
+        					if (barcodeSupplied==false) sampleName = val.substring(0, 1).toUpperCase();
         				    radiusName = val.substring(1, 2).toUpperCase();
         					measurementName = val.substring(2, 3).toUpperCase();
         				}
@@ -152,11 +152,12 @@ public class LegacySampleExtractor {
         			case 4:
         				break;
         			case 6:
-        				if (barcodeSupplied=false) sampleName = val.toUpperCase();
+        				if (barcodeSupplied==false) sampleName = val.toUpperCase();
     					break;
         			default:
         				break;
         			}
+        			break;
      					
 				case 4:
 					radiusName = val.toUpperCase();

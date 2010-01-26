@@ -305,7 +305,7 @@ public class FileMenu extends JMenu {
 			dialog.setVisible(true);
 			BarcodeDialogResult result = barcodeUI.getResult();
 
-			if(!result.success)
+			if(!result.barcodeScanSuccessful())
 			{
 				// start the import dialog with no barcode info   
 			    ImportFrame importdialog = new ImportFrame(s);
@@ -334,6 +334,9 @@ public class FileMenu extends JMenu {
 		}
 	}
 	
+	/**
+	 * @deprecated use importdbwithbarcode() instead
+	 */
 	public static void importdb() {
 		String filename = "";
 		

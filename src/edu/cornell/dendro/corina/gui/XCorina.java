@@ -274,7 +274,7 @@ public class XCorina extends JFrame {
 		
 		importSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FileMenu.importdb();
+				FileMenu.importdbwithbarcode();
 			}
 		});
 

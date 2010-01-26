@@ -45,7 +45,7 @@ public class ScanBarcodeUI extends javax.swing.JPanel {
 					// Set in prefs
 					System.out.println("Requested to never show barcode gui again");
 				}
-				//result.success = true;
+				result.success = true;
 				parent.dispose();
 			}
 		};
