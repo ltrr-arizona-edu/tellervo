@@ -293,8 +293,10 @@ public class EditorFactory {
 		BarcodeDialogResult result = barcodeUI.getResult();
 
 		// no success, so just ignore..
-		if(!result.success)
+		if(!result.success){
+			new Editor(new Sample()).setVisible(true);
 			return;
+		}
 				
 		// make a new measurement series
 		TridasMeasurementSeries series = new TridasMeasurementSeries();
