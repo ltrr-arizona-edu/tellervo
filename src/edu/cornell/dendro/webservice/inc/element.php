@@ -236,7 +236,7 @@ class element extends elementEntity implements IDBAccessor
         if ($paramsClass->getFile()!=NULL)					$this->setFiles($paramsClass->getFile());  
 		if ($paramsClass->taxon->getOriginalTaxon()!=NULL)	$this->taxon->setOriginalTaxon($paramsClass->taxon->getOriginalTaxon());
 		if ($paramsClass->taxon->getCoLID()!=NULL)			$this->taxon->setParamsFromCoL($paramsClass->taxon->getCoLID(), $paramsClass->taxon->getLabel());
-		if ($paramsClass->getShape()!=NULL)					$this->setShape($paramsClass->getShape());
+		if ($paramsClass->getShape()!=NULL)					$this->setShape(null, $paramsClass->getShape());
         if ($paramsClass->hasDimensions())   				$this->setDimensions($paramsClass->getDimensionUnits(), 
         																		 $paramsClass->getDimension('height'), 
         																		 $paramsClass->getDimension('width'), 
@@ -386,7 +386,7 @@ class element extends elementEntity implements IDBAccessor
             // Grab the XML representation of the immediate parent using the 'comprehensive'
             // attribute so that we get all the object ancestors formatted correctly                   
             $xml = new DomDocument();   
-    		$xml->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->parentEntityArray[0]->asXML('comprehensive')."</root>");                   
+    		$xml->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".end($this->parentEntityArray)->asXML('comprehensive')."</root>");                   
 
     		// We need to locate the leaf tridas:object (one with no child tridas:objects)
     		// because we need to insert our element xml here

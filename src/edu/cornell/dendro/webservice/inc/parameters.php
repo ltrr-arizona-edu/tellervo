@@ -539,17 +539,22 @@ class elementParameters extends elementEntity implements IParams
 					trigger_error("901"."The Corina web service only supports taxonomic data that conforms to the '$taxonomicAuthorityEdition'.  Please normalise your data and try again.", E_USER_ERROR);
 		   		}
 		   		break; 
-		   	case "shape": 				$this->setShape(null, $child->nodeValue); break; 
+		   	case "shape": $this->setShape(null, $child->getAttribute("normalTridas")); break; 
 		   	case "dimensions":
-		   		$unitTag = $child->getElementsByTagName("unit")->item(0);
-		   		$this->setDimensionUnits($unitTag->nodeValue.$child->getAttribute("power"));
-		   		$dimensionTags = $unitTag->childNodes;
+		   		
+		   		//$unitTag = $child->getElementsByTagName("unit")->item(0);
+		   		//$this->setDimensionUnits($unitTag->nodeValue.$child->getAttribute("power"));
+		   		//$dimensionTags = $unitTag->childNodes;
+		   		$dimensionTags = $child->childNodes;
 		   		
 		   		foreach($dimensionTags as $dimension)
 		   		{
 		   			if($dimension->nodeType != XML_ELEMENT_NODE) continue;
 		   			switch ($dimension->tagName)
 		   			{
+		   				case "units":
+		   					//@todo implement
+		   					break;
 		   				case "diameter":
 		   					$this->setDiameter($dimension->nodeValue);
 		   					break;
@@ -557,6 +562,7 @@ class elementParameters extends elementEntity implements IParams
 		   					$this->setHeight($dimension->nodeValue);
 		   					break;
 		   				case "width":
+		   					
 		   					$this->setWidth($dimension->nodeValue);
 		   					break;
 		   				case "depth":

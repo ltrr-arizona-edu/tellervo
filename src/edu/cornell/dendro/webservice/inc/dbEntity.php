@@ -1437,7 +1437,7 @@ class elementEntity extends dbEntity
 			return True;
 		}
 		else
-		{
+		{			
 			return False;
 		}
 		

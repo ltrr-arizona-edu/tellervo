@@ -363,8 +363,7 @@ class radius extends radiusEntity implements IDBAccessor
                 $xml.= "<tridas:radius>\n";
                 $xml.= $this->getIdentifierXML();          
                 if($this->getComments()!=NULL) 										$xml.= "<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
-                if($format!="minimal")
-                {
+
                     $xml.= "<tridas:woodCompleteness>\n";
                     if($this->getPith()!=NULL)											$xml.= "<tridas:pith presence=\"".dbhelper::escapeXMLChars($this->getPith())."\"></tridas:pith>\n";
                     if( ($this->getHeartwood()!=NULL)  )    
@@ -387,7 +386,7 @@ class radius extends radiusEntity implements IDBAccessor
             		$xml.= "<tridas:bark presence=\"".dbHelper::formatBool($this->getBarkPresent(), "presentabsent")."\"/>\n";
                     $xml.= "</tridas:woodCompleteness>\n";
 					if($this->getAzimuth()!=NULL)									$xml.= "<tridas:azimuth>".dbhelper::escapeXMLChars($this->getAzimuth())."</tridas:azimuth>\n";
-                }
+                
                 // Include permissions details if requested            
                 $xml .= $this->getPermissionsXML();                
             }
