@@ -79,8 +79,8 @@ public class Segments
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link AbstractCurveSegmentType }{@code >}
      * {@link JAXBElement }{@code <}{@link LineStringSegmentType }{@code >}
+     * {@link JAXBElement }{@code <}{@link AbstractCurveSegmentType }{@code >}
      * 
      * 
      */
@@ -104,8 +104,8 @@ public class Segments
      * 
      * @param curveSegments
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link AbstractCurveSegmentType }{@code >}
      *     {@link JAXBElement }{@code <}{@link LineStringSegmentType }{@code >}
+     *     {@link JAXBElement }{@code <}{@link AbstractCurveSegmentType }{@code >}
      *     
      */
     public void set_CurveSegments(List<JAXBElement<? extends AbstractCurveSegmentType>> curveSegments) {

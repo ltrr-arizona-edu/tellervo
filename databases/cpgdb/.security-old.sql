@@ -60,8 +60,8 @@ $$ LANGUAGE SQL IMMUTABLE;
 
 
 -- 1 = array of groups
--- 2 = type (VMeasurement, Tree, Site, Default)
--- 3 = id (VMeasurementID, TreeID, SiteID, or 0 for default)
+-- 2 = type (VMeasurement, Element, Object, Default)
+-- 3 = id (VMeasurementID, ElementID, ObjectID, or 0 for default)
 CREATE OR REPLACE FUNCTION cpgdb.GetGroupPermissions(integer[], varchar, integer) RETURNS varchar[] AS $$
 DECLARE
    _groupIDs ALIAS FOR $1;
@@ -71,16 +71,16 @@ DECLARE
    permissionType varchar := lower(_ptype);
    query varchar;
    i integer;
-   siteid integer;
+   objectid integer;
    res refcursor;
    perm varchar;
    perms varchar[];
 
-   stypes varchar[] := array['vmeasurement','tree','site','default'];
+   stypes varchar[] := array['vmeasurement','element','object','default'];
 BEGIN
    -- Invalid type specified?
    IF NOT (permissionType = ANY(stypes)) THEN
-      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, tree, site, default.', _ptype;
+      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, element, object, default.', _ptype;
    END IF;
 
    -- Invoke special defaults... 
@@ -107,15 +107,15 @@ BEGIN
          -- Get default permissions
          RETURN cpgdb.GetGroupPermissions(_groupIDs, 'default', 0);
 
-      ELSEIF permissionType = 'tree' THEN
-         -- Get the siteID of this tree
-         SELECT tblSubsite.siteID INTO siteid FROM tblTree, tblSubsite 
-                WHERE tblTree.subsiteID=tblSubsite.SubsiteID
-                AND tblTree.treeid = _pid;
+      ELSEIF permissionType = 'element' THEN
+         -- Get the objectID of this element
+         SELECT tblSubobject.objectID INTO objectid FROM tblElement, tblSubobject 
+                WHERE tblElement.subobjectID=tblSubobject.SubobjectID
+                AND tblElement.elementid = _pid;
 
-         RETURN cpgdb.GetGroupPermissions(_groupIDs, 'site', siteid);
+         RETURN cpgdb.GetGroupPermissions(_groupIDs, 'object', objectid);
 
-      ELSEIF permissionType = 'site' THEN
+      ELSEIF permissionType = 'object' THEN
 
          -- Get default permissions
          RETURN cpgdb.GetGroupPermissions(_groupIDs, 'default', 0);
@@ -146,8 +146,8 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 -- 1 = securityUserID
--- 2 = type (VMeasurement, Tree, Site, Default)
--- 3 = id (VMeasurementID, TreeID, SiteID, or 0 for default)
+-- 2 = type (VMeasurement, Element, Object, Default)
+-- 3 = id (VMeasurementID, ElementID, ObjectID, or 0 for default)
 CREATE OR REPLACE FUNCTION cpgdb.GetUserPermissions(integer, varchar, integer) RETURNS varchar[] AS $$
 DECLARE
    _securityUserID ALIAS FOR $1;
