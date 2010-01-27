@@ -99,6 +99,7 @@
 			<xs:enumeration value="parentobjectid" />
 			<xs:enumeration value="objectlocation" />
 			<xs:enumeration value="countOfChildSeriesOfObject"/>
+			<xs:enumeration value="anyparentobjectid"/>
 			
 			<!-- ELEMENT ATTRIBUTES -->
 			<xs:enumeration value="elementid" />

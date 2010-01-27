@@ -100,6 +100,7 @@ class searchParameters implements IParams
 									'objectcode' =>							array('tbl' => 'vwtblobject', 'field' => 'code'),
 									'objectlocation' =>						array('tbl' => 'vwtblobject', 'field' => 'locationgeometry'),
 									'countOfChildSeriesOfObject' =>			array('tbl' => 'vwtblobject', 'field' => 'countofchildvmeasurements'),
+									'anyparentobjectid' =>					array('tbl' => 'vwtblobject', 'field' => 'anyparentobjectid'),
 		
 									'elementid' => 							array ('tbl' => 'vwtblelement', 	'field'  => 'elementid'),
 									//'elementdbid' => 						array('tbl' => 'vwtblelement', 'field' => 'elementid'),

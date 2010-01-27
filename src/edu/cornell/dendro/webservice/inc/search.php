@@ -307,34 +307,57 @@ class search Implements IDBAccessor
 
         foreach($paramsArray as $param)
         {
-            // Set operator
-            switch ($param['operator'])
-            {
-            case ">":
-                $operator = ">";
-                $value = " '".$param['value']."'";
-                break;
-            case "<":
-                $operator = "<";
-                $value = " '".$param['value']."'";
-                break;
-            case "!=":
-                $operator = "!=";
-                $value = " '".$param['value']."'";
-                break;
-            case "like":
-                $operator = "ilike";
-                $value = " '%".$param['value']."%'";
-                break;
-            case "is":
-            	$operator = "is";
-            	$value = " ".$param['value']." ";
-            	break;
-            default :
-                $operator = "=";
-                $value = " '".$param['value']."'";
-            }
-            $filterSQL .= $param['table'].".".$param['field']." ".$operator.$value."\n AND ";
+        	// Intercept parent object requests as special case
+        	if($param['field']=='anyparentobjectid')
+        	{
+        		switch ($param['operator'])
+        		{
+        			case "=":
+        				$operator = "IN";
+        				$value = "'".$param['value']."'";
+        				break;
+        			case "!=":
+        				$operator = "NOT IN";
+        				$value = "'".$param['value']."'";
+        				break;
+        			default:
+        				$operator = "IN";
+        				$value = "'".$param['value']."'";        				
+        		}
+        		$filterSQL.= $param['table'].".objectid ";
+        		$filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true))\n AND ";
+        	}
+        	else
+        	{ 	
+	            // Set operator
+	            switch ($param['operator'])
+	            {
+	            case ">":
+	                $operator = ">";
+	                $value = " '".$param['value']."'";
+	                break;
+	            case "<":
+	                $operator = "<";
+	                $value = " '".$param['value']."'";
+	                break;
+	            case "!=":
+	                $operator = "!=";
+	                $value = " '".$param['value']."'";
+	                break;
+	            case "like":
+	                $operator = "ilike";
+	                $value = " '%".$param['value']."%'";
+	                break;
+	            case "is":
+	            	$operator = "is";
+	            	$value = " ".$param['value']." ";
+	            	break;
+	            default :
+	                $operator = "=";
+	                $value = " '".$param['value']."'";
+	            }
+	            $filterSQL .= $param['table'].".".$param['field']." ".$operator.$value."\n AND ";
+        	}
         }
 
         // Trim off last 'and'
