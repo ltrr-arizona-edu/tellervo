@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Arrays;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.schema.SecurityUser;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -149,7 +150,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
      */
     private Boolean setPassword(char[] pwd)
     {
-    	SecurityUser thisUser = new SecurityUser();
+    	SecurityUser thisUser = App.currentUser;
     	    	   	
     	return setPassword(thisUser, pwd);
     	

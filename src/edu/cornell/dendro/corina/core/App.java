@@ -3,6 +3,8 @@
 
 package edu.cornell.dendro.corina.core;
 
+import java.util.List;
+
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.LoginSplash;
 import edu.cornell.dendro.corina.gui.ProgressMeter;
@@ -11,7 +13,9 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.schema.SecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
+import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 
@@ -27,6 +31,9 @@ public class App {
   public static Logging logging;
   public static Dictionary dictionary;
   public static TridasObjectList tridasObjects;
+  public static SecurityUser currentUser;
+  private static String username;
+  
   
   private final static boolean DEBUGGING = false;
 
@@ -35,7 +42,8 @@ public class App {
   
   private static ProxyManager proxies; // for handling our proxies
 
-  public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
+  @SuppressWarnings("unchecked")
+public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // throwing an error instead of simply ignoring it
     // will point out bad design and/or bugs
     if (initialized) throw new IllegalStateException("AppContext already initialized.");
@@ -109,7 +117,9 @@ public class App {
     		if(DEBUGGING)
     			throw new UserCancelledException();
     		dlg.doLogin(null, false);
-    		isLoggedIn = true;
+    		username=dlg.getUsername().toString();
+    		isLoggedIn = true;  		
+    		
        	} catch (UserCancelledException uce) {
     		// we default to not being logged in...
     	}
@@ -135,6 +145,16 @@ public class App {
     	meter.setProgress(7);
     }
 
+    // Get the current users details from the dictionary 
+    if (isLoggedIn){
+    	List<?> dictionary = (List<?>) Dictionary.getDictionary("securityUserDictionary");
+		List<SecurityUser> users = (List<SecurityUser>) ListUtil.subListOfType(dictionary, SecurityUser.class);
+		
+    	for(SecurityUser su: users){
+    		if(su.getUsername().compareTo(username)==0) currentUser = su;
+    	}
+    }
+    
     if (meter != null) {
     	meter.setNote("Initializing Site List...");
     }
