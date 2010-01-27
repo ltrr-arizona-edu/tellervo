@@ -636,7 +636,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 				SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
 				for(int i = 0; i < selected.length; i++) {
 					TridasObjectEx site = (TridasObjectEx) selected[i];
-					search.addSearchConstraint(SearchParameterName.OBJECTID, 
+					search.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, 
 							SearchOperator.EQUALS, site.getIdentifier().getValue());
 				}
 

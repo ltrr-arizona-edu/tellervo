@@ -192,6 +192,10 @@ public class LabCode implements Comparable<LabCode> {
 		int i = 0;
 		int v;
 		
+		/* This code uses subobjects in code.  But at Cornell we 
+		 * are only interested in the top level object so we are
+		 * doing simple check of top level code instead
+		 * 
 		// sites are tricky...
 		while(i < o.siteCodes.size() && i < this.siteCodes.size()) {
 			String s1 = (i < this.siteCodes.size()) ? this.siteCodes.get(i) : null;
@@ -203,6 +207,12 @@ public class LabCode implements Comparable<LabCode> {
 			
 			i++;
 		}
+		*/
+		
+		String s1 = (this.siteCodes.size()>0) ? this.siteCodes.get(0) : null;
+		String s2 = (o.siteCodes.size()>0) ? o.siteCodes.get(0) : null;
+		if((v = compare(s1, s2)) != 0)
+			return v;
 		
 		if((v = compare(this.elementCode, o.elementCode)) != 0)
 			return v;

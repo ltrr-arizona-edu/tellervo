@@ -153,14 +153,39 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		add(indexMenu);
 
 		// sum
-		sumMenu = Builder.makeMenuItem("sum...", true, "sum.png");
-		sumMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
-			}
-		});
 		
-		add(sumMenu);
+		if(!sample.isSummed())
+		{
+			// Sample is not a sum so add standard 'sum' button
+			JMenuItem sumMenuItem = Builder.makeMenuItem("sum...", true, "sum.png");
+			sumMenuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
+				}
+			});
+			add(sumMenuItem);
+		}
+		else
+		{
+			// Sample is already a sum so offer to modify or create a version
+			
+			JMenuItem modifySum = Builder.makeMenuItem("modifysumandreplace");
+			modifySum.setEnabled(false);
+			
+			JMenuItem modifySumAsVersion = Builder.makeMenuItem("modifysumasversion");
+			modifySumAsVersion.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					new SumCreationDialog(editor, sample);
+				}
+			});
+			
+			JMenu sumSubMenu = Builder.makeMenu("modifysum", "sum.png");
+			sumSubMenu.add(modifySum);
+			sumSubMenu.add(modifySumAsVersion);
+			add(sumSubMenu);
+		}
+		
+		
 
 		// redate
 		JMenuItem redate = Builder.makeMenuItem("redate...", true, "redate.png");
@@ -217,7 +242,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		sampleElementsChanged(null);
 	}
 
-	private JMenuItem indexMenu, sumMenu, crossElements;
+	private JMenuItem indexMenu, crossElements;
 
 	//
 	// listener
@@ -227,7 +252,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	public void sampleMetadataChanged(SampleEvent e) {
 		// index menu: only if not indexed
 		indexMenu.setEnabled(!sample.isIndexed());
-		sumMenu.setEnabled(!sample.isSummed());
+		
 	}
 	public void sampleElementsChanged(SampleEvent e) {
 		/*

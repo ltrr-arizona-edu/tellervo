@@ -35,18 +35,58 @@ import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 public class SumCreationDialog {
 	private DBBrowser sum;
 	private String sumName = "New sum";
-
-	@SuppressWarnings("serial")
+	private Sample baseS = null;
+	
+	/**
+	 * Create sum based upon an existing sum by creating a new version
+	 * 
+	 * @param parent
+	 * @param baseSample
+	 */
+	public SumCreationDialog(final Frame parent, Sample baseSample)
+	{
+		
+		baseS = baseSample;
+		ElementList el = null;
+		
+		// this sum is a modification of an existing one, so populate dbbrowser with the relevant elements
+		if(baseS!=null)
+		{
+			el = baseS.getElements();
+		}
+		setup(parent, el);
+	}
+	
+	/**
+	 * Create a new sum
+	 * 
+	 * @param parent
+	 * @param el
+	 */
 	public SumCreationDialog(final Frame parent, ElementList el) {
+		
+		setup(parent, el);
+	}
+	
+	@SuppressWarnings("serial")
+	private void setup(final Frame parent, ElementList el) {
 		
 		// create the db browser, but make it create the sum first before closing
 		sum = new DBBrowser(parent, true, true) {
 			@Override
 			protected boolean finish() {
 				try {
+					
+					if (baseS!=null)
+					{
+						// Based upon a previous sum so get previous name as suggestion
+						sumName = baseS.getDisplayTitle();
+					}
+
 					sumName = JOptionPane.showInputDialog(parent,
 							"Please choose a name for your sum:",
 							sumName);
+					
 			
 					if ((sumName == null) || (sumName == "newSeries") || (sumName == "New sum"))
 					{
@@ -67,10 +107,12 @@ public class SumCreationDialog {
 		// must have two for a sum!
 		sum.setMinimumSelectedElements(2);
 
-		
+
+
 		// add the elements so they show in the dialog
 		for(Element e : el)
 			sum.addElement(e);
+		
 		
 		// select the site in the first element
 		/*Element e = el.get(0);
@@ -87,9 +129,7 @@ public class SumCreationDialog {
 				// ignore...
 			}
 		}*/
-		
 
-		
 		addButtons();
 		
 		sum.setTitle("Creating a sum");
