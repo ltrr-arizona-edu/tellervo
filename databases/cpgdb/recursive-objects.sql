@@ -158,3 +158,56 @@ RETURNS SETOF tblObject AS $$
   SELECT DISTINCT * FROM cpgdb._internalFindObjectsAndDescendantsWhere($1);
 $$ LANGUAGE SQL;
 
+CREATE OR REPLACE FUNCTION cpgdb.findobjectdescendantsfromcode(thiscode character varying, includeself boolean)
+  RETURNS SETOF tblobject AS
+$BODY$DECLARE
+thiscode ALIAS FOR $1;
+includeself ALIAS FOR $2;
+thisuuid uuid;
+query VARCHAR;
+res tblobject%ROWTYPE;
+BEGIN
+
+-- Extract UUID for this code;
+SELECT objectid INTO thisuuid FROM tblobject where code=thiscode;
+IF NOT FOUND THEN
+   RAISE EXCEPTION 'No objects match this code';
+END IF;
+
+FOR res IN SELECT * FROM cpgdb.findobjectdescendants(thisuuid, includeself) LOOP
+  RETURN NEXT res;
+END LOOP;
+
+END;$BODY$
+  LANGUAGE 'plpgsql' VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION cpgdb.findobjectdescendantsfromcode(character varying, boolean) OWNER TO aps03pwb;
+
+
+CREATE OR REPLACE FUNCTION cpgdb.findobjectancestorsfromcode(thiscode character varying, includeself boolean)
+  RETURNS SETOF tblobject AS
+$BODY$DECLARE
+thiscode ALIAS FOR $1;
+includeself ALIAS FOR $2;
+thisuuid uuid;
+query VARCHAR;
+res tblobject%ROWTYPE;
+BEGIN
+
+-- Extract UUID for this code;
+SELECT objectid INTO thisuuid FROM tblobject where code=thiscode;
+IF NOT FOUND THEN
+   RAISE EXCEPTION 'No objects match this code';
+END IF;
+
+FOR res IN SELECT * FROM cpgdb.findobjectancestors(thisuuid, includeself) LOOP
+  RETURN NEXT res;
+END LOOP;
+
+END;$BODY$
+  LANGUAGE 'plpgsql' VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION cpgdb.findobjectancestorsfromcode(character varying, boolean) OWNER TO aps03pwb;
+

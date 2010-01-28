@@ -77,7 +77,7 @@
     <Component class="javax.swing.JRadioButton" name="radBarcode">
       <Properties>
         <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="Lookup sample by barcode:"/>
+        <Property name="text" type="java.lang.String" value="Lookup sample by barcode or labcode:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JRadioButton" name="radManual">

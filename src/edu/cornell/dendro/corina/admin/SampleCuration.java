@@ -115,6 +115,8 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 
         			playBarcodeBeep();
         			
+        			
+   
         			// A barcode was probably just scanned	
         			String barcodeText = txtBarcode.getText();
     				try {
@@ -126,6 +128,38 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     					Alert.message("Barcode error", "There was a problem with the barcode you scanned:\n"+iae.getMessage());
     				}	
         		}
+	       		else {
+	      	    	// User is typing a lab code
+         			int key = txt.getKeyCode();
+           		    if (key == KeyEvent.VK_ENTER)
+           		    {
+           		    	 // User typed lab code followed by enter so search for it!
+           		    
+           		    	String text = txtBarcode.getText();
+           			  String [] strarray = null;
+           			  String objcode = null;
+           			  String elemcode = null;
+           			  String sampcode = null;
+           			  
+           			  // Remove the "C-" from beginning if present
+           			  if (text.substring(0, 2).compareToIgnoreCase("C-")==0) text = text.substring(2, text.length());
+           			  
+           			  // Explode based on '-' delimiter
+           			  strarray = text.split("-");
+           			  
+           			  // Get codes from array
+           			  if (strarray.length==0) return;
+           			  if (strarray.length>=1) objcode = strarray[0];
+           			  if (strarray.length>=2) elemcode = strarray[1];
+           			  if (strarray.length>=3) sampcode = strarray[2];
+           		      doLabCodeSearch(objcode, elemcode, sampcode);
+           		    }
+	           		     
+	           		// Enter has not been pressed so user is 
+           		    // still typing lab code    
+	           		return;
+	      			 
+	      		 }
  
         	}
 
@@ -239,7 +273,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	    	    	
 		// Find all elements for an object 
     	SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
-    	param.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
+    	param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
 
     	// we want an object return here, so we get a list of object->elements->samples when we use comprehensive
 		EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
@@ -359,8 +393,56 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 		
 	}
     
-    private void doManualSearch()
+	private void doLabCodeSearch(String objectcode, String elementcode, String samplecode)
+	{
+    	
+		// Set return type to samples
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
+    	
+    	// Set parameters
+    	if(objectcode!=null) param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTCODE, SearchOperator.EQUALS, objectcode);
+    	if(elementcode!=null) param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, elementcode);
+    	if(samplecode!=null) param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, samplecode);
+
+    	// we want a sample returned here
+		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
+		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.SUMMARY);
+		
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			System.out.println("oopsey doopsey.  Error getting samples");
+			return;
+		}
+		
+		List<TridasSample> sampList = resource.getAssociatedResult();
+		
+		// Check to see if any samples were found
+		if (sampList.size()==0) 
+		{
+			Alert.error("None found", "No samples were found");
+			return;
+		}
+		
+	/*	TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(sampList, numSorter);
+		*/
+		
+		resultModel.setSamples(sampList); 
+		resultModel.fireTableDataChanged();
+    	
+		
+		
+	}
+	
+    private void doSearchFromCombos()
     {
+    	String objcode = null;
     	String elcode = null;
     	String sampcode = null;
     	
@@ -372,7 +454,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	if(cboObject.getSelectedItem()!=null)
 		{
 			obj = (TridasObject) cboObject.getSelectedItem();
-			
+			objcode = obj.getTitle().toString();
 		}
 		else
 		{
@@ -415,9 +497,9 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
     	
     	// Set parameters
-    	if(obj!=null) param.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
-    	if(el!=null) param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, el.getIdentifier().getValue().toString());
-    	if(samp!=null) param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, samp.getIdentifier().getValue().toString());
+    	if(obj!=null) param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, objcode);
+    	if(el!=null) param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, elcode);
+    	if(samp!=null) param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, sampcode);
 
     	// we want a sample returned here
 		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
@@ -487,7 +569,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         setTitle("Find a sample...");
 
         radBarcode.setSelected(true);
-        radBarcode.setText("Lookup sample by barcode:");
+        radBarcode.setText("Lookup sample by barcode or labcode:");
 
         radManual.setText("Manually choose sample(s) to locate:");
 
@@ -751,7 +833,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 		}
 		else if (btn==btnSearch)
 		{
-			doManualSearch();
+			doSearchFromCombos();
 		}
 		
 	}

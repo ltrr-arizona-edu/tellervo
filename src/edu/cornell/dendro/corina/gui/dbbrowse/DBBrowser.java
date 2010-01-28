@@ -261,7 +261,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			// set up our query...
 			SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
 
-			if(objcode!=null) search.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.LIKE, objcode);		
+			if(objcode!=null) search.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTCODE, SearchOperator.EQUALS, objcode);		
 			if(elemcode!=null) search.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, elemcode);
 			if(sampcode!=null) search.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.LIKE, sampcode);
 			if(radcode!=null) search.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.LIKE, radcode);

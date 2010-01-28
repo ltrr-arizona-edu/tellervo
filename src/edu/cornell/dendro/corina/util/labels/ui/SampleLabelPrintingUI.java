@@ -243,7 +243,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 					
 					// set the lab code kludgily on the sample
 					GenericFieldUtils.setField(samp, "corina.internal.labcodeText", 
-							LabCodeFormatter.getRadiusPrefixFormatter().format(labcode));
+							LabCodeFormatter.getBodgedRadiusFormatter().format(labcode));
 					
 					// add the sample to the returns list
 					returns.add(samp);
@@ -263,7 +263,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
     	
 		// Find all samples for an object 
     	SearchParameters sampparam = new SearchParameters(SearchReturnObject.SAMPLE);
-    	sampparam.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
+    	sampparam.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
 
     	// we want an object return here, so we get a list of object->elements->samples when we use comprehensive
 		EntitySearchResource<TridasObject> sampresource = new EntitySearchResource<TridasObject>(sampparam, TridasObject.class);

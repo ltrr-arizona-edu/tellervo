@@ -294,7 +294,7 @@ public class ProSheetPrintingUI extends javax.swing.JPanel implements ActionList
     	
 		// Find all series for an object 
     	SearchParameters sampparam = new SearchParameters(SearchReturnObject.DERIVED_SERIES);
-    	sampparam.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
+    	sampparam.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
 
     	// we want a series returned here
 		SeriesSearchResource searchResource = new SeriesSearchResource(sampparam);
