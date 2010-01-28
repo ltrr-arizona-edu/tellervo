@@ -982,7 +982,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				break;
 				
 			case RADIUS:
-				prefix = " " + LabCodeFormatter.getBodgedRadiusFormatter().format(labcode) + "-";
+				prefix = " " + LabCodeFormatter.getRadiusPrefixFormatter().format(labcode) + "-";
 				break;
 				
 			// nothing for object..

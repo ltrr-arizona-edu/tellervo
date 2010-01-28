@@ -243,7 +243,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 					
 					// set the lab code kludgily on the sample
 					GenericFieldUtils.setField(samp, "corina.internal.labcodeText", 
-							LabCodeFormatter.getBodgedRadiusFormatter().format(labcode));
+							LabCodeFormatter.getRadiusPrefixFormatter().format(labcode));
 					
 					// add the sample to the returns list
 					returns.add(samp);

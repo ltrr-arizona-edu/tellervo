@@ -128,7 +128,7 @@ public class SampleListTableModel extends AbstractTableModel {
 			labCode.setSampleCode(s.getTitle());
 			labCode.appendSiteCode(objectCode);
 				
-			return LabCodeFormatter.getBodgedRadiusFormatter().format(labCode);
+			return LabCodeFormatter.getRadiusPrefixFormatter().format(labCode);
 
 		case 1:
 			return boxCode;

@@ -26,7 +26,7 @@ public class LabCodeFormatter {
 	
 	private final static LabCodeFormatter cornellLabCodeFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%");
 	private final static LabCodeFormatter cornellSeriesPrefixFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%");
-	private final static LabCodeFormatter cornellBodgedRadiusPrefix = new LabCodeFormatter("%ELEMENT%-%SAMPLE%");
+	private final static LabCodeFormatter cornellRadiusPrefixFormatter = new LabCodeFormatter("%ELEMENT%-%SAMPLE%");
 	private final static LabCodeFormatter cornellSamplePrefixFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%");
 	private final static LabCodeFormatter cornellElementPrefixFormatter = new LabCodeFormatter("C-%SITES%");
 
@@ -39,8 +39,8 @@ public class LabCodeFormatter {
 		return cornellSeriesPrefixFormatter;
 	}
 	
-	public static LabCodeFormatter getBodgedRadiusFormatter(){
-		return cornellBodgedRadiusPrefix;
+	public static LabCodeFormatter getRadiusPrefixFormatter(){
+		return cornellRadiusPrefixFormatter;
 	}
 	
 	public static LabCodeFormatter getSamplePrefixFormatter(){

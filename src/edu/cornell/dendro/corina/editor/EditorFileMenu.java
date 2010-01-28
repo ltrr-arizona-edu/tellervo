@@ -56,12 +56,6 @@ public class EditorFileMenu extends FileMenu {
 	}
 	
 	@Override
-	public void addIOMenus(){
-	
-		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()", "fileimport.png"));
-	}
-	
-	@Override
 	public void addPrintMenu() {
 		// Add report printing entry
 		JMenuItem reportPrint = Builder.makeMenuItem("print", true, "printer.png");
