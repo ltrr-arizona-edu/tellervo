@@ -307,7 +307,7 @@ class search Implements IDBAccessor
 
         foreach($paramsArray as $param)
         {
-        	// Intercept parent object requests as special case
+        	// Intercept special cases first
         	if($param['field']=='anyparentobjectid')
         	{
         		switch ($param['operator'])
@@ -321,12 +321,34 @@ class search Implements IDBAccessor
         				$value = "'".$param['value']."'";
         				break;
         			default:
-        				$operator = "IN";
-        				$value = "'".$param['value']."'";        				
+    					// No other operators allowed
+    					$this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
+        				return null;     				
         		}
         		$filterSQL.= $param['table'].".objectid ";
         		$filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true))\n AND ";
         	}
+        	elseif($param['field']=='anyparentobjectcode')
+        	{
+        		switch ($param['operator'])
+        		{
+        			case "=":
+        				$operator = "IN";
+        				$value = "'".$param['value']."'";
+        				break;
+        			case "!=":
+        				$operator = "NOT IN";
+        				$value = "'".$param['value']."'";
+        				break;
+        			default:
+    					// No other operators allowed
+    					$this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
+        				return null;     				
+        		}
+        		$filterSQL.= $param['table'].".code ";
+        		$filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)))\n AND ";
+        	}
+        	// All other cases can be handled generically
         	else
         	{ 	
 	            // Set operator

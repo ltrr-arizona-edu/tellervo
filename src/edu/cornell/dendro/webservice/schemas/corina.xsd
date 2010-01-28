@@ -45,6 +45,7 @@
 			<xs:enumeration value="plainlogin"/>
 			<xs:enumeration value="securelogin"/>
 			<xs:enumeration value="nonce"/>
+			<xs:enumeration value="setpassword"/>
 			<xs:enumeration value="logout"/>
 			<xs:enumeration value="help"/>
 			<xs:enumeration value="search"/>
@@ -100,6 +101,7 @@
 			<xs:enumeration value="objectlocation" />
 			<xs:enumeration value="countOfChildSeriesOfObject"/>
 			<xs:enumeration value="anyparentobjectid"/>
+			<xs:enumeration value="anyparentobjectcode"/>
 			
 			<!-- ELEMENT ATTRIBUTES -->
 			<xs:enumeration value="elementid" />

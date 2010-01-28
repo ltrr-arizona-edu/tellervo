@@ -519,7 +519,7 @@ class request
          
 
         }
-        elseif ( ($this->crudMode=='plainlogin') || ($this->crudMode=='securelogin') || ($this->crudMode=='nonce') ) 
+        elseif ( ($this->crudMode=='plainlogin') || ($this->crudMode=='securelogin') || ($this->crudMode=='nonce') || ($this->crudMode=='setpassword')) 
         { 	
         	$authTag = $this->xmlRequestDom->getElementsByTagName("authenticate")->item(0);
        		$myParamObj = new authenticationParameters($this->xmlRequestDom->saveXML($authTag));
