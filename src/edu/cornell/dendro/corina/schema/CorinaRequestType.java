@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="plainlogin"/>
  *     &lt;enumeration value="securelogin"/>
  *     &lt;enumeration value="nonce"/>
+ *     &lt;enumeration value="setpassword"/>
  *     &lt;enumeration value="logout"/>
  *     &lt;enumeration value="help"/>
  *     &lt;enumeration value="search"/>
@@ -49,6 +50,8 @@ public enum CorinaRequestType {
     SECURELOGIN("securelogin"),
     @XmlEnumValue("nonce")
     NONCE("nonce"),
+    @XmlEnumValue("setpassword")
+    SETPASSWORD("setpassword"),
     @XmlEnumValue("logout")
     LOGOUT("logout"),
     @XmlEnumValue("help")

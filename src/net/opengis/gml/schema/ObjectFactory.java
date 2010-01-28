@@ -57,51 +57,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link MultiCurvePropertyType }
+     * Create an instance of {@link SurfaceMember }
      * 
      */
-    public MultiCurvePropertyType createMultiCurvePropertyType() {
-        return new MultiCurvePropertyType();
+    public SurfaceMember createSurfaceMember() {
+        return new SurfaceMember();
     }
 
     /**
-     * Create an instance of {@link CurveMember }
+     * Create an instance of {@link CurveType }
      * 
      */
-    public CurveMember createCurveMember() {
-        return new CurveMember();
+    public CurveType createCurveType() {
+        return new CurveType();
     }
 
     /**
-     * Create an instance of {@link AbstractRingPropertyType }
+     * Create an instance of {@link AbstractFeatureBaseType }
      * 
      */
-    public AbstractRingPropertyType createAbstractRingPropertyType() {
-        return new AbstractRingPropertyType();
+    public AbstractFeatureBaseType createAbstractFeatureBaseType() {
+        return new AbstractFeatureBaseType();
     }
 
     /**
-     * Create an instance of {@link BoundedBy }
+     * Create an instance of {@link Name }
      * 
      */
-    public BoundedBy createBoundedBy() {
-        return new BoundedBy();
-    }
-
-    /**
-     * Create an instance of {@link Patches }
-     * 
-     */
-    public Patches createPatches() {
-        return new Patches();
-    }
-
-    /**
-     * Create an instance of {@link Pos }
-     * 
-     */
-    public Pos createPos() {
-        return new Pos();
+    public Name createName() {
+        return new Name();
     }
 
     /**
@@ -113,11 +97,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link MultiSurfaceType }
+     * Create an instance of {@link CurveMember }
      * 
      */
-    public MultiSurfaceType createMultiSurfaceType() {
-        return new MultiSurfaceType();
+    public CurveMember createCurveMember() {
+        return new CurveMember();
     }
 
     /**
@@ -129,27 +113,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link LineStringType }
+     * Create an instance of {@link LineStringSegmentType }
      * 
      */
-    public LineStringType createLineStringType() {
-        return new LineStringType();
+    public LineStringSegmentType createLineStringSegmentType() {
+        return new LineStringSegmentType();
     }
 
     /**
-     * Create an instance of {@link Envelope }
+     * Create an instance of {@link Pos }
      * 
      */
-    public Envelope createEnvelope() {
-        return new Envelope();
+    public Pos createPos() {
+        return new Pos();
     }
 
     /**
-     * Create an instance of {@link SurfaceType }
+     * Create an instance of {@link AbstractSurfaceType }
      * 
      */
-    public SurfaceType createSurfaceType() {
-        return new SurfaceType();
+    public AbstractSurfaceType createAbstractSurfaceType() {
+        return new AbstractSurfaceType();
+    }
+
+    /**
+     * Create an instance of {@link Segments }
+     * 
+     */
+    public Segments createSegments() {
+        return new Segments();
     }
 
     /**
@@ -161,11 +153,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link PolygonPatchType }
+     * Create an instance of {@link AbstractRingPropertyType }
      * 
      */
-    public PolygonPatchType createPolygonPatchType() {
-        return new PolygonPatchType();
+    public AbstractRingPropertyType createAbstractRingPropertyType() {
+        return new AbstractRingPropertyType();
+    }
+
+    /**
+     * Create an instance of {@link MeasureType }
+     * 
+     */
+    public MeasureType createMeasureType() {
+        return new MeasureType();
     }
 
     /**
@@ -185,30 +185,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SurfaceMember }
-     * 
-     */
-    public SurfaceMember createSurfaceMember() {
-        return new SurfaceMember();
-    }
-
-    /**
-     * Create an instance of {@link ReferenceType }
-     * 
-     */
-    public ReferenceType createReferenceType() {
-        return new ReferenceType();
-    }
-
-    /**
-     * Create an instance of {@link MultiPointPropertyType }
-     * 
-     */
-    public MultiPointPropertyType createMultiPointPropertyType() {
-        return new MultiPointPropertyType();
-    }
-
-    /**
      * Create an instance of {@link PointMember }
      * 
      */
@@ -217,35 +193,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link MeasureType }
+     * Create an instance of {@link SurfaceType }
      * 
      */
-    public MeasureType createMeasureType() {
-        return new MeasureType();
-    }
-
-    /**
-     * Create an instance of {@link Segments }
-     * 
-     */
-    public Segments createSegments() {
-        return new Segments();
-    }
-
-    /**
-     * Create an instance of {@link LineStringSegmentType }
-     * 
-     */
-    public LineStringSegmentType createLineStringSegmentType() {
-        return new LineStringSegmentType();
-    }
-
-    /**
-     * Create an instance of {@link CurveType }
-     * 
-     */
-    public CurveType createCurveType() {
-        return new CurveType();
+    public SurfaceType createSurfaceType() {
+        return new SurfaceType();
     }
 
     /**
@@ -257,11 +209,67 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link LineStringType }
+     * 
+     */
+    public LineStringType createLineStringType() {
+        return new LineStringType();
+    }
+
+    /**
+     * Create an instance of {@link BoundedBy }
+     * 
+     */
+    public BoundedBy createBoundedBy() {
+        return new BoundedBy();
+    }
+
+    /**
+     * Create an instance of {@link Patches }
+     * 
+     */
+    public Patches createPatches() {
+        return new Patches();
+    }
+
+    /**
      * Create an instance of {@link GeometryPropertyType }
      * 
      */
     public GeometryPropertyType createGeometryPropertyType() {
         return new GeometryPropertyType();
+    }
+
+    /**
+     * Create an instance of {@link PolygonPatchType }
+     * 
+     */
+    public PolygonPatchType createPolygonPatchType() {
+        return new PolygonPatchType();
+    }
+
+    /**
+     * Create an instance of {@link Envelope }
+     * 
+     */
+    public Envelope createEnvelope() {
+        return new Envelope();
+    }
+
+    /**
+     * Create an instance of {@link MultiPointPropertyType }
+     * 
+     */
+    public MultiPointPropertyType createMultiPointPropertyType() {
+        return new MultiPointPropertyType();
+    }
+
+    /**
+     * Create an instance of {@link MultiSurfaceType }
+     * 
+     */
+    public MultiSurfaceType createMultiSurfaceType() {
+        return new MultiSurfaceType();
     }
 
     /**
@@ -273,6 +281,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ReferenceType }
+     * 
+     */
+    public ReferenceType createReferenceType() {
+        return new ReferenceType();
+    }
+
+    /**
      * Create an instance of {@link MultiPointType }
      * 
      */
@@ -281,27 +297,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AbstractFeatureBaseType }
+     * Create an instance of {@link MultiCurvePropertyType }
      * 
      */
-    public AbstractFeatureBaseType createAbstractFeatureBaseType() {
-        return new AbstractFeatureBaseType();
-    }
-
-    /**
-     * Create an instance of {@link AbstractSurfaceType }
-     * 
-     */
-    public AbstractSurfaceType createAbstractSurfaceType() {
-        return new AbstractSurfaceType();
-    }
-
-    /**
-     * Create an instance of {@link Name }
-     * 
-     */
-    public Name createName() {
-        return new Name();
+    public MultiCurvePropertyType createMultiCurvePropertyType() {
+        return new MultiCurvePropertyType();
     }
 
     /**

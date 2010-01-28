@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="objectlocation"/>
  *     &lt;enumeration value="countOfChildSeriesOfObject"/>
  *     &lt;enumeration value="anyparentobjectid"/>
+ *     &lt;enumeration value="anyparentobjectcode"/>
  *     &lt;enumeration value="elementid"/>
  *     &lt;enumeration value="elementdbid"/>
  *     &lt;enumeration value="elementoriginaltaxonname"/>
@@ -179,6 +180,8 @@ public enum SearchParameterName {
     COUNT_OF_CHILD_SERIES_OF_OBJECT("countOfChildSeriesOfObject"),
     @XmlEnumValue("anyparentobjectid")
     ANYPARENTOBJECTID("anyparentobjectid"),
+    @XmlEnumValue("anyparentobjectcode")
+    ANYPARENTOBJECTCODE("anyparentobjectcode"),
     @XmlEnumValue("elementid")
     ELEMENTID("elementid"),
     @XmlEnumValue("elementdbid")
