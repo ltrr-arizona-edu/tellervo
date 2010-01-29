@@ -267,8 +267,33 @@ public class BoxLabel extends ReportBase{
 		Integer sampleCountInBox = 0; 
 		
 		// Loop through objects
+		List<TridasObject> objdone = new ArrayList<TridasObject>(); // Array of top level objects that have already been dealt with
+		mainobjloop:
 		for(TridasObject myobj : obj)
 		{	
+			// Need to check if this object has already been done as there will be duplicate top level objects if there are samples 
+			// from more than one subobject in the box 
+			if(objdone.size()>0)
+			{
+				for(TridasObject tlo : objdone){
+					TridasObjectEx tloex = (TridasObjectEx) tlo;
+					TridasObjectEx myobjex = (TridasObjectEx) myobj;
+					
+					if (tloex.getLabCode().compareTo(myobjex.getLabCode())==0){
+						// Object already been done so skip to next
+						continue mainobjloop;
+					}
+					else {
+						// Object has not been done so add to the done list and keep going
+						objdone.add(myobj);
+					}
+				}
+				
+			}
+			else
+			{
+				objdone.add(myobj);
+			}
 		
 			// Add object code to first column			
 			PdfPCell dataCell = new PdfPCell();
