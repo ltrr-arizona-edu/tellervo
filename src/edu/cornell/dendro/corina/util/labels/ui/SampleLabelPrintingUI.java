@@ -229,14 +229,22 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 					// make lab code
 					LabCode labcode = new LabCode();
 					
+					
+					
 					// objects first...
-					for(TridasObject obj2 : currentObjects) {
+					labcode.appendSiteCode(((TridasObjectEx) currentObjects.get(0)).getLabCode());
+					
+					// Cornell only wants top level object in lab code. 
+					// Make this client selectable before releasing to the world
+					
+					/*for(TridasObject obj2 : currentObjects) {
 						if(obj2 instanceof TridasObjectEx)
 							labcode.appendSiteCode(((TridasObjectEx) obj2).getLabCode());
 						else
 							labcode.appendSiteCode(obj2.getTitle());
 						labcode.appendSiteTitle(obj2.getTitle());
 					}
+					*/
 					
 					labcode.setElementCode(ele.getTitle());
 					labcode.setSampleCode(samp.getTitle());
