@@ -117,8 +117,6 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 		
 		if (evt.getSource() == btnPreview){
 
-			this.parent.setVisible(false);
-			
 			if(printtype == PrintType.BOX)
 			{	
 				this.parent.setVisible(false);
@@ -129,7 +127,6 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 					BoxLabel label = new BoxLabel(boxlabelpanel.selModel);
 					
 					label.getLabel(false);
-					this.parent.dispose();
 				}	
 			}
 			else if(printtype == PrintType.SAMPLE)
@@ -156,7 +153,7 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 					
 					ProSheet.viewReport((TridasObject) prosheetpanel.cboObject.getSelectedItem(), prosheetpanel.selModel);
 
-					this.parent.dispose();
+
 				}					
 				
 			}
