@@ -314,7 +314,7 @@ public class BoxLabel extends ReportBase{
 			System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
 			SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
 			sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
-			sp.addSearchConstraint(SearchParameterName.PARENTOBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
+			sp.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
 			EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
 			resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.SUMMARY);
 			CorinaResourceAccessDialog dialog2 = new CorinaResourceAccessDialog(resource);
