@@ -87,6 +87,15 @@ public class FileElement implements SampleLoader {
 		}
 		// otherwise, we got passed a whole file name. try and parse it up.
 		else {
+
+			this.filename = filename;
+			this.basename = new File(filename).getName();
+			return;
+			
+			
+			/*  THIS IS OLD STUFF WITH G:\DATA hardcoded
+			 *  Yuk!
+			 * 
 			String fn = filename;
 			
 			// if, for some reason, adaptive reading is turned off... 
@@ -96,6 +105,7 @@ public class FileElement implements SampleLoader {
 				this.basename = new File(filename).getName();
 				return;				
 			}
+			
 			
 			// chop off any sort of beginning cruft
 			if(fn.startsWith("G:\\DATA\\")) {
@@ -130,7 +140,9 @@ public class FileElement implements SampleLoader {
 			else {
 				this.filename = filename;
 				this.basename = new File(filename).getName();
-			}
+			}*/
+			
+			
 		}
 	}
 
