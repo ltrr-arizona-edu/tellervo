@@ -72,7 +72,6 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 	
 	
 	public void actionPerformed(ActionEvent evt) {
-		// TODO Auto-generated method stub
 		
 		if (evt.getSource() == btnCancel){
 		
@@ -119,7 +118,6 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 
 			if(printtype == PrintType.BOX)
 			{	
-				this.parent.setVisible(false);
 				if(boxlabelpanel.selModel.getSize()>0)
 				{
 					

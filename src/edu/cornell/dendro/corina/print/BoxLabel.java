@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 
@@ -138,7 +139,7 @@ public class BoxLabel extends ReportBase{
 		        document.add(new Paragraph(p2));
 		        
 		        // Ring samples table
-		        getTable(b);
+		        addTable(b);
 		        document.add(getParagraphSpace());	
 			    
 		        document.add(getComments(b));
@@ -196,13 +197,14 @@ public class BoxLabel extends ReportBase{
 	}
 	
 	
+		
 	/**
 	 * Get PdfPTable containing the samples per object
 	 * 
 	 * @return PdfPTable
 	 * @throws DocumentException 
 	 */
-	private void getTable(WSIBox b) throws DocumentException
+	private void addTable(WSIBox b) throws DocumentException
 	{
 		float[] widths = {0.15f, 0.75f, 0.2f};
 		PdfPTable tbl = new PdfPTable(widths);
@@ -225,15 +227,14 @@ public class BoxLabel extends ReportBase{
 		headerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		tbl.addCell(headerCell);
 		
-		
-		
-
-									
+							
 		// Find all objects associated with samples in this box
 		SearchParameters objparam = new SearchParameters(SearchReturnObject.OBJECT);
 		objparam.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue().toString());
 		EntitySearchResource<TridasObject> objresource = new EntitySearchResource<TridasObject>(objparam);
+		objresource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
 		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(objresource);
+		
 		objresource.query();	
 		dialog.setVisible(true);
 		if(!dialog.isSuccessful()) 
@@ -242,7 +243,7 @@ public class BoxLabel extends ReportBase{
 			return;
 		}
 		List<TridasObject> obj = objresource.getAssociatedResult();
-		
+
 		// Check that there are not too many objects to fit on box label
 		if(obj.size()>10) 
 		{
@@ -268,6 +269,7 @@ public class BoxLabel extends ReportBase{
 		// Loop through objects
 		for(TridasObject myobj : obj)
 		{	
+		
 			// Add object code to first column			
 			PdfPCell dataCell = new PdfPCell();
 			dataCell.setBorderWidthBottom(0);
@@ -275,8 +277,11 @@ public class BoxLabel extends ReportBase{
 			dataCell.setBorderWidthLeft(0);
 			dataCell.setBorderWidthRight(0);
 			dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
-			String objCode;
-			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getLabCode(); else objCode = myobj.getTitle();	
+			String objCode = null;
+			
+		
+			
+			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getLabCode(); 	
 			dataCell.setPhrase(new Phrase(objCode, bodyFontLarge));
 			tbl.addCell(dataCell);
 			
@@ -284,7 +289,7 @@ public class BoxLabel extends ReportBase{
 			System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
 			SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
 			sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
-			sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
+			sp.addSearchConstraint(SearchParameterName.PARENTOBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
 			EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
 			resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.SUMMARY);
 			CorinaResourceAccessDialog dialog2 = new CorinaResourceAccessDialog(resource);
@@ -360,7 +365,7 @@ public class BoxLabel extends ReportBase{
 		// Add table to document
 		document.add(tbl);		
 	}
-		
+			
 	
 	public String hyphenSummarize(List<String> lst)
 	{

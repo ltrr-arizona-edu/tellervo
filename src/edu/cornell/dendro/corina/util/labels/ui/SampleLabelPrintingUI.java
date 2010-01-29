@@ -229,8 +229,6 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 					// make lab code
 					LabCode labcode = new LabCode();
 					
-					
-					
 					// objects first...
 					labcode.appendSiteCode(((TridasObjectEx) currentObjects.get(0)).getLabCode());
 					
