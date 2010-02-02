@@ -26,6 +26,7 @@ public class ElementListTableModel extends AbstractTableModel {
     private final String[] columnNames = {
             "Name", 
             "Version", 
+            "User",
             "Type", 
             "Taxon", 
             "#", 
@@ -50,14 +51,15 @@ public class ElementListTableModel extends AbstractTableModel {
 		
 		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX-Xx-Xx"));
 		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("VERSION12"));
-		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("DirectX"));
-		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Pinus Nigra X"));
-		table.getColumnModel().getColumn(4).setPreferredWidth(fm.stringWidth("99"));
-		table.getColumnModel().getColumn(5).setPreferredWidth(fm.stringWidth("2008-08-08"));
-		table.getColumnModel().getColumn(6).setPreferredWidth(fm.stringWidth("12345"));
+		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("Brewer"));
+		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("DirectX"));
+		table.getColumnModel().getColumn(4).setPreferredWidth(fm.stringWidth("Pinus Nigra X"));
+		table.getColumnModel().getColumn(5).setPreferredWidth(fm.stringWidth("99"));
+		table.getColumnModel().getColumn(6).setPreferredWidth(fm.stringWidth("2008-08-08"));
 		table.getColumnModel().getColumn(7).setPreferredWidth(fm.stringWidth("12345"));
-		table.getColumnModel().getColumn(8).setPreferredWidth(fm.stringWidth("123"));
-		table.getColumnModel().getColumn(9).setPreferredWidth(fm.stringWidth("123")); // checkbox?
+		table.getColumnModel().getColumn(8).setPreferredWidth(fm.stringWidth("12345"));
+		table.getColumnModel().getColumn(9).setPreferredWidth(fm.stringWidth("123"));
+		table.getColumnModel().getColumn(10).setPreferredWidth(fm.stringWidth("123")); // checkbox?
     }
     
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -110,12 +112,15 @@ public class ElementListTableModel extends AbstractTableModel {
 		case 1:
 			return bs.getMetaString(Metadata.VERSION);
 			
-		// Sample type
 		case 2:
+			return null;
+			
+		// Sample type
+		case 3:
 			return bs.getSampleType();
 
 		// taxon
-		case 3: {
+		case 4: {
 			// sums have special ways of getting taxon info
 			if(bs.getSampleType() == SampleType.SUM) {
 				Integer nTaxa = bs.getMeta(Metadata.SUMMARY_MUTUAL_TAXON_COUNT, Integer.class);
@@ -131,29 +136,29 @@ public class ElementListTableModel extends AbstractTableModel {
 		}
 		
 		// measurement count
-		case 4: 
+		case 5: 
 			return bs.getMeta(Metadata.SUMMARY_SUM_CONSTITUENT_COUNT);
 		
 		// modified date
-		case 5: {
+		case 6: {
 			Date date = bs.getMeta(Metadata.MODIFIED_TIMESTAMP, Date.class);
 			return (date != null) ? dateFormat.format(date) : date;
 		}
 
 		// start year
-		case 6:
+		case 7:
 			return bs.getRange().getStart();
 			
 		// end year
-		case 7:
+		case 8:
 			return bs.getRange().getEnd();
 		
 		// number of readings
-		case 8:
+		case 9:
 			return bs.getRange().span();
 		
 		// reconciled
-		case 9:
+		case 10:
 			return bs.getMeta(Metadata.RECONCILED);
 			
 		default:

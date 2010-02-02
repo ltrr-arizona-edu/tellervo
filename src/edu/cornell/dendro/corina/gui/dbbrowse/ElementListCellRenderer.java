@@ -49,7 +49,7 @@ public class ElementListCellRenderer extends DefaultTableCellRenderer {
 		}
 
 		// special case for isReconciled column
-		if (column == 9) {
+		if (column == 10) {
 			if (value instanceof Boolean) {
 				setToolTipText((Boolean) value ? "Not reconciled"
 						: "Reconciled");

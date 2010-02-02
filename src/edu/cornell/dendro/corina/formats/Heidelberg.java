@@ -27,14 +27,20 @@ import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import java.io.StreamTokenizer;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.BaseSeries;
+import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
 /**
@@ -259,35 +265,502 @@ public class Heidelberg implements Filetype {
 		TridasObject tobj = s.getMeta(Metadata.OBJECT, TridasObject.class);
 		TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
 		TridasSample tsamp = s.getMeta(Metadata.SAMPLE, TridasSample.class);
+		TridasRadius trad = s.getMeta(Metadata.RADIUS, TridasRadius.class);
+		ITridasSeries tseries = s.getSeries();
 		
 		
 		// header
 		w.write("HEADER:");
-		//w.newLine();
-		//w.write("DataFormat" ?);
-		w.newLine();
-		w.write("KeyCode=" + s.getDisplayTitle().replace("-", ""));
-		//w.newLine();
-		//w.write("Unit" + s.getSeries().??);
-		//w.newLine();
-		//w.write("DateBegin=" + ?);
-		w.newLine();
-		w.write("DateEnd=" + s.getRange().getEnd());
-		w.newLine();
-		w.write("Length=" + s.getData().size());
 		w.newLine();
 		
-		String tmp;
-		if(tobj.getTitle() != null) {
-			w.write("Location=" + tobj.getTitle());
+		// TSAP AcceptDate - order accept date
+		// Unknown not implemented
+		
+		// TSAP Age - tree age
+		// Is this the same as ring count?  
+		
+		// TSAP AutoCorrelation (used for Tucson file format)
+		// Unknown not implemented
+		
+		// TSAP Bark -  'B' = bark available, '-' = bark not available
+		try{
+			
+			if (trad.getWoodCompleteness().getBark().getPresence().toString().compareTo("PRESENT")==0){
+				w.write("Bark=B");
+			}
+			else if (trad.getWoodCompleteness().getBark().getPresence().toString().compareTo("ABSENT")==0){
+				w.write("Bark=-");
+			}
+			w.newLine();
+		}	
+		catch (NullPointerException e){}
+		
+		// TSAP BHD - Breast height diameter
+		try{
+			w.write("BHD=" + telem.getDimensions().getDiameter().toString());
 			w.newLine();
 		}
-		if(telem.getTaxon().getNormalStd().toString() != null) {
-			w.write("Species=" + telem.getTaxon().getNormalStd().toString());
-			w.newLine();
+		catch (NullPointerException e){}
+		
+		// TSAP Bibliography[n] and BibliographyCount
+		// Not implemented
+		
+		// TSAP Bundle - Timber bundle
+		// Unknown not implemented
+		
+		// TSAP CardinalPoint
+		// Unknown not implemented
+		
+		// TSAP Chronology Type - used for sheffield file format
+		// Unknown not implemented
+		
+		// TSAP ChronoMemberCount - Chrono members
+		// Unknown not implemented
+		
+		// TSAP ChronoMemberKeycodes - Chrono members
+		// Unknown not implemented
+		
+		// TSAP Circumference
+		// Not implemented
+		
+		// TSAP Client
+		// Not implemented
+		
+		// TSAP ClientNo
+		// Not implemented
+		
+		// TSAP Collector - Sampling personal ID
+		// Not implemented
+		
+		// TSAP Comment - Single line comment
+		// Not implemented used multi line syntax instead
+		
+		// TSAP Comment[n] and CommentCount
+		int commentint = 0;
+		try{
+			if(tobj.getComments()!=null && tobj.getComments().length()>0)
+			{
+				commentint++;
+				w.write("Comment[" + Integer.toString(commentint) + "]=Object comments: " + tobj.getComments().toString());
+				w.newLine();
+			}
 		}
+		catch (NullPointerException e){}
+		try{
+			if(telem.getComments()!=null && telem.getComments().length()>0)
+			{
+				commentint++;
+				w.write("Comment[" + Integer.toString(commentint) + "]=Element comments: " + telem.getComments().toString());
+				w.newLine();
+			}
+		}
+		catch (NullPointerException e){}
+		try{
+			if(tsamp.getComments()!=null && tsamp.getComments().length()>0)
+			{
+				commentint++;
+				w.write("Comment[" + Integer.toString(commentint) + "]=Sample comments: " + tsamp.getComments().toString());
+				w.newLine();
+			}
+		}	
+		catch (NullPointerException e){}
+		try{
+			if(trad.getComments()!=null && trad.getComments().length()>0)
+			{
+				commentint++;
+				w.write("Comment[" + Integer.toString(commentint) + "]=Radius comments: " + trad.getComments().toString());
+				w.newLine();
+			}
+		}	
+		catch (NullPointerException e){}
+		if(commentint>0)
+		{
+			w.write("CommentCount=" + Integer.toString(commentint));
+			w.newLine();				
+		}
+		
+		// TSAP Continent
+		// Not implemented
+		
+		// TSAP CoreNo 
+		try{
+			if (tsamp.getType().getNormal().toString().compareTo("Core")==0){
+				w.write("CoreNo="+tsamp.getTitle().toString());
+				w.newLine();
+			}
+		}catch (NullPointerException e){}
+		
+		// TSAP Country
+		// Not implemented
+		
+		// TSAP CreationDate - deprecated 
+		// Not implemented
+		
+		// TSAP DataFormat
+		// Unknown not implemented
+		
+		// TSAP DataType - one of Ringwidth, Earlywood, Latewood, EarlyLateWood, Min density, Max density
+		// Earlywood density, Latewood density. Pith age, Weight of ringwidth
+		// NB - Hardcoded for now.
+		try{
+			w.write("DataType=Ringwidth");
+			w.newLine();
+		} catch (NullPointerException e){}
+		
+		// TSAP DateBegin
+		try{
+			w.write("DateBegin=" + s.getRange().getStart());
+			w.newLine();
+		} catch (NullPointerException e){}
+		
+		// TSAP Dated
+		// @TODO
+		
+		// TSAP DateEnd	
+		try{
+			w.write("DateEnd=" + s.getRange().getEnd());
+			w.newLine();
+		} catch (NullPointerException e){}
+		
+		// TSAP DateOfSampling
+		try{
+			w.write("DateOfSampling="+tsamp.getSamplingDate().getValue().toString());
+			w.newLine();
+		} catch (NullPointerException e){}
+		
+		// TSAP
+		//DateRelBegin[n]
+		//DateRelEnd[n]
+		//DateRelReferenceKey[n]
+		//DateRelCount
+		//DeltaMissingRingsAfter
+		//DeltaMissingRingsBefore
+		//DeltaRingsFromSeedToPith
+		//Disk
+		//District
+		//EdgeInformation
+		//EffectiveAutoCorrelation
+		//EffectiveMean
+		//EffectiveMeanSensitivity
+		//EffectiveNORFAC
+		//EffectiveNORFM
+		//EffectiveStandardDeviation
+		//Eigenvalue
 
-		// WRITE ME: finish out the header stuff
+		// TSAP Elevation
+		try{
+			w.write("Elevation="+telem.getAltitude().toString());
+			w.newLine();
+		} catch (NullPointerException e){}
+		
+		// TSAP EstimatedTimePeriod
+		try{
+			w.write("EstimatedTimePeriod=" + tobj.getCoverage().getCoverageTemporal().toString());
+			w.newLine();
+		} catch (NullPointerException e){}
+		
+		// TSAP Exposition
+		// Unknown not implemented
+		
+		// TSAP FieldNo
+		// Unknown not implemented
+		
+		// TSAP FirstMeasurementDate
+		try{
+			w.write("FirstMeasurementDate="
+					+Integer.toString(tseries.getCreatedTimestamp().getValue().getDay())+"/"
+					+Integer.toString(tseries.getCreatedTimestamp().getValue().getMonth())+"/"
+					+Integer.toString(tseries.getCreatedTimestamp().getValue().getYear()));
+			w.newLine();			
+		} catch (NullPointerException e){}
+
+		// TSAP FirstMeasurementID
+		try{
+			if(tseries instanceof TridasMeasurementSeries){
+				TridasMeasurementSeries tmseries = (TridasMeasurementSeries) tseries;
+				w.write("FirstMeasurementID="+tmseries.getAnalyst().toString());
+				w.newLine();
+			}
+		} catch (NullPointerException e){}
+		
+		// TSAP FromSeedToDateBegin - deprecated
+		// Deprecated not implemented
+		
+		// TSAP GlobalMathCommnet[n]
+		// TSAP GlobalMathCommentCount
+		// Unknown not implemented
+		
+		// TSAP GraphParam - deprecated
+		// Deprecated not implemented
+		
+		// TSAP Group
+		// Only used for Sheffield file format so not implemented
+		
+		// TSAP HouseName
+		// TSAP HouseNo
+		// TSAP ImageCellRow
+		// TSAP ImageComment[n]
+		// TSAP ImageFile[n]
+		// TSAP ImageCount
+		// TSAP ImageFile
+		// TSAP Interpretation
+		// TSAP InvalidRingsAfter
+		// TSAP InvalidRingsBefore
+		// TSAP JuvenileWood
+		// All not implemented
+		
+		// TSAP KeyCode
+		try{
+			w.write("KeyCode=" + s.getDisplayTitle().replace("-", ""));
+			w.newLine();
+		} catch (NullPointerException e){}
+
+		// TSAP KeyNo
+		// Unknown not implemented
+		
+		// TSAP LabotaryCode
+		// Unknown not implemented
+		
+		// TSAP LastRevisionDate
+		try{
+			w.write("LastRevisionDate="
+					+Integer.toString(tseries.getLastModifiedTimestamp().getValue().getDay())+"/"
+					+Integer.toString(tseries.getLastModifiedTimestamp().getValue().getMonth())+"/"
+					+Integer.toString(tseries.getLastModifiedTimestamp().getValue().getYear()));
+			w.newLine();
+		} catch (NullPointerException e){}		
+		
+		// TSAP LastRevisionPersID
+		// Not implemented
+		
+		// TSAP Latitude and Longitude
+		// Need to make this dynamic between TRiDaS entities so that it uses more detailed info if possible
+		try{		
+			List<Double> poslist = tobj.getLocation().getLocationGeometry().getPoint().getPos().getValues();		
+			if(poslist.size()==2)
+			{
+				w.write("Latitude="+ poslist.get(0).toString());
+				w.newLine();
+				w.write("Longitude="+poslist.get(1).toString());
+				w.newLine();
+			}
+		} catch (NullPointerException e){}		
+
+		// TSAP Location
+		try{
+			w.write("Location=" + tobj.getTitle());
+			w.newLine();			
+		} catch (NullPointerException e){}
+		
+		// TSAP LeaveLoss
+		// Not implemented
+		
+		// TSAP Length 
+		try{
+			w.write("Length=" + s.getData().size());
+			w.newLine();   
+		} catch (NullPointerException e){}
+			
+		// TSAP LocationCharacteristics
+		try{
+			w.write("LocationCharacteristics="+tobj.getLocation().getLocationType().value().toString());
+		} catch (NullPointerException e){}
+		
+		// TSAP MajorDimension
+		// TSAP MathComment
+		// TSAP MathComment[n]
+		// TSAP MathCommentCount
+		// TSAP MeanSensitivity
+		// TSAP MinorDimension
+		// TSAP MissingRingsAfter
+		// TSAP MissingRingsBefore		
+		// TSAP NumberOfSamplesInChrono
+		// TSAP NumberOfTreesInChrono
+		// All not implemented
+		
+		// TSAP PersId
+		// Not implemented
+		
+		// TSAP Pith, P=present -=absent
+		try{
+			String pith = trad.getWoodCompleteness().getPith().getPresence().toString();
+			if (pith.compareTo("COMPLETE")==0){
+				w.write("Pith=P");
+				w.newLine();
+			}
+			else if (pith.compareTo("INCOMPLETE")==0){
+				w.write("Pith=P");
+				w.newLine();
+			}
+			else if (pith.compareTo("ABSENT")==0)
+			{
+				w.write("Pith=-");
+				w.newLine();
+			}			
+		} catch (NullPointerException e){}
+		
+		// TSAP Project
+		// Not implemented
+		
+		// TSAP ProtectionCode - used for CATRAS
+		// Not implemented
+		
+		// TSAP Province
+		// Not implemented
+		
+		// TSAP QualityCode
+		// Not implemented
+		
+		// TSAP Radius used for INRA file format
+		// Not implemented
+		
+		// TSAP RadiusNo
+		try{
+			w.write("RadiusNo=" + trad.getTitle());
+			w.newLine();		
+		} catch (NullPointerException e){}
+		
+		// TSAP RelGroundWaterLevel
+		// Not implemented
+		
+		// TSAP RingsFromSeedToPith
+		// Not implemented
+		
+		// TSAP SampleType - used for Sheffield format
+		// Not implemented
+		
+		// TSAP SamplingHeight
+		
+		// TSAP SamplingPoint
+		try{
+			w.write("SamplingPoint=" + tsamp.getPosition().toString());
+			w.newLine();		
+		} catch (NullPointerException e){}		
+		
+		// TSAP SapWoodRings
+		try{
+			w.write("SapWoodRings=" + trad.getWoodCompleteness().getSapwood().getNrOfSapwoodRings().toString());
+			w.newLine();		
+		} catch (NullPointerException e){}	
+		
+		// TSAP Sequence
+		// Not implemented
+		
+		// TSAP SeriesEnd - series ends with ring width, earlywood, latewood
+		// TSAP SeriesStart - series starts with ring width, earlywood, latewood
+		// TSAP SeriesType - single curve, mean curve, radius, chronology, autocorrelation
+		// Not implemented
+		
+		// TSAP ShapeOfSample
+		try{
+			w.write("ShapeOfSample=" + telem.getShape().getNormalTridas().toString());
+			w.newLine();		
+		} catch (NullPointerException e){}			
+		
+		// TSAP Site - used for INRA file format
+		// Not implemented
+		
+		// TSAP SiteCode
+		try{
+			w.write("SiteCode=" + tobj.getIdentifier().getValue().toString());
+			w.newLine();		
+		} catch (NullPointerException e){}			
+		
+		// TSAP SocialStand
+		// Not implemented
+		
+		// TSAP SoilType
+		try{
+			w.write("SoilType=" + telem.getSoil().getDescription().toString());
+			w.newLine();		
+		} catch (NullPointerException e){}	
+	
+		// TSAP Species - ITRDB Species code
+		// Not implemented
+
+		// TSAP SpeciesName
+		try{
+			w.write("SpeciesName=" + telem.getTaxon().getNormal().toString());
+			w.newLine();	
+		} catch (NullPointerException e){}		
+		
+		// TSAP StandardDeviation used for Tucson file format
+		// Not implemented
+		
+		// TSAP State
+		// Not implemented
+		
+		// TSAP StemDiskNo
+		try{
+			w.write("StemDiskNo=" + tsamp.getTitle().toString());
+			w.newLine();	
+		} catch (NullPointerException e){}				
+		
+		// TSAP Street
+		// Not implemented
+		
+		// TSAP Timber
+		// Not implemented
+		
+		// TSAP TimberHeight
+		try{
+			w.write("TimberHeight=" + telem.getDimensions().getHeight().toString());
+			w.newLine();	
+		} catch (NullPointerException e){}
+		
+		// TSAP TimberType
+		// Not implemented
+		
+		// TSAP TimberWidth
+		try{
+			w.write("TimberWidth=" + telem.getDimensions().getWidth().toString());
+			w.newLine();	
+		} catch (NullPointerException e){}
+		
+		// TSAP TotalAutoCorrelation
+		// TSAP TotalMean
+		// TSAP TotalMeanSensitivity
+		// TSAP TotalNORFAC
+		// TSAP TotalNORFM
+		// TSAP TotalStandardDeviation
+		// Not implemented
+		
+		// TSAP Town
+		// TSAP TownZipCode
+		// TSAP Tree - for INRA and Sheffield format
+		// Not implemented
+		
+		// TSAP TreeHeight
+		try{
+			if (telem.getType().getNormal().compareTo("Tree")==0){
+				w.write("TreeHeight=" + telem.getDimensions().getHeight().toString());
+				w.newLine();
+			}
+		} catch (NullPointerException e){}
+		
+		// TSAP TreeNo
+		try{
+			if (telem.getType().getNormal().compareTo("Tree")==0){
+				w.write("TreeNo=" + telem.getTitle().toString());
+				w.newLine();
+			}
+		} catch (NullPointerException e){}		
+		
+		// TSAP Unit
+		// Not implemented
+		
+		// TSAP UnmeasuredInnerRings
+		// TSAP UnmeasuredOuterRings
+		// TSAP WaldKante
+		// TSAP WoodMaterialType
+		// Not implemented
+		
+		// TSAP WorkTraces
+		try{
+			w.write("WorkTraces=" + telem.getProcessing().toString());
+			w.newLine();	
+		} catch (NullPointerException e){}		
+		
 
 		// NOTE
 		// We convert all values of '0' to '1' here.
