@@ -6,6 +6,10 @@
 
 package edu.cornell.dendro.corina.prefs;
 
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.io.SerialMeasuringDeviceConstants;
+import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
+
 /**
  *
  * @author  lucasm
@@ -309,7 +313,8 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
 
         panelPlatform.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measuring Platform"));
 
-        cboPlatformType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--none--]", "EveIO", "Velmex TA UniSlide with QC10 Encoder", "Lintab", "Generic serial platform" }));
+        
+        new FormatWrapper(cboPlatformType, Prefs.SERIAL_DEVICE, App.prefs.getPref(Prefs.SERIAL_DEVICE, SerialMeasuringDeviceConstants.NONE), SerialMeasuringDeviceConstants.ALL_DEVICES);
 
         lblPlatformType.setText("Type:");
 

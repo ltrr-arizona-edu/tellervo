@@ -45,6 +45,20 @@ public abstract class AbstractSerialMeasuringDevice
 	private Set<SerialSampleIOListener> listeners = new HashSet<SerialSampleIOListener>();
 	
 	/**
+	 * The following are standard serial connection settings.
+	 * They default to 9600 baud N81.  They can be overridden using the setter methods.
+	 */
+	private int baudRate = 9600;
+
+	private int dataBits = SerialPort.DATABITS_8;
+	
+	private int stopBits = SerialPort.STOPBITS_1;
+	
+	private int parity = SerialPort.PARITY_NONE;
+	
+	private int flowControl = SerialPort.FLOWCONTROL_NONE;
+	
+	/**
 	 * Create a new serial measuring device
 	 * 
 	 * @param portName the port name ("COM1" on windows, etc)
@@ -239,23 +253,43 @@ public abstract class AbstractSerialMeasuringDevice
 	//// Informational overrides
     ////
 	protected int getBaudRate() {
-		return 9600;
+		return baudRate;
 	}
 	
 	protected int getDataBits() {
-		return SerialPort.DATABITS_8;
+		return dataBits;
 	}
 	
 	protected int getStopBits() {
-		return SerialPort.STOPBITS_1;
+		return stopBits;
 	}
 	
 	protected int getParity() {
-		return SerialPort.PARITY_NONE;
+		return parity;
 	}
 	
 	protected int getFlowControl() {
-		return SerialPort.FLOWCONTROL_NONE;
+		return flowControl;
+	}
+	
+	protected void setBaudRate(int baudRate) {
+		this.baudRate = baudRate;
+	}
+
+	protected void setDataBits(int dataBits) {
+		this.dataBits = dataBits;
+	}
+
+	protected void setStopBits(int stopBits) {
+		this.stopBits = stopBits;
+	}
+
+	protected void setParity(int parity) {
+		this.parity = parity;
+	}
+
+	protected void setFlowControl(int flowControl) {
+		this.flowControl = flowControl;
 	}
 	
 	public abstract String getMeasuringDeviceName();

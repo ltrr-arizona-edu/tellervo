@@ -74,6 +74,8 @@ public class Prefs extends AbstractSubsystem {
 	// ???
 	public static final String GRID_HIGHLIGHT = "corina.grid.highlight";
 	public static final String GRID_HIGHLIGHTCOLOR = "corina.grid.hightlightcolor";
+	
+	public static final String SERIAL_DEVICE = "corina.serial.measuring.device";
 
 	private static final CorinaLog log = new CorinaLog("Prefs");
 

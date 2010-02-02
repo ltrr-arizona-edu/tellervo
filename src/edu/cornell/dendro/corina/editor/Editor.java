@@ -77,8 +77,10 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.io.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.io.LegacyCorinaMeasuringDevice;
 import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
+import edu.cornell.dendro.corina.io.SerialDeviceSelector;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
@@ -959,9 +961,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		}
 		
 		// ok, start measuring, if we can!
-		LegacySerialSampleIO dataPort;
+		//LegacySerialSampleIO dataPort;
+		AbstractSerialMeasuringDevice dataPort;
 		try {
-			dataPort = LegacyCorinaMeasuringDevice.initialize();
+			dataPort = new SerialDeviceSelector ().getDevice();
+			dataPort.initialize();
 		}
 		catch (IOException ioe) {
 			Alert.error("Couldn't start measuring", 
