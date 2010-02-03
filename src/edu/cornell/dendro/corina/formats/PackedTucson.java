@@ -41,12 +41,12 @@ public class PackedTucson extends Tucson implements PackedFileType {
 
     @Override
 	public String toString() {
-        return I18n.getText("format.packed_tucson");
+        return I18n.getText("format.packed_tucson") + " (*"+ getDefaultExtension()+")";
     }
 
     @Override
 	public String getDefaultExtension() {
-	return ".TUC"; // ???
+	return ".tuc"; // ???
     }
 
     // can't load a packed tucson file (yet).  this should never get called,

@@ -188,7 +188,7 @@ public class Corina implements Filetype {
 
 	@Override
 	public String toString() {
-		return I18n.getText("format.corina") + " (legacy)";
+		return I18n.getText("format.corina");
 	}
 
 	// read chars until a space char, or eof.
@@ -811,7 +811,7 @@ public class Corina implements Filetype {
 
 	// default extension -- well, there isn't really one...
 	public String getDefaultExtension() {
-		return ".RAW";
+		return ".raw";
 	}
 
 	public Boolean isPackedFileCapable() {

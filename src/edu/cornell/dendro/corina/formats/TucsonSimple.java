@@ -112,11 +112,11 @@ public class TucsonSimple implements Filetype {
 
 	@Override
 	public String toString() {
-		return I18n.getText("format.tucsonsimple");
+		return I18n.getText("format.tucsonsimple") + " (*"+ getDefaultExtension()+")";
 	}
 
 	public String getDefaultExtension() {
-		return ".RWL"; // .TUC? .MST?
+		return ".rwl"; // .TUC? .MST?
 	}
 
 	public Sample load(BufferedReader r) throws IOException {

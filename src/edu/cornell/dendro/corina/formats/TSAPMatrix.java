@@ -58,7 +58,7 @@ public class TSAPMatrix implements Filetype {
 
     @Override
 	public String toString() {
-	return I18n.getText("format.tsap_matrix");
+	return I18n.getText("format.tsap_matrix") + " (*"+ getDefaultExtension()+")";
     }
 
     /**

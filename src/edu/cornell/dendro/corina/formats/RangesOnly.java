@@ -60,11 +60,11 @@ public class RangesOnly implements Filetype, PackedFileType {
 
     @Override
 	public String toString() {
-        return I18n.getText("format.ranges_only");
+        return I18n.getText("format.ranges_only") + " (*"+ getDefaultExtension()+")";
     }
 
     public String getDefaultExtension() {
-	return ".TXT";
+	return ".txt";
     }
 
     /**

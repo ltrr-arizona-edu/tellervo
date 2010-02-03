@@ -5,11 +5,14 @@ package edu.cornell.dendro.corina.io;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
+import java.nio.charset.Charset;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Filetype;
@@ -33,8 +36,20 @@ import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 public class Exporter {
 	private String exportDirectory;
 	private boolean rememberExportDirectory;
+	private EncodingType encodingType;
+	
+
+	public enum EncodingType {
+		UTF8,
+		UTF16,
+		ISO8859_1,
+		MacRoman;
+	}
 	
 	public Exporter() {
+		// Default encoding
+		encodingType = EncodingType.UTF8;
+		
 		rememberExportDirectory = true;
 
 		// load the last export directory. If it doesn't exist, make a nice default.
@@ -59,6 +74,11 @@ public class Exporter {
 		exportDirectory = directory;
 	}
 	
+	public void setEncodingType(EncodingType type)
+	{
+		encodingType = type;
+	}
+	
 	/**
 	 * Save a single sample.
 	 * Pops up a dialog box asking for the file name to save to, exports to the type 
@@ -76,11 +96,11 @@ public class Exporter {
 	}
 
 	public void saveSingleSample2(Sample exportee, String format, String fn)
-	{
+	{		
 		
 		Filetype f;
 		try {
-			BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn), encodingType.toString())); 
 			f = (Filetype) Class.forName(format).newInstance();
 			f.save(exportee, w);
 			w.close();
@@ -123,7 +143,7 @@ public class Exporter {
 			Overwrite.overwrite(fn);
 
 			// save it
-			BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
 			try {
 				f.save(exportee, w);
 			} finally {
@@ -177,7 +197,7 @@ public class Exporter {
 
 			// save it
 			Filetype f = (Filetype) Class.forName(format).newInstance();
-			BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
 			try {
 				((PackedFileType)f).saveSamples(slist, w);
 			} finally {
@@ -209,7 +229,8 @@ public class Exporter {
 		
 		BufferedWriter w = null;
 		try {
-			w = new BufferedWriter(new FileWriter(fn));
+			w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
+
 			((PackedFileType)ft).saveSamples(samples, w);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -313,7 +334,7 @@ public class Exporter {
 					new File((String)s.getDisplayTitle() +
 					ft.getDefaultExtension());		
 								
-				BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+				BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
 				try {
 					ft.save(s, w);
 				} finally {
@@ -370,7 +391,7 @@ public class Exporter {
 				
 				OpenRecent.sampleOpened(new SeriesDescriptor(s));
 				
-				BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+				BufferedWriter w =   new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
 				try {
 					ft.save(s, w);
 				} finally {
@@ -438,7 +459,7 @@ public class Exporter {
 				
 				savedNames.add(fn);
 				
-				BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+				BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
 				try {
 					f.save(s, w);
 				} finally {

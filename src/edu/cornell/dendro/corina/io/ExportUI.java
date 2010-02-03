@@ -51,15 +51,16 @@ public class ExportUI extends javax.swing.JPanel{
     	
 	private static final String EXPORTERS[] = new String[] {
 		"edu.cornell.dendro.corina.formats.Corina", 
-		"edu.cornell.dendro.corina.formats.Tucson", 
-		"edu.cornell.dendro.corina.formats.TucsonSimple",
-		"edu.cornell.dendro.corina.formats.PackedTucson", 
-		"edu.cornell.dendro.corina.formats.Spreadsheet",
-		"edu.cornell.dendro.corina.formats.HTML", 
 		"edu.cornell.dendro.corina.formats.Heidelberg",
-		"edu.cornell.dendro.corina.formats.Hohenheim", 
-		"edu.cornell.dendro.corina.formats.TSAPMatrix",
-		"edu.cornell.dendro.corina.formats.RangesOnly", };
+		"edu.cornell.dendro.corina.formats.Hohenheim",
+		"edu.cornell.dendro.corina.formats.RangesOnly",
+		"edu.cornell.dendro.corina.formats.Sheffield",
+		"edu.cornell.dendro.corina.formats.Spreadsheet",
+		"edu.cornell.dendro.corina.formats.Tucson", 
+		"edu.cornell.dendro.corina.formats.PackedTucson", 
+		"edu.cornell.dendro.corina.formats.TucsonSimple",
+		"edu.cornell.dendro.corina.formats.TSAPMatrix"
+		 };
 	
 	private StringWriter writer = new PureStringWriter(10240); // 10K	
 	private ElementList elements;
@@ -341,13 +342,21 @@ public class ExportUI extends javax.swing.JPanel{
     		message+= "\n\n";
     		message+= WordUtils.wrap("Would you like to continue with the export?", wraplength); 
     				
-    		
-    		int n = JOptionPane.showConfirmDialog(parent,
+    		Object[] options = {"Yes", "No"};
+    		int n = JOptionPane.showOptionDialog(parent, 
+    				message, "File format caution", 
+    				JOptionPane.YES_OPTION,
+    				JOptionPane.QUESTION_MESSAGE, 
+    				null, 
+    				options, 
+    				options[0]);
+
+    		/*int n = JOptionPane.showConfirmDialog(parent,
     				message, 
     				"File format caution",
     				JOptionPane.OK_CANCEL_OPTION,
-    				JOptionPane.QUESTION_MESSAGE);
-    		if (n==JOptionPane.OK_OPTION){
+    				JOptionPane.WARNING_MESSAGE);*/
+    		if (n==JOptionPane.YES_OPTION){
     			
     		} else {
     			return;
@@ -464,6 +473,8 @@ public class ExportUI extends javax.swing.JPanel{
         cboHow = new javax.swing.JComboBox();
         lblHow = new javax.swing.JLabel();
         panelSpacer = new javax.swing.JPanel();
+        lblEncoding = new javax.swing.JLabel();
+        cboEncoding = new javax.swing.JComboBox();
         panelBottom = new javax.swing.JPanel();
         btnPreview = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
@@ -491,12 +502,16 @@ public class ExportUI extends javax.swing.JPanel{
         panelSpacer.setLayout(panelSpacerLayout);
         panelSpacerLayout.setHorizontalGroup(
             panelSpacerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 503, Short.MAX_VALUE)
+            .add(0, 536, Short.MAX_VALUE)
         );
         panelSpacerLayout.setVerticalGroup(
             panelSpacerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(0, 0, Short.MAX_VALUE)
         );
+
+        lblEncoding.setText("Encoding:");
+
+        cboEncoding.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "UTF-8", "UTF-16", "Latin 1", "Mac Roman" }));
 
         org.jdesktop.layout.GroupLayout panelOptionsLayout = new org.jdesktop.layout.GroupLayout(panelOptions);
         panelOptions.setLayout(panelOptionsLayout);
@@ -505,22 +520,25 @@ public class ExportUI extends javax.swing.JPanel{
             .add(panelOptionsLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelSpacer, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
+                    .add(panelSpacer, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
                     .add(panelOptionsLayout.createSequentialGroup()
-                        .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                            .add(lblOutput, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(lblExportFormat, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(lblHow, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(lblWhat, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                .add(lblOutput, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .add(lblExportFormat, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .add(lblHow, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .add(lblWhat, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .add(lblEncoding))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelOptionsLayout.createSequentialGroup()
-                                .add(txtOutput, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
+                                .add(txtOutput, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(btnBrowse))
-                            .add(cboExportFormat, 0, 396, Short.MAX_VALUE)
-                            .add(cboHow, 0, 396, Short.MAX_VALUE)
-                            .add(cboWhat, 0, 396, Short.MAX_VALUE)))))
+                            .add(cboExportFormat, 0, 433, Short.MAX_VALUE)
+                            .add(cboHow, 0, 433, Short.MAX_VALUE)
+                            .add(cboWhat, 0, 433, Short.MAX_VALUE)
+                            .add(cboEncoding, 0, 433, Short.MAX_VALUE)))))
         );
         panelOptionsLayout.setVerticalGroup(
             panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -537,6 +555,10 @@ public class ExportUI extends javax.swing.JPanel{
                 .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblExportFormat)
                     .add(cboExportFormat, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(lblEncoding)
+                    .add(cboEncoding, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblOutput)
@@ -595,10 +617,10 @@ public class ExportUI extends javax.swing.JPanel{
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelPreviewLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelPreviewLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
                     .add(panelPreviewLayout.createSequentialGroup()
                         .add(lblPreview)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 377, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 409, Short.MAX_VALUE)
                         .add(btnCopy)))
                 .addContainerGap())
         );
@@ -644,10 +666,12 @@ public class ExportUI extends javax.swing.JPanel{
     protected javax.swing.JButton btnHelp;
     protected javax.swing.JButton btnOK;
     protected javax.swing.JButton btnPreview;
+    protected javax.swing.JComboBox cboEncoding;
     protected javax.swing.JComboBox cboExportFormat;
     protected javax.swing.JComboBox cboHow;
     protected javax.swing.JComboBox cboWhat;
     protected javax.swing.JScrollPane jScrollPane1;
+    protected javax.swing.JLabel lblEncoding;
     protected javax.swing.JLabel lblExportFormat;
     protected javax.swing.JLabel lblHow;
     protected javax.swing.JLabel lblOutput;

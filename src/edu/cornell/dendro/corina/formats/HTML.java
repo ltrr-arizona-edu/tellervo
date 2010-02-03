@@ -111,7 +111,7 @@ public class HTML implements Filetype {
 
     @Override
 	public String toString() {
-	return I18n.getText("format.html");
+	return I18n.getText("format.html") + " (*"+ getDefaultExtension()+")";
     }
 
     public String getDefaultExtension() {

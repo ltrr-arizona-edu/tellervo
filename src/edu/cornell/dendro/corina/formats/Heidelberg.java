@@ -29,6 +29,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.OutputStreamWriter;
 import java.io.StreamTokenizer;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
@@ -36,6 +37,7 @@ import java.io.IOException;
 
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.BaseSeries;
+import org.tridas.schema.NormalTridasDatingType;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
@@ -66,7 +68,7 @@ public class Heidelberg implements Filetype {
 
 	@Override
 	public String toString() {
-		return I18n.getText("format.heidelberg");
+		return I18n.getText("format.heidelberg") + " (*"+ getDefaultExtension()+")";
 	}
 
 	public String getDefaultExtension() {
@@ -274,7 +276,7 @@ public class Heidelberg implements Filetype {
 		w.newLine();
 		
 		// TSAP AcceptDate - order accept date
-		// Unknown not implemented
+		// Not implemented - tridas.project.requestdate
 		
 		// TSAP Age - tree age
 		// Is this the same as ring count?  
@@ -384,16 +386,11 @@ public class Heidelberg implements Filetype {
 		
 		// TSAP CoreNo 
 		try{
-			if (tsamp.getType().getNormal().toString().compareTo("Core")==0){
-				w.write("CoreNo="+tsamp.getTitle().toString());
-				w.newLine();
-			}
+			w.write("CoreNo="+tsamp.getTitle().toString());
+			w.newLine();
 		}catch (NullPointerException e){}
 		
 		// TSAP Country
-		// Not implemented
-		
-		// TSAP CreationDate - deprecated 
 		// Not implemented
 		
 		// TSAP DataFormat
@@ -414,7 +411,28 @@ public class Heidelberg implements Filetype {
 		} catch (NullPointerException e){}
 		
 		// TSAP Dated
-		// @TODO
+		try{
+			if(tseries.getInterpretation().getDating().getType().compareTo(NormalTridasDatingType.RELATIVE)==0)
+			{
+				w.write("RelDated");
+			}
+			else if (tseries.getInterpretation().getDating().getType().compareTo(NormalTridasDatingType.ABSOLUTE)==0)
+			{
+				w.write("Dated");
+			}
+			else if (tseries.getInterpretation().getDating().getType().compareTo(NormalTridasDatingType.DATED___WITH___UNCERTAINTY)==0)
+			{
+				w.write("Dated");
+			}
+			else if (tseries.getInterpretation().getDating().getType().compareTo(NormalTridasDatingType.RADIOCARBON)==0)
+			{
+				w.write("Dated");
+			}			
+			else{
+				w.write("Undated");
+			}
+			w.newLine();
+		} catch (NullPointerException e){}
 		
 		// TSAP DateEnd	
 		try{
@@ -470,28 +488,25 @@ public class Heidelberg implements Filetype {
 			w.write("FirstMeasurementDate="
 					+Integer.toString(tseries.getCreatedTimestamp().getValue().getDay())+"/"
 					+Integer.toString(tseries.getCreatedTimestamp().getValue().getMonth())+"/"
-					+Integer.toString(tseries.getCreatedTimestamp().getValue().getYear()));
+					+Integer.toString(tseries.getCreatedTimestamp().getValue().getYear())+" at "
+					+Integer.toString(tseries.getCreatedTimestamp().getValue().getHour())+":"
+					+Integer.toString(tseries.getCreatedTimestamp().getValue().getMinute())
+					);
 			w.newLine();			
 		} catch (NullPointerException e){}
 
-		// TSAP FirstMeasurementID
+		// TSAP FirstMeasurementPersID
 		try{
 			if(tseries instanceof TridasMeasurementSeries){
 				TridasMeasurementSeries tmseries = (TridasMeasurementSeries) tseries;
-				w.write("FirstMeasurementID="+tmseries.getAnalyst().toString());
+				w.write("FirstMeasurementPersID="+tmseries.getAnalyst().toString());
 				w.newLine();
 			}
 		} catch (NullPointerException e){}
-		
-		// TSAP FromSeedToDateBegin - deprecated
-		// Deprecated not implemented
-		
-		// TSAP GlobalMathCommnet[n]
+			
+		// TSAP GlobalMathComment[n]
 		// TSAP GlobalMathCommentCount
 		// Unknown not implemented
-		
-		// TSAP GraphParam - deprecated
-		// Deprecated not implemented
 		
 		// TSAP Group
 		// Only used for Sheffield file format so not implemented
@@ -518,7 +533,7 @@ public class Heidelberg implements Filetype {
 		// TSAP KeyNo
 		// Unknown not implemented
 		
-		// TSAP LabotaryCode
+		// TSAP LaboratoryCode
 		// Unknown not implemented
 		
 		// TSAP LastRevisionDate
@@ -526,7 +541,10 @@ public class Heidelberg implements Filetype {
 			w.write("LastRevisionDate="
 					+Integer.toString(tseries.getLastModifiedTimestamp().getValue().getDay())+"/"
 					+Integer.toString(tseries.getLastModifiedTimestamp().getValue().getMonth())+"/"
-					+Integer.toString(tseries.getLastModifiedTimestamp().getValue().getYear()));
+					+Integer.toString(tseries.getLastModifiedTimestamp().getValue().getYear())+" at "
+					+Integer.toString(tseries.getCreatedTimestamp().getValue().getHour())+":"
+					+Integer.toString(tseries.getCreatedTimestamp().getValue().getMinute())
+					);
 			w.newLine();
 		} catch (NullPointerException e){}		
 		
@@ -751,7 +769,24 @@ public class Heidelberg implements Filetype {
 		
 		// TSAP UnmeasuredInnerRings
 		// TSAP UnmeasuredOuterRings
-		// TSAP WaldKante
+		
+		// TSAP WaldKante - WKE = Earlywood, WKL = Latewood, WKX = Unknown, WK? = Indistinct, --- = None
+		// Difficult to implement as we don't structure type of wood in last ring so using 
+		// term 'WK' when last ring is complete.
+		try{
+			String lastring = trad.getWoodCompleteness().getSapwood().getLastRingUnderBark().getPresence().toString();
+			if (lastring.compareTo("PRESENT")==0){
+				w.write("WaldKante=WK");
+				w.newLine();
+			}		
+			else if (lastring.compareTo("ABSENT")==0)
+			{
+				w.write("WaldKante=---");
+				w.newLine();
+			}				
+		} catch (NullPointerException e){}
+		
+		
 		// TSAP WoodMaterialType
 		// Not implemented
 		
@@ -889,12 +924,13 @@ public class Heidelberg implements Filetype {
 
 	public String getDeficiencyDescription() {
 		return this.toString() + " file format uses unstructured keyword-value pairs for metadata with no data type " +
-				"constraints.  Although the metadata is extensible it is unlikely that " +
-				"the sotware that you use to read these files will be able to manage " +
-				"all the Corina/TRiDaS metadata properly.";
+				"constraints.  Only the metadata that can be mapped to standard " +
+				"Heidelberg fields will be exported so the additional Corina/TRiDaS "+
+				"metadata fields will not be available.";
 	}
 
 	public Boolean isLossless() {
 		return false;
 	}
+
 }

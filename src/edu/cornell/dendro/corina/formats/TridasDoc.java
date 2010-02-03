@@ -3,8 +3,14 @@ package edu.cornell.dendro.corina.formats;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.transform.Result;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -29,15 +35,27 @@ import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.schema.WSIContent;
+import edu.cornell.dendro.corina.schema.WSIRootElement;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.tridasv2.TridasIdentifierMap;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.openrecent.RecentlyOpenedDocuments;
 import edu.cornell.dendro.corina.wsi.corina.TridasGenericFieldMap;
 
 public class TridasDoc implements Filetype {	
 
+	@Override
+	public String toString() {
+		return I18n.getText("format.tridas") + " (*"+ getDefaultExtension()+")";
+	}
+	
+	public String getDefaultExtension() {
+		return ".xml";
+	}
+	
 	private void breakUpTridasLinks(TridasObject obj) {
 		// first, disassociate any children of child objects
 		if(obj.isSetObjects()) {
@@ -419,9 +437,7 @@ public class TridasDoc implements Filetype {
 		
 	}
 
-	public String getDefaultExtension() {
-		return I18n.getText("format.corinaxml");
-	}
+
 	
 	/**
 	 * Quickly check to see if it's an XML document
@@ -449,4 +465,6 @@ public class TridasDoc implements Filetype {
 	public Boolean isLossless() {
 		return true;
 	}
+
+
 }

@@ -147,7 +147,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		setLayout(new BorderLayout());
 		
 		// mainPanel has top, properties, bottom
-		JPanel mainPanel = new JPanel();
+		JPanel mainPanel = new JPanel();  
 		mainPanel.setLayout(new BorderLayout());
 		
 		mainPanel.add(topbar, BorderLayout.NORTH);

@@ -88,7 +88,7 @@ public class Spreadsheet implements Filetype, PackedFileType {
 
     @Override
 	public String toString() {
-        return I18n.getText("format.spreadsheet");
+        return I18n.getText("format.spreadsheet") + " (*"+ getDefaultExtension()+")";
     }
 
     /**
@@ -99,7 +99,7 @@ public class Spreadsheet implements Filetype, PackedFileType {
        @return the string ".TXT"
     */
     public String getDefaultExtension() {
-	return ".TXT";
+	return ".txt";
     }
 
 

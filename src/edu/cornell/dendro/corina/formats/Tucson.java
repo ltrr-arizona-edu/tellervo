@@ -113,11 +113,11 @@ public class Tucson implements Filetype {
 
 	@Override
 	public String toString() {
-		return I18n.getText("format.tucson");
+		return I18n.getText("format.tucson") + " (*"+ getDefaultExtension()+")";
 	}
 
 	public String getDefaultExtension() {
-		return ".CRN"; // .TUC? .MST?
+		return ".tuc"; // .TUC? .MST?
 	}
 
 	// load 0-3 lines of header, if available, and fill meta appropriately
