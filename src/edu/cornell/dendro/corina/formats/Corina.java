@@ -826,6 +826,6 @@ public class Corina implements Filetype {
 
 	public String getDeficiencyDescription() {
 		// TODO Auto-generated method stub
-		return "Contains a limited number of metadata fields.";
+		return "The " + this.toString() + " format contains a limited number of metadata fields.";
 	}
 }

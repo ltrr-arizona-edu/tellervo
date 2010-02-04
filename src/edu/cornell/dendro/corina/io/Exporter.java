@@ -40,10 +40,28 @@ public class Exporter {
 	
 
 	public enum EncodingType {
-		UTF8,
-		UTF16,
-		ISO8859_1,
-		MacRoman;
+		UTF8 ("UTF8", "Default - Unicode (UTF-8)", "Unicode Transformation Format - 8-bit"),
+		UTF16 ("UTF-16", "Unicode (UTF-16)", "Unicode Transformation Format - 16-bit"),
+		LATIN1 ("ISO8859_1", "Western (ISO 8859-1)", "ISO/IEC 8859 Latin alphabet 1"), 
+		US_ASCII ("ASCII", "Western (ASCII ISO 646-US)", "ISO 646-US ASCII - 7-bit"),
+		MAC_ROMAN ("MacRoman", "Western (Mac Roman)", "Macintosh Roman");
+		
+		final String classname;
+		final String shortname;
+		final String longname;
+		
+	EncodingType(String classname, String shortname, String longname){
+		this.classname = classname;
+		this.shortname = shortname;
+		this.longname = longname;
+	}
+		
+	public final String getShortname(){ return this.shortname;}
+	public final String getLongname(){ return this.longname;}
+	public final String getClassname(){ return this.classname;}
+	public final String toString(){ return this.shortname;}
+	public final EncodingType getDefaultEncoding() {return EncodingType.UTF8;}
+	
 	}
 	
 	public Exporter() {
@@ -100,7 +118,7 @@ public class Exporter {
 		
 		Filetype f;
 		try {
-			BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn), encodingType.toString())); 
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn), encodingType.getClassname())); 
 			f = (Filetype) Class.forName(format).newInstance();
 			f.save(exportee, w);
 			w.close();
@@ -143,7 +161,7 @@ public class Exporter {
 			Overwrite.overwrite(fn);
 
 			// save it
-			BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
 			try {
 				f.save(exportee, w);
 			} finally {
@@ -197,7 +215,7 @@ public class Exporter {
 
 			// save it
 			Filetype f = (Filetype) Class.forName(format).newInstance();
-			BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
 			try {
 				((PackedFileType)f).saveSamples(slist, w);
 			} finally {
@@ -229,7 +247,7 @@ public class Exporter {
 		
 		BufferedWriter w = null;
 		try {
-			w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
+			w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
 
 			((PackedFileType)ft).saveSamples(samples, w);
 		} catch (IOException e) {
@@ -334,7 +352,7 @@ public class Exporter {
 					new File((String)s.getDisplayTitle() +
 					ft.getDefaultExtension());		
 								
-				BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
+				BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
 				try {
 					ft.save(s, w);
 				} finally {
@@ -391,7 +409,7 @@ public class Exporter {
 				
 				OpenRecent.sampleOpened(new SeriesDescriptor(s));
 				
-				BufferedWriter w =   new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
+				BufferedWriter w =   new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
 				try {
 					ft.save(s, w);
 				} finally {
@@ -459,7 +477,7 @@ public class Exporter {
 				
 				savedNames.add(fn);
 				
-				BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.toString())); 
+				BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
 				try {
 					f.save(s, w);
 				} finally {
