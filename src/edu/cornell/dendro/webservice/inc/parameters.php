@@ -876,7 +876,7 @@ class radiusParameters extends radiusEntity implements IParams
 					   			switch ($sapwoodtag->tagName)
 					   			{
 					   				case "nrOfSapwoodRings": 						$this->setNumberOfSapwoodRings($sapwoodtag->nodeValue); break;
-					   				case "lastRingUnderBark": 						$this->setLastRingUnderBark($sapwoodtag->nodeValue); break;
+					   				case "lastRingUnderBark": 						$this->setLastRingUnderBark($sapwoodtag->nodeValue, $sapwoodtag->getAttribute("presence"));	break;
 					   				case "missingSapwoodRingsToBark":				$this->setMissingSapwoodRingsToBark($sapwoodtag->nodeValue); break;
 					   				case "missingSapwoodRingsToBarkFoundation": 	$this->setMissingSapwoodRingsToBarkFoundation($sapwoodtag->nodeValue); break;
 					   				default:

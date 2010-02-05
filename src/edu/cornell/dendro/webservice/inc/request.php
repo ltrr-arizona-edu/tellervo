@@ -126,15 +126,10 @@ class request
         // If using a known client then check that the version is compatible
    		if($myMetaHeader->isClientVersionValid()===FALSE)
    		{
-   			
-   			if($myMetaHeader->getClientName()===FALSE)
-   			{
-   				trigger_error("107"."The client that you are using is not recognised/supported by this webservice. Supported clients are:"
-   				
-   				, E_USER_ERROR);
+   			if($myMetaHeader->getClientName()===FALSE){
+   				trigger_error("107"."The client that you are using is not recognised/supported by this webservice. Supported clients are:", E_USER_ERROR);
    			}
-   			else
-   			{
+   			else{
    				trigger_error("108"."The version of ".$myMetaHeader->getClientName()." that you are using is no longer supported\nby the webservice at: ".
    							 "https://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']."\n\n".
    							 "Your current ".$myMetaHeader->getClientName()." version = ".$myMetaHeader->getClientVersion()."\n".

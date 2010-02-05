@@ -1936,6 +1936,13 @@ class radiusEntity extends dbEntity
     protected $lastRingUnderBark = NULL;
     
     /**
+     * Is the last ring under the bark present?
+     *
+     * @var Boolean
+     */
+    protected $lastRingUnderBarkPresence = NULL;
+    
+    /**
      * Estimated number of missing heartwood rings
      *
      * @var Integer
@@ -2083,9 +2090,20 @@ class radiusEntity extends dbEntity
 	 * @param String $value
 	 * @return Boolean
 	 */
-	function setLastRingUnderBark($value)
+	function setLastRingUnderBark($value, $presence=true)
 	{
-		$this->lastRingUnderBark = $value;
+		$present = dbHelper::formatBool($presence);
+		if($present!=='error')
+		{
+			$this->lastRingUnderBark = $value;
+			$this->lastRingUnderBarkPresence = $present;
+		}
+		else
+		{
+			return false;
+		}
+		
+
 		return true;
 	}
 	
@@ -2238,6 +2256,11 @@ class radiusEntity extends dbEntity
 	function getLastRingUnderBark()
 	{
 		return $this->lastRingUnderBark;
+	}
+	
+	function getLastRingUnderBarkPresence()
+	{
+		return $this->lastRingUnderBarkPresence;
 	}
 	
 	/**

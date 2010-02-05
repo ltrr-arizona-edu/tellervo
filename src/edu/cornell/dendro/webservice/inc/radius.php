@@ -48,7 +48,7 @@ class radius extends radiusEntity implements IDBAccessor
         $this->setMissingHeartwoodRingsToPithFoundation($row['missingheartwoodringstopithfoundation']);
         $this->setSapwood($row['sapwoodid'], $row['sapwood']);
         $this->setNumberOfSapwoodRings($row['numberofsapwoodrings']);
-        $this->setLastRingUnderBark($row['lastringunderbark']);
+        $this->setLastRingUnderBark($row['lastringunderbark'], $row['lastringunderbarkpresent']);
         $this->setMissingSapwoodRingsToBark($row['missingsapwoodringstobark']);
         $this->setMissingSapwoodRingsToBarkFoundation($row['missingsapwoodringstobarkfoundation']);          
         $this->setBarkPresent(dbHelper::formatBool($row['barkpresent']));     
@@ -181,7 +181,7 @@ class radius extends radiusEntity implements IDBAccessor
         if (dbHelper::formatBool($paramsClass->getBarkPresent(), 'presentabsent')!=NULL)						
         																	$this->setBarkPresent(dbHelper::formatBool($paramsClass->getBarkPresent(), 'php'));
         if ($paramsClass->getNumberOfSapwoodRings()!=NULL)					$this->setNumberOfSapwoodRings($paramsClass->getNumberOfSapwoodRings());
-        if ($paramsClass->getLastRingUnderBark()!=NULL)						$this->setLastRingUnderBark($paramsClass->getLastRingUnderBark());
+        if ($paramsClass->getLastRingUnderBark()!=NULL)						$this->setLastRingUnderBark($paramsClass->getLastRingUnderBark(), $paramsClass->getLastRingUnderBarkPresence());
         if ($paramsClass->getMissingSapwoodRingsToBark()!=NULL)				$this->setMissingSapwoodRingsToBark($paramsClass->getMissingSapwoodRingsToBark());
         if ($paramsClass->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$this->setMissingSapwoodRingsToBarkFoundation($paramsClass->getMissingSapwoodRingsToBarkFoundation());
         if ($paramsClass->getAzimuth()!=NULL)								$this->setAzimuth($paramsClass->getAzimuth());
@@ -378,7 +378,7 @@ class radius extends radiusEntity implements IDBAccessor
 					{
 																						$xml.= "<tridas:sapwood presence=\"".dbhelper::escapeXMLChars($this->getSapwood())."\">";
 	                    if($this->getNumberOfSapwoodRings()!=NULL)						$xml.= "<tridas:nrOfSapwoodRings>".dbhelper::escapeXMLChars($this->getNumberOfSapwoodRings())."</tridas:nrOfSapwoodRings>\n";
-	                    if($this->getLastRingUnderBark()!=NULL)							$xml.= "<tridas:lastRingUnderBark presence=\"present\">".dbhelper::escapeXMLChars($this->getLastRingUnderBark())."</tridas:lastRingUnderBark>\n";
+	                    if($this->getLastRingUnderBark()!=NULL)							$xml.= "<tridas:lastRingUnderBark presence=\"".dbHelper::formatBool($this->getLastRingUnderBarkPresence(), "presentabsent")."\">".dbhelper::escapeXMLChars($this->getLastRingUnderBark())."</tridas:lastRingUnderBark>\n";
 	                    if($this->getMissingSapwoodRingsToBark()!=NULL)					$xml.= "<tridas:missingSapwoodRingsToBark>".dbhelper::escapeXMLChars($this->getMissingSapwoodRingsToBark())."</tridas:missingSapwoodRingsToBark>\n";
 	                    if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)		$xml.= "<tridas:missingSapwoodRingsToBarkFoundation>".dbhelper::escapeXMLChars($this->getMissingSapwoodRingsToBarkFoundation())."</tridas:missingSapwoodRingsToBarkFoundation>\n";	
 	                    																$xml.= "</tridas:sapwood>\n";
@@ -442,6 +442,8 @@ class radius extends radiusEntity implements IDBAccessor
                         if($this->getSapwood()!=NULL)								$sql.="sapwoodid, ";     
                         if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="numberofsapwoodrings, ";                                             
                         if($this->getLastRingUnderBark()!=NULL)						$sql.="lastringunderbark, ";
+                        if(dbHelper::formatBool($this->getLastRingUnderBarkPresence(), 'presentabsent')!=NULL)	
+                        															$sql.="lastringunderbarkpresent, ";               
                         if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="missingsapwoodringstobark, ";
                         if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="missingsapwoodringstobarkfoundation, ";
                         if(dbHelper::formatBool($this->getBarkPresent(), 'presentabsent')!=NULL)
@@ -461,6 +463,8 @@ class radius extends radiusEntity implements IDBAccessor
                         if($this->getSapwood()!=NULL)								$sql.="'".pg_escape_string($this->getSapwood(true))."', ";                     
                         if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="'".pg_escape_string($this->getNumberOfSapwoodRings())."', ";
                         if($this->getLastRingUnderBark()!=NULL)						$sql.="'".pg_escape_string($this->getLastRingUnderBark())."', ";
+                        if(dbHelper::formatBool($this->getLastRingUnderBarkPresence(), 'presentabsent')!=NULL)	
+                        															$sql.="'".dbHelper::formatBool($this->lastRingUnderBarkPresence(),"pg"). "', ";
                         if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="'".pg_escape_string($this->getMissingSapwoodRingsToBark())."', ";
                         if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="'".pg_escape_string($this->getMissingSapwoodRingsToBarkFoundation())."', ";
                         if(dbHelper::formatBool($this->getBarkPresent(), 'presentabsent')!=NULL)
@@ -485,6 +489,8 @@ class radius extends radiusEntity implements IDBAccessor
                         if($this->getSapwood()!=NULL)								$sql.="sapwoodid='".pg_escape_string($this->getSapwood(true))."', ";        
                         if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="numberofsapwoodrings='".pg_escape_string($this->getNumberOfSapwoodRings())."', ";
                         if($this->getLastRingUnderBark()!=NULL)						$sql.="lastringunderbark='".pg_escape_string($this->getLastRingUnderBark())."', ";
+                        if(dbHelper::formatBool($this->getLastRingUnderBarkPresence()!=NULL, 'presentabsent')!=NULL)
+                        															$sql.="lastringunderbarkpresent='".dbHelper::formatBool($this->getLastRingUnderBarkPresence(),"pg")."', ";
                         if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="missingsapwoodringstobark='".pg_escape_string($this->getMissingSapwoodRingsToBark())."', ";
                         if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="missingsapwoodringstobarkfoundation='".pg_escape_string($this->getMissingSapwoodRingsToBarkFoundation())."', ";
                         if(dbHelper::formatBool($this->getBarkPresent()!=NULL, 'presentabsent')!=NULL)
@@ -494,7 +500,8 @@ class radius extends radiusEntity implements IDBAccessor
                     $sql = substr($sql, 0, -2);
                     $sql.= " WHERE radiusid='".pg_escape_string($this->getID())."'";
                 }
- 
+
+                
                 // Run SQL command
                 if ($sql)
                 {
