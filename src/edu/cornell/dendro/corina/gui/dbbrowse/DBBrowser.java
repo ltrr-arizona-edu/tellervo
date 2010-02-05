@@ -34,10 +34,13 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableRowSorter;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
@@ -67,6 +70,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	
 	private ElementListTableSorter availableSorter;
 	private ElementListTableSorter chosenSorter;
+	private TableRowSorter<ElementListTableModel> rowFilter;
+
 	
 	private ElementList selectedElements;
     private boolean isMultiDialog;
@@ -79,11 +84,11 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     public DBBrowser(java.awt.Frame parent, boolean modal) {
     	this(parent, modal, false);	
     }
-    
+       
     /** Creates new form as child of Frame */    
     public DBBrowser(java.awt.Frame parent, boolean modal, boolean openMulti) {
         super(parent, modal);
-        initComponents();
+        doInitComponents();
         
         initialize(openMulti);
     }
@@ -95,7 +100,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     /** Creates new form  as child of dialog */
     public DBBrowser(java.awt.Dialog parent, boolean modal, boolean openMulti) {
         super(parent, modal);
-        initComponents();
+        doInitComponents();
         
         initialize(openMulti);
     }
@@ -117,7 +122,10 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         // don't let it grow to distort our dialog!
         extraButtonPanel.setPreferredSize(new Dimension(btnOk.getWidth(), 1));
         extraButtonPanel.setMaximumSize(new Dimension(btnOk.getWidth(), Integer.MAX_VALUE));
-               
+        
+        // Hide version toggler for now
+        this.btnTogMostRecent.setVisible(false);
+        
         // Set size of window to 1024x700 or full screen whichever is the smaller
         int width;
         int height;
@@ -135,6 +143,18 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         }        
         this.setSize(width, height);
         Center.center(this);
+        
+        btnTogByMe.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent ev){
+        		filterAvailMeas();
+        	}
+        });
+        
+        cboSeriesType.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent ev){
+        		filterAvailMeas();
+        	}
+        });
         
         // Whenever the site list changes, make sure we repopulate our site list
         App.tridasObjects.addResourceEventListener(new ResourceEventListener() {
@@ -157,6 +177,19 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 				dispose();
 			}
         });
+        
+        btnOptions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				if(panelRibbon.isVisible()) {
+					panelRibbon.setVisible(false);
+					btnOptions.setText("Show options");
+				} else {
+					panelRibbon.setVisible(true);
+					btnOptions.setText("Hide options");
+				}
+				
+			}
+        });        
         
         txtFilterInput.addKeyListener(new KeyListener() {
         	public void keyPressed(KeyEvent txt){
@@ -363,12 +396,17 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     
     protected boolean finish() {
     	if(!isMultiDialog) {
-    		int selectedRows[] = tblAvailMeas.getSelectedRows();
+			// Convert from view to model rows
+			int viewRows[] = tblAvailMeas.getSelectedRows();
+			int modelRows[] = tblAvailMeas.getSelectedRows();
+			for(int i = 0; i < viewRows.length; i++) {
+				modelRows[i] = tblAvailMeas.convertRowIndexToModel(viewRows[i]);
+			}    		
     	
     		// create a list of our selected elements (should only be one)
-    		for(int i = 0; i < selectedRows.length; i++)
+    		for(int i = 0; i < modelRows.length; i++)
     			selectedElements.add(((ElementListTableModel)tblAvailMeas.getModel()).
-    					getElementAt(selectedRows[i]));
+    					getElementAt(modelRows[i]));
     	}
     	
     	// Save the browse list type
@@ -384,6 +422,45 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	this.browseSearchPane.setComponentAt(1, searchPanel);
     }
     
+    /** 
+     * Update the row filter  
+     */
+    private void filterAvailMeas() {       
+        List<RowFilter<ElementListTableModel, Object>> filters = new ArrayList<RowFilter<ElementListTableModel, Object>>(2);
+        RowFilter<ElementListTableModel, Object> seriesTypeFilter = null;         
+        RowFilter<ElementListTableModel, Object> authorFilter = null; 
+
+        
+        // Series Type
+        if (cboSeriesType.getSelectedIndex()==1){
+        	seriesTypeFilter = RowFilter.regexFilter("Raw", 3);
+        } else if (cboSeriesType.getSelectedIndex()==2){
+        	seriesTypeFilter = RowFilter.regexFilter("Raw", 3);
+        	seriesTypeFilter = RowFilter.notFilter(seriesTypeFilter);
+        } else {
+        	seriesTypeFilter = RowFilter.regexFilter("", 3);
+        }
+
+        // Author Filter
+        if (btnTogByMe.isSelected()){
+        	authorFilter = RowFilter.regexFilter(App.currentUser.getFirstName() + " " + App.currentUser.getLastName(), 2);
+        } else {
+        	authorFilter = RowFilter.regexFilter("", 2);
+        }
+        
+        // Add all filters together
+        filters.add(seriesTypeFilter);
+        filters.add(authorFilter);
+        RowFilter<ElementListTableModel,Object> allFilters = RowFilter.andFilter(filters);
+        
+        
+        // Apply filters
+    	rowFilter.setRowFilter(allFilters);
+    }
+
+    
+
+    
     private void setupTableArea() {
     	
 		ElementListTableModel mdlAvailMeas = new ElementListTableModel();
@@ -394,7 +471,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 		tblAvailMeas.setColumnSelectionAllowed(false);
 		tblAvailMeas.setRowSelectionAllowed(true);
 		setupTableColumns(tblAvailMeas, true);
-
+		rowFilter = new TableRowSorter<ElementListTableModel>(mdlAvailMeas);
+		tblAvailMeas.setRowSorter(rowFilter);
+			
 		ElementListTableModel mdlChosenMeas = new ElementListTableModel(selectedElements);
 		tblChosenMeas.setModel(mdlChosenMeas);
 		chosenSorter = new ElementListTableSorter(mdlChosenMeas, tblChosenMeas);
@@ -406,6 +485,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 		
 		if(!isMultiDialog) {
 			// only single selection!
+			
+			extraButtonPanel.setVisible(false);
+			
 			tblAvailMeas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			// easy; create a single scroll pane and jam it into the panel!
 			workArea.setLayout(new BorderLayout());
@@ -441,11 +523,16 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     		
     		Icon dn = Builder.getIcon("down.png", 22);
     		Icon up = Builder.getIcon("up.png", 22);
-    		//Icon downall = Builder.getIcon("down.png", 22);
-    		//Icon upall = Builder.getIcon("uparrow.png");
+    		Icon all = Builder.getIcon("selectall.png", 22);
+    		Icon none = Builder.getIcon("selectnone.png", 22);
+    		Icon invert = Builder.getIcon("selectinvert.png", 22);
 
     		btnAdd.setIcon(dn);
     		btnRemove.setIcon(up);
+    		btnSelectAll.setIcon(all);
+    		btnSelectNone.setIcon(none);
+    		btnInvertSelect.setIcon(invert);
+    		
     		//btnAddAll.setIcon(downall);
     		//btnRemoveAll.setIcon(upall);
     		
@@ -460,15 +547,18 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     		// when adding, just add things to our selectedElements list
     		btnAdd.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ev) {
+					
+					// Convert from view to model rows
+					int viewRows[] = tblAvailMeas.getSelectedRows();
+					int modelRows[] = tblAvailMeas.getSelectedRows();
+					for(int i = 0; i < viewRows.length; i++) {
+						modelRows[i] = tblAvailMeas.convertRowIndexToModel(viewRows[i]);
+					}
 
-					
-					int rows[] = tblAvailMeas.getSelectedRows();
-					
-					for(int i = 0; i < rows.length; i++) {
-						Element e = ((ElementListTableModel)tblAvailMeas.getModel()).getElementAt(rows[i]);		
-						
+					// Move selected into 'chosen' list
+					for(int i = 0; i < modelRows.length; i++) {
+						Element e = ((ElementListTableModel)tblAvailMeas.getModel()).getElementAt(modelRows[i]);		
 						if(!selectedElements.contains(e)) selectedElements.add(e);
-
 					}
 					
 					// tell the table it's changed!
@@ -497,8 +587,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 					List<Element> removeList = new ArrayList<Element>();
 					
 					for(int i = 0; i < rows.length; i++) {
-						Element e = ((ElementListTableModel)tblChosenMeas.getModel()).getElementAt(rows[i]);
-						
+						Element e = ((ElementListTableModel)tblChosenMeas.getModel()).getElementAt(rows[i]);					
 						removeList.add(e);
 					}
 

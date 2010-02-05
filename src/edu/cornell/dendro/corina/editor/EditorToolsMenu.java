@@ -13,7 +13,7 @@ import javax.swing.JMenuItem;
 import edu.cornell.dendro.corina.CorinaPermission;
 import edu.cornell.dendro.corina.cross.CrossdateDialog;
 import edu.cornell.dendro.corina.formats.Metadata;
-import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser_old;
 import edu.cornell.dendro.corina.index.IndexDialog;
 import edu.cornell.dendro.corina.manip.ReconcileWindow;
 import edu.cornell.dendro.corina.manip.RedateDialog;
@@ -79,7 +79,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		JMenuItem reconcile = Builder.makeMenuItem("new_reconcile", true, "reconcile.png");
 		reconcile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DBBrowser browser = new DBBrowser(editor, true, false);
+				DBBrowser_old browser = new DBBrowser_old(editor, true, false);
 
 				// select the site we're in
 				if(sample.meta().hasSiteCode()) 
@@ -88,7 +88,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 				browser.setTitle("Choose a reference sample");
 				browser.setVisible(true);
 				
-				if(browser.getReturnStatus() == DBBrowser.RET_OK) {
+				if(browser.getReturnStatus() == DBBrowser_old.RET_OK) {
 					ElementList toOpen = browser.getSelectedElements();
 
 					if(toOpen.size() < 1)

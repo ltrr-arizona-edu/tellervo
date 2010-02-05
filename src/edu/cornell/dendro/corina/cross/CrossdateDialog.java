@@ -36,7 +36,7 @@ import edu.cornell.dendro.corina.graph.GrapherEvent;
 import edu.cornell.dendro.corina.graph.GrapherListener;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.ReverseScrollBar;
-import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser_old;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
@@ -101,7 +101,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
      * @param preexistingElements
      */
     private ElementList showOpenDialog(Frame parent, boolean modal, ElementList preexistingElements) {
-    	DBBrowser dbb = new DBBrowser(parent, modal, true) {
+    	DBBrowser_old dbb = new DBBrowser_old(parent, modal, true) {
 			@Override
 			protected boolean finish() {
 				return (loadAllElements() && super.finish());
@@ -111,7 +111,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 		return doOpenDialog(dbb, preexistingElements);
     }
     
-    private ElementList doOpenDialog(DBBrowser dbb, ElementList preexistingElements) {
+    private ElementList doOpenDialog(DBBrowser_old dbb, ElementList preexistingElements) {
 		if(preexistingElements != null)
 			for(Element e : preexistingElements)
 				dbb.addElement(e);
@@ -136,7 +136,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	
     	dbb.setVisible(true);
     	
-    	if(dbb.getReturnStatus() != DBBrowser.RET_OK)
+    	if(dbb.getReturnStatus() != DBBrowser_old.RET_OK)
     		return null;
     	
     	return dbb.getSelectedElements();

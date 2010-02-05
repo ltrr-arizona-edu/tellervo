@@ -25,9 +25,11 @@ public class BooleanCellRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 1L;
 
 	private Icon applyIcon;
+	private Icon cancelIcon;
 	
 	public BooleanCellRenderer() {
 		applyIcon = Builder.getIcon("apply.png", 16);
+		cancelIcon = Builder.getIcon("cancel.png", 16);
 	}
 	
 	/* (non-Javadoc)
@@ -38,7 +40,7 @@ public class BooleanCellRenderer extends DefaultTableCellRenderer {
 			boolean isSelected, boolean hasFocus, int row, int column) {
 		
 		if(value == null) {
-			setBackground(table.getGridColor());
+			//setBackground(table.getGridColor());
 			setIcon(null);
 		}
 		else {
@@ -49,8 +51,9 @@ public class BooleanCellRenderer extends DefaultTableCellRenderer {
 			else
 				b = Boolean.valueOf(value.toString());
 
-			setBackground(null);
-			setIcon(b ? applyIcon : null);
+			//setBackground(null);
+			//setBackground(table.getGridColor());
+			setIcon(b ? applyIcon : cancelIcon);
 		}
 		
 		return super.getTableCellRendererComponent(table, value, isSelected, hasFocus,

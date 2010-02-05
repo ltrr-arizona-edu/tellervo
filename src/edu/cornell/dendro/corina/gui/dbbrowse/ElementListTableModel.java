@@ -13,6 +13,10 @@ import java.util.Date;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasMeasurementSeries;
+
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
@@ -51,7 +55,7 @@ public class ElementListTableModel extends AbstractTableModel {
 		
 		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX-Xx-Xx"));
 		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("VERSION12"));
-		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("Brewer"));
+		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("George W Bush"));
 		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("DirectX"));
 		table.getColumnModel().getColumn(4).setPreferredWidth(fm.stringWidth("Pinus Nigra X"));
 		table.getColumnModel().getColumn(5).setPreferredWidth(fm.stringWidth("99"));
@@ -98,9 +102,11 @@ public class ElementListTableModel extends AbstractTableModel {
 	
 	public Object getColumnValueForElement(Element e, int columnIndex) {
 		BaseSample bs;
+		ITridasSeries series;
 		
 		try {
 			bs = e.loadBasic();
+			series = bs.getSeries();
 		} catch (IOException ioe) {
 			return "<ERROR>";
 		}
@@ -113,7 +119,17 @@ public class ElementListTableModel extends AbstractTableModel {
 			return bs.getMetaString(Metadata.VERSION);
 			
 		case 2:
-			return null;
+			 if (series instanceof TridasMeasurementSeries)
+			 {
+				 TridasMeasurementSeries ser = (TridasMeasurementSeries) series;
+				 return ser.getAnalyst().toString();
+			 }
+			 else if (series instanceof TridasDerivedSeries)
+			 {
+				 TridasDerivedSeries ser = (TridasDerivedSeries) series;
+				 return ser.getAuthor().toString();
+			 }
+			 else return null;
 			
 		// Sample type
 		case 3:
@@ -174,7 +190,7 @@ public class ElementListTableModel extends AbstractTableModel {
 	
     public Class<?> getColumnClass(int c) {
     	// reconciled is true/false
-    	if(c == 9)
+    	if(c == 10)
     		return Boolean.class;
     	
     	// everything else is just a string
