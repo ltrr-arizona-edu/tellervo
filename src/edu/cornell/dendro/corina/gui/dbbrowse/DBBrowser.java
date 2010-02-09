@@ -624,7 +624,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	ElementListTableModel.setupColumnWidths(table);
 		
 		table.setDefaultRenderer(Object.class, new ElementListCellRenderer(this, disableSelections));
-		table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
+		table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer(this, disableSelections));
 		
 		// popup menu
 		table.addMouseListener(new PopupListener() {

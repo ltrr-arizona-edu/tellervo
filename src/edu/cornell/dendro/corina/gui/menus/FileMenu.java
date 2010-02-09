@@ -35,7 +35,6 @@ import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
-import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser_old;
 import edu.cornell.dendro.corina.io.ExportDialog;
 import edu.cornell.dendro.corina.io.ExportDialogLegacy;
 import edu.cornell.dendro.corina.manip.Sum;
@@ -216,7 +215,7 @@ public class FileMenu extends JMenu {
 		
 		browser.setVisible(true);
 		
-		if(browser.getReturnStatus() == DBBrowser_old.RET_OK) {
+		if(browser.getReturnStatus() == DBBrowser.RET_OK) {
 			ElementList toOpen = browser.getSelectedElements();
 			
 			for(Element e : toOpen) {
@@ -239,11 +238,11 @@ public class FileMenu extends JMenu {
 	}
 
 	public static void exportMultiDB(){
-		DBBrowser_old browser = new DBBrowser_old((Frame) null, true, true);
+		DBBrowser browser = new DBBrowser((Frame) null, true, true);
 		browser.setVisible(true);
 
 		
-		if(browser.getReturnStatus() == DBBrowser_old.RET_OK) {
+		if(browser.getReturnStatus() == DBBrowser.RET_OK) {
 			ElementList toOpen = browser.getSelectedElements();
 		
 			/*

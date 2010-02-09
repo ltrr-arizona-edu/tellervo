@@ -18,7 +18,7 @@ import org.tridas.schema.TridasIdentifier;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.GraphDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
-import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser_old;
+import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
@@ -33,7 +33,7 @@ import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 
 public class SumCreationDialog {
-	private DBBrowser_old sum;
+	private DBBrowser sum;
 	private String sumName = "New sum";
 	private Sample baseS = null;
 	
@@ -72,7 +72,7 @@ public class SumCreationDialog {
 	private void setup(final Frame parent, ElementList el) {
 		
 		// create the db browser, but make it create the sum first before closing
-		sum = new DBBrowser_old(parent, true, true) {
+		sum = new DBBrowser(parent, true, true) {
 			@Override
 			protected boolean finish() {
 				try {

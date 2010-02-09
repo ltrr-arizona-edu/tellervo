@@ -22,7 +22,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser_old;
+import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -90,18 +90,18 @@ public class GraphElementsPanel extends JPanel {
 	    	public void actionPerformed(ActionEvent ae) {
 	    		Window ancestor = SwingUtilities.getWindowAncestor(GraphElementsPanel.this);
 	    		
-				DBBrowser_old browser; 
+				DBBrowser browser; 
 				
 				if(ancestor instanceof Dialog)
-					browser = new DBBrowser_old((Dialog) ancestor, true, true);
+					browser = new DBBrowser((Dialog) ancestor, true, true);
 				else if(ancestor == null || window instanceof Frame)
-					browser = new DBBrowser_old((Frame) ancestor, true, true);
+					browser = new DBBrowser((Frame) ancestor, true, true);
 				else
 					throw new IllegalStateException("GraphElementsPanel has no real parents!");
 	    		
 	    		browser.setVisible(true);
 	    		
-	    		if(browser.getReturnStatus() == DBBrowser_old.RET_OK) {
+	    		if(browser.getReturnStatus() == DBBrowser.RET_OK) {
 	    			ElementList ss = browser.getSelectedElements();
 	    			
 	    			for(Element e : ss) {

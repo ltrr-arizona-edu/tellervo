@@ -104,19 +104,18 @@ public class Heidelberg implements Filetype {
 			String tag = line.substring(0, i);
 			String value = line.substring(i + 1);
 
-			// got end-date.
+			// Attempt to map metadata into TRiDaS fields
 			if (tag.equals("DateEnd"))
 				end = new Year(value);
 
 			if (tag.equals("Length"))
 				length = Integer.parseInt(value);
 
-			// WRITE ME: parse other tags and interpret metadata as
-			// intelligently as possible
 			if(tag.equals("Species"))
 				s.setMeta("species", value);
-			else if(tag.equals("Location"))
-				s.setMeta("title", value);
+
+			
+			
 		}
 
 		// if we got here, line starts with DATA:...

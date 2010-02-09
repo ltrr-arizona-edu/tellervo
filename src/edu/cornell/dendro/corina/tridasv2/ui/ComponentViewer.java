@@ -213,7 +213,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
     	ElementListTableModel.setupColumnWidths(table);
 		
     	table.setDefaultRenderer(Object.class, new ElementListCellRenderer(this, false));
-		table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
+		table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer(this, false));
 		
 		// popup menu
 		table.addMouseListener(new PopupListener() {
