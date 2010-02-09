@@ -117,7 +117,7 @@ public class Tucson implements Filetype {
 	}
 
 	public String getDefaultExtension() {
-		return ".tuc"; // .TUC? .MST?
+		return ".rwl"; 
 	}
 
 	// load 0-3 lines of header, if available, and fill meta appropriately

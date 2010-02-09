@@ -46,7 +46,7 @@ public class PackedTucson extends Tucson implements PackedFileType {
 
     @Override
 	public String getDefaultExtension() {
-	return ".tuc"; // ???
+	return ".rwl"; // ???
     }
 
     // can't load a packed tucson file (yet).  this should never get called,

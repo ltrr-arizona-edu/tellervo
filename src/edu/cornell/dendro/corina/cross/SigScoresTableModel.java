@@ -17,6 +17,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
 import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.cross.CrossdateDialog.StatType;
 import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.gui.SortedHeaderArrowRenderer;
 import edu.cornell.dendro.corina.index.DecimalRenderer;
@@ -231,6 +232,20 @@ public class SigScoresTableModel extends AbstractTableModel {
     	
     	for(int i = 0; i < columns.size(); i++)
     		c.getColumn(2 + i).setCellRenderer(new SigDecimalRenderer(columns.get(i).formatting));
+	}
+	
+	public void sortByStatType(StatType stat)
+	{
+		int col = -1;
+		if(stat.equals(StatType.TSCORE)) col = 3;
+		else if (stat.equals(StatType.RVALUE)) col=4;
+		else if (stat.equals(StatType.TREND)) col = 2;
+		else if (stat.equals(StatType.DSCORE)) col = 5;
+		else if (stat.equals(StatType.WJ)) col=6;
+		
+		// Do sort
+		if (col>-1)	sorter.sort(col, false);
+		fireTableDataChanged();
 	}
 	
 

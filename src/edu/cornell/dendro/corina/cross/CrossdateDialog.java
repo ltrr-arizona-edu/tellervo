@@ -37,6 +37,7 @@ import edu.cornell.dendro.corina.graph.GrapherListener;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.io.Exporter.EncodingType;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
@@ -70,6 +71,33 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 
 	private CrossdateStatusBar status;
 	
+
+	public enum StatType {
+		TSCORE ("T-Score"),
+		DSCORE ("D-Score"),
+		TREND ("Trend"), 
+		WJ ("Weiserjahre"),
+		RVALUE ("R-Value");
+		
+		final String name;
+		
+		StatType(String name){
+		this.name = name;
+
+	}
+		
+	public final String toString(){ return this.name;}
+
+	public static StatType fromName(String name){ 
+		for (StatType val : StatType.values()){
+			if (val.toString().equals(name)) return val;
+		}
+		
+		return null;
+		
+	}
+	
+	}
     /** Creates new form CrossDatingWizard */
     public CrossdateDialog(java.awt.Frame parent) {
     	super();
@@ -221,6 +249,8 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     				sigScoresModel.setCrossdates(pairing);
     				allScoresModel.setCrossdates(pairing);
     				histogramModel.setCrossdates(pairing);
+    				updateTables();
+    				
     			} catch (CrossdateCollection.NoSuchPairingException nspe) {
     				status.setPairing(null);
     				sigScoresModel.clearCrossdates();
@@ -230,6 +260,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     			}
     			
 				updateGraph(null);
+
     		}
     	};
     	
@@ -293,6 +324,14 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     		}
     	});
    	
+    	// Favourite stat type changed
+    	cboDisplayStats.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae) {
+    			updateTables();
+    		}
+    	});
+    	
+    	
     	// reset button...
     	btnResetPosition.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
@@ -484,6 +523,12 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	public String toString() {
     		return name;
     	}
+    }
+    
+    private void updateTables()
+    {
+    	sigScoresModel.sortByStatType(StatType.fromName(cboDisplayStats.getSelectedItem().toString()));
+    	
     }
     
     private void updateGraph(List<Graph> newGraphs) {    	

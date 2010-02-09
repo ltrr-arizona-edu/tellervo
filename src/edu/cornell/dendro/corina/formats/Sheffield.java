@@ -15,7 +15,7 @@
 // along with Corina; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// Copyright 2001 Ken Harris <kbh7@cornell.edu>
+// Copyright 2009 Peter Brewer
 //
 
 package edu.cornell.dendro.corina.formats;
