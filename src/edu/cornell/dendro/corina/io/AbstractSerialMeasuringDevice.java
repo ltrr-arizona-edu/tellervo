@@ -90,6 +90,7 @@ public abstract class AbstractSerialMeasuringDevice
 					doInitialize();
 				}
 			} );
+			initializeThread.start();
 		}
 		
 	}
