@@ -17,9 +17,9 @@ import edu.cornell.dendro.corina.ui.Builder;
 
 /**
  * Displays a Boolean in one of its three states:
- * Null: disabled background
- * True: a checkbox
- * False: absence of checkbox
+ * Null: empty
+ * True: a 'tick' icon
+ * False: a 'cross' icon
  * 
  * @author Lucas Madar
  *

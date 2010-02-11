@@ -11,8 +11,10 @@ import javax.swing.JTable;
 
 
 /**
- *
+ * GUI class for browsing series in the database.
+ *   
  * @author  peterbrewer
+ * @see DBBrowser
  */
 public class DBBrowser_UI extends javax.swing.JDialog {
 	private static final long serialVersionUID = 1L;
@@ -33,6 +35,9 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         initComponents();
     }
     
+    /**
+     * Initilize components of the gui
+     */
     protected void doInitComponents(){
     	// Dynamic components
 	    btnAdd = new javax.swing.JButton();

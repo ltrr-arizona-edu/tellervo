@@ -93,7 +93,7 @@ public class FileMenu extends JMenu {
 	protected JFrame f;
 
 	public FileMenu(JFrame f) {
-		super(I18n.getText("file"));
+		super(I18n.getText("menus.file"));
 		// FIXME: i18n: simply getText() doesn't do _F_ile on win32
 		// TODO: set font here, maybe
 		// QUESTION: does JMenuBar.setFont() affect all menus and menuitems?
@@ -136,9 +136,9 @@ public class FileMenu extends JMenu {
 	public void addNewOpenMenus() {
 		
 		//add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()", "filenew.png"));
-		add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.editor.EditorFactory.newSeries()", "filenew.png"));
-		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
-		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png"));	
+		add(Builder.makeMenuItem("menus.file.new", "edu.cornell.dendro.corina.editor.EditorFactory.newSeries()", "filenew.png"));
+		add(Builder.makeMenuItem("menus.file.open", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
+		add(Builder.makeMenuItem("menus.file.openmulti", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png"));	
 		add(OpenRecent.makeOpenRecentMenu());
 
 	}
@@ -152,7 +152,7 @@ public class FileMenu extends JMenu {
 		String filename = "";
 		
 		try {
-			filename = FileDialog.showSingle(I18n.getText("open"));
+			filename = FileDialog.showSingle(I18n.getText("menus.file.open"));
 			// get filename, and load
 			CanOpener.open(filename);
 		} catch (UserCancelledException uce) {
@@ -179,7 +179,7 @@ public class FileMenu extends JMenu {
 			 * get a list of elements; open each.
 			 */
 
-			ElementList elements = FileDialog.showMulti(I18n.getText("open"));
+			ElementList elements = FileDialog.showMulti(I18n.getText("menus.file.open"));
 
 			for (int i = 0; i < elements.size(); i++) {
 				Element e = elements.get(i);

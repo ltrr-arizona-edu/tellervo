@@ -31,15 +31,9 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 
-/*
- * SampleCuration2.java
- *
- * Created on November 25, 2009, 12:08 PM
- */
-
-
-
 /**
+ * GUI class to allow users to find the physical location of the sample they are
+ * interested in.   
  *
  * @author  peterbrewer
  */
@@ -52,14 +46,16 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 	protected SampleListTableModel resultModel = new SampleListTableModel();
 	
 	
-    /** Creates new form SampleCuration2 */
+    /** Creates new form SampleCuration */
     public SampleCuration(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        initComponents();
-        
+        initComponents();     
     }
     
 
+    /**
+     * Show the actual dialog
+     */
     public static void showDialog() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -81,7 +77,9 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         });
     }
 
-    
+    /**
+     * Setup the GUI.  Called from showDialog()
+     */
     private void setupGui()
     {    	
     	// Default to barcode searching
@@ -164,9 +162,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         	}
 
         });
-        
-        
-        
+         
         // Set models 
         cboObject.setModel(objModel);	
         cboElement.setModel(elModel);
@@ -186,9 +182,9 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         
     }
     
-
-    
-    
+    /**
+     * Play a beep for when barcode reader has scanned a barcode
+     */
     public void playBarcodeBeep(){
 		AudioClip beep;
 		try {	
@@ -206,7 +202,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     
     /**
      * Enable or disable manual sample searching
-     * @param e
+     * @param e 
      */
     private void setManualSearch(Boolean e)
     {
@@ -249,7 +245,9 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
  	
     }
     
-    
+    /**
+     * Populate the combo box with available objects
+     */
     private void populateObjectCombo()
     {
     	cboObject.setRenderer(new SiteRenderer());
@@ -258,6 +256,9 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	
     }
 
+    /**
+     * Populate the combo box with available elements
+     */
     private void populateElementCombo()
     {
     	TridasObject obj = null;
@@ -303,19 +304,14 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	
     }
     
+    /**
+     * Populate combo box with available samples
+     */
     private void populateSampleCombo()
     {
     	TridasElement el = null;
-    	
-    	/*if (cboElement.getSelectedItem()!=null)
-    	{*/
-    		el = (TridasElement) cboElement.getSelectedItem();
-    	/*}
-    	else
-    	{
-    		return;
-    	}*/
-    	    	    	
+    	el = (TridasElement) cboElement.getSelectedItem();
+  	    	
 		// Find all samples for an element 
     	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
     	param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, el.getIdentifier().getValue().toString());
@@ -349,6 +345,11 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	
     }
     
+    /**
+     * Search for samples using a barcode
+     * 
+     * @param barcode
+     */
 	private void doBarcodeSearch(LabBarcode.DecodedBarcode barcode) {
 
 		// Set return type to samples
@@ -393,6 +394,13 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 		
 	}
     
+	/**
+	 * Search for samples using portions of a lab code
+	 * 
+	 * @param objectcode
+	 * @param elementcode
+	 * @param samplecode
+	 */
 	private void doLabCodeSearch(String objectcode, String elementcode, String samplecode)
 	{
     	
@@ -440,6 +448,9 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 		
 	}
 	
+	/**
+	 * Search for samples using the selected records in the combo boxes
+	 */
     private void doSearchFromCombos()
     {
     	String objcode = null;
@@ -787,6 +798,10 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     protected javax.swing.JTextField txtBarcode;
     // End of variables declaration//GEN-END:variables
 
+    
+    /**
+     * Perform actions
+     */
 	public void actionPerformed(ActionEvent e) {
 
 		Object btn = e.getSource();

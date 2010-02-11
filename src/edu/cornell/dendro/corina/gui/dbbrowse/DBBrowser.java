@@ -65,6 +65,11 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
+/**
+ * Implementation of the database browser
+ * @author peterbrewer
+ *
+ */
 public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	private static final long serialVersionUID = 1L;
 	
@@ -93,11 +98,25 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         initialize(openMulti);
     }
 
+    /**
+     * Creates new gui as child of a dialog. Convenience constructor for a single 
+     * file selector browser.
+     * 
+     * @param parent - parent dialog
+     * @param modal - should it be modal?
+     * @see DBBrowser(parent, modal, openMulti)
+     */
     public DBBrowser(java.awt.Dialog parent, boolean modal) {
     	this(parent, modal, false);
     }
     
-    /** Creates new form  as child of dialog */
+    /**
+     * Creates new gui as child of a dialog.
+     * 
+     * @param parent - parent dialog
+     * @param modal - should it be modal?
+     * @param openMulti - should the user be able to pick multiple series?
+     */
     public DBBrowser(java.awt.Dialog parent, boolean modal, boolean openMulti) {
         super(parent, modal);
         doInitComponents();
@@ -105,6 +124,11 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         initialize(openMulti);
     }
 
+    /**
+     * Initilize the gui components
+     * 
+     * @param openMulti - are we allowing picking of multiple files?
+     */
     private void initialize(boolean openMulti) {
         selectedElements = new ElementList();
         
@@ -247,7 +271,12 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         txtFilterInput.requestFocusInWindow();
     }
     
-    
+    /**
+     * Search for series using a lab code string
+     * 
+     * @param text - complete or incomplete lab code
+     * @return - found successfully?
+     */
 	private Boolean doLabCodeSearch(String text) {
 		
 		  String [] strarray = null;
@@ -337,7 +366,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	}
 
     
-    
+    /**
+     * Play a beep.  Useful for when a barcode has been scanned.
+     */
     public void playBarcodeBeep(){
 		AudioClip beep;
 		try {	
@@ -355,7 +386,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     /**
      * Fully loads all elements back into the list
      * Only works for multi dialogs
-     * @return
+     * 
+     * @return successful?
      */
     public boolean loadAllElements() {
     	if(!isMultiDialog)
@@ -394,6 +426,11 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	return true;
     }
     
+    /**
+     * Finish up and return series 
+     * 
+     * @return - successful?
+     */
     protected boolean finish() {
     	if(!isMultiDialog) {
 			// Convert from view to model rows
@@ -417,13 +454,20 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	return true;
     }
     
+    /**
+     * Setup the search panel
+     * 
+     */
     private void setupSearch() {
     	searchPanel = new SearchPanel(new SearchSupport());
     	this.browseSearchPane.setComponentAt(1, searchPanel);
     }
     
     /** 
-     * Update the row filter  
+     * Update the filter used to remove series from the list which don't match
+     * the requested criteria.  The filter works on the list returned from the 
+     * search and is used for simple filtering to stop the need for extra 
+     * requests to the webservice.  
      */
     private void filterAvailMeas() {       
         List<RowFilter<ElementListTableModel, Object>> filters = new ArrayList<RowFilter<ElementListTableModel, Object>>(2);
@@ -458,9 +502,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	rowFilter.setRowFilter(allFilters);
     }
 
-    
-
-    
+    /**
+     * Setup the table(s) ready for the list of series.
+     */
     private void setupTableArea() {
     	
 		ElementListTableModel mdlAvailMeas = new ElementListTableModel();

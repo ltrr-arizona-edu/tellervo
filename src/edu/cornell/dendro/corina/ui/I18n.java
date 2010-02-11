@@ -143,7 +143,7 @@ public class I18n {
 	 */
 	public static String getText(String key) {
 		String value = msg.getString(key);
-
+		
 		StringBuffer buf = new StringBuffer();
 
 		int n = value.length();

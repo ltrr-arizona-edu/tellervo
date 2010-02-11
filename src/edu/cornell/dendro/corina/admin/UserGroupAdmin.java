@@ -14,6 +14,9 @@ import edu.cornell.dendro.corina.schema.SecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 
 /**
+ * GUI class for administering users and groups.  Allows user with the correct
+ * privileges to create and edit users and groups.  Also allows editing of which
+ * groups a user is in.
  *
  * @author  peterbrewer
  */
@@ -22,7 +25,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 	private static final long serialVersionUID = -7039984838996355038L;
 	private SecurityUserTableModel utm;
 	
-    /** Creates new form UserGroupAdmin2 */
+    /** Creates new form UserGroupAdmin */
     public UserGroupAdmin(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();

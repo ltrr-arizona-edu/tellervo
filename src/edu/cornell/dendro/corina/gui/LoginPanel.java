@@ -85,7 +85,7 @@ public class LoginPanel extends JPanel {
 		igbc.anchor = GridBagConstraints.CENTER;
 		igbc.gridwidth = 2;
 		igbc.insets = new Insets(5, 0, 10, 0);
-		subtitle = new JLabel("Please provide your credentials.");
+		subtitle = new JLabel(I18n.getText("login.provideCredentials"));
 		insidePanel.add(subtitle, igbc);
 		
 		igbc.anchor = GridBagConstraints.WEST;
@@ -127,7 +127,7 @@ public class LoginPanel extends JPanel {
 		igbc.anchor = GridBagConstraints.CENTER;
 		igbc.gridy++;
 		
-		rememberUsername = new JCheckBox("Remember my information");
+		rememberUsername = new JCheckBox(I18n.getText("login.rememberInfo"));
 		rememberUsername.setAlignmentX(JCheckBox.CENTER_ALIGNMENT);
 		insidePanel.add(rememberUsername, igbc);
 		
@@ -148,7 +148,7 @@ public class LoginPanel extends JPanel {
 		*/
 		buttonPanel.add(loginButton);
 		
-		button = new JButton("Cancel");
+		button = new JButton(I18n.getText("generic.cancel"));
 		/*
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -159,7 +159,7 @@ public class LoginPanel extends JPanel {
 		*/
 		
 		// TODO: Implement offline mode
-		button = new JButton("Continue offline");
+		button = new JButton(I18n.getText("login.continueOffline"));
 		button.setEnabled(false);
 		buttonPanel.add(button);
 

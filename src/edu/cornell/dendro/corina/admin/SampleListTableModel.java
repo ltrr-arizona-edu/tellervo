@@ -5,27 +5,23 @@ package edu.cornell.dendro.corina.admin;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import edu.cornell.dendro.corina.formats.Metadata;
-import edu.cornell.dendro.corina.sample.BaseSample;
-import edu.cornell.dendro.corina.sample.Element;
-import edu.cornell.dendro.corina.sample.ElementList;
-import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.tridasv2.LabCode;
-import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
-
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasSample;
 
+import edu.cornell.dendro.corina.tridasv2.LabCode;
+import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
+
+
+/**
+ * Table model for a list of samples and their curatorial box locations
+ * 
+ * @author peterbrewer
+ */
 public class SampleListTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	

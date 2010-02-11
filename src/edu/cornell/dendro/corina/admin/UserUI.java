@@ -8,7 +8,8 @@ package edu.cornell.dendro.corina.admin;
 
 
 /**
- *
+ * GUI Class for viewing/editing a users details.
+ * 
  * @author  peterbrewer
  */
 public class UserUI extends javax.swing.JDialog {

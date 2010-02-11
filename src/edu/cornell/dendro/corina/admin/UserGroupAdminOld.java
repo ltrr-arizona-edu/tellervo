@@ -12,7 +12,12 @@ import javax.swing.table.AbstractTableModel;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.User;
 
-
+/**
+ * @deprecated
+ * @see UserGroupAdmin.java
+ * @author peterbrewer
+ *
+ */
 public class UserGroupAdminOld extends javax.swing.JDialog {
     
 	private static final long serialVersionUID = -1241531356865887567L;

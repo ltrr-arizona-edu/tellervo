@@ -121,6 +121,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	window = new JFrame();
         
         initialize(parent, preexistingElements, firstSecondary);
+        btnSwap.setVisible(false);
     }
     
     /**

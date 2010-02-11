@@ -184,7 +184,7 @@ public class IndexDialog extends JDialog {
 		// title
 		String title = sample.getMeta("title").toString();
 		if (title == null) // (DESIGN: can i do better than "untitled"?)
-			title = I18n.getText("Untitled");
+			title = I18n.getText("general.untitled");
 		setTitle(MessageFormat.format(I18n.getText("indexing"), new Object[] { title }));
 
 		// create content pane...

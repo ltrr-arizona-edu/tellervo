@@ -82,12 +82,11 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         panelButtons = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnOk = new javax.swing.JButton();
-        btnAddRemoveSeries = new javax.swing.JButton();
+        lblStat = new javax.swing.JLabel();
+        cboDisplayStats = new javax.swing.JComboBox();
         paneTablesAndCharts = new javax.swing.JSplitPane();
         paneStatistics = new javax.swing.JTabbedPane();
         panel1To1 = new javax.swing.JPanel();
-        lblSecondary = new javax.swing.JLabel();
-        cboSecondary = new javax.swing.JComboBox();
         lblViewType = new javax.swing.JLabel();
         cboViewType = new javax.swing.JComboBox();
         panelStats = new javax.swing.JPanel();
@@ -112,25 +111,33 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         panelNToN = new javax.swing.JPanel();
         panelMatrix = new javax.swing.JPanel();
         panelChart = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        btnSwap = new javax.swing.JButton();
         lblPrimary = new javax.swing.JLabel();
+        lblSecondary = new javax.swing.JLabel();
         cboPrimary = new javax.swing.JComboBox();
+        cboSecondary = new javax.swing.JComboBox();
+        btnAddRemoveSeries = new javax.swing.JButton();
         btnResetPosition = new javax.swing.JButton();
-        lblStat = new javax.swing.JLabel();
-        cboDisplayStats = new javax.swing.JComboBox();
 
         btnCancel.setText("Cancel");
 
         btnOk.setText("Apply Crossdate");
 
-        btnAddRemoveSeries.setText("Add / Remove series");
+        lblStat.setText("Preferred statistic:");
+
+        cboDisplayStats.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "T-Score", "R-Score", "D-Score" }));
 
         org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
         panelButtons.setLayout(panelButtonsLayout);
         panelButtonsLayout.setHorizontalGroup(
             panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonsLayout.createSequentialGroup()
-                .add(btnAddRemoveSeries)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 415, Short.MAX_VALUE)
+                .addContainerGap()
+                .add(lblStat)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(cboDisplayStats, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 396, Short.MAX_VALUE)
                 .add(btnCancel)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnOk)
@@ -141,19 +148,20 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
             .add(panelButtonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnAddRemoveSeries)
                     .add(btnOk)
-                    .add(btnCancel))
+                    .add(btnCancel)
+                    .add(lblStat)
+                    .add(cboDisplayStats, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        paneTablesAndCharts.setDividerLocation(250);
+        paneTablesAndCharts.setDividerLocation(180);
         paneTablesAndCharts.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        paneTablesAndCharts.setResizeWeight(0.5);
         paneTablesAndCharts.setOneTouchExpandable(true);
 
-        lblSecondary.setText("Reference series:");
-
-        cboSecondary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "My Master Chronology" }));
+        paneStatistics.setMinimumSize(new java.awt.Dimension(0, 0));
+        paneStatistics.setPreferredSize(new java.awt.Dimension(150, 88));
 
         lblViewType.setText("View as:");
 
@@ -178,14 +186,14 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
             panelHistogramLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelHistogramLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                .add(jScrollPane6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelHistogramLayout.setVerticalGroup(
             panelHistogramLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelHistogramLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                .add(jScrollPane6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -208,14 +216,14 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
             panelSignificantScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelSignificantScoresLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelSignificantScoresLayout.setVerticalGroup(
             panelSignificantScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelSignificantScoresLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -239,14 +247,14 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
             panelAllScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelAllScoresLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+                .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelAllScoresLayout.setVerticalGroup(
             panelAllScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelAllScoresLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -283,12 +291,8 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
                 .add(panel1To1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(panelStats, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(panel1To1Layout.createSequentialGroup()
-                        .add(lblSecondary)
-                        .add(12, 12, 12)
-                        .add(cboSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 264, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(18, 18, 18)
                         .add(lblViewType)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(18, 18, 18)
                         .add(cboViewType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -297,8 +301,6 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
             .add(panel1To1Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(panel1To1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cboSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblSecondary)
                     .add(lblViewType)
                     .add(cboViewType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -335,14 +337,14 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
             panel1ToNTableLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panel1ToNTableLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panel1ToNTableLayout.setVerticalGroup(
             panel1ToNTableLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panel1ToNTableLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -350,11 +352,11 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         panelStatMap.setLayout(panelStatMapLayout);
         panelStatMapLayout.setHorizontalGroup(
             panelStatMapLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 419, Short.MAX_VALUE)
+            .add(0, 432, Short.MAX_VALUE)
         );
         panelStatMapLayout.setVerticalGroup(
             panelStatMapLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 163, Short.MAX_VALUE)
+            .add(0, 289, Short.MAX_VALUE)
         );
 
         org.jdesktop.layout.GroupLayout panel1ToNLayout = new org.jdesktop.layout.GroupLayout(panel1ToN);
@@ -394,17 +396,17 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        paneStatistics.addTab("Primary against all other series (1 to n)", panel1ToN);
+        paneStatistics.addTab("Primary against all reference series (1 to n)", panel1ToN);
 
         org.jdesktop.layout.GroupLayout panelMatrixLayout = new org.jdesktop.layout.GroupLayout(panelMatrix);
         panelMatrix.setLayout(panelMatrixLayout);
         panelMatrixLayout.setHorizontalGroup(
             panelMatrixLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 803, Short.MAX_VALUE)
+            .add(0, 833, Short.MAX_VALUE)
         );
         panelMatrixLayout.setVerticalGroup(
             panelMatrixLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 190, Short.MAX_VALUE)
+            .add(0, 120, Short.MAX_VALUE)
         );
 
         org.jdesktop.layout.GroupLayout panelNToNLayout = new org.jdesktop.layout.GroupLayout(panelNToN);
@@ -434,29 +436,78 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         panelChart.setLayout(panelChartLayout);
         panelChartLayout.setHorizontalGroup(
             panelChartLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 832, Short.MAX_VALUE)
+            .add(0, 862, Short.MAX_VALUE)
         );
         panelChartLayout.setVerticalGroup(
             panelChartLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 245, Short.MAX_VALUE)
+            .add(0, 265, Short.MAX_VALUE)
         );
 
         paneTablesAndCharts.setRightComponent(panelChart);
 
-        lblPrimary.setText("Moving / Primary series:");
+        btnSwap.setMaximumSize(new java.awt.Dimension(40, 29));
+        btnSwap.setMinimumSize(new java.awt.Dimension(40, 29));
+        btnSwap.setPreferredSize(new java.awt.Dimension(40, 29));
+
+        lblPrimary.setText("Primary series (moving):");
+
+        lblSecondary.setText("Reference series (fixed):");
 
         cboPrimary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "C-ABC-1-A" }));
 
-        btnResetPosition.setText("Reset position");
+        cboSecondary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "My Master Chronology" }));
+        cboSecondary.setMinimumSize(new java.awt.Dimension(131, 27));
+        cboSecondary.setPreferredSize(new java.awt.Dimension(131, 27));
+
+        btnAddRemoveSeries.setText("Add / Remove series");
+
+        btnResetPosition.setText("Reset positions");
         btnResetPosition.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnResetPositionActionPerformed(evt);
             }
         });
 
-        lblStat.setText("Preferred statistic:");
-
-        cboDisplayStats.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "T-Score", "R-Score", "D-Score" }));
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(lblPrimary)
+                            .add(cboPrimary, 0, 417, Short.MAX_VALUE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(btnSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(lblSecondary)
+                            .add(cboSecondary, 0, 383, Short.MAX_VALUE)))
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(btnAddRemoveSeries)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(btnResetPosition)))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(lblPrimary)
+                    .add(lblSecondary))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(btnSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(cboPrimary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(cboSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(btnAddRemoveSeries)
+                    .add(btnResetPosition)))
+        );
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -467,32 +518,16 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(paneTablesAndCharts, 0, 0, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
-                        .add(lblPrimary)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(cboPrimary, 0, 288, Short.MAX_VALUE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnResetPosition)
-                        .add(18, 18, 18)
-                        .add(lblStat)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(cboDisplayStats, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .add(layout.createSequentialGroup()
-                        .add(6, 6, 6)
-                        .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblPrimary)
-                    .add(cboDisplayStats, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblStat)
-                    .add(btnResetPosition)
-                    .add(cboPrimary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(paneTablesAndCharts, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(paneTablesAndCharts, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -509,12 +544,14 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     protected javax.swing.JButton btnCancel;
     protected javax.swing.JButton btnOk;
     protected javax.swing.JButton btnResetPosition;
+    protected javax.swing.JButton btnSwap;
     protected javax.swing.JComboBox cboDisplayStats;
     protected javax.swing.JComboBox cboMatchType;
     protected javax.swing.JComboBox cboPrimary;
     protected javax.swing.JComboBox cboSecondary;
     protected javax.swing.JComboBox cboViewAs;
     protected javax.swing.JComboBox cboViewType;
+    protected javax.swing.JPanel jPanel1;
     protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JScrollPane jScrollPane2;
     protected javax.swing.JScrollPane jScrollPane5;

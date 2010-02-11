@@ -7,7 +7,12 @@ import javax.swing.table.AbstractTableModel;
 import edu.cornell.dendro.corina.schema.SecurityGroup;
 import edu.cornell.dendro.corina.schema.SecurityUser;
 
-
+/**
+ * Simple table model for a list of securityUsers
+ * 
+ * @author peterbrewer
+ *
+ */
 public class SecurityUserTableModel extends AbstractTableModel {
 	
 	private static final long serialVersionUID = -8612040164917147271L;

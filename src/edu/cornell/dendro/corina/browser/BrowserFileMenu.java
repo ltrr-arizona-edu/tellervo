@@ -91,7 +91,7 @@ public class BrowserFileMenu extends JMenu {
        @param browser the Browser to operate on
     */
     public BrowserFileMenu(Browser browser) {
-        setText(I18n.getText("file"));
+        setText(I18n.getText("menus.file"));
 
         this.browser = browser;
 

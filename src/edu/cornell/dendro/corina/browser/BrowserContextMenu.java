@@ -189,10 +189,10 @@ public class BrowserContextMenu extends JPopupMenu {
 		{
 			JMenu cross = Builder.makeMenu("crossdate");
 
-			A = Builder.makeMenuItem("1_by_1");
-			B = Builder.makeMenuItem("1_by_n");
-			C = Builder.makeMenuItem("n_by_1");
-			D = Builder.makeMenuItem("n_by_n");
+			A = Builder.makeMenuItem("deprecated.1_by_1");
+			B = Builder.makeMenuItem("deprecated.1_by_n");
+			C = Builder.makeMenuItem("deprecated.n_by_1");
+			D = Builder.makeMenuItem("deprecated.n_by_n");
 
 			A.addActionListener(new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {

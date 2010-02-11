@@ -15,6 +15,7 @@ import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.schema.SecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
@@ -72,7 +73,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 
     // load properties -- messagedialog here is UGLY!
     if (meter != null) {
-      meter.setNote("Initializing Preferences...");
+      meter.setNote(I18n.getText("login.initPreferences"));
     }
     prefs = new Prefs();
     prefs.init();
@@ -89,14 +90,14 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     
     // set up our proxies before we try to do anything online
     if (meter != null)
-    	meter.setNote("Setting up proxy configuration...");
+    	meter.setNote(I18n.getText("login.setupProxy"));
     proxies = new ProxyManager();
     if (meter != null) 
     	meter.setProgress(4);
     
     // load our JAXB xml binding context
     if (meter != null)
-    	meter.setNote("Binding TRiDaS/Corina schemas...");
+    	meter.setNote(I18n.getText("login.bindingSchemas"));
     CorinaWsiAccessor.loadCorinaContext();
     if (meter != null)
     	meter.setProgress(5);
@@ -106,7 +107,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // only do this if we can log in now...
     if (splash != null) {
         if (meter != null) {
-        	meter.setNote("Logging in...");
+        	meter.setNote(I18n.getText("login.loggingIn"));
         }
         
     	//splash.addLoginPanel(); ... in the future...
@@ -130,12 +131,12 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     }
     
     if (meter != null) {
-    	meter.setNote("Initializing Dictionary...");
+    	meter.setNote(I18n.getText("login.initDictionary"));
     }
     dictionary = new Dictionary();
     if(splash != null && isLoggedIn) { // we have to be logged in for this...
         if (meter != null) {
-        	meter.setNote("Updating Dictionary...");
+        	meter.setNote(I18n.getText("login.updateDictionary"));
         }
         // don't update the dictionary in debug mode
         if(!DEBUGGING)
@@ -156,7 +157,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     }
     
     if (meter != null) {
-    	meter.setNote("Initializing Site List...");
+    	meter.setNote(I18n.getText("login.initObjectList"));
     }
     tridasObjects = new TridasObjectList();
     if(splash != null && isLoggedIn) { // must be logged in...
@@ -164,7 +165,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	if(!DEBUGGING)
     		tridasObjects.query();
         if (meter != null) {
-        	meter.setNote("Updating Site List...");
+        	meter.setNote(I18n.getText("login.updateObjectList"));
         }
     }
     if (meter != null) {
