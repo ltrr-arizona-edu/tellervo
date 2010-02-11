@@ -57,7 +57,7 @@ import edu.cornell.dendro.corina.ui.I18n;
    @version $Id$
 */
 public class HelpMenu extends JMenu {
-  public static final CorinaAction ABOUT_ACTION = new CorinaAction("about") {
+  public static final CorinaAction ABOUT_ACTION = new CorinaAction("menus.about") {
     public void actionPerformed(ActionEvent ae) {
       AboutBox.getInstance().show();
    
@@ -69,7 +69,7 @@ public class HelpMenu extends JMenu {
        Make a new standard Help menu.
     */
     public HelpMenu() {
-	super(I18n.getText("help"));
+	super(I18n.getText("menus.help"));
 
 	addHelpMenu();
 
@@ -108,7 +108,7 @@ public class HelpMenu extends JMenu {
 	}
 	
 	// Mozilla present so add help menu
-	add(Builder.makeMenuItem("corina_help",
+	add(Builder.makeMenuItem("menus.help.corina_help",
 				 "edu.cornell.dendro.corina.gui.HelpWiki.showHelp()", "help.png"));
     }
 
@@ -116,7 +116,7 @@ public class HelpMenu extends JMenu {
        Add the "System Properties..." menuitem.
     */
     protected void addSystemInfoMenu() {
-        add(Builder.makeMenuItem("system_info...",
+        add(Builder.makeMenuItem("menus.help.system_info",
                                  "edu.cornell.dendro.corina.util.PropertiesWindow.showPropertiesWindow()", "system.png"));
     }
 
@@ -125,10 +125,10 @@ public class HelpMenu extends JMenu {
      * FIXME: not really just an "error" log... more like "activity" log.
      */
     protected void addErrorLogMenu() {
-        add(Builder.makeMenuItem("error_log...", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()", "log.png"));
-        add(Builder.makeMenuItem("xml_debug", "edu.cornell.dendro.corina.gui.XMLDebugView.showDialog()", "networksettings.png"));
+        add(Builder.makeMenuItem("menus.help.error_log", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()", "log.png"));
+        add(Builder.makeMenuItem("menus.help.xml_debug", "edu.cornell.dendro.corina.gui.XMLDebugView.showDialog()", "networksettings.png"));
         addSeparator();
-        add(Builder.makeMenuItem("error_ws...", "edu.cornell.dendro.corina.wsi.TransactionDebug.forceGenerateWSBug()", "mail_send.png"));
+        add(Builder.makeMenuItem("menus.help.error_ws", "edu.cornell.dendro.corina.wsi.TransactionDebug.forceGenerateWSBug()", "mail_send.png"));
 
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.DebugInstantiator.showMe()"));
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.newui.NewJFrame1.main()"));
@@ -138,7 +138,7 @@ public class HelpMenu extends JMenu {
        Add the "About Corina..." menuitem.
     */
     protected void addAboutMenu() {
-      JMenuItem menuitem = Builder.makeMenuItem("about");
+      JMenuItem menuitem = Builder.makeMenuItem("menus.about");
       menuitem.setAction(ABOUT_ACTION);
       add(menuitem);
     }

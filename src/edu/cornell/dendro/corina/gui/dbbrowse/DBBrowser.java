@@ -55,6 +55,7 @@ import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.PopupListener;
@@ -96,8 +97,23 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         doInitComponents();
         
         initialize(openMulti);
+        internationalizeComponents();
     }
 
+    /**
+     *  Setup I18n for gui components
+     */
+    private void internationalizeComponents()
+    {
+    	this.setTitle(I18n.getText("dbbrowser"));
+    	btnCancel.setText(I18n.getText("general.cancel"));
+    	btnOk.setText(I18n.getText("general.ok"));    
+    	browsePanel.setName(I18n.getText("dbbrowser.browse"));
+    	searchPanel.setName(I18n.getText("dbbrowser.search"));
+    	btnOptions.setText(I18n.getText("dbbrowser.showOptions"));
+    	lblSeriesType.setText(I18n.getText("dbbrowser.seriesType"));
+    }
+    
     /**
      * Creates new gui as child of a dialog. Convenience constructor for a single 
      * file selector browser.
@@ -206,10 +222,10 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			public void actionPerformed(ActionEvent ev) {
 				if(panelRibbon.isVisible()) {
 					panelRibbon.setVisible(false);
-					btnOptions.setText("Show options");
+					btnOptions.setText(I18n.getText("dbbrowser.showoptions"));
 				} else {
 					panelRibbon.setVisible(true);
-					btnOptions.setText("Hide options");
+					btnOptions.setText(I18n.getText("dbbrowser.hideoptions"));
 				}
 				
 			}
@@ -310,7 +326,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			  
 			  // Check to see if any sites were found
 			  if (lstSites.getModel().getSize()==0) {
-				  Alert.message("Error", "No sites were found that match\n the requested search");
+				  Alert.message(I18n.getText("error"), I18n.getText("error.noObjectsFound"));
 				  populateSiteList("");
 				  return false;
 			  }
@@ -348,7 +364,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 				
 				if(elements.size()==0)
 				{
-					Alert.message("None found", "No records were found that \nmatch this lab code");
+					Alert.message(I18n.getText("error"), I18n.getText("error.noRecordsFound"));
 					populateSiteList("");
 					return false;
 				}
@@ -403,8 +419,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     			s = e.load();
     			nloaded++;
     		} catch (IOException ioe) {
-    			int ret = JOptionPane.showConfirmDialog(this, "Error loading:\n" + ioe + 
-    					"\n\nWould you like to continue?", "Error", JOptionPane.YES_NO_OPTION);
+    			int ret = JOptionPane.showConfirmDialog(this, I18n.getText("error.loadingSample") + ":\n" + ioe + 
+    					"\n\n"+I18n.getText("question.continue"), I18n.getText("error"), JOptionPane.YES_NO_OPTION);
     			
     			if(ret == JOptionPane.NO_OPTION)
     				return false;
@@ -992,9 +1008,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	}
 
 	private enum BrowseListMode {
-		ALL("Show all objects"),
-		POPULATED("Show only populated objects"),
-		POPULATED_FIRST("Show populated objects first");
+		ALL(I18n.getText("dbbrowser.showAllObjects")),
+		POPULATED(I18n.getText("dbbrowser.showPopulatedObjects")),
+		POPULATED_FIRST(I18n.getText("dbbrowser.showPopulatedObjectsFirst"));
 		
 		private final String value;
 		
@@ -1016,13 +1032,12 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	 */
 	private boolean searchByBarcode(LabBarcode.DecodedBarcode barcode)
 	{
-		String reason = "No error";
+		String reason = null;
 		final DBBrowser glue = this;
 		
 		// set up our query...
 		SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
 		
-		boolean success;
 
 		try {				
 			// Add search constraints depending on barcode type
@@ -1058,7 +1073,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			
 			if(elements.size()==0)
 			{
-				Alert.message("None found", "No records found for this barcode");
+				Alert.message(I18n.getText("error"), I18n.getText("noRecordsFoundForBarcode"));
 				return false;
 			}
 			else if(elements.size()==1 & barcode.uuidType == LabBarcode.Type.SERIES & !isMultiDialog) 
@@ -1176,14 +1191,14 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 				showSearchLabel(false);
 				showProgressbar(false);
 			} else {
-				searchInfoLabel.setText("No results");
+				searchInfoLabel.setText(I18n.getText("error.noResults"));
 				showProgressbar(false);
 			}
 		}
 
 		public void notifySearchStarting() {
 			System.out.println("SEARCH STARTING");
-			searchInfoLabel.setText("Searching...");
+			searchInfoLabel.setText(I18n.getText("dbbrowser.searching"));
 			showProgressbar(true);
 			showSearchLabel(true);
 		}

@@ -23,7 +23,7 @@ public class ElementListPopupMenu extends JPopupMenu {
 	public ElementListPopupMenu(final Element element, final ElementListManager browser) {
 		JMenuItem item;
 		
-		item = Builder.makeMenuItem("open", true, "fileopen.png");
+		item = Builder.makeMenuItem("menus.file.open", true, "fileopen.png");
 		add(item);
 		item.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

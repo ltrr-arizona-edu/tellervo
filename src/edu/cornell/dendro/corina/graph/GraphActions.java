@@ -61,22 +61,22 @@ public class GraphActions {
 	protected ToggleableAction showComponentNames;
 	
 	private void createGraphActions() throws IntrospectionException {
-		showVerticalAxis = new ToggleableBoundAction<GraphInfo>("vert_hide", "vert_show", 
+		showVerticalAxis = new ToggleableBoundAction<GraphInfo>("graph.vert_hide", "graph.vert_show", 
 				info, GraphInfo.class, GraphInfo.SHOW_VERT_AXIS_PROPERTY, "vaxisshow.png", 
 				Builder.ICONS, 22);
 
-		showGridlines = new ToggleableBoundAction<GraphInfo>("grid_hide", "grid_show",
+		showGridlines = new ToggleableBoundAction<GraphInfo>("graph.grid_hide", "graph.grid_show",
 				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_PAPER_PROPERTY, "showgrid.png", 
 				Builder.ICONS, 22);
 
-		showBaselines = new ToggleableBoundAction<GraphInfo>("base_hide", "base_show", 
+		showBaselines = new ToggleableBoundAction<GraphInfo>("graph.base_hide", "graph.base_show", 
 				info, GraphInfo.class, GraphInfo.SHOW_BASELINES_PROPERTY);
 
-		showComponentNames = new ToggleableBoundAction<GraphInfo>("compn_hide", "compn_show",
+		showComponentNames = new ToggleableBoundAction<GraphInfo>("graph.compn_hide", "graph.compn_show",
 				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_NAMES_PROPERTY, "label.png", 
 				Builder.ICONS, 22);
 
-		showHundredPercentLines = new ToggleableBoundAction<GraphInfo>("hperc_hide", "hperc_show", 
+		showHundredPercentLines = new ToggleableBoundAction<GraphInfo>("graph.hperc_hide", "graph.hperc_show", 
 				info, GraphInfo.class, GraphInfo.SHOW_HUNDREDPERCENTLINES_PROPERTY);
 	}
 	
@@ -84,7 +84,7 @@ public class GraphActions {
 	
 	@SuppressWarnings("serial")
 	private void createElementActions() {
-		showElementsPanel = new ToggleableAction("view_elements", false, "legend.png", 
+		showElementsPanel = new ToggleableAction("graph.view_elements", false, "legend.png", 
 				Builder.ICONS, 22) {
 			public void togglePerformed(ActionEvent e, Boolean value) {
 				elements.setVisible(value);
@@ -118,47 +118,47 @@ public class GraphActions {
 	
 	@SuppressWarnings("serial")
 	private void createControllerActions() {
-		squeezeVertically = new CorinaAction("baselines_align", "squeezevertically.png", Builder.ICONS, 22) {
+		squeezeVertically = new CorinaAction("graph.baselines_align", "squeezevertically.png", Builder.ICONS, 22) {
 			public void actionPerformed(ActionEvent e) {
 				controller.squeezeTogether();
 			}		
 		};
 		
-		spreadB25 = new CorinaAction("units25") {
+		spreadB25 = new CorinaAction("graph.units25") {
 			public void actionPerformed(ActionEvent e) {
 				controller.spreadOut(25);
 			}
 		};
-		spreadB50 = new CorinaAction("units50") {
+		spreadB50 = new CorinaAction("graph.units50") {
 			public void actionPerformed(ActionEvent e) {
 				controller.spreadOut(50);
 			}
 		};
-		spreadB100 = new CorinaAction("units100") {
+		spreadB100 = new CorinaAction("graph.units100") {
 			public void actionPerformed(ActionEvent e) {
 				controller.spreadOut(100);
 			}
 		};
-		spreadB200 = new CorinaAction("units200") {
+		spreadB200 = new CorinaAction("graph.units200") {
 			public void actionPerformed(ActionEvent e) {
 				controller.spreadOut(200);
 			}
 		};
 		
-		squishBaselines = new CorinaAction("baselines_squish") {
+		squishBaselines = new CorinaAction("graph.baselines_squish") {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 			}
 		};
 
-		fitHorizontally = new CorinaAction("fit_horiz", "fitcharthoriz.png", Builder.ICONS, 22) {
+		fitHorizontally = new CorinaAction("graph.fit_horiz", "fitcharthoriz.png", Builder.ICONS, 22) {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 				controller.scaleToFitWidth();
 			}
 		};
 
-		fitBoth = new CorinaAction("fit_both") {
+		fitBoth = new CorinaAction("graph.fit_both") {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 				controller.scaleToFitWidth();
@@ -166,37 +166,37 @@ public class GraphActions {
 			}
 		};
 		
-		scaleDown = new CorinaAction("escale_halve"){
+		scaleDown = new CorinaAction("graph.escale_halve"){
 			public void actionPerformed(ActionEvent e) {
 				controller.halveScale();
 			}
 		};
-		scaleUp = new CorinaAction("escale_double"){
+		scaleUp = new CorinaAction("graph.escale_double"){
 			public void actionPerformed(ActionEvent e) {
 				controller.doubleScale();
 			}
 		};
-		scaleReset = new CorinaAction("escale_reset"){
+		scaleReset = new CorinaAction("graph.escale_reset"){
 			public void actionPerformed(ActionEvent e) {
 				controller.resetScaling();
 			}
 		};
 		
-		zoomInHorizontally = new CorinaAction("hzoom_in", "haxiszoomin.png", Builder.ICONS, 22) {
+		zoomInHorizontally = new CorinaAction("graph.hzoom_in", "haxiszoomin.png", Builder.ICONS, 22) {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 				controller.zoomInHorizontal();
 			}
 		};		
 		
-		zoomOutHorizontally = new CorinaAction("hzoom_out", "haxiszoomout.png", Builder.ICONS, 22) {
+		zoomOutHorizontally = new CorinaAction("graph.hzoom_out", "haxiszoomout.png", Builder.ICONS, 22) {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 				controller.zoomOutHorizontal();
 			}
 		};	
 		
-		zoomIn = new CorinaAction("vzoom_in", "vaxiszoomin.png", Builder.ICONS, 22){
+		zoomIn = new CorinaAction("graph.vzoom_in", "vaxiszoomin.png", Builder.ICONS, 22){
 			public void actionPerformed(ActionEvent e) {
 				int height = info.getTenUnitHeight();
 				float fheight = ((float) height) * 1.25f;
@@ -204,7 +204,7 @@ public class GraphActions {
 				info.setTenUnitHeight((height == (int) fheight) ? height - 1 : (int) fheight);
 			}
 		};
-		zoomOut = new CorinaAction("vzoom_out", "vaxiszoomout.png", Builder.ICONS, 22){
+		zoomOut = new CorinaAction("graph.vzoom_out", "vaxiszoomout.png", Builder.ICONS, 22){
 			public void actionPerformed(ActionEvent e) {
 				int height = info.getTenUnitHeight();
 				float fheight = ((float) height) / 1.25f;
@@ -212,7 +212,7 @@ public class GraphActions {
 				info.setTenUnitHeight((height == (int) fheight) ? height + 1 : (int) fheight);
 			}
 		};
-		zoomReset = new CorinaAction("zoom_reset"){
+		zoomReset = new CorinaAction("graph.zoom_reset"){
 			public void actionPerformed(ActionEvent e) {
 				// reload pref
 				info.setTenUnitHeight(GraphPrefs.TENUNIT_HEIGHT.get());

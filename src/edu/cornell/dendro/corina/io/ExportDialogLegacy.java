@@ -197,7 +197,7 @@ public class ExportDialogLegacy extends JDialog {
 		tuples.add(new JScrollPane(preview), I18n.getText("export_preview"));
 
 		// buttons
-		JButton help = Builder.makeButton("help");
+		JButton help = Builder.makeButton("menus.help");
 		Help.assignHelpPageToButton(help, "exporting");
 		// BETTER?: look at state of filetype popup, and present appropriate format page
 

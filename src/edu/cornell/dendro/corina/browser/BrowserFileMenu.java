@@ -175,7 +175,7 @@ public class BrowserFileMenu extends JMenu {
     /** Add an "Open" menuitem. */
     protected void addOpenMenuItem() {
         // open
-        JMenuItem open = Builder.makeMenuItem("open");
+        JMenuItem open = Builder.makeMenuItem("menus.file.open");
         open.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 try {

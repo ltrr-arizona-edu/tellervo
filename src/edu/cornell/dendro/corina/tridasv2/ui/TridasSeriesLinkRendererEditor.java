@@ -58,7 +58,7 @@ public class TridasSeriesLinkRendererEditor extends AbstractPropertyEditor imple
 		// create a new "editor" panel
 		JPanel panel = new JPanel();		
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		openButton = Builder.makeButton("open");
+		openButton = Builder.makeButton("menus.file.open");
 		panel.add(openButton);
 		panel.add(Box.createHorizontalGlue());
 		panel.setOpaque(false);

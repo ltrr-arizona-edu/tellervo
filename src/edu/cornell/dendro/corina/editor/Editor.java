@@ -210,11 +210,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		undoMenu.setText(undoManager.getUndoPresentationName());
 		undoMenu.setEnabled(undoManager.canUndo());
 		if (!undoManager.canUndo())
-			undoMenu.setText(I18n.getText("undo"));
+			undoMenu.setText(I18n.getText("menus.edit.undo"));
 		redoMenu.setText(undoManager.getRedoPresentationName());
 		redoMenu.setEnabled(undoManager.canRedo());
 		if (!undoManager.canRedo())
-			redoMenu.setText(I18n.getText("redo"));
+			redoMenu.setText(I18n.getText("menus.edit.redo"));
 	}
 
 	private void initUndoRedo() {
@@ -261,7 +261,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			if (!sample.hasWeiserjahre())
 				rolodex.remove(wjPanel);
 			else if (rolodex.indexOfComponent(wjPanel) == -1)
-				rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
+				rolodex.add(wjPanel, I18n.getText("editor.tab_weiserjahre"));
 		}
 	}
 
@@ -333,10 +333,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				 that's crazy talk!
 				 */
 				int x = JOptionPane.showOptionDialog(this,
-						"You didn't set the metadata!", "Metadata Untouched",
+						I18n.getText("error.noMetadataSet"), I18n.getText("error.metadataUntouched"),
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.QUESTION_MESSAGE, null, // no icon
-						new String[] { "Save Anyway", "Cancel" }, null); // default
+						new String[] { I18n.getText("question.saveAnyway"), I18n.getText("general.cancel") }, null); // default
 				if (x == 1) {
 					// show metadata tab, and abort.
 					rolodex.setSelectedIndex(1);
@@ -365,8 +365,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// but only if it's not derived!
 		if(!sample.getSampleType().isDerived() && !sample.hasMeta(Metadata.RADIUS)) {
 			JOptionPane.showMessageDialog(this,
-					"Metadata not complete. You must choose a radius.",
-					"Save error", JOptionPane.ERROR_MESSAGE);
+					I18n.getText("error.metadataIncompleteRadiusRequired"),
+					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 			rolodex.setSelectedIndex(1);
 			return;
 		}
@@ -375,7 +375,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		try {
 			sample.getLoader().save(sample);
 		} catch (IOException ioe) {
-			Alert.error("I/O Error", "There was an error while saving the file: \n" + ioe.getMessage());
+			Alert.error(I18n.getText("error.ioerror"), I18n.getText("error.savingError") +": \n" + ioe.getMessage());
 			return;
 		} catch (Exception e) {
 			new Bug(e);
@@ -485,15 +485,15 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// all samples get data, meta
 		dataView = new SampleDataView(sample);
-		rolodex.add(dataView, I18n.getText("tab_data"));
-		rolodex.add(metaView, I18n.getText("tab_metadata"));
+		rolodex.add(dataView, I18n.getText("editor.tab_data"));
+		rolodex.add(metaView, I18n.getText("editor.tab_metadata"));
 
 		// wj and elements, if it's summed
 		if (sample.hasWeiserjahre())
-			rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
+			rolodex.add(wjPanel, I18n.getText("editor.tab_weiserjahre"));
 		
 		if(componentsPanel != null) {
-			rolodex.add(componentsPanel, I18n.getText("tab_components"));			
+			rolodex.add(componentsPanel, I18n.getText("editor.tab_components"));			
 			
 			// let the components panel know it's being set as visible...
 			rolodex.addChangeListener(new ChangeListener() {
@@ -505,7 +505,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		}
 				
 		if(mozillaMapPanel != null)
-			rolodex.add(mozillaMapPanel, "Map");
+			rolodex.add(mozillaMapPanel, I18n.getText("editor.tab_map"));
 	}
 
 	private void initRolodex() {
@@ -531,149 +531,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				Build.TIMESTAMP);
 	}
 
-	
-
-	
-	
-	// ask the user for a title for this (new) sample.  it's guaranteed to have a number, now!
-	/*
-	 TODO:
-	 -- esc doesn't work -- no, this is a problem with OKCancel in 1.4.1, not here
-	 -- (initial value is name of this site?)
-	 ---- (askTitle(Site)?)
-	 -- (title for non-mac platforms?)
-	 -- (i18n / extract text)
-	 -- (import classes so i don't need fq here)
-	 */
-	/*
-	 what's truly unique about this?
-	 ... AskText extends JDialog ...
-	 pass it:
-	 -- initial text
-	 -- dictionary for autocomplete
-	 -- instructions text
-	 -- help tag
-	 then, simply:
-	 ask.show();
-	 title = ask.getResult();
-	 */
-
-	private static String askTitle() throws UserCancelledException {		
-		JLabel line1 = new JLabel("Enter a name for the new sample.");
-		JLabel line2 = new JLabel("Names are usually in the form of a single capital letter.");
-		JLabel line3 = new JLabel(
-				"(You can easily change this later)");
-		// jmultilinelabel for last 2 lines?
-		line2.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-		line3.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-
-		JTextField input = new JTextField(); //new AutoComplete("", 30);
-		// defaults to site names -- TODO: pass current site in as initial text?
-
-		final boolean isOk[] = new boolean[1];
-
-		//JButton help = Builder.makeButton("help");
-		//Help.addToButton(help, "identification");
-		JButton cancel = Builder.makeButton("cancel");
-		final JButton ok = Builder.makeButton("ok");
-		ok.setEnabled(false);
-
-		input.getDocument().addDocumentListener(new DocumentListener2() {
-			@Override
-			public void update(DocumentEvent e) {
-				try {
-					Document doc = e.getDocument();
-					String text = doc.getText(0, doc.getLength()); // BETTER: why not just input.getText()?
-					ok.setEnabled(containsLetter(text)); // FIXME: combine these!
-				} catch (BadLocationException ble) {
-					// can't happen
-				}
-			}
-		});
-
-		JPanel text = Layout.boxLayoutY(line1, line2, line3);
-		JPanel buttons = Layout.buttonLayout(cancel, ok);
-		buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-		JPanel content = Layout.borderLayout(text, null, input, null, null);
-		JPanel fixed = Layout.borderLayout(content, null, null, null, buttons);
-
-		fixed.setBorder(BorderFactory.createEmptyBorder(10, 14, 6, 14));
-
-		final JDialog dialog = new JDialog(new Frame(), true);
-		dialog.getContentPane().add(fixed);
-
-		ActionListener okCancel = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				isOk[0] = (e.getSource() == ok);
-				dialog.dispose();
-			}
-		};
-		ok.addActionListener(okCancel);
-		cancel.addActionListener(okCancel);
-
-		dialog.pack();
-		OKCancel.addKeyboardDefaults(ok);
-		input.selectAll(); // (if there's anything here, later, e.g., site name)
-		input.requestFocus();
-		Center.center(dialog);
-		dialog.setVisible(true);
-
-		// then, after it's hidden (by cancel, ok, or close-box)...
-
-		if (!isOk[0])
-			throw new UserCancelledException();
-
-		return input.getText();
-	}
-
-	// FIXME: disable the "ok" button if there's no number in the title, but
-	// put a notice in the dialog saying it must have a number!
-	private String askTitleOld(String defaultText)
-			throws UserCancelledException {
-		String title = defaultText;
-		for (;;) {
-			title = (String) JOptionPane.showInputDialog(null, // parent component
-					I18n.getText("new_sample_prompt"), // message
-					I18n.getText("new_sample"), // title
-					JOptionPane.QUESTION_MESSAGE, Builder
-							.getIcon("Tree-64x64.png", 64), // null, // icon
-					null, // values (options)
-					title);
-
-			// user cancelled?
-			if (title == null)
-				throw new UserCancelledException();
-
-			// make sure there's a digit in there somewhere, and return.
-			if (containsDigit(title) && containsLetter(title))
-				return title;
-
-			// no numbers!
-			// (FIXME: this error shouldn't exist!)
-			Alert
-					.error("No number",
-							"There's no number in that title.  I think you forgot the sample number.");
-
-			// be sure to put in the user manual the trick for creating a sample
-			// without a sample number, if they ever need that: put a digit on
-			// the end, and remove it right away (heh heh).
-		}
-	}
-
-	// if i need this anywhere else, move to util?
-	private static boolean containsDigit(String s) {
-		for (int i = 0; i < s.length(); i++)
-			if (Character.isDigit(s.charAt(i)))
-				return true;
-		return false;
-	}
-
-	private static boolean containsLetter(String s) {
-		for (int i = 0; i < s.length(); i++)
-			if (Character.isLetter(s.charAt(i)))
-				return true;
-		return false;
-	}
 
 	// TODO: want single-instance editors.
 	// so:
@@ -883,20 +740,20 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// components
 		JLabel question = new JLabel("Print which sections?"); // TODO: i18n
-		final JCheckBox s1 = new JCheckBox(I18n.getText("tab_data"), def == 0);
-		final JCheckBox s2 = new JCheckBox(I18n.getText("tab_metadata"),
+		final JCheckBox s1 = new JCheckBox(I18n.getText("editor.tab_data"), def == 0);
+		final JCheckBox s2 = new JCheckBox(I18n.getText("editor.tab_metadata"),
 				def == 1);
-		final JCheckBox s3 = new JCheckBox(I18n.getText("tab_weiserjahre"),
+		final JCheckBox s3 = new JCheckBox(I18n.getText("editor.tab_weiserjahre"),
 				def == 2);
-		final JCheckBox s4 = new JCheckBox(I18n.getText("tab_components"),
+		final JCheckBox s4 = new JCheckBox(I18n.getText("editor.tab_components"),
 				def == 3);
 		// dim sections which aren't available
 		s3.setEnabled(s.hasWeiserjahre());
 		s4.setEnabled(s.getElements() != null); // FIXME: hasElements method!
 		// FIXME: if s1-4 is an array, i can simply say s[def].setEnabled(true)
 		// -- if def=0..3
-		final JButton cancel = Builder.makeButton("cancel");
-		final JButton ok = Builder.makeButton("print");
+		final JButton cancel = Builder.makeButton("general.cancel");
+		final JButton ok = Builder.makeButton("menus.file.print");
 		Component indent = Box.createHorizontalStrut(14);
 
 		// on ok/cancel, done
@@ -968,8 +825,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			dataPort.initialize();
 		}
 		catch (IOException ioe) {
-			Alert.error("Couldn't start measuring", 
-					"There was an error while initializing the external communications device: " +
+			Alert.error(I18n.getText("error"), 
+					I18n.getText("error.initExtComms") + ": " +
 					ioe.toString());
 			return;
 		}

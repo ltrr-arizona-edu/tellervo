@@ -167,7 +167,7 @@ public class IndexDialog extends JDialog {
 		// watch for already-indexed files -- shouldn't this be a
 		// "never happens", too?
 		if (sample.isIndexed()) {
-			Alert.error(I18n.getText("already_indexed_title"), I18n.getText("already_indexed_text"));
+			Alert.error(I18n.getText("error"), I18n.getText("error.alreadyIndexed"));
 			dispose();
 			return;
 		}
@@ -176,7 +176,7 @@ public class IndexDialog extends JDialog {
 		// BETTER: make this "==0", and have individual indexes throw if they
 		// can't handle size==2, etc.
 		if (sample.getData().size() < 3) {
-			Alert.error(I18n.getText("no_data_title"), I18n.getText("no_data_text"));
+			Alert.error(I18n.getText("error"), I18n.getText("error.noData"));
 			dispose();
 			return;
 		}
@@ -185,7 +185,7 @@ public class IndexDialog extends JDialog {
 		String title = sample.getMeta("title").toString();
 		if (title == null) // (DESIGN: can i do better than "untitled"?)
 			title = I18n.getText("general.untitled");
-		setTitle(MessageFormat.format(I18n.getText("indexing"), new Object[] { title }));
+		setTitle(MessageFormat.format(I18n.getText("index.indexing"), new Object[] { title }));
 
 		// create content pane...
 		JPanel content = new JPanel();
@@ -287,7 +287,7 @@ public class IndexDialog extends JDialog {
 		} catch (UserCancelledException uce) {
 			// do nothing...
 		} catch (IOException ioe) {
-			Alert.error("Could not create index", "Error: " + ioe.toString());
+			Alert.error(I18n.getText("error"), I18n.getText("error.couldNotCreateIndex")+ ": " + ioe.toString());
 		}
 		
 		return false;		
@@ -359,7 +359,7 @@ public class IndexDialog extends JDialog {
 		// bottom panel (buttons) ------------
 
 		// help button
-		JButton help = Builder.makeButton("help");
+		JButton help = Builder.makeButton("menus.help");
 		Help.assignHelpPageToButton(help, "Indexing");
 		
 
@@ -367,7 +367,7 @@ public class IndexDialog extends JDialog {
 		JButton cancel = makeCancelButton();
 
 		// ok button -- REFACTOR: EXTRACT METHOD
-		okButton = Builder.makeButton("ok");
+		okButton = Builder.makeButton("general.ok");
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				int row = table.getSelectedRow();
@@ -407,7 +407,7 @@ public class IndexDialog extends JDialog {
 	}
 	
 	private JButton makeCancelButton() {
-		JButton cancel = Builder.makeButton("cancel");
+		JButton cancel = Builder.makeButton("general.cancel");
 		cancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				dispose();
@@ -420,7 +420,7 @@ public class IndexDialog extends JDialog {
 	private JComponent makeLabel() {
 		JPanel p = new JPanel();
 		p.setLayout(new GridLayout(1,1));
-		JLabel l = new JLabel(I18n.getText("choose_index"));
+		JLabel l = new JLabel(I18n.getText("index.choose"));
 		//l.setAlignmentX(LEFT_ALIGNMENT);
 		p.add(l);
 		return p;

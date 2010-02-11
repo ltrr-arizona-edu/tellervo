@@ -53,7 +53,7 @@ public class SamplePopupMenu extends JPopupMenu {
         // TODO: add cut, copy commands here?
 
         // open
-        JMenuItem open = Builder.makeMenuItem("open");
+        JMenuItem open = Builder.makeMenuItem("menus.file.open");
         open.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 new Editor(s);

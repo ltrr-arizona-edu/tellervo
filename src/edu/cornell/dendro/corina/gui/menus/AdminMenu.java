@@ -58,7 +58,7 @@ import edu.cornell.dendro.corina.ui.I18n;
    @version $Id: HelpMenu.java 2163 2009-09-15 19:39:09Z Peter Brewer $
 */
 public class AdminMenu extends JMenu {
-  public static final CorinaAction ABOUT_ACTION = new CorinaAction("about") {
+  public static final CorinaAction ABOUT_ACTION = new CorinaAction("menus.about") {
     public void actionPerformed(ActionEvent ae) {
       AboutBox.getInstance().show();
    
@@ -69,7 +69,7 @@ private JFrame frame;
 
 	/** Make a new Admin menu. */
   public AdminMenu(JFrame frame) {
-      super(I18n.getText("admin"));
+      super(I18n.getText("menus.admin"));
       
       this.frame = frame;
       
@@ -80,7 +80,7 @@ private JFrame frame;
 
 	  addUserGroupMenu();
      
-	  JMenuItem changepwd = Builder.makeMenuItem("changepwd",
+	  JMenuItem changepwd = Builder.makeMenuItem("menus.admin.changepwd",
             "edu.cornell.dendro.corina.admin.SetPasswordUI.loadDialog()", "password.png");
  	  add(changepwd); 
 	  
@@ -100,14 +100,14 @@ private JFrame frame;
     */
     protected void addLabelMenu() {
     	
-    	JMenu labelmenu = Builder.makeMenu("labels", "label.png");
+    	JMenu labelmenu = Builder.makeMenu("menus.admin.labels", "label.png");
 
     	
-    	JMenuItem boxlabel = Builder.makeMenuItem("boxlabels",
+    	JMenuItem boxlabel = Builder.makeMenuItem("menus.admin.boxlabels",
                 "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.boxLabelDialog()", "box.png");
         labelmenu.add(boxlabel);
     	
-        JMenuItem samplelabel = Builder.makeMenuItem("samplelabels",
+        JMenuItem samplelabel = Builder.makeMenuItem("menus.admin.samplelabels",
                 "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.sampleLabelDialog()", "sample.png");
         labelmenu.add(samplelabel);   
         add(labelmenu);
@@ -118,10 +118,10 @@ private JFrame frame;
     */
 	 protected void addReportsMenu() {
 	 	
-	 	JMenu reportmenu = Builder.makeMenu("reports", "prosheet.png");
+	 	JMenu reportmenu = Builder.makeMenu("menus.admin.reports", "prosheet.png");
 	 	
 	 	
-	    JMenuItem prosheet = Builder.makeMenuItem("prosheet",
+	    JMenuItem prosheet = Builder.makeMenuItem("menus.admin.prosheet",
 	            "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.proSheetPrintingDialog()", "prosheet.png");
 	    reportmenu.add(prosheet); 
 	 	add(reportmenu);
@@ -132,7 +132,7 @@ private JFrame frame;
 	*/
 	protected void addUserGroupMenu() {
 		
-	  	JMenuItem usergroup = Builder.makeMenuItem("usersandgroups",
+	  	JMenuItem usergroup = Builder.makeMenuItem("menus.admin.usersandgroups",
 	            "edu.cornell.dendro.corina.admin.UserGroupAdmin.main()", "edit_group.png");
 	
 		usergroup.setEnabled(true);
@@ -144,15 +144,15 @@ private JFrame frame;
 	*/
 	protected void addCurationMenu() {
 		
-	 	JMenu curationmenu = Builder.makeMenu("curation", "curation.png");
+	 	JMenu curationmenu = Builder.makeMenu("menus.admin.curation", "curation.png");
 	 	
 	 	
-	    JMenuItem findsample = Builder.makeMenuItem("findsample",
+	    JMenuItem findsample = Builder.makeMenuItem("menus.admin.findsample",
 	            "edu.cornell.dendro.corina.admin.SampleCuration.showDialog()", "findsample.png");
 	    curationmenu.add(findsample); 
 	    
 	    
-	    JMenuItem inventory = Builder.makeMenuItem("inventory",
+	    JMenuItem inventory = Builder.makeMenuItem("menus.admin.inventory",
 	            "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.proSheetPrintingDialog()");
 	    inventory.setEnabled(false);
 	    curationmenu.add(inventory); 

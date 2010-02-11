@@ -129,7 +129,7 @@ public class BrowserContextMenu extends JPopupMenu {
 	}
 
 	private void initMenuItems() {
-		open = Builder.makeMenuItem("open");
+		open = Builder.makeMenuItem("menus.file.open");
 		open.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				try {

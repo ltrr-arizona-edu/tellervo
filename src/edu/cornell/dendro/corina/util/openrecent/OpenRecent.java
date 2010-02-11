@@ -47,6 +47,7 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
     A menu which shows recently-opened files.
@@ -173,7 +174,7 @@ public class OpenRecent {
 	public static JMenu makeOpenRecentMenu(String tag, JMenu menu, Integer itemsToKeep) {
 		// create a new menu if we have to
 		if(menu == null)
-			menu = Builder.makeMenu("open_recent");
+			menu = Builder.makeMenu("menus.file.open_recent");
 		
 		menu.putClientProperty("corina.open_recent_tag", tag);
 		menu.putClientProperty("corina.open_recent_itemsToKeep", itemsToKeep);
@@ -354,8 +355,8 @@ public class OpenRecent {
 						doOpen(recent.get(glue), menu.getClientProperty("corina.open_recent_action"));
 					} catch (FileNotFoundException fnfe) {
 						// file moved?
-						Alert.error("File Isn't There", "The file called '" + recent.get(glue) + "'\n"
-								+ "isn't there any more.  If it was moved, " + "you'll have to open it with File -> Open...");
+						Alert.error(I18n.getText("error.loadingSample"), I18n.getText("error.cantOpenFile")+ " " + recent.get(glue) + ".\n"
+								+ I18n.getText("error.fileNotFound"));
 
 						// remove it from the list
 						recent.remove(glue);
@@ -366,7 +367,7 @@ public class OpenRecent {
 
 						return;
 					} catch (IOException ioe) {
-						Alert.error("Error loading", "Can't open: " + ioe.toString());
+						Alert.error(I18n.getText("error.loadingSample"), I18n.getText("error.cantOpenFile")+ ": " + ioe.toString());
 						return;
 					}					
 				}
@@ -374,7 +375,7 @@ public class OpenRecent {
 			menu.add(r);
 		}
 
-		JMenuItem clear = Builder.makeMenuItem("clear_menu", true, "trashcan_full.png");
+		JMenuItem clear = Builder.makeMenuItem("menus.clear_menu", true, "trashcan_full.png");
 		if (recent.isEmpty()) {
 			// no recent items: just "Clear Menu", but dimmed
 			clear.setEnabled(false);

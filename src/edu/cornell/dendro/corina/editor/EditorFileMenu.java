@@ -58,7 +58,7 @@ public class EditorFileMenu extends FileMenu {
 	@Override
 	public void addPrintMenu() {
 		// Add report printing entry
-		JMenuItem reportPrint = Builder.makeMenuItem("print", true, "printer.png");
+		JMenuItem reportPrint = Builder.makeMenuItem("menus.file.print", true, "printer.png");
 		reportPrint.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				SeriesReport.printReport(sample);
@@ -67,7 +67,7 @@ public class EditorFileMenu extends FileMenu {
 		add(reportPrint);
 
 		// Add preview printing entry
-		JMenuItem reportPreview = Builder.makeMenuItem("printpreview", true);
+		JMenuItem reportPreview = Builder.makeMenuItem("menus.file.printpreview", true);
 		reportPreview.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {				
 				SeriesReport.viewReport(sample);
@@ -87,53 +87,8 @@ public class EditorFileMenu extends FileMenu {
 			addCoremMenu();
 		}
 			
-		// add "Rename to..." menuitem
-		JMenuItem rename_to = Builder.makeMenuItem("rename_to...");
-		rename_to.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					// get doc
-					SaveableDocument doc = (SaveableDocument) f;
-					if (doc.getFilename() == null) {
-						JOptionPane.showMessageDialog(
-										f,
-										"Can't 'rename' an unsaved Sample.\nUse save as instead.",
-										"Error", JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-
-					// be careful.. this may be overkill?
-					File oldFile = new File(new String(doc.getFilename()));
-
-					// DESIGN: start out in the same folder as the old filename,
-					// if there is one?
-
-					// get new filename
-					String filename = FileDialog.showSingle(I18n
-							.getText("rename_to...")
-							+ " (" + oldFile.getName() + ")");
-					File newFile = new File(filename);
-
-					if (newFile.exists()) {
-						JOptionPane.showMessageDialog(
-										f,
-										"Can't rename to a file that already exists.\nUse save as instead.",
-										"Error renaming...",
-										JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-
-					doc.setFilename(filename);
-					OpenRecent.fileOpened(doc.getFilename());
-					oldFile.renameTo(newFile);
-				} catch (UserCancelledException uce) {
-					// do nothing
-				}
-			}
-		});
-		add(rename_to);
-		rename_to.setVisible(false);
 	}
+	
 
 	private void addCoremMenu() {
 		JMenuItem corem = new JMenuItem("Export to COREM...");
@@ -261,7 +216,7 @@ public class EditorFileMenu extends FileMenu {
 
 	public void addExportMenus() {
 		// add "Export..." menuitem
-		JMenuItem export = Builder.makeMenuItem("export...", true, "fileexport.png");
+		JMenuItem export = Builder.makeMenuItem("menus.file.export", true, "fileexport.png");
 		export.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ev) {
 				new ExportDialog(sample);

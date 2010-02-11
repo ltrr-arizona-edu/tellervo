@@ -43,7 +43,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	private Editor editor;
 
 	public EditorToolsMenu(Sample s, Editor e) {
-		super(I18n.getText("tools")); // TODO: mnemonic
+		super(I18n.getText("menus.tools")); // TODO: mnemonic
 
 		this.sample = s;
 		this.editor = e;
@@ -51,7 +51,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		sample.addSampleListener(this);
 
 		// truncate
-		JMenuItem truncate = Builder.makeMenuItem("truncate...", true, "truncate.png");
+		JMenuItem truncate = Builder.makeMenuItem("menus.tools.truncate", true, "truncate.png");
 		truncate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				new TruncateDialog(sample, editor);
@@ -60,7 +60,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		add(truncate);
 
 		// reverse
-		JMenuItem reverseMenu = Builder.makeMenuItem("reverse", true, "reverse.png");
+		JMenuItem reverseMenu = Builder.makeMenuItem("menus.tools.reverse", true, "reverse.png");
 		reverseMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// reverse, and add to the undo-stack
@@ -76,7 +76,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		addSeparator();		
 		
 		// reconcile
-		JMenuItem reconcile = Builder.makeMenuItem("new_reconcile", true, "reconcile.png");
+		JMenuItem reconcile = Builder.makeMenuItem("menus.tools.new_reconcile", true, "reconcile.png");
 		reconcile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DBBrowser browser = new DBBrowser(editor, true, false);
@@ -85,7 +85,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 				if(sample.meta().hasSiteCode()) 
 					browser.selectSiteByCode(sample.meta().getSiteCode());
 				
-				browser.setTitle("Choose a reference sample");
+				browser.setTitle(I18n.getText("question.chooseReference"));
 				browser.setVisible(true);
 				
 				if(browser.getReturnStatus() == DBBrowser.RET_OK) {
@@ -99,8 +99,8 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 					try {
 						reference = toOpen.get(0).load();
 					} catch (IOException ioe) {
-						Alert.error("Error Loading Sample",
-								"Can't open this file: " + ioe.getMessage());
+						Alert.error(I18n.getText("error.loadingSample"),
+								I18n.getText("error.cantOpenFile") +": " + ioe.getMessage());
 						return;
 					}
 
@@ -123,7 +123,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		});
 		
 		// now, make this remember the last things we reconciled against!
-		JMenu reconcileMenu = Builder.makeMenu("reconcile");
+		JMenu reconcileMenu = Builder.makeMenu("menus.tools.reconcile");
 		reconcileMenu.putClientProperty("corina.open_recent_action", new OpenRecent.SampleOpener("reconcile") {
 			@Override
 			public void performOpen(Sample s) {
@@ -135,11 +135,11 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		});
 		reconcileMenu.add(reconcile);
 		reconcileMenu.addSeparator();
-		OpenRecent.makeOpenRecentMenu("reconcile", reconcileMenu, 2);
+		OpenRecent.makeOpenRecentMenu("menus.tools.reconcile", reconcileMenu, 2);
 		add(reconcileMenu);		
 	
 		// index
-		indexMenu = Builder.makeMenuItem("index...", true, "index.png");
+		indexMenu = Builder.makeMenuItem("menus.tools.index", true, "index.png");
 		indexMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// PERF: for big samples, it can take a couple
@@ -157,7 +157,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		if(!sample.isSummed())
 		{
 			// Sample is not a sum so add standard 'sum' button
-			JMenuItem sumMenuItem = Builder.makeMenuItem("sum...", true, "sum.png");
+			JMenuItem sumMenuItem = Builder.makeMenuItem("menus.tools.sum", true, "sum.png");
 			sumMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
@@ -169,17 +169,17 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		{
 			// Sample is already a sum so offer to modify or create a version
 			
-			JMenuItem modifySum = Builder.makeMenuItem("modifysumandreplace");
+			JMenuItem modifySum = Builder.makeMenuItem("menus.tools.modifysumandreplace");
 			modifySum.setEnabled(false);
 			
-			JMenuItem modifySumAsVersion = Builder.makeMenuItem("modifysumasversion");
+			JMenuItem modifySumAsVersion = Builder.makeMenuItem("menus.tools.modifysumasversion");
 			modifySumAsVersion.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					new SumCreationDialog(editor, sample);
 				}
 			});
 			
-			JMenu sumSubMenu = Builder.makeMenu("modifysum", "sum.png");
+			JMenu sumSubMenu = Builder.makeMenu("menus.tools.sum", "sum.png");
 			sumSubMenu.add(modifySum);
 			sumSubMenu.add(modifySumAsVersion);
 			add(sumSubMenu);
@@ -188,7 +188,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		
 
 		// redate
-		JMenuItem redate = Builder.makeMenuItem("redate...", true, "redate.png");
+		JMenuItem redate = Builder.makeMenuItem("menus.tools.redate", true, "redate.png");
 		redate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				new RedateDialog(sample, editor).setVisible(true);
@@ -210,7 +210,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 
 		// cross against
 		// HACK: just disable this if the sample isn't saved?
-		JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...", true, "crossdate.png");
+		JMenuItem crossAgainst = Builder.makeMenuItem("menus.tools.crossdate", true, "crossdate.png");
 		crossAgainst.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				Element secondary = new CachedElement(sample); 

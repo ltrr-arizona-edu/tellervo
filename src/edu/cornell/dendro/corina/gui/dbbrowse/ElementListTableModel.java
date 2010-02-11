@@ -22,23 +22,24 @@ import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.ui.I18n;
 
 public class ElementListTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	
 	private ElementList elements;
     private final String[] columnNames = {
-            "Name", 
-            "Version", 
-            "User",
-            "Type", 
-            "Taxon", 
-            "#", 
-            "Mod", 
-            "Begin", 
-            "End", 
-            "n",
-            "Rec"
+            I18n.getText("dbbrowser.name"), 
+            I18n.getText("dbbrowser.version"), 
+            I18n.getText("dbbrowser.user"),
+            I18n.getText("dbbrowser.type"), 
+            I18n.getText("dbbrowser.taxon"), 
+            I18n.getText("dbbrowser.hash"), 
+            I18n.getText("dbbrowser.modified"), 
+            I18n.getText("dbbrowser.begin"), 
+            I18n.getText("dbbrowser.end"), 
+            I18n.getText("dbbrowser.n"),
+            I18n.getText("dbbrowser.rec")
             //"ID" //useful for debugging
         };
     
@@ -145,7 +146,7 @@ public class ElementListTableModel extends AbstractTableModel {
 				if(nTaxa == null || nTaxa < 2 || taxon == null)
 					return taxon;
 			
-				return nTaxa + " taxa of " + taxon;
+				return nTaxa + " "+I18n.getText("dbbrowser.taxaOf") + " " + taxon;
 			}
 			
 			return bs.meta().getTaxon();
