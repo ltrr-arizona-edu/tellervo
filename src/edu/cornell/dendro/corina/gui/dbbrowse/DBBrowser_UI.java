@@ -54,6 +54,9 @@ public class DBBrowser_UI extends javax.swing.JDialog {
 	    
 	    // Hide preview button
 	    btnPreview.setVisible(false);
+
+	    // Make sure components are using I18n
+        internationalizeComponents();
     }
     
 	/** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -61,6 +64,35 @@ public class DBBrowser_UI extends javax.swing.JDialog {
 	    return returnStatus;
 	}
     
+    /**
+     *  Setup I18n for gui components
+     */
+    private void internationalizeComponents()
+    {
+    	this.setTitle(I18n.getText("dbbrowser"));
+    	btnCancel.setText(I18n.getText("general.cancel"));
+    	btnOk.setText(I18n.getText("general.ok"));    
+    	browsePanel.setName(I18n.getText("dbbrowser.browse"));
+    	searchPanel.setName(I18n.getText("dbbrowser.search"));
+    	btnOptions.setText(I18n.getText("dbbrowser.showOptions"));
+    	lblSeriesType.setText(I18n.getText("dbbrowser.seriesType"));
+    	btnSelectAll.setToolTipText(I18n.getText("dbbrowser.selectAll"));
+    	btnSelectNone.setToolTipText(I18n.getText("dbbrowser.selectNone"));
+    	btnInvertSelect.setToolTipText(I18n.getText("dbbrowser.selectInvert"));
+    	btnAdd.setToolTipText(I18n.getText("dbbrowser.addToSelected"));
+    	btnRemove.setToolTipText(I18n.getText("dbbrowser.removeFromSelected"));
+    	browseSearchPane.setTitleAt(0, I18n.getText("general.browse"));
+    	browseSearchPane.setTitleAt(1, I18n.getText("general.search"));
+    	cboSeriesType.setModel(new javax.swing.DefaultComboBoxModel(
+    			new String[]
+    			           { I18n.getText("dbbrowser.all"), 
+    					I18n.getText("dbbrowser.rawOnly"),
+    					I18n.getText("dbbrowser.derivedOnly")}
+    			));
+    	lblSeriesType1.setText(I18n.getText("dbbrowser.authored"));
+    	btnTogByMe.setText(I18n.getText("dbbrowser.byMe"));
+    }
+	
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is

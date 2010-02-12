@@ -53,15 +53,18 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     private void internationlizeComponents()
     {
     	this.setTitle(I18n.getText("admin.usersAndGroups"));
-    	this.chkShowDisabledUsers.setText(I18n.getText("admin.showDisabledAccounts"));
-    	this.chkShowDisabledGroups.setText(I18n.getText("admin.showDisabledGroups"));
-    	this.btnOk.setText(I18n.getText("general.ok"));
-    	this.btnEditUser444.setText(I18n.getText("menus.edit"));
-    	this.btnNewUser.setText(I18n.getText("menus.file.new"));
-    	this.btnDeleteUser.setText(I18n.getText("general.delete"));
-    	this.btnEditGroup.setText(I18n.getText("menus.edit"));
-    	this.btnNewGroup.setText(I18n.getText("menus.file.new"));
-    	this.btnDeleteGroup.setText(I18n.getText("general.delete"));    	
+    	chkShowDisabledUsers.setText(I18n.getText("admin.showDisabledAccounts"));
+    	chkShowDisabledGroups.setText(I18n.getText("admin.showDisabledGroups"));
+    	btnOk.setText(I18n.getText("general.ok"));
+    	btnEditUser444.setText(I18n.getText("menus.edit"));
+    	btnNewUser.setText(I18n.getText("menus.file.new"));
+    	btnDeleteUser.setText(I18n.getText("general.delete"));
+    	btnEditGroup.setText(I18n.getText("menus.edit"));
+    	btnNewGroup.setText(I18n.getText("menus.file.new"));
+    	btnDeleteGroup.setText(I18n.getText("general.delete"));
+    	accountsTabPane.setTitleAt(0, I18n.getText("admin.users"));
+    	accountsTabPane.setTitleAt(1, I18n.getText("admin.groups"));
+    	
     }
     
     /** This method is called from within the constructor to

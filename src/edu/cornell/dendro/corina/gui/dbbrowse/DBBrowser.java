@@ -98,27 +98,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         doInitComponents();
         
         initialize(openMulti);
-        internationalizeComponents();
     }
 
-    /**
-     *  Setup I18n for gui components
-     */
-    private void internationalizeComponents()
-    {
-    	this.setTitle(I18n.getText("dbbrowser"));
-    	btnCancel.setText(I18n.getText("general.cancel"));
-    	btnOk.setText(I18n.getText("general.ok"));    
-    	browsePanel.setName(I18n.getText("dbbrowser.browse"));
-    	searchPanel.setName(I18n.getText("dbbrowser.search"));
-    	btnOptions.setText(I18n.getText("dbbrowser.showOptions"));
-    	lblSeriesType.setText(I18n.getText("dbbrowser.seriesType"));
-    	btnSelectAll.setToolTipText(I18n.getText("dbbrowser.selectAll"));
-    	btnSelectNone.setToolTipText(I18n.getText("dbbrowser.selectNone"));
-    	btnInvertSelect.setToolTipText(I18n.getText("dbbrowser.selectInvert"));
-    	btnAdd.setToolTipText(I18n.getText("dbbrowser.addToSelected"));
-    	btnRemove.setToolTipText(I18n.getText("dbbrowser.removeFromSelected"));
-    }
+
     
     /**
      * Creates new gui as child of a dialog. Convenience constructor for a single 
@@ -228,10 +210,10 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			public void actionPerformed(ActionEvent ev) {
 				if(panelRibbon.isVisible()) {
 					panelRibbon.setVisible(false);
-					btnOptions.setText(I18n.getText("dbbrowser.showoptions"));
+					btnOptions.setText(I18n.getText("dbbrowser.showOptions"));
 				} else {
 					panelRibbon.setVisible(true);
-					btnOptions.setText(I18n.getText("dbbrowser.hideoptions"));
+					btnOptions.setText(I18n.getText("dbbrowser.hideOptions"));
 				}
 				
 			}

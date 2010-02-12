@@ -410,30 +410,30 @@ public class Prefs extends AbstractSubsystem {
 	// TODO: (need left-alignment option on that class, first)
 	private static boolean cantSave(Exception e) {
 		JPanel message = new JPanel(new BorderLayout(0, 8)); // (hgap,vgap)
-		message.add(new JLabel(I18n.getText("prefs_cant_save")),
+		message.add(new JLabel(I18n.getText("error.prefs_cant_save")),
 				BorderLayout.NORTH);
 
 		// -- dialog with optionpane (warning?)
 		JOptionPane optionPane = new JOptionPane(message,
 				JOptionPane.ERROR_MESSAGE);
 		JDialog dialog = optionPane.createDialog(null /* ? */, I18n
-				.getText("prefs_cant_save_title"));
+				.getText("error.prefs_cant_save_title"));
 
 		// -- buttons: cancel, try again.
-		optionPane.setOptions(new String[] { I18n.getText("try_again"),
-				I18n.getText("cancel") });
+		optionPane.setOptions(new String[] { I18n.getText("question.try_again"),
+				I18n.getText("general.cancel") });
 
 		// -- disclosure triangle with scrollable text area: click for
 		// details... (stacktrace)
 		JComponent stackTrace = new JScrollPane(new JTextArea(BugReport
 				.getStackTrace(e), 10, 60));
 		JDisclosureTriangle v = new JDisclosureTriangle(I18n
-				.getText("click_for_details"), stackTrace, false);
+				.getText("bug.click_for_details"), stackTrace, false);
 		message.add(v, BorderLayout.CENTER);
 
 		// -- checkbox: don't warn me again
 		JCheckBox dontWarnCheckbox = new JCheckBox(I18n
-				.getText("dont_warn_again"), false);
+				.getText("bug.dont_warn_again"), false);
 		dontWarnCheckbox.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				dontWarn = !dontWarn;

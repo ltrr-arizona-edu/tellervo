@@ -83,14 +83,14 @@ public class AboutBox extends javax.swing.JDialog {
 	    }
 
         // Build strings
-        String strVersion = MessageFormat.format(I18n.getText("version"),
+        String strVersion = MessageFormat.format(I18n.getText("about.version"),
                 new Object[] { Build.VERSION });
-        String strTimestamp = MessageFormat.format(I18n.getText("timestamp"),
+        String strTimestamp = MessageFormat.format(I18n.getText("about.timestamp"),
                 new Object[] { Build.TIMESTAMP });       
-        String strCopyright = MessageFormat.format(I18n.getText("copyright"),
+        String strCopyright = MessageFormat.format(I18n.getText("about.copyright"),
         		new Object[] { Build.YEAR,
               Build.AUTHOR });
-        String strDescription = I18n.getText("description");
+        String strDescription = I18n.getText("about.description");
         String strLicense = fileResourceToString("Licenses/CorinaLicense.txt");
         
         // Set text in dialog
@@ -100,6 +100,11 @@ public class AboutBox extends javax.swing.JDialog {
         txtDescription.setText(strDescription);        
         txtLicense.setText(strLicense);
         txtLicense.setCaretPosition(0);
+        
+        tabbedPane.setTitleAt(0, I18n.getText("about"));
+        tabbedPane.setTitleAt(1, I18n.getText("about.license"));
+        
+        
     }
     
     public String fileResourceToString(String filename){
