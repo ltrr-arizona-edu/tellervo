@@ -234,7 +234,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		add(sp, BorderLayout.CENTER);
-		add(new Modeline(myTable, mySample), BorderLayout.SOUTH);
+		add(new StatusBar(myTable, mySample), BorderLayout.SOUTH);
 		
 		initPrefs();
 		App.prefs.addPrefsListener(this);

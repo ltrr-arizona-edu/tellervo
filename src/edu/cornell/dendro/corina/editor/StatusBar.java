@@ -53,7 +53,7 @@ import javax.swing.border.EtchedBorder;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public class Modeline extends JPanel
+public class StatusBar extends JPanel
                    implements ListSelectionListener, TableColumnModelListener {
 
 /*
@@ -155,7 +155,7 @@ public class Modeline extends JPanel
     /** Create a new Modeline, for a given data table and sample.
 	@param table data table to watch for selection changes
 	@param sample sample to get data values */
-    public Modeline(JTable table, Sample sample) {
+    public StatusBar(JTable table, Sample sample) {
 	// copy refs
 	this.sample = sample;
 	this.table = table;
@@ -192,7 +192,7 @@ public class Modeline extends JPanel
     }
 
     // here's a modeline for elements panels
-    public Modeline(ElementsPanel ep) {
+    public StatusBar(ElementsPanel ep) {
 	// what it'll do: "%d samples, %d KB", or "%d of %d samples selected, %d of %d KB"
 	// -> it'll need a list selection listener
     }

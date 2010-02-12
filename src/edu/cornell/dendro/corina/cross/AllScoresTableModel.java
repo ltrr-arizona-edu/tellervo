@@ -98,7 +98,7 @@ public class AllScoresTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int col) {
 	    if (col == 0)
-	    	return I18n.getText("year");
+	    	return I18n.getText("general.year");
 	    else
 	    	return Integer.toString(col-1);
 	}

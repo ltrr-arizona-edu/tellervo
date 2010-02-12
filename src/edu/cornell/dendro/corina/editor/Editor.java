@@ -434,7 +434,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED),
 				BorderLayout.CENTER);
-		wjPanel.add(new Modeline(wjTable, sample), BorderLayout.SOUTH);
+		wjPanel.add(new StatusBar(wjTable, sample), BorderLayout.SOUTH);
 	}
 
 	private void initMetaView() {

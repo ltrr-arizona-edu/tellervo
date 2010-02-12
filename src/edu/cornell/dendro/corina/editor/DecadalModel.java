@@ -92,9 +92,9 @@ public class DecadalModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int col) {
 		if (col == 0)
-			return I18n.getText("year");
+			return I18n.getText("editor.year");
 		else if (col == 11)
-			return I18n.getText("number");
+			return I18n.getText("general.hash");
 		else
 			return Integer.toString(col - 1);
 	}

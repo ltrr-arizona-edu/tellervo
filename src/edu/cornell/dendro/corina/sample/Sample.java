@@ -174,7 +174,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		initialize();
 		
 		// initialize empty metadata with defaults?
-		setMeta("title", I18n.getText("Untitled"));
+		setMeta("title", I18n.getText("general.untitled"));
 
 		// store username, if known
 		if (System.getProperty("user.name") != null)

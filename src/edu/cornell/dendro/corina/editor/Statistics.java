@@ -38,7 +38,7 @@ public class Statistics extends JLabel implements SampleListener {
 	// SOLUTION: if an event is fired, and this component is no longer (visible,
 	// packed, ???), remove it as a sample listener.
 
-	setToolTipText(I18n.getText("modeline_tooltip"));
+	setToolTipText(I18n.getText("editor.modeline_tooltip"));
 
 	final JLabel label = this; // ...
 
@@ -93,7 +93,7 @@ public class Statistics extends JLabel implements SampleListener {
 
     private int state = 0; // which stat_*[] is being seen
 
-    private final String NA = I18n.getText("n/a");
+    private final String NA = I18n.getText("editor.na");
 
     // on my old (500MHz) powerbook, doing a compute-all for baillie's
     // 7200-year northern irish oak chronology takes up to 39ms the
@@ -109,7 +109,7 @@ public class Statistics extends JLabel implements SampleListener {
 	stat_values[i++] = (Float.isNaN(m) ? NA : f.format(m));
 
 	// total radius
-	f = new DecimalFormat("0.00 " + I18n.getText("mm"));
+	f = new DecimalFormat("0.00 " + I18n.getText("editor.mm"));
 	float radius = sample.computeRadius() / 100f; // in mm -- UNUSED if sample isIndexed
 	stat_values[i++] = (sample.isIndexed() ? NA : f.format(radius));
 
@@ -133,12 +133,12 @@ public class Statistics extends JLabel implements SampleListener {
     // messy stuff
     //
     private String stat_keys[] = new String[] {
-	"mean_sensitivity",
-	"total_radius",
-	"average_ring_width",
-	"number_of_years",
-	"number_of_rings",
-	"number_of_elements",
+	"statusbar.mean_sensitivity",
+	"statusbar.total_radius",
+	"statusbar.average_ring_width",
+	"statusbar.number_of_years",
+	"statusbar.number_of_rings",
+	"statusbar.number_of_elements",
     };
     private String stat_names[];
     {

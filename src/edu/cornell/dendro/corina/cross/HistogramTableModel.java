@@ -235,8 +235,8 @@ public class HistogramTableModel extends AbstractTableModel {
 	public String getColumnName(int col) {
         switch (col) {
             case 0: return (cross == null) ?  "Name" : cross.getName();
-            case 1: return I18n.getText("quantity");
-            case 2: return I18n.getText("histogram");
+            case 1: return I18n.getText("general.hash");
+            case 2: return I18n.getText("crossdate.histogram");
             default: throw new IllegalArgumentException(); // can't happen
         }
     }
