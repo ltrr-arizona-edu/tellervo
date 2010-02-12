@@ -17,7 +17,7 @@ class GraphViewMenu extends JMenu {
 	private JMenuItem _axisMenu, _gridlinesMenu, _baselinesMenu, _compnamesMenu, _hundredpercentlinesMenu;
 
 	GraphViewMenu(GraphWindow win, GraphActions actions) {			
-		super(I18n.getText("view"));		
+		super(I18n.getText("menus.view"));		
 
 		// start adding the menu items!
 		
@@ -63,7 +63,7 @@ class GraphViewMenu extends JMenu {
 		this.add(squeeze);
 
 		// Spread apart
-		JMenu spread = Builder.makeMenu("baselines_spread");
+		JMenu spread = Builder.makeMenu("graph.baselines_spread");
 		JMenuItem spread_25 = new JMenuItem(actions.spreadB25);		
 		JMenuItem spread_50 = new JMenuItem(actions.spreadB50);
 		JMenuItem spread_100 = new JMenuItem(actions.spreadB100);		
@@ -104,7 +104,7 @@ class GraphViewMenu extends JMenu {
 
 		this.addSeparator();
 
-		JMenu plottype = Builder.makeMenu("plot_type");			
+		JMenu plottype = Builder.makeMenu("graph.plot_type");			
 		////////
 		for(int i = 0; i < actions.plotTypes.length; i++) {
 			JRadioButtonMenuItem sa = new JRadioButtonMenuItem(actions.plotTypes[i]);

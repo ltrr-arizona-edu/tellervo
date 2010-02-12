@@ -106,7 +106,7 @@ public class Polynomial extends IndexFunction implements SolverFunction {
 	
 	@Override
 	public String getI18nTag() {
-		return "polynomial";
+		return "index.polynomial";
 	}
 	
 	@Override

@@ -64,6 +64,7 @@ import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityListHolder;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 
@@ -98,8 +99,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private JButton cancelChangeButton;
 	/** true if combo box is enabled for changing, false otherwise */
 	private boolean changingTop;
-	private static final String CHANGE_STATE = "Change...";
-	private static final String OK_STATE = "Choose";
+	private static final String CHANGE_STATE = I18n.getText("general.change");
+	private static final String OK_STATE = I18n.getText("general.choose");
 	
 	/** The lock/unlock button for making changes to the currently selected entity */
 	private JToggleButton editEntity;
@@ -191,8 +192,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		propertiesTable.setEditable(enabled);
 
 		editEntityText.setFont(editEntityText.getFont().deriveFont(Font.BOLD));
-		editEntityText.setText(enabled ? "Currently editing this " + currentMode.getTitle() 
-				: "Click the lock to edit this " + currentMode.getTitle());
+		editEntityText.setText(enabled ? I18n.getText("metadata.currentlyEditingThis") + " " + currentMode.getTitle() 
+				: I18n.getText("metadata.clickLockToEdit") + " " + currentMode.getTitle());
 		
 		if(enabled) {
 			ITridas currentEntity = currentMode.getEntity(s);
@@ -239,10 +240,10 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		bottombar.setLayout(new BoxLayout(bottombar, BoxLayout.X_AXIS));
 
 		////////// TOP BAR
-		topLabel = new JLabel("Initializing...");
+		topLabel = new JLabel(I18n.getText("general.initializing"));
 		topChooser = new EntityListComboBox();
 		changeButton = new JButton(CHANGE_STATE);
-		cancelChangeButton = new JButton("Revert");
+		cancelChangeButton = new JButton(I18n.getText("general.revert"));
 		topbar.add(topLabel);
 		topbar.add(Box.createHorizontalStrut(6));
 		topbar.add(topChooser);
@@ -310,12 +311,12 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		bottombar.add(editEntity);
 		
-		editEntityText = new JLabel("initializing...");
+		editEntityText = new JLabel(I18n.getText("general.initializing").toLowerCase());
 		editEntityText.setLabelFor(editEntity);
 		bottombar.add(editEntityText);
 	
-		editEntitySave = new JButton("Save changes");
-		editEntityCancel = new JButton("Cancel");
+		editEntitySave = new JButton(I18n.getText("general.saveChanges"));
+		editEntityCancel = new JButton(I18n.getText("general.cancel"));
 		
 		// don't let an errant enter key fire these buttons!
 		editEntitySave.setDefaultCapable(false);
@@ -363,9 +364,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		populateComboAndSelect(true);
 		
 		if(topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM)
-			propertiesTable.setPreviewText("CHOOSE");
+			propertiesTable.setPreviewText(I18n.getText("general.choose").toUpperCase());
 		else
-			propertiesTable.setPreviewText("PREVIEW");
+			propertiesTable.setPreviewText(I18n.getText("general.preview").toUpperCase());
 		propertiesTable.setPreviewing(true);
 		
 		// we're starting to change...
@@ -390,10 +391,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				!(temporarySelectingEntity.equals(currentMode.getEntity(s))) &&
 				temporarySelectingEntity.getTitle().contains("(")) {
 			
-			JOptionPane.showMessageDialog(this, "Sorry, you may not choose a legacy entity." +
-					"\nIf you don't understand what this means, please speak to someone\n" +
-					"before creating a new entity.", 
-					"Legacy problem", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, I18n.getText("error.legacyEntityProblem"), 
+					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 			
 			return;
 		}
@@ -486,9 +485,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			return true;
 		
 		int ret = JOptionPane.showConfirmDialog(this, 
-				"Any changes to your selection will be lost.\nTo save, you must press the choose button.\n" +
-				"Are you sure you wish to continue with this action?",
-				"The new selection will be lost.", 
+				I18n.getText("question.confirmChangeForm"), 
+				I18n.getText("question.continue"), 
 				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 		
 		return (ret == JOptionPane.YES_OPTION);
@@ -502,9 +500,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			return true;
 		
 		int ret = JOptionPane.showConfirmDialog(this, 
-				"Any changes you have made will be lost.\nTo save, you must press the save button.\n" +
-				"Are you sure you wish to continue with this action?",
-				"Changes will be lost!", 
+				I18n.getText("question.confirmChangeForm"), 
+				I18n.getText("question.continue"), 
 				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 		
 		return (ret == JOptionPane.YES_OPTION);
@@ -563,9 +560,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			
 			// on failure, just return
 			if(!dialog.isSuccessful()) {
-				JOptionPane.showMessageDialog(this, "There was an error while saving your changes.\r\n" +
-						"Error: " + dialog.getFailException().getLocalizedMessage(),
-						"Error saving", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, I18n.getText("error.savingChanges") + "\r\n" +
+						I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
+						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			
@@ -803,19 +800,16 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			if(temporarySelectingEntity.getTitle().contains("(") &&
 					!(temporarySelectingEntity instanceof TridasObject)) {
 				if(propertiesTable.isPreviewing())
-					propertiesTable.setPreviewText("LEGACY");				
+					propertiesTable.setPreviewText(I18n.getText("general.legacy"));				
 			}
 			else {
 				// this part isn't a hack...
 				if(propertiesTable.isPreviewing())
-					propertiesTable.setPreviewText("PREVIEW");
+					propertiesTable.setPreviewText(I18n.getText("general.preview"));
 			}				
 			//
 			// END HACK
 			//
-						
-			
-			
 			
 			// start loading the list of children right away
 			if(loadChildren && currentMode != EditType.RADIUS)
@@ -962,7 +956,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		if(currentMode == EditType.DERIVED_SERIES || currentMode == EditType.MEASUREMENT_SERIES) {
 			topChooser.setVisible(false);
 			changeButton.setVisible(false);
-			topLabel.setText("Metadata for " + currentMode.getTitle() + " " + s.getMetaString(Metadata.TITLE));
+			topLabel.setText(I18n.getText("metadata.for")+ " " + currentMode.getTitle() + " " + s.getMetaString(Metadata.TITLE));
 			topLabel.setLabelFor(null);
 		}
 		else {
@@ -991,7 +985,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				break;
 			}
 			
-			topLabel.setText("Metadata for " + currentMode.getTitle() + prefix);
+			topLabel.setText(I18n.getText("metadata.for")+ " " + currentMode.getTitle() + prefix);
 			topLabel.setLabelFor(topChooser);
 			
 			changeButton.setVisible(true);
@@ -1099,13 +1093,13 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 */
 
 	protected static enum EditType {
-		OBJECT(TridasObject.class, "Object", "object.png", Metadata.OBJECT),
-		ELEMENT(TridasElement.class, "Element", "element.png", Metadata.ELEMENT),
-		SAMPLE(TridasSample.class, "Sample", "sample.png", Metadata.SAMPLE),
-		RADIUS(TridasRadius.class, "Radius", "radius.png", Metadata.RADIUS),
-		MEASUREMENT_SERIES(TridasMeasurementSeries.class, "Series", "measurementseries.png", null),
-		DERIVED_SERIES(TridasDerivedSeries.class, "Derived Series", "derivedseries.png", null),
-		BOX(WSIBox.class, "Box", "box.png", Metadata.BOX);
+		OBJECT(TridasObject.class, I18n.getText("tridas.object"), "object.png", Metadata.OBJECT),
+		ELEMENT(TridasElement.class, I18n.getText("tridas.element"), "element.png", Metadata.ELEMENT),
+		SAMPLE(TridasSample.class, I18n.getText("tridas.sample"), "sample.png", Metadata.SAMPLE),
+		RADIUS(TridasRadius.class, I18n.getText("tridas.radius"), "radius.png", Metadata.RADIUS),
+		MEASUREMENT_SERIES(TridasMeasurementSeries.class, I18n.getText("tridas.measurementSeries"), "measurementseries.png", null),
+		DERIVED_SERIES(TridasDerivedSeries.class, I18n.getText("tridas.derivedSeries"), "derivedseries.png", null),
+		BOX(WSIBox.class, I18n.getText("general.box"), "box.png", Metadata.BOX);
 		
 		
 		private Class<? extends ITridas> type;

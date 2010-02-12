@@ -276,10 +276,10 @@ public class SigScoresTableModel extends AbstractTableModel {
 	public String getColumnName(int col) {
 		switch(col) {
 		case 0:
-			return I18n.getText("range");
+			return I18n.getText("crossdate.range");
 			
 		case 1:
-			return I18n.getText("overlap");
+			return I18n.getText("crossdate.overlap");
 			
 		default:
 			return columns.get(col - 2).heading;

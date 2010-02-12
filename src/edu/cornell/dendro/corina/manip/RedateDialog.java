@@ -23,6 +23,7 @@ package edu.cornell.dendro.corina.manip;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 import javax.swing.BorderFactory;
@@ -109,7 +110,7 @@ public class RedateDialog extends JDialog {
 				range = range.redateEndTo(new Year(value));
 				startField.setText(range.getStart().toString());
 			} catch (NumberFormatException nfe) {
-				startField.setText(I18n.getText("bad_year"));
+				startField.setText(I18n.getText("error"));
 			}
 
 			// re-enable startListener
@@ -145,7 +146,7 @@ public class RedateDialog extends JDialog {
 				range = range.redateStartTo(new Year(value));
 				endField.setText(range.getEnd().toString());
 			} catch (NumberFormatException nfe) {
-				endField.setText(I18n.getText("bad_year"));
+				endField.setText(I18n.getText("error"));
 			}
 
 			// re-enable endListener
@@ -287,7 +288,7 @@ public class RedateDialog extends JDialog {
 				return true;
 			}
 		} catch (IOException ioe) {
-			Alert.error("Could not create redate", "Error: " + ioe.toString());
+			Alert.error(I18n.getText("error.couldNotRedate"), I18n.getText("error") + ": " + ioe.toString());
 		}
 		
 		return false;
@@ -313,14 +314,13 @@ public class RedateDialog extends JDialog {
 		// if it's not derived and has no children, we can truncate in place
 		if (!sample.getSampleType().isDerived()
 				&& (!sample.hasMeta(Metadata.CHILD_COUNT) || sample.getMeta(Metadata.CHILD_COUNT, Integer.class) == 0)) {
-			String message = "This series has no dependents. You can either\n" +
-			                 "choose to redate the series in place, modifying\n" +
-			                 "the data, or you can derive a new series, leaving\n" +
-			                 "these measurements untouched (the default).\n\n" +
-			                 "Which would you like to do?";
-			String options[] = { "Derive a new series", "Redate in place", "Cancel" };
+
 			
-			int ret = JOptionPane.showOptionDialog(this, message, "Redate in place?", JOptionPane.DEFAULT_OPTION, 
+			String message = MessageFormat.format(I18n.getText("question.doInPlace"),
+					new Object[] { I18n.getText("menus.tools.redate").toLowerCase() });
+			String options[] = { I18n.getText("question.deriveNewSeries"), I18n.getText("question.redateInPlace"), I18n.getText("general.cancel")};
+			
+			int ret = JOptionPane.showOptionDialog(this, message, I18n.getText("question.redateInPlace")+"?", JOptionPane.DEFAULT_OPTION, 
 					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 			
 			switch(ret) {
@@ -342,7 +342,7 @@ public class RedateDialog extends JDialog {
 			return performCorinaWsiRedate(newDating);
 		}
 		
-		Alert.error("Can't redate", "I don't know how to redate this form of series.");
+		Alert.error(I18n.getText("error"), I18n.getText("error.couldNotRedate"));
 		
 		return false;
 	}
@@ -374,7 +374,7 @@ public class RedateDialog extends JDialog {
 	
 	private void setup(Range startRange) {
 		// set title
-		setTitle(I18n.getText("redate"));
+		setTitle(I18n.getText("menus.tools.redate"));
 
 		// kill me when i'm gone
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -403,8 +403,8 @@ public class RedateDialog extends JDialog {
 		p.add(Box.createVerticalStrut(8));
 		
 		// cancel, ok
-		JButton cancel = Builder.makeButton("cancel");
-		final JButton ok = Builder.makeButton("ok");
+		JButton cancel = Builder.makeButton("general.cancel");
+		final JButton ok = Builder.makeButton("general.ok");
 
 		// (listen for cancel, ok)
 		ActionListener buttonListener = new ActionListener() {
@@ -441,9 +441,9 @@ public class RedateDialog extends JDialog {
 		JLabel lblDating = new JLabel();
 		cboDatingType = getDatingTypeComboBox();
 
-		lblNewRange.setText(I18n.getText("new_range") + ":");
+		lblNewRange.setText(I18n.getText("redate.new_range") + ":");
 
-		lblTo.setText(I18n.getText("to"));
+		lblTo.setText(I18n.getText("general.to"));
 
 		startListener = new StartListener();
 		startField.setText(range.getStart().toString());
@@ -453,7 +453,7 @@ public class RedateDialog extends JDialog {
 		endField.setText(range.getEnd().toString());
 		endField.getDocument().addDocumentListener(endListener);
 
-		lblDating.setText(I18n.getText("dating") + ":");
+		lblDating.setText(I18n.getText("general.dating") + ":");
 
 		GroupLayout layout = new GroupLayout(p);
 		p.setLayout(layout);

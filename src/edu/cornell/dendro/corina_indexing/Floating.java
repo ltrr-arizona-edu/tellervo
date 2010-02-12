@@ -66,7 +66,7 @@ public class Floating extends IndexFunction {
 
 	@Override
 	public String getI18nTag() {
-		return "floating";
+		return "index.floating";
 	}
 	
 	@Override

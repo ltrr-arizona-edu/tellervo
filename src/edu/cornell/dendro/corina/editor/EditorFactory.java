@@ -5,6 +5,7 @@ package edu.cornell.dendro.corina.editor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +36,7 @@ import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.support.XMLDateUtils;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -229,17 +231,19 @@ public class EditorFactory {
 		 * @return true if we succeeded in loading (or just aborted), false otherwise
 		 */
 		public boolean loadFromBarcode(String barcodeText) {
-			String reason = "No error";
+			String reason = I18n.getText("error.noError");
 			
 			if(barcodeText.length() == 0) {
-				reason = "No barcode entered";
+				reason = I18n.getText("error.noBarcode");
 			}
 			else {
 				try {
 					LabBarcode.DecodedBarcode barcode = LabBarcode.decode(barcodeText);
 					
 					if(barcode.uuidType != LabBarcode.Type.SAMPLE) {
-						reason = "You may only use a SAMPLE barcode (not " + barcode.uuidType + ")";
+						reason = MessageFormat.format(I18n.getText("error.incorrectBarcodeType"),
+								new Object[] { I18n.getText("tridas.sample") });
+						//reason = "You may only use a SAMPLE barcode (not " + barcode.uuidType + ")";
 					}
 					else {
 						// yay, we have a valid barcode and barcode type!
@@ -251,7 +255,7 @@ public class EditorFactory {
 							success = true;
 						}
 						else
-							reason = "Unable to load associated data";
+							reason = I18n.getText("error.loadingData");
 					}
 					
 				} catch (IllegalArgumentException iae) {
@@ -260,8 +264,9 @@ public class EditorFactory {
 			}
 			
 			if(!success) {
-				int result = JOptionPane.showConfirmDialog(dialog, reason + ".\nWould you " +
-						"like to try to scan a new barcode?", "Invalid barcode", 
+				int result = JOptionPane.showConfirmDialog(dialog, reason + ".\n" + 
+						I18n.getText("question.scanNewBarcode"), 
+						I18n.getText("error.invalidBarcode"), 
 						JOptionPane.YES_NO_CANCEL_OPTION);
 				
 				switch(result) {
@@ -288,11 +293,12 @@ public class EditorFactory {
 	
 	public static void newSeries() {
 		// should we get this elsewhere?
-		String title = "[New series]";
+		String title = "["+I18n.getText("editor.newSeries")+ "]";
 
 		final JDialog dialog = new JDialog();
 		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
 		
+		dialog.setTitle(I18n.getText("barcode"));
 		dialog.setContentPane(barcodeUI);
 		dialog.setResizable(false);
 		dialog.pack();
@@ -331,7 +337,7 @@ public class EditorFactory {
 		Sample sample = new Sample(series);
 
 		// default title
-		sample.setMeta(Metadata.TITLE, "New entry: " + title);
+		sample.setMeta(Metadata.TITLE, I18n.getText("general.newEntry")+": " + title);
 
 		// attach anything we loaded in the above dialog
 		result.popupateCorinaSample(sample);

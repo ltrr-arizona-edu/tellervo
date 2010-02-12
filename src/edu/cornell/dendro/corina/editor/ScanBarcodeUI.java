@@ -12,6 +12,7 @@ import edu.cornell.dendro.corina.ui.Builder;
  *
  * Created on August 10, 2009, 4:41 PM
  */
+import edu.cornell.dendro.corina.ui.I18n;
 
 
 
@@ -26,6 +27,7 @@ public class ScanBarcodeUI extends javax.swing.JPanel {
     /** Creates new form ScanBarcodeUI */
     public ScanBarcodeUI(final JDialog parent) {
         initComponents();
+        internationalizeComponents();
         jLabel2.setIcon(Builder.getIcon("barcode.png", 128));
         
         result = new BarcodeDialogResult(parent);
@@ -57,6 +59,14 @@ public class ScanBarcodeUI extends javax.swing.JPanel {
     public BarcodeDialogResult getResult()
     {
     	return result;
+    }
+    
+    private void internationalizeComponents()
+    {
+    	btnManual.setText(I18n.getText("barcode.enterManually"));
+        chkAlwaysManual.setText(I18n.getText("barcode.alwaysEnterManually"));
+        jLabel1.setText(I18n.getText("barcode.instructions"));
+    	
     }
     
     /** This method is called from within the constructor to

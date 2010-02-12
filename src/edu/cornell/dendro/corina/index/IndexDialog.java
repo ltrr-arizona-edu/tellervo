@@ -231,7 +231,7 @@ public class IndexDialog extends JDialog {
 	private boolean applyIndex(Index index) {
 		SampleLoader loader = sample.getLoader();
 		if(loader == null) {
-			new Bug(new Exception("Attempting to apply an index to a sample without a loader. Shouldn't be possible!"));
+			new Bug(new Exception(I18n.getText("error.indexingWithoutLoader")));
 			return false;
 		}
 		
@@ -420,7 +420,7 @@ public class IndexDialog extends JDialog {
 	private JComponent makeLabel() {
 		JPanel p = new JPanel();
 		p.setLayout(new GridLayout(1,1));
-		JLabel l = new JLabel(I18n.getText("index.choose"));
+		JLabel l = new JLabel(I18n.getText("index.choose")+":");
 		//l.setAlignmentX(LEFT_ALIGNMENT);
 		p.add(l);
 		return p;

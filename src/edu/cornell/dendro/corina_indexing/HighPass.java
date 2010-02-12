@@ -105,7 +105,7 @@ public class HighPass extends IndexFunction {
 	
 	@Override
 	public String getI18nTag() {
-		return "high_pass";
+		return "index.high_pass";
 	}
 	
 	@Override

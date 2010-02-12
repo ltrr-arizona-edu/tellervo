@@ -69,6 +69,7 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ColorUtils;
 
 @SuppressWarnings("serial")
@@ -87,7 +88,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	private final GraphInfo gInfo;
 	private final GraphManager manager;
 	
-	private JPopupMenu popup = new JPopupMenu("Save");
+	private JPopupMenu popup = new JPopupMenu(I18n.getText("menus.file.save"));
 	
 	private Font graphNamesFont = new Font("Dialog", Font.PLAIN, 15);
 	private Font tickFont = new Font("Dialog", Font.PLAIN, 11);	
@@ -97,7 +98,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	/** The plot agent used to obtain the plotter to plot the graphs */
 	private PlotAgent plotAgent;
 	
-	private String emptyGraphText = "Nothing to graph";
+	private String emptyGraphText = I18n.getText("error.nothingToGraph");
 	
 	// compute the initial range of the year-axis
 	// (union of all graph ranges)

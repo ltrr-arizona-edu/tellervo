@@ -51,6 +51,9 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     	
     	// Hide ribbon 
 	    panelRibbon.setVisible(false);
+	    
+	    // Hide preview button
+	    btnPreview.setVisible(false);
     }
     
 	/** @return the return status of this dialog - one of RET_OK or RET_CANCEL */
@@ -91,6 +94,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         btnSelectAll = new javax.swing.JButton();
         btnSelectNone = new javax.swing.JButton();
         btnInvertSelect = new javax.swing.JButton();
+        btnPreview = new javax.swing.JButton();
 
         jButton7.setText("jButton7");
 
@@ -108,7 +112,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
             panelBottomButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelBottomButtonsLayout.createSequentialGroup()
                 .add(btnOptions)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 471, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 499, Short.MAX_VALUE)
                 .add(btnCancel)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnOk, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 75, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -158,7 +162,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
             .add(panelRibbonLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(btnTogMostRecent)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 406, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 434, Short.MAX_VALUE)
                 .add(panelRibbonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, lblSeriesType1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, lblSeriesType, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE))
@@ -259,6 +263,8 @@ public class DBBrowser_UI extends javax.swing.JDialog {
 
         btnInvertSelect.setToolTipText("Invert selection");
 
+        btnPreview.setToolTipText("Invert selection");
+
         org.jdesktop.layout.GroupLayout extraButtonPanelLayout = new org.jdesktop.layout.GroupLayout(extraButtonPanel);
         extraButtonPanel.setLayout(extraButtonPanelLayout);
         extraButtonPanelLayout.setHorizontalGroup(
@@ -266,6 +272,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
             .add(btnInvertSelect, 0, 0, Short.MAX_VALUE)
             .add(btnSelectNone, 0, 0, Short.MAX_VALUE)
             .add(btnSelectAll, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 50, Short.MAX_VALUE)
+            .add(btnPreview, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 50, Short.MAX_VALUE)
         );
         extraButtonPanelLayout.setVerticalGroup(
             extraButtonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -275,7 +282,9 @@ public class DBBrowser_UI extends javax.swing.JDialog {
                 .add(btnSelectNone)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnInvertSelect)
-                .addContainerGap(278, Short.MAX_VALUE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(btnPreview)
+                .addContainerGap(243, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout mainPanelLayout = new org.jdesktop.layout.GroupLayout(mainPanel);
@@ -310,7 +319,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(mainPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .add(panelRibbon, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 779, Short.MAX_VALUE)
+            .add(panelRibbon, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 807, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -358,6 +367,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     protected javax.swing.JButton btnInvertSelect;
     protected javax.swing.JButton btnOk;
     protected javax.swing.JButton btnOptions;
+    protected javax.swing.JButton btnPreview;
     protected javax.swing.JButton btnSelectAll;
     protected javax.swing.JButton btnSelectNone;
     protected javax.swing.JToggleButton btnTogByMe;

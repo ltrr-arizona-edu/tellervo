@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.I18n;
 
 
 /*
@@ -25,6 +26,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     /** Creates new form Ui_CrossdatePanel */
     public Ui_CrossdatePanel() {
         initComponents();
+        internationalizeComponents();
                
         this.cboViewType.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -70,6 +72,26 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     	
     }
     
+    private void internationalizeComponents()
+    {
+    	this.lblPrimary.setText(I18n.getText("crossdate.primarySeries")+":");
+    	this.lblSecondary.setText(I18n.getText("crossdate.referenceSeries")+":");
+    	this.btnAddRemoveSeries.setText(I18n.getText("crossdate.addRemoveSeries"));
+    	this.btnResetPosition.setText(I18n.getText("crossdate.resetPosition"));
+    	this.lblStat.setText(I18n.getText("crossdate.preferredStat")+":");
+    	this.btnCancel.setText(I18n.getText("general.cancel"));
+    	this.btnOk.setText(I18n.getText("crossdate.applyCrossdate"));
+    	this.lblViewAs.setText(I18n.getText("crossdate.viewAs")+":");
+    	this.lblMatchType.setText(I18n.getText("crossdate.matchType")+":");
+    	this.lblViewType.setText(I18n.getText("crossdate.viewAs")+":");
+    	cboViewType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { I18n.getText("crossdate.sigScoresOnly"), I18n.getText("crossdate.allScores"), I18n.getText("crossdate.histogramOfScores") }));
+        cboMatchType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { I18n.getText("crossdate.scoresInCurrentChronologicalPosition"), I18n.getText("crossdate.bestScoreInAnyPosition") }));
+        cboViewAs.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Table", "Map" }));
+    	this.paneStatistics.setTitleAt(0, I18n.getText("crossdate.1-to-1"));
+    	this.paneStatistics.setTitleAt(1, I18n.getText("crossdate.1-to-n"));
+    	this.paneStatistics.setTitleAt(2, I18n.getText("crossdate.n-to-n"));
+    	
+    }
     
     /** This method is called from within the constructor to
      * initialize the form.

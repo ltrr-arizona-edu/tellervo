@@ -61,22 +61,22 @@ public class GraphActions {
 	protected ToggleableAction showComponentNames;
 	
 	private void createGraphActions() throws IntrospectionException {
-		showVerticalAxis = new ToggleableBoundAction<GraphInfo>("graph.vert_hide", "graph.vert_show", 
+		showVerticalAxis = new ToggleableBoundAction<GraphInfo>("graph.verticalAxis", "graph.verticalAxis", 
 				info, GraphInfo.class, GraphInfo.SHOW_VERT_AXIS_PROPERTY, "vaxisshow.png", 
 				Builder.ICONS, 22);
 
-		showGridlines = new ToggleableBoundAction<GraphInfo>("graph.grid_hide", "graph.grid_show",
+		showGridlines = new ToggleableBoundAction<GraphInfo>("graph.grid", "graph.grid",
 				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_PAPER_PROPERTY, "showgrid.png", 
 				Builder.ICONS, 22);
 
-		showBaselines = new ToggleableBoundAction<GraphInfo>("graph.base_hide", "graph.base_show", 
+		showBaselines = new ToggleableBoundAction<GraphInfo>("graph.baselines", "graph.baselines", 
 				info, GraphInfo.class, GraphInfo.SHOW_BASELINES_PROPERTY);
 
-		showComponentNames = new ToggleableBoundAction<GraphInfo>("graph.compn_hide", "graph.compn_show",
+		showComponentNames = new ToggleableBoundAction<GraphInfo>("graph.labels", "graph.labels",
 				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_NAMES_PROPERTY, "label.png", 
 				Builder.ICONS, 22);
 
-		showHundredPercentLines = new ToggleableBoundAction<GraphInfo>("graph.hperc_hide", "graph.hperc_show", 
+		showHundredPercentLines = new ToggleableBoundAction<GraphInfo>("graph.100percentLines", "graph.100percentLines", 
 				info, GraphInfo.class, GraphInfo.SHOW_HUNDREDPERCENTLINES_PROPERTY);
 	}
 	

@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 import javax.swing.BorderFactory;
@@ -17,11 +18,13 @@ import javax.swing.text.JTextComponent;
 
 import org.tridas.interfaces.ITridasDerivedSeries;
 
+import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.support.VersionUtil;
+import edu.cornell.dendro.corina.ui.I18n;
 
 public class NameVersionJustificationPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -61,7 +64,7 @@ public class NameVersionJustificationPanel extends JPanel {
 		p.setLayout(new GridLayout(2, 2, 5, 5));
 
 		// Create name components
-		JLabel l = new JLabel("Series code:  ");
+		JLabel l = new JLabel(I18n.getText("general.seriesCode")+":");
 
 		JLabel prefix = new JLabel("C-XXX-X-X-X-");
 
@@ -86,7 +89,7 @@ public class NameVersionJustificationPanel extends JPanel {
 		titlePanel.add(seriesName, BorderLayout.CENTER);
 
 		// Create version components
-		JLabel l2 = new JLabel("Version:");
+		JLabel l2 = new JLabel(I18n.getText("general.version")+":");
 		JTextField version = new JTextField("");
 		version.setColumns(20);
 		versionName = version;
@@ -121,7 +124,7 @@ public class NameVersionJustificationPanel extends JPanel {
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		
-		JLabel l = new JLabel("Justification:");
+		JLabel l = new JLabel(I18n.getText("general.justification")+":");
 		JTextArea text = new JTextArea("", 2, 0);
 		text.setLineWrap(true);
 		text.setWrapStyleWord(true);
@@ -192,19 +195,19 @@ public class NameVersionJustificationPanel extends JPanel {
 	 */
 	public boolean testAndComplainRequired(EnumSet<Fields> valuesRequired) {
 		if(valuesRequired.contains(Fields.NAME) && !hasSeriesName()) {
-			complain("series name");
+			complain(I18n.getText("general.seriesCode"));
 			seriesName.requestFocusInWindow();
 			return false;
 		}
 
 		if(valuesRequired.contains(Fields.VERSION) && !hasVersion()) {
-			complain("version");
+			complain(I18n.getText("general.version"));
 			versionName.requestFocusInWindow();
 			return false;
 		}
 
 		if(valuesRequired.contains(Fields.JUSTIFICATION) && !hasJustification()) {
-			complain("justification");
+			complain(I18n.getText("general.justification"));
 			justification.requestFocusInWindow();
 			return false;
 		}
@@ -213,7 +216,10 @@ public class NameVersionJustificationPanel extends JPanel {
 	}
 	
 	private void complain(String name) {
-		JOptionPane.showMessageDialog(this, "The '" + name + "' field is required.", 
-				"Information missing", JOptionPane.ERROR_MESSAGE);
+		
+        String error = MessageFormat.format(I18n.getText("error.fieldMissing"), new Object[] { name.toLowerCase() });
+		
+		JOptionPane.showMessageDialog(this, error, 
+				I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 	}
 }

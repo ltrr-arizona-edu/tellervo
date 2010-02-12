@@ -25,6 +25,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
@@ -112,6 +113,11 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	searchPanel.setName(I18n.getText("dbbrowser.search"));
     	btnOptions.setText(I18n.getText("dbbrowser.showOptions"));
     	lblSeriesType.setText(I18n.getText("dbbrowser.seriesType"));
+    	btnSelectAll.setToolTipText(I18n.getText("dbbrowser.selectAll"));
+    	btnSelectNone.setToolTipText(I18n.getText("dbbrowser.selectNone"));
+    	btnInvertSelect.setToolTipText(I18n.getText("dbbrowser.selectInvert"));
+    	btnAdd.setToolTipText(I18n.getText("dbbrowser.addToSelected"));
+    	btnRemove.setToolTipText(I18n.getText("dbbrowser.removeFromSelected"));
     }
     
     /**
@@ -1000,6 +1006,10 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
      */
     public JPanel getExtraButtonPanel() {
     	return extraButtonPanel;
+    }
+    
+    public JButton getPreviewButton(){
+    	return btnPreview;
     }
 
 	public boolean isElementDisabled(Element e) {

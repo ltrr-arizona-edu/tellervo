@@ -32,6 +32,7 @@ import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.PureStringWriter;
 import edu.cornell.dendro.corina.util.TextClipboard;
@@ -100,6 +101,19 @@ public class ExportUI extends javax.swing.JPanel{
     	
         initComponents();
         setupGui();
+        internationalizeComponents();
+    }
+    
+    private void internationalizeComponents()    
+    {
+    	lblWhat.setText(I18n.getText("export.what")+":");
+    	lblHow.setText(I18n.getText("export.format")+":");
+    	lblEncoding.setText(I18n.getText("export.encoding")+":");
+    	lblOutput.setText(I18n.getText("export.outputFolder")+":");
+    	btnHelp.setText(I18n.getText("menus.help"));
+    	btnBrowse.setText(I18n.getText("general.browse"));
+    	btnCancel.setText(I18n.getText("general.cancel"));
+    	btnOK.setText(I18n.getText("general.ok"));
     }
     
     private void setupGui()
@@ -159,7 +173,7 @@ public class ExportUI extends javax.swing.JPanel{
 				{
 					// ... if so choose directory not file
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);	
-					fc.setDialogTitle("Select a folder");
+					fc.setDialogTitle(I18n.getText("export.selectAFolder"));
 				}
 				else
 				{
@@ -267,9 +281,9 @@ public class ExportUI extends javax.swing.JPanel{
     	else
     	{
 	    	String whatOptions[] = new String[] {
-				"Just this series",
-				//"This series and its associated raw measurement series", 
-				//"This series and all associated series", 
+				I18n.getText("export.justThisSeries"),
+				//I18n.getText("export.thisSeriesAndRaws"),
+				//I18n.getText("export.thisSeriesAndAll"),
 				};
 			int n = whatOptions.length;
 			for (int i = 0; i < n; i++) 
@@ -291,12 +305,12 @@ public class ExportUI extends javax.swing.JPanel{
     {
     	if(packed)
     	{
-    		lblOutput.setText("Output file:");
+    		lblOutput.setText(I18n.getText("export.outputFile"));
     		txtOutput.setText("");
     	}
     	else
     	{
-    		lblOutput.setText("Output folder:");
+    		lblOutput.setText(I18n.getText("export.outputFolder"));
     		txtOutput.setText("");
     	}
     }

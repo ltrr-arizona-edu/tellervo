@@ -389,6 +389,7 @@
                   <Component id="btnInvertSelect" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
                   <Component id="btnSelectNone" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
                   <Component id="btnSelectAll" alignment="0" pref="50" max="32767" attributes="1"/>
+                  <Component id="btnPreview" alignment="0" pref="50" max="32767" attributes="1"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -399,7 +400,9 @@
                       <Component id="btnSelectNone" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnInvertSelect" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="278" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="btnPreview" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="243" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -419,6 +422,11 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="btnInvertSelect">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="Invert selection"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnPreview">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Invert selection"/>
               </Properties>

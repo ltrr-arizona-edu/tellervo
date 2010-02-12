@@ -23,6 +23,7 @@ import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.labels.ui.TridasListCellRenderer;
@@ -67,7 +68,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
                 });
         
                 dialog.setupGui();
-            
+                dialog.internationalizeComponents();
                 dialog.pack();
                 dialog.txtBarcode.requestFocusInWindow();
                 dialog.setLocationRelativeTo(null);
@@ -77,6 +78,12 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         });
     }
 
+    private void internationalizeComponents()
+    {
+    	
+    
+    }
+    
     /**
      * Setup the GUI.  Called from showDialog()
      */

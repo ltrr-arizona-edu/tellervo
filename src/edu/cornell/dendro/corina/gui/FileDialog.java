@@ -102,7 +102,7 @@ public class FileDialog {
 		public ExtensionFilter(String tla, String name) {
 			this.tla = tla.toLowerCase();
 			this.TLA = tla.toUpperCase();
-			this.name = name + " (*." + this.TLA + ")";
+			this.name = name + " (*." + this.tla + ")";
 		}
 
 		/**
@@ -135,14 +135,12 @@ public class FileDialog {
 	/**
 	 * The default list of filters to use, as a list of extensions.
 	 */
-	public static String FILTERS[] = new String[] { "raw", "sum", "rec", "ind",
-			"cln", "trn", };
+	public static String FILTERS[] = new String[] { "fh", "m", "txt", "d", "rwl", "tuc"};
 
 	// add all default filters to this target, and then reset to default (*.*)
 	private static void addFilters(JFileChooser f) {
 		for (int i = 0; i < FILTERS.length; i++)
-			f.addChoosableFileFilter(new ExtensionFilter(FILTERS[i], I18n
-					.getText("." + FILTERS[i])));
+			f.addChoosableFileFilter(new ExtensionFilter(FILTERS[i], I18n.getText("format.extentions."+ FILTERS[i])));
 		// REFACTOR: should only need to pass FILTERS[i] to constructor here
 		f.setFileFilter(f.getAcceptAllFileFilter());
 	}

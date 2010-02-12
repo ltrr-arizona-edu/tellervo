@@ -110,7 +110,7 @@ public class TScore extends RValue {
 	/** Return a prettier name for this cross: "T-Score".
 	 @return the name of this cross, "T-Score" */
 	public String getName() {
-		return I18n.getText("tscore");
+		return I18n.getText("statistics.tscore");
 	}
 
 	/** A format string for T-scores.

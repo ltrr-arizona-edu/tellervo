@@ -9,6 +9,12 @@ import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.ui.I18n;
 
+/**
+ * Simple model for displaying indexing algorithms and their statistical fits
+ * 
+ * @author peterbrewer
+ *
+ */
 public class IndexTableModel extends AbstractTableModel {
 	// formatting for decimals
 	public static final String CHI2_FORMAT = "#,##0.0";
@@ -30,7 +36,7 @@ public class IndexTableModel extends AbstractTableModel {
 	public String getColumnName(int col) {
 		switch (col) {
 		case 0:
-			return I18n.getText("algorithm");
+			return I18n.getText("index.algorithm");
 		case 1:
 			return "\u03C7\u00B2"; // should be "Chi\overline^2" =
 									// \u03C7\u0304\u00B2

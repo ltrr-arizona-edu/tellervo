@@ -67,7 +67,7 @@ public class Trend extends Cross {
     }
 
 	public String getName() {
-	return I18n.getText("trend");
+	return I18n.getText("statistics.trend");
     }
 
 	public String getFormat() {

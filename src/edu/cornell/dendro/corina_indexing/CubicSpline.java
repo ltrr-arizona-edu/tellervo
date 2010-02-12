@@ -215,7 +215,7 @@ public class CubicSpline extends IndexFunction {
 
 	@Override
 	public String getI18nTag() {
-		return "cubic_spline";
+		return "index.cubic_spline";
 	}
 
 	@Override

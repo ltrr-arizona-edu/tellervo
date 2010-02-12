@@ -72,7 +72,7 @@ public class Exponential extends IndexFunction implements SolverFunction {
 
 	@Override
 	public String getI18nTag() {
-		return "exponential";
+		return "index.exponential";
 	}
 	
 	@Override

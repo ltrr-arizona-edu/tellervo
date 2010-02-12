@@ -70,7 +70,7 @@ public class Horizontal extends IndexFunction {
 	
 	@Override
 	public String getI18nTag() {
-		return "horizontal";
+		return "index.horizontal";
 	}
 
 	@Override

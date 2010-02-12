@@ -105,7 +105,7 @@ public class DScore extends Cross {
 	}
 
 	public String getName() {
-		return I18n.getText("dscore");
+		return I18n.getText("statistics.dscore");
 	}
 
 	public String getFormat() {

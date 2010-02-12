@@ -74,9 +74,11 @@ public class ExportDialog extends JDialog {
 		this.setContentPane(mainPanel);
 		mainPanel.panelPreview.setVisible(false);
 		
-		this.setTitle("Export data from database...");
+		this.setTitle(I18n.getText("export.dataFromDatabase"));
 		
 		this.setMinimumSize(new java.awt.Dimension(525, 270));
+
+		
 		
 		this.pack();
 		Center.center(this);

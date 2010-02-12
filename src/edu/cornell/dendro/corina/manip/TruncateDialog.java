@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 import javax.swing.BorderFactory;
@@ -151,7 +152,7 @@ public class TruncateDialog extends JDialog {
 	 */
 	public TruncateDialog(Sample s, JFrame owner) {
 		// owner, title, modal
-		super(owner, I18n.getText("truncate"), true);
+		super(owner, I18n.getText("menus.tools.truncate"), true);
 
 		// get sample, range
 		this.s = s;
@@ -245,7 +246,7 @@ public class TruncateDialog extends JDialog {
 				return true;
 			}
 		} catch (IOException ioe) {
-			Alert.error("Could not create truncate", "Error: " + ioe.toString());
+			Alert.error(I18n.getText("error"), I18n.getText("error.couldNotTrundate") +": " + ioe.toString());
 		}
 		
 		return false;
@@ -259,14 +260,11 @@ public class TruncateDialog extends JDialog {
 		// if it's not derived and has no children, we can truncate in place
 		if (!s.getSampleType().isDerived()
 				&& (!s.hasMeta(Metadata.CHILD_COUNT) || s.getMeta(Metadata.CHILD_COUNT, Integer.class) == 0)) {
-			String message = "This series has no dependents. You can either\n" +
-			                 "choose to truncate the series in place, modifying\n" +
-			                 "the data, or you can derive a new series, leaving\n" +
-			                 "these measurements untouched (the default).\n\n" +
-			                 "Which would you like to do?";
-			String options[] = { "Derive a new series", "Truncate in place", "Cancel" };
+			String message = MessageFormat.format(I18n.getText("question.doInPlace"),
+					new Object[] { I18n.getText("menus.tools.truncate").toLowerCase() });
+			String options[] = { I18n.getText("question.deriveNewSeries"), I18n.getText("question.truncateInPlace"), I18n.getText("general.cancel")};
 			
-			int ret = JOptionPane.showOptionDialog(this, message, "Truncate in place?", JOptionPane.DEFAULT_OPTION, 
+			int ret = JOptionPane.showOptionDialog(this, message, I18n.getText("question.truncateInPlace")+"?", JOptionPane.DEFAULT_OPTION, 
 					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 			
 			switch(ret) {
@@ -288,7 +286,7 @@ public class TruncateDialog extends JDialog {
 			return applyCorinaWsiTruncation();
 		}
 		
-		Alert.error("Can't truncate", "I don't know how to truncate this form of series.");
+		Alert.error(I18n.getText("error"), I18n.getText("error.unableToTruncate"));
 		
 		return false;
 	}
@@ -315,7 +313,7 @@ public class TruncateDialog extends JDialog {
 
 			@Override
 			public String getPresentationName() {
-				return I18n.getText("truncate");
+				return I18n.getText("menus.tools.truncate");
 			}
 
 			@Override
@@ -352,7 +350,7 @@ public class TruncateDialog extends JDialog {
 	 */
 	private void initButtons() {
 		// cancel == close
-		cancel = Builder.makeButton("cancel");
+		cancel = Builder.makeButton("general.cancel");
 		cancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				dispose();
@@ -360,7 +358,7 @@ public class TruncateDialog extends JDialog {
 		});
 
 		// ok == apply
-		ok = Builder.makeButton("ok");
+		ok = Builder.makeButton("general.ok");
 		ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// nothing to do?
@@ -385,14 +383,14 @@ public class TruncateDialog extends JDialog {
 		pri.setLayout(new BoxLayout(pri, BoxLayout.Y_AXIS));
 		
 		// "Start"
-		JLabel cropStart = new JLabel(I18n.getText("crop_start"));
+		JLabel cropStart = new JLabel(I18n.getText("truncate.crop_start"));
 		cropStart.setHorizontalAlignment(SwingConstants.CENTER);
 		cropStart.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// "by [ xxx ] years"
 		tfRelStart = new JTextField("0", 4);
 		tfRelStart.getDocument().addDocumentListener(relativeUpdater);
-		JPanel f1 = Layout.flowLayoutL("by ", tfRelStart, " years");
+		JPanel f1 = Layout.flowLayoutL(I18n.getText("general.by")+" ", tfRelStart, " " + I18n.getText("general.years"));
 		f1.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// "to year [ xxx ]"
@@ -405,20 +403,20 @@ public class TruncateDialog extends JDialog {
 		JPanel startPanel = Layout.boxLayoutY(cropStart, f1, f2);
 
 		// "End"
-		JLabel cropEnd = new JLabel(I18n.getText("crop_end"));
+		JLabel cropEnd = new JLabel(I18n.getText("truncate.crop_end"));
 		cropEnd.setHorizontalAlignment(SwingConstants.CENTER);
 		cropEnd.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// "by [ xxx ] years"
 		tfRelEnd = new JTextField("0", 4);
 		tfRelEnd.getDocument().addDocumentListener(relativeUpdater);
-		JPanel f3 = Layout.flowLayoutL("by ", tfRelEnd, " years");
+		JPanel f3 = Layout.flowLayoutL(I18n.getText("general.by")+" ", tfRelEnd, " " + I18n.getText("general.years"));
 		f3.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// "to year [ xxx ]"
 		tfAbsEnd = new JTextField(s.getRange().getEnd().toString(), 5);
 		tfAbsEnd.getDocument().addDocumentListener(absoluteUpdater);
-		JPanel f4 = Layout.flowLayoutL("to year ", tfAbsEnd);
+		JPanel f4 = Layout.flowLayoutL(I18n.getText("truncate.to_year") + " ", tfAbsEnd);
 		f4.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// end panel
@@ -441,7 +439,7 @@ public class TruncateDialog extends JDialog {
 
 		// build primary panel
 		pri.add(Box.createVerticalStrut(8));
-		String text = I18n.getText("before") + ": " + s.getRange() + " (n="
+		String text = I18n.getText("truncate.seriesIsNow") + ": " + s.getRange() + " (n="
 				+ s.getRange().span() + ")";
 		JLabel tmp = new JLabel(text);
 		// center the label
@@ -616,7 +614,7 @@ public class TruncateDialog extends JDialog {
 	private void updateResult() {
 		String rangeAndSpan;
 		if (r == null) {
-			rangeAndSpan = I18n.getText("badcrop");
+			rangeAndSpan = I18n.getText("error");
 			cellModifier.updateRange(s.getRange());
 		}
 		else {
@@ -624,6 +622,6 @@ public class TruncateDialog extends JDialog {
 			cellModifier.updateRange(r);
 		}
 
-		result.setText(I18n.getText("after") + ": " + rangeAndSpan);
+		result.setText(I18n.getText("truncate.afterTruncating") + ": " + rangeAndSpan);
 	}
 }

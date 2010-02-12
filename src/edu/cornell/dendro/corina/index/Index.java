@@ -307,7 +307,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	@return complete title of this index */
 	@Override
 	public final String toString() {
-		return MessageFormat.format(I18n.getText("x_index_of"), new Object[] {
+		return MessageFormat.format(I18n.getText("index.x_index_of"), new Object[] {
 				getName(), target.toString() });
 	}
 

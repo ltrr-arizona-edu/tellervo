@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -27,6 +28,8 @@ import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
 import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
@@ -84,20 +87,20 @@ public class SumCreationDialog {
 					}
 
 					sumName = JOptionPane.showInputDialog(parent,
-							"Please choose a name for your sum:",
+							I18n.getText("question.chooseNameForSum")+": ",
 							sumName);
 					
 			
 					if ((sumName == null) || (sumName == "newSeries") || (sumName == "New sum"))
 					{
-						JOptionPane.showMessageDialog(this, "Error: Please enter a valid name", 
-								"Invalid name", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(this, I18n.getText("question.pleaseEnterValidName"), 
+								I18n.getText("error.invalidName"), JOptionPane.ERROR_MESSAGE);
 						finish();
 					}
 					
 					return (applySum() && super.finish());
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(this, "Error: " + e, "Failed to create sum", 
+					JOptionPane.showMessageDialog(this, I18n.getText("error")+": " + e, I18n.getText("error.failedToCreateSum"), 
 							JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
@@ -130,9 +133,9 @@ public class SumCreationDialog {
 			}
 		}*/
 
-		addButtons();
+		addPreviewButton();
 		
-		sum.setTitle("Creating a sum");
+		sum.setTitle(I18n.getText("menus.tools.sum"));
 		sum.setVisible(true);		
 	}
 	
@@ -162,7 +165,7 @@ public class SumCreationDialog {
 			try {
 				bs = sume.loadBasic();
 			} catch (IOException ioe) {
-				throw new IllegalStateException("loadBasic() failed on sum element?");
+				throw new IllegalStateException(I18n.getText("error.loadBasicFailed"));
 			}
 			
 			TridasIdentifier sumElementId = bs.getSeries().getIdentifier();
@@ -170,7 +173,7 @@ public class SumCreationDialog {
 			if(domainTag == null)
 				domainTag = sumElementId.getDomain();
 			else if(!domainTag.equals(sumElementId.getDomain())) {
-				throw new IllegalArgumentException("Creating a sum from multiple domains is not permitted at this time");
+				throw new IllegalArgumentException(I18n.getText("error.noSumsAcrossDomains"));
 			}
 		
 			SeriesLinkUtil.addToSeries(series, sumElementId);
@@ -197,27 +200,23 @@ public class SumCreationDialog {
 		} catch (UserCancelledException uce) {
 			// do nothing...
 		} catch (IOException ioe) {
-			Alert.error("Could not create sum", "Error: " + ioe.toString());
+			Alert.error(I18n.getText("error.failedToCreateSum"), I18n.getText("error")+ ": " + ioe.toString());
 		}
 
 		return false;
 	}
 	
-	private void addButtons() {
-		JPanel panel = sum.getExtraButtonPanel();
+	private void addPreviewButton() {
+				
+		JButton btnPreview = sum.getPreviewButton();
 		
-		JButton preview = new JButton("Preview");
-		preview.setSize(panel.getWidth(), preview.getHeight());
-		preview.setAlignmentX(JButton.RIGHT_ALIGNMENT);
+		btnPreview.setVisible(true);
+		btnPreview.setToolTipText(I18n.getText("general.preview"));
+		Icon previewIcon = Builder.getIcon("graph.png", 22);
 
-		BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
-		panel.setLayout(layout);
-		
-		panel.add(Box.createVerticalStrut(52));
-		panel.add(preview);
-		panel.add(Box.createVerticalStrut(12));
-		
-		preview.addActionListener(new ActionListener() {
+		btnPreview.setIcon(previewIcon);
+
+		btnPreview.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					Sample s = Sum.sum(sum.getSelectedElements());
@@ -226,8 +225,8 @@ public class SumCreationDialog {
 					Center.center(graph, sum);
 					graph.setVisible(true);
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(sum, "Couldn't sum: " + ex.toString(), 
-							"Sum failure", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(sum, I18n.getText("error.failedToCreateSum")+": " + ex.toString(), 
+							I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 				}
 			}			
 		});

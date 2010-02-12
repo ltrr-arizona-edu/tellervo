@@ -12,6 +12,7 @@ import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.schema.SecurityGroup;
 import edu.cornell.dendro.corina.schema.SecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  * GUI class for administering users and groups.  Allows user with the correct
@@ -30,17 +31,16 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         super(parent, modal);
         initComponents();
         setupGui();
+        internationlizeComponents();
     }
     
     @SuppressWarnings("unchecked")
 	private void setupGui(){
     	// Set up basic dialog 
         setLocationRelativeTo(null);
-        this.setTitle("Users and Groups");
-        
+                
         // Populate user list
         List<SecurityUser> lstofUsers = (List<SecurityUser>) Dictionary.getDictionary("securityUserDictionary");  
-        
         
         utm = new SecurityUserTableModel(lstofUsers);
         tblUsers.setModel(utm);
@@ -48,6 +48,20 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         btnOk.addActionListener(this);
         
         
+    }
+    
+    private void internationlizeComponents()
+    {
+    	this.setTitle(I18n.getText("admin.usersAndGroups"));
+    	this.chkShowDisabledUsers.setText(I18n.getText("admin.showDisabledAccounts"));
+    	this.chkShowDisabledGroups.setText(I18n.getText("admin.showDisabledGroups"));
+    	this.btnOk.setText(I18n.getText("general.ok"));
+    	this.btnEditUser444.setText(I18n.getText("menus.edit"));
+    	this.btnNewUser.setText(I18n.getText("menus.file.new"));
+    	this.btnDeleteUser.setText(I18n.getText("general.delete"));
+    	this.btnEditGroup.setText(I18n.getText("menus.edit"));
+    	this.btnNewGroup.setText(I18n.getText("menus.file.new"));
+    	this.btnDeleteGroup.setText(I18n.getText("general.delete"));    	
     }
     
     /** This method is called from within the constructor to

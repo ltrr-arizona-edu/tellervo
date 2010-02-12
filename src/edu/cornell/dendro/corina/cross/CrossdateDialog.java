@@ -43,6 +43,7 @@ import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 
 /**
@@ -242,7 +243,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     			int col = cboSecondary.getSelectedIndex();
     			
     			// make a nice title?
-    			window.setTitle("Crossdating: " + cboSecondary.getSelectedItem().toString());
+    			window.setTitle(I18n.getText("crossdate.crossdating")+": " + cboSecondary.getSelectedItem().toString());
     			
     			try {
     				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);

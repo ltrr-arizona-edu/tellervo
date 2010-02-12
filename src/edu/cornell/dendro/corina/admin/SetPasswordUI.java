@@ -9,6 +9,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.schema.SecurityUser;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  * Dialog for setting users own password, or for user with admin
@@ -27,7 +28,18 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     public SetPasswordUI(java.awt.Frame parent) {
         super(parent, true);
         initComponents();
-        setupGui();     
+        setupGui();   
+        internationalizeComponents();
+    }
+    
+    private void internationalizeComponents()
+    {
+    	this.setTitle(I18n.getText("admin.setPassword"));
+    	lblOld.setText(I18n.getText("admin.oldPassword")+":");
+    	lblNew.setText(I18n.getText("admin.newPassword")+":");
+    	lblVerify.setText(I18n.getText("admin.verify")+":");
+    	btnCancel.setText(I18n.getText("general.ok"));
+    	btnOk.setText(I18n.getText("general.cancel"));
     }
     
     /**
@@ -57,7 +69,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	if (asAdmin) 
     	{
     		// Set admin specific GUI items
-    		lblOld.setText("Your password");
+    		lblOld.setText(I18n.getText("admin.yourPassword")+":");
     		lblUserText.setText(thisUser.getUsername());
     	}
     	else
@@ -87,7 +99,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     			}
     			else
     			{
-    				Alert.message("Error", "Incorrect password");
+    				Alert.message(I18n.getText("error"), I18n.getText("error.incorrectPassword"));
     			}
     		}
         });
@@ -174,7 +186,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	if((Arrays.equals(pwdNew.getPassword(), pwdVerify.getPassword())==false))
     	{
     		// Passwords entered don't match
-    		lblStrengthText.setText("Passwords do not match");
+    		lblStrengthText.setText(I18n.getText("admin.passwordsDontMatch"));
     		lblStrengthText.setForeground(Color.RED);
     		return;
     	}
@@ -182,14 +194,14 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	if(pwdNew.getPassword().length<7)
     	{
     		// Passwords too short
-    		lblStrengthText.setText("Password too short");
+    		lblStrengthText.setText(I18n.getText("admin.passwordTooShort"));
     		lblStrengthText.setForeground(Color.RED);
     		return;
     	}
     	else
     	{
     		// Passwords match and are long enough
-	    	lblStrengthText.setText("Password meets system requirements");
+	    	lblStrengthText.setText(I18n.getText("admin.passwordMeetsRequirements"));
 			lblStrengthText.setForeground(Color.GREEN);
 			
 			// Enable OK button

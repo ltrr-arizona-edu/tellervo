@@ -72,7 +72,7 @@ public class RValue extends Cross {
 	/** Return a prettier name for this cross: "R-Value".
 	 @return the name of this cross, "R-Value" */
 	public String getName() {
-		return I18n.getText("rvalue");
+		return I18n.getText("statistics.rvalue");
 	}
 
 	/** A format string for R-values.

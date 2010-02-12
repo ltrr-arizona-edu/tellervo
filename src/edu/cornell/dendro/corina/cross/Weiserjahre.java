@@ -52,7 +52,7 @@ public class Weiserjahre extends Cross {
     }
 
 	public String getName() {
-	return I18n.getText("weiserjahre");
+	return I18n.getText("statistics.weiserjahre");
     }
 
 	public static String getNameStatic() {

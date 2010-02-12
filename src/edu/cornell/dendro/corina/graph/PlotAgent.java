@@ -71,7 +71,12 @@ public enum PlotAgent {
 	 * Get the internationalization tag for this plot agent
 	 * @return "agent_xxx"
 	 */
-	public String getI18nTag() {
-		return "agent_" + this.toString().toLowerCase();
+	public String getI18nTag() 
+	{		
+		if(this.toString().equals(PlotAgent.SEMILOG.toString())) return "graph.agent_semilog";
+		else if (this.toString().equals(PlotAgent.STANDARD.toString()))	return "graph.agent_standard";
+		else if (this.toString().equals(PlotAgent.TOOTHED.toString())) return "graph.agent_toothed";
+		else return null;
+		
 	}
 }

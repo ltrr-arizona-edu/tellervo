@@ -6,6 +6,7 @@ import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.schema.SecurityGroup;
 import edu.cornell.dendro.corina.schema.SecurityUser;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  * Simple table model for a list of securityUsers
@@ -19,12 +20,12 @@ public class SecurityUserTableModel extends AbstractTableModel {
 	private List<SecurityUser> userList;
 	    	
     private final String[] columnNames = {
-            "#",
-            "User",
-            "First name",
-            "Last name",
-            "Groups",
-            "Enabled",
+            I18n.getText("dbbrowser.hash"),
+            I18n.getText("admin.user"),
+            I18n.getText("admin.firstName"),
+            I18n.getText("admin.lastName"),
+            I18n.getText("admin.groups"),
+            I18n.getText("general.enabled"),
         };
 	
 	public SecurityUserTableModel(List<SecurityUser> usrLst){

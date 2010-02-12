@@ -25,7 +25,7 @@ public class GraphFileMenu extends FileMenu {
 
     @Override
 	public void addPrintMenu() {
-		JMenuItem print1 = Builder.makeMenuItem("plot_print", true, "printer.png");
+		JMenuItem print1 = Builder.makeMenuItem("menus.graph.printplot", true, "printer.png");
 		print1.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				window.plot.tryPrint(GraphPrintDialog.PRINT_PRINTER);
@@ -33,7 +33,7 @@ public class GraphFileMenu extends FileMenu {
 		});
 		this.add(print1);			
 
-		JMenuItem print2 = Builder.makeMenuItem("plot_exportpdf", true, "pdf.png");
+		JMenuItem print2 = Builder.makeMenuItem("menus.graph.exportPDFPlot", true, "pdf.png");
 		print2.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				window.plot.tryPrint(GraphPrintDialog.PRINT_PDF);
@@ -41,7 +41,7 @@ public class GraphFileMenu extends FileMenu {
 		});
 		this.add(print2);			
 
-		JMenuItem print3 = Builder.makeMenuItem("plot_exportpng", true, "png.png");
+		JMenuItem print3 = Builder.makeMenuItem("menus.graph.exportPNGPlot", true, "png.png");
 		print3.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				window.plot.tryPrint(GraphPrintDialog.PRINT_PNG);

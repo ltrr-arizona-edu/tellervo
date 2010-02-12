@@ -25,14 +25,14 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 	private Sample sample;
 
 	EditorGraphMenu(Sample s) {
-		super(I18n.getText("graph_menu")); // i18n bypasses mnemonic here!
+		super(I18n.getText("menus.graph")); // i18n bypasses mnemonic here!
 		
 		this.sample = s;
 
 		sample.addSampleListener(this);
 
 		// plot
-		plot = new JMenuItem(new CorinaAction("graph", "graph.png", 22) {
+		plot = new JMenuItem(new CorinaAction("menus.graph.activeSeries", "graph.png", 22) {
 			public void actionPerformed(ActionEvent e) {
 				new GraphWindow(sample);
 			}
@@ -40,7 +40,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 		add(plot);
 
 		// plot elements
-		plotElements = new JMenuItem(new CorinaAction("graph_components") {
+		plotElements = new JMenuItem(new CorinaAction("menus.graph.components") {
 			public void actionPerformed(ActionEvent e) {
 				new GraphWindow(sample.getElements());
 			}
@@ -53,7 +53,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 		add(plotElements);
 		
 		// plot all
-		plotAll = new JMenuItem(new CorinaAction("graph_everything") {
+		plotAll = new JMenuItem(new CorinaAction("menus.graph.everything") {
 			public void actionPerformed(ActionEvent e) {
 				new GraphWindow(sample, sample.getElements());
 			}
@@ -66,7 +66,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 		add(plotAll);
 
 		// bargraph all
-		bargraphAll = new JMenuItem(new CorinaAction("bargraph_components") {
+		bargraphAll = new JMenuItem(new CorinaAction("menus.graph.bargraph_components") {
 			public void actionPerformed(ActionEvent e) {
 				// FIXME: pass my title here so the bargraph
 				// has my name as its title.
