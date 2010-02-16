@@ -11,6 +11,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.BugReport;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.BugReport.DocumentHolder;
@@ -44,6 +45,7 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 		dialog.setContentPane(this);
 		dialog.pack();
 		Center.center(dialog);
+        dialog.setIconImage(Builder.getApplicationIcon());
 		
 		txtComments.setLineWrap(true);
 		txtComments.setWrapStyleWord(true);

@@ -20,6 +20,7 @@ import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
 
@@ -57,7 +58,8 @@ public class XMLDebugView extends JDialog {
 		super(owner, false);
 		
 		setTitle("XML Communications Debugging Monitor");
-		
+        setIconImage(Builder.getApplicationIcon());
+
 		if(!enabled) {
 			dispose();
 			singleton = null;

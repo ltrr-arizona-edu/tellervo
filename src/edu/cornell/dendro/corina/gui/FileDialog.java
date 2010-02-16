@@ -36,6 +36,7 @@ import javax.swing.filechooser.FileFilter;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**
@@ -273,8 +274,11 @@ public class FileDialog {
 	 */
 	public static String showSingle(String buttonText, String title, String workingDirectory, String function)
 			throws UserCancelledException {
+		
+             
 		// create chooser
 		JFileChooser f = new JFileChooser();
+	
 		
 		// add filters
 		addFilters(f);
@@ -300,11 +304,11 @@ public class FileDialog {
 		
 		
 		// set up some dialog UI properties
-		f.setApproveButtonText(buttonText);
+		//f.setApproveButtonText(buttonText);
 		f.setDialogTitle(title);
 		
 		// show the dialog
-		int result = f.showDialog(null, null);
+		int result = f.showDialog(null, buttonText);
 		
 		try {
 			if (result == JFileChooser.APPROVE_OPTION) {

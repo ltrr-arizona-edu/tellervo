@@ -17,6 +17,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
+import edu.cornell.dendro.corina.ui.Builder;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 
@@ -114,6 +116,8 @@ public class PropertiesWindow extends JDialog {
   private PropertiesTableModel model;
   public PropertiesWindow() {
 	  super((JFrame) null, "System Properties");
+      setIconImage(Builder.getApplicationIcon());
+
 	  //setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
     model = new PropertiesTableModel(System.getProperties());

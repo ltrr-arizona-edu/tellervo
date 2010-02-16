@@ -15,6 +15,7 @@ import edu.cornell.dendro.corina.admin.UserGroupAdminOld;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.platform.Platform;
 
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 
 public class PrintingDialog extends JDialog{
@@ -28,6 +29,7 @@ public class PrintingDialog extends JDialog{
         lp = new PrintSettings(lt, this);
         
         this.setTitle("Print " + lt.toString().toLowerCase() );
+        setIconImage(Builder.getApplicationIcon());
 		this.setContentPane(lp);
 		this.pack();
     }

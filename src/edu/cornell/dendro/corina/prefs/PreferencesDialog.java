@@ -49,7 +49,7 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		
 		// construct a new dialog!
 		dialog = new JFrame("Preferences");
-		dialog.setIconImage(Builder.getImage("Preferences16.gif"));
+		dialog.setIconImage(Builder.getApplicationIcon());
 		dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		// steal the content pane from an instance of PreferencesDialog

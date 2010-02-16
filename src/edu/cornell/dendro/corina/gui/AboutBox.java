@@ -54,6 +54,8 @@ public class AboutBox extends javax.swing.JDialog {
     public AboutBox() {  	
     	
         initComponents();
+        setIconImage(Builder.getApplicationIcon());
+
         addDetails();
         pack();
 

@@ -25,6 +25,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
 
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 
 /**
@@ -52,6 +53,8 @@ public class ErrorLog extends JDialog {
 
   private ErrorLog() {
     setTitle("Log");
+    setIconImage(Builder.getApplicationIcon());
+
     LogViewer center = new LogViewer();
 
     // WRITEME: to add printing, make a Printer that just calls
@@ -68,7 +71,8 @@ public class ErrorLog extends JDialog {
   }
 
   public static synchronized void showLogViewer() {
-    if (singleton == null) {
+    
+	if (singleton == null) {
       singleton = new ErrorLog();
     }
     Center.center(singleton);
