@@ -12,6 +12,7 @@ import edu.cornell.dendro.corina.dictionary.User;
 import edu.cornell.dendro.corina.schema.SecurityGroup;
 import edu.cornell.dendro.corina.schema.SecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**
@@ -47,7 +48,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         
         btnOk.addActionListener(this);
         
-        
+        setIconImage(Builder.getApplicationIcon());
     }
     
     private void internationlizeComponents()
