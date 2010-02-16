@@ -23,6 +23,7 @@ import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
@@ -50,7 +51,9 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     /** Creates new form SampleCuration */
     public SampleCuration(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        initComponents();     
+        initComponents();   
+
+
     }
     
 
@@ -89,6 +92,8 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
      */
     private void setupGui()
     {    	
+        setIconImage(Builder.getApplicationIcon());
+    	
     	// Default to barcode searching
     	setManualSearch(false);
     	
