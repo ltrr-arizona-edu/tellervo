@@ -30,6 +30,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
         initComponents();
         setupGui();   
         internationalizeComponents();
+        
     }
     
     private void internationalizeComponents()
@@ -111,6 +112,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	lblStrengthText.setText("");
     	btnOk.setEnabled(false);
     	
+        setIconImage(Builder.getApplicationIcon());
 
     	
     }
