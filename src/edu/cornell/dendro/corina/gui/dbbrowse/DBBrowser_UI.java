@@ -8,6 +8,7 @@ import java.awt.HeadlessException;
 import javax.swing.JButton;
 import javax.swing.JTable;
 
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
 
@@ -35,6 +36,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     public DBBrowser_UI(javax.swing.JDialog parent, boolean modal) {
         super(parent, modal);
         initComponents();
+		
     }
     
     /**
@@ -57,6 +59,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
 
 	    // Make sure components are using I18n
         internationalizeComponents();
+         
     }
     
 	/** @return the return status of this dialog - one of RET_OK or RET_CANCEL */

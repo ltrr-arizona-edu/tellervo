@@ -78,14 +78,7 @@ public abstract class XFrame extends JFrame {
 		});
 
 		// tree icon
-		setTreeIcon();
-	}
-
-	//
-	// icon
-	//
-	private void setTreeIcon() {
-		setIconImage(((ImageIcon) Builder.getIcon("corina-application.png", 32)).getImage());
+		setIconImage(Builder.getApplicationIcon());
 	}
 
 	// call me to close an XFrame. confirms close with user, if

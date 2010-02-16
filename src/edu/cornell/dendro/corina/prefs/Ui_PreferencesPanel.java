@@ -9,6 +9,7 @@ package edu.cornell.dendro.corina.prefs;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.io.SerialMeasuringDeviceConstants;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  *
@@ -22,8 +23,82 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         panelTestComms.setEnabled(false);
         this.btnStartMeasuring.setEnabled(false);
         this.txtComCheckLog.setEnabled(false);
+        internationalizeComponents();
     }
 
+    private void internationalizeComponents()
+    {
+    	// main buttons
+    	this.btnOk.setText(I18n.getText("general.ok"));
+    	this.btnResetAll.setText(I18n.getText("preferences.resetAll"));
+    	this.btnCancel.setText(I18n.getText("general.cancel"));
+
+        // First tab
+    	this.propertiesTabs.setTitleAt(0, I18n.getText("preferences.network"));
+    	this.panelWebservice.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.webservice")));
+        this.panelNetworkConnections.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.networkConnection")));
+        this.panelEmail.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.email")));   	
+        this.lblWSURL.setText(I18n.getText("general.url")+":");
+        this.lblSMTPServer.setText(I18n.getText("preferences.smtpServer")+":");
+        this.lblProxyPort.setText(I18n.getText("general.port")+":");
+        this.lblProxyPort1.setText(I18n.getText("general.port")+":");
+        this.lblProxyServer.setText(I18n.getText("preferences.httpProxy")+":");
+        this.lblProxyServer1.setText(I18n.getText("preferences.httpSecureProxy")+":");
+        this.btnDefaultProxy.setText(I18n.getText("preferences.defaultProxy"));
+        this.btnNoProxy.setText(I18n.getText("preferences.directConnection"));
+        this.btnManualProxy.setText(I18n.getText("preferences.useManualProxy"));
+        this.btnReloadDictionary.setText(I18n.getText("preferences.reloadDictionary"));
+        
+        // Second tab
+        this.panelHardware.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.measuringPlatform")));
+        this.panelTestComms.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.checkConnection")));        
+    	this.propertiesTabs.setTitleAt(1, I18n.getText("preferences.hardware"));
+        this.lblPlatformType.setText(I18n.getText("general.type")+":");
+        this.lblPort.setText(I18n.getText("general.port")+":");
+        this.lblPlatformUnits.setText(I18n.getText("preferences.units")+":");
+        this.lblBaud.setText(I18n.getText("preferences.baud")+":");
+        this.lblDatabits.setText(I18n.getText("preferences.databits")+":");
+        this.lblStopbits.setText(I18n.getText("preferences.stopbits")+":");
+        this.lblParity.setText(I18n.getText("preferences.parity")+":");
+        this.btnStartMeasuring.setText(I18n.getText("menus.edit.start_measuring"));
+        
+        // Third tab
+    	this.propertiesTabs.setTitleAt(2, I18n.getText("preferences.statistics"));
+    	this.panelCOFECHA.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.cofechaIntegration")));
+        this.panelNumberFormats.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.numberFormats")));
+        this.panelSigScores.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.sigScores")));
+        this.chkEnableCOFECHA.setText(I18n.getText("preferences.enableCOFECHA"));
+        this.lblCOFECHAPath.setText(I18n.getText("preferences.pathToExecutable")+":");
+        this.btnBrowseCOFECHA.setText(I18n.getText("general.browse"));
+        this.lblTScore.setText(I18n.getText("statistics.tscore")+":");
+        this.lblRValue.setText(I18n.getText("statistics.rvalue")+":");
+        this.lblTrend.setText(I18n.getText("statistics.trend")+":");
+        this.lblDScore.setText(I18n.getText("statistics.dscore")+":");
+        this.lblWJ.setText(I18n.getText("statistics.weiserjahre")+":");
+        this.lblMinOverlap.setText(I18n.getText("preferences.minYearsOverlap")+":");
+        this.lblMinOverlapDScore.setText(I18n.getText("preferences.minYearsOverlapForDScore")+":");
+        this.chkHighlightSig.setText(I18n.getText("preferences.highlightSignificantYears")+":");
+        this.lblHighlightColor.setText(I18n.getText("preferences.highlightColor")+":");
+                
+    	// Fourth tab
+    	this.propertiesTabs.setTitleAt(3, I18n.getText("preferences.appearance"));
+        this.panelEditor.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.sampleEditor")));
+        this.panelCharts.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.charts")));
+        this.panelUI.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.ui")));
+        this.lblDisplayUnits.setText(I18n.getText("preferences.units")+":");
+        this.lblTextColor.setText(I18n.getText("preferences.textColor")+":");
+        this.lblEditorBGColor.setText(I18n.getText("preferences.backgroundColor")+":");
+        this.btnFont.setText(I18n.getText("preferences.font")+":");
+        this.chkShowEditorGrid.setText(I18n.getText("preferences.gridlines"));
+        this.lblAxisCursorColor.setText(I18n.getText("preferences.axisCursorColor")+":");
+        this.lblChartBGColor.setText(I18n.getText("preferences.backgroundColor")+":");
+        this.lblGridColor.setText(I18n.getText("preferences.gridColor")+":");
+        this.chkShowChartGrid.setText(I18n.getText("preferences.gridlines"));
+
+        
+    	
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is

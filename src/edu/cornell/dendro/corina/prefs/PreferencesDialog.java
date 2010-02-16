@@ -37,7 +37,7 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 	private static JFrame dialog;
 
 	public synchronized static void showPreferences() {
-            System.out.println("hello world");
+
 		// does it already exist? just bring it to the front
 		if(dialog != null) {
 			dialog.setVisible(true);

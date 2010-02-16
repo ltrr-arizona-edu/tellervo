@@ -6,6 +6,8 @@
 
 package edu.cornell.dendro.corina.cross;
 
+import edu.cornell.dendro.corina.ui.Builder;
+
 /**
  *
  * @author  peterbrewer
@@ -18,7 +20,7 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
     public Ui_CrossdateDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
+		setIconImage(Builder.getApplicationIcon());
         lblPrimary.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblSecondary.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
     }

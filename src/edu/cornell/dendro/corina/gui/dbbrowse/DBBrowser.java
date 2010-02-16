@@ -98,6 +98,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         doInitComponents();
         
         initialize(openMulti);
+        setIconImage(Builder.getApplicationIcon());
     }
 
 

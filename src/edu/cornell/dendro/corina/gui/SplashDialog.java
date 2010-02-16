@@ -63,7 +63,6 @@ public class SplashDialog extends JDialog implements ProgressMeter.ProgressListe
 		content.setSize(d);
 		
 		JLabel test = new JLabel();
-		test.setText("hello world");
 		content.add(test, BorderLayout.CENTER);
 
 		/*if (title != null) {

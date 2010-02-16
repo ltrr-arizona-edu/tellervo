@@ -57,6 +57,7 @@ import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.ListUtil;
 
@@ -137,8 +138,8 @@ public class XCorina extends JFrame {
 		// boilerplate
 		setTitle("Corina - " + Build.VERSION + " " + Build.TIMESTAMP);
 
-		// set tree icon
-		setIconImage(((ImageIcon) Builder.getIcon("corina-application.png", 32)).getImage());
+		// set application icon
+		setIconImage(Builder.getApplicationIcon());
 
 		// set background...
 		ClassLoader cl = this.getClass().getClassLoader();		
@@ -243,9 +244,9 @@ public class XCorina extends JFrame {
 		qlbutton(openSeries);
 		qlbutton(importSeries);
 		
-		newSeries.setToolTipText("Create new series");
-		openSeries.setToolTipText("Open existing series");
-		importSeries.setToolTipText("Import existing dataset");
+		newSeries.setToolTipText(I18n.getText("workspace.createNewSeries"));
+		openSeries.setToolTipText(I18n.getText("workspace.openExistingSeries"));
+		importSeries.setToolTipText(I18n.getText("workspace.importExistingSeries"));
 		
 		newSeries.setIcon(Builder.getIcon("filenew.png", 64));
 		openSeries.setIcon(Builder.getIcon("fileopen.png", 64));

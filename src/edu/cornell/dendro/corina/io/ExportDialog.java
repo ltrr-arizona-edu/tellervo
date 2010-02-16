@@ -53,6 +53,7 @@ public class ExportDialog extends JDialog {
 		//super(parent, I18n.getText("export"), true);
 			
 		setupGui(elements);
+		setIconImage(Builder.getApplicationIcon());
 
 	}
 

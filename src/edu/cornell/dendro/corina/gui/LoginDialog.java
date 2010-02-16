@@ -78,8 +78,9 @@ public class LoginDialog extends JDialog {
 
 		getContentPane().setLayout(new GridBagLayout());
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setTitle("Corina Login");
-		
+		setTitle(I18n.getText("login.Authentication"));
+        setIconImage(Builder.getApplicationIcon());
+
 		GridBagConstraints ogbc = new GridBagConstraints();
 
 		username = new JTextField();
@@ -117,7 +118,7 @@ public class LoginDialog extends JDialog {
 		igbc.gridy = 0;
 		
 		// title for login
-		tmp = new JLabel("You must log in for access...");
+		tmp = new JLabel(I18n.getText("login.requestLogin"));
 		igbc.anchor = GridBagConstraints.WEST;
 		igbc.insets = new Insets(0, 10, 0, 80);
 		igbc.gridwidth = 2;
@@ -137,7 +138,7 @@ public class LoginDialog extends JDialog {
 		igbc.gridx = 0;
 		igbc.gridy++;
 		igbc.insets = new Insets(12, 10, 0, 0);
-		tmp = new JLabel(I18n.getText("login.username"));
+		tmp = new JLabel(I18n.getText("login.username")+":");
 		tmp.setLabelFor(username);
 		
 		igbc.insets = new Insets(12, 10, 0, 20);
@@ -151,7 +152,7 @@ public class LoginDialog extends JDialog {
 		igbc.gridx = 0;
 		igbc.gridy++;
 		
-		tmp = new JLabel(I18n.getText("login.password"));
+		tmp = new JLabel(I18n.getText("login.password")+":");
 		tmp.setLabelFor(password);
 		
 		igbc.ipady = 0;
@@ -184,22 +185,22 @@ public class LoginDialog extends JDialog {
 		igbc.gridx = 1;
 		
 		igbc.gridy++;
-		rememberUsername = new JCheckBox("Remember my username");
+		rememberUsername = new JCheckBox(I18n.getText("login.rememberMyUsername"));
 		insidePanel.add(rememberUsername, igbc);
 		
 		igbc.gridy++;
 		igbc.insets = new Insets(0, 8, 0, 0);
-		rememberPassword = new JCheckBox("Remember my password");
+		rememberPassword = new JCheckBox(I18n.getText("login.rememberMyPassword"));
 		insidePanel.add(rememberPassword, igbc);
 		
 		igbc.gridy++;		
-		autoLogin = new JCheckBox("Log in automatically");
+		autoLogin = new JCheckBox(I18n.getText("login.automatically"));
 		insidePanel.add(autoLogin, igbc);
 		
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		
 		final JDialog glue = this;
-		loginButton = new JButton("Log in");
+		loginButton = new JButton(I18n.getText("login"));
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				performAuthentication(0);
@@ -207,7 +208,7 @@ public class LoginDialog extends JDialog {
 		});
 		buttonPanel.add(loginButton);
 		
-		cancelButton = new JButton("Cancel");
+		cancelButton = new JButton(I18n.getText("general.cancel"));
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				glue.dispose();
@@ -217,7 +218,7 @@ public class LoginDialog extends JDialog {
 		
 		// TODO: Implement offline mode
 		JButton button;
-		button = new JButton("Work offline");
+		button = new JButton(I18n.getText("login.workOffline"));
 		button.setEnabled(false);
 		buttonPanel.add(button);
 

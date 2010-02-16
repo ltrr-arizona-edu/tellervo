@@ -9,13 +9,18 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
+import edu.cornell.dendro.corina.ui.Builder;
+
 public class LoginSplash extends Splash {
 	public LoginSplash(String title, BufferedImage img) {
 		super(title, img);
+        setIconImage(Builder.getApplicationIcon());
+        
 	}
 	
 	public void addLoginPanel() {
 		Rectangle parentRect = getContentPane().getBounds();
+		
 		
 		// magic numbers make it look pretty with our current background image
 		// if you change the login image, change these :)

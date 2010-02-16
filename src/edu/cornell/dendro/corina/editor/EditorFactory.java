@@ -299,6 +299,7 @@ public class EditorFactory {
 		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
 		
 		dialog.setTitle(I18n.getText("barcode"));
+		dialog.setIconImage(Builder.getApplicationIcon());
 		dialog.setContentPane(barcodeUI);
 		dialog.setResizable(false);
 		dialog.pack();
