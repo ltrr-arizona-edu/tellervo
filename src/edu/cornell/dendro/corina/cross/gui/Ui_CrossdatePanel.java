@@ -74,7 +74,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     
     private void internationalizeComponents()
     {
-    	this.lblPrimary.setText(I18n.getText("crossdate.primarySeries")+":");
+    	this.lblPrimary.setText(I18n.getText("crossdate.floatingSeries")+":");
     	this.lblSecondary.setText(I18n.getText("crossdate.referenceSeries")+":");
     	this.btnAddRemoveSeries.setText(I18n.getText("crossdate.addRemoveSeries"));
     	this.btnResetPosition.setText(I18n.getText("crossdate.resetPosition"));
@@ -137,8 +137,8 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         btnSwap = new javax.swing.JButton();
         lblPrimary = new javax.swing.JLabel();
         lblSecondary = new javax.swing.JLabel();
-        cboPrimary = new javax.swing.JComboBox();
-        cboSecondary = new javax.swing.JComboBox();
+        cboFloating = new javax.swing.JComboBox();
+        cboReference = new javax.swing.JComboBox();
         btnAddRemoveSeries = new javax.swing.JButton();
         btnResetPosition = new javax.swing.JButton();
 
@@ -330,7 +330,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        paneStatistics.addTab("Primary against a reference series (1 to 1)", panel1To1);
+        paneStatistics.addTab("Floating against a reference series (1 to 1)", panel1To1);
 
         lblMatchType.setText("Match type:");
 
@@ -418,7 +418,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        paneStatistics.addTab("Primary against all reference series (1 to n)", panel1ToN);
+        paneStatistics.addTab("Floating against all reference series (1 to n)", panel1ToN);
 
         org.jdesktop.layout.GroupLayout panelMatrixLayout = new org.jdesktop.layout.GroupLayout(panelMatrix);
         panelMatrix.setLayout(panelMatrixLayout);
@@ -471,15 +471,15 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         btnSwap.setMinimumSize(new java.awt.Dimension(40, 29));
         btnSwap.setPreferredSize(new java.awt.Dimension(40, 29));
 
-        lblPrimary.setText("Primary series (moving):");
+        lblPrimary.setText("Floating series:");
 
         lblSecondary.setText("Reference series (fixed):");
 
-        cboPrimary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "C-ABC-1-A" }));
+        cboFloating.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "C-ABC-1-A" }));
 
-        cboSecondary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "My Master Chronology" }));
-        cboSecondary.setMinimumSize(new java.awt.Dimension(131, 27));
-        cboSecondary.setPreferredSize(new java.awt.Dimension(131, 27));
+        cboReference.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "My Master Chronology" }));
+        cboReference.setMinimumSize(new java.awt.Dimension(131, 27));
+        cboReference.setPreferredSize(new java.awt.Dimension(131, 27));
 
         btnAddRemoveSeries.setText("Add / Remove series");
 
@@ -500,13 +500,13 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
                     .add(jPanel1Layout.createSequentialGroup()
                         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(lblPrimary)
-                            .add(cboPrimary, 0, 417, Short.MAX_VALUE))
+                            .add(cboFloating, 0, 417, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(lblSecondary)
-                            .add(cboSecondary, 0, 383, Short.MAX_VALUE)))
+                            .add(cboReference, 0, 383, Short.MAX_VALUE)))
                     .add(jPanel1Layout.createSequentialGroup()
                         .add(btnAddRemoveSeries)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -523,8 +523,8 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(btnSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(cboPrimary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(cboSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(cboFloating, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(cboReference, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnAddRemoveSeries)
@@ -568,9 +568,9 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     protected javax.swing.JButton btnResetPosition;
     protected javax.swing.JButton btnSwap;
     protected javax.swing.JComboBox cboDisplayStats;
+    protected javax.swing.JComboBox cboFloating;
     protected javax.swing.JComboBox cboMatchType;
-    protected javax.swing.JComboBox cboPrimary;
-    protected javax.swing.JComboBox cboSecondary;
+    protected javax.swing.JComboBox cboReference;
     protected javax.swing.JComboBox cboViewAs;
     protected javax.swing.JComboBox cboViewType;
     protected javax.swing.JPanel jPanel1;

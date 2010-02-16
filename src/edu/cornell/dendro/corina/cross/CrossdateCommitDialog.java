@@ -60,8 +60,8 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Sample primary;
-	private Sample secondary;
+	private Sample reference;
+	private Sample floating;
 	private Range range;
 	private boolean saved;
 
@@ -130,9 +130,9 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 			return false;
 		}
 		
-		SampleLoader loader = secondary.getLoader();
+		SampleLoader loader = floating.getLoader();
 		if(loader == null) {
-			new Bug(new Exception("Attempting to apply an crossdate to a sample without a loader. Shouldn't be possible!"));
+			new Bug(new Exception("Attempting to apply a crossdate to a sample without a loader. Shouldn't be possible!"));
 			return false;
 		}
 		
@@ -149,7 +149,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		TridasDerivedSeries series = new TridasDerivedSeries();
 		series.setTitle(txtNewCrossdateName.getText());
 		// the identifier is based on the domain from the secondary
-		series.setIdentifier(NewTridasIdentifier.getInstance(secondary.getSeries().getIdentifier()));
+		series.setIdentifier(NewTridasIdentifier.getInstance(floating.getSeries().getIdentifier()));
 		
 		// Set version 
 		if(txtVersion.getText()!=null) series.setVersion(txtVersion.getText());
@@ -164,7 +164,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		GenericFieldUtils.addField(series, "corina.justification", txtJustification.getText());
 		
 		// set the parent
-		SeriesLinkUtil.addToSeries(series, secondary.getSeries().getIdentifier());
+		SeriesLinkUtil.addToSeries(series, floating.getSeries().getIdentifier());
 
 		//
 		// TODO: Stop sending this in both startYear AND newStartYear!
@@ -181,7 +181,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		GenericFieldUtils.addField(series, "corina.newStartYear", range.getStart().toString());
 
 		// get linkseries for master
-		SeriesLink linkMaster = SeriesLinkUtil.forIdentifier(primary.getSeries().getIdentifier());
+		SeriesLink linkMaster = SeriesLinkUtil.forIdentifier(reference.getSeries().getIdentifier());
 		// make dating reference for master
 		TridasDatingReference master = new TridasDatingReference();
 		
@@ -212,13 +212,13 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		return false;
 	}
 	
-	public void setup(Sample primary, Sample secondary, Range newRange) {	
-		this.primary = primary;
-		this.secondary = secondary;
+	public void setup(Sample floating, Sample reference, Range newRange) {	
+		this.floating = floating;
+		this.reference = reference;
 		this.range = newRange;
 		
-		lblMasterSampleName.setText(primary.toString());
-		lblCrossdateName.setText(secondary.toString());
+		lblMasterSampleName.setText(reference.toString());
+		lblCrossdateName.setText(floating.toString());
 		lblNewDateRange.setText(newRange.toString());
 		
 		//
@@ -226,13 +226,13 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		//   The title field in the apply crossdate should be the same 
 		//   as the displayTitle of the moving series that has been crossdated
 		
-		txtNewCrossdateName.setText(secondary.meta().getName());
+		txtNewCrossdateName.setText(reference.meta().getName());
 		txtNewCrossdateName.setEditable(false);
 		
 		// make the prefix more relevant if we have a labcode
-		if (secondary.hasMeta(Metadata.LABCODE)) {
+		if (reference.hasMeta(Metadata.LABCODE)) {
 			lblprefix.setText(LabCodeFormatter.getSeriesPrefixFormatter().format(
-					secondary.getMeta(Metadata.LABCODE, LabCode.class))
+					floating.getMeta(Metadata.LABCODE, LabCode.class))
 					+ "- ");
 		}
 		else
@@ -245,8 +245,8 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		// txtNewCrossdateName.requestFocus();
 		
 		// Version field
-		if(secondary.getSeries() instanceof ITridasDerivedSeries) {
-			String parentVersion = ((ITridasDerivedSeries) secondary.getSeries()).getVersion();
+		if(reference.getSeries() instanceof ITridasDerivedSeries) {
+			String parentVersion = ((ITridasDerivedSeries) reference.getSeries()).getVersion();
 			
 			txtVersion.setText(VersionUtil.nextVersion(parentVersion));
 		}

@@ -134,8 +134,8 @@
             <Container class="javax.swing.JPanel" name="panel1To1">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Primary against a reference series (1 to 1)">
-                    <Property name="tabTitle" type="java.lang.String" value="Primary against a reference series (1 to 1)"/>
+                  <JTabbedPaneConstraints tabName="Floating against a reference series (1 to 1)">
+                    <Property name="tabTitle" type="java.lang.String" value="Floating against a reference series (1 to 1)"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
@@ -386,8 +386,8 @@
             <Container class="javax.swing.JPanel" name="panel1ToN">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Primary against all reference series (1 to n)">
-                    <Property name="tabTitle" type="java.lang.String" value="Primary against all reference series (1 to n)"/>
+                  <JTabbedPaneConstraints tabName="Floating against all reference series (1 to n)">
+                    <Property name="tabTitle" type="java.lang.String" value="Floating against all reference series (1 to n)"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
@@ -659,14 +659,14 @@
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="lblPrimary" min="-2" max="-2" attributes="0"/>
-                              <Component id="cboPrimary" alignment="0" pref="417" max="32767" attributes="2"/>
+                              <Component id="cboFloating" alignment="0" pref="417" max="32767" attributes="2"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btnSwap" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="lblSecondary" min="-2" max="-2" attributes="0"/>
-                              <Component id="cboSecondary" pref="383" max="32767" attributes="2"/>
+                              <Component id="cboReference" pref="383" max="32767" attributes="2"/>
                           </Group>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
@@ -690,8 +690,8 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="btnSwap" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="cboPrimary" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="cboSecondary" min="-2" max="-2" attributes="0"/>
+                      <Component id="cboFloating" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="cboReference" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
@@ -718,7 +718,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="lblPrimary">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Primary series (moving):"/>
+            <Property name="text" type="java.lang.String" value="Floating series:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lblSecondary">
@@ -726,7 +726,7 @@
             <Property name="text" type="java.lang.String" value="Reference series (fixed):"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="cboPrimary">
+        <Component class="javax.swing.JComboBox" name="cboFloating">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="1">
@@ -735,7 +735,7 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="cboSecondary">
+        <Component class="javax.swing.JComboBox" name="cboReference">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="1">

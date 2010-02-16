@@ -297,7 +297,7 @@ public class SigScoresTableModel extends AbstractTableModel {
 			return null;
 		
 		ArrayList<Graph> graphs = new ArrayList<Graph>();
-		graphs.add(new Graph(pairing.getPrimary()));
+		graphs.add(new Graph(pairing.getFloating()));
 		graphs.add(new Graph(getSecondaryForRow(row)));
 				
 		return graphs;
@@ -322,7 +322,7 @@ public class SigScoresTableModel extends AbstractTableModel {
 
 		Sample redate = new Sample();
 
-		Sample.copy(pairing.getSecondary(), redate);
+		Sample.copy(pairing.getReference(), redate);
 		redate.setRange(scores.get(row).range);
 		
 		return redate;

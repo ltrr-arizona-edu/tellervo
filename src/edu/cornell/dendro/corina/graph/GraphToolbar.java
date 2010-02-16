@@ -85,7 +85,7 @@ public class GraphToolbar extends JToolBar {
 	
 	private String getToolTip(String key) {
 		try {
-			return (key == null) ? null : I18n.getText(key);
+			return (key == null) ? null : I18n.getText("graph."+key);
 		} catch (Exception e) {
 			return null;
 		}

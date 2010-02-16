@@ -180,7 +180,7 @@ public class AllScoresTableModel extends AbstractTableModel {
 		
 		Sample redate = new Sample();
 		
-		Sample.copy(pairing.getSecondary(), redate);
+		Sample.copy(pairing.getReference(), redate);
 		redate.setRange(newRange);
 		
 		return redate;
@@ -200,7 +200,7 @@ public class AllScoresTableModel extends AbstractTableModel {
 			return null;
 		
 		ArrayList<Graph> graphs = new ArrayList<Graph>();
-		graphs.add(new Graph(pairing.getPrimary()));
+		graphs.add(new Graph(pairing.getFloating()));
 		graphs.add(new Graph(secondary));
 				
 		return graphs;

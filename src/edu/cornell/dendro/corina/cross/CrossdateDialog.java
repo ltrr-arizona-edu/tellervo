@@ -31,6 +31,7 @@ import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.graph.GraphActions;
 import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
+import edu.cornell.dendro.corina.graph.GraphPrefs;
 import edu.cornell.dendro.corina.graph.GraphToolbar;
 import edu.cornell.dendro.corina.graph.GrapherEvent;
 import edu.cornell.dendro.corina.graph.GrapherListener;
@@ -239,14 +240,14 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	// whenever one of our combo boxes change...
     	ActionListener listChanged = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			int row = cboPrimary.getSelectedIndex();
-    			int col = cboSecondary.getSelectedIndex();
+    			int floatingIndex = cboFloating.getSelectedIndex();
+    			int referenceIndex = cboReference.getSelectedIndex();
     			
     			// make a nice title?
-    			window.setTitle(I18n.getText("crossdate.crossdating")+": " + cboSecondary.getSelectedItem().toString());
+    			window.setTitle(I18n.getText("crossdate.crossdating")+": " + cboFloating.getSelectedItem().toString());
     			
     			try {
-    				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
+    				CrossdateCollection.Pairing pairing = crossdates.getPairing(floatingIndex, referenceIndex);
     				status.setPairing(pairing);
     				sigScoresModel.setCrossdates(pairing);
     				allScoresModel.setCrossdates(pairing);
@@ -266,8 +267,8 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     		}
     	};
     	
-    	cboPrimary.addActionListener(listChanged);
-    	cboSecondary.addActionListener(listChanged);
+    	cboFloating.addActionListener(listChanged);
+    	cboReference.addActionListener(listChanged);
     	
     	// now, when our table row changes
     	tableSignificantScores.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -337,7 +338,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	// reset button...
     	btnResetPosition.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			cboPrimary.setSelectedIndex(cboPrimary.getSelectedIndex());
+    			cboFloating.setSelectedIndex(cboFloating.getSelectedIndex());
     		}
     	});
     	
@@ -355,8 +356,8 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	    	crossdatingElements = crossdates.setElements(crossdatingElements);   	
 
     	    	// try to keep our settings where they were
-    	    	Object o1 = cboPrimary.getSelectedItem();
-    	    	Object o2 = cboSecondary.getSelectedItem();
+    	    	Object o1 = cboFloating.getSelectedItem();
+    	    	Object o2 = cboReference.getSelectedItem();
     	    	setupLists(((o1 instanceof Sample) ? new CachedElement((Sample)o1) : (Element) o1),
     	    			((o2 instanceof Sample) ? new CachedElement((Sample)o2) : (Element) o2));
     		}
@@ -364,8 +365,8 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 
        	btnOk.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			int row = cboPrimary.getSelectedIndex();
-    			int col = cboSecondary.getSelectedIndex();
+    			int row = cboFloating.getSelectedIndex();
+    			int col = cboReference.getSelectedIndex();
     			    			
     			try {
     				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
@@ -373,7 +374,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     				CrossdateCommitDialog commit = new CrossdateCommitDialog(window, true);
     				Center.center(commit, window);
     				
-    				commit.setup(pairing.getPrimary(), pairing.getSecondary(), newCrossdateRange);
+    				commit.setup(pairing.getFloating(), pairing.getReference(), newCrossdateRange);
     				commit.setVisible(true);
     				
     				if(commit.didSave())
@@ -433,6 +434,9 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	GraphToolbar graphToolbar = new GraphToolbar(actions);
     	panelChart.add(graphToolbar, BorderLayout.NORTH);
     	
+		// show labels by default
+		actions.setLabelsSelected(true);
+    	
     	// add a status bar
     	panelChart.add(status, BorderLayout.SOUTH);
     	
@@ -440,7 +444,8 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	graph.addGrapherListener(this);
     	
 		// get our basic graph set up
-		updateGraph(null);
+		updateGraph(null);		
+
     }
     
     private void setupLists(Element firstPrimary, Element firstSecondary) {
@@ -457,30 +462,30 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     		}
     	}
     	
-    	cboPrimary.setModel(new DefaultComboBoxModel(samples.toArray()));
-    	cboSecondary.setModel(new DefaultComboBoxModel(samples.toArray()));
+    	cboFloating.setModel(new DefaultComboBoxModel(samples.toArray()));
+    	cboReference.setModel(new DefaultComboBoxModel(samples.toArray()));
     	
     	// choose what shows up by default in our combos
     	if(firstSecondary == null && firstPrimary == null) {
     		// easy case
-    		cboPrimary.setSelectedIndex(0);
-    		cboSecondary.setSelectedIndex(1);
+    		cboFloating.setSelectedIndex(0);
+    		cboReference.setSelectedIndex(1);
     	}
     	else {
-    		// ensure our 'secondary' box is populated
-    		boolean havePrimary = false;
-    		boolean haveSecondary = false;
+    		// ensure our 'reference' box is populated
+    		boolean haveFloating = false;
+    		boolean haveReference = false;
     		
-    		for(int i = 0; (i < myElements.size()) && !(havePrimary && haveSecondary); i++) {
+    		for(int i = 0; (i < myElements.size()) && !(haveFloating && haveReference); i++) {
     			Element e = myElements.get(i);
     			
-    			if(!haveSecondary && ((firstSecondary == null && !e.equals(firstPrimary)) || e.equals(firstSecondary))) {
-    				cboSecondary.setSelectedIndex(i);
-    				haveSecondary = true;
+    			if(!haveReference && ((firstSecondary == null && !e.equals(firstPrimary)) || e.equals(firstSecondary))) {
+    				cboReference.setSelectedIndex(i);
+    				haveReference = true;
     			}    			
-    			else if(!havePrimary && (firstPrimary == null || e.equals(firstPrimary))) {
-    				cboPrimary.setSelectedIndex(i);
-    				havePrimary = true;
+    			else if(!haveFloating && (firstPrimary == null || e.equals(firstPrimary))) {
+    				cboFloating.setSelectedIndex(i);
+    				haveFloating = true;
     			}    			
     		}
     	}
@@ -542,10 +547,10 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     		graphSamples.add(newGraphs.get(1));
     		
     		// make sure we can't drag our fixed graph
-    		newGraphs.get(0).setDraggable(false);
+    		newGraphs.get(1).setDraggable(false);
     		
     		// also, display the moving range
-    		status.setMovingRange(newGraphs.get(1).getRange());
+    		status.setMovingRange(newGraphs.get(0).getRange());
     		
     		// fit the height of the graph
         	graphController.scaleToFitHeight(5);
@@ -562,7 +567,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 	public void graphChanged(GrapherEvent evt) {
 		if(evt.getEventType() == GrapherEvent.Type.XOFFSET_CHANGED) {
 			if(graphSamples.size() == 2)
-				status.setMovingRange(graphSamples.get(1).getRange());
+				status.setMovingRange(graphSamples.get(0).getRange());
 		}
 	}
 	
@@ -632,7 +637,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 			}
 			
 			range.setText("Moving range: " + mRange);
-			overlap.setText("Overlap: " + mRange.overlap(pairing.getPrimary().getRange()));
+			overlap.setText("Overlap: " + mRange.overlap(pairing.getFloating().getRange()));
 			
 			for(int i = 0; i < SigScoresTableModel.columns.size(); i++) {
 				// score type for this column

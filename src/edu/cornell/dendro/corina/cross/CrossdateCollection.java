@@ -20,35 +20,35 @@ import edu.cornell.dendro.corina.sample.Sample;
 
 public class CrossdateCollection {
 	public static class Pairing {
-		private Sample primary;
-		private Sample secondary;
+		private Sample floating;  // The series that is being dated
+		private Sample reference; // The series that is being used as the reference against which the floating is dated
 		private Map<Class<? extends Cross>, Cross> crosses;
 		
-		public Pairing(Sample primary, Sample secondary) {
-			if(primary == null || secondary == null) 
+		public Pairing(Sample floating, Sample reference) {
+			if(floating == null || reference == null) 
 				throw new IllegalArgumentException("Pairing must have two valid samples");
 			
-			this.primary = primary;
-			this.secondary = secondary;
+			this.floating = floating;
+			this.reference = reference;
 		}
 		
 		public Cross getCrossForClass(Class<?> clazz) {
 			return crosses.get(clazz);
 		}
 		
-		public Sample getPrimary() {
-			return primary;
+		public Sample getFloating() {
+			return floating;
 		}
 
-		public Sample getSecondary() {
-			return secondary;
+		public Sample getReference() {
+			return reference;
 		}
 		
 		@Override
 		public boolean equals(Object o) {
 			if(o instanceof Pairing) {
-				if(((Pairing) o).primary.equals(primary) &&
-				   ((Pairing) o).secondary.equals(secondary))
+				if(((Pairing) o).floating.equals(floating) &&
+				   ((Pairing) o).reference.equals(reference))
 					return true;
 			}
 			return false;
@@ -169,7 +169,7 @@ public class CrossdateCollection {
 						// now, do the crossings!
 						for(int k = 0; k < Cross.ALL_CROSSDATES.length; k++) {
 							try {
-								Cross cross = Cross.makeCross(Cross.ALL_CROSSDATES[k], pairing.primary, pairing.secondary);
+								Cross cross = Cross.makeCross(Cross.ALL_CROSSDATES[k], pairing.floating, pairing.reference);
 
 								// do the crossdating
 								cross.run();
