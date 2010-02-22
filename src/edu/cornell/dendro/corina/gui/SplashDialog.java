@@ -83,9 +83,9 @@ public class SplashDialog extends JDialog implements ProgressMeter.ProgressListe
 		
 	
 		content.add(progressPanel, BorderLayout.CENTER);
-			content.add(progressPanel, BorderLayout.SOUTH);
+			//content.add(progressPanel, BorderLayout.SOUTH);
 			
-			content.add(new JLabel("blah"), BorderLayout.NORTH);
+			//content.add(new JLabel("blah"), BorderLayout.NORTH);
 
 		
 		setContentPane(content);

@@ -53,11 +53,7 @@ public class GraphActions {
 	public boolean hasController() {
 		return controller != null;
 	}
-	
-	public void setLabelsSelected(Boolean b){
-		info.setShowGraphNames(b);
-	}
-	
+		
 	protected ToggleableAction showVerticalAxis;
 	protected ToggleableAction showGridlines;
 	protected ToggleableAction showBaselines;

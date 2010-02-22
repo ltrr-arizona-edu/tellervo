@@ -133,7 +133,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         panelNToN = new javax.swing.JPanel();
         panelMatrix = new javax.swing.JPanel();
         panelChart = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
+        panelDetails = new javax.swing.JPanel();
         btnSwap = new javax.swing.JButton();
         lblPrimary = new javax.swing.JLabel();
         lblSecondary = new javax.swing.JLabel();
@@ -141,6 +141,8 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         cboReference = new javax.swing.JComboBox();
         btnAddRemoveSeries = new javax.swing.JButton();
         btnResetPosition = new javax.swing.JButton();
+        scrollInfo = new javax.swing.JScrollPane();
+        txtInfo = new javax.swing.JTextArea();
 
         btnCancel.setText("Cancel");
 
@@ -215,7 +217,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
             panelHistogramLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelHistogramLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
+                .add(jScrollPane6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -245,7 +247,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
             panelSignificantScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelSignificantScoresLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -276,7 +278,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
             panelAllScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelAllScoresLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
+                .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -428,7 +430,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         );
         panelMatrixLayout.setVerticalGroup(
             panelMatrixLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 120, Short.MAX_VALUE)
+            .add(0, 66, Short.MAX_VALUE)
         );
 
         org.jdesktop.layout.GroupLayout panelNToNLayout = new org.jdesktop.layout.GroupLayout(panelNToN);
@@ -462,7 +464,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         );
         panelChartLayout.setVerticalGroup(
             panelChartLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 265, Short.MAX_VALUE)
+            .add(0, 223, Short.MAX_VALUE)
         );
 
         paneTablesAndCharts.setRightComponent(panelChart);
@@ -490,66 +492,76 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
             }
         });
 
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout panelDetailsLayout = new org.jdesktop.layout.GroupLayout(panelDetails);
+        panelDetails.setLayout(panelDetailsLayout);
+        panelDetailsLayout.setHorizontalGroup(
+            panelDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelDetailsLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(panelDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(panelDetailsLayout.createSequentialGroup()
+                        .add(panelDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(lblPrimary)
-                            .add(cboFloating, 0, 417, Short.MAX_VALUE))
+                            .add(cboFloating, 0, 420, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(panelDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(lblSecondary)
-                            .add(cboReference, 0, 383, Short.MAX_VALUE)))
-                    .add(jPanel1Layout.createSequentialGroup()
+                            .add(cboReference, 0, 386, Short.MAX_VALUE)))
+                    .add(panelDetailsLayout.createSequentialGroup()
                         .add(btnAddRemoveSeries)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnResetPosition)))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
+        panelDetailsLayout.setVerticalGroup(
+            panelDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelDetailsLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(panelDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblPrimary)
                     .add(lblSecondary))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(panelDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(btnSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(cboFloating, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(cboReference, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(panelDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnAddRemoveSeries)
                     .add(btnResetPosition)))
         );
+
+        txtInfo.setColumns(20);
+        txtInfo.setRows(5);
+        txtInfo.setFocusable(false);
+        scrollInfo.setViewportView(txtInfo);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .add(layout.createSequentialGroup()
+                .addContainerGap()
+                .add(scrollInfo, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 864, Short.MAX_VALUE)
+                .addContainerGap())
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(paneTablesAndCharts, 0, 0, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
-                        .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())))
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(panelDetails, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .add(scrollInfo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelDetails, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(paneTablesAndCharts, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+                .add(paneTablesAndCharts, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -573,7 +585,6 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     protected javax.swing.JComboBox cboReference;
     protected javax.swing.JComboBox cboViewAs;
     protected javax.swing.JComboBox cboViewType;
-    protected javax.swing.JPanel jPanel1;
     protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JScrollPane jScrollPane2;
     protected javax.swing.JScrollPane jScrollPane5;
@@ -592,16 +603,19 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     protected javax.swing.JPanel panelAllScores;
     protected javax.swing.JPanel panelButtons;
     protected javax.swing.JPanel panelChart;
+    protected javax.swing.JPanel panelDetails;
     protected javax.swing.JPanel panelHistogram;
     protected javax.swing.JPanel panelMatrix;
     protected javax.swing.JPanel panelNToN;
     protected javax.swing.JPanel panelSignificantScores;
     protected javax.swing.JPanel panelStatMap;
     protected javax.swing.JPanel panelStats;
+    protected javax.swing.JScrollPane scrollInfo;
     protected javax.swing.JTable tableSignificantScores;
     protected javax.swing.JTable tbl1ToNStats;
     protected javax.swing.JTable tblAllScores;
     protected javax.swing.JTable tblHistogram;
+    protected javax.swing.JTextArea txtInfo;
     // End of variables declaration//GEN-END:variables
     
 }

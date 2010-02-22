@@ -180,7 +180,7 @@ public class AllScoresTableModel extends AbstractTableModel {
 		
 		Sample redate = new Sample();
 		
-		Sample.copy(pairing.getReference(), redate);
+		Sample.copy(pairing.getSecondary(), redate);
 		redate.setRange(newRange);
 		
 		return redate;
@@ -200,7 +200,7 @@ public class AllScoresTableModel extends AbstractTableModel {
 			return null;
 		
 		ArrayList<Graph> graphs = new ArrayList<Graph>();
-		graphs.add(new Graph(pairing.getFloating()));
+		graphs.add(new Graph(pairing.getPrimary()));
 		graphs.add(new Graph(secondary));
 				
 		return graphs;
@@ -227,7 +227,7 @@ public class AllScoresTableModel extends AbstractTableModel {
 	 * @return
 	 */
 	public Integer getOverlapAt(Range newRange) {
-		return (newRange == null) ? null : newRange.overlap(cross.getMoving().getRange());		
+		return (newRange == null) ? null : newRange.overlap(cross.getFixed().getRange());		
 	}
 	
 	protected Year getYear(int row, int col) {
@@ -290,9 +290,9 @@ public class AllScoresTableModel extends AbstractTableModel {
 
 				cell.setBackground(significant ? lite : back);
 				if(newRange != null && overlap != null)
-					((JLabel)cell).setToolTipText("<html>Primary: " + 
+					((JLabel)cell).setToolTipText("<html>Reference: " + 
 							model.getCross().getFixed().getRange() + 
-							"<br>Secondary: " + newRange + "<br>Overlap: " + 
+							"<br>Floating: " + newRange + "<br>Overlap: " + 
 							overlap);
 			}
 

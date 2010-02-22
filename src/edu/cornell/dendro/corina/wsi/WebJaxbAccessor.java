@@ -203,7 +203,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 				
 				// create an XML document from the given objects
 				outDocument = marshallToDocument(context, sendingObject, getNamespacePrefixMapper());
-				
+								
 				// add it to the http post request
 				XMLBody xmlb = new XMLBody(outDocument, "application/corina+xml", null);				
 				postEntity.addPart("xmlrequest", xmlb);
