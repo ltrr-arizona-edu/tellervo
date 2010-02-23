@@ -22,7 +22,7 @@ import java.util.TooManyListenersException;
 
 public abstract class AbstractSerialMeasuringDevice
 	implements 
-		SerialPortEventListener
+		SerialPortEventListener, SerialSampleIOListener
 {
 	/** A list of states our port can be in */
 	protected enum PortState {
@@ -58,6 +58,7 @@ public abstract class AbstractSerialMeasuringDevice
 	
 	private int flowControl = SerialPort.FLOWCONTROL_NONE;
 	
+	private MeasurementReceiver receiver;
 	/**
 	 * Create a new serial measuring device
 	 * 
@@ -67,6 +68,8 @@ public abstract class AbstractSerialMeasuringDevice
 	public AbstractSerialMeasuringDevice(String portName) throws IOException {
 		port = openPort(portName);
 		state = PortState.NORMAL;
+		
+		addSerialSampleIOListener(this);
 	}
 	
 	/**
@@ -324,5 +327,29 @@ public abstract class AbstractSerialMeasuringDevice
 			System.err.println(e.toString());
 		}
 		return hscResult;
+	}
+	
+	public void SerialSampleIONotify(SerialSampleIOEvent sse) {
+		if(sse.getType() == SerialSampleIOEvent.BAD_SAMPLE_EVENT) {
+			receiver.receiverUpdateStatus("Error reading the previous sample!");
+		}
+		if(sse.getType() == SerialSampleIOEvent.ERROR) {
+			receiver.receiverUpdateStatus((String) sse.getValue());
+		}
+		else if(sse.getType() == SerialSampleIOEvent.INITIALIZING_EVENT) {
+			receiver.receiverUpdateStatus("Initializing reader (try "+ sse.getValue() +")");
+		}
+		else if(sse.getType() == SerialSampleIOEvent.INITIALIZED_EVENT) {
+			receiver.receiverUpdateStatus("Initialized; ready to read measurements.");
+		}
+		else if(sse.getType() == SerialSampleIOEvent.NEW_SAMPLE_EVENT) {
+			Integer value = (Integer) sse.getValue();
+			
+			receiver.receiverNewMeasurement(value);
+		}
+	}
+	
+	public void setMeasurementReceiver(MeasurementReceiver receiver){
+		this.receiver = receiver;
 	}
 }

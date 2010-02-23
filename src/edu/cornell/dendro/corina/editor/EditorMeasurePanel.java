@@ -21,7 +21,7 @@ import edu.cornell.dendro.corina.ui.Builder;
 public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 	private JLabel lastMeasurement;
 	private Editor editor;
-	//private LegacyCorinaMeasuringDevice dev;
+//	private LegacyCorinaMeasuringDevice dev;
 	private AbstractSerialMeasuringDevice dev;
 	
 	/* audioclips to play... */
@@ -30,6 +30,7 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 	private AudioClip measure_error;
 	
 	public EditorMeasurePanel(Editor myeditor, AbstractSerialMeasuringDevice device) {
+//	public EditorMeasurePanel(Editor myeditor, LegacySerialSampleIO ioport) {
 		super(new FlowLayout(FlowLayout.RIGHT));
 		
 		editor = myeditor;
@@ -37,7 +38,7 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 		lastMeasurement = new JLabel("[No last measurement]");
 		add(lastMeasurement);
 				
-		JButton leave = Builder.makeButton("stop_measuring");
+		JButton leave = Builder.makeButton("menus.edit.stop_measuring");
 		add(leave);
 		leave.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
@@ -66,8 +67,9 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 		/* ignore this... */ }
 		
 		// now, watch for info!
-		//dev = new LegacyCorinaMeasuringDevice(device, this);
+//		dev = new LegacyCorinaMeasuringDevice(ioport, this);
 		dev = device;
+		dev.setMeasurementReceiver(this);
 	}
 	
 //	public EditorMeasurePanel(Editor myEditor){
