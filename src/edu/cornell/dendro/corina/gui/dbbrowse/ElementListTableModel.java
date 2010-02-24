@@ -39,8 +39,8 @@ public class ElementListTableModel extends AbstractTableModel {
             I18n.getText("dbbrowser.begin"), 
             I18n.getText("dbbrowser.end"), 
             I18n.getText("dbbrowser.n"),
-            I18n.getText("dbbrowser.rec")
-            //"ID" //useful for debugging
+            I18n.getText("dbbrowser.rec"),
+            "hidden.MostRecentVersion"
         };
     
     /**
@@ -65,7 +65,9 @@ public class ElementListTableModel extends AbstractTableModel {
 		table.getColumnModel().getColumn(8).setPreferredWidth(fm.stringWidth("12345"));
 		table.getColumnModel().getColumn(9).setPreferredWidth(fm.stringWidth("123"));
 		table.getColumnModel().getColumn(10).setPreferredWidth(fm.stringWidth("Rec")); // checkbox?
-    }
+
+
+		}
     
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -178,9 +180,44 @@ public class ElementListTableModel extends AbstractTableModel {
 		case 10:
 			return bs.getMeta(Metadata.RECONCILED);
 			
+		// hidden column returning true if row is most recent version
+		case 11:
+			return isMostRecentVersion(bs);
+			
 		default:
 			return null;
 		}
+	}
+	
+	private Integer isMostRecentVersion(BaseSample thisBS)
+	{	
+		Integer mostRecent = 1;
+		
+		for(int i=0; i<getRowCount(); i++ )
+		{
+			Element matchEl = getElementAt(i);
+			BaseSample matchBS;
+					
+			try {
+				matchBS = matchEl.loadBasic();
+			} catch (IOException ioe) {
+				return 0;
+			}
+			
+			// Skip if we're comparing the same row
+			if(thisBS.equals(matchBS)) continue;
+
+			// Skip if the name is not the same
+			if(!thisBS.getDisplayTitle().equals(matchBS.getDisplayTitle())) continue;
+			
+			// Check if the current row is newer than the specified row
+			if(thisBS.getMeta(Metadata.CREATED_TIMESTAMP, Date.class).before(matchBS.getMeta(Metadata.CREATED_TIMESTAMP, Date.class)))
+			{
+				mostRecent = 0; 
+			}
+		}
+		
+		return mostRecent;
 	}
 	
 	public Object getValueAt(int rowIndex, int columnIndex) {

@@ -92,8 +92,8 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     					I18n.getText("dbbrowser.rawOnly"),
     					I18n.getText("dbbrowser.derivedOnly")}
     			));
-    	lblSeriesType1.setText(I18n.getText("dbbrowser.authored"));
-    	btnTogByMe.setText(I18n.getText("dbbrowser.byMe"));
+    	btnTogByMe.setText(I18n.getText("dbbrowser.createdByMe"));
+    	btnTogMostRecent.setText(I18n.getText("dbbrowser.mostRecentVersionsOnly"));
     }
 	
     /** This method is called from within the constructor to
@@ -114,7 +114,6 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         lblSeriesType = new javax.swing.JLabel();
         btnTogByMe = new javax.swing.JToggleButton();
         btnTogMostRecent = new javax.swing.JToggleButton();
-        lblSeriesType1 = new javax.swing.JLabel();
         mainPanel = new javax.swing.JPanel();
         listTableSplit = new javax.swing.JSplitPane();
         browseSearchPane = new javax.swing.JTabbedPane();
@@ -176,31 +175,25 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         lblSeriesType.setText("Series types:");
 
         btnTogByMe.setFont(new java.awt.Font("Lucida Grande", 0, 10));
-        btnTogByMe.setText("by me");
+        btnTogByMe.setText("Created by me");
 
         btnTogMostRecent.setFont(new java.awt.Font("Lucida Grande", 0, 10));
         btnTogMostRecent.setText("Most recent versions only");
-        btnTogMostRecent.setEnabled(false);
         btnTogMostRecent.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTogMostRecentActionPerformed(evt);
             }
         });
 
-        lblSeriesType1.setFont(new java.awt.Font("Lucida Grande", 0, 10));
-        lblSeriesType1.setText("Authored:");
-
         org.jdesktop.layout.GroupLayout panelRibbonLayout = new org.jdesktop.layout.GroupLayout(panelRibbon);
         panelRibbon.setLayout(panelRibbonLayout);
         panelRibbonLayout.setHorizontalGroup(
             panelRibbonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelRibbonLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(btnTogMostRecent)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 434, Short.MAX_VALUE)
-                .add(panelRibbonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, lblSeriesType1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, lblSeriesType, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE))
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelRibbonLayout.createSequentialGroup()
+                .addContainerGap(511, Short.MAX_VALUE)
+                .add(panelRibbonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(lblSeriesType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 71, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(btnTogMostRecent))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelRibbonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                     .add(btnTogByMe, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
@@ -213,12 +206,11 @@ public class DBBrowser_UI extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(panelRibbonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(cboSeriesType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblSeriesType)
-                    .add(btnTogMostRecent))
+                    .add(lblSeriesType))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelRibbonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnTogByMe)
-                    .add(lblSeriesType1))
+                    .add(btnTogMostRecent))
                 .addContainerGap())
         );
 
@@ -251,7 +243,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(cboBrowseBy, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtFilterInput, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -267,7 +259,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         );
         searchPanelLayout.setVerticalGroup(
             searchPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 331, Short.MAX_VALUE)
+            .add(0, 333, Short.MAX_VALUE)
         );
 
         browseSearchPane.addTab("Search", searchPanel);
@@ -282,7 +274,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         );
         workAreaLayout.setVerticalGroup(
             workAreaLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 377, Short.MAX_VALUE)
+            .add(0, 379, Short.MAX_VALUE)
         );
 
         listTableSplit.setRightComponent(workArea);
@@ -319,7 +311,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
                 .add(btnInvertSelect)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnPreview)
-                .addContainerGap(243, Short.MAX_VALUE))
+                .addContainerGap(245, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout mainPanelLayout = new org.jdesktop.layout.GroupLayout(mainPanel);
@@ -338,8 +330,8 @@ public class DBBrowser_UI extends javax.swing.JDialog {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, listTableSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, extraButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, listTableSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, extraButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -413,7 +405,6 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     protected javax.swing.JButton jButton7;
     protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JLabel lblSeriesType;
-    protected javax.swing.JLabel lblSeriesType1;
     protected javax.swing.JSplitPane listTableSplit;
     protected javax.swing.JList lstSites;
     protected javax.swing.JPanel mainPanel;

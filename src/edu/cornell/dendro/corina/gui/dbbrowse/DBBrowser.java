@@ -37,6 +37,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
+import javax.swing.RowFilter.ComparisonType;
+import javax.swing.RowFilter.Entry;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -151,9 +153,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         // don't let it grow to distort our dialog!
         extraButtonPanel.setPreferredSize(new Dimension(btnOk.getWidth(), 1));
         extraButtonPanel.setMaximumSize(new Dimension(btnOk.getWidth(), Integer.MAX_VALUE));
-        
-        // Hide version toggler for now
-        this.btnTogMostRecent.setVisible(false);
+       
         
         // Set size of window to 1024x700 or full screen whichever is the smaller
         int width;
@@ -172,6 +172,12 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         }        
         this.setSize(width, height);
         Center.center(this);
+        
+        btnTogMostRecent.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent ev){
+        		filterAvailMeas();
+        	}
+        });
         
         btnTogByMe.addActionListener(new ActionListener(){
         	public void actionPerformed(ActionEvent ev){
@@ -478,7 +484,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         List<RowFilter<ElementListTableModel, Object>> filters = new ArrayList<RowFilter<ElementListTableModel, Object>>(2);
         RowFilter<ElementListTableModel, Object> seriesTypeFilter = null;         
         RowFilter<ElementListTableModel, Object> authorFilter = null; 
-
+        RowFilter<ElementListTableModel, Object> versionFilter = null; 
         
         // Series Type
         if (cboSeriesType.getSelectedIndex()==1){
@@ -497,9 +503,16 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         	authorFilter = RowFilter.regexFilter("", 2);
         }
         
+        if (this.btnTogMostRecent.isSelected()){
+        	versionFilter = RowFilter.numberFilter(ComparisonType.EQUAL, 1, 11);
+        } else {
+        	versionFilter = RowFilter.numberFilter(ComparisonType.NOT_EQUAL, 5, 11);
+        }
+        
         // Add all filters together
         filters.add(seriesTypeFilter);
         filters.add(authorFilter);
+        filters.add(versionFilter);
         RowFilter<ElementListTableModel,Object> allFilters = RowFilter.andFilter(filters);
         
         
@@ -514,6 +527,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	
 		ElementListTableModel mdlAvailMeas = new ElementListTableModel();
 		tblAvailMeas.setModel(mdlAvailMeas); // set model
+		tblAvailMeas.getColumnModel().removeColumn(tblAvailMeas.getColumn("hidden.MostRecentVersion"));
 		availableSorter = new ElementListTableSorter(mdlAvailMeas, tblAvailMeas);
 		availableSorter.sortOnColumn(0, false);
 		tblAvailMeas.getTableHeader().addMouseListener(availableSorter); // add sorter & header renderer
@@ -1206,4 +1220,6 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			}
 		}
 	}
+	
+
 }
