@@ -81,38 +81,14 @@ public class ElementListPopupMenu extends JPopupMenu {
 		if( series instanceof TridasDerivedSeries)
 		{
 			final TridasDerivedSeries ds = (TridasDerivedSeries) bs.getSeries();
-			if(ds.getType().getValue().equals("Crossdate"));
+			if(ds.getType().getValue().equalsIgnoreCase("Crossdate"))
 			{
 				item = Builder.makeMenuItem("crossdate.reviewCrossdate", true, "crossdate.png");
 				add(item);
 				item.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {			
-						
-						Element floatingSeries = element;
-						Element referenceSeries = null;
-						
-						// set up our query...
-						SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
-						search.addSearchConstraint(SearchParameterName.SERIESDBID, 
-								SearchOperator.EQUALS, ds.getInterpretation().getDatingReference().getLinkSeries().getIdentifier().getValue());
 					
-
-						SeriesSearchResource searchResource = new SeriesSearchResource(search);
-						CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(new JDialog(), searchResource);
-						
-						// start our query (remotely)
-						searchResource.query();
-						dlg.setVisible(true);
-						
-						if(!dlg.isSuccessful()) {
-							new Bug(dlg.getFailException());
-						} else {
-							referenceSeries = searchResource.getAssociatedResult().get(0);
-
-						}
-						
-						
-						new CrossdateDialog(new JFrame(), referenceSeries, floatingSeries);
+						new CrossdateDialog(new JFrame(), element);
 
 					}
 				});

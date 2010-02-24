@@ -7,8 +7,12 @@ import java.io.IOException;
 import java.security.AccessControlException;
 import java.security.AccessController;
 
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasDerivedSeries;
 
 import edu.cornell.dendro.corina.CorinaPermission;
 import edu.cornell.dendro.corina.cross.CrossdateDialog;
@@ -109,16 +113,6 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 					// open it for fun times
 					new ReconcileWindow(sample, reference);
 				}
-
-					/*
-					 * here's how the reconcile UI should work: -- auto-tile
-					 * +------A Reading------+ +------C Reading------+ | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-					 * +---------------------+ +---------------------+
-					 * +--------------Reconcile Dialog---------------+ | | | |
-					 * +---------------------------------------------+ --
-					 * selecting an error row in the reconcile dialog selects
-					 * that year in A and C
-					 */
 			}
 		});
 		
@@ -206,36 +200,68 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		add(redate);
 		redate.setEnabled(true);
 		redate.setVisible(true);		
-
-
-		// cross against
-		// HACK: just disable this if the sample isn't saved?
-		JMenuItem crossAgainst = Builder.makeMenuItem("menus.tools.crossdate", true, "crossdate.png");
+		
+		
+		// Crossdating	
+		JMenuItem crossAgainst = Builder.makeMenuItem("menus.tools.new_crossdate", true, "crossdate.png");
 		crossAgainst.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				Element secondary = new CachedElement(sample); 
 				new CrossdateDialog(editor, ElementList.singletonList(secondary), secondary);
 			}
 		});
-		add(crossAgainst);
-
-		// cross all
-		/*
-		crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
-		crossElements.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				// n-by-n cross
-				Sequence seq = new Sequence(sample.getElements(),
-						sample.getElements());
-				new CrossdateWindow(seq);
+		
+		// now, make this remember the last things we reconciled against!
+		JMenu crossMenu = Builder.makeMenu("menus.tools.crossdateAgainst");
+		crossMenu.putClientProperty("corina.crossdate_open_recent_action", new OpenRecent.SampleOpener("crossdate") {
+			@Override
+			public void performOpen(Sample s) {
+				// new crossdate window
+				//new ReconcileWindow(sample, s);
+				// move to top of menu
+				//OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
+				Element secondary = new CachedElement(sample); 
+				new CrossdateDialog(editor, ElementList.singletonList(secondary), secondary);
+				OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
 			}
 		});
-		add(crossElements);
-		crossElements.setEnabled(false);
-		crossElements.setVisible(false);
-		*/
+		
+		ITridasSeries series = s.getSeries();
+		if(series instanceof TridasDerivedSeries)
+		{
+			TridasDerivedSeries ds = (TridasDerivedSeries) series;
+			if(ds.getType().getValue().equals("Crossdate"))
+			{
+				JMenuItem reviewCrossdate = Builder.makeMenuItem("crossdate.reviewCrossdate", true, "crossdate.png");
+				final CachedElement element = new CachedElement(s);
+				reviewCrossdate.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent ae) {
+						new CrossdateDialog(editor, element);
+					}
+				});
+				add(reviewCrossdate);
+			}
+			else
+			{
+				crossMenu.add(crossAgainst);
+				crossMenu.addSeparator();
+				OpenRecent.makeOpenRecentMenu("menus.tools.crossdate", crossMenu, 10);
+				add(crossMenu);	
+			}
+			
+		}
+		else
+		{
+			crossMenu.add(crossAgainst);
+			crossMenu.addSeparator();
+			OpenRecent.makeOpenRecentMenu("menus.tools.crossdate", crossMenu, 10);
+			add(crossMenu);	
+		}
+		
+		
 
-
+		
+		
 
 		// hit them so they enable/disable themselves properly
 		sampleMetadataChanged(null);

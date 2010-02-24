@@ -16,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -43,6 +44,7 @@ import edu.cornell.dendro.corina.graph.GraphToolbar;
 import edu.cornell.dendro.corina.graph.GrapherEvent;
 import edu.cornell.dendro.corina.graph.GrapherListener;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.io.Exporter.EncodingType;
@@ -51,9 +53,15 @@ import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.schema.SearchOperator;
+import edu.cornell.dendro.corina.schema.SearchParameterName;
+import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
+import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 /**
  *
@@ -116,18 +124,50 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     }
     
     /**
-     * Set up crossdate dialog in 'review mode' with the floating and reference
-     * series defined
+     * The specified element is shown in a crossdate dialog in 'review mode'
+     * so the user can inspect the decision that was made  
      * 
      * @param parent
-     * @param reference
      * @param floating
      */
-    public CrossdateDialog(java.awt.Frame parent,
-    		Element reference, Element floating) {
+    public CrossdateDialog(java.awt.Frame parent, Element floating) {
     	super();
     	window = new JFrame();
         
+    	// Load floating element and check it's a 'crossdate'
+		BaseSample bs;
+		try {
+			bs = floating.load();
+		} catch (IOException ioe) {
+			// shouldn't happen?
+			return;
+		}	
+		TridasDerivedSeries ds = (TridasDerivedSeries) bs.getSeries();
+		if(!ds.getType().getValue().equals("Crossdate"))
+		{
+			new Bug(new Exception(I18n.getText("error.mustBeCrossdate")));
+			return;
+		}
+		    	
+		// Query for the master chronology used to do the crossdate
+		SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
+		search.addSearchConstraint(SearchParameterName.SERIESDBID, 
+				SearchOperator.EQUALS, ds.getInterpretation().getDatingReference().getLinkSeries().getIdentifier().getValue());
+	
+		SeriesSearchResource searchResource = new SeriesSearchResource(search);
+		CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(new JDialog(), searchResource);
+		
+		// start our query (remotely)
+		searchResource.query();
+		dlg.setVisible(true);
+		
+		Element reference = null;
+		if(!dlg.isSuccessful()) {
+			new Bug(dlg.getFailException());
+		} else {
+			reference = searchResource.getAssociatedResult().get(0);
+		}
+    	
     	// Set up lists of series
     	ElementList tmp = new ElementList();
     	tmp.add(reference);
@@ -234,17 +274,17 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 				
 				setFloatingPosition(floatingSample.getRange());
 				
-				reviewString = floatingSample.getDisplayTitle() + " was dated using the reference series: " + referenceSample.getDisplayTitle() + ".\n";
-				reviewString += "Author: " + floatingSeries.getAuthor() + "\n";
+				reviewString = floatingSample.getDisplayTitle() + I18n.getText("crossdate.wasDatedUsing")+ ": " + referenceSample.getDisplayTitle() + ".\n";
+				reviewString += I18n.getText("meta.author")+": " + floatingSeries.getAuthor() + "\n";
 				for (TridasGenericField gf: floatingSample.getSeries().getGenericFields())
 				{
 					if(gf.getName().equals("corina.justification"))
 					{
-						reviewString += "Justification: "+gf.getValue().toString() + "\n";
+						reviewString += I18n.getText("general.justification") +": "+gf.getValue().toString() + "\n";
 					}
 					if(gf.getName().equals("corina.crossdateConfidenceLevel"))
 					{
-						reviewString += "Certainty: " + gf.getValue().toString() + " star\n";
+						reviewString += I18n.getText("general.certainty")+ ": " + gf.getValue().toString() + " "+ I18n.getText("general.star")+"\n";
 					}
 
 				}
