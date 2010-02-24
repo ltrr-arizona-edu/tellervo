@@ -57,6 +57,7 @@ import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -274,7 +275,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 				
 				setFloatingPosition(floatingSample.getRange());
 				
-				reviewString = floatingSample.getDisplayTitle() + I18n.getText("crossdate.wasDatedUsing")+ ": " + referenceSample.getDisplayTitle() + ".\n";
+				reviewString = floatingSample.getDisplayTitle() + " " + I18n.getText("crossdate.wasDatedUsing")+ ": " + referenceSample.getDisplayTitle() + ".\n";
 				reviewString += I18n.getText("meta.author")+": " + floatingSeries.getAuthor() + "\n";
 				for (TridasGenericField gf: floatingSample.getSeries().getGenericFields())
 				{
@@ -333,7 +334,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     }
     
     private void initialize() {  	
-
+    	
     	// start our new crossdates
     	crossdates = new CrossdateCollection();
     	status = new CrossdateStatusBar();
@@ -356,6 +357,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	Center.center(window);
     	window.setExtendedState(window.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     	window.setVisible(true);
+    	window.setIconImage(Builder.getApplicationIcon());
     	
     	if (tableSignificantScores.getRowCount()>0)	tableSignificantScores.setRowSelectionInterval(0, 0);
 
