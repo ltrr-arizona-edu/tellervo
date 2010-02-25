@@ -504,9 +504,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         }
         
         if (this.btnTogMostRecent.isSelected()){
-        	versionFilter = RowFilter.numberFilter(ComparisonType.EQUAL, 1, 11);
+        	versionFilter = RowFilter.regexFilter("true", 11);
         } else {
-        	versionFilter = RowFilter.numberFilter(ComparisonType.NOT_EQUAL, 5, 11);
+        	versionFilter = RowFilter.regexFilter("", 11);
         }
         
         // Add all filters together
