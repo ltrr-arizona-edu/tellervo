@@ -32,8 +32,6 @@ import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasGenericField;
 
-import sun.tools.tree.ThisExpression;
-
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.cross.gui.Ui_CrossdatePanel;
 import edu.cornell.dendro.corina.graph.Graph;
