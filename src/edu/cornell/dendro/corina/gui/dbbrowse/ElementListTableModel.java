@@ -189,9 +189,15 @@ public class ElementListTableModel extends AbstractTableModel {
 		}
 	}
 	
-	private Integer isMostRecentVersion(BaseSample thisBS)
+	/**
+	 * Returns true if this baseSample is the most recent version in the table
+	 * 
+	 * @param thisBS
+	 * @return
+	 */
+	private Boolean isMostRecentVersion(BaseSample thisBS)
 	{	
-		Integer mostRecent = 1;
+		Boolean mostRecent = true;
 		
 		for(int i=0; i<getRowCount(); i++ )
 		{
@@ -201,7 +207,7 @@ public class ElementListTableModel extends AbstractTableModel {
 			try {
 				matchBS = matchEl.loadBasic();
 			} catch (IOException ioe) {
-				return 0;
+				return false;
 			}
 			
 			// Skip if we're comparing the same row
@@ -213,7 +219,7 @@ public class ElementListTableModel extends AbstractTableModel {
 			// Check if the current row is newer than the specified row
 			if(thisBS.getMeta(Metadata.CREATED_TIMESTAMP, Date.class).before(matchBS.getMeta(Metadata.CREATED_TIMESTAMP, Date.class)))
 			{
-				mostRecent = 0; 
+				mostRecent = false; 
 			}
 		}
 		
@@ -228,11 +234,16 @@ public class ElementListTableModel extends AbstractTableModel {
 	
     public Class<?> getColumnClass(int c) {
     	// reconciled is true/false
-    	if(c == 10)
+    	if(c == 10){
     		return Boolean.class;
-    	
+    	}
+    	if(c == 11){
+    		return Boolean.class;
+    	}
+    	else{
     	// everything else is just a string
-    	return String.class;
+    		return String.class;
+    	}
     }
     
 	public String getColumnName(int index) {
