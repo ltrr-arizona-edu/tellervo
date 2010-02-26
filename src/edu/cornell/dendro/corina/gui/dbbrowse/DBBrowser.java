@@ -539,6 +539,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			
 		ElementListTableModel mdlChosenMeas = new ElementListTableModel(selectedElements);
 		tblChosenMeas.setModel(mdlChosenMeas);
+		tblChosenMeas.getColumnModel().removeColumn(tblChosenMeas.getColumn("hidden.MostRecentVersion"));
 		chosenSorter = new ElementListTableSorter(mdlChosenMeas, tblChosenMeas);
 		chosenSorter.sortOnColumn(0, false);
 		tblChosenMeas.getTableHeader().addMouseListener(chosenSorter); // add sorter & header renderer
