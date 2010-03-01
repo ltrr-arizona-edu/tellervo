@@ -57,6 +57,7 @@ import org.tridas.schema.TridasSample;
  *           &lt;element ref="{http://www.tridas.org/1.3}radius" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://www.tridas.org/1.3}measurementSeries" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://www.tridas.org/1.3}derivedSeries" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element name="user" type="{http://dendro.cornell.edu/schema/corina/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}box" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;/sequence>
  *         &lt;sequence>
@@ -92,6 +93,7 @@ import org.tridas.schema.TridasSample;
     "radiuses",
     "measurementSeries",
     "derivedSeries",
+    "users",
     "boxes",
     "entities",
     "authenticate",
@@ -118,6 +120,8 @@ public class WSIRequest
     protected List<TridasMeasurementSeries> measurementSeries;
     @XmlElement(namespace = "http://www.tridas.org/1.3")
     protected List<TridasDerivedSeries> derivedSeries;
+    @XmlElement(name = "user")
+    protected List<SecurityUser> users;
     @XmlElement(name = "box")
     protected List<WSIBox> boxes;
     @XmlElement(name = "entity")
@@ -421,6 +425,43 @@ public class WSIRequest
     }
 
     /**
+     * Gets the value of the users property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the users property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getUsers().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link SecurityUser }
+     * 
+     * 
+     */
+    public List<SecurityUser> getUsers() {
+        if (users == null) {
+            users = new ArrayList<SecurityUser>();
+        }
+        return this.users;
+    }
+
+    public boolean isSetUsers() {
+        return ((this.users!= null)&&(!this.users.isEmpty()));
+    }
+
+    public void unsetUsers() {
+        this.users = null;
+    }
+
+    /**
      * Gets the value of the boxes property.
      * 
      * <p>
@@ -719,6 +760,18 @@ public class WSIRequest
     }
 
     /**
+     * Sets the value of the users property.
+     * 
+     * @param users
+     *     allowed object is
+     *     {@link SecurityUser }
+     *     
+     */
+    public void setUsers(List<SecurityUser> users) {
+        this.users = users;
+    }
+
+    /**
      * Sets the value of the boxes property.
      * 
      * @param boxes
@@ -759,6 +812,7 @@ public class WSIRequest
         equalsBuilder.append(this.getRadiuses(), that.getRadiuses());
         equalsBuilder.append(this.getMeasurementSeries(), that.getMeasurementSeries());
         equalsBuilder.append(this.getDerivedSeries(), that.getDerivedSeries());
+        equalsBuilder.append(this.getUsers(), that.getUsers());
         equalsBuilder.append(this.getBoxes(), that.getBoxes());
         equalsBuilder.append(this.getEntities(), that.getEntities());
         equalsBuilder.append(this.getAuthenticate(), that.getAuthenticate());
@@ -789,6 +843,7 @@ public class WSIRequest
         hashCodeBuilder.append(this.getRadiuses());
         hashCodeBuilder.append(this.getMeasurementSeries());
         hashCodeBuilder.append(this.getDerivedSeries());
+        hashCodeBuilder.append(this.getUsers());
         hashCodeBuilder.append(this.getBoxes());
         hashCodeBuilder.append(this.getEntities());
         hashCodeBuilder.append(this.getAuthenticate());
@@ -844,6 +899,11 @@ public class WSIRequest
             List<TridasDerivedSeries> theDerivedSeries;
             theDerivedSeries = this.getDerivedSeries();
             toStringBuilder.append("derivedSeries", theDerivedSeries);
+        }
+        {
+            List<SecurityUser> theUsers;
+            theUsers = this.getUsers();
+            toStringBuilder.append("users", theUsers);
         }
         {
             List<WSIBox> theBoxes;
@@ -960,6 +1020,15 @@ public class WSIRequest
             copy.setDerivedSeries(copyDerivedSeries);
         } else {
             copy.unsetDerivedSeries();
+        }
+        if (this.isSetUsers()) {
+            List<SecurityUser> sourceUsers;
+            sourceUsers = this.getUsers();
+            @SuppressWarnings("unchecked")
+            List<SecurityUser> copyUsers = ((List<SecurityUser> ) copyBuilder.copy(sourceUsers));
+            copy.setUsers(copyUsers);
+        } else {
+            copy.unsetUsers();
         }
         if (this.isSetBoxes()) {
             List<WSIBox> sourceBoxes;

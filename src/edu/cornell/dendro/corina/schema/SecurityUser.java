@@ -39,7 +39,7 @@ import org.tridas.interfaces.IdAble;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="memberOf">
+ *         &lt;element name="memberOf" minOccurs="0">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
@@ -51,11 +51,12 @@ import org.tridas.interfaces.IdAble;
  *           &lt;/complexType>
  *         &lt;/element>
  *       &lt;/sequence>
- *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}token" />
- *       &lt;attribute name="username" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="firstName" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="lastName" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="isActive" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}token" />
+ *       &lt;attribute name="username" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="firstName" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="lastName" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="isActive" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="password" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -67,25 +68,25 @@ import org.tridas.interfaces.IdAble;
 @XmlType(name = "securityUser", propOrder = {
     "memberOf"
 })
-public class SecurityUser
-    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, HumanName, IdAble
+public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, HumanName, IdAble
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlElement(required = true)
     protected SecurityUser.MemberOf memberOf;
-    @XmlAttribute(name = "id", required = true)
+    @XmlAttribute(name = "id")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String id;
-    @XmlAttribute(name = "username", required = true)
+    @XmlAttribute(name = "username")
     protected String username;
-    @XmlAttribute(name = "firstName", required = true)
+    @XmlAttribute(name = "firstName")
     protected String firstName;
-    @XmlAttribute(name = "lastName", required = true)
+    @XmlAttribute(name = "lastName")
     protected String lastName;
-    @XmlAttribute(name = "isActive", required = true)
-    protected boolean isActive;
+    @XmlAttribute(name = "isActive")
+    protected Boolean isActive;
+    @XmlAttribute(name = "password")
+    protected String password;
 
     /**
      * Gets the value of the memberOf property.
@@ -230,6 +231,10 @@ public class SecurityUser
     /**
      * Gets the value of the isActive property.
      * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
      */
     public boolean isIsActive() {
         return isActive;
@@ -238,13 +243,49 @@ public class SecurityUser
     /**
      * Sets the value of the isActive property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
      */
     public void setIsActive(boolean value) {
         this.isActive = value;
     }
 
     public boolean isSetIsActive() {
-        return true;
+        return (this.isActive!= null);
+    }
+
+    public void unsetIsActive() {
+        this.isActive = null;
+    }
+
+    /**
+     * Gets the value of the password property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Sets the value of the password property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPassword(String value) {
+        this.password = value;
+    }
+
+    public boolean isSetPassword() {
+        return (this.password!= null);
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
@@ -262,6 +303,7 @@ public class SecurityUser
         equalsBuilder.append(this.getFirstName(), that.getFirstName());
         equalsBuilder.append(this.getLastName(), that.getLastName());
         equalsBuilder.append(this.isIsActive(), that.isIsActive());
+        equalsBuilder.append(this.getPassword(), that.getPassword());
     }
 
     public boolean equals(Object object) {
@@ -283,6 +325,7 @@ public class SecurityUser
         hashCodeBuilder.append(this.getFirstName());
         hashCodeBuilder.append(this.getLastName());
         hashCodeBuilder.append(this.isIsActive());
+        hashCodeBuilder.append(this.getPassword());
     }
 
     public int hashCode() {
@@ -318,9 +361,14 @@ public class SecurityUser
             toStringBuilder.append("lastName", theLastName);
         }
         {
-            boolean theIsActive;
+            Boolean theIsActive;
             theIsActive = this.isIsActive();
             toStringBuilder.append("isActive", theIsActive);
+        }
+        {
+            String thePassword;
+            thePassword = this.getPassword();
+            toStringBuilder.append("password", thePassword);
         }
     }
 
@@ -373,11 +421,20 @@ public class SecurityUser
             copy.lastName = null;
         }
         if (this.isSetIsActive()) {
-            boolean sourceIsActive;
+            Boolean sourceIsActive;
             sourceIsActive = this.isIsActive();
-            boolean copyIsActive = copyBuilder.copy(sourceIsActive);
+            Boolean copyIsActive = ((Boolean) copyBuilder.copy(sourceIsActive));
             copy.setIsActive(copyIsActive);
         } else {
+            copy.unsetIsActive();
+        }
+        if (this.isSetPassword()) {
+            String sourcePassword;
+            sourcePassword = this.getPassword();
+            String copyPassword = ((String) copyBuilder.copy(sourcePassword));
+            copy.setPassword(copyPassword);
+        } else {
+            copy.password = null;
         }
         return copy;
     }

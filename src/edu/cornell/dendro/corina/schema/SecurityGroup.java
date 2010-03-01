@@ -34,10 +34,10 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * &lt;complexType name="securityGroup">
  *   &lt;simpleContent>
  *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
- *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}token" />
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="description" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="isActive" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}token" />
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="description" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="isActive" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *     &lt;/extension>
  *   &lt;/simpleContent>
  * &lt;/complexType>
@@ -56,16 +56,16 @@ public class SecurityGroup
     private final static long serialVersionUID = 1001L;
     @XmlValue
     protected String value;
-    @XmlAttribute(name = "id", required = true)
+    @XmlAttribute(name = "id")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String id;
-    @XmlAttribute(name = "name", required = true)
+    @XmlAttribute(name = "name")
     protected String name;
-    @XmlAttribute(name = "description", required = true)
+    @XmlAttribute(name = "description")
     protected String description;
-    @XmlAttribute(name = "isActive", required = true)
-    protected boolean isActive;
+    @XmlAttribute(name = "isActive")
+    protected Boolean isActive;
 
     /**
      * Gets the value of the value property.
@@ -182,6 +182,10 @@ public class SecurityGroup
     /**
      * Gets the value of the isActive property.
      * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
      */
     public boolean isIsActive() {
         return isActive;
@@ -190,13 +194,21 @@ public class SecurityGroup
     /**
      * Sets the value of the isActive property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
      */
     public void setIsActive(boolean value) {
         this.isActive = value;
     }
 
     public boolean isSetIsActive() {
-        return true;
+        return (this.isActive!= null);
+    }
+
+    public void unsetIsActive() {
+        this.isActive = null;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
@@ -263,7 +275,7 @@ public class SecurityGroup
             toStringBuilder.append("description", theDescription);
         }
         {
-            boolean theIsActive;
+            Boolean theIsActive;
             theIsActive = this.isIsActive();
             toStringBuilder.append("isActive", theIsActive);
         }
@@ -310,11 +322,12 @@ public class SecurityGroup
             copy.description = null;
         }
         if (this.isSetIsActive()) {
-            boolean sourceIsActive;
+            Boolean sourceIsActive;
             sourceIsActive = this.isIsActive();
-            boolean copyIsActive = copyBuilder.copy(sourceIsActive);
+            Boolean copyIsActive = ((Boolean) copyBuilder.copy(sourceIsActive));
             copy.setIsActive(copyIsActive);
         } else {
+            copy.unsetIsActive();
         }
         return copy;
     }
