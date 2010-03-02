@@ -151,6 +151,8 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
      */
     private Boolean setPassword(SecurityUser user, char[] pwd)
     {
+    	
+    	
 		return null;
     	
     }

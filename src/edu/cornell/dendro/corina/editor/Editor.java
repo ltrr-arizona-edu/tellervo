@@ -75,6 +75,7 @@ import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.menus.AdminMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.io.AbstractSerialMeasuringDevice;
@@ -587,6 +588,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		menubar.add(new EditorFileMenu(this, sample));
 		editorEditMenu = new EditorEditMenu(sample, dataView, this);
 		menubar.add(editorEditMenu);
+		menubar.add(new AdminMenu(this));
 		menubar.add(new EditorToolsMenu(sample, this));
 		menubar.add(new EditorGraphMenu(sample));
 		//menubar.add(new EditorSiteMenu(sample));

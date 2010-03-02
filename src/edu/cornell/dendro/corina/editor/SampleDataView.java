@@ -278,21 +278,21 @@ public class SampleDataView extends JPanel implements SampleListener,
 	
 	protected final void addAddDeleteMenu(JPopupMenu menu){
 		
-		JMenuItem insert = Builder.makeMenuItem("insert_year", true, "insertyear.png");
+		JMenuItem insert = Builder.makeMenuItem("menus.edit.insert_year", true, "insertyear.png");
 		insert.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				insertYear();
 			}
 		});
 
-		JMenuItem insertMR = Builder.makeMenuItem("insert_mr", true, "insertmissingyear.png");
+		JMenuItem insertMR = Builder.makeMenuItem("menus.edit.insert_mr", true, "insertmissingyear.png");
 		insertMR.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				insertMR();
 			}
 		});
 
-		JMenuItem delete = Builder.makeMenuItem("delete_year", true, "deleteyear.png");
+		JMenuItem delete = Builder.makeMenuItem("menus.edit.delete_year", true, "deleteyear.png");
 		delete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				deleteYear();
