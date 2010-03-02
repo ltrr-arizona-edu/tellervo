@@ -38,13 +38,13 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 -- 1 = array of groups
 -- 2 = type (vmeasurement, element, object, default)
 -- 3 = id (VMeasurementID, ElementID, ObjectID, or 0 for default)
-CREATE OR REPLACE FUNCTION cpgdb.GetGroupPermissionSet(_groupIDs integer[], _permtype varchar, _pid integer) 
+CREATE OR REPLACE FUNCTION cpgdb.GetGroupPermissionSet(_groupIDs integer[], _permtype varchar, _pid uuid) 
 RETURNS typPermissionSet AS $$
 DECLARE
    query varchar;
    whereClause varchar;
    --i integer;
-   objid integer;
+   objid uuid;
    res refcursor;
    perm varchar;
    vstype varchar;
@@ -54,6 +54,9 @@ DECLARE
 
    stypes varchar[] := array['vmeasurement','element','object','default'];
 BEGIN
+
+   --RAISE NOTICE 'Starting getgrouppermissionset()';
+
    -- Invalid type specified?
    IF NOT (_permtype = ANY(stypes)) THEN
       RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, element, object, default (case matters!).', _permtype;
@@ -63,7 +66,7 @@ BEGIN
    IF _permtype = 'default' THEN
       whereClause := '';
    ELSE
-      whereClause := ' WHERE ' || _permType || 'Id = ' || _pid;
+      whereClause := ' WHERE ' || _permType || 'Id = ' ||  '''' || _pid ||'''' ;
    END IF;
    
    query := 'SELECT DISTINCT perm.name FROM tblSecurity' || _permType || ' obj ' ||
@@ -88,7 +91,7 @@ BEGIN
             LEFT JOIN tblRadius t2 ON t2.RadiusID = t1.RadiusID 
             LEFT JOIN tblSample t3 on t3.SampleID = t2.SampleID 
             LEFT JOIN tblElement tr ON tr.ElementID = t3.ElementID
-            WHERE vs.VMeasurementID = _pid;
+            WHERE vs.VMeasurementID =   _pid  ;
 
          IF NOT FOUND THEN
             RAISE EXCEPTION 'Could not determine security: vmeasurement % -> element does not exist', _pid;
@@ -103,7 +106,7 @@ BEGIN
             setSize := 0;
 
             -- For each child VMeasurement, AND our sets together...
-            FOR objid IN SELECT MemberVMeasurementID FROM tblVMeasurementGroup WHERE VMeasurementID = _pid LOOP
+            FOR objid IN SELECT MemberVMeasurementID FROM tblVMeasurementGroup WHERE VMeasurementID = '''' || _pid ||'''' LOOP
                childPerms := cpgdb.GetGroupPermissionSet(_groupIDs, 'vmeasurement', objid);
 
                -- Start out with our first childperms; continue with anding them.               
@@ -121,9 +124,8 @@ BEGIN
          
       ELSIF _permType = 'element' THEN
          -- Get the objectID of this element
-         SELECT tblSubobject.objectID INTO objid FROM tblElement, tblSubobject
-                WHERE tblElement.subobjectID=tblSubobject.SubobjectID
-                AND tblElement.elementid = _pid;
+         SELECT tblelement.objectID INTO objid FROM tblElement
+                WHERE tblElement.elementid = _pid;
 
          IF NOT FOUND THEN
             RAISE EXCEPTION 'Could not determine security: element % -> object does not exist', _pid;
@@ -250,7 +252,7 @@ $$ LANGUAGE SQL IMMUTABLE;
 -- 1 = securityUserID
 -- 2 = type (VMeasurement, Element, Object, Default)
 -- 3 = id (VMeasurementID, ElementID, ObjectID, or 0 for default)
-CREATE OR REPLACE FUNCTION cpgdb.GetUserPermissionSet(integer, varchar, integer) 
+CREATE OR REPLACE FUNCTION cpgdb.GetUserPermissionSet(integer, varchar, uuid) 
 RETURNS typPermissionSet AS $$
 DECLARE
    _securityUserID ALIAS FOR $1;
@@ -260,6 +262,8 @@ DECLARE
    groupMembership int[];
    perms typPermissionSet;
 BEGIN
+   --RAISE NOTICE 'Starting getuserpermissionset()';
+
    -- Get an array list of all groups this user is a member of
    SELECT * INTO groupMembership FROM cpgdb.GetGroupMembershipArray($1);
 
