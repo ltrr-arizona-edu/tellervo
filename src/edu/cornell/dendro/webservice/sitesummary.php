@@ -144,7 +144,7 @@ global $dbconn;
    	 
    	   foreach ($radiusArray as $radiusCode)
    	   { 	
-   	   		
+   	   		$isreconciled = false;
    	   		/*$seriesSQL = "select 
 					objectcode,
 					elementcode,
@@ -173,6 +173,7 @@ global $dbconn;
 					measuredbyid,
 					su.lastname as measuredbyname,
 					createdtimestamp,
+					isreconciled,
 					readingcount
 					from
 					vwcomprehensivevm
@@ -195,6 +196,7 @@ global $dbconn;
 							echo "<td>";
 							echo $seriesrow['measuredbyname']."<br>".$seriesrow['readingcount']." rings<br>";
 							if($seriesrow['createdtimestamp']>'2000-01-01') echo date('d/m/Y', strtotime($seriesrow['createdtimestamp']));
+							if($seriesrow['isreconciled']=='t') echo "<br>Reconciled";
 							echo "</td>";
 							$readingCount++;
 						

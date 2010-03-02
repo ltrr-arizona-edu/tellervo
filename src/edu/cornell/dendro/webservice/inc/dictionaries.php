@@ -162,15 +162,18 @@ class dictionaries
                 	
                 	if ($item=="securityUser"){
                 		$myObj->setChildParamsFromDB();
-                	}
-                	                	
-                	if($success)
-                	{
-                		$xmldata.=$myObj->asXML("minimal");
+                		$xmldata.=$myObj->asXML("comprehensive");
                 	}
                 	else
-                	{
-                		
+                	{ 	                	
+	                	if($success)
+	                	{
+	                		$xmldata.=$myObj->asXML("minimal");
+	                	}
+	                	else
+	                	{
+	                		
+	                	}
                 	}
                 }
                 $xmldata.= "</".$item."Dictionary>\n";

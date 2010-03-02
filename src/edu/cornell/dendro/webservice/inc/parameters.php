@@ -1264,12 +1264,60 @@ class boxParameters extends boxEntity implements IParams
     
     
     
+class securityUserParameters extends securityUserEntity implements IParams
+{
+	var $xmlRequestDom = NULL;
+    
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+    	global $firebug;
+    	parent::__construct();    	
+    	
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='box')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();   		
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+     		            		
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+    	global $firebug;
+		global $corinaNS;
+        global $tridasNS;
+	
 
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+     
+        foreach($children as $child)
+        {
 
-
-
-
-
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   $firebug->log($child->hasAttribute("id"), "has id?");
+		   
+		   if ($child->tagName=='user')
+		   {
+		   		if($child->hasAttribute("id")) $this->setID($child->getAttribute("id"), null);
+		   		if($child->hasAttribute("username")) $this->setUsername($child->getAttribute("username"));
+		   		if($child->hasAttribute("firstName")) $this->setFirstname($child->getAttribute("firstName"));
+		   		if($child->hasAttribute("lastName")) $this->setLastname($child->getAttribute("lastName"));
+		   		if($child->hasAttribute("isActive")) $this->setIsActive(dbhelper::formatBool($child->getAttribute("isActive"),"php"));
+		   		if($child->hasAttribute("password")) $this->setPassword($child->getAttribute("password"), "plain");
+		   } 
+        }   
+    }	
+}
+    
+ 
 /**
  * Old stuff needs refactoring
  *

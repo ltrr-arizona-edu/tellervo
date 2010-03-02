@@ -284,8 +284,13 @@ class request
 
 	                	case 'box':
 	                		$newxml = "<box><identifier>".$item->getAttribute('id')."</identifier></box>";
-	                		$myParamObj = new boxParameters($newxml, $parentID);
-                            break;		                		
+	                		$myParamObj = new boxParameters($newxml);
+                            break;	
+
+	                	case 'user':
+	                		$newxml = "<root><user id='".$item->getAttribute('id')."'/></root>";
+	                		$myParamObj = new securityUserParameters($newxml);
+                            break;	                            
                                                         
 	                	default:
 	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);
@@ -336,7 +341,10 @@ class request
             			break;
             		case "tridas:derivedSeries":
             			$myParamObj = new measurementParameters($this->xmlRequestDom->saveXML($item), $parentID);
-            			break;    	
+            			break; 
+            		case "user":
+            			$myParamObj = new securityUserParameters("<root>".$this->xmlRequestDom->saveXML($item)."</root>");
+						break;
             		case "box":
             			$myParamObj = new boxParameters($this->xmlRequestDom->saveXML($item));
             			break;

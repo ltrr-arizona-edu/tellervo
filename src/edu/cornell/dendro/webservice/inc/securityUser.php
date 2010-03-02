@@ -13,16 +13,11 @@
 require_once('inc/sample.php');
 require_once('inc/taxon.php');
 require_once('inc/securityGroup.php');
+require_once('dbhelper.php');
 
-class securityUser 
+
+class securityUser extends securityUserEntity implements IDBAccessor
 {
-    var $id = NULL;
-    var $username = NULL;
-    var $firstName = NULL;
-    var $lastName = NULL;
-    var $password = NULL;
-    var $isActive = TRUE;
-    var $groupArray = array();
 
     var $parentXMLTag = "users"; 
     var $lastErrorMessage = NULL;
@@ -41,46 +36,8 @@ class securityUser
     /* SETTERS */
     /***********/
     
-    function setUsername($theUsername)
-    {
-        $this->username=$theUsername;
-    }
-    
-    function setFirstname($theFirstname)
-    {
-        $this->firstName=$theFirstname;
-    }
-    
-    function setLastname($theLastname)
-    {
-        $this->lastName=$theLastname;
-    }
-    
-    function setPassword($thePassword, $format="plain")
-    {
-        switch($format)
-        {
-        case "plain":
-            // password supplied is plain tetxt so hash first
-            $this->password=hash('md5', $thePassword);
-            break;
-        case "hash":
-            // password is already hashed so just store
-            $this->password=$thePassword;
-            break;
-        default:
-            return false;
-            break;
-        }
 
-        return true;
-    }
-    
-    function setIsActive($theIsActive)
-    {
-        // Set the current objects precision 
-        $this->isActive=$theIsActive;
-    }
+
 
     function setParamsFromDB($theID)
     {
@@ -111,7 +68,7 @@ class securityUser
                 $this->setUsername($row['username']);
                 $this->setFirstName($row['firstname']);
                 $this->setLastName($row['lastname']);
-                //$this->setPassword($row['password'], "hash");
+                $this->setPassword($row['password'], "hash");
                 $this->setIsActive(dbHelper::formatBool($row['isactive']));
             }
         }
@@ -158,14 +115,15 @@ class securityUser
     function setParamsFromParamsClass($paramsClass)
     {
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if (isset($paramsClass->id))           $this->id   = $paramsClass->id;
-        if (isset($paramsClass->username))     $this->setUsername($paramsClass->username);
-        if (isset($paramsClass->firstName))    $this->setFirstName($paramsClass->firstName);
-        if (isset($paramsClass->lastName))     $this->setLastName($paramsClass->lastName);
-        if (isset($paramsClass->hashPassword)) $this->setPassword($paramsClass->hashPassword, "hash");
-        if (isset($paramsClass->isActive))     $this->setIsActive($paramsClass->isActive);
+        if ($paramsClass->getID()!=null)           		$this->id   = $paramsClass->getID();
+        if ($paramsClass->getUsername()!=null)     		$this->setUsername($paramsClass->getUsername());
+        if ($paramsClass->getFirstName()!=null)    		$this->setFirstName($paramsClass->getFirstName());
+        if ($paramsClass->getLastName()!=null)     		$this->setLastName($paramsClass->getLastName());
+        //if (isset($paramsClass->hashPassword))   		$this->setPassword($paramsClass->hashPassword, "hash");
+        if ($paramsClass->getHashedPassword()!=null)    $this->setPassword($paramsClass->getHashedPassword(), "hash");
+        if ($paramsClass->getIsActive()!=null)     		$this->setIsActive($paramsClass->getIsActive());
         
-        if (isset($paramsClass->groupArray) && $paramsClass->groupArray[0]!='empty')
+        if (isset($paramsClass->groupArray) && count($paramsClass->groupArray)>0)
         {
             // Remove any existing groups,  ready to be replaced with what user has specified
             unset($this->groupArray);
@@ -186,17 +144,7 @@ class securityUser
         switch($crudMode)
         {
             case "read":
-                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
-                {
-                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer when reading users.  It is currently a ".gettype($paramsObj->id));
-                    return false;
-                }
-                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
-                {
-                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer when reading users.");
-                    return false;
-                }
-                if($paramsObj->id==NULL)
+                if($paramsObj->getID()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a users.");
                     return false;
@@ -204,12 +152,12 @@ class securityUser
                 return true;
          
             case "update":
-                if($paramsObj->id == NULL)
+                if($paramsObj->getID() == NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating a user.");
                     return false;
                 }
-                if(($paramsObj->username == NULL) && ($paramsObj->firstName==NULL) && ($paramsObj->lastName==NULL) && ($paramsObj->isActive==NULL) && ($paramsObj->hashPassword==NULL) ) 
+                if(($paramsObj->getUsername() == NULL) && ($paramsObj->getFirstName()==NULL) && ($paramsObj->getLastName()==NULL) && ($paramsObj->getIsActive()==NULL) && ($paramsObj->getHashedPassword()==NULL) ) 
                 {
                     $this->setErrorMessage("902","Missing parameter(s) - you haven't specified any parameters to update.");
                     return false;
@@ -217,7 +165,7 @@ class securityUser
                 return true;
 
             case "delete":
-                if($paramsObj->id == NULL) 
+                if($paramsObj->getID() == NULL) 
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a user.");
                     return false;
@@ -225,24 +173,24 @@ class securityUser
                 return true;
 
             case "create":
-                if($paramsObj->username == NULL) 
+                if($paramsObj->getUsername() == NULL) 
                 {
                     $this->setErrorMessage("902","Missing parameter - 'username' field is required when creating a user.");
                     return false;
                 }
-                if($paramsObj->firstName == NULL) 
+                if($paramsObj->getFirstname() == NULL) 
                 {
                     $this->setErrorMessage("902","Missing parameter - 'firstName' field is required when creating a user.");
                     return false;
                 }
-                if($paramsObj->lastName == NULL) 
+                if($paramsObj->getLastname() == NULL) 
                 {
                     $this->setErrorMessage("902","Missing parameter - 'lastName' field is required when creating a user.");
                     return false;
                 }
-                if($paramsObj->hashPassword == NULL)  
+                if($paramsObj->getHashedPassword() == NULL)  
                 {
-                    $this->setErrorMessage("902","Missing parameter - either 'plainPassword' or 'hashPassword' is required when creating a user.");
+                    $this->setErrorMessage("902","Missing parameter - 'password' field is required when creating a user.");
                     return false;
                 }
                 return true;
@@ -253,38 +201,14 @@ class securityUser
         }
     }
     
-    
-    function setErrorMessage($theCode, $theMessage)
-    {
-        // Set the error latest error message and code for this object.
-        $this->lastErrorCode = $theCode;
-        $this->lastErrorMessage = $theMessage;
-    }
-
+  
 
     /***********/
     /*ACCESSORS*/
     /***********/
 
-    function getID()
-    {
-    	return $this->id;
-    	
-    }
     
-    function getFormattedName()
-    {
-    	if (($this->firstName!=NULL) && ($this->lastName!=NULL))
-    	{
-    		return $this->firstName." ".$this->lastName;
-    	}
-    	else
-    	{
-    		return false;
-    	}
-    }
-    
-    function asXML()
+    function asXML($format='standard', $parts="full")
     {
         $xml = NULL;
         // Return a string containing the current object in XML format
@@ -299,9 +223,10 @@ class securityUser
             $xml.= "isActive=\"".dbHelper::formatBool($this->isActive, 'english')."\" ";
             $xml.= ">";
 
-            if (isset($this->groupArray))
+       
+            if ($format=='comprehensive')
             {
-                $xml.= "<memberOf>";
+                $xml.= "\n<memberOf>\n";
                 foreach($this->groupArray as $groupID)
                 {
                     $group = new securityGroup();
@@ -317,7 +242,7 @@ class securityUser
                     }
 
                 }
-                $xml.= "</memberOf>";
+                $xml.= "</memberOf>\n";
 
             }
             
@@ -344,19 +269,6 @@ class securityUser
         return $xml;
     }
 
-    function getLastErrorCode()
-    {
-        // Return an integer containing the last error code recorded for this object
-        $error = $this->lastErrorCode; 
-        return $error;  
-    }
-
-    function getLastErrorMessage()
-    {
-        // Return a string containing the last error message recorded for this object
-        $error = $this->lastErrorMessage;
-        return $error;
-    }
 
     /***********/
     /*FUNCTIONS*/
@@ -367,6 +279,7 @@ class securityUser
         // Write the current object to the database
 
         global $dbconn;
+        global $firebug;
         $sql  = NULL;
         $sql2 = NULL;
 
@@ -385,7 +298,7 @@ class securityUser
                     $sql.= "'".$this->password."', ";
                     $sql.= "'".$this->firstName."', ";
                     $sql.= "'".$this->lastName."', ";
-                    $sql.= "'".fromPHPtoPGBool($this->isActive)."'";
+                    $sql.= "'".dbhelper::formatBool($this->isActive,'pg')."'";
                     $sql.= " )";
                     $sql2 = "select * from tblsecurityuser where securityuserid=currval('tblsecurityuser_securityuserid_seq')";
                 }
@@ -397,10 +310,12 @@ class securityUser
                     $sql.= "password = '".$this->password."', ";
                     $sql.= "firstName = '".$this->firstName."', ";
                     $sql.= "lastName = '".$this->lastName."', ";
-                    $sql.= "isactive = '".fromPHPtoPGBool($this->isActive)."'";
+                    $sql.= "isactive = '".dbhelper::formatBool($this->isActive, 'pg')."'";
                     $sql.= "where securityuserid = '".$this->id."'";
                 }
 
+                $firebug->log($sql, "User write SQL");
+                
                 // Run SQL command
                 if ($sql)
                 {
@@ -425,7 +340,7 @@ class securityUser
                 }
                 
                 // Set or unset member groups for this user
-                if(isset($this->groupArray))
+                if(count($this->groupArray)>0)
                 {
                     $sql = "delete from tblsecurityusermembership where securityuserid=".$this->id;
                     $result = pg_query($dbconn, $sql);

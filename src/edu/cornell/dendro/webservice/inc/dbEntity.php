@@ -2389,6 +2389,116 @@ class boxEntity extends dbEntity
     
 }
 
+class securityUserEntity extends dbEntity
+{
+
+    protected $id = NULL;
+    protected $username = NULL;
+    protected $firstName = NULL;
+    protected $lastName = NULL;
+    protected $password = NULL;
+    protected $isActive = NULL;
+    protected $groupArray = array();
+    
+    function __construct()
+    {
+
+    		
+    }
+    
+    /***********/
+    /* SETTERS */
+    /***********/
+
+    function setUsername($theUsername)
+    {
+        $this->username=$theUsername;
+    }
+    
+    function setFirstname($theFirstname)
+    {
+        $this->firstName=$theFirstname;
+    }
+    
+    function setLastname($theLastname)
+    {
+        $this->lastName=$theLastname;
+    }
+    
+    
+    function setPassword($thePassword, $format="plain")
+    {
+        switch($format)
+        {
+        case "plain":
+            // password supplied is plain text so hash first
+            $this->password=hash('md5', $thePassword);
+            break;
+        case "hash":
+            // password is already hashed so just store
+            $this->password=$thePassword;
+            break;
+        default:
+            return false;
+            break;
+        }
+
+        return true;
+    }
+    
+    function setIsActive($theIsActive)
+    {
+        // Set the current objects precision 
+        $this->isActive=$theIsActive;
+    }
+  
+    
+    /***********/
+    /* GETTERS */
+    /***********/
+
+    function getUsername()
+    {
+        return $this->username;
+    }
+    
+    function getFirstname()
+    {
+        return $this->firstName;
+    }
+    
+    function getLastname()
+    {
+        return $this->lastName;
+    }
+    
+    function getHashedPassword()
+    {
+        return $this->password;
+    }
+    
+
+    function getFormattedName()
+    {
+    	if (($this->firstName!=NULL) && ($this->lastName!=NULL))
+    	{
+    		return $this->firstName." ".$this->lastName;
+    	}
+    	else
+    	{
+    		return false;
+    	}
+    }
+    
+    function getIsActive()
+    {
+    	return $this->isActive;
+    }
+    
+}
+
+
+
 /**
  * Class representing a taxon in the database
  *

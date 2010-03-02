@@ -360,7 +360,8 @@ class auth
         // $theObjectType should be one of site,tree, vmeasurement, default
 
         global $dbconn;
-
+		global $firebug;
+        
         // Always allow access to dictionaries
         if ( ($theObjectType=='dictionaries') || ($theObjectType=='authentication') )
         {
@@ -444,7 +445,8 @@ class auth
         }
 
         // Do the actual perms lookup
-        $sql = "select * from cpgdb.getuserpermissionset($this->securityuserid, '$theObjectType', $theObjectID)";
+        $sql = "select * from cpgdb.getuserpermissionset($this->securityuserid, '$theObjectType', '$theObjectID'::uuid)";
+        $firebug->log($sql, "Get permissions sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {

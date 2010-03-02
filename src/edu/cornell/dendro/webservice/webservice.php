@@ -93,7 +93,7 @@ if($myMetaHeader->status != "Error")
             case "authenticationParameters": 	$myObject = new authenticate(); break;
             case "searchParameters": 			$myObject = new search(); break;
             case "dictionariesParameters": 		$myObject = new dictionaries(); break;
-            //case "securityUserParameters": 		$myObject = new securityUser(); break;
+            case "securityUserParameters": 		$myObject = new securityUser(); break;
             //case "securityGroupParameters":		$myObject = new securityGroup(); break
             case "boxParameters":				$myObject = new box(); break;
             default:
@@ -185,8 +185,9 @@ if($myMetaHeader->status != "Error")
 
         if( ($myRequest->getCrudMode()=='create') || ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete'))
         {
+        	
             // Do permissions check
-            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Beginning permissions check...");
+			$firebug->log("Beginning permissions check...");
             if($myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID)===FALSE)
             {
                 // Permission denied

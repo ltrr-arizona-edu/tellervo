@@ -93,6 +93,7 @@ class search Implements IDBAccessor
         global $dbconn;
         global $debugFlag;
         global $myMetaHeader;
+        global $firebug;
         
         $myAuth       = $auth;
         $myRequest    = $paramsClass;
@@ -146,119 +147,140 @@ class search Implements IDBAccessor
         }
 
         // Add SQL to XML output
+        $firebug->log($fullSQL, "Search SQL");
         $this->sqlcommand .= $fullSQL;
         
-        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Compilation of search SQL complete");
+        $firebug->log("Compilation of search SQL complete");
 
         // Do SQL Query
         pg_send_query($dbconn, $fullSQL);
         $result = pg_get_result($dbconn);
-            $this->recordHits = pg_num_rows($result);
+        $this->recordHits = pg_num_rows($result);
 
-            $result = pg_query($dbconn, $fullSQL);
-  
-            while ($row = pg_fetch_array($result))
+        $result = pg_query($dbconn, $fullSQL);
+
+        $firebug->log("Begin permissions check");
+        while ($row = pg_fetch_array($result))
+        {                   	
+            // Check user has permission to read requested entity
+            if($this->returnObject=="object") 
             {
-	            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Begin permissions check");
-	                        	
-                // Check user has permission to read then create a new object
-                if($this->returnObject=="object") 
-                {
-                    $myReturnObject = new object();
-                    $hasPermission = $myAuth->getPermission("read", "object", $row['objectid']);
-                }
-                elseif($this->returnObject=="element")
-                {
-                    $myReturnObject = new element();
-                    $hasPermission = $myAuth->getPermission("read", "element", $row['elementid']);
-                }
-                elseif($this->returnObject=="sample") 
-                {
-                    $myReturnObject = new sample();
-                    $hasPermission = $myAuth->getPermission("read", "sample", $row['sampleid']);
-                }
-                elseif($this->returnObject=="radius") 
-                {
-                    $myReturnObject = new radius();
-                    $hasPermission = $myAuth->getPermission("read", "radius", $row['radiusid']);
-                }
-                elseif($this->returnObject=="vmeasurement")
-                {
-                    $myReturnObject = new measurement();
-                    $hasPermission = $myAuth->getPermission("read", "measurement", $row['vmeasurementid']);
-                }
-                else
-                {
-                    $this->setErrorMessage("901","Invalid return object ".$this->returnObject." specified.  Must be one of site, subsite, tree, specimen, radius or measurement");
-                }
-
-                
-                if($hasPermission===FALSE)
-                {
-                    array_push($this->deniedRecArray, $row['id']); 
-                    continue;
+            	$firebug->log("Checking object permissions");
+                $myReturnObject = new object();
+                $hasPermission = $myAuth->getPermission("read", "object", $row['objectid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['objectid']);
+                	$firebug->log($row['objectid'], "Permission denied on objectid");	 
+                	continue;
+                }              
+            }
+            elseif($this->returnObject=="element")
+            {
+                $myReturnObject = new element();
+                $hasPermission = $myAuth->getPermission("read", "element", $row['elementid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['elementid']); 
+                	$firebug->log($row['elementid'], "Permission denied on elementid");	 
+                	continue;
                 }
                 
-                if ($debugFlag===TRUE) $myMetaHeader->setTiming("Permissions check complete");
-				
-   
-                // Set parameters on new object and return XML
-                if ($debugFlag===TRUE) $myMetaHeader->setTiming("Get current entities details from database");
-                $success = $myReturnObject->setParamsFromDBRow($row, $format);
-                //$success = $myReturnObject->setParamsFromDB($row['id']);
-                if ($debugFlag===TRUE) $myMetaHeader->setTiming("Got details from database");
-
-                // Do children if requested
-                if($paramsClass->includeChildren===TRUE)
-                {
-                	$myReturnObject->setChildParamsFromDB(true);
-                }
-                
-              
-                // Get permissions if requested
-                if($includePermissions===TRUE) $myReturnObject->getPermissions($myAuth->getID());
-
-                if ($debugFlag===TRUE) $myMetaHeader->setTiming("Get current entities XML");
-                //$success = $myReturnObject->setParamsFromDB($row['id'], "brief");
-                if($success)
-                {
-                    $xmldata.=$myReturnObject->asXML($format);
-
-                }
-                else
-                {
-                    $this->setErrorMessage($myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage());
+            }
+            elseif($this->returnObject=="sample") 
+            {
+                $myReturnObject = new sample();
+                $hasPermission = $myAuth->getPermission("read", "sample", $row['sampleid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['sampleid']); 
+                	$firebug->log($row['sampleid'], "Permission denied on sampleid");	 
+                	continue;
+                }              
+            }
+            elseif($this->returnObject=="radius") 
+            {
+                $myReturnObject = new radius();
+                $hasPermission = $myAuth->getPermission("read", "radius", $row['radiusid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['radiusid']); 
+                	$firebug->log($row['radiusid'], "Permission denied on radiusid");	 
+                	continue;
+                }            
+            }
+            elseif($this->returnObject=="vmeasurement")
+            {
+                $myReturnObject = new measurement();
+                $hasPermission = $myAuth->getPermission("read", "measurement", $row['vmeasurementid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['vmeasurementid']); 
+                	$firebug->log($row['vmeasurementid'], "Permission denied on vmeasurementid");	                 	
+                	continue;            
                 }
             }
-        // }
-
-            if(count($this->deniedRecArray)>0 )
-            {
-                $errMessage = "Permission denied on the following ".$this->returnObject."id(s): ";
-                foreach ($this->deniedRecArray as $id)
-                {
-                    $errMessage .= $id.", ";
-                }
-                $errMessage = substr($errMessage, 0, -2).".";
-                $this->setErrorMessage("103", $errMessage);
-            }
-
-            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Permissions checks complete"); 
-            
-            // Put xmldata into class variable
-            if($xmldata!=NULL)
-            {
-                $this->xmldata=$xmldata;
-            }
-
-            if($this->lastErrorCode==NULL)
-            {
-                return true;
-            } 
             else
             {
-                return false;
+                $this->setErrorMessage("901","Invalid return object ".$this->returnObject." specified.  Must be one of object, element, sample radius or measurement");
             }
+
+            $firebug->log("Permissions check complete");
+
+            // Set parameters on new object and return XML
+            $firebug->log("Get current entities details from database");
+            $success = $myReturnObject->setParamsFromDBRow($row, $format);
+            //$success = $myReturnObject->setParamsFromDB($row['id']);
+            $firebug->log("Got details from database");
+
+            // Do children if requested
+            if($paramsClass->includeChildren===TRUE)
+            {
+            	$myReturnObject->setChildParamsFromDB(true);
+            }
+            
+            $firebug->log($xmldata, "XML data");
+            
+          
+            // Get permissions if requested
+            if($includePermissions===TRUE) $myReturnObject->getPermissions($myAuth->getID());
+
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Get current entities XML");
+            //$success = $myReturnObject->setParamsFromDB($row['id'], "brief");
+            if($success)
+            {
+                $xmldata.=$myReturnObject->asXML($format);
+
+            }
+            else
+            {
+                $this->setErrorMessage($myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage());
+            }
+        }
+        // }
+
+        if(count($this->deniedRecArray)>0 )
+        {
+            $errMessage = "Permission denied on the following ".$this->returnObject." id(s): ";
+            foreach ($this->deniedRecArray as $id)
+            {
+                $errMessage .= $id.", ";
+            }
+            $errMessage = substr($errMessage, 0, -2).".";
+            $this->setErrorMessage("103", $errMessage);
+        }
+
+        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Permissions checks complete"); 
+        
+        // Put xmldata into class variable
+        if($xmldata!=NULL)
+        {
+            $this->xmldata=$xmldata;
+        }
+
+        if($this->lastErrorCode==NULL)
+        {
+            return true;
+        } 
+        else
+        {
+            return false;
+        }
     }
 
     function xmlDebugOutput()
