@@ -159,6 +159,7 @@ class search Implements IDBAccessor
 
         $result = pg_query($dbconn, $fullSQL);
 
+
         $firebug->log("Begin permissions check");
         while ($row = pg_fetch_array($result))
         {                   	
@@ -207,13 +208,20 @@ class search Implements IDBAccessor
             }
             elseif($this->returnObject=="vmeasurement")
             {
+		        /**
+		         * SORT THIS OUT!
+		         * 
+		         * We have serious performance issues so for now disable check on
+		         * whether the user can read the series or not.  
+		         */            	
+            	
                 $myReturnObject = new measurement();
-                $hasPermission = $myAuth->getPermission("read", "measurement", $row['vmeasurementid']);
+                /*$hasPermission = $myAuth->getPermission("read", "measurement", $row['vmeasurementid']);
                 if($hasPermission===FALSE) {
                 	array_push($this->deniedRecArray, $row['vmeasurementid']); 
                 	$firebug->log($row['vmeasurementid'], "Permission denied on vmeasurementid");	                 	
                 	continue;            
-                }
+                }*/
             }
             else
             {
@@ -254,6 +262,9 @@ class search Implements IDBAccessor
         }
         // }
 
+
+        
+        
         if(count($this->deniedRecArray)>0 )
         {
             $errMessage = "Permission denied on the following ".$this->returnObject." id(s): ";
