@@ -78,6 +78,8 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 	private static final long serialVersionUID = 1L;
 
+	private RingAnnotations remarksPanel = null;
+	
 	private Sample mySample;
 
 	public JTable myTable;
