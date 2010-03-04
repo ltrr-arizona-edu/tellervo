@@ -3,7 +3,6 @@
  */
 package edu.cornell.dendro.corina_indexing;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +15,7 @@ public abstract class IndexFunction {
 	protected Indexable input;
 	
 	/** Our output, provided sequentially in this list */
-	protected List output;
+	protected List<? extends Number> output;
 	
 	/** Create an index function 
 	 * 
@@ -28,10 +27,9 @@ public abstract class IndexFunction {
 	
 	public void setInput(Indexable input) {
 		this.input = input;
-		output = new ArrayList(input.getData().size());
 	}
 	
-	public List getOutput() {
+	public List<? extends Number> getOutput() {
 		return output;
 	}
 	

@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina_indexing;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -55,21 +56,21 @@ public class Horizontal extends IndexFunction {
 
 		// the curve: well, it's flat...
 		int n = input.getData().size();
-		for (int i = 0; i < n; i++)
-			output.add(mean);
+		List<Double> output = Collections.nCopies(n, mean);
+		this.output = output;
 	}
 	
-	private double getDatasetMean(List dataset) {
+	private double getDatasetMean(List<? extends Number> dataset) {
 		int n = dataset.size();
 		int sum = 0;
 		for (int i = 0; i < n; i++)
-			sum += ((Number) dataset.get(i)).intValue();
+			sum += dataset.get(i).intValue();
 		return (double) sum / (double) n;
 	}
 	
 	@Override
 	public String getI18nTag() {
-		return "horizontal";
+		return "index.horizontal";
 	}
 
 	@Override

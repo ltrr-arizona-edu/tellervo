@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina_indexing;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,9 +67,10 @@ public class Polynomial extends IndexFunction implements SolverFunction {
 	/** Compute the index. */
 	@Override
 	public void index() {
-		final List in = input.getData();
+		final List<? extends Number> in = input.getData();
 		// init x, y
 		int n = in.size();
+		final List<Double> output = new ArrayList<Double>(n);
 		double x[] = new double[n];
 		double y[] = new double[n];
 		for (int i = 0; i < n; i++) {
@@ -93,6 +95,8 @@ public class Polynomial extends IndexFunction implements SolverFunction {
 				yp += c[j] * f[j];
 			output.add(new Double(yp));
 		}
+		
+		this.output = output;
 	}
 
 	@Override
@@ -102,7 +106,7 @@ public class Polynomial extends IndexFunction implements SolverFunction {
 	
 	@Override
 	public String getI18nTag() {
-		return "polynomial";
+		return "index.polynomial";
 	}
 	
 	@Override

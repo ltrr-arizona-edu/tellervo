@@ -72,7 +72,7 @@ public class Exponential extends IndexFunction implements SolverFunction {
 
 	@Override
 	public String getI18nTag() {
-		return "exponential";
+		return "index.exponential";
 	}
 	
 	@Override
@@ -83,7 +83,8 @@ public class Exponential extends IndexFunction implements SolverFunction {
 	// if forReal==false, compute chi2, only.
 	// if forReal==true, compute chi2 and put results in data
 	private double compute(boolean forReal) {
-		final List indata = input.getData();
+		final List<? extends Number> indata = input.getData();
+		List<Double> output = null;
 		// init x, y
 		
 		int n = indata.size();
@@ -108,7 +109,7 @@ public class Exponential extends IndexFunction implements SolverFunction {
 		// i'd re-use Index's implementation.)
 		double chi2 = 0.;
 		if (forReal)
-			output = new ArrayList(n);
+			output = new ArrayList<Double>(n);
 		for (int i = 0; i < n; i++) {
 			double f[] = f(x[i]);
 			double yp = 0.;
@@ -123,6 +124,9 @@ public class Exponential extends IndexFunction implements SolverFunction {
 		// (if your compiler does loop unrolling and CSE, that last
 		// part will be beautiful.  if not...)
 
+		if(forReal)
+			this.output = output;
+		
 		// return chi2
 		return chi2;
 	}

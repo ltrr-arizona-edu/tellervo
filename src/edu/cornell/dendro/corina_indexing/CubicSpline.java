@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina_indexing;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -73,7 +74,7 @@ public class CubicSpline extends IndexFunction {
 
 	// run reinsch's smooth
 	private void smooth() {
-		final List in = input.getData();
+		final List<? extends Number> in = input.getData();
 		// my init stuff
 		int N = in.size();
 		final int n1 = 1, n2 = N;
@@ -83,7 +84,7 @@ public class CubicSpline extends IndexFunction {
 		final double dy = 1.0;
 		for (int i = 1; i < N + 1; i++) {
 			x[i] = (double) i - 1;
-			y[i] = ((Number) in.get(i - 1)).doubleValue();
+			y[i] = in.get(i - 1).doubleValue();
 			// dy[i] = 1.0;
 		}
 		N += 2;
@@ -189,9 +190,12 @@ public class CubicSpline extends IndexFunction {
 	public void index() {
 		// run computation
 		smooth();
-
-		// compute curve: since h=1, y[i] = d[i]+c[i]+b[i]+a[i]
+		
+		// create output
 		int n = input.getData().size();
+		List<Double> output = new ArrayList<Double>(n);
+		
+		// compute curve: since h=1, y[i] = d[i]+c[i]+b[i]+a[i]
 		for (int i = 0; i < n; i++) {
 			double y = d[i] + c[i] + b[i] + a[i];
 			output.add(new Double(y));
@@ -205,11 +209,13 @@ public class CubicSpline extends IndexFunction {
 			double y0 = y1 - (y2 - y1);
 			output.set(0, new Double(y0));
 		}
+		
+		this.output = output;
 	}
 
 	@Override
 	public String getI18nTag() {
-		return "cubic_spline";
+		return "index.cubic_spline";
 	}
 
 	@Override
