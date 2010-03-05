@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.cross.gui;
+package edu.cornell.dendro.corina.gui.cross;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
