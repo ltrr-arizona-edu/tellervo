@@ -23,6 +23,7 @@ package edu.cornell.dendro.corina.graph;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+
 import javax.swing.JPanel;
 
 public class Axis extends JPanel {
@@ -58,7 +59,7 @@ public class Axis extends JPanel {
 
 	public void drawVertAxis(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		int tenunitSize = gInfo.get10UnitHeight();
+		int tenunitSize = gInfo.getTenUnitHeight();
 
 		int w = getWidth();
 		int lastLabelTop = Integer.MAX_VALUE;

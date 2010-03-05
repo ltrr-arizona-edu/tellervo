@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.gui.menus;
 
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Printable;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.AbstractAction;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -22,32 +23,32 @@ import javax.swing.JOptionPane;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.editor.ScanBarcodeUI;
+import edu.cornell.dendro.corina.editor.EditorFactory.BarcodeDialogResult;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.CanOpener;
 import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.ImportFrame;
 import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
-import edu.cornell.dendro.corina.gui.datawizard.CreateOrImportWizard;
-import edu.cornell.dendro.corina.gui.datawizard.SiteEditorPanel;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
-import edu.cornell.dendro.corina.gui.newui.HierarchyPanel;
-import edu.cornell.dendro.corina.gui.newui.CreateSampleDialog;
+import edu.cornell.dendro.corina.io.ExportDialog;
+import edu.cornell.dendro.corina.io.ExportDialogLegacy;
 import edu.cornell.dendro.corina.manip.Sum;
-import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.LegacySampleExtractor;
+import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.Overwrite;
-import edu.cornell.dendro.corina.io.ExportDialog;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 
 // TODO:
 // -- refactor so Editor can use it (export)
@@ -87,10 +88,12 @@ import edu.cornell.dendro.corina.io.ExportDialog;
 
 public class FileMenu extends JMenu {
 
+	private static final long serialVersionUID = 1L;
+
 	protected JFrame f;
 
 	public FileMenu(JFrame f) {
-		super(I18n.getText("file"));
+		super(I18n.getText("menus.file"));
 		// FIXME: i18n: simply getText() doesn't do _F_ile on win32
 		// TODO: set font here, maybe
 		// QUESTION: does JMenuBar.setFont() affect all menus and menuitems?
@@ -101,6 +104,7 @@ public class FileMenu extends JMenu {
 		addNewOpenMenus();
 		addSeparator();
 		addIOMenus();
+		addExportMenus();
 		addSeparator();
 		addCloseSaveMenus();
 		addSeparator();
@@ -111,14 +115,6 @@ public class FileMenu extends JMenu {
 		// that way, subclasses can override any single menu or any group, as desired.
 		// oh, i should put all these add...() methods in an init() method.
 		addExitMenu();
-	}
-
-	// *****
-	// for indenting menuitems
-	private static String INDENT = "    ";
-
-	private static void indent(JMenuItem m) {
-		m.setText(INDENT + m.getText());
 	}
 
 	/*
@@ -134,76 +130,21 @@ public class FileMenu extends JMenu {
 	
 	public void addIOMenus(){
 		
-		add(Builder.makeMenuItem("dbimport...", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdb()", "fileimport.png"));		
+		add(Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png"));		
 	}
 	
 	public void addNewOpenMenus() {
 		
-		/*
-		// new sample
-		JMenuItem sample = Builder.makeMenuItem("sample...",
-				"new edu.cornell.dendro.corina.editor.Editor()");
-		indent(sample); // (re-indent!)
-
-		// new sum
-		JMenuItem sum = Builder.makeMenuItem("sum...",
-			"edu.cornell.dendro.corina.gui.menus.FileMenu.sum()"); // why not "new Sum()"?
-		indent(sum);
-
-		// new plot
-		JMenuItem plot = Builder.makeMenuItem("plot...",
-				"new edu.cornell.dendro.corina.graph.GraphWindow()");
-		indent(plot); // (re-indent!)
-
-		// new grid
-		// (REMOVE ME)
-		// JMenuItem grid = Builder.makeMenuItem("grid...",
-		// "new corina.cross.GridFrame()");
-		// indent(grid); // (re-indent!)
-		JMenuItem crossdate = Builder.makeMenuItem("crossdate...",
-				"new edu.cornell.dendro.corina.cross.CrossdateKit()");
-		indent(crossdate);
-
-		// new atlas
-		JMenuItem map = Builder.makeMenuItem("atlas...",
-				"new edu.cornell.dendro.corina.map.MapFrame()");
-		indent(map);
-
-		// new site (site editor)
-		JMenuItem sites = Builder.makeMenuItem("site...",
-				"new edu.cornell.dendro.corina.site.SiteEditor()");
-		indent(sites);
-
-		// add menuitems to menu
-		add(Builder.makeMenuItem("new", false));
-		add(sample);
-		add(sum);
-		add(plot);
-		// add(grid);
-		add(crossdate);
-		add(map);
-		add(sites);
-*/
-		// db stuff
-	//	addSeparator();
-		
-		
-		add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()", "filenew.png"));
-		add(Builder.makeMenuItem("dbopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
-		add(Builder.makeMenuItem("dbmultiopen...", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()"));	
+		//add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()", "filenew.png"));
+		add(Builder.makeMenuItem("menus.file.new", "edu.cornell.dendro.corina.editor.EditorFactory.newSeries()", "filenew.png"));
+		add(Builder.makeMenuItem("menus.file.open", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
+		add(Builder.makeMenuItem("menus.file.openmulti", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png"));	
 		add(OpenRecent.makeOpenRecentMenu());
-		//addSeparator();
 
-		
-		
-		// open, browse
-		//add(Builder.makeMenuItem("open...", "edu.cornell.dendro.corina.gui.menus.FileMenu.open()"));
-		//add(Builder.makeMenuItem("open_multi...",
-		//		"edu.cornell.dendro.corina.gui.menus.FileMenu.openMulti()"));
-		//add(Builder.makeMenuItem("bulkexport...",
-			//	"edu.cornell.dendro.corina.gui.menus.FileMenu.bulkexport()", "fileexport.png"));
-		
-		//add(Builder.makeMenuItem("browse...", "new edu.cornell.dendro.corina.browser.Browser();"));
+	}
+	
+	public void addExportMenus(){
+		add(Builder.makeMenuItem("menus.file.export", "edu.cornell.dendro.corina.gui.menus.FileMenu.exportMultiDB()", "fileexport.png"));		
 	}
 
 	// ask the user for a file to open, and open it
@@ -211,20 +152,20 @@ public class FileMenu extends JMenu {
 		String filename = "";
 		
 		try {
-			filename = FileDialog.showSingle(I18n.getText("open"));
+			filename = FileDialog.showSingle(I18n.getText("menus.file.open"));
 			// get filename, and load
 			CanOpener.open(filename);
 		} catch (UserCancelledException uce) {
 			// do nothing
 		} catch (WrongFiletypeException wfte) {
-			Alert.error("Can't open file", "Can't open the file " + 
+			Alert.error(I18n.getText("error.cantOpenFile"), I18n.getText("error.cantOpenFile") + " " +
 					new File(filename).getName() + ".\n" +
-					"Corina does not recognize that file type.");
+					I18n.getText("error.fileTypeNotRecognized"));
 		} catch (IOException ioe) {
 			// BUG: this should never happen.  loading is so fast, it'll get displayed
 			// in the preview component, and if it can't be loaded, "ok" should be dimmed.
 			// (is that possible with jfilechooser?)
-			Alert.error("I/O Error", "Can't open file " + filename + ":\n" + ioe.getMessage());
+			Alert.error(I18n.getText("error.ioerror"), I18n.getText("error.cantOpenFile") + filename + ":\n" + ioe.getMessage());
 			// (so why not use Bug.bug()?)
 		}
 	}
@@ -238,7 +179,7 @@ public class FileMenu extends JMenu {
 			 * get a list of elements; open each.
 			 */
 
-			ElementList elements = FileDialog.showMulti(I18n.getText("open"));
+			ElementList elements = FileDialog.showMulti(I18n.getText("menus.file.open"));
 
 			for (int i = 0; i < elements.size(); i++) {
 				Element e = elements.get(i);
@@ -249,10 +190,10 @@ public class FileMenu extends JMenu {
 				try {
 					CanOpener.open(e.getName());
 				} catch (WrongFiletypeException wfte) {
-					Alert.error("Can't open file", "Can't open the file " + e.getShortName() + ":\n"
-							+ "Unsupported file type.");
+					Alert.error(I18n.getText("error.cantOpenFile"), I18n.getText("error.cantOpenFile") + " " + e.getShortName() + ":\n"
+							+ I18n.getText("error.fileTypeNotRecognized"));
 				} catch (IOException ioe) {
-					Alert.error("I/O Error", "Can't open file " + e.getShortName() + ":\n"
+					Alert.error(I18n.getText("error.cantOpenFile"), I18n.getText("error.cantOpenFile") + " " + e.getShortName() + ":\n"
 							+ ioe.getMessage());
 				}
 			}
@@ -283,12 +224,12 @@ public class FileMenu extends JMenu {
 				try {
 					s = e.load();
 				} catch (IOException ioe) {
-					Alert.error("Error Loading Sample",
-							"Can't open this file: " + ioe.getMessage());
+					Alert.error(I18n.getText("error.loadingSample"),
+							I18n.getText("error.cantOpenFile") +":" + ioe.getMessage());
 					continue;
 				}
 
-				OpenRecent.sampleOpened(s.getLoader());
+				OpenRecent.sampleOpened(new SeriesDescriptor(s));
 				
 				// open it
 				new Editor(s);
@@ -296,49 +237,105 @@ public class FileMenu extends JMenu {
 		}
 	}
 
-	public static void importdb() {
+	public static void exportMultiDB(){
+		DBBrowser browser = new DBBrowser((Frame) null, true, true);
+		browser.setVisible(true);
+
+		
+		if(browser.getReturnStatus() == DBBrowser.RET_OK) {
+			ElementList toOpen = browser.getSelectedElements();
+		
+			/*
+			List<Sample> samples = new ArrayList<Sample>();
+
+			for(Element e : toOpen) {
+				// load it
+				Sample s;
+				try {
+					s = e.load();
+					
+				} catch (IOException ioe) {
+					Alert.error("Error Loading Sample",
+							"Can't open this file: " + ioe.getMessage());
+					continue;
+				}
+				samples.add(s);
+
+				OpenRecent.sampleOpened(new SeriesDescriptor(s));
+			}
+			
+			
+			
+			// no samples => don't bother doing anything
+			if (samples.isEmpty()) {
+				return;
+			}
+
+			// ok, now we have a list of valid samples in 'samples'...
+			// so open export dialog box
+			*/
+			
+			new ExportDialog(toOpen);
+
+		} 
+			
+			
+	}
+	
+	public static void importdbwithbarcode(){
 		String filename = "";
 		
 		try {
-			filename = FileDialog.showSingle("Choose a sample to import");
+			filename = FileDialog.showSingle(I18n.getText("menus.file.import"), I18n.getText("menus.file.import"));
 			// get filename, and load
 			Element e = ElementFactory.createElement(filename);
 		    Sample s = e.load();
 		    
-		    CreateOrImportWizard wiz = new CreateOrImportWizard(null, false);
+			final JDialog dialog = new JDialog();
+			final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
+			
+			dialog.setContentPane(barcodeUI);
+			dialog.setResizable(false);
+			dialog.pack();
+			dialog.setModal(true);
+			Center.center(dialog);
+			dialog.setVisible(true);
+			BarcodeDialogResult result = barcodeUI.getResult();
 
-		    // extract info from the sample
-		    wiz.setLegacySample(new LegacySampleExtractor(s));
-
-		    wiz.setVisible(true);
+			if(!result.barcodeScanSuccessful())
+			{
+				// start the import dialog with no barcode info   
+			    ImportFrame importdialog = new ImportFrame(s);
+			    importdialog.setVisible(true);
+			}
+			else{
+				// start the import dialog with barcode info 
+			    ImportFrame importdialog = new ImportFrame(s, result);
+			    importdialog.setVisible(true);
+			}
+			
+			
+		    
 		} catch (UserCancelledException uce) {
 			// do nothing
 		} catch (WrongFiletypeException wfte) {
-			Alert.error("Can't open file", "Can't open the file " + 
-					new File(filename).getName() + ".\n" +
-					"Corina does not recognize that file type.");
+			Alert.error(I18n.getText("error.cantOpenFile"), I18n.getText("error.cantOpenFile") + ":\n"
+					+ I18n.getText("error.fileTypeNotRecognized"));
 		} catch (IOException ioe) {
 			// BUG: this should never happen.  loading is so fast, it'll get displayed
 			// in the preview component, and if it can't be loaded, "ok" should be dimmed.
 			// (is that possible with jfilechooser?)
-			Alert.error("I/O Error", "Can't open file " + filename + ":\n" + ioe.getMessage());
+			Alert.error(I18n.getText("error.cantOpenFile"), I18n.getText("error.cantOpenFile") + ":\n"
+					+ ioe.getMessage());
 			// (so why not use Bug.bug()?)
 		}
 	}
-	
-	public static void newdb() {
-		CreateOrImportWizard wizardDialog = new CreateOrImportWizard((JFrame)null, false);
-		
-		wizardDialog.setVisible(true);
-	}
-
-	
 	
 	// ask the user for a list of files to open
 	public static void bulkexport() {
 		try {
 			// get a list of elements
-			ElementList elements = FileDialog.showMulti(I18n.getText("bulkexport..."));
+			ElementList elements = FileDialog.showMulti(I18n.getText("menus.file.bulkexport"));
 
 			// convert them to samples
 			boolean problem = false;
@@ -364,7 +361,7 @@ public class FileMenu extends JMenu {
 
 			// problem?
 			if (problem) {
-				Alert.error("Error loading sample(s):", errorsamples);
+				Alert.error(I18n.getText("error.loadingSample"), errorsamples);
 				return;
 			}
 
@@ -443,7 +440,7 @@ public class FileMenu extends JMenu {
 
 					// problem?
 					if (problem) {
-						Alert.error("Error loading sample(s):", errorsamples);
+						Alert.error(I18n.getText("error.loadingSample"), errorsamples);
 						return;
 					}
 
@@ -459,10 +456,10 @@ public class FileMenu extends JMenu {
 
 			switch (action) {
 			case 0:
-				new ExportDialog(samples, null, false);
+				new ExportDialogLegacy(samples, null, false);
 				break;
 			case 1:
-				new ExportDialog(samples, null, true);
+				new ExportDialogLegacy(samples, null, true);
 				break;
 			case JOptionPane.CLOSED_OPTION:
 			case 2:
@@ -475,6 +472,7 @@ public class FileMenu extends JMenu {
 		}
 	}
 
+	/*
 	// ask user for some files to sum, and make the sum
 	// REFACTOR: why isn't this in manip.Sum?
 	public static void sum() {
@@ -539,7 +537,7 @@ public class FileMenu extends JMenu {
 			Alert.error("Error summing", e.getMessage());
 		}
 	}
-
+*/
 	public void addCloseSaveMenus() {
 		addCloseMenu();
 		addSaveMenu();
@@ -547,11 +545,11 @@ public class FileMenu extends JMenu {
 	}
 
 	public void addSaveMenu() {
-		JMenuItem save = Builder.makeMenuItem("save");
+		JMenuItem save = Builder.makeMenuItem("menus.file.save", true, "filesave.png");
 
 		if (f instanceof SaveableDocument) {
 			// add menuitems, hooked up to |f|
-			save.addActionListener(new AbstractAction() {
+			save.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					// get doc
 					SaveableDocument doc = (SaveableDocument) f;
@@ -562,8 +560,8 @@ public class FileMenu extends JMenu {
 					// add to the recently opened files list if the user actually saved
 					// also, the user can try to save a document they didn't do anything to. argh.
 					if (doc.isSaved() && doc.getFilename() != null) {
-						if(doc.getSaverClass() != null && doc.getSaverClass() instanceof SampleLoader)
-							OpenRecent.sampleOpened((SampleLoader)doc.getSaverClass());
+						if(doc.getSavedDocument() instanceof Sample)
+							OpenRecent.sampleOpened(new SeriesDescriptor((Sample) doc.getSavedDocument()));
 						else
 							OpenRecent.fileOpened(doc.getFilename());
 					}
@@ -578,12 +576,12 @@ public class FileMenu extends JMenu {
 	}
 
 	public void addSaveAsMenu() {
-		JMenuItem saveAs = Builder.makeMenuItem("save_as...");
+		JMenuItem saveAs = Builder.makeMenuItem("menus.file.saveas");
 
 		if (f instanceof SaveableDocument
 				&& ((SaveableDocument) f).isNameChangeable()) {
 			// add menuitems, hooked up to |f|
-			saveAs.addActionListener(new AbstractAction() {
+			saveAs.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						// get doc
@@ -594,7 +592,7 @@ public class FileMenu extends JMenu {
 
 						// get new filename
 						String filename = FileDialog.showSingle(I18n
-								.getText("save"));
+								.getText("menus.file.save"));
 						Overwrite.overwrite(filename); // (may abort)
 						doc.setFilename(filename);
 
@@ -617,8 +615,8 @@ public class FileMenu extends JMenu {
 	public void addCloseMenu() {
 		// close menu
 		// -- DESIGN: don't i need an XFrame for this? ouch, that's a harsh restriction.
-		JMenuItem close = Builder.makeMenuItem("close");
-		close.addActionListener(new AbstractAction() {
+		JMenuItem close = Builder.makeMenuItem("menus.file.close", false, "fileclose.png");
+		close.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// call close() on XFrame (asks for confirmation), else dispose().
 				// -- yeah, it should be able to call dispose() everywhere,
@@ -643,11 +641,11 @@ public class FileMenu extends JMenu {
 
 	public void addPageSetupMenu() {
 		// menuitem
-		JMenuItem setup = Builder.makeMenuItem("page_setup...");
+		JMenuItem setup = Builder.makeMenuItem("menus.file.pagesetup");
 
 		if (f instanceof PrintableDocument) {
 			// page setup
-			setup.addActionListener(new AbstractAction() {
+			setup.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					pageSetup();
 				}
@@ -671,11 +669,11 @@ public class FileMenu extends JMenu {
 
 	public void addPrintMenu() {
 		// menuitem
-		JMenuItem print = Builder.makeMenuItem("print...");
+		JMenuItem print = Builder.makeMenuItem("menus.file.print", true, "printer.png");
 
 		if (f instanceof PrintableDocument) {
 			// print
-			print.addActionListener(new AbstractAction() {
+			print.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					print();
 				}
@@ -710,8 +708,8 @@ public class FileMenu extends JMenu {
 		else if (p instanceof Pageable)
 			printJob.setPageable((Pageable) p);
 		else
-			Bug.bug(new IllegalArgumentException(
-					"not an object which can be printed!"));
+			new Bug(new IllegalArgumentException(
+					I18n.getText("error.notPrintable")));
 
 		// job title
 		printJob.setJobName(doc.getPrintTitle());
@@ -730,7 +728,7 @@ public class FileMenu extends JMenu {
 					// do nothing, the user already knows
 				} catch (PrinterException pe) {
 					// ***
-					Alert.error("Error printing", "Printer error: "
+					Alert.error(I18n.getText("error.printing"), I18n.getText("error.printing")
 							+ pe.getMessage());
 				}
 			}
@@ -753,7 +751,7 @@ public class FileMenu extends JMenu {
 	public void addExitMenu() {
 		if (!App.platform.isMac()) {
 			addSeparator();
-			add(Builder.makeMenuItem("quit", "edu.cornell.dendro.corina.gui.XCorina.quit()", "exit.png"));
+			add(Builder.makeMenuItem("menus.file.quit", "edu.cornell.dendro.corina.gui.XCorina.quit()", "exit.png"));
 		}
 	}
 }

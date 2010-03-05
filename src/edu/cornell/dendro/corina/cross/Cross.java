@@ -81,16 +81,13 @@ public abstract class Cross implements Runnable {
 	/**
 	 * Get a crossdate score.
 	 * 
-	 * TODO -- (what if you want data.length? use getRange().span().)
+	 * Used only inside cross implementation by other crosses
 	 * 
-	 * @deprecated relies on an implementation detail; use getScore(Year)
-	 *             instead
 	 * @param index
 	 *            the index of the score to get
 	 * @return the score at that index
 	 */
-	@Deprecated
-	public float getScoreOLD(int index) {
+	protected float getScore(int index) {
 		return data[index];
 	}
 
@@ -303,8 +300,8 @@ public abstract class Cross implements Runnable {
 	@Override
 	public final String toString() {
 		// get filenames of both samples
-		String f = (String) fixed.getMeta("filename");
-		String m = (String) moving.getMeta("filename");
+		String f = fixed.getDisplayTitle();
+		String m = moving.getDisplayTitle();
 
 		// remove folder names
 		f = (new File(f)).getName();
@@ -359,9 +356,9 @@ public abstract class Cross implements Runnable {
 	 * Crossdate preamble: any setup that needs to be done before the main loop
 	 * to compute individual scores.
 	 * 
-	 * @deprecated the preamble was always kind of silly
+	 * ----deprecated the preamble was always kind of silly
+	 * Not really - it's nice to separate this stuff!
 	 */
-	@Deprecated
 	protected void preamble() {
 		// nothing need be done by default
 
@@ -501,14 +498,15 @@ public abstract class Cross implements Runnable {
 	 *                if the class can't be found, it isn't a Cross subclass, or
 	 *                there's an exception thrown when instantiating it
 	 */
+	@SuppressWarnings("unchecked")
 	public static Cross makeCross(String algorithm, Sample fixed, Sample moving)
 			throws IllegalArgumentException {
 
 		try {
-			Class c = Class.forName(algorithm);
-			Constructor cons = c.getConstructor(new Class[] { Sample.class,
+			Class<Cross> c = (Class<Cross>) Class.forName(algorithm);
+			Constructor<Cross> cons = c.getConstructor(new Class[] { Sample.class,
 					Sample.class });
-			Cross x = (Cross) cons.newInstance(new Object[] { fixed, moving });
+			Cross x = cons.newInstance(new Object[] { fixed, moving });
 			return x;
 		} catch (Exception e) {
 			// possible exceptions that would dump you down here:

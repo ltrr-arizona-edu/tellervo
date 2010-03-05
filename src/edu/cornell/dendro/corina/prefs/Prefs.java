@@ -41,6 +41,7 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.BugReport;
 import edu.cornell.dendro.corina.util.JDisclosureTriangle;
 import edu.cornell.dendro.corina.util.WeakEventListenerList;
 
@@ -73,6 +74,8 @@ public class Prefs extends AbstractSubsystem {
 	// ???
 	public static final String GRID_HIGHLIGHT = "corina.grid.highlight";
 	public static final String GRID_HIGHLIGHTCOLOR = "corina.grid.hightlightcolor";
+	
+	public static final String SERIAL_DEVICE = "corina.serial.measuring.device";
 
 	private static final CorinaLog log = new CorinaLog("Prefs");
 
@@ -407,30 +410,30 @@ public class Prefs extends AbstractSubsystem {
 	// TODO: (need left-alignment option on that class, first)
 	private static boolean cantSave(Exception e) {
 		JPanel message = new JPanel(new BorderLayout(0, 8)); // (hgap,vgap)
-		message.add(new JLabel(I18n.getText("prefs_cant_save")),
+		message.add(new JLabel(I18n.getText("error.prefs_cant_save")),
 				BorderLayout.NORTH);
 
 		// -- dialog with optionpane (warning?)
 		JOptionPane optionPane = new JOptionPane(message,
 				JOptionPane.ERROR_MESSAGE);
 		JDialog dialog = optionPane.createDialog(null /* ? */, I18n
-				.getText("prefs_cant_save_title"));
+				.getText("error.prefs_cant_save_title"));
 
 		// -- buttons: cancel, try again.
-		optionPane.setOptions(new String[] { I18n.getText("try_again"),
-				I18n.getText("cancel") });
+		optionPane.setOptions(new String[] { I18n.getText("question.try_again"),
+				I18n.getText("general.cancel") });
 
 		// -- disclosure triangle with scrollable text area: click for
 		// details... (stacktrace)
-		JComponent stackTrace = new JScrollPane(new JTextArea(Bug
+		JComponent stackTrace = new JScrollPane(new JTextArea(BugReport
 				.getStackTrace(e), 10, 60));
 		JDisclosureTriangle v = new JDisclosureTriangle(I18n
-				.getText("click_for_details"), stackTrace, false);
+				.getText("bug.click_for_details"), stackTrace, false);
 		message.add(v, BorderLayout.CENTER);
 
 		// -- checkbox: don't warn me again
 		JCheckBox dontWarnCheckbox = new JCheckBox(I18n
-				.getText("dont_warn_again"), false);
+				.getText("bug.dont_warn_again"), false);
 		dontWarnCheckbox.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				dontWarn = !dontWarn;
@@ -467,8 +470,13 @@ public class Prefs extends AbstractSubsystem {
 
 	// just wrappers, for now
 	public void setPref(String pref, String value) {
-		// System.setProperty(pref, value);
-		prefs.setProperty(pref, value);
+		
+		// support removing via set(null)
+		if(value == null)
+			prefs.remove(pref);
+		else
+			prefs.setProperty(pref, value);
+		
 		save();
 		firePrefChanged(pref);
 	}
@@ -481,6 +489,26 @@ public class Prefs extends AbstractSubsystem {
 		return prefs.getProperty(pref);
 	}
 
+	/**
+	 * Get a preference result as an enum
+	 * 
+	 * @param pref
+	 * @param deflt
+	 * @param enumType
+	 * @return
+	 */
+	public <T extends Enum<T>> T getEnumPref(String pref, T deflt, Class<T> enumType) {
+		String val = getPref(pref, null);
+		if(val == null)
+			return deflt;
+		
+		try {
+			return Enum.valueOf(enumType, val);
+		} catch (Exception e) {
+			return deflt;
+		}
+	}
+	
 	public String getPref(String pref, String deflt) {
 		String value = prefs.getProperty(pref);
 		if (value == null)

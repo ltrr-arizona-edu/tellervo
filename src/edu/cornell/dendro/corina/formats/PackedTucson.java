@@ -41,12 +41,12 @@ public class PackedTucson extends Tucson implements PackedFileType {
 
     @Override
 	public String toString() {
-        return I18n.getText("format.packed_tucson");
+        return I18n.getText("format.packed_tucson") + " (*"+ getDefaultExtension()+")";
     }
 
     @Override
 	public String getDefaultExtension() {
-	return ".TUC"; // ???
+	return ".rwl"; // ???
     }
 
     // can't load a packed tucson file (yet).  this should never get called,
@@ -75,6 +75,9 @@ public class PackedTucson extends Tucson implements PackedFileType {
     	// We follow the logic in save() below:
     	// if it's got elements, ignore the sample and use the elements.
     	// Otherwise, we save the sample.
+    	
+    	
+    	//@todo Need to fix 'prefix' to something useful
     	for(int i = 0; i < sl.size(); i++) {
     		Sample s = (Sample) sl.get(i);
     		
@@ -83,10 +86,16 @@ public class PackedTucson extends Tucson implements PackedFileType {
     				Sample tmp = (s.getElements().get(j)).load();
     				
     				try {
-    					if(prefix == null)
-    						prefix = tmp.getMeta("id").toString();
-    					else
-    						prefix = commonPrefix(prefix, tmp.getMeta("id").toString());
+    					if(prefix == null){
+    						//prefix = tmp.getMeta("id").toString();
+    						prefix = s.getIdentifier().getValue().toString();
+    						prefix = prefix.substring(prefix.length()-6);
+    					}
+    					else{
+    						//prefix = commonPrefix(prefix, tmp.getMeta("id").toString());
+        					prefix = s.getIdentifier().getValue().toString();
+        					prefix = prefix.substring(prefix.length()-6);
+    					}
     				} catch (NullPointerException npe) {
     					throw new IOException("Invalid META ID in file " + tmp.getMeta("filename"));
     				}
@@ -95,10 +104,16 @@ public class PackedTucson extends Tucson implements PackedFileType {
     			}
     		} else {
     			try {
-    				if(prefix == null)
-    					prefix = s.getMeta("id").toString();
-    				else
-    					prefix = commonPrefix(prefix, s.getMeta("id").toString());
+    				if(prefix == null){
+    					//prefix = s.getMeta("id").toString();
+    					prefix = s.getIdentifier().getValue().toString();
+    					prefix = prefix.substring(prefix.length()-6);
+    				}
+    				else{
+    					//prefix = commonPrefix(prefix, s.getMeta("id").toString());
+    					prefix = s.getIdentifier().getValue().toString();
+    					prefix = prefix.substring(prefix.length()-6);
+    				}
     			} catch (NullPointerException npe) {
     				throw new IOException("Invalid META ID in file " + s.getMeta("filename"));
     			}
@@ -108,7 +123,7 @@ public class PackedTucson extends Tucson implements PackedFileType {
     	}
     	
         // save the header, using that prefix
-        save3LineHeader(w, prefix); // was: "000   "
+        save3LineHeader(w, prefix, (Sample) sl.get(0)); // was: "000   "
         
         for(int i = 0; i < outsamples.size(); i++)
         	saveData((Sample) outsamples.get(i), w);
@@ -117,7 +132,7 @@ public class PackedTucson extends Tucson implements PackedFileType {
     @Override
 	public void save(Sample s, BufferedWriter w) throws IOException {
         // make sure it's a master, else ioe
-        if (s.getElements() == null)
+/*        if (s.getElements() == null)
             throw new IOException("Packed Tucson format is only available " +
 				  "for summed samples with Elements");
 
@@ -136,7 +151,7 @@ public class PackedTucson extends Tucson implements PackedFileType {
         // (save3lineheader() automatically makes sure it's 6 chars long)
 
         // save the header, using that prefix
-        save3LineHeader(w, prefix); // was: "000   "
+        save3LineHeader(w, prefix, s); // was: "000   "
 
         // IDEA: use commonprefix of title for header title?
 
@@ -148,13 +163,22 @@ public class PackedTucson extends Tucson implements PackedFileType {
             // BUG: might not be AD-only.  saveData() should call
             // verifyAD(), then, not save()
         }
-        // (shouldn't that be saveData(elem)?)
+        // (shouldn't that be saveData(elem)?)*/
+    	
+		ArrayList<Sample> sl = new ArrayList<Sample>();
+		sl.add(s);
+		
+		// and pass them to savesamples
+		saveSamples(sl, w);
+	
+    	
+    	
     }
 
     // save a 3-line header -- itrdb uses these.
     // |id| is usually just 3 chars (like, "PFU").
     private void save3LineHeader(BufferedWriter w,
-				 String id) throws IOException {
+				 String id, Sample s) throws IOException {
 	// ensure exactly 6 chars
 	if (id.length() > 6)
 	    id = id.substring(0, 6);
@@ -162,11 +186,20 @@ public class PackedTucson extends Tucson implements PackedFileType {
 	    id += " ";
 
 	// write out lines -- mostly blank, fill in rest later?
-	w.write(id + " 1 Untitled");
+	
+	
+	
+	w.write(id + " 1 " + s.getDisplayTitle());
 	w.newLine();
 	w.write(id + " 2 ");
 	w.newLine();
-	w.write(id + " 3 ");
+	w.write(id + " 3 Exported from Corina");
 	w.newLine();
+    }
+    
+    @Override
+    public Boolean isPackedFileCapable()
+    {
+    	return true;
     }
 }

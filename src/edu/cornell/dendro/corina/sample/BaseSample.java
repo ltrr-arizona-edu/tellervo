@@ -4,9 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import edu.cornell.dendro.corina.Range;
+import org.tridas.interfaces.ITridasDerivedSeries;
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.interfaces.TridasIdentifiable;
+import org.tridas.schema.TridasIdentifier;
 
-public class BaseSample {
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.gui.Bug;
+
+public class BaseSample implements TridasIdentifiable {
 
 	/** Sample metadata, as a (String, Object) Map.  The following
 	 table lists the standard keys, their data types, and valid values:
@@ -40,19 +46,42 @@ public class BaseSample {
 	 @see edu.cornell.dendro.corina.formats.Corina */
 
 	private Map<String, Object> meta;
+	private ITridasSeries series;
 
 	public static void copy(BaseSample source, BaseSample target) {
 		target.range = source.range;
 		target.meta = source.meta;
 		target.loader = source.loader;
 		target.sampleType = source.sampleType;
+		target.series = source.series;
 	}
 	
 	public BaseSample() {
 		meta = new HashMap<String, Object>();
-		range = new Range();
-		loader = null; // no default loader!
-		sampleType = SampleType.UNKNOWN;
+		
+		// call these so anyone overloading us can handle properly
+		setRange(new Range());
+		setLoader(null); // start with no loader
+		setSampleType(SampleType.UNKNOWN);
+	}
+	
+	public BaseSample(ITridasSeries series) {
+		this();
+		
+		this.series = series;
+
+		// set sampleType based on series
+		if(series instanceof ITridasDerivedSeries) {
+			ITridasDerivedSeries dseries = (ITridasDerivedSeries) series;
+
+			// try to establish sample type
+			if(!dseries.isSetType() || !dseries.getType().isSetValue())
+				setSampleType(SampleType.UNKNOWN);
+			else
+				setSampleType(SampleType.fromString(dseries.getType().getValue()));
+		}
+		else
+			setSampleType(SampleType.DIRECT);
 	}
 	
 	public BaseSample(BaseSample source) {
@@ -72,6 +101,24 @@ public class BaseSample {
 	}
 	
 	/**
+	 * Get meta as a particular class.
+	 * 
+	 * @param key
+	 * @param clazz
+	 * @return 
+	 */
+	public <T> T getMeta(String key, Class<T> clazz) {
+		Object o = meta.get(key);
+		
+		try {
+			return (o != null) ? clazz.cast(o) : null;
+		} catch (ClassCastException cce) {
+			new Bug(cce);
+			return null;
+		}
+	}
+	
+	/**
 	 * Returns null if meta[key] doesn't exist, otherwise calls the object's tostring method
 	 * @param key
 	 * @return
@@ -80,6 +127,17 @@ public class BaseSample {
 		Object o = meta.get(key);
 		
 		return (o == null) ? null : o.toString();
+	}
+	
+	/**
+	 * 
+	 * @param key
+	 * @return an integer, or null
+	 */
+	public Integer getMetaInteger(String key) {
+		Object o = meta.get(key);
+		
+		return (o == null) ? null : Integer.valueOf(o.toString());
 	}
 
 	public boolean hasMeta(String key) {
@@ -135,7 +193,54 @@ public class BaseSample {
 	public void setSampleType(SampleType sampleType) {
 		this.sampleType = sampleType;
 	}
+
+	/**
+	 * Get the attached series
+	 * @return The attached series
+	 */
+	public ITridasSeries getSeries() {
+		return series;
+	}
+
+	/**
+	 * Attach a different series
+	 * @param series
+	 */
+	public void setSeries(ITridasSeries series) {
+		this.series = series;
+
+		// update our sample type to reflect what's going on
+		if(series instanceof ITridasDerivedSeries) {
+			if(!sampleType.isDerived())
+				sampleType = SampleType.UNKNOWN_DERIVED;
+		}
+		else if(sampleType.isDerived())
+			sampleType = SampleType.UNKNOWN;
+	}
 	
+	/** Our implementation of Metadata */
+	private BaseSampleMetadata metadata;
+
+	/** Get the metadata interface */
+	public CorinaMetadata meta() {
+		if(metadata == null)
+			metadata = new BaseSampleMetadata(this);
+		
+		return metadata;
+	}
+	
+	/**
+	 * Get the display title of this sample
+	 * Generally, this is the lab code
+	 * 
+	 * For a menubar title, use toString()
+	 * 
+	 * @return a String, probably lab code
+	 */
+	public String getDisplayTitle() {
+		return getMeta("title", String.class);
+	}	
+
 	// loader
 	private SampleLoader loader;
 	
@@ -145,5 +250,12 @@ public class BaseSample {
 	
 	public void setLoader(SampleLoader loader) {
 		this.loader = loader;
+	}
+
+	/**
+	 * Get the associated tridas identifier
+	 */
+	public TridasIdentifier getIdentifier() {
+		return (series != null) ? series.getIdentifier() : null;
 	}
 }

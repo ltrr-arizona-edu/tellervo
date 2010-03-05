@@ -55,6 +55,7 @@ import java.io.IOException;
  * @author Aaron Hamid arh14 at cornell.edu
  * @version $Id$
  */
+@Deprecated
 public class MultiColumn implements Filetype {
 
   @Override
@@ -244,7 +245,7 @@ public String toString() {
   public void save(Sample s, BufferedWriter w) throws IOException {
     Year y = s.getRange().getStart();
     System.out.println("Range start: " + y);
-    boolean hasCount = (s.getCount() != null);
+    boolean hasCount = (s.hasCount());
     System.out.println("Has count: " + hasCount);
 
     // write out the header
@@ -339,4 +340,16 @@ public String toString() {
       w.newLine();
     }
   }
+
+public Boolean isPackedFileCapable() {
+	return false;
+}
+
+public String getDeficiencyDescription() {
+	return this.toString() + " file format has no metadata capabilities.";
+}
+
+public Boolean isLossless() {
+	return false;
+}
 }

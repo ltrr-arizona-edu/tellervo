@@ -20,247 +20,476 @@
 
 package edu.cornell.dendro.corina.manip;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.AccessControlException;
-import java.security.AccessController;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.EnumSet;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.cornell.dendro.corina.CorinaPermission;
+import org.jdesktop.layout.GroupLayout;
+import org.jdesktop.layout.LayoutStyle;
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasDatingType;
+import org.tridas.schema.TridasDating;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasInterpretation;
+
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Layout;
-import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
+import edu.cornell.dendro.corina.gui.NameVersionJustificationPanel;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
+import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
+import edu.cornell.dendro.corina.tridasv2.ui.ComboBoxFilterable;
+import edu.cornell.dendro.corina.tridasv2.ui.EnumComboBoxItemRenderer;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.OKCancel;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
+import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 
 /**
-   A dialog which enables the user to redate a sample.  You can redate
-   either one that has already been loaded or a file on disk.
-
-   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
-   @version $Id$
-*/
+ * A dialog which enables the user to redate a sample. You can redate either one
+ * that has already been loaded or a file on disk.
+ * 
+ * @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i
+ *         style="color: gray">dot</i> edu&gt;
+ * @author Lucas Madar
+ * @version $Id$
+ */
 public class RedateDialog extends JDialog {
-    private Sample sample;
-    private Range range;
-    private boolean isAbsolute;
+	/** A DocumentListener for the end value */
+	private class EndListener implements DocumentListener {
+		public void changedUpdate(DocumentEvent e) {
+			update();
+		}
 
-    private JTextField startField, endField;
-    private DocumentListener startListener, endListener;
+		public void insertUpdate(DocumentEvent e) {
+			update();
+		}
 
-    private class StartListener implements DocumentListener {
-	public void changedUpdate(DocumentEvent e) { update(); }
-	public void insertUpdate(DocumentEvent e)  { update(); }
-	public void removeUpdate(DocumentEvent e)  { update(); }
+		public void removeUpdate(DocumentEvent e) {
+			update();
+		}
 
-	private void update() {
-	    // disable EndListener
-	    endField.getDocument().removeDocumentListener(endListener);
+		private void update() {
+			// disable StartListener
+			startField.getDocument().removeDocumentListener(startListener);
 
-	    // get text
-	    String value = startField.getText();
+			// get text
+			String value = endField.getText();
 
-	    // if it's the same, do nothing -- (not worth the code)
+			// if it's the same, do nothing -- (not worth the code)
 
-	    // set the range
-	    try {
-		range = range.redateStartTo(new Year(value));
-		endField.setText(range.getEnd().toString());
-	    } catch (NumberFormatException nfe) {
-		endField.setText(I18n.getText("bad_year"));
-	    }
+			// set the range
+			try {
+				range = range.redateEndTo(new Year(value));
+				startField.setText(range.getStart().toString());
+			} catch (NumberFormatException nfe) {
+				startField.setText(I18n.getText("error"));
+			}
 
-	    // re-enable endListener
-	    endField.getDocument().addDocumentListener(endListener);
+			// re-enable startListener
+			startField.getDocument().addDocumentListener(startListener);
+		}
 	}
-    }
 
-    private class EndListener implements DocumentListener {
-	public void changedUpdate(DocumentEvent e) { update(); }
-	public void insertUpdate(DocumentEvent e)  { update(); }
-	public void removeUpdate(DocumentEvent e)  { update(); }
+	/** A DocumentListener for the starting value */
+	private class StartListener implements DocumentListener {
+		public void changedUpdate(DocumentEvent e) {
+			update();
+		}
 
-	private void update() {
-	    // disable StartListener
-	    startField.getDocument().removeDocumentListener(startListener);
+		public void insertUpdate(DocumentEvent e) {
+			update();
+		}
 
-	    // get text
-	    String value = endField.getText();
+		public void removeUpdate(DocumentEvent e) {
+			update();
+		}
 
-	    // if it's the same, do nothing -- (not worth the code)
+		private void update() {
+			// disable EndListener
+			endField.getDocument().removeDocumentListener(endListener);
 
-	    // set the range
-	    try {
-		range = range.redateEndTo(new Year(value));
+			// get text
+			String value = startField.getText();
+
+			// if it's the same, do nothing -- (not worth the code)
+
+			// set the range
+			try {
+				range = range.redateStartTo(new Year(value));
+				endField.setText(range.getEnd().toString());
+			} catch (NumberFormatException nfe) {
+				endField.setText(I18n.getText("error"));
+			}
+
+			// re-enable endListener
+			endField.getDocument().addDocumentListener(endListener);
+		}
+	}
+
+	private static final long serialVersionUID = 1L;
+	
+	/** The sample we're redating */
+	private Sample sample;
+
+	/** The new range */
+	private Range range;
+	
+	/** The original dating type (can be null) */
+	private NormalTridasDatingType originalDatingType;
+	
+	/** The current dating type */
+	private NormalTridasDatingType datingType;
+
+	/** The name, version, and justificaiton panel */
+	private NameVersionJustificationPanel info;
+
+	/** Text field document listeners to auto-update each other */
+	private DocumentListener startListener, endListener;
+
+	/** The Combo box that holds the dating type */
+	protected JComboBox cboDatingType;
+	
+	/** The text boxes that hold our start/end year */
+	protected JTextField startField, endField;
+
+	/**
+	 * @param sample
+	 * @param owner
+	 */
+	public RedateDialog(Sample sample, JFrame owner) {
+		this(sample, owner, sample.getRange());
+	}
+	
+	/**
+	 * Create a redater for a loaded sample. The "OK" button will fire a
+	 * <code>sampleRedated</code> event to update other views.
+	 * 
+	 * @param sample
+	 *            the sample to redate
+	 * @param owner
+	 *            the owning frame
+	 * @param startRange
+	 * 			  the initial range
+	 */
+	public RedateDialog(Sample sample, JFrame owner, Range startRange) {
+		// modal
+		super(owner, true);
+
+		// get sample
+		this.sample = sample;
+
+		// determine dating type
+		setupDatingType();
+		
+		// pass
+		setup(startRange);
+
+		// all done
+		pack();
+		endField.requestFocusInWindow();
+		
+		Center.center(this, owner);
+	}
+	
+	/**
+	 * Apply a redate directly to the sample
+	 * @param dating
+	 */
+	private void performRedateInPlace(TridasDating dating) {
+		sample.postEdit(Redate.redate(sample, range, dating));
+	}
+	
+	/**
+	 * Create a new redate on the webservice
+	 * @param dating
+	 * @return true on success, false otherwise
+	 */
+	private boolean performCorinaWsiRedate(TridasDating dating) {
+		// we have to have a name and a justification
+		if(!info.testAndComplainRequired(EnumSet.of(NameVersionJustificationPanel.Fields.NAME,
+				NameVersionJustificationPanel.Fields.JUSTIFICATION)))
+			return false;
+
+		TridasDerivedSeries series = new TridasDerivedSeries();
+		
+		// set title (and version?)
+		series.setTitle(info.getSeriesName());
+		if(info.hasVersion())
+			series.setVersion(info.getVersion());
+		
+		// it's a truncate
+		ControlledVoc voc = new ControlledVoc();
+		voc.setValue(SampleType.REDATE.toString());
+		series.setType(voc);
+		
+		// the identifier is based on the domain from the series
+		series.setIdentifier(NewTridasIdentifier.getInstance(sample.getSeries().getIdentifier()));
+		
+		// set the parent
+		SeriesLinkUtil.addToSeries(series, sample.getSeries().getIdentifier());
+		
+		// now, a redate has three other parameters
+		TridasInterpretation interpretation = new TridasInterpretation();
+		series.setInterpretation(interpretation);
+		
+		// 1: Dating type (but only if it changed)
+		if(datingType != originalDatingType)
+			interpretation.setDating(dating);
+
+		// 2: Relative start year
+		interpretation.setFirstYear(range.getStart().tridasYearValue());
+		// looks like the genericField is what's actually used?
+		GenericFieldUtils.setField(series, "corina.newStartYear", Integer.parseInt(range.getStart().toString()));
+
+		// 3: Justification
+		GenericFieldUtils.setField(series, "corina.justification", info.getJustification());
+		
+		// make a new 'redate' dummy sample for saving
+		Sample tmp = new Sample(series);		
+
+		try {
+			CorinaWsiTridasElement saver = new CorinaWsiTridasElement(series.getIdentifier());
+			// here's where we do the "meat"
+			if(saver.save(tmp)) {
+				// put it in our menu
+				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
+				
+				new Editor(tmp).toFront();
+				
+				// get out of here! :)
+				return true;
+			}
+		} catch (IOException ioe) {
+			Alert.error(I18n.getText("error.couldNotRedate"), I18n.getText("error") + ": " + ioe.toString());
+		}
+		
+		return false;
+	}
+	
+	private boolean performRedate() {
+		ITridasSeries series = sample.getSeries();
+		TridasDating newDating;
+		
+		if(series.isSetInterpretation() && series.getInterpretation().isSetDating()) {
+			TridasDating oldDating = series.getInterpretation().getDating();
+			// create a copy!
+			newDating = (TridasDating) oldDating.createCopy();
+			oldDating.copyTo(newDating);
+		}
+		else
+			// just make a new dating element
+			newDating = new TridasDating();
+		
+		// set the new dating type
+		newDating.setType(datingType);
+
+		// if it's not derived and has no children, we can truncate in place
+		if (!sample.getSampleType().isDerived()
+				&& (!sample.hasMeta(Metadata.CHILD_COUNT) || sample.getMeta(Metadata.CHILD_COUNT, Integer.class) == 0)) {
+
+			
+			String message = MessageFormat.format(I18n.getText("question.doInPlace"),
+					new Object[] { I18n.getText("menus.tools.redate").toLowerCase() });
+			String options[] = { I18n.getText("question.deriveNewSeries"), I18n.getText("question.redateInPlace"), I18n.getText("general.cancel")};
+			
+			int ret = JOptionPane.showOptionDialog(this, message, I18n.getText("question.redateInPlace")+"?", JOptionPane.DEFAULT_OPTION, 
+					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			
+			switch(ret) {
+			case 0:
+				break;
+				
+			// truncate in place
+			case 1:
+				performRedateInPlace(newDating);
+				return true;
+			
+			// cancel
+			case 2:
+				return false;
+			}
+		}
+		
+		if(sample.getLoader() instanceof CorinaWsiTridasElement) {
+			return performCorinaWsiRedate(newDating);
+		}
+		
+		Alert.error(I18n.getText("error"), I18n.getText("error.couldNotRedate"));
+		
+		return false;
+	}
+	
+	private void setupDatingType() {
+		ITridasSeries series = sample.getSeries();
+		
+		// default to relative if there's no information
+		if(!series.isSetInterpretation() || !series.getInterpretation().isSetDating())
+			datingType = NormalTridasDatingType.RELATIVE;
+		else
+			originalDatingType = datingType = series.getInterpretation().getDating().getType();
+	}
+	
+	private JComboBox getDatingTypeComboBox() {
+		final JComboBox combo = new ComboBoxFilterable(NormalTridasDatingType.values());
+		
+		combo.setRenderer(new EnumComboBoxItemRenderer());
+		combo.setSelectedItem(datingType);
+		
+		combo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				datingType = (NormalTridasDatingType) combo.getSelectedItem();
+			}
+		});
+		
+		return combo;
+	}
+	
+	private void setup(Range startRange) {
+		// set title
+		setTitle(I18n.getText("menus.tools.redate"));
+
+		// kill me when i'm gone
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+		// grab data
+		range = startRange;
+
+		// dialog is a boxlayout
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+		p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+		setContentPane(p);
+
+		p.add(getTopPanel());
+		
+		p.add(Box.createVerticalStrut(8));
+		p.add(new JSeparator(JSeparator.HORIZONTAL));
+		p.add(Box.createVerticalStrut(8));
+
+		// name, version, justificaiton panel
+		info = new NameVersionJustificationPanel(sample, false, true);
+		p.add(info);
+
+		p.add(Box.createVerticalStrut(8));
+		p.add(new JSeparator(JSeparator.HORIZONTAL));
+		p.add(Box.createVerticalStrut(8));
+		
+		// cancel, ok
+		JButton cancel = Builder.makeButton("general.cancel");
+		final JButton ok = Builder.makeButton("general.ok");
+
+		// (listen for cancel, ok)
+		ActionListener buttonListener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolean isOk = e.getSource() == ok;
+				boolean rangeChanged = !sample.getRange().equals(range);
+
+				if (isOk && (rangeChanged || datingType != originalDatingType)) {
+					if(!performRedate())
+						return;
+				}
+
+				dispose();
+			}
+		};
+		cancel.addActionListener(buttonListener);
+		ok.addActionListener(buttonListener);
+
+		// in panel
+		p.add(Box.createVerticalStrut(14));
+		p.add(Layout.buttonLayout(cancel, ok));
+
+		// esc => cancel, return => ok
+		OKCancel.addKeyboardDefaults(ok);
+	}
+
+	private JPanel getTopPanel() {
+		JPanel p = new JPanel();
+		
+		JLabel lblNewRange = new JLabel();
+		startField = new JTextField(6);
+		JLabel lblTo = new JLabel();
+		endField = new JTextField(6);
+		JLabel lblDating = new JLabel();
+		cboDatingType = getDatingTypeComboBox();
+
+		lblNewRange.setText(I18n.getText("redate.new_range") + ":");
+
+		lblTo.setText(I18n.getText("general.to"));
+
+		startListener = new StartListener();
 		startField.setText(range.getStart().toString());
-	    } catch (NumberFormatException nfe) {
-		startField.setText(I18n.getText("bad_year"));
-	    }
+		startField.getDocument().addDocumentListener(startListener);
 
-	    // re-enable startListener
-	    startField.getDocument().addDocumentListener(startListener);
+		endListener = new EndListener();
+		endField.setText(range.getEnd().toString());
+		endField.getDocument().addDocumentListener(endListener);
+
+		lblDating.setText(I18n.getText("general.dating") + ":");
+
+		GroupLayout layout = new GroupLayout(p);
+		p.setLayout(layout);
+		layout.setHorizontalGroup(
+				layout.createParallelGroup(GroupLayout.LEADING)
+				.add(layout.createSequentialGroup()
+						.add(layout.createParallelGroup(GroupLayout.LEADING)
+								.add(lblNewRange)
+								.add(lblDating))
+								.add(18, 18, 18)
+								.add(layout.createParallelGroup(GroupLayout.LEADING)
+										.add(layout.createSequentialGroup()
+												.add(startField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(LayoutStyle.UNRELATED)
+												.add(lblTo)
+												.addPreferredGap(LayoutStyle.UNRELATED)
+												.add(endField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addContainerGap(89, Short.MAX_VALUE))
+												.add(cboDatingType, 0, 191, Short.MAX_VALUE)))
+		);
+		layout.setVerticalGroup(
+				layout.createParallelGroup(GroupLayout.LEADING)
+				.add(layout.createSequentialGroup()
+						.addContainerGap()
+						.add(layout.createParallelGroup(GroupLayout.BASELINE)
+								.add(lblNewRange)
+								.add(startField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.add(lblTo)
+								.add(endField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(LayoutStyle.RELATED)
+								.add(layout.createParallelGroup(GroupLayout.BASELINE)
+										.add(lblDating)
+										.add(cboDatingType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+										.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
+
+		return p;
 	}
-    }
-
-    /**
-       Create a redater for a loaded sample.  The "OK" button will
-       fire a <code>sampleRedated</code> event to update other views.
-
-       @param s the sample to redate
-    */
-    public RedateDialog(Sample s, JFrame owner) {
-	// modal
-	super(owner);
-	setModal(true);
-
-	// get sample
-	sample = s;
-
-	// pass
-	setup();
-
-	// all done
-	pack();
-	// (resize to make 50% wider here?)
-	setResizable(false);
-	show();
-	endField.requestFocus();
-    }
-
-    private void setup() {
-        // set title
-        setTitle(I18n.getText("redate"));
-
-        // kill me when i'm gone
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-        // grab data
-        range = sample.getRange();
-        isAbsolute = sample.isAbsolute();
-
-        // dialog is a boxlayout
-        JPanel p = new JPanel();
-        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-        p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
-        setContentPane(p);
-
-        // controls go in a dialoglayout
-        JPanel controls = new JPanel(new DialogLayout());
-        p.add(controls);
-
-        // old range
-        // controls.add(new JLabel(sample.range.toString()), I18n.getText("old_range") + ":");
-        // controls.add(new JLabel(I18n.getText("old_range") + " was " + sample.range));
-
-        // redate --------------------------------------------------
-        JPanel rangePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-
-        startListener = new StartListener();
-        startField = new JTextField(sample.getRange().getStart().toString(), 5);
-        startField.getDocument().addDocumentListener(startListener);
-
-        endListener = new EndListener();
-        endField = new JTextField(sample.getRange().getEnd().toString(), 5);
-        endField.getDocument().addDocumentListener(endListener);
-
-        // can't do this with dialoglayout! -- firstLabel.setLabelFor(endField); // :-)
-
-        rangePanel.add(startField);
-        rangePanel.add(new JLabel(" - "));
-        rangePanel.add(endField);
-
-        controls.add(rangePanel, I18n.getText("new_range") + ":");
-
-        // dating --------------------------------------------------
-	// TODO: add builder for radiobuttons?
-        ButtonGroup datingGroup = new ButtonGroup();
-        JRadioButton relButton = Builder.makeRadioButton("relative");
-	relButton.setSelected(!isAbsolute);
-        final JRadioButton absButton = Builder.makeRadioButton("absolute");
-	absButton.setSelected(isAbsolute);
-
-        // on click (either radiobutton), set absolute (re-use listener)
-        ActionListener absListener = new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                isAbsolute = (e.getSource() == absButton);
-            }
-        };
-        relButton.addActionListener(absListener);
-        absButton.addActionListener(absListener);
-
-        datingGroup.add(relButton);
-        datingGroup.add(absButton);
-        controls.add(relButton, "Dating:");
-        controls.add(Box.createVerticalStrut(4), null); // (8)
-        controls.add(absButton, "");
-
-        // 22-jul-2002: maryanne says this might be useful:
-        final JCheckBox elementsToo = new JCheckBox("Also redate all elements");
-        controls.add(Box.createVerticalStrut(8), null);
-        controls.add(elementsToo, "");
-        boolean allowElementsToo = true;
-        //if (System.getSecurityManager() != null) {
-          try {
-            AccessController.checkPermission(new CorinaPermission("redate.elements"));
-          } catch (AccessControlException ace) {
-            allowElementsToo = false;
-            elementsToo.setBackground(Color.red.darker().darker());
-          }
-        //}
-        // OUCH.  that's about as dangerous a weapon as i've ever thought about handing the lusers.
-        // (permanently disabled, now) -ken
-        // re-enabled with preliminary access control 10/7/04 -aaron
-        if (sample.getElements() == null || !allowElementsToo)
-          elementsToo.setEnabled(false);
-        	
-
-        // buttons --------------------------------------------------
-
-        // cancel, ok
-        JButton cancel = Builder.makeButton("cancel");
-        final JButton ok = Builder.makeButton("ok");
-
-        // (listen for cancel, ok)
-        ActionListener buttonListener = new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                boolean isOk = (e.getSource() == ok);
-                boolean rangeChanged = !sample.getRange().equals(range);
-                boolean absRelChanged = (sample.isAbsolute() != isAbsolute);
-
-                if (isOk && (rangeChanged || absRelChanged))
-                    sample.postEdit(Redate.redate(sample, range, isAbsolute ? "A" : "R"));
-
-                dispose();
-            }
-        };
-        cancel.addActionListener(buttonListener);
-        ok.addActionListener(buttonListener);
-
-	// in panel
-        p.add(Box.createVerticalStrut(14));
-        p.add(Layout.buttonLayout(cancel, ok));
-
-        // esc => cancel, return => ok
-        OKCancel.addKeyboardDefaults(ok);
-    }
 }

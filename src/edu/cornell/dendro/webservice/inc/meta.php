@@ -1,12 +1,15 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
 
 require_once("dbhelper.php");
 $myMetaHeader = new meta();
@@ -29,14 +32,15 @@ class meta
   var $nonce = NULL;
   var $seq = NULL;
   var $timing = array();
+  	
 
   function meta($theRequestType="")
   {
     global $wsversion;
     $this->startTimestamp = microtime(true);
-    $this->requestdate= date(DATE_ISO8601);
-    $this->requesturl= escapeXMLChars($_SERVER['REQUEST_URI']);
-    $this->clientversion= escapeXMLChars($_SERVER['HTTP_USER_AGENT']);
+    $this->requestdate= date('c');
+    $this->requesturl= dbHelper::escapeXMLChars($_SERVER['REQUEST_URI']);
+    $this->clientversion= dbHelper::escapeXMLChars($_SERVER['HTTP_USER_AGENT']);
     if($theRequestType)  $this->requesttype= $theRequestType;
     $this->wsversion = $wsversion;
   }
@@ -60,15 +64,19 @@ class meta
 
     $message = array($theCode => $theMessage);
     array_push($this->messages, $message);
-
+        
     // Set corresponding status 
     if($this->status=="Error" || $theStatus=="Error") 
     {
         $this->status="Error";
     }
-    elseif($this->status=="Warning" || $theStatus=="Warning")
+    elseif($this->status=="Warning" || $theStatus=="Warning" )
     {
         $this->status="Warning";
+    }
+    elseif($this->status=="Notice" || $theStatus=="Notice")
+    {
+    	$this->startTimestamp="Notice";
     }
     else
     {
@@ -78,12 +86,19 @@ class meta
 
   function setTiming($theLabel)
   {
-    // Setter for error and warning messages
-
-    $message = array($theLabel => round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0));
-    array_push($this->timing, $message);
+  	global $debugFlag;
+  	global $timingFlag;
+  	global $firebug;
+  	
+  	if(( $debugFlag===TRUE) && ($timingFlag===TRUE))
+  	{
+    	//$message = array($theLabel => round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0));
+    	//array_push($this->timing, $message);
+    	
+  		$firebug->log(round(((microtime(true)*1000)-($this->startTimestamp*1000)), 0), $theLabel);
+  	}
   }
-
+  
   function requestLogin($nonce, $seq, $messageType="Error")
   {
       $this->seq=$seq;
@@ -119,6 +134,94 @@ class meta
      return False;
   }
 
+  /**
+   * Search the complete HTTP_USER_AGENT for identifiers of known client programs and return the associated version number.  
+   * If no known clients are identifier then returns false
+   *
+   * @return Mixed
+   */
+  function getClientVersion()
+  {
+  	global $corinaClientIdentifiers;
+  	foreach($corinaClientIdentifiers as $app)
+  	{ 	
+	  	if (strstr($this->clientversion, $app['name']))
+	  	{
+	  		return (float) substr(strstr($this->clientversion, $app['name']), strlen($app['name'])+1);
+	  		break;
+	  	}	
+  	}	
+  	return false;
+  }
+  
+  /**
+   * Is the version of the client being used valid?
+   *
+   * @return Boolean
+   */
+  function isClientVersionValid()
+  {
+  	global $corinaClientIdentifiers;
+	global $onlyAllowKnownClients;
+	
+	
+  	foreach($corinaClientIdentifiers as $app)
+  	{ 	
+	  	if (strstr($this->clientversion, $app['name']))
+	  	{
+	  		$minVersion =  $app['minVersion'];
+	  		if($this->getClientVersion()>=$minVersion) 
+	  		{
+	  			return true;
+	  		}
+	  		else
+	  		{
+	  			return false;
+	  		}
+	  	}	
+  	}
+
+  	// Return either false or null depending on if strict client checking is enabled
+  	if($onlyAllowKnownClients===TRUE)
+  	{ 
+  		return false;
+  	}
+  	else
+  	{
+  		return null;
+  	}
+  }
+  
+  
+  function getClientName()
+  {
+  	global $corinaClientIdentifiers;	
+  	
+  	foreach($corinaClientIdentifiers as $app)
+  	{ 	
+	  	if (strstr($this->clientversion, $app['name']))
+	  	{
+	  		return $app['name'];
+	  	}	
+  	}	
+  	return false;
+  }
+  
+  function getMinRequiredClientVersion()
+  {
+  	global $corinaClientIdentifiers;	
+  	
+  	foreach($corinaClientIdentifiers as $app)
+  	{ 	
+	  	if (strstr($this->clientversion, $app['name']))
+	  	{
+	  		return $app['minVersion'];
+	  	}	
+  	}	
+  	return false;
+  }
+  
+    
   function asXML()
   {
     // Get class as XML 
@@ -127,12 +230,12 @@ class meta
     {
         $xml.="<user id=\"".$this->securityUserID."\" username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$this->lastname."\" />\n";
     }
-    $xml.="<wsversion>".$this->wsversion."</wsversion>\n";
-    $xml.="<clientversion>".$this->clientversion."</clientversion>\n";
-    $xml.="<requestdate>".$this->requestdate."</requestdate>\n";
+    $xml.="<wsVersion>".$this->wsversion."</wsVersion>\n";
+    $xml.="<clientVersion>".$this->clientversion."</clientVersion>\n";
+    $xml.="<requestDate>".$this->requestdate."</requestDate>\n";
     $xml.="<queryTime unit=\"seconds\">".round((microtime(true)-$this->startTimestamp), 2)."</queryTime>\n";
-    $xml.="<requesturl>".$this->requesturl."</requesturl>\n";
-    $xml.="<requesttype>".$this->requesttype."</requesttype>\n";
+    $xml.="<requestUrl>".$this->requesturl."</requestUrl>\n";
+    $xml.="<requestType>".strtolower($this->requesttype)."</requestType>\n";
     $xml.="<status>".$this->status."</status>\n";
 
     // Remove duplicate messages
@@ -142,7 +245,7 @@ class meta
     {
         foreach($item as $code => $message)
         {
-          $xml.="<message code=\"".$code."\">".$message."</message>\n";
+          $xml.="<message code=\"".$code."\">".dbhelper::escapeXMLChars($message)."</message>\n";
         }
     }
 

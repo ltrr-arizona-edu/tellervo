@@ -1,10 +1,9 @@
 package edu.cornell.dendro.corina.graph;
 
+import java.awt.Graphics;
+import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Printable;
-import java.awt.print.PageFormat;
-
-import java.awt.Graphics;
 
 // pageable, not printable, because we know we're just 1 page, and we want the user to know this, too.
 public class GraphPrinter implements Pageable {

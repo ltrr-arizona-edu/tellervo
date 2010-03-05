@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.cornell.dendro.corina_indexing.*;
 
@@ -18,7 +20,7 @@ import edu.cornell.dendro.corina_indexing.*;
  */
 public class Indexer extends ReadingResultHolder implements Indexable {
 
-	private int indexType;
+	private final int indexType;
 	
 	/**
 	 * @param readingResults
@@ -29,45 +31,81 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 		super(readingResults);
 		
 		if(indexType == null)
-			this.indexType = 7; // exponential is the magic default.
-		else
-			this.indexType = indexType;
+			throw new NullPointerException("indexType must be specified as VMeasurementOpParam");
+		
+		this.indexType = indexType;
 	}
 
 	/**
 	 * @see Indexable
 	 */
-	public List getData() {
+	public List<? extends Number> getData() {
 		return reading;
 	}
 
 	@Override
-	protected void operate() throws SQLException {
+	public void operate() throws SQLException {
 		IndexFunction func;
 		
 		func = getIndexFunction();
 		func.index();
 		
-		List indexedData = func.getOutput();
+		List<? extends Number> indexedData = func.getOutput();
 		if(indexedData.size() != reading.size())
 			throw new IllegalArgumentException("output and input are not the same size!");
+		
+		Logger logger = Logger.getAnonymousLogger();
+		boolean logData = logger.isLoggable(Level.FINER);
+		
 		
 		/*
 		 * Traverse the indexed data and create our output.
 		 */
 		int len = indexedData.size();
-		output = new ArrayList(len);
+		
+		if(logger.isLoggable(Level.FINE)) {
+			logger.fine("Indexing " + len + " datapoints using " 
+					    + func.getDatabaseRepresentation());
+		}
+		
+		List<Integer> output = new ArrayList<Integer>(len);
 		for(int i = 0; i < len; i++) {
 			double ind = ((Number) indexedData.get(i)).doubleValue();
 			double raw = ((Number) reading.get(i)).doubleValue();
 			double ratio = raw / ind;
 			int val = (int) Math.round(ratio * 1000.0d);			
 			
+			if(logData)
+			{
+				String msg = new ParamStringBuilder()
+								 	.append("i", i)
+								 	.append("ind", ind)
+								 	.append("raw", raw)
+								 	.append("ratio", ratio)
+								 	.append("val", val)
+								 	.toString();
+				
+				logger.finer(msg);
+			}
+			
 			output.add(val);
 		}
+		
+		this.output = output;
 	}
 	
 	private IndexFunction getIndexFunction() throws SQLException  {
+		
+		Logger logger = Logger.getAnonymousLogger();
+		
+		if(logger.isLoggable(Level.FINE)) {
+			String msg = new ParamStringBuilder()
+				.append("indexType", indexType)
+				.toString();
+			
+			logger.fine("getIndexFunction(): " + msg );
+		}
+		
 		switch(indexType) {
 		case 0:
 			return new Horizontal(this);
@@ -112,21 +150,21 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 			
 			b.append(newVMeasurementResultID);
 			b.append("',");
-			b.append(((Number) relYear.get(i)).intValue());
+			b.append(relYear.get(i));
 			b.append(',');
-			b.append(((Number) output.get(i)).intValue());
+			b.append(output.get(i).intValue());
 			b.append(")");
 			s.addBatch(b.toString());
 		}
 	}
 
-	public void batchAddStatements(PreparedStatement s, String newVMeasurementResultID) throws SQLException {
+	public void batchAddStatements(PreparedStatement s, Object newVMeasurementResultID) throws SQLException {
 		int len = output.size();
 
 		for(int i = 0; i < len; i++) {
-			s.setString(1, newVMeasurementResultID);
-			s.setInt(2, ((Number) relYear.get(i)).intValue());
-			s.setInt(3, ((Number) output.get(i)).intValue());
+			s.setObject(1, newVMeasurementResultID);
+			s.setInt(2, relYear.get(i));
+			s.setInt(3, output.get(i).intValue());
 		
 			s.addBatch();
 		}

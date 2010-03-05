@@ -16,8 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.Subsite;
+import edu.cornell.dendro.corina.tridas.Subsite;
+import edu.cornell.dendro.corina.tridas.TridasObject;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
@@ -70,6 +70,7 @@ public class SubsiteEditorPanel extends BaseEditorPanel<Subsite> {
        	txtSite.setText(getParentObject().toString());    	
     }
     
+    /*
     public void commit() {
     	Subsite subsite = new Subsite(Subsite.ID_NEW, txtSubsiteName.getText());
     	assimilateUpdateObject(subsite);
@@ -82,13 +83,14 @@ public class SubsiteEditorPanel extends BaseEditorPanel<Subsite> {
 		if(ir.getObject().get(0) instanceof Subsite) {
 			setNewObject((Subsite) ir.getObject().get(0));
 			if(getParentObject() != null) {
-				((Site)getParentObject()).addSubsite(getNewObject());
-				((Site)getParentObject()).sortSubsites();
+				((TridasObject)getParentObject()).addSubsite(getNewObject());
+				((TridasObject)getParentObject()).sortSubsites();
 			}
 		}
 		
     	dispose();
     }
+    */
         
     protected void validateForm() {
     	boolean nameOk;

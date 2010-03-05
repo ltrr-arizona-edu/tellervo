@@ -1,5 +1,10 @@
-CREATE OR REPLACE FUNCTION cpgdb.CreateMetaCache(tblVMeasurement.VMeasurementID%TYPE) 
-RETURNS tblVMeasurementMetaCache AS $$
+-- Function: cpgdb.createmetacache(uuid)
+
+-- DROP FUNCTION cpgdb.createmetacache(uuid);
+
+CREATE OR REPLACE FUNCTION cpgdb.createmetacache(uuid)
+  RETURNS tblvmeasurementmetacache AS
+$BODY$
 DECLARE
    vmid ALIAS FOR $1;
    op varchar;
@@ -22,6 +27,7 @@ BEGIN
 
    ret.VMeasurementID := vmid;
    ret.StartYear := vmresult.StartYear;
+   ret.datingTypeID := vmresult.datingTypeID;
 
    -- Calculate number of readings
    SELECT COUNT(*) INTO ret.ReadingCount
@@ -42,8 +48,8 @@ BEGIN
 
    -- Delete and populate the cache
    DELETE FROM tblVMeasurementMetaCache WHERE VMeasurementID = vmid;
-   INSERT INTO tblVMeasurementMetaCache(VMeasurementID, StartYear, ReadingCount, MeasurementCount)
-      VALUES (ret.VMeasurementID, ret.StartYear, ret.ReadingCount, ret.MeasurementCount);
+   INSERT INTO tblVMeasurementMetaCache(VMeasurementID, StartYear, ReadingCount, MeasurementCount, DatingTypeID)
+      VALUES (ret.VMeasurementID, ret.StartYear, ret.ReadingCount, ret.MeasurementCount, ret.datingTypeID);
 
    -- Clean up
    DELETE FROM tblVMeasurementResult WHERE VMeasurementResultID = vmresult.VMeasurementResultID;
@@ -55,58 +61,66 @@ BEGIN
       SELECT vmid,Measurement.MeasurementID FROM cpgdb.FindVMParentMeasurements(vmid) Measurement;
 
    -- Calculate extent of vmeasurement by looking up locations of all associated direct Measurements
-   SELECT setsrid(extent(tbltree.location)::geometry,4326)
-      INTO  ret.vmextent
-      FROM  tbltree, tblspecimen, tblradius, tblMeasurement, tblvmeasurement
-      WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
-      AND   tblmeasurement.radiusid=tblradius.radiusid
-      AND   tblradius.specimenid=tblspecimen.specimenid
-      AND   tblspecimen.treeid=tbltree.treeid
-      AND   tblvmeasurement.vmeasurementid
-            IN (SELECT vMeasurementid
-                   FROM  cpgdb.FindVMParents(vmid, true)
-                   WHERE op='Direct');
+  -- SELECT setsrid(extent(tblelement.locationgeometry)::geometry,4326)
+   --   INTO  ret.vmextent
+    --  FROM  tblelement, tblsample, tblradius, tblMeasurement, tblvmeasurement
+    --  WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
+    --  AND   tblmeasurement.radiusid=tblradius.radiusid
+    --  AND   tblradius.sampleid=tblsample.sampleid
+    --  AND   tblsample.elementid=tblelement.elementid
+    --  AND   tblvmeasurement.vmeasurementid
+      --      IN (SELECT vMeasurementid
+      --             FROM  cpgdb.FindVMParents(vmid, true)
+       --            WHERE op='Direct');
 
-   --RAISE NOTICE 'Extent is %', ret.vmextent;
+   -- Calculate extent using all associated element and object geometries
+   IF op = 'Direct' THEN
+   RAISE NOTICE 'Getting extents from element and object.  Measurement count is %', ret.MeasurementCount;
+	   SELECT setsrid(extent(st_collect(tblelement.locationgeometry, tblobject.locationgeometry)), 4326)
+	      INTO  ret.vmextent
+	      FROM  tblobject, tblelement, tblsample, tblradius, tblMeasurement, tblvmeasurement
+	      WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
+	      AND   tblmeasurement.radiusid=tblradius.radiusid
+	      AND   tblradius.sampleid=tblsample.sampleid
+	      AND   tblsample.elementid=tblelement.elementid
+	      AND   tblelement.objectid=tblobject.objectid
+	      AND   tblvmeasurement.vmeasurementid
+		    IN (SELECT vMeasurementid
+			   FROM  cpgdb.FindVMParents(vmid, true)
+			   WHERE op='Direct');
+   
+   -- Calculate extent of vmeasurement by looking up locations of all associated direct VMeasurements
+   ELSE 
+	RAISE NOTICE 'Getting extent from component vmeasurements';
+	RAISE NOTICE 'Find all parents of %', vmid;
+	RAISE NOTICE 'Number of measurements is %',ret.MeasurementCount;
+	   SELECT setsrid(extent(tblvmeasurementmetacache.vmextent)::geometry, 4326)
+	   INTO  ret.vmextent
+	   FROM  tblvmeasurementmetacache
+	   WHERE tblvmeasurementmetacache.vmeasurementid
+		 IN (SELECT vMeasurementid
+		   FROM  cpgdb.FindVMParents(vmid, false));
+   END IF;
+
+
+   RAISE NOTICE 'Extent is %', ret.vmextent;
 
    -- Store extent info
    UPDATE tblVMeasurementMetaCache SET vmextent = ret.vmextent WHERE VMeasurementID = ret.VMeasurementID;
 
    -- Now, get taxon and label data and update that
-   SELECT INTO ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix 
-       s.siteCode,s.siteCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVMeasurementPrefix(vmid) AS prefix
+   SELECT INTO ret.objectCode, ret.objectCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix 
+       s.objectCode,s.objectCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVMeasurementPrefix(vmid) AS prefix
        FROM cpgdb.getVMeasurementSummaryInfo(vmid) AS s;
-   UPDATE tblVMeasurementMetaCache SET (siteCode, siteCount, commonTaxonName, taxonCount, prefix) =
-       (ret.siteCode, ret.siteCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix)
+   UPDATE tblVMeasurementMetaCache SET (objectCode, objectCount, commonTaxonName, taxonCount, prefix) =
+       (ret.objectCode, ret.objectCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix)
        WHERE VMeasurementID = vmid;
 
    -- Return result
    RETURN ret;
 END;
-$$ LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE OR REPLACE FUNCTION cpgdb.GetMetaCache(tblVMeasurement.VMeasurementID%TYPE) 
-RETURNS tblVMeasurementMetaCache AS $$
-DECLARE
-   vmid ALIAS FOR $1;
-   ret tblVMeasurementMetaCache%ROWTYPE;
-BEGIN
-   -- Do we already have it cached?
-   SELECT * INTO ret FROM tblVMeasurementMetaCache WHERE VMeasurementID = vmid;
-   IF FOUND THEN
-      -- RAISE NOTICE 'Cache hit on %', vmid;
-      RETURN ret;
-   END IF;
-
-   -- Not cached, so we have to make it
-   RAISE NOTICE 'Cache miss on %', vmid;
-   SELECT * INTO ret FROM cpgdb.CreateMetaCache(vmid);
-   RETURN ret;
-END;
-$$ LANGUAGE 'plpgsql' VOLATILE;
-
-CREATE OR REPLACE FUNCTION cpgdb.GetDerivedCache(tblVMeasurement.VMeasurementID%TYPE) 
-RETURNS SETOF tblVMeasurementDerivedCache AS $$
-   SELECT * FROM cpgdb.GetMetaCache($1);
-   SELECT * FROM tblVMeasurementDerivedCache WHERE VMeasurementID = $1;
-$$ LANGUAGE SQL;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE
+  COST 100;
+ALTER FUNCTION cpgdb.createmetacache(uuid) OWNER TO lucasm;

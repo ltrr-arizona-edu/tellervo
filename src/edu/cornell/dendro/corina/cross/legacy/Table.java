@@ -136,7 +136,7 @@ public class Table extends AbstractTableModel {
 			super(fixed, moving); // here's where all the computations get done
 			title = moving.toString();
 
-			this.movingFilename = moving.getMeta("filename").toString();
+			this.movingFilename = moving.getDisplayTitle();
 			this.movingElement = movingElement;
 		}
 

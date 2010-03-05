@@ -1,28 +1,29 @@
 DROP TYPE typVMeasurementSearchResult CASCADE;
 CREATE TYPE typVMeasurementSearchResult AS (
    RecursionLevel integer,
-   VMeasurementID integer,
+   VMeasurementID uuid,
    Op varchar,
-   Name varchar,
+   Code varchar,
    StartYear integer,
    ReadingCount integer,
    MeasurementCount integer,
-   Description varchar,
+   Comments varchar,
    Modified timestamp
 );
 
 DROP TABLE tblVMeasurementMetaCache CASCADE;
 CREATE TABLE tblVMeasurementMetaCache (
-    VMeasurementID integer NOT NULL REFERENCES tblVMeasurement ON DELETE CASCADE ON UPDATE CASCADE,
+    VMeasurementID tblvmeasurement.vmeasurementid%TYPE NOT NULL REFERENCES tblVMeasurement ON DELETE CASCADE ON UPDATE CASCADE,
     StartYear integer NOT NULL,
     ReadingCount integer NOT NULL,
     MeasurementCount integer DEFAULT 1 NOT NULL
     vsextent geometry,
-    siteCode text,
-    siteCount integer,   
+    objectCode text,
+    objectCount integer,   
     commonTaxonName text,
-    taxonCount integer
-    prefix text;
+    taxonCount integer,
+    prefix text,
+    datingTypeID integer NOT NULL,
     CONSTRAINT enforce_dims_vsextent CHECK ((ndims(vsextent) = 2)),
     CONSTRAINT enforce_geotype_vsextent CHECK (((geometrytype(vsextent) = 'POLYGON'::text) OR (vsextent IS NULL))),
     CONSTRAINT enforce_srid_vsextent CHECK ((srid(vsextent) = 4326))
@@ -32,7 +33,7 @@ DROP TABLE tblVMeasurementDerivedCache CASCADE;
 CREATE TABLE tblVMeasurementDerivedCache
 (
   derivedCacheID serial NOT NULL,
-  VMeasurementID integer NOT NULL,
+  VMeasurementID uuid NOT NULL,
   MeasurementID integer NOT NULL,
   CONSTRAINT tblvMeasurementderivedcache_pkey PRIMARY KEY (derivedcacheid),
   CONSTRAINT tblvMeasurementderivedcache_Measurementid_fkey FOREIGN KEY (Measurementid)
@@ -59,10 +60,11 @@ CREATE TYPE typPermissionSet AS (
 
 DROP TYPE typVMeasurementSummaryInfo CASCADE;
 CREATE TYPE typVMeasurementSummaryInfo AS (
-   VMeasurementID integer,
-   siteCode text,
-   siteCount integer,   
+   VMeasurementID uuid,
+   objectCode text,
+   objectCount integer,   
    commonTaxonName text,
    taxonCount integer
 );
 
+CREATE TYPE DatingTypeClass AS ENUM ('arbitrary', 'inferred');

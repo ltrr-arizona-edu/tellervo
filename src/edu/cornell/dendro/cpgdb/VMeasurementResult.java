@@ -1,19 +1,27 @@
 package edu.cornell.dendro.cpgdb;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Savepoint;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VMeasurementResult {
 	// Internal values
-	private enum VMeasurementOperation { DIRECT, INDEX, CLEAN, REDATE, SUM, CROSSDATE }
+	private enum VMeasurementOperation { DIRECT, INDEX, CLEAN, REDATE, SUM, CROSSDATE, TRUNCATE }
 		
 	// This string holds our result, which is a UUID returned by the DB
-	private String result;
+	private UUID result;
 	
 	// we keep this instantiated for easy access to the db
 	protected DBQuery dbq;
 	
 	// owner user ID (for later extension...)
 	private int ownerUserID = 1234;
+	
+	private final Logger logger;
 
 	/**
 	 * 
@@ -21,7 +29,7 @@ public class VMeasurementResult {
 	 * @param safe true if we should attempt to rollback on error, false otherwise
 	 * @throws SQLException
 	 */
-	public VMeasurementResult(int VMeasurementID, boolean safe) throws SQLException {
+	public VMeasurementResult(UUID VMeasurementID, boolean safe) throws SQLException {
 		this(VMeasurementID, safe, true);
 	}
 
@@ -32,8 +40,10 @@ public class VMeasurementResult {
 	 * @param cleanup true if we should close all our queries immediately, false otherwise
 	 * @throws SQLException
 	 */
-	public VMeasurementResult(int VMeasurementID, boolean safe, boolean cleanup) throws SQLException {
-		this.dbq = new DBQuery();
+	public VMeasurementResult(UUID VMeasurementID, boolean safe, boolean cleanup) throws SQLException {
+		logger = Logger.getAnonymousLogger();
+		dbq = new DBQuery();
+		
 		try {
 			acquireVMeasurementResult(VMeasurementID, safe);
 		} finally {
@@ -50,8 +60,9 @@ public class VMeasurementResult {
 	 * @param dbQuery
 	 * @throws SQLException
 	 */
-	public VMeasurementResult(int VMeasurementID, boolean safe, DBQuery dbQuery) throws SQLException {
+	public VMeasurementResult(UUID VMeasurementID, boolean safe, DBQuery dbQuery) throws SQLException {
 		this.dbq = dbQuery;		
+		logger = Logger.getAnonymousLogger();
 		acquireVMeasurementResult(VMeasurementID, safe);
 	}
 
@@ -65,13 +76,13 @@ public class VMeasurementResult {
 	 * @param safe true if we should attempt to rollback on failure
 	 * @throws SQLException
 	 */
-	private void acquireVMeasurementResult(int VMeasurementID, boolean safe) throws SQLException {
+	private void acquireVMeasurementResult(UUID VMeasurementID, boolean safe) throws SQLException {
 		if(safe) {
 			// If we have an error, clean up any mess we made, but pass along the exception.
 			Savepoint beforeCreation = dbq.getConnection().setSavepoint();
 			
 			try {
-				result = recursiveGetVMeasurementResult(VMeasurementID, (String)null, (String)null, 0);
+				result = recursiveGetVMeasurementResult(VMeasurementID, null, null, 0);
 			} catch (SQLException sql) {
 				dbq.getConnection().rollback(beforeCreation);
 				throw sql;
@@ -80,7 +91,7 @@ public class VMeasurementResult {
 			}					
 		}
 		else
-			result = recursiveGetVMeasurementResult(VMeasurementID, (String)null, (String)null, 0);
+			result = recursiveGetVMeasurementResult(VMeasurementID, null, null, 0);
 	}
 	
 	/**
@@ -91,8 +102,19 @@ public class VMeasurementResult {
 	 * @return A string indicating the UUID of the VMeasurementResult associated with the provided VMeasurementID
 	 * @throws SQLException
 	 */
-	private String recursiveGetVMeasurementResult(int VMeasurementID, String VMeasurementResultGroupID,	
-			String VMeasurementResultMasterID, int recursionDepth) throws SQLException {
+	private UUID recursiveGetVMeasurementResult(UUID VMeasurementID, UUID VMeasurementResultGroupID,	
+			UUID VMeasurementResultMasterID, int recursionDepth) throws SQLException {
+
+		if(logger.isLoggable(Level.FINE)) {
+			String params = new ParamStringBuilder()
+				.append("VMeasurementID", VMeasurementID)
+				.append("VMeasurementResultGroupID", VMeasurementResultGroupID)
+				.append("VMeasurementResultMasterID", VMeasurementResultMasterID)
+				.append("recursionDepth", recursionDepth)
+				.toString();
+			
+			logger.fine("recursiveGETVMR() {" + params + "}");
+		}
 		
 		ResultSet res;
 		VMeasurementOperation op;
@@ -103,7 +125,7 @@ public class VMeasurementResult {
 			throw new SQLException("VMeasurementResult: Infinite recursion detected!");
 		
 		if(VMeasurementResultMasterID == null)
-			VMeasurementResultMasterID = dbq.createUUID();
+			VMeasurementResultMasterID = UUID.randomUUID();
 		
 		// Figure out what kind of VMeasurement we have to deal with
 		res = dbq.query("qryVMeasurementType", VMeasurementID);
@@ -115,6 +137,17 @@ public class VMeasurementResult {
 
 			// If VMeasurementOpParameter is NULL, getInt turns NULL to 0
 			VMeasurementOpParameter = (Integer) res.getObject("VMeasurementOpParameter");
+			
+			if(logger.isLoggable(Level.FINE)) {
+				String params = new ParamStringBuilder()
+					.append("op", op)
+					.append("MeasurementID", MeasurementID)
+					.append("VMeasurementsInGroup", VMeasurementsInGroup)
+					.append("VMeasurementOpParameter", VMeasurementOpParameter)
+					.toString();
+				
+				logger.fine("qryVMeasurementType values {" + params + "}");
+			}
 			
 			if(op == VMeasurementOperation.DIRECT && VMeasurementsInGroup == 0 && MeasurementID != 0) {
 				// Ah, the clean base case. Just drop out nicely, after we clean up.
@@ -128,6 +161,7 @@ public class VMeasurementResult {
 					(op == VMeasurementOperation.CLEAN && VMeasurementsInGroup == 1) ||
 					(op == VMeasurementOperation.REDATE && VMeasurementsInGroup == 1) ||
 					(op == VMeasurementOperation.CROSSDATE && VMeasurementsInGroup == 1) ||
+					(op == VMeasurementOperation.TRUNCATE && VMeasurementsInGroup == 1) ||
 					(op == VMeasurementOperation.SUM && VMeasurementsInGroup > 1)
 				   )) 
 				   throw new SQLException("Malformed VMeasurement (id:" + VMeasurementID + ")");
@@ -142,9 +176,9 @@ public class VMeasurementResult {
 		 * The recursive case.
 		 */
 
-		String newVMeasurementResultID = null;
-		String newVMeasurementResultGroupID = null;
-		String lastWorkingVMeasurementResultID = null;
+		UUID newVMeasurementResultID = null;
+		UUID newVMeasurementResultGroupID = null;
+		UUID lastWorkingVMeasurementResultID = null;
 		/*
 		 * The lastWorkingVMeasurementResultID (CurrentVMeasurementResultID in
 		 * Kit's code) is the last VMeasurementResult returned by our recursive
@@ -162,7 +196,7 @@ public class VMeasurementResult {
 			 * group ID.
 			 */
 			if (VMeasurementResultGroupID == null)
-				newVMeasurementResultGroupID = dbq.createUUID();
+				newVMeasurementResultGroupID = UUID.randomUUID();
 			else
 				newVMeasurementResultGroupID = VMeasurementResultGroupID;
 
@@ -171,13 +205,14 @@ public class VMeasurementResult {
 		case CLEAN:
 		case REDATE:
 		case CROSSDATE:
+		case TRUNCATE:
 		case INDEX:
 			/*
 			 * For everything else, we make a new Group ID. If we're a redated
 			 * sample underneath a sum, this is so we don't include the original
 			 * sample in the sum as well.
 			 */
-			newVMeasurementResultGroupID = dbq.createUUID();
+			newVMeasurementResultGroupID = UUID.randomUUID();
 
 			break;
 
@@ -190,7 +225,8 @@ public class VMeasurementResult {
 		res = dbq.query("qryVMeasurementMembers", VMeasurementID);
 
 		while (res.next()) {
-			lastWorkingVMeasurementResultID = recursiveGetVMeasurementResult(res.getInt("MemberVMeasurementID"),
+			lastWorkingVMeasurementResultID = recursiveGetVMeasurementResult(
+					UUID.fromString(res.getString("MemberVMeasurementID")),
 					newVMeasurementResultGroupID, VMeasurementResultMasterID,
 					recursionDepth + 1);
 		}
@@ -204,7 +240,7 @@ public class VMeasurementResult {
 		case INDEX: 
 		{			
 			// First, create a new VMeasurementResult and move our metadata over to it
-			newVMeasurementResultID = dbq.createUUID();
+			newVMeasurementResultID = UUID.randomUUID();
 			dbq.execute("qappVMeasurementResultOpIndex",
 					newVMeasurementResultID, VMeasurementID,
 					VMeasurementResultMasterID,
@@ -215,7 +251,9 @@ public class VMeasurementResult {
 			res = dbq.query("qacqVMeasurementReadingResult", lastWorkingVMeasurementResultID);
 			Indexer idx = new Indexer(res, VMeasurementOpParameter);
 			res.close();
-
+			
+			// run the actual index on the data
+			idx.operate();
 
 			// prepare a statement for inserting our rows	
 			PreparedStatement bulkInsert = dbq.getConnection().prepareStatement(
@@ -230,7 +268,7 @@ public class VMeasurementResult {
 			
 		case SUM: 
 			// create a new VMeasurement, move the metadata
-			newVMeasurementResultID = dbq.createUUID();
+			newVMeasurementResultID = UUID.randomUUID();
 			
 			// create our vmeasurementresult...
 			dbq.execute("qappVMeasurementResultOpSum",
@@ -263,11 +301,8 @@ public class VMeasurementResult {
 			/* 
 			 * "As we are updating a record, not appending a new one, use the current ID as the new one."
 			 */
-			if(VMeasurementOpParameter == null)
-				throw new SQLException("Invalid null redate parameter");
-			
 			newVMeasurementResultID = lastWorkingVMeasurementResultID;
-			dbq.execute("qupdVMeasurementResultOpRedate", VMeasurementID, VMeasurementOpParameter, lastWorkingVMeasurementResultID);
+			dbq.execute("qupdVMeasurementResultOpRedate", VMeasurementID, lastWorkingVMeasurementResultID);
 			break;
 
 		case CROSSDATE:
@@ -276,9 +311,47 @@ public class VMeasurementResult {
 			 */
 			
 			newVMeasurementResultID = lastWorkingVMeasurementResultID;
-			dbq.execute("qupdVMeasurementResultOpCrossdate", VMeasurementID, VMeasurementID, lastWorkingVMeasurementResultID);
+			dbq.execute("qupdVMeasurementResultOpCrossdate", VMeasurementID, lastWorkingVMeasurementResultID);
+			break;
+			
+		case TRUNCATE:
+			newVMeasurementResultID = lastWorkingVMeasurementResultID;
+			dbq.execute("qupdVMeasurementResultOpTruncate", VMeasurementID, lastWorkingVMeasurementResultID);
 			break;
 		}
+		
+		/*
+		 * Now, migrate over or aggregate any reading notes
+		 * Then apply our own vmeasurement-derived notes
+		 */
+		switch(op) {
+		case INDEX:
+			// steal lastWorkingVMeasurementResultID's notes
+			res = dbq.query("applyDerivedReadingNotes", VMeasurementID, newVMeasurementResultID, 
+					lastWorkingVMeasurementResultID, null);
+			break;
+		
+		case SUM:
+			// aggregate all notes from newVMeasurementResultGroupID
+			res = dbq.query("applyDerivedReadingNotes", VMeasurementID, newVMeasurementResultID, 
+					null, newVMeasurementResultGroupID);
+			break;
+		
+		case CLEAN:
+		case REDATE:
+		case CROSSDATE:
+		case TRUNCATE:
+			// just mark the notes as inherited
+			res = dbq.query("applyDerivedReadingNotes", VMeasurementID, newVMeasurementResultID, null, null);
+			break;
+		
+		default:
+			throw new SQLException("Reading notes not handled by type " + op);
+		}
+		
+		// force above query to execute and clean up
+		res.next();
+		res.close();
 		
 		/*
 		 * Now, we clean the data for explicit cases (CLEAN)
@@ -291,6 +364,7 @@ public class VMeasurementResult {
 		case INDEX:
 		case REDATE:
 		case CROSSDATE:
+		case TRUNCATE:
 		case CLEAN:
 			// Clear away the group ID and change it to our parent?
 			dbq.execute("qupdVMeasurementResultClearGroupID", newVMeasurementResultGroupID);
@@ -321,24 +395,18 @@ public class VMeasurementResult {
 			dbq.execute("qdelVMeasurementResultRemoveMasterID", VMeasurementResultMasterID, newVMeasurementResultID);
 		}
 		
+		if(logger.isLoggable(Level.FINE))
+			logger.finer("recursiveGetVMID returning ["+ newVMeasurementResultID + "]");
+		
 		return newVMeasurementResultID;
 	}
-		
+
 	private VMeasurementOperation getOp(String strOp) throws SQLException {
-		if(strOp.equals("Direct"))
-			return VMeasurementOperation.DIRECT;
-		if(strOp.equals("Index"))
-			return VMeasurementOperation.INDEX;
-		if(strOp.equals("Sum"))
-			return VMeasurementOperation.SUM;
-		if(strOp.equals("Redate"))
-			return VMeasurementOperation.REDATE;
-		if(strOp.equals("Clean"))
-			return VMeasurementOperation.CLEAN;
-		if(strOp.equals("Crossdate"))
-			return VMeasurementOperation.CROSSDATE;
-		
-		throw new SQLException("Invalid VMeasurement Operation: " + strOp);
+		try {
+			return VMeasurementOperation.valueOf(strOp.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			throw new SQLException("Invalid VMeasurement Operation: " + strOp);
+		}		
 	}
 
 	/*
@@ -348,21 +416,26 @@ public class VMeasurementResult {
 	 * Copy measurement into tblVMeasurementResult and tblVMeasurementReadingResult
 	 * Place the result (newVMeasurementResultID) in the result class variable.
 	 */
-	private String doDirectCase(int VMeasurementID, String VMeasurementResultGroupID, 
-			String VMeasurementResultMasterID, int MeasurementID) throws SQLException {
+	private UUID doDirectCase(UUID VMeasurementID, UUID VMeasurementResultGroupID, 
+			UUID VMeasurementResultMasterID, int MeasurementID) throws SQLException {
 		
-		String newVMeasurementResultID = dbq.createUUID();
+		UUID newVMeasurementResultID = UUID.randomUUID();
 		
 		// Create a new VMeasurementResult
 		dbq.execute("qappVMeasurementResult", 
 				newVMeasurementResultID, VMeasurementID, VMeasurementResultGroupID, 
-				VMeasurementResultMasterID, ownerUserID, MeasurementID, VMeasurementID);
+				VMeasurementResultMasterID, ownerUserID, MeasurementID);
 		
 		// Create new VMeasurementReadingResults...
 		dbq.execute("qappVMeasurementReadingResult", newVMeasurementResultID, MeasurementID);
 		
+		// Copy over any ReadingNotes
+		dbq.execute("qappVMeasurementReadingNoteResult", newVMeasurementResultID);
+		
+		if(logger.isLoggable(Level.FINE))
+			logger.finer("doDirectCase returning ["+ newVMeasurementResultID + "]");
 		return newVMeasurementResultID;		
 	}
 
-	public String getResult() { return result; }
+	public UUID getResult() { return result; }
 }

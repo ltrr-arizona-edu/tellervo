@@ -21,29 +21,21 @@
 package edu.cornell.dendro.corina.index;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Toolkit;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Vector;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -51,245 +43,75 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 
+import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.TridasDerivedSeries;
+
+import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.graph.GraphActions;
+import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
-import edu.cornell.dendro.corina.graph.GraphWindow;
+import edu.cornell.dendro.corina.graph.GraphToolbar;
 import edu.cornell.dendro.corina.graph.Graphable;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
-import edu.cornell.dendro.corina.graph.PlotAgents;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
+import edu.cornell.dendro.corina.gui.NameVersionJustificationPanel;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
-import edu.cornell.dendro.corina.sample.CorinaWebElement;
-import edu.cornell.dendro.corina.sample.FileElement;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.tridasv2.SeriesLinkUtil;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.NoEmptySelection;
 import edu.cornell.dendro.corina.util.OKCancel;
-import edu.cornell.dendro.corina.util.TextClipboard;
-import edu.cornell.dendro.corina.util.UserFriendlyFile;
-
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
+import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
 import edu.cornell.dendro.corina_indexing.Exponential;
 
 /**
  * Indexing dialog. Lets the user choose an indexing algorithm to use.
  * 
- * <pre>
- * NOTE: the proper order of buttons is:
- *  (help) --- (alternative) (cancel) ((ok))
- * </pre>
+ * Shows them a graph of the index in the same dialog.
  * 
- * @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i
- *         style="color: gray">dot</i> edu&gt;
+ * @author Ken Harris 
+ * @author Lucas Madar
+ * 
  * @version $Id$
  */
 public class IndexDialog extends JDialog {
-	// data
-	private Sample sample;
+	private static final long serialVersionUID = 1L;
+
+	private GrapherPanel graphPanel;
+
+	private List<Graph> graphSamples;
+	
 	private IndexSet iset;
+	private IndexTableModel model;
+
+	private NameVersionJustificationPanel nameAndVersion;
+	
+	private JButton okButton;
+
+	// source data
+	private Sample sample;
 
 	// table
 	private JTable table;
-	private IndexTableModel model;
-
-	// formatting for decimals
-	private static final String CHI2_FORMAT = "#,##0.0";
-	private static final String RHO_FORMAT = "0.000";
-
-	// table model -- (could be static but for i18n)
-	private static class IndexTableModel extends AbstractTableModel {
-		private DecimalFormat fmtChi2 = new DecimalFormat(CHI2_FORMAT);
-		private DecimalFormat fmtR = new DecimalFormat(RHO_FORMAT);
-		private IndexSet iset;
-
-		public IndexTableModel(IndexSet iset) {
-			this.iset = iset;
-		}
-
-		@Override
-		public String getColumnName(int col) {
-			switch (col) {
-			case 0:
-				return I18n.getText("algorithm");
-			case 1:
-				return "\u03C7\u00B2"; // should be "Chi\overline^2" =
-										// \u03C7\u0304\u00B2
-				// unfortunately, Mac OS X (at least -- so probably others)
-				// apparently doesn't
-				// combine combining diacritics after greek letters, so it looks
-				// just plain bad.
-				// (but a\u0304\u00B2 looks fine, so it's not completely
-				// ignorant of combining diacritics)
-				// (actually, a\u0304 looks fine in window titles, but not
-				// tables headers, so ... yeah. ick.)
-				// Windows 2000 report: swing labels can do the greek but not
-				// the diacritic (chi, followed
-				// by a box), window titles can do the diacritic but not the
-				// greek (box, with an overline).
-
-			case 2:
-				return "\u03C1"; // "rho"
-			default:
-				throw new IllegalArgumentException(); // can't happen
-			}
-		}
-
-		public int getRowCount() {
-			return iset.indexes.size();
-		}
-
-		public int getColumnCount() {
-			return 3;
-		}
-
-		public Object getValueAt(int row, int col) {
-			Index i = iset.indexes.get(row);
-			switch (col) {
-			case 0:
-				return i.getName();
-			case 1:
-				return fmtChi2.format(i.getChi2()); // (is defined, as long as
-													// N!=0)
-			case 2:
-				if (Double.isNaN(i.getR())) // can happen
-					return "-";
-				else
-					return fmtR.format(i.getR());
-			default:
-				throw new IllegalArgumentException(); // can't happen
-			}
-		}
-
-		public void setIndexSet(IndexSet iset) {
-			this.iset = iset;
-			fireTableDataChanged();
-		}
-	}
-
-	// label, aligned
-	private JComponent makeLabel() {
-		JLabel l = new JLabel(I18n.getText("choose_index"));
-		l.setAlignmentX(RIGHT_ALIGNMENT);
-		return l;
-	}
-
-	// flow containing name: and box
-	private JComponent makeNameBox() {
-		JPanel p = new JPanel();
-		
-		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-		
-		JLabel l = new JLabel("Series code:  " + sample.getMetaString("title"));
-		
-		indexName = new JTextField();
-		indexName.setText("Index");
-		
-		l.setLabelFor(indexName);
-		
-		p.add(l);
-		p.add(Box.createHorizontalStrut(5));
-		p.add(indexName);
-		
-		return p;
-	}
-
-	private JComponent makeTable() {
-		iset = new IndexSet(sample);
-
-		model = new IndexTableModel(iset);
-		table = new JTable(model);
-		table.setShowGrid(false);
-		
-		int theight = table.getRowHeight() * iset.indexes.size();
-		table.setPreferredScrollableViewportSize(new Dimension(220, theight));
-		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		JScrollPane scroller = new JScrollPane(table);
-		// scroller.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 14));
-
-		// use decimal renderers for chi^2 and rho
-		table.getColumnModel().getColumn(1).setCellRenderer(new DecimalRenderer(CHI2_FORMAT.replace('#', '0')));
-		table.getColumnModel().getColumn(2).setCellRenderer(new DecimalRenderer(RHO_FORMAT.replace('#', '0')));
-		
-		// calculate the maximum string width for the first column
-		int maxWidth = -1;
-		FontMetrics fm = table.getFontMetrics(table.getFont());
-		for(Index i : iset.indexes) {
-			int iwidth = fm.stringWidth(i.getName());
-			if(iwidth > maxWidth)
-				maxWidth = iwidth;
-		}
-		table.getColumnModel().getColumn(0).setPreferredWidth(maxWidth);
-
-		// don't allow reordering or resizing of the columns
-		table.getTableHeader().setReorderingAllowed(false);
-		// disabled for debugging:
-		// for (int i=0; i<3; i++)
-		// table.getColumn(table.getColumnName(i)).setResizable(false);
-
-		// or deselecting the only selection.
-		// (my users, sir, they didn't care for this dialog, at first.
-		// one of them actually tried to deselect the only selected
-		// entry. but i ... CORRECTED them, sir.)
-		NoEmptySelection.noEmptySelection(table);
-
-		// set up graphSamples, and ensure that it's set to something sane
-		// otherwise, graph won't initialize
-		graphSamples = new ArrayList<Graph>(2);
-		graphSamples.add(new Graph(iset.indexes.get(0).getTarget()));
-		graphSamples.add(new Graph(iset.indexes.get(0)));
-		
-    	table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				// ignore if we haven't yet made a selection
-				if(e.getValueIsAdjusting())
-					return;
-				
-				int row = table.getSelectedRow();
-				if(row == -1) // ignore if this happens??
-					return;
-
-				Index i = iset.indexes.get(row);
-				
-				// change the graph samples...
-				graphSamples.set(0, new Graph(i.getTarget()));
-				graphSamples.set(1, new Graph(i));
-				
-				if(graphPanel != null)
-					graphPanel.update();
-			}
-    	});
-
-		
-		// select exponential, because that's probably the one that's going to
-		// get used
-		// (and we should encourage that)
-		for (int i = 0; i < iset.indexes.size(); i++) {
-			if ((iset.indexes.get(i)).getIndexFunction() instanceof Exponential) {
-				table.setRowSelectionInterval(i, i);
-				break;
-			}
-		}
-		
-		return scroller;
-	}
 
 	/* 
 	 * This isn't used at all, but I'm keeping it in case it proves useful in the future.
@@ -328,32 +150,168 @@ public class IndexDialog extends JDialog {
 	}
 	*/
 
-	private JButton makeCancelButton() {
-		JButton cancel = Builder.makeButton("cancel");
-		cancel.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent ae) {
-				dispose();
+	
+	/**
+	 * Create a new indexing dialog for the given sample.
+	 * 
+	 * @param s
+	 *            the Sample to be indexed
+	 */
+	public IndexDialog(Sample s, JFrame owner) {
+		super(owner, true);
+		setModal(false); //-- no, graph becomes unusable, then.
+
+		// data
+		sample = s;
+
+		// watch for already-indexed files -- shouldn't this be a
+		// "never happens", too?
+		if (sample.isIndexed()) {
+			Alert.error(I18n.getText("error"), I18n.getText("error.alreadyIndexed"));
+			dispose();
+			return;
+		}
+
+		// make sure there's data here
+		// BETTER: make this "==0", and have individual indexes throw if they
+		// can't handle size==2, etc.
+		if (sample.getData().size() < 3) {
+			Alert.error(I18n.getText("error"), I18n.getText("error.noData"));
+			dispose();
+			return;
+		}
+
+		// title
+		String title = sample.getMeta("title").toString();
+		if (title == null) // (DESIGN: can i do better than "untitled"?)
+			title = I18n.getText("general.untitled");
+		setTitle(MessageFormat.format(I18n.getText("index.indexing"), new Object[] { title }));
+
+		// create content pane...
+		JPanel content = new JPanel();
+		content.setLayout(new BoxLayout(content, BoxLayout.X_AXIS));
+		
+		// Create split pane...
+		JSplitPane splitPane = new JSplitPane();
+		setContentPane(splitPane);
+		//splitPane.setDividerLocation(450);
+		
+		// calculate any extra width in this dialog
+		// 20 = separator + padding
+		int extraWidth = 20 + getInsets().left + getInsets().right;
+		
+		// add the content
+		JPanel tableAndButtons = createTableAndButtons();
+		content.add(tableAndButtons);
+		content.add(Box.createHorizontalStrut(5));
+		content.add(new JSeparator(JSeparator.VERTICAL));
+		content.add(Box.createHorizontalStrut(5));
+			
+		JComponent graph = createGraph(content.getPreferredSize(), extraWidth);
+		splitPane.setRightComponent(content);
+		splitPane.setLeftComponent(graph);
+		
+		content.setMaximumSize(new Dimension(400,400));
+		splitPane.setResizeWeight(1.0);
+		
+		
+		// ok/cancel
+		OKCancel.addKeyboardDefaults(okButton);
+
+		// all done
+		pack();
+		Center.center(this, owner);
+		setVisible(true);
+	}
+	
+	/**
+	 * 
+	 * @return true on success, false on failure
+	 */
+	private boolean applyIndex(Index index) {
+		SampleLoader loader = sample.getLoader();
+		if(loader == null) {
+			new Bug(new Exception(I18n.getText("error.indexingWithoutLoader")));
+			return false;
+		}
+		
+		if(loader instanceof CorinaWsiTridasElement) 
+			return corinaWsiApplyIndex(index);
+				
+		// well, fine then. Just apply the index to the existing sample.
+		legacyApplyIndex(index);
+		return true;
+	}
+
+	private boolean corinaWsiApplyIndex(Index index) {
+		// we have to have a name set in order to create an index
+		if(!nameAndVersion.testAndComplainRequired(EnumSet.of(NameVersionJustificationPanel.Fields.NAME)))
+			return false;
+		
+		TridasDerivedSeries series = new TridasDerivedSeries();
+		
+		// it's a new series! (to force update, set this to the id of the series to update!)
+		// call gets a new identifier with the domain of our parent
+		series.setIdentifier(NewTridasIdentifier.getInstance(sample.getSeries().getIdentifier()));
+		series.setTitle(nameAndVersion.getSeriesName());
+		
+		if(nameAndVersion.hasVersion())
+			series.setVersion(nameAndVersion.getVersion());
+
+		// it's an index
+		ControlledVoc voc = new ControlledVoc();
+		voc.setValue(SampleType.INDEX.toString());
+		series.setType(voc);
+
+		// the index type
+		series.setStandardizingMethod(index.getIndexFunction().getDatabaseRepresentation());
+
+		// the sample we're basing this index on
+		SeriesLinkUtil.addToSeries(series, sample.getSeries().getIdentifier());
+		
+		// create a new sample to hold this all
+		Sample tmp = new Sample(series);
+
+		try {
+			CorinaWsiTridasElement cwe = new CorinaWsiTridasElement(series.getIdentifier());
+			
+			// here's where we do the "meat"
+			if(cwe.save(tmp, this)) {
+				// put it in our menu
+				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
+								
+				// open a new editor 
+				new Editor(tmp);
+				return true;
 			}
-		});
-		return cancel;
+		} catch (UserCancelledException uce) {
+			// do nothing...
+		} catch (IOException ioe) {
+			Alert.error(I18n.getText("error"), I18n.getText("error.couldNotCreateIndex")+ ": " + ioe.toString());
+		}
+		
+		return false;		
 	}
 	
 	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {
-		// initialize our plotting agents
-		PlotAgents agents = new PlotAgents();
-		
 		// create a new graphinfo structure, so we can tailor it to our needs.
 		GraphInfo gInfo = new GraphInfo();
 		
 		// force no drawing of graph names
-		gInfo.overrideDrawGraphNames(false);
+		gInfo.setShowGraphNames(false);
+		
+		// Make sure the graphs can't be dragged
+		graphSamples.get(0).setDraggable(false);
+		graphSamples.get(1).setDraggable(false);
 		
 		// create a graph panel; put it in a scroll pane
-		graphPanel = new GrapherPanel(graphSamples, agents, null, gInfo) {
+		graphPanel = new GrapherPanel(graphSamples, null, gInfo) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Dimension getPreferredScrollableViewportSize() {
 				// -10s are for insets set below in the emptyBorder
-				int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width - (otherPanelDim.width + extraWidth);
+				int screenWidth = super.getPreferredScrollableViewportSize().width - (otherPanelDim.width + extraWidth);
 				int graphWidth = getGraphPixelWidth();
 				return new Dimension((graphWidth < screenWidth) ? graphWidth : screenWidth, otherPanelDim.height);
 			}
@@ -363,7 +321,18 @@ public class IndexDialog extends JDialog {
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
-		return scroller;
+		// make the default viewport background the same color as the graph
+		scroller.getViewport().setBackground(gInfo.getBackgroundColor());
+		
+		GraphActions actions = new GraphActions(graphPanel, null, new GraphController(graphPanel, scroller));
+		GraphToolbar toolbar = new GraphToolbar(actions);
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(scroller, BorderLayout.CENTER);
+		panel.add(toolbar, BorderLayout.NORTH);
+		
+		return panel;
 	}
 	
 	private JPanel createTableAndButtons() {
@@ -383,21 +352,23 @@ public class IndexDialog extends JDialog {
 		// name
 		p.add(Box.createVerticalStrut(8));
 		p.add(makeNameBox());
-
+ 
+		
 		p.add(Box.createVerticalStrut(14));
 
 		// bottom panel (buttons) ------------
 
 		// help button
-		JButton help = Builder.makeButton("help");
-		Help.addToButton(help, "indexing");
+		JButton help = Builder.makeButton("menus.help");
+		Help.assignHelpPageToButton(help, "Indexing");
+		
 
 		// cancel button
 		JButton cancel = makeCancelButton();
 
 		// ok button -- REFACTOR: EXTRACT METHOD
-		okButton = Builder.makeButton("ok");
-		okButton.addActionListener(new AbstractAction() {
+		okButton = Builder.makeButton("general.ok");
+		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				int row = table.getSelectedRow();
 
@@ -412,68 +383,6 @@ public class IndexDialog extends JDialog {
 		p.add(Layout.buttonLayout(help, null, okButton, cancel));
 		p.add(Box.createVerticalGlue());
 		return p;
-	}
-
-	/**
-	 * Create a new indexing dialog for the given sample.
-	 * 
-	 * @param s
-	 *            the Sample to be indexed
-	 */
-	public IndexDialog(Sample s, JFrame owner) {
-		super(owner, true);
-		// setModal(true); -- no, graph becomes unusable, then.
-
-		// data
-		sample = s;
-
-		// watch for already-indexed files -- shouldn't this be a
-		// "never happens", too?
-		if (sample.isIndexed()) {
-			Alert.error(I18n.getText("already_indexed_title"), I18n.getText("already_indexed_text"));
-			dispose();
-			return;
-		}
-
-		// make sure there's data here
-		// BETTER: make this "==0", and have individual indexes throw if they
-		// can't handle size==2, etc.
-		if (sample.getData().size() < 3) {
-			Alert.error(I18n.getText("no_data_title"), I18n.getText("no_data_text"));
-			dispose();
-			return;
-		}
-
-		// title
-		String title = sample.getMeta("title").toString();
-		if (title == null) // (DESIGN: can i do better than "untitled"?)
-			title = I18n.getText("Untitled");
-		setTitle(MessageFormat.format(I18n.getText("indexing"), new Object[] { title }));
-
-		// create content pane...
-		JPanel content = new JPanel();
-		content.setLayout(new BoxLayout(content, BoxLayout.X_AXIS));
-		setContentPane(content);
-		
-		// calculate any extra width in this dialog
-		// 20 = separator + padding
-		int extraWidth = 20 + getInsets().left + getInsets().right;
-		
-		// add the content
-		JPanel tableAndButtons = createTableAndButtons();
-		content.add(tableAndButtons);
-		content.add(Box.createHorizontalStrut(5));
-		content.add(new JSeparator(JSeparator.VERTICAL));
-		content.add(Box.createHorizontalStrut(5));
-		content.add(createGraph(tableAndButtons.getPreferredSize(), extraWidth));
-		
-		// ok/cancel
-		OKCancel.addKeyboardDefaults(okButton);
-
-		// all done
-		pack();
-		Center.center(this, owner);
-		setVisible(true);
 	}
 	
 	/**
@@ -497,61 +406,167 @@ public class IndexDialog extends JDialog {
 		sample.fireSampleMetadataChanged();		
 	}
 	
-	/**
-	 * 
-	 * @return true on success, false on failure
-	 */
-	private boolean applyIndex(Index index) {
-		SampleLoader loader = sample.getLoader();
-		if(loader == null) {
-			new Bug(new Exception("Attempting to apply an index to a sample without a loader. Shouldn't be possible!"));
-			return false;
-		}
-		
-		if(loader instanceof CorinaWebElement) {
-			// create a new, empty sample
-			Sample tmp = new Sample();
-
-			// set it up
-			tmp.setMeta("name", indexName.getText());
-			tmp.setMeta("title", indexName.getText()); // not necessary, but consistent?
-			tmp.setMeta("::saveoperation", SampleType.INDEX);
-			tmp.setMeta("::indexclass", index);
-			
-			// the new sample's parent is our current sample
-			tmp.setMeta("::dbparent", sample.getMeta("::dbrid"));
-			
-			try {
-				// here's where we do the "meat"
-				if(loader.save(tmp)) {
-					// put it in our menu
-					OpenRecent.sampleOpened(tmp.getLoader());
-					
-					/*
-					// copy it over...
-					Sample.copy(tmp, sample);
-					sample.fireSampleMetadataChanged();
-					sample.clearModified();
-					*/
-					
-					// instead, open a new editor 
-					new Editor(tmp);
-					return true;
-				}
-			} catch (IOException ioe) {
-				Alert.error("Could not create index", "Error: " + ioe.toString());
+	private JButton makeCancelButton() {
+		JButton cancel = Builder.makeButton("general.cancel");
+		cancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				dispose();
 			}
-
-			return false;
-		}
-		
-		// well, fine then. Just apply the index to the existing sample.
-		legacyApplyIndex(index);
-		return true;
+		});
+		return cancel;
 	}
 	
-	private JButton okButton;
-	private JTextField indexName;
-	private GrapherPanel graphPanel;
-	private List<Graph> graphSamples;
+	// label, aligned
+	private JComponent makeLabel() {
+		JPanel p = new JPanel();
+		p.setLayout(new GridLayout(1,1));
+		JLabel l = new JLabel(I18n.getText("index.choose")+":");
+		//l.setAlignmentX(LEFT_ALIGNMENT);
+		p.add(l);
+		return p;
+	}
+	
+	// flow containing name and version
+	private JComponent makeNameBox() {
+		nameAndVersion = new NameVersionJustificationPanel(sample, false, false);
+		return nameAndVersion;
+	}
+	
+	private JComponent makeTable() {
+		iset = new IndexSet(sample);
+
+		model = new IndexTableModel(iset);
+		table = new JTable(model);
+		table.setShowGrid(false);
+		
+		int theight = table.getRowHeight() * iset.indexes.size();
+		table.setPreferredScrollableViewportSize(new Dimension(220, theight));
+		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JScrollPane scroller = new JScrollPane(table);
+		// scroller.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 14));
+
+		// use decimal renderers for chi^2 and rho
+		table.getColumnModel().getColumn(1).setCellRenderer(new DecimalRenderer(IndexTableModel.CHI2_FORMAT.replace('#', '0')));
+		table.getColumnModel().getColumn(2).setCellRenderer(new DecimalRenderer(IndexTableModel.RHO_FORMAT.replace('#', '0')));
+		
+		// calculate the maximum string width for the first column
+		int maxWidth = -1;
+		FontMetrics fm = table.getFontMetrics(table.getFont());
+		for(Index i : iset.indexes) {
+			int iwidth = fm.stringWidth(i.getName());
+			if(iwidth > maxWidth)
+				maxWidth = iwidth;
+		}
+		table.getColumnModel().getColumn(0).setPreferredWidth(maxWidth);
+
+		// don't allow reordering or resizing of the columns
+		table.getTableHeader().setReorderingAllowed(false);
+		// disabled for debugging:
+		// for (int i=0; i<3; i++)
+		// table.getColumn(table.getColumnName(i)).setResizable(false);
+
+		// or deselecting the only selection.
+		// (my users, sir, they didn't care for this dialog, at first.
+		// one of them actually tried to deselect the only selected
+		// entry. but i ... CORRECTED them, sir.)
+		NoEmptySelection.noEmptySelection(table);
+
+		// set up graphSamples, and ensure that it's set to something sane
+		// otherwise, graph won't initialize
+		graphSamples = new ArrayList<Graph>(3);
+		graphSamples.add(new Graph(iset.indexes.get(0).getTarget()));
+		graphSamples.add(new Graph(iset.indexes.get(0)));
+		graphSamples.add(getDiffGraph(iset.indexes.get(0)));
+		
+    	table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				// ignore if we haven't yet made a selection
+				if(e.getValueIsAdjusting())
+					return;
+				
+				int row = table.getSelectedRow();
+				if(row == -1) // ignore if this happens??
+					return;
+
+				Index i = iset.indexes.get(row);
+				float scale = graphSamples.get(0).scale;
+				
+				// change the graph samples...
+				graphSamples.set(0, new Graph(i.getTarget()));
+				graphSamples.set(1, new Graph(i));
+				graphSamples.set(2, getDiffGraph(i));
+				
+				// propagate old scale
+				graphSamples.get(0).scale = scale;
+				graphSamples.get(1).scale = scale;
+				graphSamples.get(2).scale = scale * 0.1f;
+				
+				// Make sure the graphs can't be dragged
+				graphSamples.get(0).setDraggable(false);
+				graphSamples.get(1).setDraggable(false);				
+				graphSamples.get(2).setDraggable(false);				
+				
+				if(graphPanel != null)
+					graphPanel.update();
+			}
+    	});
+
+		
+		// select exponential, because that's probably the one that's going to
+		// get used
+		// (and we should encourage that)
+		for (int i = 0; i < iset.indexes.size(); i++) {
+			if ((iset.indexes.get(i)).getIndexFunction() instanceof Exponential) {
+				table.setRowSelectionInterval(i, i);
+				break;
+			}
+		}
+		
+		return scroller;
+	}
+	
+	/**
+	 * Get a difference graph
+	 * @param indexidx
+	 * @return a graph of the differences in the ratio
+	 */
+	private Graph getDiffGraph(Index index) {		
+		Graphable series = index.getTarget();
+
+		return new Graph(new DiffGraph(series.getData(), index.getData(), series.getStart()));
+	}
+	
+	private static final class DiffGraph implements Graphable {
+		private final Year startYear;
+		private final List<? extends Number> output;
+		
+		public DiffGraph(List<? extends Number> seriesData, List<? extends Number> indexData, Year startYear) {
+			this.startYear = startYear;
+		
+			int len = seriesData.size();
+			
+			List<Integer> output = new ArrayList<Integer>(len);
+			for(int i = 0; i < len; i++) {
+				double ind = indexData.get(i).doubleValue();
+				double raw = seriesData.get(i).doubleValue();
+				double ratio = raw / ind;
+				int val = (int) Math.round(ratio * 1000.0d);			
+				
+				output.add(val);
+			}
+			this.output = output;
+		}
+		
+		public List<? extends Number> getData() {
+			return output;
+		}
+
+		public float getScale() {
+			return 1.0f;
+		}
+
+		public Year getStart() {
+			return startYear;
+		}
+	}
 }

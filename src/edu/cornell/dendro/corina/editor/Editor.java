@@ -27,6 +27,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
@@ -34,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -52,6 +52,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -62,18 +64,24 @@ import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
 import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.graph.BargraphFrame.BargraphPanel;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.ElementsPanel;
 import edu.cornell.dendro.corina.gui.FileDialog;
-import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
+import edu.cornell.dendro.corina.gui.menus.AdminMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.io.AbstractSerialMeasuringDevice;
+import edu.cornell.dendro.corina.io.LegacyCorinaMeasuringDevice;
+import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
+import edu.cornell.dendro.corina.io.SerialDeviceSelector;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
@@ -84,7 +92,9 @@ import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.site.LegacySite;
+import edu.cornell.dendro.corina.tridasv2.MapLink;
+import edu.cornell.dendro.corina.tridasv2.ui.ComponentViewer;
+import edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -92,10 +102,6 @@ import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.DocumentListener2;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
-import edu.cornell.dendro.corina.webdbi.MapLink;
-import edu.cornell.dendro.corina.io.CorinaMeasuringDevice;
-import edu.cornell.dendro.corina.io.SerialSampleIO;
-import edu.cornell.dendro.corina.Year;
 
 /*
  left to do:
@@ -163,6 +169,8 @@ import edu.cornell.dendro.corina.Year;
 public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		SampleListener, PrintableDocument {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final CorinaLog log = new CorinaLog("Editor");
 
 	// gui
@@ -170,12 +178,14 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	private JPanel wjPanel;
 
-	private ElementsPanel elemPanel = null;
-	
 	private EditorMeasurePanel measurePanel = null;
 
 	private JComponent metaView;
 
+	private ComponentViewer componentsPanel = null;
+	
+	private BargraphPanel bargraphPanel = null;
+	
 	// gui -- new
 	private SampleDataView dataView; // (a jpanel)
 
@@ -185,8 +195,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private JTabbedPane rolodex;
 	
 	// for menus we have to notify...
-	private EditorViewMenu editorViewMenu;
-	private EditorSumMenu editorSumMenu;
+	private EditorFileMenu editorFileMenu;
 	private EditorEditMenu editorEditMenu;
 
 	// undo
@@ -202,11 +211,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		undoMenu.setText(undoManager.getUndoPresentationName());
 		undoMenu.setEnabled(undoManager.canUndo());
 		if (!undoManager.canUndo())
-			undoMenu.setText(I18n.getText("undo"));
+			undoMenu.setText(I18n.getText("menus.edit.undo"));
 		redoMenu.setText(undoManager.getRedoPresentationName());
 		redoMenu.setEnabled(undoManager.canRedo());
 		if (!undoManager.canRedo())
-			redoMenu.setText(I18n.getText("redo"));
+			redoMenu.setText(I18n.getText("menus.edit.redo"));
 	}
 
 	private void initUndoRedo() {
@@ -253,20 +262,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			if (!sample.hasWeiserjahre())
 				rolodex.remove(wjPanel);
 			else if (rolodex.indexOfComponent(wjPanel) == -1)
-				rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
-			if (sample.getElements() == null) {
-				rolodex.remove(elemPanel);
-				initElemPanel();
-				editorViewMenu.setElementsPanel(elemPanel);
-				editorSumMenu.setElementsPanel(elemPanel);
-			}
-			else if (elemPanel == null)
-			{
-				initElemPanel();
-				rolodex.add(elemPanel, I18n.getText("tab_elements"));
-				editorViewMenu.setElementsPanel(elemPanel);
-				editorSumMenu.setElementsPanel(elemPanel);				
-			}
+				rolodex.add(wjPanel, I18n.getText("editor.tab_weiserjahre"));
 		}
 	}
 
@@ -299,7 +295,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				fn = fn.substring(lastSlash + 1);
 			return fn;
 		} else {
-			return (String) sample.getMeta("title");
+			return sample.getDisplayTitle();
 		}
 	}
 	
@@ -322,23 +318,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		dataView.stopEditing(false);
 		
 		// make sure they're all numbers -- no nulls, strings, etc.
-		// abstract this out as "boolean verifyOnlyNumbers()" or something?
-		for (int i = 0; i < sample.getData().size(); i++) {
-			Object o = sample.getData().get(i);
-			if (o == null || !(o instanceof Integer)) { // integer?  or number?
-				// BUT: didn't i used to pass in |this| as the owner?  is this worse?
-				Alert.error("Bad Data",
-						"One or more years had bad (non-numeric) data, or no data:\n"
-								+ "- year " + sample.getRange().getStart().add(i)
-								+ " has "
-								+ (o == null ? "no value" : "value " + o));
-				return;
-				// BUG: return failure.  how?  (UserCancelled?)
-				// NO, DESIGN BUG: this shouldn't ever be allowed to happen.  why does it?
-			}
-			// REPLACE WITH: call to method ensureNumbersOnly()
-			// -- why not simply disallow non-numbers to begin with?
-		}
+		// we don't have to do this anymore!
 		
 		// get filename from sample; fall back to user's choice
 		if (sample.getLoader() == null) {
@@ -354,10 +334,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				 that's crazy talk!
 				 */
 				int x = JOptionPane.showOptionDialog(this,
-						"You didn't set the metadata!", "Metadata Untouched",
+						I18n.getText("error.noMetadataSet"), I18n.getText("error.metadataUntouched"),
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.QUESTION_MESSAGE, null, // no icon
-						new String[] { "Save Anyway", "Cancel" }, null); // default
+						new String[] { I18n.getText("question.saveAnyway"), I18n.getText("general.cancel") }, null); // default
 				if (x == 1) {
 					// show metadata tab, and abort.
 					rolodex.setSelectedIndex(1);
@@ -382,11 +362,21 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			sample.setLoader(new FileElement(filename));
 		}
 
+		// complain if it's not complete yet 
+		// but only if it's not derived!
+		if(!sample.getSampleType().isDerived() && !sample.hasMeta(Metadata.RADIUS)) {
+			JOptionPane.showMessageDialog(this,
+					I18n.getText("error.metadataIncompleteRadiusRequired"),
+					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+			rolodex.setSelectedIndex(1);
+			return;
+		}
+		
 		// now, actually try and save the sample
 		try {
 			sample.getLoader().save(sample);
 		} catch (IOException ioe) {
-			Alert.error("I/O Error", "There was an error while saving the file: \n" + ioe.getMessage());
+			Alert.error(I18n.getText("error.ioerror"), I18n.getText("error.savingError") +": \n" + ioe.getMessage());
 			return;
 		} catch (Exception e) {
 			new Bug(e);
@@ -399,8 +389,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		updateTitle();
 	}
 
-	public Object getSaverClass() {
-		return sample.getLoader();
+	public Object getSavedDocument() {
+		return sample;
 	}
 
 	// init methods
@@ -415,11 +405,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// no wj?  die.  (Q: why didn't i have/need this before?  A: i
 		// made it, but it never got displayed, so nobody checks to
 		// see if it actually has any rows or columns)
-		// if (!sample.hasWeiserjahre())
-		// return;
-		// -> i should go back to doing it this way.  don't have an
-		// initialized wjtable/panel sitting around if it's not being used.
-		// FIXME.
+		if (!sample.hasWeiserjahre())
+			return;
 
 		// create the table
 		wjTable = new JTable(new WJTableModel(sample));
@@ -435,7 +422,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// make the "Nr" column renderer a progress bar -- this recomputes max(count)!!!
 		int max = 0;
-		if (sample.getCount() != null)
+		if (sample.hasCount())
 			max = (Collections.max(sample.getCount())).intValue();
 		wjTable.getColumnModel().getColumn(11).setCellRenderer(
 				new CountRenderer(max));
@@ -448,35 +435,47 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED),
 				BorderLayout.CENTER);
-		wjPanel.add(new Modeline(wjTable, sample), BorderLayout.SOUTH);
+		wjPanel.add(new StatusBar(wjTable, sample), BorderLayout.SOUTH);
 	}
 
 	private void initMetaView() {
-		metaView = new MetadataPanel(sample);
+		metaView = new TridasMetadataPanel(sample);
 	}
 
-	private void initElemPanel() {
-		if (sample.getElements() != null) {
-			elemPanel = new ElementsPanel(this);
-			sample.addSampleListener(elemPanel);
-		}
-		else {
-			if(elemPanel != null)
-				sample.removeSampleListener(elemPanel);
-			elemPanel = null;
-		}
+	private void initComponentsPanel() {
+		if(sample.getSampleType().isDerived())
+			componentsPanel = new ComponentViewer(sample);
 	}
-	
-	private void initMozillaMapPanel() {
-		MapLink link = (MapLink) sample.getMeta("::maplink");
+
 		
+	private void initMozillaMapPanel() {
+		MapLink link = new MapLink(sample.getSeries());
+	
 		// no link? no panel!
 		if(link == null)
 			return;
 		
+		// See if we have access to mozilla libs
+		try {
+			// this loads the DLL...
+			Class.forName("org.mozilla.browser");
+		}
+		catch (Exception e) {
+			// driver not installed...
+			System.out.println("No mozilla - no map");
+			System.out.println(e.getMessage());
+			return;
+		}
+		catch (Error e) {
+			// native interface not installed...
+			System.out.println("No mozilla - no map");
+			System.out.println(e.getMessage());
+			return;
+		}
+		
 		try {
 			mozillaMapPanel = new EditorMozillaMapPanel(link);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			// no mapping? no problem. don't fail violently!
 		}
 	}
@@ -487,17 +486,27 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// all samples get data, meta
 		dataView = new SampleDataView(sample);
-		rolodex.add(dataView, I18n.getText("tab_data"));
-		rolodex.add(metaView, I18n.getText("tab_metadata"));
+		rolodex.add(dataView, I18n.getText("editor.tab_data"));
+		rolodex.add(metaView, I18n.getText("editor.tab_metadata"));
 
 		// wj and elements, if it's summed
 		if (sample.hasWeiserjahre())
-			rolodex.add(wjPanel, I18n.getText("tab_weiserjahre"));
-		if (sample.getElements() != null)
-			rolodex.add(elemPanel, I18n.getText("tab_elements"));
+			rolodex.add(wjPanel, I18n.getText("editor.tab_weiserjahre"));
 		
+		if(componentsPanel != null) {
+			rolodex.add(componentsPanel, I18n.getText("editor.tab_components"));			
+			
+			// let the components panel know it's being set as visible...
+			rolodex.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					if(rolodex.getSelectedComponent() == componentsPanel)
+						componentsPanel.notifyPanelVisible();
+				}
+			});
+		}
+				
 		if(mozillaMapPanel != null)
-			rolodex.add(mozillaMapPanel, "Map");
+			rolodex.add(mozillaMapPanel, I18n.getText("editor.tab_map"));
 	}
 
 	private void initRolodex() {
@@ -523,192 +532,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				Build.TIMESTAMP);
 	}
 
-	// ask the user for a title for this (new) sample.  it's guaranteed to have a number, now!
-	/*
-	 TODO:
-	 -- esc doesn't work -- no, this is a problem with OKCancel in 1.4.1, not here
-	 -- (initial value is name of this site?)
-	 ---- (askTitle(Site)?)
-	 -- (title for non-mac platforms?)
-	 -- (i18n / extract text)
-	 -- (import classes so i don't need fq here)
-	 */
-	/*
-	 what's truly unique about this?
-	 ... AskText extends JDialog ...
-	 pass it:
-	 -- initial text
-	 -- dictionary for autocomplete
-	 -- instructions text
-	 -- help tag
-	 then, simply:
-	 ask.show();
-	 title = ask.getResult();
-	 */
-	private static final String DEMO = "Acemh\u00FCy\u00FCk 36A";
-
-	private static String askTitle() throws UserCancelledException {		
-		JLabel line1 = new JLabel("Enter a title for the new sample.");
-		JLabel line2 = new JLabel("Titles are usually of the form \"" + DEMO
-				+ "\".");
-		JLabel line3 = new JLabel(
-				"(You must include both a letter and a number in the title.)");
-		// jmultilinelabel for last 2 lines?
-		line2.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-		line3.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-
-		JTextField input = new AutoComplete("", 30);
-		// defaults to site names -- TODO: pass current site in as initial text?
-
-		final boolean isOk[] = new boolean[1];
-
-		JButton help = Builder.makeButton("help");
-		Help.addToButton(help, "identification");
-		JButton cancel = Builder.makeButton("cancel");
-		final JButton ok = Builder.makeButton("ok");
-		ok.setEnabled(false);
-
-		input.getDocument().addDocumentListener(new DocumentListener2() {
-			@Override
-			public void update(DocumentEvent e) {
-				try {
-					Document doc = e.getDocument();
-					String text = doc.getText(0, doc.getLength()); // BETTER: why not just input.getText()?
-					ok.setEnabled(containsDigit(text) && containsLetter(text)); // FIXME: combine these!
-				} catch (BadLocationException ble) {
-					// can't happen
-				}
-			}
-		});
-		/*
-		 how about:
-		 ...addDocumentAdapter(new Runnable() {
-		 public void run() {
-		 ok.setEnabled(containsDigit(text.getDocument().getText()));
-		 });
-		 // unaryop would be better
-		 */
-
-		JPanel text = Layout.boxLayoutY(line1, line2, line3);
-		JPanel buttons = Layout.buttonLayout(help, null, cancel, ok);
-		buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-		JPanel content = Layout.borderLayout(text, null, input, null, null);
-		JPanel fixed = Layout.borderLayout(content, null, null, null, buttons);
-
-		fixed.setBorder(BorderFactory.createEmptyBorder(10, 14, 6, 14));
-
-		final JDialog dialog = new JDialog(new Frame(), true);
-		dialog.getContentPane().add(fixed);
-
-		AbstractAction okCancel = new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				isOk[0] = (e.getSource() == ok);
-				dialog.dispose();
-			}
-		};
-		ok.addActionListener(okCancel);
-		cancel.addActionListener(okCancel);
-
-		dialog.pack();
-		OKCancel.addKeyboardDefaults(ok);
-		input.selectAll(); // (if there's anything here, later, e.g., site name)
-		input.requestFocus();
-		Center.center(dialog);
-		dialog.show();
-
-		// then, after it's hidden (by cancel, ok, or close-box)...
-
-		if (!isOk[0])
-			throw new UserCancelledException();
-
-		return input.getText();
-	}
-
-	// FIXME: disable the "ok" button if there's no number in the title, but
-	// put a notice in the dialog saying it must have a number!
-	private String askTitleOld(String defaultText)
-			throws UserCancelledException {
-		String title = defaultText;
-		for (;;) {
-			title = (String) JOptionPane.showInputDialog(null, // parent component
-					I18n.getText("new_sample_prompt"), // message
-					I18n.getText("new_sample"), // title
-					JOptionPane.QUESTION_MESSAGE, Builder
-							.getIcon("Tree-64x64.png"), // null, // icon
-					null, // values (options)
-					title);
-
-			// user cancelled?
-			if (title == null)
-				throw new UserCancelledException();
-
-			// make sure there's a digit in there somewhere, and return.
-			if (containsDigit(title) && containsLetter(title))
-				return title;
-
-			// no numbers!
-			// (FIXME: this error shouldn't exist!)
-			Alert
-					.error("No number",
-							"There's no number in that title.  I think you forgot the sample number.");
-
-			// be sure to put in the user manual the trick for creating a sample
-			// without a sample number, if they ever need that: put a digit on
-			// the end, and remove it right away (heh heh).
-		}
-	}
-
-	// if i need this anywhere else, move to util?
-	private static boolean containsDigit(String s) {
-		for (int i = 0; i < s.length(); i++)
-			if (Character.isDigit(s.charAt(i)))
-				return true;
-		return false;
-	}
-
-	private static boolean containsLetter(String s) {
-		for (int i = 0; i < s.length(); i++)
-			if (Character.isLetter(s.charAt(i)))
-				return true;
-		return false;
-	}
-
-	public Editor() {
-		// ask user for title
-		String title;
-		try {
-			title = askTitle();
-		} catch (UserCancelledException uce) {
-			dispose();
-			return;
-		}
-
-		// make dataset ref, with our title
-		sample = new Sample();
-		sample.setMeta("title", title);
-
-		// pass
-		setup();
-	}
-
-	// new sample for site -- not used yet
-	public Editor(LegacySite s) {
-		// ask user for title
-		String title;
-		try {
-			title = askTitle(); // WAS: s.getName() + " ");
-		} catch (UserCancelledException uce) {
-			dispose();
-			return;
-		}
-
-		// make dataset ref, with our title
-		sample = new Sample();
-		sample.setMeta("title", title);
-
-		// pass
-		setup();
-	}
 
 	// TODO: want single-instance editors.
 	// so:
@@ -741,7 +564,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// view area
 		initWJPanel();
 		initMetaView();
-		initElemPanel();
+		initComponentsPanel();
+		//initElemPanel();
 		initMozillaMapPanel();
 
 		// i'll watch the data
@@ -761,15 +585,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		JMenuBar menubar = new JMenuBar();
 
 		// TODO: extend CorinaMenuBar
-		menubar.add(new EditorFileMenu(this));
+		menubar.add(new EditorFileMenu(this, sample));
 		editorEditMenu = new EditorEditMenu(sample, dataView, this);
 		menubar.add(editorEditMenu);
-		editorViewMenu = new EditorViewMenu(sample, elemPanel);
-		menubar.add(editorViewMenu);
+		menubar.add(new AdminMenu(this));
 		menubar.add(new EditorToolsMenu(sample, this));
-		editorSumMenu = new EditorSumMenu(sample, elemPanel);
-		menubar.add(editorSumMenu);
-		editorSumMenu.setVisible(false);
 		menubar.add(new EditorGraphMenu(sample));
 		//menubar.add(new EditorSiteMenu(sample));
 		if (App.platform.isMac())
@@ -792,7 +612,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// is the same, or just make sure the absolute is within range?
 		// i can store the position either in a ;WINDOW field, or beyond the ~author line.
 		Center.center(this);
-		show();
+		setVisible(true);
 
 		/*
 		 // strategy: keep going down, until it would go off-screen, then start again.
@@ -843,7 +663,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private void setUIFromPrefs() {
 		if (wjTable == null)
 			return;
-		Font font = Font.decode(App.prefs.getPref(Prefs.EDIT_FONT));
+		Font font = App.prefs.getFontPref(Prefs.EDIT_FONT, null);
 		if (font != null)
 			wjTable.setFont(font);
 		// BUG: this doesn't reset the row-heights!
@@ -922,25 +742,25 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// components
 		JLabel question = new JLabel("Print which sections?"); // TODO: i18n
-		final JCheckBox s1 = new JCheckBox(I18n.getText("tab_data"), def == 0);
-		final JCheckBox s2 = new JCheckBox(I18n.getText("tab_metadata"),
+		final JCheckBox s1 = new JCheckBox(I18n.getText("editor.tab_data"), def == 0);
+		final JCheckBox s2 = new JCheckBox(I18n.getText("editor.tab_metadata"),
 				def == 1);
-		final JCheckBox s3 = new JCheckBox(I18n.getText("tab_weiserjahre"),
+		final JCheckBox s3 = new JCheckBox(I18n.getText("editor.tab_weiserjahre"),
 				def == 2);
-		final JCheckBox s4 = new JCheckBox(I18n.getText("tab_elements"),
+		final JCheckBox s4 = new JCheckBox(I18n.getText("editor.tab_components"),
 				def == 3);
 		// dim sections which aren't available
 		s3.setEnabled(s.hasWeiserjahre());
 		s4.setEnabled(s.getElements() != null); // FIXME: hasElements method!
 		// FIXME: if s1-4 is an array, i can simply say s[def].setEnabled(true)
 		// -- if def=0..3
-		final JButton cancel = Builder.makeButton("cancel");
-		final JButton ok = Builder.makeButton("print");
+		final JButton cancel = Builder.makeButton("general.cancel");
+		final JButton ok = Builder.makeButton("menus.file.print");
 		Component indent = Box.createHorizontalStrut(14);
 
 		// on ok/cancel, done
 		final boolean okClicked[] = new boolean[1];
-		AbstractAction a = new AbstractAction() {
+		ActionListener a = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				okClicked[0] = (e.getSource() == ok);
 				d.dispose();
@@ -950,7 +770,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		ok.addActionListener(a);
 
 		// if you uncheck all, "print" gets dimmed
-		AbstractAction b = new AbstractAction() {
+		ActionListener b = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ok.setEnabled(s1.isSelected() || s2.isSelected()
 						|| s3.isSelected() || s4.isSelected());
@@ -975,7 +795,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		OKCancel.addKeyboardDefaults(ok);
 		d.pack();
 		d.setResizable(false);
-		d.show();
+		d.setVisible(true);
 
 		// -- (user selects something) --
 
@@ -1000,13 +820,15 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		}
 		
 		// ok, start measuring, if we can!
-		SerialSampleIO dataPort;
+		//LegacySerialSampleIO dataPort;
+		AbstractSerialMeasuringDevice dataPort;
 		try {
-			dataPort = CorinaMeasuringDevice.initialize();
+			dataPort = new SerialDeviceSelector ().getDevice();
+			dataPort.initialize();
 		}
 		catch (IOException ioe) {
-			Alert.error("Couldn't start measuring", 
-					"There was an error while initializing the external communications device: " +
+			Alert.error(I18n.getText("error"), 
+					I18n.getText("error.initExtComms") + ": " +
 					ioe.toString());
 			return;
 		}
@@ -1031,6 +853,14 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			getContentPane().repaint();
 			measurePanel = null;
 		}
+	}
+	
+	/**
+	 * Get the sampleDataView
+	 * @return The SampleDataVeiw I am holding
+	 */
+	public SampleDataView getSampleDataView() {
+		return dataView;
 	}
 	
 	@Override

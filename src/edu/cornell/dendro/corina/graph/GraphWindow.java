@@ -20,6 +20,7 @@
 
 package edu.cornell.dendro.corina.graph;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -42,17 +43,16 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.ScrollPaneConstants;
 
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
-import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.cross.Cross;
@@ -72,7 +72,6 @@ import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
-import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Overwrite;
@@ -109,6 +108,11 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// DISABLED until printing works better:
 		// PrintableDocument,
 		Printable, PrefsListener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5018275020308926052L;
 
 	// SampleListener
 	private void update(Sample s) {
@@ -152,7 +156,6 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	// gui
 	public GrapherPanel plot; // the plot area itself
-	public PlotAgents agents;
 	public GraphElementsPanel elemPanel;
 	public GraphController controller;
 
@@ -386,10 +389,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	// construct a GrapherPanel, add a GrapherListener, etc.
 	private void createPanelAndDisplay() {
-		// initialize our plotting agents
-		agents = new PlotAgents();
 		// create a graph panel; put it in a scroll pane
-		plot = new GrapherPanel(samples, agents, this);
+		plot = new GrapherPanel(samples, this);
 		
 		scroller = new JScrollPane(plot,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
@@ -407,19 +408,22 @@ public class GraphWindow extends XFrame implements SampleListener,
 		//content.add(new GraphToolbar(this), BorderLayout.NORTH);
 		
 		elemPanel.setVisible(false);
+		
+		// create actions for toolbar and menubar (below)
+		GraphActions actions = new GraphActions(plot, elemPanel, controller);		
+		
+		// create toolbar
+		JToolBar toolbar = new GraphToolbar(actions);
+		content.add(toolbar, BorderLayout.NORTH);
 				
 		// set initial y-offsets: spread 'em out
 		controller.spreadOut(50);						
 		
 		// corner!
 		JLabel black = new JLabel();
-		black.setBackground(Color.getColor("corina.graph.background",
-				Color.black));
+		black.setBackground(GraphPrefs.BACKGROUND.get());
 		black.setOpaque(true);
 		scroller.setCorner(ScrollPaneConstants.LOWER_LEFT_CORNER, black);
-
-		// to turn on baselines and vert axis, if enabled...
-		plot.postScrollpanedInit();		
 
 		// special case: if there's an Index, align baselines (ugly test!)
 		// REFACTOR: this doesn't do anything, does it?
@@ -431,10 +435,10 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// ooh, menubar
 		{
 			JMenuBar menubar = new JMenuBar();
-
+			
 			menubar.add(new GraphFileMenu(this));
 			menubar.add(new GraphEditMenu(this));
-			menubar.add(new GraphViewMenu(this));
+			menubar.add(new GraphViewMenu(this, actions));
 			if (App.platform.isMac())
 				menubar.add(new WindowMenu(this));
 			menubar.add(new HelpMenu());
@@ -448,7 +452,6 @@ public class GraphWindow extends XFrame implements SampleListener,
 		DropTarget t3 = new DropTarget(plot, dtl); // on the plot!
 
 		// context menu
-		final SamplePopupMenu popup = new SamplePopupMenu();
 		plot.addMouseListener(new PopupListener() {
 			@Override
 			public void showPopup(MouseEvent e) {
@@ -456,9 +459,16 @@ public class GraphWindow extends XFrame implements SampleListener,
 				int n = plot.getGraphAt(e.getPoint());
 
 				// not on a graph? bail.
-				if (n == -1)
+				if (n == -1){
+					final GraphBGPopupMenu bgpopup = new GraphBGPopupMenu();
+					bgpopup.show(e.getComponent(), e.getX(), e.getY());
 					return;
+				}
 
+				
+				// Create sample popup menu
+				final SamplePopupMenu popup = new SamplePopupMenu(plot);
+				
 				// select it
 				plot.current = n;
 				plot.repaint();
@@ -752,7 +762,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 			
 			Graph g = (Graph) samples.get(plot.current);
 			Color gcolor = g.getColor(false);			
-			elemPanel.setColor(gcolor);			
+			elemPanel.setColor(gcolor);	
 		}
 	}
 	
@@ -788,7 +798,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		App.prefs.removePrefsListener(this);
 	}
 
-	public Object getSaverClass() {
-		return this;
+	public Object getSavedDocument() {
+		return plot;
 	}
 }

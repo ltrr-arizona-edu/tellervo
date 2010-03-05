@@ -54,17 +54,17 @@ public class UnitTests extends TestCase {
 			assertEquals(s.getWJIncr(), null);
 			assertEquals(s.getWJDecr(), null);
 			assertEquals(s.getElements(), null);
-			assertEquals(s.getCount(), null);
+			assertEquals(s.hasCount(), false);
 			assertTrue(!s.hasMeta("filename"));
 
 			// undo it
 			undo.undo();
-			assertTrue(s.getCount() != null);
+			assertTrue(s.hasCount());
 			assertTrue(s.hasMeta("filename"));
 
 			// redo it
 			undo.redo();
-			assertEquals(s.getCount(), null);
+			assertEquals(s.hasCount(), false);
 			assertTrue(!s.hasMeta("filename"));
 		} catch (IOException ioe) {
 			fail();

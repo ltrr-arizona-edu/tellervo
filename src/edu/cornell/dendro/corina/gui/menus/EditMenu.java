@@ -84,7 +84,7 @@ public class EditMenu extends JMenu {
 
 	/** Make a new Edit menu. */
     public EditMenu(JFrame frame) {
-        super(I18n.getText("edit"));
+        super(I18n.getText("menus.edit"));
         
         this.frame = frame;
         
@@ -101,7 +101,6 @@ public class EditMenu extends JMenu {
         addSelectAll();
 
         addPreferences();
-        addAdmin();
     }
 
     protected void addUndoRedo() {
@@ -110,11 +109,11 @@ public class EditMenu extends JMenu {
     }
 
     protected void addUndo() {
-        add(Builder.makeMenuItem("undo", false, "undo.png"));
+        add(Builder.makeMenuItem("menus.edit.undo", false, "undo.png"));
     }
 
     protected void addRedo() {
-        add(Builder.makeMenuItem("redo", false, "redo.png"));
+        add(Builder.makeMenuItem("menus.edit.redo", false, "redo.png"));
     }
 
     protected void addClipboard() {
@@ -124,43 +123,33 @@ public class EditMenu extends JMenu {
     }
 
     protected void addCut() {
-        add(Builder.makeMenuItem("cut", false, "editcut.png"));
+        add(Builder.makeMenuItem("menus.edit.cut", false, "editcut.png"));
     }
 
     protected void addCopy() {
-        add(Builder.makeMenuItem("copy", false, "editcopy.png"));
+        add(Builder.makeMenuItem("menus.edit.copy", false, "editcopy.png"));
     }
 
     protected void addPaste() {
-        add(Builder.makeMenuItem("paste", false, "editpaste.png"));
+        add(Builder.makeMenuItem("menus.edit.paste", false, "editpaste.png"));
     }
 
     protected void addSelectAll() {
-        add(Builder.makeMenuItem("select_all", false));
+        add(Builder.makeMenuItem("menus.edit.select_all", false));
     }
     
     protected void addPreferences() {
         if (!App.platform.isMac()) {
             addSeparator();
-            JMenuItem prefs = Builder.makeMenuItem("preferences",
+            JMenuItem prefs = Builder.makeMenuItem("menus.preferences",
                                                    "edu.cornell.dendro.corina.prefs.PreferencesDialog.showPreferences()", "advancedsettings.png");
             add(prefs);
                        
         }
         
-        // kludge, remove me when the new prefs dialog works well
-        JMenuItem legacyPrefs = Builder.makeMenuItem("preferences", 
-                "edu.cornell.dendro.corina.prefs.PrefsDialog.showPreferences()", "advancedsettings.png");
-        
-        legacyPrefs.setText("Legacy Preferences Dialog");
-        add(legacyPrefs);
+
     }
     
-    protected void addAdmin(){
-        JMenuItem prefs = Builder.makeMenuItem("admin",
-                                               "edu.cornell.dendro.corina.gui.AdminPanel.main()", "agent.png");
-        add(prefs);
-    }
-    
+
 
 }

@@ -67,7 +67,7 @@ public class Trend extends Cross {
     }
 
 	public String getName() {
-	return I18n.getText("trend");
+	return I18n.getText("statistics.trend");
     }
 
 	public String getFormat() {
@@ -101,7 +101,7 @@ public class Trend extends Cross {
     }
 
     // make an array of floats from a List of Numbers
-    private float[] makeArray(List list) {
+    private float[] makeArray(List<Number> list) {
 	int n = list.size();
 	float array[] = new float[n];
 	for (int i=0; i<n; i++)

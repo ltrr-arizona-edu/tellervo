@@ -1,12 +1,1328 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * This file contains the interface and classes that contain the 
+ * parameters requested by the user.
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
+require_once('inc/dbEntity.php');
+require_once('inc/dbhelper.php');
+
+/**
+ * Interface for parameters objects
+ *
+ */
+interface IParams
+{
+	function __construct($xmlrequest);
+    function setParamsFromXMLRequest();
+}
+
+
+class searchParameters implements IParams
+{
+    var $xmlRequestDom 			 			= NULL;	
+    var $returnObject            			= NULL;
+    var $limit                   			= NULL;
+    var $skip                    			= NULL;
+    var $allData                 			= FALSE;
+    var $includeChildren					= FALSE;
+    
+    var $paramsArray						= array();
+    var $objectParamsArray		 			= array();
+    var $elementParamsArray					= array();
+    var $sampleParamsArray					= array();
+    var $radiusParamsArray					= array();
+    var $measurementParamsArray  			= array();
+    var $vmeasurementParamsArray  			= array();
+    var $vmeasurementResultParamsArray  	= array();
+    var $vmeasurementMetaCacheParamsArray  	= array();
+    var $derivedCacheParamsArray			= array();
+
+
+    function __construct($xmlrequest)
+    { 	
+        // Load the xmlrequest into a DOMDocument if it isn't already
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }	
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+        
+        $this->setParamsFromXMLRequest();
+    }
+
+    function setParamsFromXMLRequest()
+    {
+    	global $corinaNS;
+        global $tridasNS;
+	
+        // Get main attributes
+    	$searchParamsTag = $this->xmlRequestDom->getElementsByTagName("searchParams")->item(0); 	
+		$this->returnObject = $searchParamsTag->getAttribute("returnObject");
+		$this->limit = (int) $searchParamsTag->getAttribute("limit");
+		$this->skip = (int) $searchParamsTag->getAttribute("skip");
+		$this->includeChildren = (bool) $searchParamsTag->getAttribute("includeChildren");
+		
+		// Get individual params
+		$paramsTags = $this->xmlRequestDom->getElementsByTagName("param");	
+		
+				// Create an array for translating the search parameters names into Corina database table and field names
+		$translationArray = array (		
+									'objectid' => 							array('tbl' => 'vwtblobject', 'field' => 'objectid'),
+									//'objectdbid' => 						array('tbl' => 'vwtblobject', 'field' => 'objectid'),                        
+									'objecttitle' => 						array('tbl' => 'vwtblobject', 'field' => 'title'),
+									'objectcreated' => 						array('tbl' => 'vwtblobject', 'field' => 'createdtimestamp'),
+									'objectlastmodified' => 				array('tbl' => 'vwtblobject', 'field' => 'lastmodifiedtimestamp'),
+									'objectdescription' => 					array('tbl' => 'vwtblobject', 'field' => 'description'),
+									'objectcreator' => 						array('tbl' => 'vwtblobject', 'field' => 'creator'),
+									'objectowner' => 						array('tbl' => 'vwtblobject', 'field' => 'owner'),
+									'objectfile' => 						array('tbl' => 'vwtblobject', 'field' => 'file'),
+									'objectcoverageTemporal' => 			array('tbl' => 'vwtblobject', 'field' => 'coveragetemporal'),
+									'objectcoverageTemporalFoundation' => 	array('tbl' => 'vwtblobject', 'field' => 'coveragetemporalfoundation'),
+									'objectlocationtype' => 				array('tbl' => 'vwtblobject', 'field' => 'locationtype'),
+									'objectlocationprecision' => 			array('tbl' => 'vwtblobject', 'field' => 'locationprecision'),
+									'objectlocationcomment' => 				array('tbl' => 'vwtblobject', 'field' => 'locationcomment'),
+									'objecttype' =>							array('tbl' => 'vwtblobject', 'field' => 'type'),	
+									'parentobjectid' =>						array('tbl' => 'vwtblobject', 'field' => 'parentobjectid'),
+									'objectcode' =>							array('tbl' => 'vwtblobject', 'field' => 'code'),
+									'objectlocation' =>						array('tbl' => 'vwtblobject', 'field' => 'locationgeometry'),
+									'countOfChildSeriesOfObject' =>			array('tbl' => 'vwtblobject', 'field' => 'countofchildvmeasurements'),
+									'anyparentobjectid' =>					array('tbl' => 'vwtblobject', 'field' => 'anyparentobjectid'),
+									'anyparentobjectcode' =>				array('tbl' => 'vwtblobject', 'field' => 'anyparentobjectcode'),
+		
+									'elementid' => 							array ('tbl' => 'vwtblelement', 	'field'  => 'elementid'),
+									//'elementdbid' => 						array('tbl' => 'vwtblelement', 'field' => 'elementid'),
+									'elementoriginaltaxonname' => 			array('tbl' => 'vwtblelement', 'field' => 'originaltaxonname'),
+									//'elementphylumname' => array('tbl' => 'vwtblelement', 'field' => ''),
+									//'elementclassname' => array('tbl' => 'vwtblelement', 'field' => ''),
+									//'elementordername' => array('tbl' => 'vwtblelement', 'field' => ''),
+									//'elementfamilyname' => array('tbl' => 'vwtblelement', 'field' => ''),
+									//'elementgenusname' => array('tbl' => 'vwtblelement', 'field' => ''),
+									//'elementspeciesname' => array('tbl' => 'vwtblelement', 'field' => ''),
+									//'elementinfraspeciesname' => array('tbl' => 'vwtblelement', 'field' => ''),
+									//'elementinfraspeciestype' => array('tbl' => 'vwtblelement', 'field' => ''),
+									'elementauthenticity' => 				array('tbl' => 'vwtblelement', 'field' => 'elementauthenticity'),
+									'elementshape' => 						array('tbl' => 'vwtblelement', 'field' => 'elementshape'),
+									'elementheight' => 						array('tbl' => 'vwtblelement', 'field' => 'height'),
+									'elementwidth' => 						array('tbl' => 'vwtblelement', 'field' => 'width'),
+									'elementdepth' => 						array('tbl' => 'vwtblelement', 'field' => 'depth'),
+									'elementdiameter' => 					array('tbl' => 'vwtblelement', 'field' => 'diameter'),
+									'elementdimensionunits' => 				array('tbl' => 'vwtblelement', 'field' => 'units'),
+									//'elementdimensionunitspower' => array('tbl' => 'vwtblelement', 'field' => ''),
+									'elementtype' => 						array('tbl' => 'vwtblelement', 'field' => 'elementtype'),
+									'elementfile' => 						array('tbl' => 'vwtblelement', 'field' => 'file'),
+									'elementlocationtype' => 				array('tbl' => 'vwtblelement', 'field' => 'locationtype'),
+									'elementlocationprecision' => 			array('tbl' => 'vwtblelement', 'field' => 'locationprecision'),
+									'elementlocationcomment' => 			array('tbl' => 'vwtblelement', 'field' => 'locationcomment'),
+									'elementprocessing' => 					array('tbl' => 'vwtblelement', 'field' => 'processing'),
+									'elementmarks' => 						array('tbl' => 'vwtblelement', 'field' => 'marks'),
+									'elementdescription' => 				array('tbl' => 'vwtblelement', 'field' => 'description'),
+									'elementcreated' => 					array('tbl' => 'vwtblelement', 'field' => 'createdtimestamp'),
+									'elementlastmodified' =>	 			array('tbl' => 'vwtblelement', 'field' => 'lastmodifiedtimestamp'),
+									'elementcode' =>						array('tbl' => 'vwtblelement', 'field' => 'code'),
+		
+									'sampleid' => 							array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
+									'sampledbid' => 						array('tbl' => 'vwtblsample', 'field' => 'sampleid'),
+									'samplingdate' => 						array('tbl' => 'vwtblsample', 'field' => 'samplingdate'),
+									'samplefile' => 						array('tbl' => 'vwtblsample', 'field' => 'file'),
+									'sampleposition' => 					array('tbl' => 'vwtblsample', 'field' => 'position'),
+									'samplestate' => 						array('tbl' => 'vwtblsample', 'field' => 'state'),
+									'samplehasknots' => 					array('tbl' => 'vwtblsample', 'field' => 'knots'),
+									'sampledescription' => 					array('tbl' => 'vwtblsample', 'field' => 'description'),
+									'samplecreated' => 						array('tbl' => 'vwtblsample', 'field' => 'createtimestamp'),
+									'samplelastmodified' => 				array('tbl' => 'vwtblsample', 'field' => 'lastmodifiedtimstamp'),
+									'samplingdatecertainty' => 				array('tbl' => 'vwtblsample', 'field' => 'datecertainty'),
+									'sampleboxid' =>						array('tbl' => 'vwtblsample', 'field' => 'boxid'),
+									'samplecode' =>							array('tbl' => 'vwtblsample', 'field' => 'code'),
+
+                                    'radiusid' =>                           		array('tbl' => 'vwtblradius', 'field' => 'radiusid'),
+									//'radiusdbid' 
+									'radiuspith'=>									array('tbl' => 'vwtblradius', 'field' => 'radiuspith'),
+									'radiussapwood'=>								array('tbl' => 'vwtblradius', 'field' => 'sapwood'),
+									'radiusheartwood'=>								array('tbl' => 'vwtblradius', 'field' => 'heartwood'),
+									'radiusbark'=>									array('tbl' => 'vwtblradius', 'field' => 'barkpresent'),
+									'radiusnumbersapwoodrings'=>					array('tbl' => 'vwtblradius', 'field' => 'numberofsapwoodrings'),
+									'radiuslastringunderbark'=>						array('tbl' => 'vwtblradius', 'field' => 'lastringunderbark'),
+									'radiusmissingheartwoodringstopith'=>			array('tbl' => 'vwtblradius', 'field' => 'missingheartwoodringstopith'),
+									'radiusmissingheartwoodringstopithfoundation'=>	array('tbl' => 'vwtblradius', 'field' => 'missingheartwoodringstopithfoundation'),
+									'radiusmissingsapwoodringstobark'=>				array('tbl' => 'vwtblradius', 'field' => 'missingsapwoodringstobark'),
+									'radiusmissingsapwoodringstobarkfoundation'=>	array('tbl' => 'vwtblradius', 'field' => 'missingsapwoodringstobarkfoundation'),
+									'radiuscreated'=>								array('tbl' => 'vwtblradius', 'field' => 'radiuscreated'),
+									'radiuslastmodified'=>							array('tbl' => 'vwtblradius', 'field' => 'radiuslastmodified'),
+									'radiusazimuth'=>								array('tbl' => 'vwtblradius', 'field' => 'azimuth'),
+									'radiustitle'=>									array('tbl' => 'vwtblradius', 'field' => 'radiuscode'),
+									'radiuscode' =>									array('tbl' => 'vwtblradius', 'field' => 'radiuscode'),	
+		
+									'seriesid' =>                           array('tbl' => 'vwcomprehensivevm', 'field' => 'vmeasurementid'),
+									'seriesdbid' =>                           array('tbl' => 'vwcomprehensivevm', 'field' => 'vmeasurementid'),
+		
+									//'seriesmeasuringmethod' =>				array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesvariable'=>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesunit'=>							array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriespower' =>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriesmeasuringdate' =>				array('tbl' => 'vwcomprehensivevm', 'field' => 'birthdate'),
+									//'seriesanalyst' =>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesdendrochronologist' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriescomments' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'comments'),
+
+									'seriesfirstyear' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'startyear'),
+									//'seriessproutyear' =>					array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesdeathyear' =>					array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriesprovenance' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'provenance'),
+									//'seriestype' =>							array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesstandardizingmethod' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesauthor' =>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriesobjective' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'objective'),
+									'seriesversion' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'version'),
+									'seriesderivationdate' =>				array('tbl' => 'vwcomprehensivevm', 'field' => 'birthdate'),
+									'serieslastmodified' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'lastmodifiedtimestamp'),
+									'seriesoperatorparameter' =>			array('tbl' => 'vwcomprehensivevm', 'field' => 'vmeasurementopparameter'),
+									'seriesisreconciled' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'isreconciled'),
+									'seriesdatingtype' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'datingtype'),
+									//'seriesdatingerrorpositive' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesdatingerrornegative' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									//'seriesvaluecount' =>					array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriescount' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'directchildcount'),
+									'seriescode' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'code')
+		
+								
+								  );
+		
+		// Loop through each param tag
+		foreach ($paramsTags as $param)
+		{
+			if($param->nodeType != XML_ELEMENT_NODE) continue; 
+			
+			// If the <all> tag is found set allData to true and finish
+			if($param->tagName=='all') 
+			{
+				$this->allData=TRUE; 
+				break;
+			}
+	
+			// Use translation array to get the correct table and field names
+			if(isset($translationArray[$param->getAttribute("name")]))
+			{
+				$fieldname = $translationArray[$param->getAttribute("name")]['field'];
+				$tablename = $translationArray[$param->getAttribute("name")]['tbl'];
+				$operator = $param->getAttribute("operator");
+				$value = $param->getAttribute("value");
+				$temparr = array('table'=>$tablename, 'field'=>$fieldname, 'operator'=>$operator, 'value'=>$value);
+	
+				// Add params to a parametersArray
+				array_push($this->paramsArray,  $temparr);
+			}
+			else
+			{
+				trigger_error("104"."Unknown parameter ".$param->getAttribute("name")." specified.", E_USER_ERROR);
+			}	
+		}		
+
+	}
+}
+
+class dictionariesParameters implements IParams
+{   
+    protected $xmlRequestDom = NULL;
+
+    function __construct($xmlrequest)
+    {
+
+    }
+
+    function setParamsFromXMLRequest()
+    {
+    	return null;
+    }
+    
+    function getID()
+    {
+    	return null;
+    }
+}
+
+
+class authenticationParameters implements IParams
+{
+    protected $username      = NULL;
+    protected $snonce        = NULL;
+    protected $cnonce        = NULL;
+    protected $seq           = NULL;
+    protected $hash          = NULL;
+    protected $password      = NULL;
+    protected $xmlRequestDom = NULL;
+    var 	  $hasChild 	 = NULL;
+    var       $parentID 	 = NULL;
+
+    
+
+    function __construct($xmlrequest)
+    {    	
+        // Load the xmlrequest into a DOMDocument if it isn't already
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+        
+        $this->setParamsFromXMLRequest();
+    }
+
+    function setParamsFromXMLRequest()
+    {
+    	$authTag = $this->xmlRequestDom->getElementsByTagName("authenticate")->item(0);
+    	if($authTag!=NULL)
+    	{
+	        if($authTag->getAttribute("username")!=NULL)   $this->username   = $authTag->getAttribute("username");
+	        if($authTag->getAttribute("password")!=NULL)   $this->password   = $authTag->getAttribute("password");
+	        if($authTag->getAttribute("cnonce")!=NULL)     $this->cnonce     = $authTag->getAttribute("cnonce");
+	        if($authTag->getAttribute("snonce")!=NULL)     $this->snonce     = $authTag->getAttribute("snonce");
+	        if($authTag->getAttribute("hash")!=NULL)       $this->hash       = $authTag->getAttribute("hash");
+	        if($authTag->getAttribute("seq")!=NULL)        $this->seq        = $authTag->getAttribute("seq");
+    	}
+    }
+    
+    function getUsername()
+    {
+    	return $this->username;
+    }
+    
+    function getSNonce()
+    {
+    	return $this->snonce;
+    }
+    
+    function getCNonce()
+    {
+    	return $this->cnonce;
+    }
+    
+    function getSeq()
+    {
+    	return $this->seq;
+    }
+    
+    function getHash()
+    {
+    	return $this->hash;
+    }
+    
+    function getPassword()
+    {
+    	return $this->password;
+    }
+    
+}
+
+class objectParameters extends objectEntity implements IParams
+{
+	var $xmlRequestDom = NULL;
+    var $hasChild   = FALSE;
+    var $parentID   = NULL;
+
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+    	parent::__construct();    	
+    	
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+     		
+        $this->parentID=$parentID;
+            		
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+		global $corinaNS;
+        global $tridasNS;
+	
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+        
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   	case "description":			$this->setDescription($child->nodeValue); break;
+		   	case "creator":				$this->setCreator($child->nodeValue); break;
+		   	case "title":				$this->setTitle($child->nodeValue); break;
+		   	case "owner":				$this->setOwner($child->nodeValue); break;
+		   	case "file":				$this->addFile($child->nodeValue); break;
+		   	case "title":				$this->setTitle($child->nodeValue); break;
+		   	case "comments":			$this->setComments($child->nodeValue); break;
+		   	case "createdTimestamp":	break;
+		   	case "lastModifiedTimestamp": break;
+
+		    case "type": 				
+		   		if($child->hasAttribute("normalStd"))
+		   		{
+		   			if($child->getAttribute("normalStd")=="Corina")
+		   			{
+		   				$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
+		   			}
+		   			else
+		   			{
+		   				trigger_error("901"."Webservice only supports Corina vocabularies for element type", E_USER_ERROR);
+		   				break;
+		   			}
+		   		}
+				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+		   	
+		   	case "location": 
+				$locationTags = $child->childNodes;
+				foreach($locationTags as $tag)
+				{	
+		  	 		if($tag->nodeType != XML_ELEMENT_NODE) continue;  
+		  	 		
+		  	 		switch($tag->tagName)
+		  	 		{
+		  	 			case "locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
+		  	 			case "locationComment" : $this->location->setComment($tag->nodeValue); break;
+		  	 			case "locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
+		  	 			case "locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	 
+		  	 			default:
+						trigger_error("901"."Unknown tag ".$tag->tagName." in location section of the 'object' entity. This tag is being ignored", E_USER_NOTICE);
+		  	 				
+		  	 		}	  	 		
+				}
+				break;
+		   	
+		   	case "genericField":
+		   		$type = $child->getAttribute("type");
+		   		$name = $child->getAttribute("name");
+		   		$value = $child->nodeValue;		   		
+		   		switch($name)
+		   		{	   			
+		   			case "corina.objectLabCode" : $this->setCode($value); break;
+		   			case "corina.countOfChildSeries" : break;
+		   			case "corina.mapLink" :		break;
+		   			
+		   			default:
+		   			trigger_error("901"."Unknown attribute type $name in the &lt;".$child->tagName."&gt; tag of the 'object'. This tag is being ignored", E_USER_NOTICE);
+		   		}
+		   		break;
+			
+		   	case "coverage":			
+		   		$coverageTags = $child->childNodes;
+		   		foreach($covereageTags as $tag)
+		   		{
+		   			switch($tag->tagName)
+		   			{
+		   				case "coverageTemporal":			$coverageTemporal = $tag->nodeValue; break;
+		   				case "coverageTemporalFoundation": 	$coverageTemporalFoundation = $tag->nodeValue; break;
+
+		   			}
+		   			
+		   			if ( (isset($coverageTemporal)) && (isset($coverageTemporalFoundation)) ) $this->setCoverageTemporal($coverageTemporal, $coverageTemporalFoundation);
+		
+		   		}
+		   		break;
+		   	
+		   	
+		   		
+		   	case "object":
+		   		trigger_error("901"."Nested objects not supported in XML request.  Use parentID instead to show relationships", E_USER_ERROR);
+		   		break;
+		   		
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'object' entity of the XML request", E_USER_NOTICE);
+		   }
+        }   
+    }	
+}
+
+class elementParameters extends elementEntity implements IParams
+{   
+	var $xmlRequestDom = NULL;
+    var $hasChild   = FALSE;
+    var $parentID   = NULL;
+
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+    	parent::__construct();
+    	
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+    		
+        $this->parentID=$parentID;
+             		
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+	
+	function setParamsFromXMLRequest()
+	{
+		global $corinaNS;
+        global $tridasNS;
+        global $taxonomicAuthorityEdition;
+        global $firebug;
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+               
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+
+		   switch ($child->tagName)
+		   {
+		   	case "title":				$this->setTitle($child->nodeValue); break;		   	
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;		   		
+		   	case "createdTimestamp":	  break;
+		   	case "lastModifiedTimestamp": break;	
+		   	case "comments":			$this->setComments($child->nodeValue); break;			   	
+		   	case "type": 				
+		   		if($child->hasAttribute("normalStd"))
+		   		{
+		   			if($child->getAttribute("normalStd")=="Corina")
+		   			{
+		   				$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
+		   			}
+		   			else
+		   			{
+		   				trigger_error("901"."Webservice only supports Corina vocabularies for element type", E_USER_ERROR);
+		   				break;
+		   			}
+		   		}
+				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+		   		
+		   		
+		   	case "description":			$this->setDescription($child->nodeValue); break;
+		   	case "file": 				$this->addFile($child->nodeValue); break;
+		   	case "taxon":
+		   		/* @todo Decisions need to be made as to how taxonomy and dictionaries will be handled
+		   		 * */
+
+		   		if($child->getAttribute("normalStd")==$taxonomicAuthorityEdition)
+		   		{
+		   			$this->taxon->setCoLID($child->getAttribute("normalId"));
+		   			$this->taxon->setLabel($child->getAttribute("normal"));
+		   			$this->taxon->setOriginalTaxon($child->nodeValue);
+		   		}
+		   		else
+		   		{
+					trigger_error("901"."The Corina web service only supports taxonomic data that conforms to the '$taxonomicAuthorityEdition'.  Please normalise your data and try again.", E_USER_ERROR);
+		   		}
+		   		break; 
+		   	case "shape": $this->setShape(null, $child->getAttribute("normalTridas")); break; 
+		   	case "dimensions":
+		   		
+		   		//$unitTag = $child->getElementsByTagName("unit")->item(0);
+		   		//$this->setDimensionUnits($unitTag->nodeValue.$child->getAttribute("power"));
+		   		//$dimensionTags = $unitTag->childNodes;
+		   		$dimensionTags = $child->childNodes;
+		   		
+		   		foreach($dimensionTags as $dimension)
+		   		{
+		   			if($dimension->nodeType != XML_ELEMENT_NODE) continue;
+		   			switch ($dimension->tagName)
+		   			{
+		   				case "units":
+		   					//@todo implement
+		   					break;
+		   				case "diameter":
+		   					$this->setDiameter($dimension->nodeValue);
+		   					break;
+		   				case "height":
+		   					$this->setHeight($dimension->nodeValue);
+		   					break;
+		   				case "width":
+		   					
+		   					$this->setWidth($dimension->nodeValue);
+		   					break;
+		   				case "depth":
+		   					$this->setDepth($dimension->nodeValue);
+		   					break;
+		   			}
+		   		}
+		   		break;
+		   	case "authenticity":	 	$this->setAuthenticity($child->nodeValue); break;   		   	
+		   	case "processing": 			$this->setProcessing($child->nodeValue); break;	   	
+		   	case "marks": 				$this->setMarks($child->nodeValue); break;
+		   	case "altitude":			$this->setAltitude($child->nodeValue); break;
+
+		    case "location": 
+				$locationTags = $child->childNodes;
+				foreach($locationTags as $tag)
+				{	
+		  	 		if($tag->nodeType != XML_ELEMENT_NODE) continue;  
+		  	 		
+		  	 		switch($tag->tagName)
+		  	 		{
+		  	 			case "locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
+		  	 			case "locationComment" : $this->location->setComment($tag->nodeValue); break;
+		  	 			case "locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
+		  	 			case "locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	 
+		  	 			default:
+						trigger_error("901"."Unknown tag ".$tag->tagName." in location section of the 'element' entity. This tag is being ignored", E_USER_NOTICE);
+		  	 				
+		  	 		}	  	 		
+				}
+				break;
+ 	
+		   	case "slope":
+		   		$slopeTags = $child->childNodes;
+		   		
+		   		foreach($slopeTags as $slopeTag)
+		   		{
+		   			if($slopeTag->nodeType != XML_ELEMENT_NODE) continue;
+		   			switch ($slopeTag->tagName)
+		   			{
+		   				case "angle":
+		   					$this->setSlopeAngle($slopeTag->nodeValue);
+		   					break;
+		   				case "azimuth":
+		   					$this->setSlopeAzimuth($slopeTag->nodeValue);
+		   					break;
+		   			}
+		   		}
+		   		break;
+		   	case "soil":
+		   		$soilTags = $child->childNodes;
+		   		
+		   		foreach($soilTags as $soilTag)
+		   		{
+		   			if($soilTag->nodeType != XML_ELEMENT_NODE) continue;
+		   			switch ($soilTag->tagName)
+		   			{
+		   				case "depth":
+		   					$this->setSoilDepth($soilTag->nodeValue);
+		   					break;
+		   				case "description":
+		   					$this->setSoilDescription($soilTag->nodeValue);
+		   					break;
+		   			}
+		   		}
+		   		break;	
+		   	case "bedrock":
+		   		$bedrockTags = $child->childNodes;
+		   		
+		   		foreach($bedrockTags as $bedrockTag)
+		   		{
+		   			if($bedrockTag->nodeType != XML_ELEMENT_NODE) continue;
+		   			switch ($bedrockTag->tagName)
+		   			{
+		   				case "description":
+		   					$this->setBedrockDescription($bedrockTag->nodeValue);
+		   					break;
+		   			}
+		   		}
+		   		break;		   		   			   			   		
+
+	   	
+		   	
+		   	case "genericField":
+		   		$type = $child->getAttribute("type");
+		   		$name = $child->getAttribute("name");
+		   		$value = $child->nodeValue;		   		
+		   		switch($name)
+		   		{
+		   			case "name":
+		   				$this->setName($value);
+		   				break;
+		   			
+		   			case "corina.boxID":	
+		   				$this->setBoxID($value);
+		   				break;
+		   				
+		   			// Ignore autogenerated fields
+		   			case "corina.kingdom":	break;
+		   			case "corina.phylum":	break;
+		   			case "corina.class":	break;
+		   			case "corina.order":	break;
+		   			case "corina.family":	break;
+		   			case "corina.genus":	break;
+		   			case "corina.species":	break;		   			
+		   			//default:
+		   			//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'element' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   		}
+		   		break;
+	
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'element' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   
+		   }
+        } 	
+
+
+	}
+	
+	/**
+	 * Get the ID of this element's parent 'object entity'
+	 *
+	 * @return Integer
+	 */
+    function getParentID()
+    {
+    	return $this->parentID;
+    }	
+	
+}
+
+class sampleParameters extends sampleEntity implements IParams
+{   
+	var $xmlRequestDom = NULL;
+    var $hasChild   = FALSE;
+    var $parentID   = NULL;
+       
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+    	
+    	parent::__construct();    	
+    	
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+    		
+        $this->parentID=$parentID;
+                
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+	
+	
+    function setParamsFromXMLRequest()
+    {
+		global $corinaNS;
+        global $tridasNS;
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+        
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "title":				$this->setTitle($child->nodeValue); break;
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   	case "createdTimestamp":	  break;
+		   	case "lastModifiedTimestamp": break;	
+		   	case "comments":			$this->setComments($child->nodeValue); break;
+		   	case "type": 				
+		   		if($child->hasAttribute("normalStd"))
+		   		{
+		   			if($child->getAttribute("normalStd")=="Corina")
+		   			{
+		   				$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
+		   			}
+		   			else
+		   			{
+		   				trigger_error("901"."Webservice only supports Corina vocabularies for sample type", E_USER_ERROR);
+		   				break;
+		   			}
+		   		}
+				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+		   	case "description":			$this->setDescription($child->nodeValue); break;	
+		   	case "file":				$this->addFile($child->nodeValue); break;		   	
+		   	case "samplingDate":		$this->setSamplingDate($child->nodeValue); break;
+		   	case "position":			$this->setPosition($child->nodeValue); break;
+		   	case "state":				$this->setState($child->nodeValue); break;
+		   	case "knots":				$this->setKnots(dbHelper::formatBool($child->nodeValue)); break;
+		   		
+
+		   	case "genericField":
+		   		$type = $child->getAttribute("type");
+		   		$name = $child->getAttribute("name");
+		   		$value = $child->nodeValue;		   		
+		   		switch($name)
+		   		{	   			
+		   			default:
+		   			trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'sample' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+	
+		   		}
+		   		break;
+		   				   	
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'sample' entity of the XML request", E_USER_NOTICE);
+		   }
+        }
+    }
+
+    /**
+     * Get the Id of this sample's parent 'element' entity
+     *
+     * @return Integer 
+     */
+    function getParentID()
+    {
+    	return $this->parentID;
+    }
+}
+
+class radiusParameters extends radiusEntity implements IParams
+{   
+	var $xmlRequestDom = NULL;
+    var $hasChild   = FALSE;
+    var $parentID   = NULL;
+
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+    	parent::__construct();    	
+    	
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+    		
+        $this->parentID=$parentID;
+        
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+		global $corinaNS;
+        global $tridasNS;
+        global $firebug;
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+        
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "title":				$this->setTitle($child->nodeValue); break;
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+   			case "createdTimestamp": 	  break;
+   			case "lastModifiedTimestamp": break;
+		   	case "comments":			$this->setComments($child->nodeValue); break;			
+		   	case "woodCompleteness":
+		   		$woodCompletenessTags = $child->childNodes;
+		   		foreach($woodCompletenessTags as $tag)
+		   		{
+		   			if($tag->nodeType != XML_ELEMENT_NODE) continue;
+		   			switch ($tag->tagName)
+		   			{
+		   				case "pith":
+		   					$this->setPith(NULL, $tag->getAttribute("presence"));
+		   					break;
+		   				case "heartwood":	
+					   		$this->setHeartwood(null, $tag->getAttribute("presence"));
+					   		
+					   		$heartwoodtags = $tag->childNodes;
+					   		
+					   		foreach($heartwoodtags as $heartwoodtag)
+					   		{
+					   			if($heartwoodtag->nodeType != XML_ELEMENT_NODE) continue;
+					   			switch($heartwoodtag->tagName)
+					   			{
+					   				case "missingHeartwoodRingsToPith":				$this->setMissingHeartwoodRingsToPith($heartwoodtag->nodeValue); break;
+					   				case "missingHeartwoodRingsToPithFoundation":	$this->setMissingHeartwoodRingsToPithFoundation($heartwoodtag->nodeValue); break;	
+					   				default:
+					   					trigger_error("901"."Unknown tag &lt;".$heartwoodtag->tagName."&gt; in 'radius.woodCompleteness.heartwood' entity of the XML request. Tag is being ignored", E_USER_NOTICE);	
+					   			}
+					   		}
+					   		break;		   					
+		   				case "sapwood":
+		   					$this->setSapwood(NULL, $tag->getAttribute("presence"));
+					   		$sapwoodtags = $tag->childNodes;
+					   		foreach($sapwoodtags as $sapwoodtag)
+					   		{
+					   			if($sapwoodtag->nodeType != XML_ELEMENT_NODE) continue;
+					   			switch ($sapwoodtag->tagName)
+					   			{
+					   				case "nrOfSapwoodRings": 						$this->setNumberOfSapwoodRings($sapwoodtag->nodeValue); break;
+					   				case "lastRingUnderBark": 						$this->setLastRingUnderBark($sapwoodtag->nodeValue, $sapwoodtag->getAttribute("presence"));	break;
+					   				case "missingSapwoodRingsToBark":				$this->setMissingSapwoodRingsToBark($sapwoodtag->nodeValue); break;
+					   				case "missingSapwoodRingsToBarkFoundation": 	$this->setMissingSapwoodRingsToBarkFoundation($sapwoodtag->nodeValue); break;
+					   				default:
+					   					trigger_error("901"."Unknown tag &lt;".$sapwoodtag->tagName."&gt; in 'radius.woodCompleteness.sapwood' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+					   			}
+					   		}		   			
+							break;
+		   				case "bark":
+		   					$firebug->log($tag->getAttribute("presence"), "bark tag: ");
+		   					$this->setBarkPresent($tag->getAttribute("presence"));
+		   					break;					   		
+				
+		   				default:
+		   					trigger_error("901"."Unknown tag &lt;".$tag->tagName."&gt; in 'radius.woodCompleteness' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   			}
+		   		}		   			
+				break;
+		   	case "azimuth":				$this->setAzimuth($child->nodeValue); break;
+		   	case "genericField":
+		   		$type = $child->getAttribute("type");
+		   		$name = $child->getAttribute("name");
+		   		$value = $child->nodeValue;		   		
+		   		switch($name)
+		   		{	   			
+		   			default:
+		   			trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'radius' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+	
+		   		}
+		   		break;		   		   	
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'radius' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   }
+        }
+    }	
+}
+        
+
+class measurementParameters extends measurementEntity implements IParams
+{   
+	var $xmlRequestDom = NULL;
+    var $hasChild   = FALSE;
+    var $parentID   = NULL;
+
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+    	parent::__construct();
+    	
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+    		
+        $this->parentID=$parentID;
+        
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+		global $corinaNS;
+        global $tridasNS;
+        global $firebug;
+
+        if($this->xmlRequestDom->documentElement->tagName=='measurementSeries')
+        {
+        	$this->setVMeasurementOp(5, 'Direct');
+        }  
+
+        
+        $children = $this->xmlRequestDom->documentElement->childNodes;   
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "title":				$this->setTitle($child->nodeValue);
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+   			case "createdTimestamp": 		break;
+   			case "lastModifiedTimestamp": 	break;			   	
+		   	case "comments":			$this->setComments($child->nodeValue); break;
+   			case "measuringDate":		$this->setMeasuringDate($child->nodeValue); break;
+   			case "derivationDate":		$this->setDerivationDate($child->nodeValue); break;
+ 		   	case "type":				$this->setVMeasurementOp(null, $child->nodeValue); break;	  				   	
+   			case "linkSeries":
+   				$seriesTags = $child->childNodes;
+   				foreach($seriesTags as $series)
+   				{
+   					if($series->nodeType != XML_ELEMENT_NODE) continue;
+   					if($series->nodeName=='series')
+   					{
+   						if($series->nodeType != XML_ELEMENT_NODE) continue;
+   						$idTags = $series->childNodes;
+   						foreach($idTags as $idTag)
+		   				{
+		   					if($idTag->nodeType != XML_ELEMENT_NODE) continue;
+		   					if($idTag->nodeName=='identifier')
+		   					{
+		   						array_push($this->referencesArray, $idTag->nodeValue);  		
+		   					}
+		   					else
+		   					{
+		   						trigger_error("901"."Only identifier tags are currently supported in Corina.", E_USER_NOTICE);
+		   					}
+		   				}
+   					}
+   				}
+   				break;	
+		   	case "objective":			$this->setObjective($child->nodeValue); break;
+   			case "standardizingMethod":	$this->setStandardizingMethod(null, $child->nodeValue); break;
+		
+		   	// Ignore user name fields as we use genericField ID's for these instead
+		   	case "analyst":				break;
+		   	case "dendrochronologist":	break;
+		   	case "author":				break;
+		   	case "measuringMethod":		$this->setMeasuringMethod(NULL, $child->getAttribute("normalTridas")); break;
+		   	case "version":				$this->setVersion($child->nodeValue); break;
+		   	case "interpretation":
+		   		$interpTags = $child->childNodes;
+		   		foreach($interpTags as $interpTag)
+		   		{
+		   			if($interpTag->nodeType != XML_ELEMENT_NODE) continue;
+		   			switch($interpTag->nodeName)
+		   			{
+
+		   				case "datingReference":
+		   					$datingRefTags = $interpTag->childNodes;
+					   		foreach($datingRefTags as $datingRefTag)
+		   					{	
+		   						if($datingRefTag->nodeType != XML_ELEMENT_NODE) continue;		 
+		   			   			switch($datingRefTag->nodeName)
+		   						{		
+		   							
+						   			case "linkSeries":
+						   				$seriesTags = $datingRefTag->childNodes;
+						   				foreach($seriesTags as $series)
+						   				{
+						   					if($series->nodeType != XML_ELEMENT_NODE) continue;
+					   					if($series->nodeName=='identifier')
+						   					{						   
+						   						$this->setMasterVMeasurementID($series->nodeValue);  		
+						   					}
+						   				}
+						   				break;
+		   						}
+		   					}
+		   					
+			   			case "dating":
+			   				$this->dating->setDatingType(null, $interpTag->getAttribute("type"));
+			   				break;
+		   					
+			   			case "firstYear": 
+			   				// Special case.  If the series is 'direct' then user may be redating in place
+			   				// Kludgey and gross.
+			   				if($this->getVMeasurementOp()=="Direct") $this->setFirstYear($interpTag->nodeValue);
+			   				break;
+			   			case "sproutYear": break;
+			   			case "deathYear":  break;
+		   				default:
+		   					trigger_error("901"."Unknown tag &lt;".$interpTag->tagName."&gt;. Tag is being ignored", E_USER_NOTICE);
+		   					
+		   					break;
+		   			}
+		   		}
+		   		break;
+			case "interpretationUnsolved":	break;
+			case "location": break;
+			
+		    case "genericField":
+		   		$type = $child->getAttribute("type");
+		   		$name = $child->getAttribute("name");
+		   		$value = $child->nodeValue;		   		
+		   		switch($name)
+		   		{
+		   			case "corina.analystID":
+		   				$this->analyst->setParamsFromDB($value);
+		   				break;
+		   			
+		   			case "corina.dendrochronologistID":
+		   				$this->dendrochronologist->setParamsFromDB($value);
+		   				break;
+
+		   			case "corina.authorID":
+		   				$this->setAuthor($value);
+		   				break;
+		   				
+		   			case "corina.justification":
+		   				$this->setJustification($value);
+		   				break;
+		   			
+		   			case "corina.crossdateConfidenceLevel":
+		   				$this->setConfidenceLevel($value);
+		   				break;
+		   				
+		   			case "corina.isReconciled":		   				
+		   				$this->setIsReconciled($value);
+		   				break;
+		   				
+		   			case "corina.newStartYear":
+	   					$this->setNewStartYear($value);
+	   					break;	
+		   				
+		   			case "corina.newEndYear":
+		   				$this->setNewEndYear($value);	   					
+		   			  				
+		   			case "corina.directChildCount":		break;
+		   			case "corina.mapLink":				break;
+		   			case "corina.isPublished":			break;
+		   			case "corina.readingCount":			break;		   			
+		   			
+		   			default:
+		   				trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; with name attribute '".$name."' in the series entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+	
+		   		}
+		   		break;
+		   			   		
+		   	case "values":
+		   		
+		   		
+		   		$valuetags = $child->childNodes;
+		   		$i = 0;
+		   		
+		   		foreach($valuetags as $tag)
+		   		{
+		   			if($tag->nodeType != XML_ELEMENT_NODE) continue;
+		   			if($tag->tagName == 'value') 
+		   			{	
+		   				// Tag is a <value> tag so process
+		   				
+		   				// get the index and value fields
+			   			$index = $tag->getAttribute("index");
+			   			$value = $tag->getAttribute("value");  
+
+			   			// See if it has child nodes (notes or subvalues)
+			   			$valuechildren = $tag->childNodes;
+		   				$myNotesArray = array();			   			
+			   			foreach($valuechildren as $valuechild)
+			   			{
+			   				if($valuechild->nodeType != XML_ELEMENT_NODE) continue;
+			   				if($valuechild->tagName == 'remark')
+			   				{
+			   					// Create a notes object to hold note
+			   					$currReadingNote = new readingNote();
+			   					
+			   					if($valuechild->hasAttribute("normalTridas"))
+			   					{
+			   						// TRiDaS controlled remark
+			   						$currReadingNote->setControlledVoc(null, "TRiDaS");
+			   						$currReadingNote->setNote($valuechild->getAttribute("normalTridas"));	   						
+			   					}
+			   					else
+			   					{
+				   					// Corina or free text remark
+				   					$currReadingNote->setID($valuechild->getAttribute("normalId"));
+				   					$currReadingNote->setControlledVoc(null, $valuechild->getAttribute("normalStd"));
+				   					
+				   					if($valuechild->hasAttribute("normal"))
+				   					{
+				   						$currReadingNote->setNote($valuechild->getAttribute("normal"));
+				   					}
+				   					else
+				   					{  		
+				   						$currReadingNote->setNote($valuechild->nodeValue);			
+				   						
+				   					}
+			   					}
+			   					
+			   					// Notes fields common to all types of notes
+			   					$currReadingNote->setInheritedCount($valuechild->getAttribute("inheritedCount"));
+			   					
+			   					// Add notes in a notes array
+			   					array_push($myNotesArray, $currReadingNote);
+			   				}
+			   				
+			   			}
+
+			   			// Mush all the reading and notes into the ReadingArray
+						$this->readingsArray[$i] = array('value' => unit::unitsConverter($value, $this->getUnits(), "db-default"), 
+	                                                     'wjinc' => NULL, 
+	                                                     'wjdec' => NULL, 
+	                                                     'count' => NULL,
+	                                                     'notesArray' => $myNotesArray);
+		   			}
+		   			else if($tag->tagName=='variable')
+		   			{		   				
+		   				if($tag->getAttribute("normalTridas")!=NULL)
+		   				{
+		   					$this->setVariable(NULL, $tag->getAttribute("normalTridas"));
+		   				}
+		   				else
+		   				{
+		   					trigger_error("104"."Only TRiDaS normalised variables are supported by this webservice", E_USER_ERROR);
+		   				}
+		   			}
+		   			else if($tag->tagName=='unit')
+		   			{
+		   				if($tag->getAttribute("normalTridas")!=NULL)
+		   				{
+		   					$this->setUnits(NULL, $tag->getAttribute("normalTridas"));
+		   				}
+		   				else
+		   				{
+		   					trigger_error("104"."Only TRiDaS normalised units are supported by this webservice", E_USER_ERROR);
+		   				}		   				
+		   			}
+		   			else
+		   			{
+		   				// Tag not a value tag so skip
+		   				continue;
+		   			}
+		   			
+		   			// Increment readingArray counter
+					$i++;
+					
+		   		}		   			
+				break;		   		
+		   		
+
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'series' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   }
+        }
+    }	
+}   
+    
+class boxParameters extends boxEntity implements IParams
+{
+	var $xmlRequestDom = NULL;
+
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+    	parent::__construct();    	
+    	
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='box')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+     		            		
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+		global $corinaNS;
+        global $tridasNS;
+	
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+        
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   	case "title":				$this->setTitle($child->nodeValue); break;
+		   	case "trackingLocation":	$this->setTrackingLocation($child->nodeValue); break;
+		   	case "curationLocation":	$this->setCurationLocation($child->nodeValue); break;
+		   	case "comments":			$this->setComments($child->nodeValue); break;
+		   	case "createdTimestamp":	break;
+		   	case "lastModifiedTimestamp": break;
+
+		   		
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'box' entity of the XML request", E_USER_NOTICE);
+		   }
+        }   
+    }	
+}
+    
+    
+    
+class securityUserParameters extends securityUserEntity implements IParams
+{
+	var $xmlRequestDom = NULL;
+    
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+    	global $firebug;
+    	parent::__construct();    	
+    	
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='box')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();   		
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+     		            		
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+    	global $firebug;
+		global $corinaNS;
+        global $tridasNS;
+	
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+     
+        foreach($children as $child)
+        {
+
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   $firebug->log($child->hasAttribute("id"), "has id?");
+		   
+		   if ($child->tagName=='user')
+		   {
+		   		if($child->hasAttribute("id")) $this->setID($child->getAttribute("id"), null);
+		   		if($child->hasAttribute("username")) $this->setUsername($child->getAttribute("username"));
+		   		if($child->hasAttribute("firstName")) $this->setFirstname($child->getAttribute("firstName"));
+		   		if($child->hasAttribute("lastName")) $this->setLastname($child->getAttribute("lastName"));
+		   		if($child->hasAttribute("isActive")) $this->setIsActive(dbhelper::formatBool($child->getAttribute("isActive"),"php"));
+		   		if($child->hasAttribute("password")) $this->setPassword($child->getAttribute("password"), "plain");
+		   } 
+        }   
+    }	
+}
+    
+ 
+/**
+ * Old stuff needs refactoring
+ *
+ */
+/*
 
 class parameters 
 {
@@ -28,432 +1344,12 @@ class parameters
 
     function getXMLParams()
     {
-        echo "This function should be overloaded";
-    }
-
-
-}
-
-
-class siteParameters extends parameters
-{
-    var $id             = NULL;
-    var $name           = NULL;
-    var $code           = NULL;
-    var $siteNoteArray = array();
-        
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
+        echo "This function must be overloaded";
+        die();
     }
     
-    function getXMLParams()
-    {
-        $mySite = $this->xmlrequest->xpath('//site');
-        if(isset($mySite[0]['id']))                  $this->id                       = (int) $mySite[0]['id'];
-        if(isset($mySite[0]->name))                  $this->name                     = addslashes($mySite[0]->name);
-        if(isset($mySite[0]->code))                  $this->code                     = addslashes($mySite[0]->code);
-        if(isset($this->xmlrequest->subSite))        $this->hasChild                 = True;
-
-        $siteNotes = $this->xmlrequest->xpath('//siteNotes');
-        if (isset($siteNotes[0]->siteNote[0]))
-        {
-            foreach($siteNotes[0] as $item)
-            {
-                array_push($this->siteNoteArray, $item['id']);
-            }
-        }
-        else
-        {
-            $this->siteNoteArray = array('empty');
-        }
-    }
 }
 
-class subSiteParameters extends parameters
-{
-    var $id         = NULL;
-    var $name       = NULL;
-    var $siteID     = NULL;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->siteID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))      $this->id           = (int) $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->name))      $this->name         = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->tree))      $this->hasChild     = True;
-    }
-
-}
-
-class treeParameters extends parameters
-{
-    var $id                 = NULL;
-    var $name               = NULL;
-    var $taxonID            = NULL;
-    var $originalTaxonName  = NULL;
-    var $latitude           = NULL;
-    var $longitude          = NULL;
-    var $precision          = NULL;
-    var $subSiteID          = NULL;
-    var $isLiveTree         = NULL;
-    var $treeNoteArray      = array();
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->subSiteID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id                   = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->name))                  $this->name                 = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->originalTaxonName))     $this->originalTaxonName    = addslashes($this->xmlrequest->originalTaxonName);
-        if(isset($this->xmlrequest->validatedTaxon['id']))  $this->taxonID              = (int)      $this->xmlrequest->validatedTaxon['id'];
-        if(isset($this->xmlrequest->latitude))              $this->latitude             = (double)   $this->xmlrequest->latitude;
-        if(isset($this->xmlrequest->longitude))             $this->longitude            = (double)   $this->xmlrequest->longitude;
-        if(isset($this->xmlrequest->precision))             $this->precision            = (double)   $this->xmlrequest->precision;
-        if(isset($this->xmlrequest->isLiveTree))            $this->isLiveTree           = fromStringtoPHPBool($this->xmlrequest->isLiveTree);
-        if(isset($this->xmlrequest->specimen))              $this->hasChild             = True;
-        
-        $treeNotes = $this->xmlrequest->xpath('//treeNotes');
-        if (isset($treeNotes[0]->treeNote[0]))
-        {
-            foreach($treeNotes[0] as $item)
-            {
-                array_push($this->treeNoteArray, $item['id']);
-            }
-        }
-        else
-        {
-            $this->treeNoteArray = array('empty');
-        }
-    }
-}
-
-class specimenParameters extends parameters
-{
-    var $id                            = NULL;
-    var $treeID                        = NULL;
-    var $name                          = NULL;
-    var $dateCollected                 = NULL;
-    var $specimenType                  = NULL;
-    var $terminalRing                  = NULL;
-    var $sapwoodCount                  = NULL;
-    var $specimenQuality               = NULL;
-    var $specimenContinuity            = NULL;
-    var $pith                          = NULL;
-    var $unmeasuredPre                 = NULL;
-    var $unmeasuredPost                = NULL;
-    var $isTerminalRingVerified        = NULL;
-    var $isSapwoodCountVerified        = NULL;
-    var $isSpecimenQualityVerified     = NULL;
-    var $isSpecimenContinuityVerified  = NULL;
-    var $isPithVerified                = NULL;
-    var $isUnmeasuredPreVerified       = NULL;
-    var $isUnmeasuredPostVerified      = NULL;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->treeID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                          $this->id                               = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->name))                          $this->name                             = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->dateCollected))                 $this->dateCollected                    = addslashes($this->xmlrequest->dateCollected);
-        if(isset($this->xmlrequest->specimenType))                  $this->specimenType                     = addslashes($this->xmlrequest->specimenType);
-        if(isset($this->xmlrequest->terminalRing))                  $this->terminalRing                     = addslashes($this->xmlrequest->terminalRing);
-        if(isset($this->xmlrequest->sapwoodCount))                  $this->sapwoodCount                     = (int)      $this->xmlrequest->sapwoodCount;
-        if(isset($this->xmlrequest->specimenQuality))               $this->specimenQuality                  = addslashes($this->xmlrequest->specimenQuality);
-        if(isset($this->xmlrequest->specimenContinuity))            $this->specimenContinuity               = addslashes($this->xmlrequest->specimenContinuity);
-        if(isset($this->xmlrequest->pith))                          $this->pith                             = addslashes($this->xmlrequest->pith);
-        if(isset($this->xmlrequest->unmeasuredPre))                 $this->unmeasuredPre                    = (int)      $this->xmlrequest->unmeasuredPre;
-        if(isset($this->xmlrequest->unmeasuredPost))                $this->unmeasuredPost                   = (int)      $this->xmlrequest->unmeasuredPost;
-        if(isset($this->xmlrequest->isTerminalRingVerified))        $this->isTerminalRingVerified           = fromStringtoPHPBool(   $this->xmlrequest->isTerminalRingVerified);
-        if(isset($this->xmlrequest->isSapwoodCountVerified))        $this->isSapwoodCountVerified           = fromStringtoPHPBool(   $this->xmlrequest->isSapwoodCountVerified);
-        if(isset($this->xmlrequest->isSpecimenQualityVerified))     $this->isSpecimenQualityVerified        = fromStringtoPHPBool(   $this->xmlrequest->isSpecimenQualityVerified);
-        if(isset($this->xmlrequest->isSpecimenContinuityVerified))  $this->isSpecimenContinuityVerified     = fromStringtoPHPBool(   $this->xmlrequest->isSpecimenContinuityVerified);
-        if(isset($this->xmlrequest->isPithVerified))                $this->isPithVerified                   = fromStringtoPHPBool(   $this->xmlrequest->isPithVerified);
-        if(isset($this->xmlrequest->isUnmeasuredPreVerified))       $this->isUnmeasuredPreVerified          = fromStringtoPHPBool(   $this->xmlrequest->isUnmeasuredPreVerified);
-        if(isset($this->xmlrequest->isUnmeasuredPostVerified))      $this->isUnmeasuredPostVerified         = fromStringtoPHPBool(   $this->xmlrequest->isUnmeasuredPostVerified);
-        if(isset($this->xmlrequest->radius))                        $this->hasChild                         = True;
-    }
-}
-
-class radiusParameters extends parameters
-{
-    var $id         = NULL;
-    var $name       = NULL;
-    var $specimenID = NULL;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->specimenID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->name))                  $this->name         = addslashes($this->xmlrequest->name);
-        if(isset($this->xmlrequest->measurement))           $this->hasChild     = True;
-    }
-}
-
-
-
-class measurementParameters extends parameters
-{
-    var $id                     = NULL;
-    var $radiusID               = NULL;
-    var $startYear              = NULL;
-    var $measuredByID           = NULL;  
-    var $ownerUserID            = NULL;
-    var $datingTypeID           = NULL;
-    var $datingType             = NULL;
-    var $datingErrorPositive    = NULL;
-    var $datingErrorNegative    = NULL;
-    var $name                   = NULL;
-    var $description            = NULL;  
-    var $isLegacyCleaned        = NULL;
-    var $isReconciled           = NULL;
-    var $isPublished            = NULL;
-    var $vmeasurementOp         = NULL;
-    var $vmeasurementOpParam    = NULL;
-    var $readingsType           = NULL;
-    var $readingsUnits          = NULL;
-    var $readingsArray          = array();
-    var $referencesArray        = array();
-    var $measurementNoteArray   = array();
-    var $masterVMeasurementID   = NULL;
-    var $certaintyLevel         = NULL;
-    var $justification          = NULL;
-    var $newStartYear           = NULL;
-
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->radiusID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                                          $this->id                    = (int)                $this->xmlrequest['id'];
-        if(isset($this->xmlrequest->metadata->measuredBy['id']))                    $this->measuredByID          = (int)                $this->xmlrequest->metadata->measuredBy['id'];
-        if(isset($this->xmlrequest->metadata->owner['id']))                         $this->ownerUserID           = (int)                $this->xmlrequest->metadata->owner['id'];
-        //if(isset($this->xmlrequest->metadata->datingTypeID))                      $this->datingTypeID          = addslashes(          $this->xmlrequest->metadata->datingTypeID);
-        if(isset($this->xmlrequest->metadata->dating['startYear']))                 $this->startYear             = (int)                $this->xmlrequest->metadata->dating['startYear'];
-        if(isset($this->xmlrequest->metadata->dating['type']))                      $this->datingType            = addslashes(          $this->xmlrequest->metadata->dating['type']);
-        if(isset($this->xmlrequest->metadata->dating['positiveError']))             $this->datingErrorPositive   = (int)                $this->xmlrequest->metadata->dating['positiveError'];
-        if(isset($this->xmlrequest->metadata->dating['negativeError']))             $this->datingErrorNegative   = (int)                $this->xmlrequest->metadata->dating['negativeError'];
-        if(isset($this->xmlrequest->metadata->name))                                $this->name                  = addslashes(          $this->xmlrequest->metadata->name);
-        if(isset($this->xmlrequest->metadata->description))                         $this->description           = addslashes(          $this->xmlrequest->metadata->description);
-        if(isset($this->xmlrequest->metadata->isLegacyCleaned))                     $this->isLegacyCleaned       = fromStringtoPHPBool( $this->xmlrequest->metadata->isLegacyCleaned);
-        if(isset($this->xmlrequest->metadata->isReconciled))                        $this->isReconciled          = fromStringtoPHPBool( $this->xmlrequest->metadata->isReconciled);
-        if(isset($this->xmlrequest->metadata->isPublished))                         $this->isPublished           = fromStringtoPHPBool( $this->xmlrequest->metadata->isPublished);
-        if(isset($this->xmlrequest->readings['type']))                              $this->readingsType          = addslashes(          $this->xmlrequest->readings['type']);
-        if(isset($this->xmlrequest->readings['units']))                             $this->readingsUnits         = (int)                $this->xmlrequest->readings['units'];
-        if(isset($this->xmlrequest->metadata->operation))                           $this->vmeasurementOp        = addslashes(          $this->xmlrequest->metadata->operation);
-        if(isset($this->xmlrequest->metadata->operation['parameter']))              $this->vmeasurementOpParam   = addslashes(          $this->xmlrequest->metadata->operation['parameter']);
-        if(isset($this->xmlrequest->metadata->crossdate->basedOn->measurement['id']))       
-                                                                                    $this->masterVMeasurementID  = (int)                $this->xmlrequest->metadata->crossdate->basedOn->measurement['id'];
-        if(isset($this->xmlrequest->metadata->crossdate->startYear))                $this->startYear             = (int)                $this->xmlrequest->metadata->crossdate->startYear;
-        if(isset($this->xmlrequest->metadata->crossdate->certaintyLevel))           $this->certaintyLevel        = (int)                $this->xmlrequest->metadata->crossdate->certaintyLevel;
-        if(isset($this->xmlrequest->metadata->crossdate->justification))            $this->justification         = addslashes(          $this->xmlrequest->metadata->crossdate->justification);
-        if(isset($this->xmlrequest->metadata->crossdate->startYear))                $this->newStartYear          = (int)                $this->xmlrequest->metadata->crossdate->startYear;
-
-        
-        foreach($this->xmlrequest->xpath('//references/measurement') as $refmeasurement)
-        {
-            if($refmeasurement['id']) array_push($this->referencesArray, $refmeasurement['id']);
-        }
-        
-        $theYear =-1;
-        foreach($this->xmlrequest->xpath('//readings/reading') as $reading)
-        {
-            if ($reading['year']!=NULL) 
-            {
-                // If the XML includes a year attribute use it
-                $theYear = (int) $reading['year'];
-            }
-            else
-            {
-                // Otherwise use relative years - base 0
-                $theYear++; 
-            }
-
-            $theValue = (int) $reading['value'];
-            $this->readingsArray[$theYear] = array('reading' => $theValue, 'wjinc' => NULL, 'wjdec' => NULL, 'count' => 1, 'notesArray' => array());
-                
-            if(isset($reading->readingNote))
-            {
-                foreach($reading->readingNote as $readingNote)
-                {
-                    array_push($this->readingsArray[$theYear], (int) $readingNote['id']); 
-                }
-
-            }
-
-        }
-        
-        $measurementNotes = $this->xmlrequest->xpath('//measurementNotes');
-        if (isset($measurementNotes[0]->measurementNote[0]))
-        {
-            foreach($measurmentNotes[0] as $item)
-            {
-                array_push($this->measurementNoteArray, $item['id']);
-            }
-        }
-        else
-        {
-            $this->measurementNoteArray = array('empty');
-        }
-    }
-}
-
-class taxonParameters extends parameters
-{
-    // TO DO!!!
-    var $id         = NULL;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
-        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
-    }
-}
-
-class siteNoteParameters extends parameters
-{
-    var $id         = NULL;
-    var $note       = NULL;
-    var $isStandard = FALSE;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
-        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
-    }
-}
-
-class treeNoteParameters extends parameters
-{
-    var $id         = null;
-    var $note       = null;
-    var $isStandard = false;
-
-    function __construct($metaheader, $auth, $xmlrequest, $parentid=null)
-    {
-        parent::__construct($metaheader, $auth, $xmlrequest);
-    }
-    
-    function getxmlparams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
-        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
-    }
-}
-
-class vmeasurementNoteParameters extends parameters
-{
-    var $id         = NULL;
-    var $note       = NULL;
-    var $isStandard = FALSE;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
-        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
-    }
-}
-
-class readingNoteParameters extends parameters
-{
-    var $id         = NULL;
-    var $note       = NULL;
-    var $isStandard = FALSE;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))                  $this->id           = (int)      $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isStandard']))          $this->isStandard   = fromStringToPHPBool($this->xmlrequest['isStandard']);
-        if(isset($this->xmlrequest))                        $this->note         = addslashes(trim($this->xmlrequest));
-    }
-}
-
-class dictionariesParameters extends parameters
-{   
-    var $id = NULL;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-
-    function getXMLParams()
-    {
-    }
-}
-
-class authenticationParameters extends parameters
-{
-    var $username     = NULL;
-    var $snonce       = NULL;
-    var $cnonce       = NULL;
-    var $seq          = NULL;
-    var $hash         = NULL;
-    var $password     = NULL;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        $this->radiusID = $parentID;
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest[0]['username']))                  $this->username                    = addslashes($this->xmlrequest[0]['username']);
-        if(isset($this->xmlrequest[0]['password']))                  $this->password                    = addslashes($this->xmlrequest[0]['password']);
-        if(isset($this->xmlrequest[0]['cnonce']))                    $this->cnonce                      = addslashes($this->xmlrequest[0]['cnonce']);
-        if(isset($this->xmlrequest[0]['snonce']))                    $this->snonce                      = addslashes($this->xmlrequest[0]['snonce']);
-        if(isset($this->xmlrequest[0]['hash']))                      $this->hash                        = addslashes($this->xmlrequest[0]['hash']);
-        if(isset($this->xmlrequest[0]['seq']))                       $this->seq                         = addslashes($this->xmlrequest[0]['seq']);
-    }
-}
 
 class securityUserParameters extends parameters
 {
@@ -517,149 +1413,7 @@ class securityGroupParameters extends parameters
     }
 
 }
-
-class searchParameters extends parameters
-{
-    var $returnObject            = NULL;
-    var $limit                   = NULL;
-    var $skip                    = NULL;
-    var $allData                 = FALSE;
-    var $siteParamsArray         = array();
-    var $subSiteParamsArray      = array();
-    var $treeParamsArray         = array();
-    var $specimenParamsArray     = array();
-    var $radiusParamsArray       = array();
-    var $measurementParamsArray  = array();
-    var $vmeasurementParamsArray  = array();
-    var $vmeasurementResultParamsArray  = array();
-    var $vmeasurementMetaCacheParamsArray  = array();
+*/
 
 
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-
-    function getXMLParams()
-    {
-        if($this->xmlrequest['returnObject'])  $this->returnObject  = addslashes ( $this->xmlrequest['returnObject']);
-        if($this->xmlrequest['limit'])         $this->limit         = (int) $this->xmlrequest['limit'];
-        if($this->xmlrequest['skip'])          $this->skip          = (int) $this->xmlrequest['skip'];
-        if(isset($this->xmlrequest->all))      $this->allData       = TRUE;
-                        
-        foreach($this->xmlrequest->xpath('//param') as $param)
-        {
-            // Site Parameters
-            if    ( ($param['name'] == 'siteid') || 
-                    ($param['name'] == 'sitename') || 
-                    ($param['name'] == 'sitecode') || 
-                    ($param['name'] == 'sitecreated') || 
-                    ($param['name'] == 'sitexcentroid') || 
-                    ($param['name'] == 'siteycentroid') || 
-                    ($param['name'] == 'sitelastmodified') )
-            {
-                array_push($this->siteParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            }
-
-            // Subsite Parameters
-            elseif( ($param['name'] == 'subsiteid') || 
-                    ($param['name'] == 'subsitename') || 
-                    ($param['name'] == 'subsitecreated') || 
-                    ($param['name'] == 'subsitelastmodified'))
-            {
-                array_push($this->subSiteParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
-            }
-
-            // Tree Parameters
-            elseif( ($param['name'] == 'treeid') || 
-                    ($param['name'] == 'treename') || 
-                    ($param['name'] == 'originaltaxonname') || 
-                    ($param['name'] == 'treecreated') || 
-                    ($param['name'] == 'treelastmodified') || 
-                    ($param['name'] == 'precision') || 
-                    ($param['name'] == 'islivetree') || 
-                    ($param['name'] == 'latitude') || 
-                    ($param['name'] == 'longitude'))
-            {
-                array_push($this->treeParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
-            }  
-
-            // Specimen parameters
-            elseif( ($param['name'] == 'specimenid') || 
-                    ($param['name'] == 'specimenname') || 
-                    ($param['name'] == 'datecollected') || 
-                    ($param['name'] == 'specimencreated') || 
-                    ($param['name'] == 'specimenlastmodified') || 
-                    ($param['name'] == 'specimentypeid') || 
-                    ($param['name'] == 'specimentype') || 
-                    ($param['name'] == 'isterminalringverified') || 
-                    ($param['name'] == 'sapwoodcount') || 
-                    ($param['name'] == 'issapwoodcountverified') || 
-                    ($param['name'] == 'isspecimenqualityverified') || 
-                    ($param['name'] == 'ispithverified') || 
-                    ($param['name'] == 'unmeaspre') || 
-                    ($param['name'] == 'unmeaspost') || 
-                    ($param['name'] == 'isunmeaspreverified') || 
-                    ($param['name'] == 'isunmeaspostverified') || 
-                    ($param['name'] == 'terminalringid') || 
-                    ($param['name'] == 'terminalring') || 
-                    ($param['name'] == 'specimenqualityid') || 
-                    ($param['name'] == 'specimenquality') || 
-                    ($param['name'] == 'specimencontinuityid') || 
-                    ($param['name'] == 'specimencontinuity') || 
-                    ($param['name'] == 'pithid') || 
-                    ($param['name'] == 'pith') || 
-                    ($param['name'] == 'isspecimencontinuityverified'))
-            {
-                array_push($this->specimenParamsArray, array ('name' => addslashes($param['name']), 'operator' => $param['operator'], 'value' => addslashes($param['value'])));
-            }
-
-            // Radius parameters
-            elseif( ($param['name'] == 'radiusid') || 
-                    ($param['name'] == 'radiusname') || 
-                    ($param['name'] == 'radiuscreated') || 
-                    ($param['name'] == 'radiuslastmodified'))
-            {
-                array_push($this->radiusParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            }
-
-            // Measurement Parameters
-            elseif( ($param['name'] == 'measurementname') || 
-                    ($param['name'] == 'measurementoperator') || 
-                    ($param['name'] == 'measurementdescription') || 
-                    ($param['name'] == 'measurementispublished') || 
-                    ($param['name'] == 'measurementowneruserid') || 
-                    ($param['name'] == 'measurementcreated') || 
-                    ($param['name'] == 'operatorparameter') || 
-                    ($param['name'] == 'measurementlastmodified'))
-            {
-                array_push($this->vmeasurementParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            }
-            elseif( ($param['name'] == 'measurementid') )
-            {
-                array_push($this->vmeasurementParamsArray, array ('name' => addslashes('vmeasurementid'), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            } 
-            elseif( ($param['name'] == 'measurementisreconciled') || 
-                    ($param['name'] == 'datingtype') || 
-                    ($param['name'] == 'datingerrornegative') || 
-                    ($param['name'] == 'datingerrorpositive'))
-            {
-                array_push($this->measurementParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            }
-            elseif( ($param['name'] == 'startyear') || 
-                    ($param['name'] == 'readingcount') || 
-                    ($param['name'] == 'measurementcount') || 
-                    ($param['name'] == 'measurementymin') || 
-                    ($param['name'] == 'measurementymax') || 
-                    ($param['name'] == 'measurementxmin') || 
-                    ($param['name'] == 'measurementxmax') || 
-                    ($param['name'] == 'measurementxcentroid') || 
-                    ($param['name'] == 'measurementycentroid'))
-            {
-                array_push($this->vmeasurementMetaCacheParamsArray, array ('name' => addslashes($param['name']), 'operator' => addslashes($param['operator']), 'value' => addslashes($param['value'])));
-            }
-
-        }
-    }
-}
 ?>

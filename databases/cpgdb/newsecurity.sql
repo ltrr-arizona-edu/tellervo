@@ -1,3 +1,156 @@
+CREATE OR REPLACE FUNCTION cpgdb.GetGroupPermissionSet(_groupIDs integer[], _permtype varchar, _pid uuid) 
+RETURNS typPermissionSet AS $$
+DECLARE
+   query varchar;
+   whereClause varchar;
+   --i integer;
+   objid uuid;
+   res refcursor;
+   perm varchar;
+   vstype varchar;
+   perms typPermissionSet;
+   childPerms typPermissionSet;
+   setSize integer;
+
+   stypes varchar[] := array['vmeasurement','element','object','default'];
+BEGIN
+
+   --RAISE NOTICE 'Starting getgrouppermissionset()';
+
+   -- Invalid type specified?
+   IF NOT (_permtype = ANY(stypes)) THEN
+      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, element, object, default (case matters!).', _permtype;
+   END IF;
+
+   -- Build our query
+   IF _permtype = 'default' THEN
+      whereClause := '';
+   ELSE
+      whereClause := ' WHERE ' || _permType || 'Id = ' ||  '''' || _pid ||'''' ;
+   END IF;
+   
+   query := 'SELECT DISTINCT perm.name FROM tblSecurity' || _permType || ' obj ' ||
+            'INNER JOIN ArrayToRows(ARRAY[' || array_to_string(_groupIDs, ',') || ']) AS membership ON obj.securityGroupID = membership ' ||
+            'INNER JOIN tlkpSecurityPermission perm ON perm.securityPermissionID = obj.securityPermissionID' || whereClause;
+
+
+
+   --RAISE NOTICE 'secQuery: % for %', _permtype, _pid;
+
+   -- Open the query, and execute to see if we get any results
+   OPEN res FOR EXECUTE query;
+   FETCH res INTO perm;
+
+   -- No results?
+   IF NOT FOUND THEN
+      CLOSE res;
+      
+      IF _permtype = 'vmeasurement' THEN
+         -- This obnoxious query joins direct vss to elements, so we don't have to do another query
+         SELECT op.Name,tr.ElementID INTO vstype,objid FROM tblVMeasurement vs 
+            INNER JOIN tlkpVMeasurementOp op ON vs.VMeasurementOpID = op.VMeasurementOpID
+            LEFT JOIN tblMeasurement t1 ON vs.MeasurementID = t1.MeasurementID 
+            LEFT JOIN tblRadius t2 ON t2.RadiusID = t1.RadiusID 
+            LEFT JOIN tblSample t3 on t3.SampleID = t2.SampleID 
+            LEFT JOIN tblElement tr ON tr.ElementID = t3.ElementID
+            WHERE vs.VMeasurementID =   _pid  ;
+
+         IF NOT FOUND THEN
+            RAISE EXCEPTION 'Could not determine security: vmeasurement % -> element does not exist', _pid;
+         END IF;
+
+         IF vstype = 'Direct' THEN
+            -- We hit a direct VMeasurement. Move down to element...
+            perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'element', objid);
+	    RETURN perms;
+         ELSE
+            -- Start with a completely empty permission set
+            setSize := 0;
+
+            -- For each child VMeasurement, AND our sets together...
+            FOR objid IN SELECT MemberVMeasurementID FROM tblVMeasurementGroup WHERE VMeasurementID = '''' || _pid ||'''' LOOP
+               childPerms := cpgdb.GetGroupPermissionSet(_groupIDs, 'vmeasurement', objid);
+
+               -- Start out with our first childperms; continue with anding them.               
+               IF setSize = 0 THEN
+                  perms := childperms;
+               ELSE
+                  perms := cpgdb.AndPermissionSets(perms, childPerms);
+               END IF;
+
+               setSize := setSize + 1;
+               
+            END LOOP;
+            RETURN perms;
+         END IF;
+         
+      ELSIF _permType = 'element' THEN
+         -- Get the objectID of this element
+         SELECT tblelement.objectID INTO objid FROM tblElement
+                WHERE tblElement.elementid = _pid;
+
+         IF NOT FOUND THEN
+            RAISE EXCEPTION 'Could not determine security: element % -> object does not exist', _pid;
+         END IF;
+         
+         perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'object', objid);
+         RETURN perms;
+         
+      ELSIF _permType = 'object' THEN
+         -- Get default permissions
+         perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'default', 0);
+         RETURN perms;
+
+      ELSE
+	 -- No defaults?!?! Ahh!
+	 perms.denied := true;
+	 perms.canRead := false;
+	 perms.canDelete := false;
+	 perms.canUpdate := false;
+	 perms.canCreate := false;
+	 perms.decidedBy := 'No defaults';
+	 RETURN perms;
+
+      END IF;
+
+   -- Results found?
+   ELSE
+      -- initialize our perms...
+      perms.decidedBy := _permType || ' ' || _pid;
+      perms.denied := false;
+      perms.canRead := false;
+      perms.canDelete := false;
+      perms.canUpdate := false;
+      perms.canCreate := false;
+
+      LOOP
+         IF perm = 'No permission' THEN
+ 	    perms.denied = true;
+         ELSIF perm = 'Read' THEN
+            perms.canRead := true;
+         ELSIF perm = 'Create' THEN
+            perms.canCreate := true;
+         ELSIF perm = 'Update' THEN
+            perms.canUpdate := true;
+         ELSIF perm = 'Delete' THEN
+            perms.canDelete := true;
+         END IF; 
+
+         -- Get the next permission
+         FETCH res INTO perm;
+
+         IF NOT FOUND THEN
+            EXIT; -- at the end of our permission list
+         END IF;
+      END LOOP;
+   END IF;
+   
+   -- Close the query and return permissions
+   CLOSE res;
+   RETURN perms;
+END;
+$$ LANGUAGE PLPGSQL VOLATILE;
+
 CREATE OR REPLACE FUNCTION cpgdb.AndPermissionSets(origset typPermissionSet, newset typPermissionSet) 
 RETURNS typPermissionSet AS $$
 DECLARE
@@ -36,15 +189,15 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 -- 1 = array of groups
--- 2 = type (vmeasurement, tree, site, default)
--- 3 = id (VMeasurementID, TreeID, SiteID, or 0 for default)
-CREATE OR REPLACE FUNCTION cpgdb.GetGroupPermissionSet(_groupIDs integer[], _permtype varchar, _pid integer) 
+-- 2 = type (vmeasurement, element, object, default)
+-- 3 = id (VMeasurementID, ElementID, ObjectID, or 0 for default)
+CREATE OR REPLACE FUNCTION cpgdb.GetGroupPermissionSet(_groupIDs integer[], _permtype varchar, _pid uuid) 
 RETURNS typPermissionSet AS $$
 DECLARE
    query varchar;
    whereClause varchar;
    --i integer;
-   objid integer;
+   objid uuid;
    res refcursor;
    perm varchar;
    vstype varchar;
@@ -52,18 +205,21 @@ DECLARE
    childPerms typPermissionSet;
    setSize integer;
 
-   stypes varchar[] := array['vmeasurement','tree','site','default'];
+   stypes varchar[] := array['vmeasurement','element','object','default'];
 BEGIN
+
+   --RAISE NOTICE 'Starting getgrouppermissionset()';
+
    -- Invalid type specified?
    IF NOT (_permtype = ANY(stypes)) THEN
-      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, tree, site, default (case matters!).', _permtype;
+      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, element, object, default (case matters!).', _permtype;
    END IF;
 
    -- Build our query
    IF _permtype = 'default' THEN
       whereClause := '';
    ELSE
-      whereClause := ' WHERE ' || _permType || 'Id = ' || _pid;
+      whereClause := ' WHERE ' || _permType || 'Id = ' ||  '''' || _pid ||'''' ;
    END IF;
    
    query := 'SELECT DISTINCT perm.name FROM tblSecurity' || _permType || ' obj ' ||
@@ -81,29 +237,29 @@ BEGIN
       CLOSE res;
       
       IF _permtype = 'vmeasurement' THEN
-         -- This obnoxious query joins direct vss to trees, so we don't have to do another query
-         SELECT op.Name,tr.TreeID INTO vstype,objid FROM tblVMeasurement vs 
+         -- This obnoxious query joins direct vss to elements, so we don't have to do another query
+         SELECT op.Name,tr.ElementID INTO vstype,objid FROM tblVMeasurement vs 
             INNER JOIN tlkpVMeasurementOp op ON vs.VMeasurementOpID = op.VMeasurementOpID
             LEFT JOIN tblMeasurement t1 ON vs.MeasurementID = t1.MeasurementID 
             LEFT JOIN tblRadius t2 ON t2.RadiusID = t1.RadiusID 
-            LEFT JOIN tblSpecimen t3 on t3.SpecimenID = t2.SpecimenID 
-            LEFT JOIN tblTree tr ON tr.TreeID = t3.TreeID
-            WHERE vs.VMeasurementID = _pid;
+            LEFT JOIN tblSample t3 on t3.SampleID = t2.SampleID 
+            LEFT JOIN tblElement tr ON tr.ElementID = t3.ElementID
+            WHERE vs.VMeasurementID =   _pid  ;
 
          IF NOT FOUND THEN
-            RAISE EXCEPTION 'Could not determine security: vmeasurement % -> tree does not exist', _pid;
+            RAISE EXCEPTION 'Could not determine security: vmeasurement % -> element does not exist', _pid;
          END IF;
 
          IF vstype = 'Direct' THEN
-            -- We hit a direct VMeasurement. Move down to tree...
-            perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'tree', objid);
+            -- We hit a direct VMeasurement. Move down to element...
+            perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'element', objid);
 	    RETURN perms;
          ELSE
             -- Start with a completely empty permission set
             setSize := 0;
 
             -- For each child VMeasurement, AND our sets together...
-            FOR objid IN SELECT MemberVMeasurementID FROM tblVMeasurementGroup WHERE VMeasurementID = _pid LOOP
+            FOR objid IN SELECT MemberVMeasurementID FROM tblVMeasurementGroup WHERE VMeasurementID = '''' || _pid ||'''' LOOP
                childPerms := cpgdb.GetGroupPermissionSet(_groupIDs, 'vmeasurement', objid);
 
                -- Start out with our first childperms; continue with anding them.               
@@ -119,20 +275,19 @@ BEGIN
             RETURN perms;
          END IF;
          
-      ELSIF _permType = 'tree' THEN
-         -- Get the siteID of this tree
-         SELECT tblSubsite.siteID INTO objid FROM tblTree, tblSubsite
-                WHERE tblTree.subsiteID=tblSubsite.SubsiteID
-                AND tblTree.treeid = _pid;
+      ELSIF _permType = 'element' THEN
+         -- Get the objectID of this element
+         SELECT tblelement.objectID INTO objid FROM tblElement
+                WHERE tblElement.elementid = _pid;
 
          IF NOT FOUND THEN
-            RAISE EXCEPTION 'Could not determine security: tree % -> site does not exist', _pid;
+            RAISE EXCEPTION 'Could not determine security: element % -> object does not exist', _pid;
          END IF;
          
-         perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'site', objid);
+         perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'object', objid);
          RETURN perms;
          
-      ELSIF _permType = 'site' THEN
+      ELSIF _permType = 'object' THEN
          -- Get default permissions
          perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'default', 0);
          RETURN perms;
@@ -248,9 +403,9 @@ RETURNS integer[] AS $$
 $$ LANGUAGE SQL IMMUTABLE;
 
 -- 1 = securityUserID
--- 2 = type (VMeasurement, Tree, Site, Default)
--- 3 = id (VMeasurementID, TreeID, SiteID, or 0 for default)
-CREATE OR REPLACE FUNCTION cpgdb.GetUserPermissionSet(integer, varchar, integer) 
+-- 2 = type (VMeasurement, Element, Object, Default)
+-- 3 = id (VMeasurementID, ElementID, ObjectID, or 0 for default)
+CREATE OR REPLACE FUNCTION cpgdb.GetUserPermissionSet(integer, varchar, uuid) 
 RETURNS typPermissionSet AS $$
 DECLARE
    _securityUserID ALIAS FOR $1;
@@ -260,6 +415,8 @@ DECLARE
    groupMembership int[];
    perms typPermissionSet;
 BEGIN
+   --RAISE NOTICE 'Starting getuserpermissionset()';
+
    -- Get an array list of all groups this user is a member of
    SELECT * INTO groupMembership FROM cpgdb.GetGroupMembershipArray($1);
 
@@ -284,7 +441,7 @@ BEGIN
    END IF;
 
    -- Ok, we've cached the groups, then... go ahead and ask there.
-   perms := cpgdb.GetGroupPermissionSet(groupMembership, _ptype, _pid);
+   perms := cpgdb.GetGroupPermissionSet(groupMembership, _ptype, _pid::uuid);
    RETURN perms;
 END;
 $$ LANGUAGE PLPGSQL;

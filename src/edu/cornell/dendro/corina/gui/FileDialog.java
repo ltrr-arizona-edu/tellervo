@@ -36,6 +36,7 @@ import javax.swing.filechooser.FileFilter;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**
@@ -87,7 +88,7 @@ public class FileDialog {
 		// (don't instantiate me)
 	}
 
-	private static class ExtensionFilter extends FileFilter {
+	public static class ExtensionFilter extends FileFilter {
 		private String TLA, tla;
 
 		private String name;
@@ -102,7 +103,7 @@ public class FileDialog {
 		public ExtensionFilter(String tla, String name) {
 			this.tla = tla.toLowerCase();
 			this.TLA = tla.toUpperCase();
-			this.name = name + " (*." + this.TLA + ")";
+			this.name = name + " (*." + this.tla + ")";
 		}
 
 		/**
@@ -135,14 +136,12 @@ public class FileDialog {
 	/**
 	 * The default list of filters to use, as a list of extensions.
 	 */
-	public static String FILTERS[] = new String[] { "raw", "sum", "rec", "ind",
-			"cln", "trn", };
+	public static String FILTERS[] = new String[] { "fh", "m", "txt", "d", "rwl", "tuc"};
 
 	// add all default filters to this target, and then reset to default (*.*)
 	private static void addFilters(JFileChooser f) {
 		for (int i = 0; i < FILTERS.length; i++)
-			f.addChoosableFileFilter(new ExtensionFilter(FILTERS[i], I18n
-					.getText("." + FILTERS[i])));
+			f.addChoosableFileFilter(new ExtensionFilter(FILTERS[i], I18n.getText("format.extentions."+ FILTERS[i])));
 		// REFACTOR: should only need to pass FILTERS[i] to constructor here
 		f.setFileFilter(f.getAcceptAllFileFilter());
 	}
@@ -247,13 +246,23 @@ public class FileDialog {
 	public static String showSingle(String prompt) throws UserCancelledException {
 		return showSingle(prompt, getWorkingDirectory("general"), "general");
 	}
+
+	public static String showSingle(String title, String prompt) throws UserCancelledException {
+		return showSingle(title, prompt, getWorkingDirectory("general"), "general");
+	}
+	
+	public static String showSingle(String prompt, String workingDirectory, String function) throws UserCancelledException {
+		return showSingle(prompt, prompt, workingDirectory, function);
+	}
 	
 	/**
 	 * Show a file selection dialog. This allows the user to select one file. It
 	 * shows a preview component, and has the default filters available.
 	 * 
-	 * @param prompt
-	 *          the text string to use for both the title bar and approve button
+	 * @param buttonText
+	 *          the text to show in the approve button
+	 * @param title
+	 *          the text to show in the title bar
 	 * @param workingDirectory
 	 *          the directory to start in
 	 * @param function
@@ -263,10 +272,13 @@ public class FileDialog {
 	 * @exception UserCancelledException
 	 *              if the user cancelled
 	 */
-	public static String showSingle(String prompt, String workingDirectory, String function)
+	public static String showSingle(String buttonText, String title, String workingDirectory, String function)
 			throws UserCancelledException {
+		
+             
 		// create chooser
 		JFileChooser f = new JFileChooser();
+	
 		
 		// add filters
 		addFilters(f);
@@ -290,9 +302,14 @@ public class FileDialog {
 		else		
 			f.setCurrentDirectory(workFile);
 		
+		
+		// set up some dialog UI properties
+		//f.setApproveButtonText(buttonText);
+		f.setDialogTitle(title);
+		
 		// show the dialog
-		int result = f.showDialog(null, prompt);
-
+		int result = f.showDialog(null, buttonText);
+		
 		try {
 			if (result == JFileChooser.APPROVE_OPTION) {
 				// ok: store wd, and return file

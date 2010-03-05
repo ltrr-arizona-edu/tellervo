@@ -22,28 +22,38 @@ package edu.cornell.dendro.corina.sample;
 
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
+import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.io.Files;
-import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.graph.Graphable;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.tridasv2.support.TridasRingWidthWrapper;
+import edu.cornell.dendro.corina.tridasv2.support.TridasWeiserjahreWrapper;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import edu.cornell.dendro.corina_indexing.Indexable;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Vector;
 import java.util.HashMap;
 
 import java.lang.reflect.Method;
-import java.net.URI;
 
 import javax.swing.undo.*;
+
+import org.tridas.interfaces.ITridasDerivedSeries;
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.NormalTridasUnit;
+import org.tridas.schema.NormalTridasVariable;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasRemark;
+import org.tridas.schema.TridasUnit;
+import org.tridas.schema.TridasUnitless;
+import org.tridas.schema.TridasValue;
+import org.tridas.schema.TridasValues;
+import org.tridas.schema.TridasVariable;
 
 /**
    Class representing a reading of a dendro sample.
@@ -65,6 +75,7 @@ import javax.swing.undo.*;
 // the same object.  better yet, an editor factory so a second
 // editor(sample) bringstofront the existing editor.
 
+@SuppressWarnings("serial")
 public class Sample extends BaseSample implements Previewable, Graphable, Indexable {
 
 	private static class SamplePreview extends Preview {
@@ -95,38 +106,34 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		}
 	}
 
-	/** The value of a missing ring, 2.  Anything less than or equal
+	/** The value of a missing ring, 0.  Anything less than or equal
 	 to this value is considered a MR. */
-	public static final int MR = 2;
+	public static final int MR = 0;
 
-	private boolean metadataChanged = true;
-	
 	// copy each part of source to target.  shallow copy, no events, etc.
 	// used only by editor (paste) -- bad interface!
 	public static void copy(Sample source, Sample target) {
 		// copy our base data
 		BaseSample.copy(source, target);
-		
-		target.data = source.data;
-		target.count = source.count;
-		target.incr = source.incr;
-		target.decr = source.decr;
+
+		target.ringwidths = source.ringwidths;
+		target.weiserjahre = source.weiserjahre;
 		target.elements = source.elements;
+
+		// rebuild the target's tables
+		target.setSeries(target.getSeries(), false);
 	}
+	
+	private boolean metadataChanged = true;
 		
-	/** Data, as a List of Integers. 
+	/** 
+	 * Data, as a List of Integers. 
 	 * It's not that easy, though;
 	 * We put floats in here occasionally, as well as strings.
 	 */
-	private List<Object> data;
+	private TridasRingWidthWrapper ringwidths;
+	private TridasWeiserjahreWrapper weiserjahre;
 		
-	/** Number of samples in the sum at any given point. */
-	private List<Integer> count = null;
-	
-	// weiserjahre
-	private List<Integer> decr = null;
-	private List<Integer> incr = null;
-	
 	/** Elements (in a List) that were put into this sum. */
 	private ElementList elements = null;
 	
@@ -142,6 +149,12 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/* FUTURE: */
 	private UndoableEditSupport undoSupport = new UndoableEditSupport();
 
+	/** A map from Tridas variable (RING_WIDTH, etc) to values */
+	private EnumMap<NormalTridasVariable, TridasValues> tridasValuesMap;
+	
+	/** A slower hashmap from Standard/Name to values */
+	private HashMap<TridasVariable, TridasValues> otherValuesMap;
+	
 	/** Default constructor.  Defaults:
 	 <ul>
 	 <li><code>data</code> and <code>count</code> are initialized but empty
@@ -157,41 +170,192 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 </ul>
 	 @see #meta */
 	public Sample() {
-		super();
+		super(new TridasMeasurementSeries());
+		initialize();
 		
-		// make defaults: empty
-		data = new ArrayList<Object>();
+		// initialize empty metadata with defaults?
+		setMeta("title", I18n.getText("general.untitled"));
 
 		// store username, if known
 		if (System.getProperty("user.name") != null)
 			setMeta("author", System.getProperty("user.name"));
-
-		// initialize empty metadata with defaults?
-		setMeta("title", I18n.getText("Untitled"));
+		
+		setSeries(getSeries(), false);
 
 		// metadata NOT changed
 		metadataChanged = false;
 	}
-
-	/**
-	 * Creates a new sample from a file on disk
-	 * @param filename
-	 * @throws IOException
-	 * 
-	 * @deprecated use Sample(URI) instead!
-	 */
-	private Sample(String filename) throws IOException {
-		// new @-notation
-		if (filename.startsWith("@"))
-			filename = System.getProperty("corina.dir.data", ".")
-					+ filename.substring(1);
-		// (assumes c.d.r ends with file.sep!)
-
-		Sample s = Files.load(filename);
-		copy(s, this);
-		trimAllToSize();
+	
+	public Sample(ITridasSeries series) {
+		super(series);
+		initialize();
+		
+		setSeries(getSeries(), false);
+		
+		// metadata NOT changed
+		metadataChanged = false;		
+	}
+	
+	@Override
+	public void setSeries(ITridasSeries series) {
+		setSeries(series, true);
+	}
+	
+	private void setSeries(ITridasSeries series, boolean notifySuper) {
+		if(notifySuper)
+			super.setSeries(series);
+		
+		repopulateValuesMap();
+		
+		// must have ring widths!
+		if(!tridasValuesMap.containsKey(NormalTridasVariable.RING_WIDTH)) {
+			getSeries().getValues().add(createEmptyRingWidths());
+			repopulateValuesMap(); // be lazy
+		}
+		
+		// make the ring widths wrapper
+		ringwidths = new TridasRingWidthWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH));
+		
+		// if weiserjahre exists, make the values wrapper for it as well
+		if(otherValuesMap.containsKey(WEISERJAHRE_VARIABLE)) 
+			weiserjahre = new TridasWeiserjahreWrapper(otherValuesMap.get(WEISERJAHRE_VARIABLE));
+		else
+			weiserjahre = null;
 	}
 
+	/**
+	 * Common setup
+	 */
+	private void initialize() {
+		otherValuesMap = new HashMap<TridasVariable, TridasValues>();
+		tridasValuesMap = new EnumMap<NormalTridasVariable, TridasValues>(NormalTridasVariable.class);
+	}
+	
+	/**
+	 * Create a default set of TridasValues
+	 * - 1/100th mm
+	 * - Ring widths
+	 * 
+	 * @return a representative TridasValues object
+	 */
+	private TridasValues createEmptyRingWidths() {
+		TridasValues values = new TridasValues();
+		
+		// set default units
+		TridasUnit units = new TridasUnit();		
+		units.setNormalTridas(NormalTridasUnit.HUNDREDTH_MM);
+		values.setUnit(units);
+		
+		// set as ring widths
+		TridasVariable variable = new TridasVariable();
+		variable.setNormalTridas(NormalTridasVariable.RING_WIDTH);
+		values.setVariable(variable);
+
+		// populate the list of values (empty)
+		values.getValues();
+		
+		return values;
+	}	
+
+	/**
+	 * Create a default set of TridasValues
+	 * - 1/100th mm
+	 * - Ring widths
+	 * 
+	 * @return a representative TridasValues object
+	 */
+	private TridasValues createEmptyWeiserjahre() {
+		TridasValues values = new TridasValues();
+		
+		values.setUnitless(new TridasUnitless());
+		
+		// set as Weiserjahre
+		values.setVariable(WEISERJAHRE_VARIABLE);
+
+		// populate the list of values (empty)
+		values.getValues();
+		
+		return values;
+	}	
+
+	/**
+	 * For quick lookups, find TridasVariables via a map
+	 */
+	private void repopulateValuesMap() {
+		tridasValuesMap.clear();
+		otherValuesMap.clear();
+		
+		for(TridasValues values : getSeries().getValues()) {
+			TridasVariable variable = values.getVariable();
+			
+			if(variable.isSetNormalTridas())
+				tridasValuesMap.put(variable.getNormalTridas(), values);
+			else {				
+				otherValuesMap.put(variable, values);
+			}
+		}
+	}
+
+	/**
+	 * Shortcut for getRemarksForYear(values, year)
+	 * Uses RING_WIDTH variable
+	 * 
+	 * @param y the year
+	 * @return a list of remarks for this year, or an empty list if one exists.
+	 */
+	public List<TridasRemark> getRemarksForYear(Year y) {
+		return getRemarksForYear(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH), y);
+	}
+	
+	/**
+	 * Get a list of TridasRemarks for this year on the specified variable
+	 * @param values
+	 * @param y
+	 * @return a list of remarks for this year, or an empty list if one exists.
+	 */
+	public List<TridasRemark> getRemarksForYear(TridasValues values, Year y) {
+		try {
+			TridasValue value = getValueForYear(values, y);
+			
+			// if we've got remarks, return them!
+			if(value.isSetRemarks())
+				return value.getRemarks();
+			
+		} catch (IndexOutOfBoundsException ioobe) {
+			// fall through
+		}
+		
+		return Collections.emptyList();		
+	}
+
+	/**
+	 * Shortcut for getRemarksForYear(values, year)
+	 * Uses RING_WIDTH variable
+	 * 
+	 * @param y the year
+	 * @return a TridasValue for the given year
+	 */
+	public TridasValue getValueForYear(Year y) {
+		return getValueForYear(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH), y);
+	}
+
+	/**
+	 * Get a TridasValue for a given year
+	 * 
+	 * @param values
+	 * @param y
+	 * @return a TridasValue for the given year
+	 */
+	public TridasValue getValueForYear(TridasValues values, Year y) {
+		Range range = getRange();
+
+		if(!range.contains(y))
+			throw new IndexOutOfBoundsException();
+		
+		int idx = y.diff(range.getStart());
+		return values.getValues().get(idx);		
+	}
+	
 	public synchronized void addSampleListener(SampleListener l) {
 		if (!listeners.contains(l))
 			listeners.add(l);
@@ -206,6 +370,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	// return 0.0 for indexed sample?  throw ex?)
 	public int computeRadius() {
 		// (apply '+ data)
+		List<Number> data = getData();
 		int n = data.size();
 		int sum = 0;
 		for (int i = 0; i < n; i++)
@@ -215,9 +380,11 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 
 	// number of intervals with >3 samples
 	public int count3SampleIntervals() {
-		// (count-if #'(lambda (x) (> x 3)) (sample-count s))
-		if (count == null)
+		if (!hasCount())
 			return 0;
+		
+		// (count-if #'(lambda (x) (> x 3)) (sample-count s))
+		List<Integer> count = getCount();
 
 		int n = count.size();
 		int three = 0;
@@ -234,15 +401,19 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	public int countRings() {
 		// it's not a sum, so the number of rings is just the length
 		// (if (null count) (length data) ...
-		if (count == null)
+		List<Number> data = getData();
+		
+		if (!hasCount())
 			return data.size();
+
+		List<Integer> count = getCount();
 
 		// it's a sum, so the number of rings is the sum of the number
 		// of measurements for each year
 		// ... (apply '+ count))
 		int n = 0, size = count.size();
 		for (int i = 0; i < size; i++)
-			n += (count.get(i)).intValue();
+			n += count.get(i);
 		return n;
 	}
 
@@ -251,7 +422,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		if (!hasWeiserjahre())
 			return 0;
 
-		int sig = 0, n = incr.size();
+		int sig = 0, n = getWJIncr().size();
 		for (int i = 0; i < n; i++)
 			if (Weiserjahre.isSignificant(this, i))
 				sig++;
@@ -266,50 +437,10 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		fireSampleEvent("sampleElementsChanged");
 	}
 
-	// fire an arbitrary sample event called |method|.  each
-	// fireSampleXYZhappened() method is virtually identical, so their
-	// guts were refactored into here.  this makes adding new events
-	// painless.  (this was taken from a web page -- url?)
-	private void fireSampleEvent(String method) {
-		// alert all listeners
-		Vector<SampleListener> l;
-		synchronized (this) {
-			l = (Vector<SampleListener>) listeners.clone();
-		}
-
-		int size = l.size();
-
-		if (size == 0)
-			return;
-
-		SampleEvent e = new SampleEvent(this);
-
-		try {
-
-			// **
-			Class<?> types[] = new Class[] { SampleEvent.class };
-			Method m = SampleListener.class.getMethod(method, types);
-			Object args[] = new Object[] { e };
-
-			for (int i = 0; i < size; i++) {
-				SampleListener listener = (SampleListener) l.elementAt(i);
-
-				// this is like "listener.method(e)" (along with the 2 lines
-				// marked ** above)
-				m.invoke(listener, args);
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			// BUG: these exceptions are caught too coursely!
-
-			// just ignore them all... (?)
-		}
-	}
 	public void fireSampleMetadataChanged() {
 		metadataChanged = true;
 		fireSampleEvent("sampleMetadataChanged");
 	}
-
 	public void fireSampleRedated() {
 		fireSampleEvent("sampleRedated");
 	}
@@ -318,7 +449,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @return the count
 	 */
 	public List<Integer> getCount() {
-		return count;
+		return ringwidths.getCount();
 	}
 
 	/** Return the data for a graph
@@ -327,8 +458,15 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @see Indexable
 	 * @return data to graph, as a List of Integers 
 	 */
-	public List<Object> getData() {
-		return data;
+	public List<Number> getData() {
+		return ringwidths.getData();
+	}
+
+	/**
+	 * @return the elements
+	 */
+	public ElementList getElements() {
+		return elements;
 	}
 
 	/*
@@ -352,52 +490,24 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 private static Map samples = new HashMap();
 	 */
 
-	/**
-	 * @return the elements
-	 */
-	public ElementList getElements() {
-		return elements;
-	}
-
-	// get an int field from this sample.
-	// (would be int, but can't return null then -- use exception?)
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	private Integer getInteger(String field) {
-		// TODO: load, if needed.
-
-		Object val = getMeta(field);
-		if (val != null && val instanceof Integer)
-			return (Integer) val;
-
-		return null;
-	}
-
-	// get a list-of-numbers field from this sample.
-	// (what about elements?)
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	private List getList(String field) {
-		// TODO: load, if needed.
-
-		if (field.equals("data"))
-			return data;
-		else if (field.equals("count"))
-			return count;
-		else if (field.equals("incr"))
-			return incr;
-		else if (field.equals("decr"))
-			return decr;
-
-		return null;
-	}
-
 	public Preview getPreview() {
 		return new SamplePreview(this);
+	}
+
+	@Override
+	public SampleType getSampleType() {
+		SampleType known = super.getSampleType();
+		
+		// easy, it was determined for us!
+		if(known != SampleType.UNKNOWN)
+			return known;
+		
+		if(isIndexed())
+			return SampleType.INDEX; // we saved this in IsIndexed()...
+		else if(isSummed())
+			return SampleType.SUM;
+		else // fall back if we can't determine and it hasn't been loaded...
+			return known;
 	}
 
 	/** Return the default scale factor for graphing.
@@ -427,14 +537,14 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @return the decr
 	 */
 	public List<Integer> getWJDecr() {
-		return decr;
+		return (weiserjahre != null) ? weiserjahre.getDecr() : null;
 	}
 
 	/**
 	 * @return the incr
 	 */
 	public List<Integer> getWJIncr() {
-		return incr;
+		return (weiserjahre != null) ? weiserjahre.getIncr() : null;
 	}
 
 	/* Determining if a file is indexed: The 800 Rule
@@ -479,19 +589,40 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 summed indexed formats for tucson.  but he wants it back in,
 	 so we give it to him. */
 	public void guessIndexed() {
+		List<Number> data = getData();
 		setMeta("format", computeRadius() / data.size() > 800 ? "I" : "R");
 	}
 
 	// does it have weiserjahre?
 	public boolean hasWeiserjahre() {
-		return (incr != null);
+		return (weiserjahre != null);
 	}
 
-	/** Return true if the sample is absolutely dated, else false.
-	 @return true if the sample is absolutely dated */
-	public boolean isAbsolute() {
-		String dating = (String) getMeta("dating");
-		return (dating != null && Character.toUpperCase(dating.charAt(0)) == 'A');
+	/** 
+	 * Return true if the sample is absolutely dated, else false.
+	 * @return true if the sample is absolutely dated 
+	 */
+	public boolean isAbsolutelyDated() {
+		ITridasSeries series = getSeries();
+		
+		// no interpretation or no dating -> Relative dating
+		if(!series.isSetInterpretation() || !series.getInterpretation().isSetDating())
+			return false;
+		
+		switch(series.getInterpretation().getDating().getType()) {
+		case ABSOLUTE:
+		case DATED___WITH___UNCERTAINTY:
+		case RADIOCARBON:
+			return true;
+			
+		case RELATIVE:
+			return false;
+			
+		default:
+			new Bug(new IllegalArgumentException("Dating type " + 
+					series.getInterpretation().getDating() + " not supported"));
+			return false;
+		}
 	}
 
 	// is this sample editable?  no, if it's been indexed or summed.
@@ -530,47 +661,12 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		}
 	}
 
-	@Override
-	public SampleType getSampleType() {
-		SampleType known = super.getSampleType();
-		
-		// easy, it was determined for us!
-		if(known != SampleType.UNKNOWN)
-			return known;
-		
-		if(isIndexed())
-			return SampleType.INDEX; // we saved this in IsIndexed()...
-		else if(isSummed())
-			return SampleType.SUM;
-		else // fall back if we can't determine and it hasn't been loaded...
-			return known;
-	}
-	
-	//
-	// load/save
-	//
-
 	/** Return true if the file was modified since last save.
 	 @return if the sample has been modified */
 	public boolean isModified() {
 		return modified;
 	}
 	
-	public boolean wasMetadataChanged() {
-		return metadataChanged;
-	}
-
-	// is this sample oak?  (assumes meta/species is a string, if present)
-	// (FIXME: if it's not a string, it's not oak.)
-	// checks for "oak" or "quercus".
-	public boolean isOak() {
-		String species = (String) getMeta("species");
-		if (species == null)
-			return false;
-		species = species.toLowerCase();
-		return (species.indexOf("oak") != -1 || species.indexOf("quercus") != -1);
-	}
-
 	/** <p>Return true if the sample is summed, else false.  Here
 	 "summed" is defined as:</p>
 	 <ul>
@@ -585,12 +681,13 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 
 		// we don't know? guess.
 		// why is this "or?"
-		case UNKNOWN:
-			if (elements != null || count != null) {
+		case UNKNOWN: {
+			if (elements != null || hasCount()) {
 				setSampleType(SampleType.SUM);
 				return true;
 			}
 			return false;
+		}
 			
 		default:
 			return false;
@@ -601,10 +698,6 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		undoSupport.postEdit(e);
 	}
 
-	//
-	// event model
-	//
-
 	public synchronized void removeSampleListener(SampleListener l) {
 		listeners.remove(l);
 	}
@@ -613,14 +706,23 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @param count the count to set
 	 */
 	public void setCount(List<Integer> count) {
-		this.count = count;
+		ringwidths.setCount(count);
+	}
+	
+	/**
+	 * Note that getCount() will return a list that has all ones
+	 * when hasCount() can return false
+	 * @return true if counts exist
+	 */
+	public boolean hasCount() {
+		return ringwidths.hasCount();
 	}
 
 	/**
 	 * @param data the data to set
 	 */
-	public void setData(List<Object> data) {
-		this.data = data;
+	public void setData(List<Number> data) {
+		ringwidths.setData(data);
 	}
 
 	/**
@@ -638,40 +740,71 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/**
 	 * @param decr the decr to set
 	 */
-	public List<Integer> setWJDecr(List<Integer> decr) {
-		return this.decr = decr;
+	public void setWJDecr(List<Integer> decr) {
+		if(weiserjahre == null) {
+			getSeries().getValues().add(createEmptyWeiserjahre());
+			repopulateValuesMap();
+			weiserjahre = new TridasWeiserjahreWrapper(otherValuesMap.get(WEISERJAHRE_VARIABLE));
+		}
+		weiserjahre.setDecr(decr);
 	}
 
 	/**
 	 * @param incr the incr to set
 	 */
 	public void setWJIncr(List<Integer> incr) {
-		this.incr = incr;
+		if(weiserjahre == null) {
+			getSeries().getValues().add(createEmptyWeiserjahre());
+			repopulateValuesMap();
+			weiserjahre = new TridasWeiserjahreWrapper(otherValuesMap.get(WEISERJAHRE_VARIABLE));
+		}
+		weiserjahre.setIncr(incr);
 	}
 
 	/** Return the sample's title.
 	 @return the "title" tag from meta */
 	@Override
 	public String toString() {
-		String name = getMeta("title") + " " + getRange().toStringWithSpan();
+		String title = getDisplayTitle();
+		
+		if(getSeries() instanceof ITridasDerivedSeries) {
+			String version = ((ITridasDerivedSeries) getSeries()).getVersion();
+			
+			if(version != null && version.length() > 0) {
+				title += ": " + version; 
+			}
+		}
+		
+		String name = title + " " + getRange().toStringWithSpan();
 		if (isModified()) // not aqua-ish, but how to do it the real way?
 			name = "* " + name;
 		return name;
 	}
-
-	private void trimAllToSize() {
-		((ArrayList<Object>) data).trimToSize();
-		if (count != null)
-			((ArrayList<Integer>) count).trimToSize();
-		if (hasWeiserjahre()) {
-			((ArrayList<Integer>) incr).trimToSize();
-			((ArrayList<Integer>) decr).trimToSize();
-		}
+	
+	/** Return a short version of the sample's title (without range info).
+	 @return the "title" tag from meta */
+	public String toSimpleString() {
+		String name = getDisplayTitle();
+		if (isModified()) // not aqua-ish, but how to do it the real way?
+			name = "* " + name;
+		return name;
+	}
+		
+	
+	private CorinaMetadata metadataWrapper;
+	
+	@Override
+	public CorinaMetadata meta() {
+		if(metadataWrapper == null)
+			metadataWrapper = new SampleMetadata(this);
+		
+		return metadataWrapper;
 	}
 
 	// make sure data/count/wj are the same size as range.span, and
 	// contain all legit Numbers.  turns nulls/non-numbers into 0's.
 	public void verify() {
+		List<Number> data = getData();
 		int n = getRange().span();
 
 		// what to do if they're the wrong size -- adjust range if the data
@@ -686,4 +819,61 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 
 		// TODO: do count, WJ as well
 	}
+
+	public boolean wasMetadataChanged() {
+		return metadataChanged;
+	}
+
+	// fire an arbitrary sample event called |method|.  each
+	// fireSampleXYZhappened() method is virtually identical, so their
+	// guts were refactored into here.  this makes adding new events
+	// painless.  (this was taken from a web page -- url?)
+	@SuppressWarnings("unchecked")
+	private void fireSampleEvent(String method) {
+		// alert all listeners
+		Vector<SampleListener> l;
+		synchronized (this) {
+			l = (Vector<SampleListener>) listeners.clone();
+		}
+
+		int size = l.size();
+
+		if (size == 0)
+			return;
+
+		SampleEvent e = new SampleEvent(this);
+
+		try {
+
+			// **
+			Class<?> types[] = new Class[] { SampleEvent.class };
+			Method m = SampleListener.class.getMethod(method, types);
+			Object args[] = new Object[] { e };
+
+			for (int i = 0; i < size; i++) {
+				SampleListener listener = (SampleListener) l.elementAt(i);
+
+				// this is like "listener.method(e)" (along with the 2 lines
+				// marked ** above)
+				m.invoke(listener, args);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			// BUG: these exceptions are caught too coursely!
+
+			// just ignore them all... (?)
+		}
+	}
+	
+	public final static TridasVariable WEISERJAHRE_VARIABLE = new TridasVariable() {
+		{
+			this.setNormalStd(CORINA_STD);
+			this.setNormal(WEISERJAHRE);
+			this.setValue(""); // this is XML mandatory, as it's a value string
+		}
+	};
+	public final static String CORINA_STD = "Corina";
+	public final static String WEISERJAHRE = "Weiserjahre";
+
+
 }

@@ -3,43 +3,65 @@
  */
 package edu.cornell.dendro.corina.graph;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
-import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.util.Center;
-
-import java.awt.FlowLayout;
-import java.awt.Container;
-import java.util.List;
 import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.Rectangle;
+import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Paper;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.List;
 
-import java.awt.print.*;
-
-import javax.swing.event.*;
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.ProgressMonitor;
+import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
+
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.Center;
 
 /**
  * @author Lucas
@@ -182,7 +204,7 @@ public class GraphPrintDialog extends JPanel {
 				// create a PDF document
 				
 				Rectangle rect = new Rectangle(0, 0,
-						(pinfo.getDrawRange().span() * pinfo.getYearWidth()),
+						(pinfo.getDrawBounds().span() * pinfo.getYearWidth()),
 						(pinfo.getPrintHeight()));
 				com.lowagie.text.Rectangle pageSize = new com.lowagie.text.Rectangle(
 						rect.width, rect.height);
@@ -206,7 +228,7 @@ public class GraphPrintDialog extends JPanel {
 					// do some magic to set up the pdf context
 					PdfContentByte cb = writer.getDirectContent();
 					Graphics2D g = cb.createGraphicsShapes(pageSize
-							.width(), pageSize.height());
+							.getWidth(), pageSize.getHeight());
 
 					plotter.computeRange(pinfo, g);
 					plotter.paintGraph(g, pinfo);
@@ -269,7 +291,7 @@ public class GraphPrintDialog extends JPanel {
 				pm.setNote("Creating PNG document...");
 				
 				Rectangle rect = new Rectangle(0, 0,
-						(pinfo.getDrawRange().span() * pinfo.getYearWidth()),
+						(pinfo.getDrawBounds().span() * pinfo.getYearWidth()),
 						(pinfo.getPrintHeight()));
 				
 				BufferedImage fileImage = new BufferedImage(rect.width,
@@ -462,7 +484,7 @@ public class GraphPrintDialog extends JPanel {
 		    inchwidth.setEditable(false);
 		    float iw = 0;
 		    try {
-		    	iw = ((float) gInfo.getDrawRange().span() * gInfo.getYearWidth()) / 
+		    	iw = ((float) gInfo.getDrawBounds().span() * gInfo.getYearWidth()) / 
 		    	Float.parseFloat(dpi.getText());
 		    } catch (Exception e) { }
 		    inchwidth.setText(dfmt.format(iw));
@@ -526,7 +548,7 @@ public class GraphPrintDialog extends JPanel {
 		private void updatePrintDimensions() {
 		    float pgraphHeight = 0.0f;
 		    try {
-		    	pgraphHeight = ((float) gInfo.getDrawRange().span() * gInfo.getYearWidth()) / 
+		    	pgraphHeight = ((float) gInfo.getDrawBounds().span() * gInfo.getYearWidth()) / 
 		    		Float.parseFloat(dpi.getText());
 		    } catch (Exception e) { }
 		    
@@ -558,11 +580,11 @@ public class GraphPrintDialog extends JPanel {
 					float fppy = Float.parseFloat(pixelsperyear.getText());
 					yearsperinch.setText(dfmt.format(fdpi / fppy));
 					gInfo.setYearWidth((int) fppy);
-					gInfo.set10UnitHeight((int) fppy);
+					gInfo.setTenUnitHeight((int) fppy);
 					
 				    float iw = 0;
 				    try {
-				    	iw = ((float) gInfo.getDrawRange().span() * gInfo.getYearWidth()) / 
+				    	iw = ((float) gInfo.getDrawBounds().span() * gInfo.getYearWidth()) / 
 				    	Float.parseFloat(dpi.getText());
 				    } catch (Exception e) { }
 				    inchwidth.setText(dfmt.format(iw));
@@ -581,7 +603,7 @@ public class GraphPrintDialog extends JPanel {
 					
 				    float iw = 0;
 				    try {
-				    	iw = ((float) gInfo.getDrawRange().span() * gInfo.getYearWidth()) / 
+				    	iw = ((float) gInfo.getDrawBounds().span() * gInfo.getYearWidth()) / 
 				    	Float.parseFloat(dpi.getText());
 				    } catch (Exception e) { }
 				    inchwidth.setText(dfmt.format(iw));
@@ -651,7 +673,7 @@ public class GraphPrintDialog extends JPanel {
 				fullscale = scale * zoom;
 				
 				setPreferredSize(new Dimension(
-						(int) (pinfo.getDrawRange().span() * pinfo.getYearSize() * fullscale), 
+						(int) (pinfo.getDrawBounds().span() * pinfo.getYearWidth() * fullscale), 
 						(int) (pinfo.getPrintHeight() * fullscale)));
 				revalidate();
 				repaint();				
@@ -695,8 +717,8 @@ public class GraphPrintDialog extends JPanel {
 				 }
 			});
 			    
-			JLabel large = new JLabel(Builder.getIcon("mountains-large.png"));
-			JLabel small = new JLabel(Builder.getIcon("mountains-small.png"));
+			JLabel large = new JLabel(Builder.getIcon("viewmag+.png", 22));
+			JLabel small = new JLabel(Builder.getIcon("viewmag-.png", 22));
 
 			// allow clicking on these!
 			large.addMouseListener(new MouseAdapter() {
@@ -769,7 +791,7 @@ public class GraphPrintDialog extends JPanel {
 		    // graph is the width we see on the screen
 		    
 		    // we need to make a scale from 72nds of an inch to "DPI" of an inch...
-		    h = gInfo.getDrawRange().span() * gInfo.getYearWidth();
+		    h = gInfo.getDrawBounds().span() * gInfo.getYearWidth();
 		    w = gInfo.getPrintHeight();
 		    pscale = 72.0 / params.getDPI();
 		    

@@ -20,7 +20,10 @@
 
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -38,6 +41,7 @@ import javax.swing.JTextField;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
  * Bootstrap for Corina. It all starts here...
@@ -82,16 +86,25 @@ public class Startup implements PrivilegedAction {
 		    App.platform.init();
 			
 			ClassLoader cl = this.getClass().getClassLoader();
-			URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background.png");
-			ImageIcon ii = null;
+			URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/splash2.png");
+			BufferedImage img = null;
+		
 			if (url != null) {
-				ii = new ImageIcon(url);
+				img = javax.imageio.ImageIO.read(url);
 			}
-			LoginSplash splash = new LoginSplash("", ii);
+			LoginSplash splash = new LoginSplash("Corina", img);
 			ProgressMeter pm = new ProgressMeter();
+			
+			Dimension d = new Dimension(img.getWidth(), img.getHeight());	
+			splash.setMinimumSize(d);
+			splash.setMaximumSize(d);
+			splash.setSize(d);	
+			
+			
 			pm.addProgressListener(splash);
 			pm.setMillisToDecideToPopup(0);
 			pm.setMillisToPopup(0);
+			
 			App.init(pm, splash);
 			// monitor.close();
 			// let's go...

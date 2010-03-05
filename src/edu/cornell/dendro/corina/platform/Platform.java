@@ -143,6 +143,15 @@ public class Platform extends AbstractSubsystem {
 			new Bug(ioe);
 		}
 	}
+	
+	public void openFile(File file) {
+		if(isWindows)
+			Windows.openFile(file);
+		else if(isMac)
+			Macintosh.openFile(file);
+		else
+			new Bug(new IllegalArgumentException("Platform.openFile() not implemented on this platform"));
+	}
 
 	// get the name of the trash folder
 	public String getTrash() {

@@ -34,14 +34,14 @@ public class Truncate {
 
     public void cropTo(Range r) {
 	// make backup space
-	endData = new Stack();
-	endCount= new Stack();
-	endIncr = new Stack();
-	endDecr = new Stack();
-	startData = new Stack();
-	startCount = new Stack();
-	startIncr = new Stack();
-	startDecr = new Stack();
+	endData = new Stack<Number>();
+	endCount= new Stack<Integer>();
+	endIncr = new Stack<Integer>();
+	endDecr = new Stack<Integer>();
+	startData = new Stack<Number>();
+	startCount = new Stack<Integer>();
+	startIncr = new Stack<Integer>();
+	startDecr = new Stack<Integer>();
 
 	// sapwood
 	if (s.hasMeta("sapwood")) {
@@ -56,7 +56,7 @@ public class Truncate {
 	while (numCropEnd-- > 0) {
 	    int i = s.getData().size()-1;
 	    endData.push(s.getData().remove(i));
-	    if (s.getCount() != null)
+	    if (s.hasCount())
 		endCount.push(s.getCount().remove(i));
 	    if (s.hasWeiserjahre()) {
 		endIncr.push(s.getWJIncr().remove(i));
@@ -85,7 +85,7 @@ public class Truncate {
     private Range oldRange; // redundant, but helpful
     // FIXME: i think i only really need one stack, not 8 (though then
     // i probably need cropStart/cropEnd ints)
-    private Stack<Object> endData, startData; 
+    private Stack<Number> endData, startData; 
     private Stack<Integer> endCount;
     private Stack<Integer> startIncr, startDecr, endIncr, endDecr;
     private Stack<Integer> startCount;
@@ -106,7 +106,7 @@ public class Truncate {
 	// start
 	while (!startData.empty()) {
 	    s.getData().add(0, startData.pop());
-	    if (s.getCount() != null)
+	    if (s.hasCount())
 		s.getCount().add(0, startCount.pop());
 	    if (s.hasWeiserjahre()) {
 		s.getWJIncr().add(0, startIncr.pop());

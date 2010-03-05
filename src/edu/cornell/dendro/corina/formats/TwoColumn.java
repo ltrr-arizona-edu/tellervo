@@ -60,6 +60,7 @@ import java.io.IOException;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+@Deprecated 
 public class TwoColumn implements Filetype {
 
     @Override
@@ -222,7 +223,7 @@ public class TwoColumn implements Filetype {
     
     public void save(Sample s, BufferedWriter w) throws IOException {
         Year y = s.getRange().getStart();
-        boolean hasCount = (s.getCount() != null);
+        boolean hasCount = s.hasCount();
 
         for (int i=0; i<s.getData().size(); i++) {
             w.write(y + "\t" + s.getData().get(i));
@@ -233,4 +234,16 @@ public class TwoColumn implements Filetype {
             y = y.add(+1);
         }
     }
+
+	public Boolean isPackedFileCapable() {
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format has no metadata capabilities";
+	}
+
+	public Boolean isLossless() {
+		return false;
+	}
 }

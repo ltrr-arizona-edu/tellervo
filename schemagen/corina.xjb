@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings 
+	version="2.1"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	xmlns:ai="http://jaxb.dev.java.net/plugin/if_insertion"
+	extensionBindingPrefixes="xjc ai">
+
+	<!-- Make underscores significant; this fixes *most* of the ObjectFactory name collision errors -->
+	<jaxb:bindings>
+		<jaxb:globalBindings 
+				underscoreBinding="asCharInWord"
+				generateIsSetMethod="true"
+				enableFailFastCheck="true"
+				typesafeEnumBase="xs:string xs:int xs:long xs:short xs:double xs:float"
+				typesafeEnumMemberName="generateName">
+			<jaxb:serializable uid="1001"/>
+			<xjc:simple />
+			<xjc:treatRestrictionLikeNewType />	
+			<xjc:javaType name="java.lang.Integer" xmlType="xs:int" adapter="org.tridas.adapters.IntegerAdapter" />
+		</jaxb:globalBindings>
+	</jaxb:bindings> 
+	
+	<!-- Tridas schema. Prefix with 'Tridas'! -->
+	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/tridas.xsd" node="/xs:schema">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.tridas.schema"/>
+			<jaxb:nameXmlTransform>
+				<jaxb:elementName prefix="Tridas" />
+			</jaxb:nameXmlTransform>
+		</jaxb:schemaBindings>
+		
+		<!-- Rename object element to custom class -->
+		<jaxb:bindings node="//xs:element[@name='object']">
+			<jaxb:class implClass="edu.cornell.dendro.corina.tridasv2.TridasObjectEx" />
+		</jaxb:bindings>
+						
+		<!-- Fix some unconvertable strings -->
+		<jaxb:bindings node="//xs:simpleType[@name='normalTridasUnit']">
+			<jaxb:typesafeEnumClass>
+				<jaxb:typesafeEnumMember value="1/100th millimetres" name="HUNDREDTH_MM" />
+				<jaxb:typesafeEnumMember value="1/10th millimetres" name="TENTH_MM" />
+			</jaxb:typesafeEnumClass>
+		</jaxb:bindings>
+
+		<jaxb:bindings node="//xs:simpleType[@name='normalTridasVariable']">
+			<jaxb:typesafeEnumClass>
+				<jaxb:typesafeEnumMember value="Ring width" name="RING_WIDTH" />
+				<jaxb:typesafeEnumMember value="Earlywood width" name="EARLYWOOD_WIDTH" />
+				<jaxb:typesafeEnumMember value="Latewood width" name="LATEWOOD_WIDTH" />
+				<jaxb:typesafeEnumMember value="Ring density" name="RING_DENSITY" />
+				<jaxb:typesafeEnumMember value="Earlywood density" name="EARLYWOOD_DENSITY" />
+				<jaxb:typesafeEnumMember value="Latewood density" name="LATEWOOD_DENSITY" />
+				<jaxb:typesafeEnumMember value="Maximum density" name="MAXIMUM_DENSITY" />
+				<jaxb:typesafeEnumMember value="Latewood percent" name="LATEWOOD_PERCENT" />
+			</jaxb:typesafeEnumClass>
+		</jaxb:bindings>
+
+		<jaxb:bindings node="//xs:simpleType[@name='normalTridasRemark']">
+			<jaxb:typesafeEnumClass>
+				<jaxb:typesafeEnumMember value="Fire damage" name="FIRE_DAMAGE" />
+				<jaxb:typesafeEnumMember value="Frost damage" name="FROST_DAMAGE" />
+				<jaxb:typesafeEnumMember value="Crack" name="CRACK" />
+				<jaxb:typesafeEnumMember value="False ring(s)" name="FALSE_RINGS" />
+				<jaxb:typesafeEnumMember value="Compression wood" name="COMPRESSION_WOOD" />
+				<jaxb:typesafeEnumMember value="Tension wood" name="TENSION_WOOD" />
+				<jaxb:typesafeEnumMember value="Traumatic ducts" name="TRAUMATIC_DUCTS" />
+				<jaxb:typesafeEnumMember value="Unspecified injury" name="UNSPECIFIED_INJURY" />
+			</jaxb:typesafeEnumClass>
+		</jaxb:bindings>				
+	</jaxb:bindings>
+
+	<!-- Corina -->
+	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/corina.xsd" node="/xs:schema">
+		
+		<!-- Rename Corina root element to WSIRootElement -->
+		<jaxb:bindings node="//xs:element[@name='corina']">
+			<jaxb:class name="WSIRootElement" />
+		</jaxb:bindings>
+
+		<!-- Preserve header message code, but keep message content as DOM -->
+		<jaxb:bindings node="//xs:element[@name='message']">
+        	<jaxb:bindings node="./xs:complexType/xs:sequence">
+        		<jaxb:dom/>
+       		</jaxb:bindings>
+		</jaxb:bindings>
+
+		<jaxb:schemaBindings>
+			<jaxb:package name="edu.cornell.dendro.corina.schema"/>
+			<jaxb:nameXmlTransform>
+				<jaxb:elementName prefix="WSI" />
+			</jaxb:nameXmlTransform>
+		</jaxb:schemaBindings>
+		
+		<jaxb:bindings node="//xs:simpleType[@name='searchOperator']">
+			<jaxb:typesafeEnumClass>
+				<jaxb:typesafeEnumMember value="&gt;" name="GREATER_THAN" />
+				<jaxb:typesafeEnumMember value="&lt;" name="LESS_THAN" />
+				<jaxb:typesafeEnumMember value="=" name="EQUALS" />
+				<jaxb:typesafeEnumMember value="!=" name="NOT_EQUALS" />
+			</jaxb:typesafeEnumClass>
+		</jaxb:bindings>
+		
+		<!-- Add IdAble interface to securityUser -->
+		<jaxb:bindings node="//xs:complexType[@name='securityUser']">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.IdAble
+				org.tridas.interfaces.HumanName
+			</ai:interfaces>
+		</jaxb:bindings>
+					
+		<!-- Add ITridas interface to box (kludge) -->
+		<jaxb:bindings node="//xs:element[@name='box']/xs:complexType">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.ITridas
+			</ai:interfaces>
+		</jaxb:bindings>						
+	</jaxb:bindings>
+
+	<!-- GML -->
+	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/gmlsf.xsd" node="/xs:schema">
+		<jaxb:schemaBindings>
+			<jaxb:package name="net.opengis.gml.schema"/>
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+	
+</jaxb:bindings> 

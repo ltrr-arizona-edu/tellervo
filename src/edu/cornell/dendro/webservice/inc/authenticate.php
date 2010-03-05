@@ -1,14 +1,23 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.0
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
+
+
 require_once('dbhelper.php');
 
+/**
+ * This class handles authentication requests from the user
+ *
+ */
 class authenticate 
 {
     var $id = NULL;
@@ -21,15 +30,24 @@ class authenticate
     /* CONSTRUCTOR */
     /***************/
 
+	/**
+	 * Constructor for this class
+	 *
+	 */
     function __construct()
     {
-        // Constructor for this class.
     }
 
     /***********/
     /* SETTERS */
     /***********/
 
+    /**
+     * Raise an error
+     *
+     * @param Integer $theCode
+     * @param String $theMessage
+     */
     function setErrorMessage($theCode, $theMessage)
     {
         // Set the error latest error message and code for this object.
@@ -37,18 +55,27 @@ class authenticate
         $this->lastErrorMessage = $theMessage;
     }
 
-    function validateRequestParams($paramsObj, $crudMode)
+    /**
+     * Validate the parameters passed depending on the 'CRUD' mode.
+     * In this case $crudMode should be one of 'plainlogin', 'nonce'
+     * or 'securelogin'.
+     *
+     * @param authenticationParameters $paramsObj
+     * @return Boolean
+     */
+    public function validateRequestParams($paramsObj)
     {
-        // Check parameters based on crudMode 
-        switch($crudMode)
+    	global $myRequest;  	
+    	
+        switch($myRequest->getCrudMode())
         {
             case "plainlogin":
-                if($paramsObj->username==NULL)
+                if($paramsObj->getUsername()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'username' field is required when doing a plain login");
                     return false;
                 }
-                if($paramsObj->password==NULL)
+                if($paramsObj->getPassword()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'password' field is required when doing a plain login");
                     return false;
@@ -56,27 +83,27 @@ class authenticate
                 return true;
             
             case "securelogin":
-                if($paramsObj->username==NULL)
+                if($paramsObj->getUsername()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'username' field is required when doing a secure login");
                     return false;
                 }
-                if($paramsObj->hash==NULL)
+                if($paramsObj->getHash()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'hash' field is required when doing a secure login");
                     return false;
                 }
-                if($paramsObj->cnonce==NULL)
+                if($paramsObj->getCNonce()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'cnonce' field is required when doing a secure login");
                     return false;
                 }
-                if($paramsObj->snonce==NULL)
+                if($paramsObj->getSNonce()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'snonce' field is required when doing a secure login");
                     return false;
                 }
-                if($paramsObj->seq==NULL)
+                if($paramsObj->getSeq()==NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'seq' field is required when doing a secure login");
                     return false;
@@ -95,12 +122,20 @@ class authenticate
     /***********/
     /*ACCESSORS*/
     /***********/
-    function doPlainAuthentication($paramsClass, $auth)
+    
+    /**
+     * Do a 'plain' authentication
+     *
+     * @param Parameters Class $paramsClass
+     * @param Auth Class $auth
+     * @return Boolean
+     */
+    public function doPlainAuthentication($paramsClass, $auth)
     {
         $myAuth = $auth;
         $myRequest = $paramsClass;
 
-        $myAuth->login($myRequest->username, $myRequest->password);
+        $myAuth->login($myRequest->getUsername(), $myRequest->getPassword());
         if($myAuth->isLoggedIn())
         {
             return True;
@@ -109,15 +144,23 @@ class authenticate
         {
             // Log in failed
             $this->setErrorMessage($myAuth->getLastErrorCode(), $myAuth->getLastErrorMessage());
+            return False;
         }
     }
     
-    function doSecureAuthentication($paramsClass, $auth)
+    /**
+     * Do a secure authentication 
+     *
+     * @param Params Class $paramsClass
+     * @param Auth Class $auth
+     * @return Boolean
+     */
+    public function doSecureAuthentication($paramsClass, $auth)
     {
         $myAuth = $auth;
         $myRequest = $paramsClass;
         
-        $myAuth->loginWithNonce($myRequest->username, $myRequest->hash, $myRequest->cnonce, $myRequest->snonce, $myRequest->seq);
+        $myAuth->loginWithNonce($myRequest->getUsername(), $myRequest->getHash(), $myRequest->getCNonce(), $myRequest->getSNonce(), $myRequest->getSeq());
         
         if($myAuth->isLoggedIn())
         {
@@ -132,7 +175,13 @@ class authenticate
         }
     }
 
-    function setNonce($paramsClass, $auth)
+    /**
+     * Set the nonce 
+     *
+     * @param Params Class $paramsClass
+     * @param Auth Class $auth
+     */
+    public function setNonce($paramsClass, $auth)
     {
         $myAuth = $auth;
         $myRequest = $paramsClass;
@@ -142,7 +191,12 @@ class authenticate
         
     }
 
-    function asXML($mode="all")
+    /**
+     * Get the XML representation of this class
+     *
+     * @return String
+     */
+    public function asXML($mode="all")
     {
         if(isset($this->xmldata))
         {
@@ -154,25 +208,23 @@ class authenticate
         }
     }
 
-    function asKML($mode="all")
-    {
-    }
-
-    function getParentTagBegin()
-    {
-    }
-
-    function getParentTagEnd()
-    {
-    }
-
+    /**
+     * Get code for the most recent error
+     *
+     * @return Integer
+     */
     function getLastErrorCode()
     {
         // Return an integer containing the last error code recorded for this object
         $error = $this->lastErrorCode; 
         return $error;  
     }
-
+    
+    /**
+     * Get the message for the most recent error
+     *
+     * @return String
+     */
     function getLastErrorMessage()
     {
         // Return a string containing the last error message recorded for this object
@@ -184,6 +236,13 @@ class authenticate
     /*FUNCTIONS*/
     /***********/
 
+    /**
+     * Get an SQL representation of the array of parameters
+     *
+     * @param Array  $paramsArray
+     * @param String $paramName
+     * @return String
+     */
     function paramsToFilterSQL($paramsArray, $paramName)
     {
         $filterSQL="";
@@ -222,9 +281,14 @@ class authenticate
         return $filterSQL;
     }
 
+    /**
+     * Convert a variable name to it's database alias.
+     *
+     * @param String $objectName
+     * @return String
+     */
     function variableName($objectName)
     {
-
         switch($objectName)
         {
         case "site":
@@ -251,9 +315,14 @@ class authenticate
 
     }
 
+    /**
+     * Covert a variable name to it's database table alias
+     *
+     * @param String $objectName
+     * @return String
+     */
     function tableName($objectName)
     {
-
         switch($objectName)
         {
         case "site":
@@ -280,16 +349,20 @@ class authenticate
 
     }
 
+    /**
+     * This function returns an interger representing the most junior level of relationship required in this query
+     * tblsite     -- 6 -- most senior
+     * tblsubsite  -- 5 --
+     * tblelement  -- 4 --
+     * tblsample   -- 3 --
+     * tblradius   -- 2 --
+     * tblseries   -- 1 -- most junior
+     *
+     * @param String $theRequest
+     * @return Integer
+     */
     function getLowestRelationshipLevel($theRequest)
     {
-        // This function returns an interger representing the most junior level of relationship required in this query
-        // tblsite         -- 6 -- most senior
-        // tblsubsite      -- 5 --
-        // tblelement         -- 4 --
-        // tblsample     -- 3 --
-        // tblradius       -- 2 --
-        // tblseries  -- 1 -- most junior
-        
         $myRequest = $theRequest;
         
         if (($myRequest->seriesParamsArray) || ($myRequest->returnObject == 'series'))
@@ -322,16 +395,20 @@ class authenticate
         }
     }
 
+    /**
+     * This function returns an interger representing the most senior level of relationship required in this query
+     * tblsite     -- 6 -- most senior
+     * tblsubsite  -- 5 --
+     * tblelement  -- 4 --
+     * tblsample   -- 3 --
+     * tblradius   -- 2 --
+     * tblseries   -- 1 -- most junior   
+     *
+     * @param String $theRequest
+     * @return String
+     */
     function getHighestRelationshipLevel($theRequest)
     {
-        // This function returns an interger representing the most senior level of relationship required in this query
-        // tblsite         -- 6 -- most senior
-        // tblsubsite      -- 5 --
-        // tblelement         -- 4 --
-        // tblsample     -- 3 --
-        // tblradius       -- 2 --
-        // tblseries  -- 1 -- most junior
-
         $myRequest = $theRequest;
 
         if (($myRequest->siteParamsArray) || ($myRequest->returnObject == 'site'))
@@ -364,10 +441,14 @@ class authenticate
         }
     }
 
+    /**
+     * Returns the 'where' clause part of the query SQL for the table relationships 
+     *
+     * @param String $theRequest
+     * @return String
+     */
     function getRelationshipSQL($theRequest)
     {
-        // Returns the 'where' clause part of the query SQL for the table relationships 
-
         $myRequest = $theRequest;
         $lowestLevel  = $this->getLowestRelationshipLevel($myRequest);
         $highestLevel = $this->getHighestRelationshipLevel($myRequest);

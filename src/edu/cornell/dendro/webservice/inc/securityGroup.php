@@ -1,13 +1,16 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
-require_once('inc/specimen.php');
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
+require_once('inc/sample.php');
 require_once('inc/taxon.php');
 
 class securityGroup 
@@ -199,7 +202,7 @@ class securityGroup
                 $xml.= "id=\"".$this->id."\" ";
                 $xml.= "name=\"".$this->name."\" ";
                 $xml.= "description=\"".$this->description."\" ";
-                $xml.= "isActive=\"".fromPGtoStringBool($this->isActive)."\" ";
+                $xml.= "isActive=\"".dbHelper::fromPGtoStringBool($this->isActive)."\" ";
                 $xml.= ">";
             }
 

@@ -1,24 +1,36 @@
 package edu.cornell.dendro.corina.manip;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.JSplitPane;
+import javax.swing.ScrollPaneConstants;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.DecadalModel;
+import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.graph.GraphActions;
+import edu.cornell.dendro.corina.graph.GraphController;
+import edu.cornell.dendro.corina.graph.GraphInfo;
+import edu.cornell.dendro.corina.graph.GraphToolbar;
+import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -26,6 +38,7 @@ import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
 
 public class ReconcileWindow extends XFrame implements ReconcileNotifier, SaveableDocument {
+	private static final long serialVersionUID = 1L;
 	
 	private ReconcileDataView dv1, dv2;
 	private Sample s1, s2;
@@ -37,8 +50,18 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	private JButton btnFinish;
 	private JButton btnViewType;
 	private JButton btnRemeasure;
-	private JPanel refPanel; // the panel with the reference measurement
+	private JButton btnHelp;
+	//private JPanel refPanel; // the panel with the reference measurement
 	private JSeparator sepLine;
+	protected JPanel panelChart;
+	
+	private GraphActions actions;	
+	private GrapherPanel graph;	
+	private GraphInfo graphInfo;
+	private List<Graph> graphSamples;
+	private JScrollPane graphScroller;	
+	private GraphController graphController;	
+	
 	
 	private boolean extraIsShown = false;
 	private final static String EXPAND = "Show reference";
@@ -46,9 +69,9 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	
 	public ReconcileWindow(Sample s1, Sample s2) {
 		JPanel content = new JPanel(new BorderLayout());
+				
+		setTitle("Reconciling " + s1.toSimpleString());
 		
-		setTitle("Reconciliation: " + s1.toString());
-
 		// create a copy of our samples before we even touch them
 		// we keep s2 now for future compatibility, when we might have multiple
 		// windows referring to s2 open
@@ -59,29 +82,62 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 
 		this.s1 = s1;
 		this.s2 = s2;
-		dv1 = new ReconcileDataView(s1, s2);
-		dv2 = new ReconcileDataView(s2, s1);
+		dv1 = new ReconcileDataView(s1, s2, false, this);
+		dv2 = new ReconcileDataView(s2, s1, false, this);
 		
 		dv1.setReconcileNotifier(this);
 		dv2.setReconcileNotifier(this);
 		
+		// Create split pane to hold two series
+		JPanel seriesHolder = new JPanel();
+		seriesHolder.setLayout(new BoxLayout(seriesHolder, BoxLayout.X_AXIS));
+		
+		// Create panel for primary series
 		JPanel reconcilePanel = new JPanel();
 		reconcilePanel.setLayout(new BoxLayout(reconcilePanel, BoxLayout.Y_AXIS));
+		reconcilePanel.add(createReconcilePane(s1, dv1, "Primary series: "));
 		
-		refPanel = new JPanel(new BorderLayout());
-		refPanel.add(createReconcilePane(s2, dv2), BorderLayout.CENTER);
-		refPanel.setVisible(extraIsShown);
+		// Create panel for reference series
+		JPanel refPanel = new JPanel();
+		refPanel.setLayout(new BoxLayout(refPanel, BoxLayout.Y_AXIS));
+		refPanel.add(createReconcilePane(s2, dv2, "Reference series: "));
 		
+		//JPanel refPanel = new JPanel(new BorderLayout());
+		//refPanel.add(createReconcilePane(s2, dv2), BorderLayout.CENTER);
+		//refPanel.setVisible(extraIsShown);
 		
-		reconcilePanel.add(createReconcilePane(s1, dv1));
-		reconcilePanel.add(createButtonPanel());
-		reconcilePanel.add(refPanel);
+		// Graph panel
+		panelChart = new JPanel();
+		setupGraph();
+		updateGraph(s1, s2);	
+				
+		// Create split pane to hold tab pane and graph pane
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);	
+		splitPane.setTopComponent(seriesHolder);
+		splitPane.setBottomComponent(panelChart);
+		splitPane.setDividerLocation(300);
 		
-		content.add(reconcilePanel, BorderLayout.CENTER);
+		// Add series panels to seriesHolder panel
+		seriesHolder.add(reconcilePanel);
+		seriesHolder.add(refPanel);
+		
+		// Add panels to main panel
+		content.add(splitPane, BorderLayout.CENTER);
+		content.add(dv1.getReconcileInfoPanel(), BorderLayout.WEST);
+		content.add(createButtonPanel(), BorderLayout.SOUTH);
 		
 		setContentPane(content);
 		
+		// set initial remeasure button state
+		checkRemeasurable();
+
 		pack();
+
+		// start maximized
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+		
 		setVisible(true);
 	}
 	
@@ -93,7 +149,10 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		btnRemeasure = new JButton("Remeasure selected ring");
 		btnCancel = new JButton("Cancel");
 		btnViewType = new JButton("Graph");
+		btnHelp = new JButton("Help");
 		sepLine = new javax.swing.JSeparator();
+		
+		btnShowHideRef.setVisible(false);
 		
 		// TODO - hide until implemented
 		btnViewType.setVisible(false);
@@ -118,7 +177,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
             .add(layout.createSequentialGroup()
                 .add(btnViewType)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnShowHideRef)
+                .add(btnHelp)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(btnRemeasure)                
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 361, Short.MAX_VALUE)
@@ -133,7 +192,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
                 .add(sepLine, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnShowHideRef)
+                    .add(btnHelp)
                     .add(btnCancel)
                     .add(btnFinish)
                     .add(btnRemeasure)
@@ -141,14 +200,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
                 .addContainerGap(26, Short.MAX_VALUE))
         );			
 	
-		
-        btnViewType.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent ae){
-        		// TODO 	
-        		// Toggle between Graph and Table views
-        	}
-        });
-        
+		        
 		// Cancel should loose any unsaved changes so reload sample from db
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -181,6 +233,8 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 				}
 			}
 		});
+		
+		Help.assignHelpPageToButton(btnHelp, "Reconciling");
 		
 		btnFinish.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -261,68 +315,50 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		
 		btnRemeasure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				int col = dv1.myTable.getSelectedColumn();
-				int row = dv1.myTable.getSelectedRow();
-
-				Year y = ((DecadalModel) dv1.myTable.getModel()).getYear(row, col);
-				
-				ReconcileMeasureDialog dlg = new ReconcileMeasureDialog(glue, true, s1, s2, y);
-				
-				Center.center(dlg, glue);
-				dlg.setVisible(true);
-
-				// did we get a value?
-				Integer value = dlg.getFinalValue();
-				if(value != null) {
-					// kludge in some updates!
-					((DecadalModel) dv1.myTable.getModel()).setValueAt(value, row, col);
-					((DecadalModel) dv2.myTable.getModel()).setValueAt(value, row, col);
-					
-					dv1.myTable.setColumnSelectionInterval(col, col);
-					dv1.myTable.setRowSelectionInterval(row, row);
-					dv2.myTable.setColumnSelectionInterval(col, col);
-					dv2.myTable.setRowSelectionInterval(row, row);
-				}
-			}
-		});
-
-		btnShowHideRef.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				// toggle visibility
-				extraIsShown = !extraIsShown;
-
-				// hide it and resize it
-				glue.setVisible(false);
-				
-				btnShowHideRef.setText(extraIsShown ? HIDE : EXPAND);
-				refPanel.setVisible(extraIsShown);
-				glue.pack();
-				
-				// make sure we're not freakin' huge
-				int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-				if(glue.getHeight() > height - 100)
-					glue.setSize(glue.getWidth(), height - 100);
-				
-				// re-visible
-				glue.setVisible(true);
-				
-				// re-center 
-				Center.center(glue);
+				remeasureSelectedRing();
 			}
 		});
 		
 		return buttonPanel;
 	}
 	
-	private JPanel createReconcilePane(Sample s, ReconcileDataView dv) {
+	protected void remeasureSelectedRing()
+	{
+		// glue for our buttons...
+		final ReconcileWindow glue = this;
+		int col = dv1.myTable.getSelectedColumn();
+		int row = dv1.myTable.getSelectedRow();
+
+		Year y = ((DecadalModel) dv1.myTable.getModel()).getYear(row, col);
+		
+		ReconcileMeasureDialog dlg = new ReconcileMeasureDialog(glue, true, s1, s2, y);
+		
+		Center.center(dlg, glue);
+		dlg.setVisible(true);
+
+		// did we get a value?
+		Integer value = dlg.getFinalValue();
+		if(value != null) {
+			// kludge in some updates!
+			((DecadalModel) dv1.myTable.getModel()).setValueAt(value, row, col);
+			((DecadalModel) dv2.myTable.getModel()).setValueAt(value, row, col);
+			
+			dv1.myTable.setColumnSelectionInterval(col, col);
+			dv1.myTable.setRowSelectionInterval(row, row);
+			dv2.myTable.setColumnSelectionInterval(col, col);
+			dv2.myTable.setRowSelectionInterval(row, row);
+		}
+	}
+	
+	
+	private JPanel createReconcilePane(Sample s, ReconcileDataView dv, String titlePrefix) {
 		JPanel p = new JPanel();
 		
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		
-		p.setBorder(BorderFactory.createTitledBorder(s.toString()));
+		p.setBorder(BorderFactory.createTitledBorder(titlePrefix + s.toSimpleString()));
 		
-		p.add(dv);
-		
+		p.add(dv);	
 		return p;
 	}
 
@@ -337,11 +373,18 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		
 		dv.duplicateSelectionFrom(dataview);
 		
+		checkRemeasurable();
+	}
+	
+	/**
+	 * If we've selected something, enable or disable the 'remeasure' button
+	 */
+	private void checkRemeasurable() {
 		// enable if it's a valid index into both datasets!
 		Year y = dv1.getSelectedYear();
 		int col = dv1.myTable.getSelectedColumn();
 		int idx = y.diff(s1.getStart());
-		btnRemeasure.setEnabled(col > 1 && col < 11 && idx >= 0 && idx < s1.getData().size() && idx < s2.getData().size());
+		btnRemeasure.setEnabled(col > 0 && col < 11 && idx >= 0 && idx < s1.getData().size() && idx < s2.getData().size());		
 	}
 
 	public void reconcileDataChanged(ReconcileDataView dataview) {
@@ -357,18 +400,22 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		
 		// enable our apply button?
 		if(s1.isModified() || s2.isModified()) btnFinish.setEnabled(true);
+		
+		updateGraph(s1, s2);
+		
 	}
-
+	
+	
 	// SaveableDocument
 	public String getDocumentTitle() {
-		return "reference sample " + (String) s2.getMeta("title");
+		return "reference sample " + s2.getDisplayTitle();
 	}
 
 	public String getFilename() {
 		return null;
 	}
 
-	public Object getSaverClass() {
+	public Object getSavedDocument() {
 		return null;
 	}
 
@@ -397,4 +444,84 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	
 	public void setFilename(String fn) {
 	}
+	
+    @SuppressWarnings("serial")
+	private void setupGraph() {	    	
+		// create a new graphinfo structure, so we can tailor it to our needs.
+		graphInfo = new GraphInfo();
+		
+		// force no drawing of graph names and drawing of vertical axis
+		graphInfo.setShowGraphNames(false);
+		graphInfo.setShowVertAxis(true);
+		
+		// set up our samples
+		graphSamples = new ArrayList<Graph>(2);
+				
+		// create a graph panel; put it in a scroll pane
+		graph = new GrapherPanel(graphSamples, null, graphInfo) {
+			@Override
+			public Dimension getPreferredSize(Dimension parent, Dimension scroll) {
+				// our height is the size of the graph or the size of the viewport
+				// whichever is greater
+				return new Dimension(parent.width, Math.max(getGraphHeight(), scroll.height));
+			}
+		};
+		graph.setUseVerticalScrollbar(true);
+		
+		
+		graphScroller = new JScrollPane(graph,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		graphScroller.setVerticalScrollBar(new ReverseScrollBar());
+
+		// make the default viewport background the same color as the graph
+		graphScroller.getViewport().setBackground(graphInfo.getBackgroundColor());
+		
+		graphController = new GraphController(graph, graphScroller);
+				
+		panelChart.setLayout(new BorderLayout());
+		panelChart.add(graphScroller, BorderLayout.CENTER);
+		
+		// add a toolbar
+    	actions = new GraphActions(graph, null, graphController);
+    	GraphToolbar graphToolbar = new GraphToolbar(actions);
+    	graphToolbar.setOrientation(1);
+    	panelChart.add(graphToolbar, BorderLayout.WEST);
+    	
+    	// listen to this graph
+    	//graph.addGrapherListener(this);
+    	
+		// get our basic graph set up
+		updateGraph(null, null);
+	 
+    }
+    
+    private void updateGraph(Sample s1, Sample s2) {    	
+   		graphSamples.clear();
+   		
+   		ArrayList<Graph> myGraphs = new ArrayList<Graph>();
+   		
+   		if(!(s1 == null || s2 == null)){ 				
+			myGraphs.add(new Graph(s1));
+			myGraphs.add(new Graph(s2));  
+   		}
+    	
+		if(myGraphs.size() == 2) {
+    		// copy the graphs over
+    		graphSamples.add(myGraphs.get(0));
+    		graphSamples.add(myGraphs.get(1));
+    		
+    		// make sure we can't drag our graphs
+    		myGraphs.get(0).setDraggable(false);
+    		myGraphs.get(1).setDraggable(false);
+    		
+    		// fit the height of the graph
+        	graphController.scaleToFitHeight(5);
+    	}
+    	
+		graphInfo.setShowVertAxis(true);
+    	graph.update(true);
+    }
+    
+    
 }

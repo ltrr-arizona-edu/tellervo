@@ -7,11 +7,13 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
 public class FormatWrapper extends ItemWrapper<String> {
+	
+	String[] formats;
 	public FormatWrapper(JComboBox cbo, String prefName, Object defaultValue) {
 		super(prefName, defaultValue, String.class);
 		
 		// show a sample for each format thingy...
-		String[] formats = new String[FORMAT_STRINGS.length];
+		formats = new String[FORMAT_STRINGS.length];
 		int selectedIdx = -1;
 		
 		for(int i = 0; i < FORMAT_STRINGS.length; i++) {
@@ -26,13 +28,34 @@ public class FormatWrapper extends ItemWrapper<String> {
 		
 		cbo.addItemListener(this);
 	}
+	
+	public FormatWrapper(JComboBox cbo, String prefName, Object defaultValue, String[]values) {
+		super(prefName, defaultValue, String.class);
+		
+		// show a sample for each format thingy...
+		formats = values;
+		int selectedIdx = -1;
+		
+		for(int i = 0; i < values.length; i++) {
+			//formats[i] = new DecimalFormat(FORMAT_STRINGS[i]).format(SAMPLE_NUMBER);
+			//formats[i] = 
+			if(formats[i].equals(getValue()))
+				selectedIdx = i;
+		}
+		
+		cbo.setModel(new DefaultComboBoxModel(values));
+		if(selectedIdx >= 0)
+			cbo.setSelectedIndex(selectedIdx);
+		
+		cbo.addItemListener(this);
+	}
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		int selectedIdx = ((JComboBox) e.getSource()).getSelectedIndex();
 		
 		if(selectedIdx >= 0)
-			setValue(FORMAT_STRINGS[selectedIdx]);
+			setValue(formats[selectedIdx]);
 		else
 			setValue(null);
 	}

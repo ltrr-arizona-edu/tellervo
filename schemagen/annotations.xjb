@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+This file is for custom annotations applied to tridas objects
+-->
+<bindings 
+	version="2.1"
+	xmlns="http://java.sun.com/xml/ns/jaxb" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:annox="http://annox.dev.java.net"
+	extensionBindingPrefixes="annox ls"
+	xmlns:ta="http://annox.dev.java.net/org.tridas.annotations"
+	schemaLocation="../src/edu/cornell/dendro/webservice/schemas/tridas.xsd" node="/xs:schema">
+	
+	<!-- xmlns:ls="http://www.no0ne.org/xjc/plugin/prop-listener-injector" -->	
+	<!-- Disable listener support by default -->	
+	<!-- <ls:listener-support type="NONE" /> -->
+	
+	<!-- MACHINE ONLY THINGS -->
+	<bindings node="//xs:element[@name='identifier']/xs:complexType">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>
+
+	<bindings node="//xs:element[@name='genericField']/xs:complexType">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>
+
+	<bindings node="//xs:element[@name='values']/xs:complexType">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>
+		
+		<!-- Add propertychangelistener support -->	
+		<!-- <ls:listener-support type="BOUND" /> -->
+	</bindings>
+	
+	<!-- No derivedSeries.linkSeries visible -->
+	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@name='linkSeries']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>
+
+	<!-- read only -->
+	<bindings node="//xs:complexType[@name='tridasEntity']/xs:sequence/xs:element[@ref='createdTimestamp']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" />
+		</annox:annotate>	
+	</bindings>
+	<bindings node="//xs:complexType[@name='tridasEntity']/xs:sequence/xs:element[@ref='lastModifiedTimestamp']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" />
+		</annox:annotate>	
+	</bindings>
+
+	<!-- End of tree depth notes -->
+	<bindings node="//xs:complexType[@name='date']">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>
+
+	<bindings node="//xs:complexType[@name='dateTime']">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+
+	<!-- LinkSeries is unviewable except for preferredSeries -->
+	<bindings node="//xs:complexType[@name='seriesLinks']/xs:sequence/xs:element[@name='series']">
+		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true"/></annox:annotate>
+	</bindings>
+
+	<!-- No element.linkSeries -->
+	<bindings node="//xs:element[@name='element']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@name='linkSeries']">
+		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true"/></annox:annotate>
+	</bindings>
+
+	<!-- No interpretationUnsolved -->
+	<bindings node="//xs:group[@name='interpretationType']/xs:choice/xs:element[@ref='interpretationUnsolved']">
+		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true"/></annox:annotate>
+	</bindings>
+	
+	<!-- No *series.ID -->
+	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:attribute[@name='id']">
+		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true" /></annox:annotate>
+	</bindings>
+	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:attribute[@name='id']">
+		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true" /></annox:annotate>
+	</bindings>
+
+	<!-- final: locationGeometry -->
+	<bindings node="//xs:element[@name='locationGeometry']/xs:complexType">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+	
+	<!-- read only: object.location! -->
+	<bindings node="//xs:element[@name='object']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='location']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" />
+		</annox:annotate>	
+	</bindings>	
+
+	<!-- Read only: interpretation.*, save for provenance -->
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='dating']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" finalType="true" />
+		</annox:annotate>	
+	</bindings>
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='firstYear']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" finalType="true" />
+		</annox:annotate>	
+	</bindings>
+	<!-- Don't touch datingReference, its "editor" is only for loading -->
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='statFoundation']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" />
+		</annox:annotate>	
+	</bindings>
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='sproutYear']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='deathYear']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+		
+	<!-- Set seriesLink as a final type -->
+	<bindings node="//xs:complexType[@name='seriesLink']">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+
+	<!-- Set datingReference as a final type -->
+	<bindings node="//xs:element[@name='datingReference']/xs:complexType">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+
+	<!-- derivedSeries.type is final (and read only, because a controlledvoc which isn't editable) -->
+	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='type']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>
+	
+	<!-- derivedSeries.standardizingMethod is read only -->
+	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='standardizingMethod']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties readOnly="true" />
+		</annox:annotate>	
+	</bindings>
+	
+	<!-- hide measurementSeries.woodCompleteness -->
+	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='woodCompleteness']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>
+	
+	<!-- make pith and bark final types 
+	     actually, don't do this!
+	     
+	     This is really complex coding for very little benefit
+	    
+	<bindings node="//xs:element[@name='woodCompleteness']/xs:complexType/xs:sequence/xs:element[@ref='pith']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+	<bindings node="//xs:element[@name='woodCompleteness']/xs:complexType/xs:sequence/xs:element[@ref='bark']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties finalType="true" />
+		</annox:annotate>	
+	</bindings>	
+	-->
+	
+	<!-- - - - - - - - - - - -->
+	<!-- Dictionary bindings -->	
+	<!-- - - - - - - - - - - -->
+	
+	<!-- measurementSeries.analyst -->
+	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='analyst']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_GENERICID" 
+				dictionary="securityUser" 
+				identifierField="corina.analystID" 
+				sortType="LASTNAME_FIRSTNAME"/>
+		</annox:annotate>
+	</bindings>	
+	
+	<!-- measurementSeries.dendrochronologist -->
+	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='dendrochronologist']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_GENERICID" 
+				dictionary="securityUser" 
+				identifierField="corina.dendrochronologistID" 
+				sortType="LASTNAME_FIRSTNAME"/>
+		</annox:annotate>
+	</bindings>	
+
+	<!-- derivedSeries.author -->
+	<bindings node="//xs:element[@name='derivedSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='author']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_GENERICID" 
+				dictionary="securityUser" 
+				identifierField="corina.authorID"
+				sortType="LASTNAME_FIRSTNAME"/>
+		</annox:annotate>
+	</bindings>	
+	
+	<!-- object.type -->
+	<bindings node="//xs:element[@name='object']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='type']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="objectType" />
+		</annox:annotate>
+	</bindings>	
+
+	<!-- object.coverage.coverageTemporal -->
+	<bindings node="//xs:element[@name='coverage']/xs:complexType/xs:sequence/xs:element[@ref='coverageTemporal']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="coverageTemporal" />
+		</annox:annotate>
+	</bindings>	
+
+	<!-- object.coverage.coverageTemporalFoundation -->
+	<bindings node="//xs:element[@name='coverage']/xs:complexType/xs:sequence/xs:element[@ref='coverageTemporalFoundation']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="coverageTemporalFoundation" />
+		</annox:annotate>
+	</bindings>	
+
+	<!-- element.type -->
+	<bindings node="//xs:element[@name='element']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='type']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="elementType" />
+		</annox:annotate>
+	</bindings>	
+	
+	<!-- element.shape -->
+	<bindings node="//xs:element[@name='element']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='shape']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="elementShape" />
+		</annox:annotate>
+	</bindings>	
+
+	<!-- element.taxon -->
+	<bindings node="//xs:element[@name='element']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='taxon']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" 
+				dictionary="taxon"
+				sortType="NORMAL_OR_VALUE"/>
+		</annox:annotate>
+	</bindings>	
+	
+	<!-- sample.type -->
+	<bindings node="//xs:element[@name='sample']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@ref='type']">
+		<annox:annotate target="field">
+			<ta:TridasCustomDictionary type="CORINA_CONTROLLEDVOC" dictionary="sampleType" />
+		</annox:annotate>
+	</bindings>		
+</bindings>

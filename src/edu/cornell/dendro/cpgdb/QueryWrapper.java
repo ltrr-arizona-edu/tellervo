@@ -1,10 +1,12 @@
 package edu.cornell.dendro.cpgdb;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 
 /*
  * This class is a temporary wrapper for SQL statements.
@@ -25,8 +27,6 @@ public class QueryWrapper {
 		this.sql = sqlConnection;
 		
 		queries = new HashMap<String, StatementQueryHolder>();
-		
-		addQuery("getuuid", "select uuid()");
 		
 		// Param order:
 		// 1 = VMeasurementID
@@ -55,14 +55,14 @@ public class QueryWrapper {
 				"( VMeasurementResultID, VMeasurementID, RadiusID, IsReconciled, StartYear, " +
 				"DatingTypeID, DatingErrorPositive, DatingErrorNegative, " +
 				"IsLegacyCleaned, CreatedTimestamp, LastModifiedTimestamp, VMeasurementResultGroupID, " +
-				"VMeasurementResultMasterID, OwnerUserID, Name, Description, isPublished ) " +				
+				"VMeasurementResultMasterID, OwnerUserID, Code, Comments, isPublished ) " +				
 				"SELECT ? AS Expr1, ? AS Expr2, m.RadiusID, m.IsReconciled, " +
 				"m.StartYear, m.DatingTypeID, m.DatingErrorPositive, " +
 				"m.DatingErrorNegative, m.IsLegacyCleaned, " +
 				"vm.CreatedTimestamp, " +
 				"vm.LastModifiedTimestamp, " + 
 				"? AS Expr5, ? AS Expr6, ? AS Expr7, " + 
-				"vm.name, vm.description, vm.isPublished " +
+				"vm.code, vm.comments, vm.isPublished " +
 				"FROM tblMeasurement m " +
 				"INNER JOIN tblVMeasurement AS vm ON vm.MeasurementID = m.MeasurementID " +
 				"WHERE m.MeasurementID=? and vm.VMeasurementID=?");
@@ -155,13 +155,13 @@ public class QueryWrapper {
 				"INSERT INTO tblVMeasurementResult ( VMeasurementResultID, VMeasurementID, RadiusID, " +
 				"IsReconciled, StartYear, DatingTypeID, DatingErrorPositive, DatingErrorNegative, " +
 				"IsLegacyCleaned, CreatedTimestamp, LastModifiedTimestamp, VMeasurementResultMasterID, " +
-				"OwnerUserID, Name, Description, isPublished ) " +
+				"OwnerUserID, Code, Comments, isPublished ) " +
 				"SELECT ? AS Expr1, ? AS Expr2, " +
 				"r.RadiusID, r.IsReconciled, r.StartYear, " +
 				"r.DatingTypeID, r.DatingErrorPositive, " +
 				"r.DatingErrorNegative, r.IsLegacyCleaned, v.CreatedTimestamp, " +
 				"v.LastModifiedTimestamp, ? AS Expr5, ? AS Expr6, " +
-				"v.Name, v.Description, v.isPublished " +
+				"v.Code, v.Comments, v.isPublished " +
 				"FROM tblVMeasurementResult r " +
 				"INNER JOIN tblVMeasurement AS v ON v.VMeasurementID = r.VMeasurementID " +
 				"WHERE r.VMeasurementResultID=?");
@@ -183,12 +183,12 @@ public class QueryWrapper {
 				"INSERT INTO tblVMeasurementResult ( VMeasurementResultID, VMeasurementID, " +
                 "StartYear, DatingTypeID, CreatedTimestamp, " +
 				"LastModifiedTimestamp, VMeasurementResultMasterID, OwnerUserID, " +
-				"Name) " +
+				"Code) " +
 				"SELECT ? AS Expr1, ? AS Expr2, " +
 				"Min(r.StartYear) AS MinOfStartYear, " +
 				"Max(r.DatingTypeID) AS MaxOfDatingTypeID, " +
 				"now() AS CreatedTimestamp, now() AS LastModifiedTimestamp, " +
-				"? AS Expr5, ? AS Expr6, 'SUM' AS Name " + 
+				"? AS Expr5, ? AS Expr6, 'SUM' AS Code " + 
 				"FROM tblVMeasurementResult r " +
 				"WHERE r.VMeasurementResultGroupID=?");
 		
@@ -217,7 +217,7 @@ public class QueryWrapper {
 	 * @throws SQLException
 	 */
 	public void cleanup() throws SQLException {
-		Iterator i = queries.keySet().iterator();
+		Iterator<String> i = queries.keySet().iterator();
 		
 		while(i.hasNext()) {
 			StatementQueryHolder sq = queries.get(i.next());
@@ -237,7 +237,9 @@ public class QueryWrapper {
 		
 		for(int i = 0; i < args.length; i++) {
 			if(args[i] == null)
-				statement.setString(i + 1, (String) args[i]);
+				statement.setString(i + 1, null);
+			else if(args[i] instanceof UUID)
+				statement.setString(i + 1, args[i].toString());
 			else
 				statement.setObject(i + 1, args[i]);
 		}
@@ -281,6 +283,6 @@ public class QueryWrapper {
 		}		
 	}
 		
-	private HashMap<String, StatementQueryHolder> queries;
+	private Map<String, StatementQueryHolder> queries;
 	private Connection sql;
 }

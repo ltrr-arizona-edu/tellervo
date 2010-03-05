@@ -20,22 +20,26 @@
 
 package edu.cornell.dendro.corina.graph;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JToolTip;
+
 import edu.cornell.dendro.corina.editor.Editor;
-import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
-
-import java.awt.event.ActionEvent;
-import javax.swing.JPopupMenu;
-import javax.swing.JMenuItem;
-import javax.swing.AbstractAction;
 
 // used by: GraphWindow, BargraphFrame
 public class SamplePopupMenu extends JPopupMenu {
 
     private JMenuItem titleItem, rangeItem, scaleItem;
 
-    public SamplePopupMenu() {
+    public SamplePopupMenu(GrapherPanel gpanel) {
+    	
+    	this.panel = gpanel;
+    	
         // dummy entries: the name of the sample, and its range
         titleItem = new JMenuItem();
         titleItem.setEnabled(false);
@@ -49,7 +53,7 @@ public class SamplePopupMenu extends JPopupMenu {
         // TODO: add cut, copy commands here?
 
         // open
-        JMenuItem open = Builder.makeMenuItem("open");
+        JMenuItem open = Builder.makeMenuItem("menus.file.open");
         open.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 new Editor(s);
@@ -57,32 +61,52 @@ public class SamplePopupMenu extends JPopupMenu {
         });
 
         // plot
-        JMenuItem plot = new JMenuItem("Plot"); // FIXME: i18n?  use Builder?
+        JMenuItem plot = new JMenuItem("Plot on new graph"); // FIXME: i18n?  use Builder?
         plot.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
                 new GraphWindow(s);
             }
         });
+        
+        // remove
+        JMenuItem remove = new JMenuItem("Remove");
+        remove.addActionListener(new AbstractAction(){
+        	public void actionPerformed(ActionEvent ae){
+        		// FIXME: implement!
+        		
+        	}
+        });
+        
+        // properties
+        JMenuItem properties = new JMenuItem("Format series");
+        properties.addActionListener(new AbstractAction(){
+        	public void actionPerformed(ActionEvent ae){
+        		// FIXME: implement!
+        		
+        	}
+        });
+        
+        remove.setEnabled(false);
+        properties.setEnabled(false);
 
-        // WAS: "Redate..." menuitem
-
-        add(titleItem);
-        add(rangeItem);
-        add(scaleItem);
-        addSeparator();
+        //add(titleItem);
+        //add(rangeItem);
+        //add(scaleItem);
         add(open);
-        add(plot);
+        add(plot);       
+        add(remove);
+        addSeparator(); 
+        add(properties);
     }
 
     private Sample s;
+	private GrapherPanel panel;
 
     public void setSample(Sample s) {
         this.s = s;
 
         // update title, range
-        titleItem.setText((String) (s.hasMeta("title") ?
-				    s.getMeta("title") :
-				    s.getMeta("filename")));
+        titleItem.setText(s.getDisplayTitle());
         rangeItem.setText(Builder.INDENT + s.getRange().toStringWithSpan());
         scaleItem.setText("Sample scale: " + String.valueOf(s.getScale()));
     }

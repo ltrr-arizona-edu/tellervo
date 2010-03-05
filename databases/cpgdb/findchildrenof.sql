@@ -1,16 +1,30 @@
-CREATE OR REPLACE FUNCTION cpgdb.FindChildrenOf(varchar, integer) 
+CREATE OR REPLACE FUNCTION cpgdb.FindChildrenOfObjectAncestor(parentid uuid)
+RETURNS SETOF typVMeasurementSearchResult AS $$
+DECLARE
+   id tblobject.objectid%TYPE;
+   res typVMeasurementSearchResult;
+BEGIN
+   FOR id IN SELECT objectId FROM cpgdb.FindObjectDescendants(parentid, true) LOOP
+      FOR res in SELECT * FROM cpgdb.FindChildrenOf('object', id) LOOP
+         RETURN NEXT res;
+      END LOOP;
+   END LOOP;
+END;
+$$ LANGUAGE 'plpgsql' STABLE;
+
+CREATE OR REPLACE FUNCTION cpgdb.FindChildrenOf(varchar, anyelement) 
 RETURNS SETOF typVMeasurementSearchResult AS $$
 DECLARE
    stype ALIAS FOR $1;
    id ALIAS FOR $2;
 
    i INTEGER;
-   searches VARCHAR[] := array['VMeasurement','Measurement','Radius','Specimen','Tree','Subsite','Site'];
+   searches VARCHAR[] := array['VMeasurement','Measurement','Radius','Sample','Element','Object'];
 
    whereClause VARCHAR;
    joinClause VARCHAR;
    query VARCHAR;
-   vsid INTEGER;
+   vsid uuid;
    res typVMeasurementSearchResult;
 BEGIN
    -- Loop through our ordered array above, dynamically creating
@@ -31,7 +45,7 @@ BEGIN
    END IF;
 
    query := 'SELECT DISTINCT tblVMeasurement.VMeasurementID FROM tblVMeasurement' 
-            || joinClause || ' WHERE ' || whereClause || '=' || id;
+            || joinClause || ' WHERE ' || whereClause || '=''' || id || '''';
 
    -- RAISE NOTICE 'Query: %', query;
 

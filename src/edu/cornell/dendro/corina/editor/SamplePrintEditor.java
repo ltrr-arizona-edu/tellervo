@@ -503,7 +503,7 @@ public class SamplePrintEditor extends JPanel {
 		
 		if(bits.wantTitle()) {
 			sb.setLength(0);
-			sb.append(s.getMeta("title").toString());
+			sb.append(s.getDisplayTitle());
 			
 			sb.append("\n");
 			textpane.append("title", sb.toString());
@@ -826,6 +826,8 @@ public class SamplePrintEditor extends JPanel {
 	private String getMetadata() {
 		StringBuffer sb = new StringBuffer();
 	
+		/*
+		 * TODO: Redo this whole thing
 		if (s.hasMeta("id"))
 			sb.append("ID Number " + s.getMeta("id") + "\n");
 		if (s.hasMeta("title"))
@@ -893,7 +895,7 @@ public class SamplePrintEditor extends JPanel {
 					+ s.getMeta("quality") + "\n");
 
 		sb.append("\n");
-		
+		*/
 		return sb.toString();
 	}
 
@@ -989,6 +991,8 @@ public class SamplePrintEditor extends JPanel {
 				mark = mark + " ";
 				sb.append("\t" + mark + "\t" + e.toString() + "\n");
 			} else {
+				/*
+				 * TODO: Redo this whole thing
 				String x = "";
 
 				x += (bs.hasMeta("id") ? bs.getMeta("id")
@@ -1014,6 +1018,7 @@ public class SamplePrintEditor extends JPanel {
 						"terminal").toString() : "");
 
 				sb.append(x + "\n");
+				 */
 			}
 		}
 

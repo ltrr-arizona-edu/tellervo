@@ -10,7 +10,9 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/*
 import com.enterprisedt.net.ftp.*;
+*/
 
 /*
   general plan:
@@ -37,6 +39,7 @@ import com.enterprisedt.net.ftp.*;
 
 public class ITRDB {
 
+	/*
     private static String ITRDB_HOST = "ftp.ngdc.noaa.gov";
     private static String ITRDB_DIR = "/paleo/treering/";
 
@@ -140,7 +143,7 @@ public class ITRDB {
 	List l = itrdb.getFolders("measurements");
 	for (int i=0; i<l.size(); i++)
 	    System.out.println("folder: " + l.get(i));
-	*/
+	* /
 
 	// list files in measurements/europe/turk*
 	List l2 = itrdb.getFiles("measurements/europe/");
@@ -163,4 +166,5 @@ public class ITRDB {
 	    }
 	}
     }
+    */
 }

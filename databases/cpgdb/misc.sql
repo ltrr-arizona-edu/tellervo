@@ -5,12 +5,12 @@ create schema cpgdb;
 -- functions for getting tblvmeasurementresults
 --
 
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementResultID(integer)
+CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementResultID(uuid)
   RETURNS "varchar" AS
     'edu.cornell.dendro.cpgdb.Dispatch.GetVMeasurementResult'
   LANGUAGE 'javaU' VOLATILE;  
 
-CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementResult(integer)
+CREATE OR REPLACE FUNCTION cpgdb.GetVMeasurementResult(uuid)
   RETURNS SETOF tblVMeasurementResult AS
     'edu.cornell.dendro.cpgdb.VMeasurementResultSet.getVMeasurementResultSet'
   LANGUAGE 'javaU' VOLATILE;

@@ -2,30 +2,23 @@ package edu.cornell.dendro.corina.editor;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.io.FileNotFoundException;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.security.AccessControlException;
 import java.security.AccessController;
-import java.util.Collections;
-import java.util.List;
 
-import javax.swing.AbstractAction;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import edu.cornell.dendro.corina.core.App;
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasDerivedSeries;
+
 import edu.cornell.dendro.corina.CorinaPermission;
 import edu.cornell.dendro.corina.cross.CrossdateDialog;
-import edu.cornell.dendro.corina.cross.legacy.CrossdateWindow;
-import edu.cornell.dendro.corina.cross.legacy.Sequence;
-import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.FileDialog;
-import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.index.IndexDialog;
-import edu.cornell.dendro.corina.manip.Reconcile;
-import edu.cornell.dendro.corina.manip.ReconcileDialog;
 import edu.cornell.dendro.corina.manip.ReconcileWindow;
 import edu.cornell.dendro.corina.manip.RedateDialog;
 import edu.cornell.dendro.corina.manip.Reverse;
@@ -33,137 +26,70 @@ import edu.cornell.dendro.corina.manip.SumCreationDialog;
 import edu.cornell.dendro.corina.manip.TruncateDialog;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
-import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
-import edu.cornell.dendro.corina.sample.SampleSummary;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 
 // REFACTOR: this class needs refactoring.  there's IOEs and FNFEs in here!
 
 public class EditorToolsMenu extends JMenu implements SampleListener {
-
+	private static final long serialVersionUID = 1L;
+	
 	private Sample sample;
 	private Editor editor;
 
 	public EditorToolsMenu(Sample s, Editor e) {
-		super(I18n.getText("tools")); // TODO: mnemonic
+		super(I18n.getText("menus.tools")); // TODO: mnemonic
 
 		this.sample = s;
 		this.editor = e;
 
 		sample.addSampleListener(this);
 
-		// redate
-		JMenuItem redate = Builder.makeMenuItem("redate...", true, "redate.png");
-		redate.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent ae) {
-				new RedateDialog(sample, editor);
-			}
-		});
-		if (System.getSecurityManager() != null) {
-			try {
-				AccessController.checkPermission(new CorinaPermission("redate"));
-			} catch (AccessControlException ace) {
-				ace.printStackTrace();
-				redate.setEnabled(false);
-				redate.setBackground(Color.red.darker().darker());
-			}
-		}
-		add(redate);
-		redate.setEnabled(false);
-		redate.setVisible(false);
-
-		// index
-		indexMenu = Builder.makeMenuItem("index...", true, "index.png");
-		indexMenu.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent ae) {
-				// PERF: for big samples, it can take a couple
-				// seconds for the dialog to appear.  not enough
-				// for a progressbar, but enough that i should use
-				// the "wait" cursor on the editor window.
-				new IndexDialog(sample, editor);
-			}
-		});
-		indexMenu.setEnabled(!sample.isIndexed());
-		add(indexMenu);
-
-		// sum
-		sumMenu = Builder.makeMenuItem("sum...", true, "sum.png");
-		sumMenu.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent ae) {
-				new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
-			}
-		});
-		sumMenu.setEnabled(!sample.isSummed());
-		add(sumMenu);
-
 		// truncate
-		JMenuItem truncate = Builder.makeMenuItem("truncate...");
-		truncate.addActionListener(new AbstractAction() {
+		JMenuItem truncate = Builder.makeMenuItem("menus.tools.truncate", true, "truncate.png");
+		truncate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				new TruncateDialog(sample, editor);
 			}
 		});
 		add(truncate);
-		truncate.setEnabled(sample.getSampleType() == SampleType.DIRECT);
 
 		// reverse
-		JMenuItem reverseMenu = Builder.makeMenuItem("reverse", true, "reverse.png");
-		reverseMenu.addActionListener(new AbstractAction() {
+		JMenuItem reverseMenu = Builder.makeMenuItem("menus.tools.reverse", true, "reverse.png");
+		reverseMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// reverse, and add to the undo-stack
 				editor.postEdit(Reverse.reverse(sample));
 			}
 		});
 		add(reverseMenu);
-		truncate.setEnabled(sample.getSampleType() == SampleType.DIRECT);
+		reverseMenu.setEnabled(sample.getSampleType() == SampleType.DIRECT
+				&& (!sample.hasMeta(Metadata.CHILD_COUNT) || sample.getMeta(
+						Metadata.CHILD_COUNT, Integer.class) == 0));
 
 		// ---
-		addSeparator();
-
-		// cross against
-		// HACK: just disable this if the sample isn't saved?
-		JMenuItem crossAgainst = Builder.makeMenuItem("cross_against...", true, "crossdate.png");
-		crossAgainst.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent ae) {
-				new CrossdateDialog(editor, false, ElementList.singletonList(new CachedElement(sample)));
-			}
-		});
-		add(crossAgainst);
-
-		// cross all
-		crossElements = Builder.makeMenuItem("cross_elements", true, "crossdate.png");
-		crossElements.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent ae) {
-				// n-by-n cross
-				Sequence seq = new Sequence(sample.getElements(),
-						sample.getElements());
-				new CrossdateWindow(seq);
-			}
-		});
-		add(crossElements);
-		crossElements.setEnabled(false);
-		crossElements.setVisible(false);
-
+		addSeparator();		
+		
 		// reconcile
-		JMenuItem reconcile = Builder.makeMenuItem("new_reconcile", true, "reconcile.png");
-		reconcile.addActionListener(new AbstractAction() {
+		JMenuItem reconcile = Builder.makeMenuItem("menus.tools.new_reconcile", true, "reconcile.png");
+		reconcile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DBBrowser browser = new DBBrowser(editor, true, false);
 
 				// select the site we're in
-				SampleSummary ss = (SampleSummary) sample.getMeta("::summary");
-				if(ss != null) 
-					browser.selectSiteByCode(ss.getSiteCode());
+				if(sample.meta().hasSiteCode()) 
+					browser.selectSiteByCode(sample.meta().getSiteCode());
 				
-				browser.setTitle("Choose a reference sample");
+				browser.setTitle(I18n.getText("question.chooseReference"));
 				browser.setVisible(true);
 				
 				if(browser.getReturnStatus() == DBBrowser.RET_OK) {
@@ -177,51 +103,172 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 					try {
 						reference = toOpen.get(0).load();
 					} catch (IOException ioe) {
-						Alert.error("Error Loading Sample",
-								"Can't open this file: " + ioe.getMessage());
+						Alert.error(I18n.getText("error.loadingSample"),
+								I18n.getText("error.cantOpenFile") +": " + ioe.getMessage());
 						return;
 					}
 
-					OpenRecent.sampleOpened(reference.getLoader(), "reconcile");
+					OpenRecent.sampleOpened(new SeriesDescriptor(reference), "reconcile");
 					
 					// open it for fun times
-					Center.center(new ReconcileWindow(sample, reference), editor);
+					new ReconcileWindow(sample, reference);
 				}
-
-					/*
-					 * here's how the reconcile UI should work: -- auto-tile
-					 * +------A Reading------+ +------C Reading------+ | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-					 * +---------------------+ +---------------------+
-					 * +--------------Reconcile Dialog---------------+ | | | |
-					 * +---------------------------------------------+ --
-					 * selecting an error row in the reconcile dialog selects
-					 * that year in A and C
-					 */
 			}
 		});
 		
 		// now, make this remember the last things we reconciled against!
-		JMenu reconcileMenu = Builder.makeMenu("reconcile");
+		JMenu reconcileMenu = Builder.makeMenu("menus.tools.reconcile");
 		reconcileMenu.putClientProperty("corina.open_recent_action", new OpenRecent.SampleOpener("reconcile") {
 			@Override
 			public void performOpen(Sample s) {
 				// new reconcile window
-				Center.center(new ReconcileWindow(sample, s), editor);
+				new ReconcileWindow(sample, s);
 				// move to top of menu
-				OpenRecent.sampleOpened(s.getLoader(), getTag());
+				OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
 			}
 		});
 		reconcileMenu.add(reconcile);
 		reconcileMenu.addSeparator();
-		OpenRecent.makeOpenRecentMenu("reconcile", reconcileMenu, 2);
-		add(reconcileMenu);
+		OpenRecent.makeOpenRecentMenu("menus.tools.reconcile", reconcileMenu, 2);
+		add(reconcileMenu);		
+	
+		// index
+		indexMenu = Builder.makeMenuItem("menus.tools.index", true, "index.png");
+		indexMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				// PERF: for big samples, it can take a couple
+				// seconds for the dialog to appear.  not enough
+				// for a progressbar, but enough that i should use
+				// the "wait" cursor on the editor window.
+				new IndexDialog(sample, editor);
+			}
+		});
+		indexMenu.setEnabled(!sample.isIndexed());
+		add(indexMenu);
+
+		// sum
+		
+		if(!sample.isSummed())
+		{
+			// Sample is not a sum so add standard 'sum' button
+			JMenuItem sumMenuItem = Builder.makeMenuItem("menus.tools.sum", true, "sum.png");
+			sumMenuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					new SumCreationDialog(editor, ElementList.singletonList(new CachedElement(sample)));
+				}
+			});
+			add(sumMenuItem);
+		}
+		else
+		{
+			// Sample is already a sum so offer to modify or create a version
+			
+			JMenuItem modifySum = Builder.makeMenuItem("menus.tools.modifysumandreplace");
+			modifySum.setEnabled(false);
+			
+			JMenuItem modifySumAsVersion = Builder.makeMenuItem("menus.tools.modifysumasversion");
+			modifySumAsVersion.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					new SumCreationDialog(editor, sample);
+				}
+			});
+			
+			JMenu sumSubMenu = Builder.makeMenu("menus.tools.sum", "sum.png");
+			sumSubMenu.add(modifySum);
+			sumSubMenu.add(modifySumAsVersion);
+			add(sumSubMenu);
+		}
+		
+		
+
+		// redate
+		JMenuItem redate = Builder.makeMenuItem("menus.tools.redate", true, "redate.png");
+		redate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				new RedateDialog(sample, editor).setVisible(true);
+			}
+		});
+		if (System.getSecurityManager() != null) {
+			try {
+				AccessController.checkPermission(new CorinaPermission("redate"));
+			} catch (AccessControlException ace) {
+				ace.printStackTrace();
+				redate.setEnabled(false);
+				redate.setBackground(Color.red.darker().darker());
+			}
+		}
+		add(redate);
+		redate.setEnabled(true);
+		redate.setVisible(true);		
+		
+		
+		// Crossdating	
+		JMenuItem crossAgainst = Builder.makeMenuItem("menus.tools.new_crossdate", true, "crossdate.png");
+		crossAgainst.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				Element secondary = new CachedElement(sample); 
+				new CrossdateDialog(editor, ElementList.singletonList(secondary), secondary);
+			}
+		});
+		
+		// now, make this remember the last things we reconciled against!
+		JMenu crossMenu = Builder.makeMenu("menus.tools.crossdateAgainst");
+		crossMenu.putClientProperty("corina.crossdate_open_recent_action", new OpenRecent.SampleOpener("crossdate") {
+			@Override
+			public void performOpen(Sample s) {
+				// new crossdate window
+				//new ReconcileWindow(sample, s);
+				// move to top of menu
+				//OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
+				Element secondary = new CachedElement(sample); 
+				new CrossdateDialog(editor, ElementList.singletonList(secondary), secondary);
+				OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
+			}
+		});
+		
+		ITridasSeries series = s.getSeries();
+		if(series instanceof TridasDerivedSeries)
+		{
+			TridasDerivedSeries ds = (TridasDerivedSeries) series;
+			if(ds.getType().getValue().equals("Crossdate"))
+			{
+				JMenuItem reviewCrossdate = Builder.makeMenuItem("crossdate.reviewCrossdate", true, "crossdate.png");
+				final CachedElement element = new CachedElement(s);
+				reviewCrossdate.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent ae) {
+						new CrossdateDialog(editor, element);
+					}
+				});
+				add(reviewCrossdate);
+			}
+			else
+			{
+				crossMenu.add(crossAgainst);
+				crossMenu.addSeparator();
+				OpenRecent.makeOpenRecentMenu("menus.tools.crossdate", crossMenu, 10);
+				add(crossMenu);	
+			}
+			
+		}
+		else
+		{
+			crossMenu.add(crossAgainst);
+			crossMenu.addSeparator();
+			OpenRecent.makeOpenRecentMenu("menus.tools.crossdate", crossMenu, 10);
+			add(crossMenu);	
+		}
+		
+		
+
+		
+		
 
 		// hit them so they enable/disable themselves properly
 		sampleMetadataChanged(null);
 		sampleElementsChanged(null);
 	}
 
-	private JMenuItem indexMenu, sumMenu, crossElements;
+	private JMenuItem indexMenu, crossElements;
 
 	//
 	// listener
@@ -231,11 +278,13 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	public void sampleMetadataChanged(SampleEvent e) {
 		// index menu: only if not indexed
 		indexMenu.setEnabled(!sample.isIndexed());
-		sumMenu.setEnabled(!sample.isSummed());
+		
 	}
 	public void sampleElementsChanged(SampleEvent e) {
+		/*
 		// cross elements: only if elements present, and at least 2 elements
 		crossElements.setEnabled(sample.getElements() != null &&
 				sample.getElements().size() >= 2);
+				*/
 	}
 }

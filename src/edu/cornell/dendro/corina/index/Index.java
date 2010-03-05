@@ -66,7 +66,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	 * @see Graphable
 	 * @return data as a List of Integers 
 	 */
-	public final List getData() {
+	public final List<? extends Number> getData() {
 		return ixFunction.getOutput();
 	}
 
@@ -177,12 +177,12 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	}
 
 	// "(loop for x in A for y in B summing (expt (- x y) 2))"
-	private static double computeChi2(List A, List B) {
+	private static double computeChi2(List<? extends Number> A, List<? extends Number> B) {
 		int n = A.size();
 		double chi2 = 0.0;
 		for (int i = 0; i < n; i++) {
-			double a = ((Number) A.get(i)).doubleValue();
-			double b = ((Number) B.get(i)).doubleValue();
+			double a = A.get(i).doubleValue();
+			double b = B.get(i).doubleValue();
 			double chi = a - b;
 			chi2 += chi * chi;
 		}
@@ -212,13 +212,13 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	// why can't i steal it directly?  because they use arrays,
 	// i use lists (and t-score uses funny offsets).
 	// i really shouldn't violate OAOO, though -- REFACTOR.
-	private static double computeR(List A, List B) {
+	private static double computeR(List<? extends Number> A, List<? extends Number> B) {
 		// compute means
 		int n = A.size();
 		double Amean = 0.0, Bmean = 0.0;
 		for (int i = 0; i < n; i++) {
-			Amean += ((Number) A.get(i)).doubleValue();
-			Bmean += ((Number) B.get(i)).doubleValue();
+			Amean += A.get(i).doubleValue();
+			Bmean += B.get(i).doubleValue();
 		}
 		Amean /= n;
 		Bmean /= n;
@@ -241,7 +241,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	}
 
 	// undo: backup data
-	private List backup = null;
+	private List<Number> backup = null;
 	private String oldFormat;
 	private boolean wasMod;
 
@@ -251,7 +251,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	public final void apply() {
 		// back up the old data
 		if (backup == null) {
-			backup = new ArrayList();
+			backup = new ArrayList<Number>();
 			backup.addAll(target.getData());
 		}
 		// INEFFICIENT: make a copy of the old data, then overwrite it all.
@@ -284,7 +284,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 
 	public final void unapply() {
 		// restore target.data
-		target.setData(new ArrayList());
+		target.setData(new ArrayList<Number>());
 		target.getData().addAll(backup);
 
 		// restore meta/format
@@ -307,7 +307,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	@return complete title of this index */
 	@Override
 	public final String toString() {
-		return MessageFormat.format(I18n.getText("x_index_of"), new Object[] {
+		return MessageFormat.format(I18n.getText("index.x_index_of"), new Object[] {
 				getName(), target.toString() });
 	}
 

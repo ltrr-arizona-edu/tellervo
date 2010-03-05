@@ -34,12 +34,12 @@ import javax.swing.ListModel;
 import javax.swing.UIManager;
 
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.site.GenericIntermediateObject;
-import edu.cornell.dendro.corina.site.Radius;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.Specimen;
-import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.tridas.Subsite;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasEntityBase;
+import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 
 /**
  * @author lucasm
@@ -47,12 +47,12 @@ import edu.cornell.dendro.corina.site.Tree;
  * Create a BoxLayout of FlowLayouts...
  *
  */
-public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends BasePanel implements WizardChildMonitor {
+public class BaseContentPanel<OBJT extends TridasEntityBase> extends BasePanel implements WizardChildMonitor {
 	/**
 	 * 
 	 */
 	public BaseContentPanel(WizardPanelParent parent, 
-			Class<? extends GenericIntermediateObject> contentClass) {
+			Class<? extends TridasEntityBase> contentClass) {
 		
 		this.wizardParent = parent;
 		this.myPanel = (BaseEditorPanel<OBJT>) EditorPanelFactory.createPanelForClass(contentClass);
@@ -288,7 +288,7 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends Ba
      * Also serves to notify us of a change in the parental selection
      * @param obj
      */
-    public void setParentObject(GenericIntermediateObject obj) {
+    public void setParentObject(TridasEntityBase obj) {
     	if(obj != parentObject) {
     		parentObject = obj;
     		
@@ -301,7 +301,7 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends Ba
     		
     		// special case (I hate these)
     		// on subsites, choose Main as the default
-    		if(obj instanceof Site) {
+    		if(obj instanceof TridasObject) {
     			int len = cboExistingList.getModel().getSize();
     			
     			for(int i = 0; i < len; i++) {
@@ -330,11 +330,11 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends Ba
      */
     private void setDefaultSelectionFrom(Object o) {
     	// don't even bother for any other weird type
-    	if(!(o instanceof GenericIntermediateObject))
+    	if(!(o instanceof TridasEntityBase))
     		return;
     	
     	// don't bother if it's invalid!
-    	if(o.toString().equals(GenericIntermediateObject.NAME_INVALID))
+    	if(o.toString().equals(TridasEntityBase.NAME_INVALID))
     		return;
     	
     	// go through our list and do case insensitive string compares
@@ -363,8 +363,8 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends Ba
     public String getPrefix() {
     	Object obj = cboExistingList.getSelectedItem();
     	
-    	if(obj instanceof Site)
-    		return ((Site)obj).getCode();
+    	if(obj instanceof TridasObject)
+    		return ((TridasObject)obj).getLabCode();
     	
     	return obj.toString();
     }
@@ -437,7 +437,7 @@ public class BaseContentPanel<OBJT extends GenericIntermediateObject> extends Ba
 	private WizardPanelParent wizardParent;
 	private BaseEditorPanel<OBJT> myPanel;
 	private ComboBoxPopulator comboPopulator;
-	private GenericIntermediateObject parentObject;
+	private TridasEntityBase parentObject;
 
 	private boolean panelValid = false;
 

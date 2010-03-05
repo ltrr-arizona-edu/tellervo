@@ -20,8 +20,6 @@
 
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.site.LegacySiteDB;
-
 import java.util.List;
 import javax.swing.JTextField;
 
@@ -40,7 +38,7 @@ import javax.swing.event.DocumentEvent;
          eventually come up first?
    </ul>
 
-   @see edu.cornell.dendro.corina.site.LegacySiteDB
+   @see edu.cornell.dendro.corina.tridas.LegacySiteDB
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
@@ -49,26 +47,6 @@ public class AutoComplete extends JTextField {
     // the list of words to look for matches in
     private List dict;
  
-    /**
-       Make a new autocompleting text field, using all of the site
-       names from the database.
-
-       @param text the initial text for the field
-       @param columns the number of columns of text to show
-       @param dictionary a list of words to autocomplete
-    */
-    public AutoComplete(String text, int columns) {
-	super(text, columns);
-
-	try {
-	    List l = LegacySiteDB.getSiteDB().getSiteNames();
-	    useDictionary(l);
-	} catch (NullPointerException npe) {
-	    // apparently this is what happens if it can't load the
-	    // site db file.  FIXME: it should behave nicer.
-	}
-    }
-
     /**
        Make a new autocompleting text field.
 

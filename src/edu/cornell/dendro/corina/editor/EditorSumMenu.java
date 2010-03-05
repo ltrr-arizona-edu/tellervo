@@ -1,31 +1,27 @@
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.sample.Element;
-import edu.cornell.dendro.corina.sample.ElementFactory;
-import edu.cornell.dendro.corina.sample.ElementList;
-import edu.cornell.dendro.corina.sample.FileElement;
-import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleEvent;
-import edu.cornell.dendro.corina.sample.SampleListener;
-import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.manip.Sum;
-import edu.cornell.dendro.corina.manip.Clean;
-import edu.cornell.dendro.corina.gui.ElementsPanel;
-import edu.cornell.dendro.corina.gui.FileDialog;
-import edu.cornell.dendro.corina.gui.UserCancelledException;
-import edu.cornell.dendro.corina.gui.Bug;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
-
-import java.util.ArrayList;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
-import java.awt.event.ActionEvent;
+
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.FileDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.manip.Clean;
+import edu.cornell.dendro.corina.manip.Sum;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementFactory;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleEvent;
+import edu.cornell.dendro.corina.sample.SampleListener;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 // sum
 // - re-sum
@@ -40,6 +36,8 @@ import java.awt.event.ActionEvent;
 
 public class EditorSumMenu extends JMenu implements SampleListener {
 
+	private static final long serialVersionUID = 1L;
+
 	private JMenuItem resumMenu;
 
 	private JMenuItem cleanMenu;
@@ -48,19 +46,16 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 
 	private Sample sample;
 	
-	private ElementsPanel elemPanel;
-
-	public EditorSumMenu(Sample s, ElementsPanel epanel) {
+	public EditorSumMenu(Sample s) {
 		super(I18n.getText("sum"));
 
 		this.sample = s;
-		this.elemPanel = epanel;
 
 		sample.addSampleListener(this);
 
 		// re-sum
 		resumMenu = Builder.makeMenuItem("resum");
-		resumMenu.addActionListener(new AbstractAction() {
+		resumMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// resum it
 				try {
@@ -98,7 +93,7 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 							.error("Error Summing",
 									"Some elements are raw, some indexed: can't mix types.");
 				} catch (Exception e) {
-					Bug.bug(e);
+					new Bug(e);
 
 					// BUG: if the user deletes all elements from
 					// this sample, sum throws something to here...
@@ -110,7 +105,7 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 
 		// clean
 		cleanMenu = Builder.makeMenuItem("clean");
-		cleanMenu.addActionListener(new AbstractAction() {
+		cleanMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// clean, and add to undo-stack
 				sample.postEdit(Clean.clean(sample));
@@ -143,7 +138,7 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 
 		// add item -- ENABLED IFF THERE EXIST OTHER ELEMENTS OR DATA IS-EMPTY
 		addMenu = Builder.makeMenuItem("element_add...");
-		addMenu.addActionListener(new AbstractAction() {
+		addMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// open file dialog
 				String filename;
@@ -160,7 +155,7 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 				// ADD CHECK: make sure indexed+indexed, or raw+raw
 
 				// remember how many elements there used to be
-				int numOld = sample.getElements().size();
+				//int numOld = sample.getElements().size();
 
 				// add -- if summed, add each one
 				Element src = ElementFactory.createElement(filename);
@@ -195,9 +190,8 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 
 		// remove item
 		remMenu = Builder.makeMenuItem("element_remove");
-		remMenu.addActionListener(new AbstractAction() {
+		remMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				elemPanel.removeSelectedRows();
 				// fixme: make this undoable
 			}
 		});
@@ -232,7 +226,5 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 	public void sampleElementsChanged(SampleEvent e) {
 		// clean: if summed (what's that mean, exactly?)
 		cleanMenu.setEnabled(sample.isSummed());
-	}
-	
-    public void setElementsPanel(ElementsPanel ep) { elemPanel = ep; }
+	}	
 }

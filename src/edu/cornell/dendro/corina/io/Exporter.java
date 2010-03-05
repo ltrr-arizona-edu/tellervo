@@ -5,11 +5,14 @@ package edu.cornell.dendro.corina.io;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
+import java.nio.charset.Charset;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Filetype;
@@ -17,10 +20,14 @@ import edu.cornell.dendro.corina.formats.PackedFileType;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Overwrite;
+import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
+import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 
 /**
  * @author Lucas Madar
@@ -29,14 +36,44 @@ import edu.cornell.dendro.corina.util.Overwrite;
 public class Exporter {
 	private String exportDirectory;
 	private boolean rememberExportDirectory;
+	private EncodingType encodingType;
+	
+
+	public enum EncodingType {
+		UTF8 ("UTF8", "Default - Unicode (UTF-8)", "Unicode Transformation Format - 8-bit"),
+		UTF16 ("UTF-16", "Unicode (UTF-16)", "Unicode Transformation Format - 16-bit"),
+		LATIN1 ("ISO8859_1", "Western (ISO 8859-1)", "ISO/IEC 8859 Latin alphabet 1"), 
+		US_ASCII ("ASCII", "Western (ASCII ISO 646-US)", "ISO 646-US ASCII - 7-bit"),
+		MAC_ROMAN ("MacRoman", "Western (Mac Roman)", "Macintosh Roman");
+		
+		final String classname;
+		final String shortname;
+		final String longname;
+		
+	EncodingType(String classname, String shortname, String longname){
+		this.classname = classname;
+		this.shortname = shortname;
+		this.longname = longname;
+	}
+		
+	public final String getShortname(){ return this.shortname;}
+	public final String getLongname(){ return this.longname;}
+	public final String getClassname(){ return this.classname;}
+	public final String toString(){ return this.shortname;}
+	public final EncodingType getDefaultEncoding() {return EncodingType.UTF8;}
+	
+	}
 	
 	public Exporter() {
+		// Default encoding
+		encodingType = EncodingType.UTF8;
+		
 		rememberExportDirectory = true;
 
 		// load the last export directory. If it doesn't exist, make a nice default.
-		exportDirectory = App.prefs.getPref("corina.dir.export");
+		exportDirectory = App.prefs.getPref("corina.dir.export", null);
 		if(exportDirectory == null)
-			exportDirectory = App.prefs.getPref("corina.dir.data");
+			exportDirectory = App.prefs.getPref("corina.dir.data", null);
 		if(exportDirectory == null)
 			exportDirectory = "";
 		
@@ -55,6 +92,11 @@ public class Exporter {
 		exportDirectory = directory;
 	}
 	
+	public void setEncodingType(EncodingType type)
+	{
+		encodingType = type;
+	}
+	
 	/**
 	 * Save a single sample.
 	 * Pops up a dialog box asking for the file name to save to, exports to the type 
@@ -65,19 +107,37 @@ public class Exporter {
 	 */
 	public String saveSingleSample(Sample exportee, String format) {
 		
-		// use the default title...
-		
-		String etext = "";
-		if (exportee.getMeta("filename") != null) {
-			File oldfile = new File((String) exportee.getMeta("filename"));
-			etext = " (" + oldfile.getName() + ")";
-		}
-
-		String title = I18n.getText("export") + etext;
+		// use the default title...		
+		String title = I18n.getText("export") + " " + exportee.getDisplayTitle();
 		
 		return saveSingleSample(exportee, format, title);
 	}
 
+	public void saveSingleSample2(Sample exportee, String format, String fn)
+	{		
+		
+		Filetype f;
+		try {
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn), encodingType.getClassname())); 
+			f = (Filetype) Class.forName(format).newInstance();
+			f.save(exportee, w);
+			w.close();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+		
+	}
+	
 	public String saveSingleSample(Sample exportee, String format, String title) {
 		String fn = null;
 		
@@ -86,12 +146,12 @@ public class Exporter {
 			String suggestedfn = 
 				exportDirectory + 
 				File.separator + 
-				new File((String)exportee.getMeta("filename")).getName() +
+				exportee.getDisplayTitle().toString() +
 				f.getDefaultExtension();
 			
 			System.out.println(suggestedfn);
 			
-			fn = FileDialog.showSingle(title, suggestedfn, "export");
+			fn = FileDialog.showSingle(I18n.getText("export"), title, suggestedfn, "export");
 
 			// save the export directory. Remember, fn is the actual filename, so we need to chop off the file name bit.
 			if(rememberExportDirectory)
@@ -101,7 +161,7 @@ public class Exporter {
 			Overwrite.overwrite(fn);
 
 			// save it
-			BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
 			try {
 				f.save(exportee, w);
 			} finally {
@@ -155,7 +215,7 @@ public class Exporter {
 
 			// save it
 			Filetype f = (Filetype) Class.forName(format).newInstance();
-			BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
 			try {
 				((PackedFileType)f).saveSamples(slist, w);
 			} finally {
@@ -182,6 +242,80 @@ public class Exporter {
 		return fn;
 	}
 	
+	public Boolean savePackedSample2(List<Sample> samples, Filetype ft, File fn)
+	{
+		
+		BufferedWriter w = null;
+		try {
+			w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
+
+			((PackedFileType)ft).saveSamples(samples, w);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				w.close();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+				return false;
+			}
+		}
+		
+		return true;
+		
+	}
+	
+	
+	public Boolean savePackedSample2(ElementList elements, Filetype ft, File fn)
+	{
+		
+		List<Sample> samples = new ArrayList<Sample>();
+
+		for(Element e : elements) {
+			// load it
+			Sample s;
+			try {
+				s = e.load();
+				
+			} catch (IOException ioe) {
+				Alert.error("Error Loading Sample",
+						"Can't open this file: " + ioe.getMessage());
+				continue;
+			}
+			samples.add(s);
+
+			OpenRecent.sampleOpened(new SeriesDescriptor(s));
+		}
+		
+		// no samples => don't bother doing anything
+		if (samples.isEmpty()) {
+			return null;
+		}
+		
+		
+		BufferedWriter w = null;
+		try {
+			w = new BufferedWriter(new FileWriter(fn));
+			((PackedFileType)ft).saveSamples(samples, w);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				w.close();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+				return false;
+			}
+		}
+		
+		return true;
+		
+	}
+	
 	/**
 	 * Saves multiple samples.
 	 * Pops up a dialog box asking for a folder to save to;
@@ -194,6 +328,108 @@ public class Exporter {
 	public List saveMultiSample(List slist, String format) {
 		return saveMultiSample(slist, format, "Choose an Export Folder");
 	}
+	
+	public Boolean saveMultiSample2(List<Sample> samples, Filetype ft, File folder)
+	{
+		try {
+						
+			if(!((folder.exists() && folder.isDirectory()) || folder.mkdirs())) {
+				Alert.error("Couldn't export", "Couldn't create/write to directory " + folder.getName());
+				return false;
+			}
+			
+			// for each sample, make a new filename and export it!
+			for (int i = 0; i < samples.size(); i++) {
+				Sample s = (Sample) samples.get(i);
+				String progress = "Processing "
+						+ ((String) s.getDisplayTitle() + " (" + i
+						+ "/" + samples.size() + ")");
+				
+				// so, we have things like "blah.pkw.TUC!"
+				// gross, but this is what people wanted.
+				String fn = folder.getAbsolutePath() +
+					File.separator +
+					new File((String)s.getDisplayTitle() +
+					ft.getDefaultExtension());		
+								
+				BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
+				try {
+					ft.save(s, w);
+				} finally {
+					try {
+						w.close();
+					} catch (IOException ioe) {
+						ioe.printStackTrace();
+						return false;
+					}
+				}					
+				System.out.println("Exported " + fn);
+			}			
+			
+		} catch (Exception ex) {
+			// problem creating filetype, or npe, or whatever -- bug.
+			Bug.bug(ex);
+		}
+		return true;
+	}
+	
+	public Boolean saveMultiSample2(ElementList elements, Filetype ft, File folder)
+	{
+		try {
+						
+			if(!((folder.exists() && folder.isDirectory()) || folder.mkdirs())) {
+				Alert.error("Couldn't export", "Couldn't create/write to directory " + folder.getName());
+				return false;
+			}
+			
+			int i=0;
+			for(Element e : elements) {
+				i++;
+				// load it
+				Sample s;
+				try {
+					s = e.load();
+					
+				} catch (IOException ioe) {
+					Alert.error("Error Loading Sample",
+							"Can't open this file: " + ioe.getMessage());
+					continue;
+				}
+				
+				String progress = "Processing "
+					+ ((String) s.getDisplayTitle() + " (" + i
+					+ "/" + elements.size() + ")");
+				
+				// so, we have things like "blah.pkw.TUC!"
+				// gross, but this is what people wanted.
+				String fn = folder.getAbsolutePath() +
+					File.separator +
+					new File((String)s.getDisplayTitle() +
+					ft.getDefaultExtension());					
+				
+				OpenRecent.sampleOpened(new SeriesDescriptor(s));
+				
+				BufferedWriter w =   new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
+				try {
+					ft.save(s, w);
+				} finally {
+					try {
+						w.close();
+					} catch (IOException ioe) {
+						ioe.printStackTrace();
+						return false;
+					}
+				}					
+				System.out.println("Exported " + fn);
+				
+			}		
+			
+		} catch (Exception ex) {
+			// problem creating filetype, or npe, or whatever -- bug.
+			Bug.bug(ex);
+		}
+		return true;
+	}	
 	
 	public List saveMultiSample(List slist, String format, String title) {		
 		List savedNames = new ArrayList();
@@ -241,7 +477,7 @@ public class Exporter {
 				
 				savedNames.add(fn);
 				
-				BufferedWriter w = new BufferedWriter(new FileWriter(fn));
+				BufferedWriter w = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(fn), encodingType.getClassname())); 
 				try {
 					f.save(s, w);
 				} finally {

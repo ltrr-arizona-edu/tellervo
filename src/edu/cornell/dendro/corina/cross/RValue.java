@@ -72,7 +72,7 @@ public class RValue extends Cross {
 	/** Return a prettier name for this cross: "R-Value".
 	 @return the name of this cross, "R-Value" */
 	public String getName() {
-		return I18n.getText("rvalue");
+		return I18n.getText("statistics.rvalue");
 	}
 
 	/** A format string for R-values.
@@ -110,15 +110,16 @@ public class RValue extends Cross {
 	 window, and then the natural logarithm is taken.
 	 @param data a List of Numbers holding the data to normalize
 	 @return an array of floats containing the normalized data */
-	private float[] normalize(List data) {
+	private float[] normalize(List<Number> data) {
 		// size of the data: used many times below
 		int N = data.size();
 		float smoothed[] = new float[N];
 
 		// make sure everything is positive (for GAZ37ABC.TRU)
+		// also, make sure things aren't zero - divide by zero errors!
 		Integer one = new Integer(1); // (singleton)
 		for (int i = 0; i < N; i++)
-			if (((Number) data.get(i)).intValue() < 0)
+			if (data.get(i).intValue() < 1)
 				data.set(i, one);
 
 		// make array weights={1,1,1,...}
@@ -136,13 +137,13 @@ public class RValue extends Cross {
 		*/
 		
 		// borrow a high-pass filter
-		List tmp = HighPass.filter(data, weights);
+		List<Double> tmp = HighPass.filter(data, weights);
 		// high-pass should return an array!  (and maybe take an array, too!)
 
 		// natural logarithm -- log(0) is bad news, so log(max(s[i],eps))
 		for (int i = 0; i < N; i++) {
-			float value = ((Number) data.get(i)).floatValue();
-			float filter = ((Number) tmp.get(i)).floatValue();
+			float value = data.get(i).floatValue();
+			float filter = tmp.get(i).floatValue();
 			float ratio = value / filter;
 
 			smoothed[i] = (float) Math.log(Math.max(100 * ratio, EPS));

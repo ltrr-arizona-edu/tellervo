@@ -11,9 +11,12 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -29,8 +32,8 @@ import edu.cornell.dendro.corina.util.Center;
 /**
  * @author Aaron
  */
-public class Splash extends JFrame implements ProgressMeter.ProgressListener {
-	private ImageIcon image;
+public class Splash extends JDialog implements ProgressMeter.ProgressListener {
+	private BufferedImage img;
 	private JProgressBar progress = new JProgressBar();
 	private JLabel label = new JLabel();
 	protected Container progressPanel;
@@ -43,40 +46,34 @@ public class Splash extends JFrame implements ProgressMeter.ProgressListener {
 		this(title, null);
 	}
 
-	public Splash(ImageIcon image) {
-		this(null, image);
+	public Splash(BufferedImage img) {
+		this(null, img);
 	}
 
-	public Splash(String title, ImageIcon image) {
-		JPanel content = new JPanel();
+	public Splash(String title, BufferedImage img) {
 		
 		setUndecorated(true);
 
 		// make the content pane
-		content.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-		content.setLayout(new BorderLayout());
-		content.setBackground(Color.white);
+		ImagePanel content = new ImagePanel(img, ImagePanel.ACTUAL);
+
+		//content.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+		//content.setLayout(new BorderLayout());
+		//content.setBackground(Color.white);
+	
 		setContentPane(content);
-		
-		if (title != null) {
-			JLabel titlelabel = new JLabel(title);
-			titlelabel.setHorizontalAlignment(SwingConstants.CENTER);
-			getContentPane().add(titlelabel, BorderLayout.NORTH);
-		}
-		
+				
 		progressPanel = new Container();
 		progressPanel.setLayout(new GridLayout(2, 1));
 		label.setHorizontalAlignment(SwingConstants.CENTER);
-		progressPanel.add(label);
+		label.setForeground(Color.WHITE);
+		progressPanel.add(label);	
 		progressPanel.add(progress);
 		label.setVisible(false);
 		
-		if (image != null) {
-			getContentPane().add(new JLabel(image), BorderLayout.CENTER);
-			getContentPane().add(progressPanel, BorderLayout.SOUTH);
-		} else {
-			getContentPane().add(progressPanel, BorderLayout.CENTER);
-		}
+		
+		
+		getContentPane().add(progressPanel, BorderLayout.SOUTH);	
 		pack();
 				
 		/* really? this behavior sucks! 

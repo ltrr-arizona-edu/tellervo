@@ -1,12 +1,9 @@
 package edu.cornell.dendro.corina.graph;
 
-import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -16,12 +13,12 @@ import javax.swing.ScrollPaneConstants;
 
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
-import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 
+@SuppressWarnings("serial")
 public class GraphDialog extends JDialog {
 	/**
 	 * Graph a list of elements
@@ -105,18 +102,16 @@ public class GraphDialog extends JDialog {
 		}
 		
 		// ok, so things are good now. 
-		// initialize our plotting agents
-		PlotAgents agents = new PlotAgents();
 		
 		// create a new graphinfo structure, so we can tailor it to our needs.
 		GraphInfo gInfo = new GraphInfo();
 		
 		// force no drawing of graph names
-		gInfo.overrideDrawGraphNames(false);
+		gInfo.setShowGraphNames(false);
 		
 		// create a graph panel; put it in a scroll pane
 		final JDialog glue = this;
-		GrapherPanel graphPanel = new GrapherPanel(samples, agents, null, gInfo) {
+		GrapherPanel graphPanel = new GrapherPanel(samples, null, gInfo) {
 			@Override
 			public Dimension getPreferredScrollableViewportSize() {
 				int extraWidth = 2 + glue.getInsets().right + glue.getInsets().right;

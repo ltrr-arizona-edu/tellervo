@@ -20,25 +20,23 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import edu.cornell.dendro.corina.formats.WrongFiletypeException;
-import edu.cornell.dendro.corina.sample.ElementFactory;
-import edu.cornell.dendro.corina.sample.Sample;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.sample.ElementFactory;
 
 // methods for loading and saving a bunch of Graphs
 

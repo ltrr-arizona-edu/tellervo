@@ -6,6 +6,9 @@
 
 
 package edu.cornell.dendro.corina.prefs;
+
+import edu.cornell.dendro.corina.ui.Builder;
+
 /**
  *
  * @author  peterbrewer
@@ -20,6 +23,7 @@ public class Ui_PreferencesDialog extends javax.swing.JDialog {
     public Ui_PreferencesDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+		setIconImage(Builder.getApplicationIcon());
     }
     
     /** @return the return status of this dialog - one of RET_OK or RET_CANCEL */

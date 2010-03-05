@@ -23,11 +23,15 @@ package edu.cornell.dendro.corina.manip;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleType;
 
 import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
+
+import org.tridas.interfaces.ITridasDerivedSeries;
+import org.tridas.schema.TridasDerivedSeries;
 
 /**
  A "sum" of two or more datasets is the average of those datasets.
@@ -148,6 +152,13 @@ public class Sum {
 
 	// load elements, sum them, and store into result (returns result, too)
 	private static Sample sum(Sample result, ElementList elements) throws IOException {
+
+		result.setSampleType(SampleType.SUM);
+
+		// if it's not a derived series, it is now
+		if(!(result.getSeries() instanceof ITridasDerivedSeries))
+			result.setSeries(new TridasDerivedSeries());		
+		
 		// step 0: load all elements, and stuff 'em into a buffer
 		Sample buf[] = loadIntoBuffer(elements);
 
@@ -155,7 +166,7 @@ public class Sum {
 		if (buf.length == 0) {
 			// "skip to step 6" would be nice...
 			result.setRange(new Range()); // default empty range (1001-1000)
-			result.setData(new ArrayList<Object>());
+			result.setData(new ArrayList<Number>());
 			result.setCount(new ArrayList<Integer>());
 			result.setWJIncr(new ArrayList<Integer>());
 			result.setWJDecr(new ArrayList<Integer>());
@@ -242,7 +253,7 @@ public class Sum {
 
 		// step 6: set range, and copy array back into (list) result.data
 		result.setRange(range);
-		result.setData(new ArrayList<Object>(n));
+		result.setData(new ArrayList<Number>(n));
 		result.setCount(new ArrayList<Integer>(n));
 		result.setWJIncr(new ArrayList<Integer>(n));
 		result.setWJDecr(new ArrayList<Integer>(n));

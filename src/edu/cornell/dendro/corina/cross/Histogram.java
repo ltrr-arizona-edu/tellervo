@@ -222,6 +222,16 @@ public class Histogram {
 	}
 
 	/**
+	 * Gets the minimum value in a bucket
+	 * 
+	 * @param bucket
+	 * @return
+	 */
+	public float getBucketMin(int bucket) {
+		return low + step * bucket;
+	}
+	
+	/**
 	 * Get the number of items in a bucket.
 	 * 
 	 * @param bucket

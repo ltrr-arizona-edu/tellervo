@@ -20,6 +20,7 @@ import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
+@SuppressWarnings("serial")
 public class AllScoresTableModel extends AbstractTableModel {
 	private CrossdateCollection.Pairing pairing;
 	private Class<?> shownCrossdateClass;
@@ -97,7 +98,7 @@ public class AllScoresTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int col) {
 	    if (col == 0)
-	    	return I18n.getText("year");
+	    	return I18n.getText("general.year");
 	    else
 	    	return Integer.toString(col-1);
 	}
@@ -226,7 +227,7 @@ public class AllScoresTableModel extends AbstractTableModel {
 	 * @return
 	 */
 	public Integer getOverlapAt(Range newRange) {
-		return (newRange == null) ? null : newRange.overlap(cross.getMoving().getRange());		
+		return (newRange == null) ? null : newRange.overlap(cross.getFixed().getRange());		
 	}
 	
 	protected Year getYear(int row, int col) {
@@ -240,7 +241,7 @@ public class AllScoresTableModel extends AbstractTableModel {
 	
     private class ScoreCellRenderer extends DefaultTableCellRenderer {
         private DecimalFormat df;
-        private Color fore, back, lite;
+        private Color back, lite; //, fore;
         private AllScoresTableModel model;
         
         public ScoreCellRenderer(AllScoresTableModel model) {
@@ -253,7 +254,7 @@ public class AllScoresTableModel extends AbstractTableModel {
             
             df = new DecimalFormat("0000"); // sane default?
             
-            fore = App.prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black);
+            // fore = App.prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black);
             back = App.prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white);
             lite = App.prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green);
         }
@@ -289,9 +290,9 @@ public class AllScoresTableModel extends AbstractTableModel {
 
 				cell.setBackground(significant ? lite : back);
 				if(newRange != null && overlap != null)
-					((JLabel)cell).setToolTipText("<html>Primary: " + 
+					((JLabel)cell).setToolTipText("<html>Reference: " + 
 							model.getCross().getFixed().getRange() + 
-							"<br>Secondary: " + newRange + "<br>Overlap: " + 
+							"<br>Floating: " + newRange + "<br>Overlap: " + 
 							overlap);
 			}
 

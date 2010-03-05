@@ -1,12 +1,23 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.0
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
+
+require_once('FirePHPCore/FirePHP.class.php');
+
+// Set up FireBug debugging
+$firebug = FirePHP::getInstance(true);
+$firebug->setEnabled($debugFlag);
+if($debugFlag===TRUE) ob_start();
+
 
 // Remove standard PHP error reporting
 //error_reporting(0);
@@ -17,6 +28,8 @@ $old_error_handler = set_error_handler("userErrorHandler");
 function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars) 
 {
     global $myMetaHeader;
+    global $firebug;
+    $wrapwidth = 90;
 
     // Associative array for looking up friendly error names
     $errortype      = array(
@@ -78,11 +91,15 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
     // Generic PHP errors
     if (in_array($errno, $phperrors))
     {
-        $myMetaHeader->setMessage($errno, "PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename", "Warning");
+    	$message = "PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename";
+        $myMetaHeader->setMessage($errno, wordwrap($message, $wrapwidth), "Warning");
+        $firebug->log($message, "PHP warning code $errno");
     }
     elseif (in_array($errno, $phpwarnings))
     {
-        $myMetaHeader->setMessage($errno, "PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename ", "Warning");
+    	$message = "PHP ".$errortype[$errno]." - ".$errmsg.". See line $linenum in file $filename ";
+        $myMetaHeader->setMessage($errno, wordwrap($message, $wrapwidth), "Warning");
+        $firebug->log($message, "PHP warning code $errno");
     }
 
     // Corina specific errors
@@ -90,25 +107,30 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
     {
         $errno = (int) substr($errmsg, 0, 3);
         $errmsg = substr($errmsg, 3);
-        $myMetaHeader->setMessage($errno, $errmsg, "Error");
+        $myMetaHeader->setMessage($errno, wordwrap($errmsg, $wrapwidth), "Error");
+        $firebug->log($errmsg, "Error $errno");
     }
     elseif ($errno == E_USER_WARNING)
     {
         $errno = (int) substr($errmsg, 0, 3);
         $errmsg = substr($errmsg, 3);
-        $myMetaHeader->setMessage($errno, $errmsg, "Warning");
+        $myMetaHeader->setMessage($errno, wordwrap($errmsg, $wrapwidth), "Warning");
+        $firebug->log($errmsg, "Warning $errno");
     }
     elseif ($errno == E_USER_NOTICE)
     {
         $errno = (int) substr($errmsg, 0, 3);
         $errmsg = substr($errmsg, 3);
-        $myMetaHeader->setMessage($errno, $errmsg, "Notice");
+        $myMetaHeader->setMessage($errno, wordwrap($errmsg, $wrapwidth), "Notice");
+        $firebug->log($errmsg, "Notice $errno");
     }
     
     // Other unusual PHP errors
     else 
     {
-        $myMetaHeader->setMessage("P".$errno, "PHP ".$errortype[$errno]." - ".$errmsg.". \n See line $linenum \n in file $filename", "Warning");
+    	$message = "PHP ".$errortype[$errno]." - ".$errmsg.". \n See line $linenum \n in file $filename";
+        $myMetaHeader->setMessage("99".$errno, wordwrap($message, $wrapwidth), "Warning");
+        $firebug->log($message, "PHP warning code $errno");
     }
     
 }

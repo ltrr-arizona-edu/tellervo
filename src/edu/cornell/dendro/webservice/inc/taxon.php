@@ -1,33 +1,19 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
 require_once('dbhelper.php');
 
-class taxon 
+class taxon extends taxonEntity implements IDBAccessor
 {
-    var $id = NULL;
-    var $parentID = NULL;
-    var $label = NULL;
-    var $colID = NULL;
-    var $colParentID = NULL;
-    var $taxonRank = NULL;
-    var $parentXMLTag = "taxonDictionary"; 
-    var $lastErrorMessage = NULL;
-    var $lastErrorCode = NULL;
-    var $kingdom = NULL;
-    var $phylum = NULL;
-    var $class = NULL;
-    var $order = NULL;
-    var $family = NULL;
-    var $genus = NULL;
-    var $species = NULL;
-   
 
     /***************/
     /* CONSTRUCTOR */
@@ -43,27 +29,25 @@ class taxon
     /* SETTERS */
     /***********/
 
-    function setLabel($theLabel)
+    function setParamsFromDBRow($row)
     {
-        // Set the current objects note.
-        $this->label=$theLabel;
+    	$this->setID($row['taxonid']);
+     	$this->setLabel($row['taxonlabel']);
+        $this->setCoLID($row['colid']);
+        $this->setCoLParentID($row['colparentid']);
+        $this->setTaxonRank($row['taxonrank']);
+        //$this->setParentID($row['parenttaxonid']);
+        //$this->setHigherTaxonomy();
     }
-
-    function setErrorMessage($theCode, $theMessage)
-    {
-        // Set the error latest error message and code for this object.
-        $this->lastErrorCode = $theCode;
-        $this->lastErrorMessage = $theMessage;
-    }
-
+    
     function setParamsFromDB($theID)
     {
         // Set the current objects parameters from the database
 
         global $dbconn;
         
-        $this->id=$theID;
-        $sql = "select tlkptaxon.taxonid, tlkptaxon.parenttaxonid, tlkptaxon.colID, tlkptaxon.colParentID, tlkptaxonrank.taxonrank, tlkptaxon.label as label from tlkptaxon, tlkptaxonrank  where tlkptaxon.taxonid=$theID and tlkptaxonrank.taxonrankid=tlkptaxon.taxonrankid";
+        
+        $sql = "SELECT * FROM vwtlkptaxon WHERE taxonid=".pg_escape_string($theID);
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -73,19 +57,15 @@ class taxon
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified id");
+                $this->setErrorMessage("903", "No records match the specified taxon ID. SQL was ".dbhelper::xmlSpecialCharReplace($sql));
                 return FALSE;
             }
             else
             {
                 // Set parameters from db
                 $row = pg_fetch_array($result);
-                $this->label = $row['label'];
-                $this->colID = $row['colid'];
-                $this->colParentID = $row['colparentid'];
-                $this->taxonRank = $row['taxonrank'];
-                $this->taxonRank = $row['taxonrank'];
-                $this->parentID = $row['parenttaxonid'];
+                $this->setParamsFromDBRow($row);
+
             }
         }
         else
@@ -97,144 +77,81 @@ class taxon
 
         return TRUE;
     }
+
     
-    function taxonRecordExists($colID)
+	/**
+	 * Set the current taxon details using the Catalogue of Life dictionary.
+	 *
+	 * @param String $CoLID - CoL ID 
+	 * @param String $CoLNormalName - CoL normalised name for belts and braces check
+	 * @param String $webservice - either 'local' or 'remote'
+	 * @return Boolean
+	 */
+    function setParamsFromCoL($CoLID, $CoLNormalName=NULL, $webservice="local")
     {
-        global $dbconn;
-        $sql="select count(*) from tlkptaxon where colid=$colID";
+    	if($webservice=='local')
+    	{
+	        // Set the current objects parameters from the database
+	
+	        global $dbconn;
+	        
+	        $sql = "SELECT taxonid, colid, label 
+	        		FROM tlkptaxon 
+	        		WHERE colid='".pg_escape_string($CoLID)."'";
+
+	        if($CoLNormalName!=NULL)
+	        {
+	        	$sql.=" AND label='".pg_escape_string($CoLNormalName)."'";
+	        }
+	        
+	        //echo $sql;
+	        $dbconnstatus = pg_connection_status($dbconn);
+	        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+	        {
+	            pg_send_query($dbconn, $sql);
+	            $result = pg_get_result($dbconn);
+	            if(pg_num_rows($result)==0)
+	            {
+	                // No records match the id specified
+	                $this->setErrorMessage("903", "Either no record matches the specified catalogue of life ID or the normalised name you gave is not consistent with the Catalogue of Life");
+	                return FALSE;
+	            }
+	            else
+	            {
+                	$row = pg_fetch_array($result);	            	
+					
+                	$this->setParamsFromDB($row['taxonid']);
+					
+	            }
+	        }
+	        else
+	        {
+	            // Connection bad
+	            $this->setErrorMessage("001", "Error connecting to database");
+	            return FALSE;
+	        }
+	
+	        return TRUE;
+    	}
+    	else
+    	{
+    		$this->setErrorMessage("702", "Setting taxon parameters using the remote Cataloge of life webservice has not yet been implemented.");
+    	}
+    	
+
+    }  
         
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);    
-            while ($row = pg_fetch_array($result))
-            {
-                if($row['count']>0)
-                {
-                    return True;
-                }
-                else
-                {   
-                    return False;
-                }
-            }
-        }
-    }
     
-    function setHigherTaxonomy()
-    {
-        global $dbconn;
-        
-        $sql = "select * from cpgdb.qrytaxonomy(".$this->id.")";
-        //echo $sql;
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            pg_send_query($dbconn, $sql);
-            $result = pg_get_result($dbconn);
-            if(pg_num_rows($result)==0)
-            {
-                // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified id");
-                return FALSE;
-            }
-            else
-            {
-                // Set parameters from db
-                $row = pg_fetch_array($result);
-                $this->kingdom  = $row['kingdom'];
-                $this->phylum   = $row['phylum'];
-                $this->class    = $row['class'];
-                $this->order    = $row['txorder'];
-                $this->family   = $row['family'];
-                $this->genus    = $row['genus'];
-                $this->species  = $row['species'];
-            }
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-
-        return TRUE;
-
-    }
     
-
-
-    function setParamsFromCoL($CoLID)
-    {
-        $doneStuff = false;
-        $colURL="http://webservice.catalogueoflife.org/annual-checklist/2008/search.php?response=full&id=$CoLID";
-        $colXML = simplexml_load_file($colURL);
-        if($colXML['total_number_of_results']==1)
-        {
-            if($colXML->result->name_status=='accepted name')
-            {
-                // Write Higher taxon records
-                $parentID = NULL;
-                foreach ($colXML->result->classification->taxon as $currentTaxon)
-                {
-                    if(!($this->taxonRecordExists($currentTaxon->id)))
-                    {
-                        $this->setParamsWithParents($currentTaxon->id, $parentID, $currentTaxon->rank, $currentTaxon->name);
-                        $this->writeToDB();
-                        $doneStuff = true;
-                    }
-                    $parentID = $currentTaxon->id;
-                }
-
-                // Write requested taxon details
-                if(!($this->taxonRecordExists($colXML->result->id)))
-                {
-                    if($colXML->result->rank=="Infraspecies")
-                    {
-                        // This needs to change
-                        $rank = $colXML->result->infraspecies_marker;
-                    }
-                    else
-                    {
-                        $rank = $colXML->result->rank;
-                    }
-                    $this->setParamsWithParents($colXML->result->id, $parentID, $colXML->result->rank, $colXML->result->name." ".$colXML->result->author);
-                    $this->writeToDB();
-                    $doneStuff = true;
-                }
-            }
-            else
-            {
-                $this->setErrorMessage("901", "The requested taxon is a synonym.  Only accepted taxa can be added.");
-                return false;
-            }
-    
-        }
-        else
-        {   
-            // More than one taxon returned
-            $this->setErrorMessage("901", "The requested taxon is not unique.");
-            return false;
-        }
-
-        if ($doneStuff)
-        {
-            return true;
-        }
-        else
-        {
-            $this->setErrorMessage("906", "Record already exists.");
-            return false;
-        }
-
-    }
         
     function setParamsWithParents($colID, $colParentID, $taxonRank, $label)
     {
         global $dbconn;
 
         // Lookup taxon rank id
-        $sql = "select taxonrankid from tlkptaxonrank where taxonrank ilike '$taxonRank'";
+        $sql = "SELECT taxonrankid 
+        		FROM tlkptaxonrank 
+        		WHERE taxonrank ilike '".pg_escape_string($taxonRank)."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -253,7 +170,9 @@ class taxon
         // Lookup parent taxon id
         if ($colParentID)
         {
-            $sql = "select taxonid from tlkptaxon where colid=$colParentID";
+            $sql = "SELECT taxonid 
+            		FROM tlkptaxon 
+            		WHERE colid=".pg_escape_string($colParentID);
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
@@ -286,122 +205,97 @@ class taxon
         }
     }
 
-
-    /***********/
-    /*ACCESSORS*/
-    /***********/
-
-    function asXML($format='standard', $parts='all')
+   function setHigherTaxonomy()
     {
-        // Return a string containing the current object in XML format
-        if (!isset($this->lastErrorCode))
+        global $dbconn;
+        
+        $sql = "SELECT * FROM cpgdb.qrytaxonomy(".pg_escape_string($this->getID()).")";
+        //echo $sql;
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
-            // Only return XML when there are no errors.
-            //
-            // TO DO - Sort out XML special characters in XML.  
-            $xml= "<taxon id=\"".$this->id."\" parentID=\"".$this->parentID."\" colID=\"".$this->colID."\" colParentID=\"".$this->colParentID."\" taxonRank=\"".$this->taxonRank."\">".escapeXMLChars($this->label)."</taxon>\n";
-            return $xml;
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            if(pg_num_rows($result)==0)
+            {
+                // No records match the id specified
+                $this->setErrorMessage("903", "No records match the specified id when looking up higher taxonomy");
+                return FALSE;
+            }
+            else
+            {
+                // Set parameters from db
+                $row = pg_fetch_array($result);
+                $this->kingdom  = $row['kingdom'];
+                $this->phylum   = $row['phylum'];
+                $this->class    = $row['class'];
+                $this->order    = $row['txorder'];
+                $this->family   = $row['family'];
+                $this->genus    = $row['genus'];
+                $this->species  = $row['species'];
+            }
         }
         else
         {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
             return FALSE;
         }
-    }
 
-    function getLabel()
+        return TRUE;
+
+    }    
+
+
+    function asXML()
     {
-        return $this->label;
+    	global $taxonomicAuthorityEdition;
+    	$xml = "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$this->getCoLID()."\" normal=\"".$this->getLabel()."\">".$this->getOriginalTaxon()."</tridas:taxon>\n";    	
+    	return $xml;
     }
     
-    function getHigherTaxonXML($theRank)
+    function getHigherTaxonomyXML()
     {
-        $xml = "<higherTaxon rank=\"$theRank\" >";
-        switch($theRank)
-        {
-            case "kingdom":
-                return $xml.$this->kingdom."</higherTaxon>";
-            case "phylum":
-                return $xml.$this->phylum."</higherTaxon>";
-            case "class":
-                return $xml.$this->class."</higherTaxon>";
-            case "order":
-                return $xml.$this->order."</higherTaxon>";
-            case "family":
-                return $xml.$this->family."</higherTaxon>";
-            case "genus":
-                return $xml.$this->genus."</higherTaxon>";
-            default:
-                return false;
-        }
+    	$this->setHigherTaxonomy();
+    	$xml = NULL;
+ 		$xml.= $this->getHigherTaxonXML('kingdom')."\n";   
+        $xml.= $this->getHigherTaxonXML('phylum')."\n";   
+        $xml.= $this->getHigherTaxonXML('class')."\n";   
+        $xml.= $this->getHigherTaxonXML('order')."\n";   
+        $xml.= $this->getHigherTaxonXML('family')."\n";   
+        $xml.= $this->getHigherTaxonXML('genus')."\n";   
+        $xml.= $this->getHigherTaxonXML('species')."\n";  
+    	
+    	return $xml;    	
     }
 
-    function getHigherTaxon($theRank)
-    {
-        switch($theRank)
-        {
-            case "kingdom":
-                return $this->kingdom;
-            case "phylum":
-                return $this->phylum;
-            case "class":
-                return $this->class;
-            case "order":
-                return $this->order;
-            case "family":
-                return $this->family;
-            case "genus":
-                return $this->genus;
-            default:
-                return false;
-        }
-    }
 
-    function getParentTagBegin()
-    {
-        // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag.">";
-        return $xml;
-    }
-
-    function getParentTagEnd()
-    {
-        // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
-        return $xml;
-    }
-
-    function getLastErrorCode()
-    {
-        // Return an integer containing the last error code recorded for this object
-        $error = $this->lastErrorCode; 
-        return $error;  
-    }
-
-    function getLastErrorMessage()
-    {
-        // Return a string containing the last error message recorded for this object
-        $error = $this->lastErrorMessage;
-        return $error;
-    }
 
     /***********/
     /*FUNCTIONS*/
     /***********/
 
+    /**
+     * Write this taxon to the database
+     *
+     * @return unknown
+     */
     function writeToDB()
     {
-        // Write the current object to the database
-
+        
         global $dbconn;
+        
+        if ($this->getName()==NULL) $this->setErrorMessage("902", "Missing parameter - 'name' field is required."); return FALSE;
+        
 
         //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
+        if($this->getLastErrorCode()== NULL)
         {
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // If ID has not been set or colID has been set, then we assume that we are writing a new record to the DB.  Otherwise updating.
-                if( ($this->id == NULL) || (isset($this->colID)) ) 
+                if( ($this->getID() == NULL) || ($this->getCoLID()!=NULL) ) 
                 {
                     // New record
                     $sql = "insert into tlkptaxon (";
@@ -461,54 +355,16 @@ class taxon
             }
         }
     }
-/*
+
+    function validateRequestParams($paramsClass, $crudMode)
+    {
+
+        return false;
+    }
     function deleteFromDB()
     {
-        // Delete the record in the database matching the current object's ID
-
-        global $dbconn;
-
-        // Check for required parameters
-        if($this->id == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'id' field is required.");
-            return FALSE;
-        }
-
-        //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
-        {
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-
-                $sql = "delete from tlkpspecimentype where specimentypeid=".$this->id;
-
-                // Run SQL command
-                if ($sql)
-                {
-                    // Run SQL 
-                    pg_send_query($dbconn, $sql);
-                    $result = pg_get_result($dbconn);
-                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                    {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
-                        return FALSE;
-                    }
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-        }
-
-        // Return true as write to DB went ok.
-        return TRUE;
+        return false;
     }
- */
 // End of Class
 } 
 ?>

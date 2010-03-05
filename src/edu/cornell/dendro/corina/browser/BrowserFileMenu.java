@@ -20,6 +20,9 @@
 
 package edu.cornell.dendro.corina.browser;
 
+import edu.cornell.dendro.corina.tridas.LegacySite;
+import edu.cornell.dendro.corina.tridas.LegacySiteDB;
+import edu.cornell.dendro.corina.tridas.SiteNotFoundException;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.graph.GraphWindow;
@@ -30,9 +33,6 @@ import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleLoader;
-import edu.cornell.dendro.corina.site.LegacySite;
-import edu.cornell.dendro.corina.site.LegacySiteDB;
-import edu.cornell.dendro.corina.site.SiteNotFoundException;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,7 +91,7 @@ public class BrowserFileMenu extends JMenu {
        @param browser the Browser to operate on
     */
     public BrowserFileMenu(Browser browser) {
-        setText(I18n.getText("file"));
+        setText(I18n.getText("menus.file"));
 
         this.browser = browser;
 
@@ -175,7 +175,7 @@ public class BrowserFileMenu extends JMenu {
     /** Add an "Open" menuitem. */
     protected void addOpenMenuItem() {
         // open
-        JMenuItem open = Builder.makeMenuItem("open");
+        JMenuItem open = Builder.makeMenuItem("menus.file.open");
         open.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 try {

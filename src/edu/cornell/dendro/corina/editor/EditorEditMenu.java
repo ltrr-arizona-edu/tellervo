@@ -36,7 +36,7 @@ import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
-import edu.cornell.dendro.corina.io.SerialSampleIO;
+import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.core.App;
 
 import java.io.File;
@@ -113,7 +113,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 	@Override
 	protected void addUndo() {
-		undoMenu = Builder.makeMenuItem("undo", true, "undo.png");
+		undoMenu = Builder.makeMenuItem("menus.edit.undo", true, "undo.png");
 		undoMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// DISABLED: undoManager.undo();
@@ -126,7 +126,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 	@Override
 	protected void addRedo() {
-		redoMenu = Builder.makeMenuItem("redo", true, "redo.png");
+		redoMenu = Builder.makeMenuItem("menus.edit.redo", true, "redo.png");
 		redoMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// DISABLED: undoManager.redo();
@@ -144,7 +144,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	@Override
 	protected void addCopy() {
 		// copy: put all data unto clipboard in 2-column format
-		JMenuItem copy = Builder.makeMenuItem("copy", true, "editcopy.png");
+		JMenuItem copy = Builder.makeMenuItem("menus.edit.copy", true, "editcopy.png");
 		copy.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				CopyDialog d = new CopyDialog(editor, sample.getRange());
@@ -164,7 +164,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	@Override
 	protected void addPaste() {
 		// paste: replace (insert?) data from clipboard (any format) into this sample
-		JMenuItem paste = Builder.makeMenuItem("paste", true, "editpaste.png");
+		JMenuItem paste = Builder.makeMenuItem("menus.edit.paste", true, "editpaste.png");
 		paste.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				paste();
@@ -195,7 +195,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		addDelete();
 		addInsertYears();
 
-		if (SerialSampleIO.hasSerialCapability()
+		if (LegacySerialSampleIO.hasSerialCapability()
 				&& App.prefs.getPref("corina.serialsampleio.port") != null) {
 			addSeparator();
 			addMeasure();
@@ -215,7 +215,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 
 	private void addMeasure() {
-		measureMenu = Builder.makeMenuItem("start_measuring", true, "measurement.png");
+		measureMenu = Builder.makeMenuItem("menus.edit.start_measuring", true, "measure.png");
 		measureMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				editor.toggleMeasuring();
@@ -225,7 +225,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 
 	private void addInsert() {
-		insert = Builder.makeMenuItem("insert_year", true, "insertyear.png");
+		insert = Builder.makeMenuItem("menus.edit.insert_year", true, "insertyear.png");
 		insert.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				dataView.insertYear();
@@ -235,28 +235,28 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 	
 	private void addInsertYears() {
-		insert = Builder.makeMenuItem("insert_years");
+		insert = Builder.makeMenuItem("menus.edit.insert_years");
 		insert.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				try {
 					// first, get the number of years...
 					int value = AskNumber.getNumber(
-							editor, "Insert years...",
-							"Insert how many years?", 2);
+							editor, I18n.getText("menus.edit.insert_years"),
+							I18n.getText("question.insertHowManyYears"), 2);
 					
-					String labels[] = {"Blank", "Default Value ["+Sample.MR+"]", "Cancel"};
+					String labels[] = {I18n.getText("general.blank"), I18n.getText("general.defaultValue") +" ["+Sample.MR+"]", I18n.getText("general.cancel")};
 					
 					int ret = JOptionPane.showOptionDialog(
 							editor,
-							"What would you like the newly inserted years to be set to?",
-							"Insert " + value + " years...",
+							I18n.getText("question.whatShouldInsertYearsBeSetTo"),
+							I18n.getText("general.insert") + " " + value + " " + I18n.getText("general.years"),
 							JOptionPane.YES_NO_CANCEL_OPTION,
 							JOptionPane.QUESTION_MESSAGE, null, labels,
 							labels[0]);
 					
 					switch(ret) {
 					case 0:
-						dataView.insertYears("", value);
+						dataView.insertYears(0, value);
 						break;
 					case 1:
 						dataView.insertYears(new Integer(Sample.MR), value);
@@ -273,7 +273,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 
 	private void addInsertMR() {
-		insertMR = Builder.makeMenuItem("insert_mr", true, "insertmissingyear.png");
+		insertMR = Builder.makeMenuItem("menus.edit.insert_mr", true, "insertmissingyear.png");
 		insertMR.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				dataView.insertMR();
@@ -283,7 +283,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 
 	private void addDelete() {
-		delete = Builder.makeMenuItem("delete_year", true, "deleteyear.png");
+		delete = Builder.makeMenuItem("menus.edit.delete_year", true, "deleteyear.png");
 		delete.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				dataView.deleteYear();
@@ -351,8 +351,8 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			sample.removeMeta("filename");
 		} catch (WrongFiletypeException wfte) {
 			// unreadable format.  tell user.
-			Alert.error("Problem Pasting",
-					"The clipboard doesn't appear to have a dendro dataset.");
+			Alert.error(I18n.getText("error"),
+					I18n.getText("error.clipboardError"));
 			return;
 		} catch (IOException ioe) {
 			// shouldn't ever happen.  this means there was a problem reading or
@@ -363,8 +363,8 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			return;
 		} catch (UnsupportedFlavorException ufe) {
 			// clipboard doesn't have text on it.  tell user.
-			Alert.error("Problem Pasting",
-					"The clipboard doesn't appear to have text on it.");
+			Alert.error(I18n.getText("error"),
+					I18n.getText("error.clipboardError"));
 			return;
 		}
 
@@ -413,7 +413,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			int inindex = range.getStart().compareTo(sample.getRange().getStart());
 			
 			List tmpData = sample.getData().subList(inindex, inindex + range.span());
-			List tmpCount = (sample.getCount() == null) ? null : sample.getCount().subList(inindex, inindex + range.span());
+			List tmpCount = sample.hasCount() ? null : sample.getCount().subList(inindex, inindex + range.span());
 			Sample tmpSample = new Sample();
 			
 			tmpSample.setRange(range);
@@ -465,9 +465,9 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			return;
 
 		if(!measuring)
-			measureMenu.setText(I18n.getText("start_measuring"));
+			measureMenu.setText(I18n.getText("menus.edit.start_measuring"));
 		else
-			measureMenu.setText(I18n.getText("stop_measuring"));
+			measureMenu.setText(I18n.getText("menus.edit.stop_measuring"));
 	}
 
 	public void sampleElementsChanged(SampleEvent e) {

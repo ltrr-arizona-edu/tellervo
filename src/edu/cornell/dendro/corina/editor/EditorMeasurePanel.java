@@ -21,14 +21,16 @@ import edu.cornell.dendro.corina.ui.Builder;
 public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 	private JLabel lastMeasurement;
 	private Editor editor;
-	private CorinaMeasuringDevice dev;
+//	private LegacyCorinaMeasuringDevice dev;
+	private AbstractSerialMeasuringDevice dev;
 	
 	/* audioclips to play... */
 	private AudioClip measure_one;
 	private AudioClip measure_dec;
 	private AudioClip measure_error;
 	
-	public EditorMeasurePanel(Editor myeditor, SerialSampleIO ioport) {
+	public EditorMeasurePanel(Editor myeditor, AbstractSerialMeasuringDevice device) {
+//	public EditorMeasurePanel(Editor myeditor, LegacySerialSampleIO ioport) {
 		super(new FlowLayout(FlowLayout.RIGHT));
 		
 		editor = myeditor;
@@ -36,7 +38,7 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 		lastMeasurement = new JLabel("[No last measurement]");
 		add(lastMeasurement);
 				
-		JButton leave = Builder.makeButton("stop_measuring");
+		JButton leave = Builder.makeButton("menus.edit.stop_measuring");
 		add(leave);
 		leave.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
@@ -49,19 +51,30 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 
 		AudioClip measInit;
 		try {
-			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/meas1.wav"));
-			measure_dec = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/measdec.wav"));
-			measure_error = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/measerr.wav"));
+			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/meas1.wav"));
+			measure_dec = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/measdec.wav"));
+			measure_error = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/measerr.wav"));
 			
 			// play this to indicate measuring is on...
-			measInit = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/measinit.wav"));
+			measInit = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/measinit.wav"));
 			if(measInit != null)
 				measInit.play();
-		} catch (Exception ae) { /* ignore this... */ }
+			 	System.out.println("Sound played");
+		} catch (Exception ae) { 
+			System.out.println("Failed to play sound");
+			System.out.println(ae.getMessage());
+			
+		/* ignore this... */ }
 		
 		// now, watch for info!
-		dev = new CorinaMeasuringDevice(ioport, this);
+//		dev = new LegacyCorinaMeasuringDevice(ioport, this);
+		dev = device;
+		dev.setMeasurementReceiver(this);
 	}
+	
+//	public EditorMeasurePanel(Editor myEditor){
+//		new EditorMeasurePanel(myEditor, new SerialDeviceSelector().getDevice());
+//	}
 	
 	public void receiverUpdateStatus(String status) {
 		lastMeasurement.setText(status);

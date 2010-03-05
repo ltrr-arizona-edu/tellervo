@@ -1,26 +1,25 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.0
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
 require_once('dbhelper.php');
+require_once('inc/dbEntity.php');
 
-require_once("inc/note.php");
-require_once("inc/specimenType.php");
-require_once("inc/terminalRing.php");
-require_once("inc/specimenQuality.php");
-require_once("inc/specimenContinuity.php");
-require_once("inc/datingType.php");
-require_once("inc/pith.php");
+require_once("inc/readingNote.php");
 require_once("inc/taxon.php");
 require_once("inc/region.php");
 require_once("inc/securityUser.php");
+require_once("inc/box.php");
 
-class dictionaries 
+class dictionaries
 {
     var $parentXMLTag = "dictionaries"; 
     var $xmldata = NULL;
@@ -66,10 +65,12 @@ class dictionaries
         global $dbconn;
         
         $xmldata = "";
-
-        $dictItems = array('siteNote', 'pith', 'specimenQuality', 'specimenType', 'terminalRing', 'region', 'specimenContinuity', 'treeNote', 'vmeasurementNote', 'readingNote', 'taxon', 'securityUser', 'datingType');
-            
-        // Specimen Type 
+        
+        $dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
+        				  'elementAuthenticity', 'datingType', 'taxon');
+       
+        
+		// Standard dictionary items
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -77,82 +78,39 @@ class dictionaries
             {
                 if($item=="region")
                 {
-                    $sql="select distinct(tblsiteregion.regionid) as id, tblregion.regionname from tblsiteregion, tblregion where tblsiteregion.regionid=tblregion.regionid";
+                	// Unique case
+                    $sql="select distinct(tblobjectregion.regionid) as id, tblregion.regionname as value from tblobjectregion, tblregion where tblobjectregion.regionid=tblregion.regionid";
                 }
-                elseif($item=="securityUser")
+                elseif($item=="taxon")
                 {
-                    $sql = "select ".strtolower($item)."id as id from tbl".strtolower($item)." order by ".strtolower($item)."id"; 
+                	// Unique case
+                	$sql = "SELECT taxon.taxonid, taxon.label, taxon.parentTaxonID, taxon.colID, taxon.colParentID, rank.taxonrank
+                			FROM tlkpTaxon taxon
+							INNER JOIN tlkpTaxonRank rank on rank.taxonrankid=taxon.taxonrankid";
                 }
                 else
                 {
-                    $sql = "select ".strtolower($item)."id as id from tlkp".strtolower($item)." order by ".strtolower($item)."id"; 
+                	// Looking up in tlkp style table
+                    $sql = "select ".strtolower($item)."id as id, ".strtolower($item)." as value from tlkp".strtolower($item)." where ".strtolower($item)."id>0 order by ".strtolower($item)."id"; 
                 }
-                
-                switch ($item)
-                {
-                    case "siteNote":
-                        $myObj = new siteNote();
-                        break;
-                    case "pith":
-                        $myObj = new pith();
-                        break;
-                    case "specimenQuality":
-                        $myObj = new specimenQuality();
-                        break;
-                    case "specimenType":
-                        $myObj = new specimenType();
-                        break;
-                    case "terminalRing":
-                        $myObj = new terminalRing();
-                        break;
-                    case "region":
-                        $myObj = new region();
-                        break;
-                    case "specimenContinuity":
-                        $myObj = new specimenContinuity();
-                        break;
-                    case "treeNote":
-                        $myObj = new treeNote();
-                        break;
-                    case "vmeasurementNote":
-                        $myObj = new vmeasurementNote();
-                        break;
-                    case "readingNote":
-                        $myObj = new readingNote();
-                        break;
-                    case "taxon":
-                        $myObj = new taxon();
-                        break;
-                    case "securityUser":
-                        $myObj = new securityUser();
-                        break;
-                    case "datingType":
-                        $myObj = new datingType();
-                        break;
-                    default:
-                        echo "not supported yet";
-                        die();
-                }
-                
-                $xmldata.=$myObj->getParentTagBegin();
+                                
+                $xmldata.= "<".$item."Dictionary>\n";
                 
                 // Run SQL
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
-                    $success = $myObj->setParamsFromDB($row['id']);
-
-                    if($success)
-                    {
-                        $xmldata.=$myObj->asXML();
-                    }
-                    else
-                    {
-                    //   trigger_error($mySpecimenType->getLastErrorCode().$mySpecimenType->getLastErrorMessage());
-                    }
+                	if($item=='taxon')
+                	{
+				    	global $taxonomicAuthorityEdition;
+				    	$xmldata .= "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$row['colid']."\" normal=\"".dbHelper::escapeXMLChars($row['label'])."\"/>\n";    	
+                	}
+                	else
+                	{
+                    	$xmldata.= "<".$item." normalStd=\"Corina\" normalId=\"".$row['id']."\" normal=\"".dbHelper::escapeXMLChars($row['value'])."\"/>\n";
+                	}
                 }
-                $xmldata.=$myObj->getParentTagEnd();
-                unset($myDummyObj, $myObj);
+                $xmldata.= "</".$item."Dictionary>\n";
             }
         }
         else
@@ -161,6 +119,73 @@ class dictionaries
             trigger_error("001"."Error connecting to database");
         }
 
+        
+        // More complex dictionary items
+        $dictItemsWithClasses = array('securityUser', 'readingNote', 'box');
+        
+        global $firebug;
+        
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            foreach($dictItemsWithClasses as $item)
+            {
+                switch($item)
+                {
+            		case "securityUser": 
+            			$sql="select securityuserid as id from tblsecurityuser";
+            			$myObj = new securityUser();
+            			break;     
+            		case "readingNote": 
+            			$sql="select readingnoteid as id from tlkpreadingnote where vocabularyid>0";
+            			$myObj = new readingNote();
+            			break;              			     			
+            		case "taxon":
+                       	$sql="select taxonid as id, label as value from tlkptaxon order by taxonid";
+                       	$myObj = new taxon();
+                       	break;
+            		case "box":
+            			$sql="select boxid as id, title as value from tblbox order by createdtimestamp"; 	
+                      	$myObj = new box();
+                      	break;
+                }
+            		
+		
+                            
+                $xmldata.= "<".$item."Dictionary>\n";
+                
+                // Run SQL
+                $result = pg_query($dbconn, $sql);
+                while ($row = pg_fetch_array($result))
+                {
+                	$success = $myObj->setParamsFromDB($row['id']);
+                	
+                	if ($item=="securityUser"){
+                		$myObj->setChildParamsFromDB();
+                		$xmldata.=$myObj->asXML("comprehensive");
+                	}
+                	else
+                	{ 	                	
+	                	if($success)
+	                	{
+	                		$xmldata.=$myObj->asXML("minimal");
+	                	}
+	                	else
+	                	{
+	                		
+	                	}
+                	}
+                }
+                $xmldata.= "</".$item."Dictionary>\n";
+                unset($myObj);
+            }
+        }
+        else
+        {
+            // Connection bad
+            trigger_error("001"."Error connecting to database");
+        }       
+       
         // Put xmldata into class variable
         if($xmldata!=NULL)
         {
@@ -196,14 +221,10 @@ class dictionaries
         }
     }
 
-    function asKML($mode="all")
-    {
-    }
-
     function getParentTagBegin()
     {
         // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tbltree")."'>";
+        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblelement")."'>";
         return $xml;
     }
 
@@ -228,230 +249,7 @@ class dictionaries
         return $error;
     }
 
-    /***********/
-    /*FUNCTIONS*/
-    /***********/
-
-    function paramsToFilterSQL($paramsArray, $paramName)
-    {
-        $filterSQL="";
-        foreach($paramsArray as $param)
-        {
-            // Set operator
-            switch ($param['operator'])
-            {
-            case ">":
-                $operator = ">";
-                $value = " '".$param['value']."'";
-                break;
-            case "<":
-                $operator = "<";
-                $value = " '".$param['value']."'";
-                break;
-            case "=":
-                $operator = "=";
-                $value = " '".$param['value']."'";
-                break;
-            case "!=":
-                $operator = "!=";
-                $value = " '".$param['value']."'";
-                break;
-            case "like":
-                $operator = "ilike";
-                $value = " '%".$param['value']."%'";
-                break;
-            default :
-                $operator = "=";
-                $value = " '".$param['value']."'";
-            }
-            $filterSQL .= $this->tableName($paramName).".".$param['name']." ".$operator.$value." and ";
-        }
-
-        return $filterSQL;
-    }
-
-    function variableName($objectName)
-    {
-
-        switch($objectName)
-        {
-        case "site":
-            return "site";
-            break;
-        case "subsite":
-            return "subsite";
-            break;
-        case "tree":
-            return "tree";
-            break;
-        case "specimen":
-            return "specimen";
-            break;
-        case "radius":
-            return "radius";
-            break;
-        case "measurement":
-            return "vmeasurement";
-            break;
-        default:
-            return false;
-        }
-
-    }
-
-    function tableName($objectName)
-    {
-
-        switch($objectName)
-        {
-        case "site":
-            return "vwtblsite";
-            break;
-        case "subsite":
-            return "vwtblsubsite";
-            break;
-        case "tree":
-            return "vwtbltree";
-            break;
-        case "specimen":
-            return "vwtblspecimen";
-            break;
-        case "radius":
-            return "vwtblradius";
-            break;
-        case "measurement":
-            return "vwvmeasurement";
-            break;
-        default:
-            return false;
-        }
-
-    }
-
-    function getLowestRelationshipLevel($theRequest)
-    {
-        // This function returns an interger representing the most junior level of relationship required in this query
-        // tblsite         -- 6 -- most senior
-        // tblsubsite      -- 5 --
-        // tbltree         -- 4 --
-        // tblspecimen     -- 3 --
-        // tblradius       -- 2 --
-        // tblmeasurement  -- 1 -- most junior
-        
-        $myRequest = $theRequest;
-        
-        if (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'measurement'))
-        {
-            return 1;
-        }
-        elseif (($myRequest->radiusParamsArray) || ($myRequest->returnObject == 'radius'))
-        {
-            return 2;
-        }
-        elseif (($myRequest->specimenParamsArray) || ($myRequest->returnObject == 'specimen'))
-        {
-            return 3;
-        }
-        elseif (($myRequest->treeParamsArray) || ($myRequest->returnObject == 'tree'))
-        {
-            return 4;
-        }
-        elseif (($myRequest->subsiteParamsArray) || ($myRequest->returnObject == 'subsite'))
-        {
-            return 5;
-        }
-        if (($myRequest->siteParamsArray) || ($myRequest->returnObject == 'site'))
-        {
-            return 6;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    function getHighestRelationshipLevel($theRequest)
-    {
-        // This function returns an interger representing the most senior level of relationship required in this query
-        // tblsite         -- 6 -- most senior
-        // tblsubsite      -- 5 --
-        // tbltree         -- 4 --
-        // tblspecimen     -- 3 --
-        // tblradius       -- 2 --
-        // tblmeasurement  -- 1 -- most junior
-
-        $myRequest = $theRequest;
-
-        if (($myRequest->siteParamsArray) || ($myRequest->returnObject == 'site'))
-        {
-            return 6;
-        }
-        elseif (($myRequest->subsiteParamsArray) || ($myRequest->returnObject == 'subsite'))
-        {
-            return 5;
-        }
-        elseif (($myRequest->treeParamsArray) || ($myRequest->returnObject == 'tree'))
-        {
-            return 4;
-        }
-        elseif (($myRequest->specimenParamsArray) || ($myRequest->returnObject == 'specimen'))
-        {
-            return 3;
-        }
-        elseif (($myRequest->radiusParamsArray) || ($myRequest->returnObject == 'radius'))
-        {
-            return 2;
-        }
-        elseif (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'measurement'))
-        {
-            return 1;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    function getRelationshipSQL($theRequest)
-    {
-        // Returns the 'where' clause part of the query SQL for the table relationships 
-
-        $myRequest = $theRequest;
-        $lowestLevel  = $this->getLowestRelationshipLevel($myRequest);
-        $highestLevel = $this->getHighestRelationshipLevel($myRequest);
-        $sql ="";
-
-        //echo "high = $highestLevel\n";
-        //echo "low = $lowestLevel\n";
-
-        if (($lowestLevel==1) && ($highestLevel>=1))
-        {
-            $sql .= "vwvmeasurement.measurementid=tblmeasurement.measurementid and ";
-        }
-        if (($lowestLevel<=1) && ($highestLevel>1))
-        {
-            $sql .= "vwvmeasurement.radiusid=vwtblradius.radiusid and ";
-        }
-        if (($lowestLevel<=2) && ($highestLevel>2))
-        {
-            $sql .= "vwtblradius.specimenid=vwtblspecimen.specimenid and ";
-        }
-        if (($lowestLevel<=3) && ($highestLevel>3))
-        {
-            $sql .= "vwtblspecimen.treeid=vwtbltree.treeid and ";
-        }
-        if (($lowestLevel<=4) && ($highestLevel>4))
-        {
-            $sql .= "vwtbltree.subsiteid=vwtblsubsite.subsiteid and ";
-        }
-        if (($lowestLevel<=5) && ($highestLevel>5))
-        {
-            $sql .= "vwtblsubsite.siteid=vwtblsite.siteid and ";
-        }
-
-        return $sql;
-    }
-
+  
 
 
 // End of Class

@@ -58,14 +58,16 @@
                        Defaults to "dist".
 -->
 
+<!-- I'm not sure what good this is
   <exec executable="svn" output="svninfo.xml">
-    <arg line="info --xml"/>
+    <arg line="info - -xml"/>
   </exec>
   <xmlproperty file="svninfo.xml" collapseattributes="true"/>
 
   <property name="svn.revision"  value="${info.entry.revision}"/>
+-->
   <property name="app.name"      value="corina"/>
-  <property name="app.version"   value="bleedingedge"/>
+  <property name="app.version"   value="aardvark"/>
   <property name="app.keystore"  value="corina.keystore.set.in.build.properties"/>
   <property name="build.home"    value="build"/>
   <property name="deploy.home"   value="deploy"/>
@@ -137,20 +139,40 @@
                        URL: http://java.sun.com/products/javacomm/
 -->
 
-  <property name="log4j.jar" value="(set this in build.properties!)"/>
-  <property name="junit.jar" value="(set this in build.properties!)"/>
-  <property name="jhall.jar" value="(set this in build.properties!)"/>
-  <property name="ftp.jar" value="(set this in build.properties!)"/>
-  <property name="batik.jar" value="(set this in build.properties!)"/>
-  <property name="comm.jar" value="(set this in build.properties!)"/>
-  <property name="itext.jar" value="(set this in build.properties!)"/>
-  <property name="jdom.jar" value="(set this in build.properties!)"/>
-  <property name="pljava.jar" value="(set this in build.properties!)"/>
-  <property name="swing-layout.jar" value="(set this in build.properties!)"/>
-  <property name="jgoodies-forms.jar" value="(set this in build.properties!)"/>
-  <property name="mozswing.jar" value="(set this in build.properties!)"/>
-  <property name="MozillaInterfaces.jar" value="(set this in build.properties!)"/>
-  <property name="new-jfontchooser.jar" value="(set this in build.properties!)"/>
+    <property name="batik.jar" value="(set this in build.properties!)"/>
+    <property name="junit.jar" value="(set this in build.properties!)"/>
+    <property name="RXTXcomm.jar" value="(set this in build.properties!)"/>
+    <property name="postgresql-8.2-506.jdbc.jar" value="(set this in build.properties!)"/>
+    <property name="jdom.jar" value="(set this in build.properties!)"/>
+    <property name="pljava.jar" value="(set this in build.properties!)"/>
+    <property name="forms.jar" value="(set this in build.properties!)"/>
+    <property name="swing-layout.jar" value="(set this in build.properties!)"/>
+    <property name="log4j.jar" value="(set this in build.properties!)"/>
+    <property name="jna.jar" value="(set this in build.properties!)"/>
+    <property name="commons-logging.jar" value="(set this in build.properties!)"/>
+    <property name="mozswing.jar" value="(set this in build.properties!)"/>
+    <property name="jfontchooser.jar" value="(set this in build.properties!)"/>
+    <property name="JFontChooser.jar" value="(set this in build.properties!)"/>
+    <property name="apache-mime4j.jar" value="(set this in build.properties!)"/>
+    <property name="commons-codec.jar" value="(set this in build.properties!)"/>
+    <property name="httpclient.jar" value="(set this in build.properties!)"/>
+    <property name="httpcore.jar" value="(set this in build.properties!)"/>
+    <property name="httpmime.jar" value="(set this in build.properties!)"/>
+    <property name="jh.jar" value="(set this in build.properties!)"/>
+    <property name="jsyntaxpane.jar" value="(set this in build.properties!)"/>
+    <property name="activation.jar" value="(set this in build.properties!)"/>
+    <property name="l2fprod-common-shared.jar" value="(set this in build.properties!)"/>
+    <property name="l2fprod-common-sheet.jar" value="(set this in build.properties!)"/>
+    <property name="jaxen.jar" value="(set this in build.properties!)"/>
+    <property name="l2fprod-common-buttonbar.jar" value="(set this in build.properties!)"/>
+    <property name="iText.jar" value="(set this in build.properties!)"/>
+    <property name="jaxb-api.jar" value="(set this in build.properties!)"/>
+    <property name="jsr173_1.0_api.jar" value="(set this in build.properties!)"/>
+    <property name="jaxb-impl.jar" value="(set this in build.properties!)"/>
+    <property name="commons-lang.jar" value="(set this in build.properties!)"/>
+    <property name="coll-prop.jar" value="(set this in build.properties!)"/>
+    <property name="jaxb2-basics-runtime.jar" value="(set this in build.properties!)"/>
+    <property name="PDFRenderer.jar" value="(set this in build.properties!)"/>
 	
 <!-- ==================== Compilation Classpath =========================== -->
 
@@ -163,27 +185,69 @@
   that you explicitly added.
 -->
   <path id="compile.classpath">
-    <pathelement location="${log4j.jar}"/>
-    <pathelement location="${commons-logging.jar}"/>
-    <pathelement location="${jfontchooser.jar}"/>
-    <pathelement location="${junit.jar}"/>
-    <pathelement location="${jhall.jar}"/>
-    <pathelement location="${ftp.jar}"/>
     <pathelement location="${batik.jar}"/>
-    <pathelement location="${comm.jar}"/> 
-    <pathelement location="${itext.jar}"/> 
-    <pathelement location="${mail.jar}"/> 
-    <pathelement location="${commons-email.jar}"/> 
-    <pathelement location="${RXTXcomm.jar}"/> 
-    <pathelement location="${jdom.jar}"/> 
-    <pathelement location="${pljava.jar}"/> 
-    <pathelement location="${swing-layout.jar}"/> 
-    <pathelement location="${jgoodies-forms.jar}"/> 
-    <pathelement location="${mozswing.jar}"/> 
-    <pathelement location="${MozillaInterfaces.jar}"/> 
-    <pathelement location="${new-jfontchooser.jar}"/> 
+    <pathelement location="${junit.jar}"/>
+    <pathelement location="${RXTXcomm.jar}"/>
+    <pathelement location="${postgresql-8.2-506.jdbc.jar}"/>
+    <pathelement location="${jdom.jar}"/>
+    <pathelement location="${pljava.jar}"/>
+    <pathelement location="${forms.jar}"/>
+    <pathelement location="${swing-layout.jar}"/>
+    <pathelement location="${log4j.jar}"/>
+    <pathelement location="${jna.jar}"/>
+    <pathelement location="${commons-logging.jar}"/>
+    <pathelement location="${mozdom4java.jar}"/>
+    <pathelement location="${MozillaInterfaces.jar}"/>
+    <pathelement location="${mozswing.jar}"/>
+    <pathelement location="${MozillaGlue.jar}"/>
+    <pathelement location="${jfontchooser.jar}"/>
+    <pathelement location="${JFontChooser.jar}"/>
+    <pathelement location="${apache-mime4j.jar}"/>
+    <pathelement location="${commons-codec.jar}"/>
+    <pathelement location="${httpclient.jar}"/>
+    <pathelement location="${httpcore.jar}"/>
+    <pathelement location="${httpmime.jar}"/>
+    <pathelement location="${jh.jar}"/>
+    <pathelement location="${jsyntaxpane.jar}"/>
+    <pathelement location="${activation.jar}"/>
+    <pathelement location="${l2fprod-common-shared.jar}"/>
+    <pathelement location="${l2fprod-common-sheet.jar}"/>
+    <pathelement location="${jaxen.jar}"/>
+    <pathelement location="${l2fprod-common-buttonbar.jar}"/>
+    <pathelement location="${iText.jar}"/>
+    <pathelement location="${jaxb-api.jar}"/>
+    <pathelement location="${jsr173_1.0_api.jar}"/>
+    <pathelement location="${jaxb-impl.jar}"/>
+    <pathelement location="${commons-lang.jar}"/>
+    <pathelement location="${coll-prop.jar}"/>
+    <pathelement location="${jaxb2-basics-runtime.jar}"/>
+    <pathelement location="${PDFRenderer.jar}"/>
   </path>
 
+  <path id="xjc.classpath">
+  	<pathelement location="Libraries/jaxb/jaxb-xjc.jar"/>
+  	<!-- <pathelement location="Libraries/jaxb/jaxb-impl.jar"/>
+  	<pathelement location="Libraries/jaxb/jaxb-api.jar"/> -->
+	<pathelement location="Libraries/commons-lang-2.4.jar"/>
+  	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-ant-0.5.1.jar"/>
+  	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-0.5.1.jar"/>
+  	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-annotate-0.5.1.jar"/>
+  	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-tools-0.5.1.jar"/>
+  	<pathelement location="Libraries/jaxb/plugin/jaxb2-basics-runtime-0.5.1.jar"/>
+ 	<pathelement location="Libraries/jaxb/plugin/collection-setter-injector.jar"/> 
+  	<pathelement location="Libraries/jaxb/plugin/annox-0.4.2.jar"/>
+  	<pathelement location="Libraries/jaxb/plugin/xjc-if-ins+generics.jar"/>
+  	<!-- <pathelement location="Libraries/jaxb/plugin/proplistplugin.jar"/> -->
+  	<pathelement location="Libraries/jaxb/plugin/TridasAandI.jar"/>
+    <pathelement location="Libraries/jaxb/plugin/TridasAnnotationsPlugin.jar"/>
+  	<pathelement location="${jaxb2-basics-runtime.jar}"/>
+    <pathelement location="${commons-logging.jar}"/>
+  </path>
+	
+  <!-- XJC JAXB schema compiler -->
+  <taskdef name="xjc" classname="org.jvnet.jaxb2_commons.xjc.XJC2Task">
+	<classpath refid="xjc.classpath" />
+  </taskdef>
 <!-- ==================== All Target ====================================== -->
 
 <!--
@@ -323,6 +387,7 @@
 		<include name="edu/cornell/dendro/corina_resources/**/*.jpg"/>
 		<include name="edu/cornell/dendro/corina_resources/**/*.png"/>
 		<include name="edu/cornell/dendro/corina_resources/**/*.wav"/>
+		<include name="edu/cornell/dendro/webservice/schemas/*.xsd"/>
         </fileset>
 
     </jar>
@@ -344,7 +409,9 @@
 		<include name="edu/cornell/dendro/corina_resources/*.properties"/>
 		<include name="edu/cornell/dendro/corina_resources/Translations/**"/>
 		<include name="edu/cornell/dendro/corina_resources/Statistics/**"/>
+		<include name="edu/cornell/dendro/corina_resources/Licenses/**"/>
 		<exclude name="edu/cornell/dendro/corina_indexing/**"/>
+		<include name="edu/cornell/dendro/corina/**/*.properties"/>
 	</fileset>
 
     	<manifest>
@@ -363,7 +430,16 @@
    Creates .jar files for postgresql db functions
 -->
 
-  <target name="cpgdb" depends="compile" description="Create deployable binary distribution of databasing functions">
+  <target name="cpgdb" depends="prepare" description="Create deployable binary distribution of databasing functions">
+    <!-- Compile Java classes as necessary -->
+    <javac srcdir="src"
+          destdir="${build.home}"
+            debug="${compile.debug}"
+      deprecation="${compile.deprecation}"
+         optimize="${compile.optimize}"
+         includes="edu/cornell/dendro/cpgdb/**">
+      <classpath refid="compile.classpath"/>
+    </javac>
 
     <!-- Create deploy directory and copy static content -->
     <mkdir dir="${deploy.home}"/>
@@ -388,4 +464,70 @@
     </jar>
   </target>
 
+<!--
+   Cleans (deletes) corina, tridas, gml schema
+-->
+	<target name="cleanschema" description="Clean webservice schemas">
+		<delete>
+	    	<fileset dir="src">
+				<include name="edu/cornell/dendro/schema/**/*.java" />
+				<include name="net/opengis/gml/schema/**/*.java" />
+				<include name="org/tridas/schema/**/*.java" />
+			</fileset>
+		</delete>
+	</target>
+<!--
+   Creates corina, tridas, gml schema
+-->
+	<target name="buildschema" description="Rebuild webservice schemas">
+		<!-- Compile the schema into java code -->
+		<xjc destdir="src" target="2.1">
+			<arg value="-Xannotate" />
+			<arg value="-Xtridas-annotations" />
+			<arg value="-Xifins" />
+			<arg value="-Xcollection-setter-injector" />
+			<!-- <arg value="-Xinject-prop-listeners" /> -->
+			<arg value="-Xequals" />
+			<arg value="-XhashCode" />
+			<arg value="-XtoString" />
+			<arg value="-Xcopyable" />
+			<arg value="-extension" />
+			<arg value="-no-header" />
+			
+			<binding dir="schemagen">
+				<include name="*.xjb" />
+			</binding>
+			<schema dir="src/edu/cornell/dendro/webservice/schemas">
+				<include name="corina.xsd" />
+				<include name="tridas.xsd" />
+				<include name="gmlsf.xsd" />
+			</schema>
+			<produces dir="src">
+				<include name="edu/cornell/dendro/schema/**/*.java" />
+				<include name="net/opengis/gml/schema/**/*.java" />
+				<include name="org/tridas/schema/**/*.java" />
+			</produces>
+		</xjc>
+
+		<!-- Make a javadoc for the java code --> 
+		<mkdir dir="${dist.home}/docs/jaxbschema" />
+	    <javadoc
+	           classpathref="compile.classpath"
+	                destdir="${dist.home}/docs/jaxbschema"
+	                 access="protected"
+	                 author="true"
+	                version="true"
+	                    use="true"
+	          breakiterator="true"
+	            windowtitle="${app.name} ${app.version} API Documentation">
+	      <doctitle><![CDATA[${app.name} ${app.version}<br/>API Documentation]]></doctitle>
+	      <header><![CDATA[${app.name} ${app.version}<br/>API Documentation]]></header>
+	    	<fileset dir="src">
+	    		<include name="edu/cornell/dendro/corina/tridasv2/TridasObjectEx.java" />
+				<include name="edu/cornell/dendro/schema/**/*.java" />
+				<include name="net/opengis/gml/schema/**/*.java" />
+				<include name="org/tridas/**/*.java" />
+    		</fileset>
+	    </javadoc>
+	</target>
 </project>

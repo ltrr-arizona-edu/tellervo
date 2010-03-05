@@ -6,8 +6,8 @@ DECLARE
     res typVMeasurementSearchResult;
     meta tblVMeasurementMetaCache%ROWTYPE;
 BEGIN
-    SELECT o.Name, vs.Name, vs.Description, vs.LastModifiedTimestamp
-    INTO res.Op, res.Name, res.Description, res.Modified
+    SELECT o.Name, vs.Code, vs.Comments, vs.LastModifiedTimestamp
+    INTO res.Op, res.Code, res.Comments, res.Modified
     FROM tblVMeasurement AS vs
       INNER JOIN tlkpVMeasurementOp AS o ON o.VMeasurementOpID = vs.VMeasurementOpID
     WHERE vs.VMeasurementID = _vsid;
@@ -51,8 +51,8 @@ BEGIN
    -- Loop through each of my direct descendents
 
    OPEN ref FOR SELECT
-      vs.VMeasurementID, o.Name, vs.Name,
-      vs.Description, vs.LastModifiedTimestamp
+      vs.VMeasurementID, o.Name, vs.Code,
+      vs.Comments, vs.LastModifiedTimestamp
       FROM tblVMeasurement AS vs
          INNER JOIN tblVMeasurementGroup AS g ON g.VMeasurementID = vs.VMeasurementID
          INNER JOIN tlkpVMeasurementOp AS o ON o.VMeasurementOpID = vs.VMeasurementOpID
@@ -60,7 +60,7 @@ BEGIN
       ORDER BY vs.LastModifiedTimestamp DESC;
 
    LOOP
-      FETCH ref INTO VMeasurementID, res.Op, res.Name, res.Description, res.Modified;
+      FETCH ref INTO VMeasurementID, res.Op, res.Code, res.Comments, res.Modified;
 
       -- No children? Ok; just drop out.
       IF NOT FOUND THEN
@@ -116,8 +116,8 @@ BEGIN
    -- Loop through each of my direct parents
 
    OPEN ref FOR SELECT
-      vs.VMeasurementID, o.Name, vs.Name,
-      vs.Description, vs.LastModifiedTimestamp
+      vs.VMeasurementID, o.Name, vs.Code,
+      vs.Comments, vs.LastModifiedTimestamp
       FROM tblVMeasurement as vs
          INNER JOIN tblVMeasurementGroup AS g ON g.MemberVMeasurementID = vs.VMeasurementID
          INNER JOIN tlkpVMeasurementOp AS o ON o.VMeasurementOpID = vs.VMeasurementOpID
@@ -125,7 +125,7 @@ BEGIN
       ORDER BY vs.LastModifiedTimestamp DESC;
 
    LOOP
-      FETCH ref INTO VMeasurementID, res.Op, res.Name, res.Description, res.Modified;
+      FETCH ref INTO VMeasurementID, res.Op, res.Code, res.Comments, res.Modified;
 
       -- No parents? Ok; just drop out.
       IF NOT FOUND THEN
@@ -172,7 +172,7 @@ RETURNS SETOF typVMeasurementSearchResult AS '
 
 CREATE OR REPLACE FUNCTION cpgdb.FindVMParentMeasurements(tblVMeasurement.VMeasurementID%TYPE)
 RETURNS SETOF tblMeasurement AS $$
-  SELECT Measurement.* FROM cpgdb.FindVMParents($1, true) parents 
+  SELECT DISTINCT ON (Measurement.MeasurementID) Measurement.* FROM cpgdb.FindVMParents($1, true) parents 
   INNER JOIN tblVMeasurement vs ON parents.VMeasurementID = vs.VMeasurementID 
   INNER JOIN tblMeasurement Measurement ON Measurement.MeasurementID = vs.MeasurementID 
   WHERE parents.op='Direct';

@@ -1,12 +1,15 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
 require_once('dbhelper.php');
 
 
@@ -95,7 +98,7 @@ class note
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "select * from ".$this->tableName." where ".$this->objectField."=$theID";
+        $sql = "select * from ".pg_escape_string($this->tableName)." where ".pg_escape_string($this->objectField)."='".pg_escape_string($theID)."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -323,13 +326,13 @@ class note
                 if($this->id == NULL)
                 {
                     // New record
-                    $sql = "insert into ".$this->tableName." (note, isstandard) values ('".$this->note."', '".fromPHPtoPGBool($this->isStandard)."')";
-                    $sql2 = "select ".$this->objectField." as id from ".$this->tableName." where ".$this->objectField."=currval('".$this->tableName."_".$this->objectName."id_seq')";
+                    $sql = "INSERT INTO ".pg_escape_string($this->tableName)." (note, isstandard) VALUES ('".pg_escape_string($this->note)."', '".dbHelper::formatBool($this->isStandard, 'pg')."')";
+                    $sql2 = "SELECT ".pg_escape_string($this->objectField)." AS id FROM ".pg_escape_string($this->tableName)." WHERE ".pg_escape_string($this->objectField)."=currval('".pg_escape_string($this->tableName)."_".pg_escape_string($this->objectName)."id_seq')";
                 }
                 else
                 {
                     // Updating DB
-                    $sql = "update ".$this->tableName." set note='".$this->note."', isstandard='".fromPHPtoPGBool($this->isStandard)."' where ".$this->objectField."=".$this->id;
+                    $sql = "UPDATE ".pg_escape_string($this->tableName)." SET note='".pg_escape_string($this->note)."', isstandard='".dbHelper::formatBool($this->isStandard, 'pg')."' WHERE ".pg_escape_string($this->objectField)."=".$this->id;
                 }
 
                 // Run SQL command
@@ -387,7 +390,7 @@ class note
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from ".$this->tableName." where ".$this->objectField."=".$this->id;
+                $sql = "DELETE FROM ".pg_escape_string($this->tableName)." WHERE ".pg_escape_string($this->objectField)."=".pg_escape_string($this->id);
 
                 // Run SQL command
                 if (isset($sql))
@@ -438,7 +441,9 @@ class note
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // First check this combination exists
-                $sql = "select * from ".$this->joinTableName." where ".$this->parentField."=$theParentID and ".$this->objectField."=".$this->id;
+                $sql = "SELECT * FROM ".pg_escape_string($this->joinTableName).
+                		" WHERE ".pg_escape_string($this->parentField)."=".pg_escape_string($theParentID).
+                		" AND ".pg_escape_string($this->objectField)."=".pg_escape_string($this->id);
                 pg_send_query($dbconn, $sql);
                 $result = pg_get_result($dbconn);
                 if(pg_num_rows($result)>0)
@@ -449,7 +454,7 @@ class note
                 else
                 {
                     // Add note
-                    $sql = "insert into ".$this->joinTableName." (".$this->parentField.", ".$this->objectField.") values ($theParentID, ".$this->id.")";
+                    $sql = "INSERT INTO ".pg_escape_string($this->joinTableName)." (".pg_escape_string($this->parentField).", ".pg_escape_string($this->objectField).") VALUES (".pg_escape_string($theParentID).", ".pg_escape_string($this->id).")";
                     pg_send_query($dbconn, $sql);
                     $result = pg_get_result($dbconn);
                     if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
@@ -479,7 +484,9 @@ class note
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // First check this combination exists
-                $sql = "select * from ".$this->joinTableName." where ".$this->parentField."=$theParentID and ".$this->objectField."=".$this->id;
+                $sql = "SELECT * FROM ".pg_escape_string($this->joinTableName).
+                		" WHERE ".pg_escape_string($this->parentField)."=".pg_escape_string($theParentID).
+                		" AND ".pg_escape_string($this->objectField)."=".pg_escape_string($this->id);
                 pg_send_query($dbconn, $sql);
                 $result = pg_get_result($dbconn);
                 if(pg_num_rows($result)==0)
@@ -489,7 +496,9 @@ class note
                 }
                 else
                 {
-                    $sql = "delete from ".$this->joinTableName." where ".$this->parentField."=$theParentID and ".$this->objectField."=".$this->id;
+                    $sql = "DELETE FROM ".pg_escape_string($this->joinTableName).
+                    		" WHERE ".pg_escape_string($this->parentField)."=".pg_escape_string($theParentID).
+                    		" AND ".pg_escape_string($this->objectField)."=".pg_escape_string($this->id);
                     pg_send_query($dbconn, $sql);
                     $result = pg_get_result($dbconn);
                     if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
@@ -540,12 +549,12 @@ class vmeasurementNote extends note
 
 }
 
-class readingNote extends note
+/**class readingNote extends note
 {
     function __construct()
     {
         parent::__construct('reading'); 
     }
 
-}
+}**/
 ?>

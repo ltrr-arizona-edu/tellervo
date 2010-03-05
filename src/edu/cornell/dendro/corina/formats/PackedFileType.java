@@ -40,4 +40,5 @@ public interface PackedFileType {
        @param w the writer to write to
     */
     public void saveSamples(List<Sample> sl, BufferedWriter w) throws IOException;
+
 }

@@ -6,16 +6,23 @@
 
 package edu.cornell.dendro.corina.cross;
 
+import edu.cornell.dendro.corina.ui.Builder;
+
 /**
  *
  * @author  peterbrewer
  */
+@SuppressWarnings({ "serial", "unchecked" })
 public class Ui_CrossdateDialog extends javax.swing.JDialog {
-    
-    /** Creates new form Ui_CrossdateDialog */
+	private static final long serialVersionUID = 6188608379220551733L;
+	
+	/** Creates new form Ui_CrossdateDialog */
     public Ui_CrossdateDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+		setIconImage(Builder.getApplicationIcon());
+        lblPrimary.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblSecondary.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
     }
     
     /** This method is called from within the constructor to
@@ -26,6 +33,15 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        panelMeasurements = new javax.swing.JPanel();
+        lblPrimary = new javax.swing.JLabel();
+        cboPrimary = new javax.swing.JComboBox();
+        lblSecondary = new javax.swing.JLabel();
+        cboSecondary = new javax.swing.JComboBox();
+        btnAddMeasurement = new javax.swing.JButton();
+        panelSwap = new javax.swing.JPanel();
+        btnSwap = new javax.swing.JButton();
+        btnResetMeasurements = new javax.swing.JButton();
         panelCrossdates = new javax.swing.JPanel();
         splitCrossDates = new javax.swing.JSplitPane();
         tabpanelStats = new javax.swing.JTabbedPane();
@@ -44,40 +60,108 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
         cboDisplayHistogram = new javax.swing.JComboBox();
         panelChart = new javax.swing.JPanel();
         panelButtons = new javax.swing.JPanel();
-        btnApply = new javax.swing.JButton();
-        seperatorButtons = new javax.swing.JSeparator();
+        btnOK = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
-        lblRedateSummary = new javax.swing.JLabel();
-        panelMeasurementPool = new javax.swing.JPanel();
-        panelSecondary = new javax.swing.JPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        lstMeasurementPool = new javax.swing.JList();
-        lblPoolType = new javax.swing.JLabel();
-        btnAdd = new javax.swing.JButton();
-        btnRemove = new javax.swing.JButton();
-        panelPairSelectors = new javax.swing.JPanel();
-        btnFirstPair = new javax.swing.JButton();
-        btnPreviousPair = new javax.swing.JButton();
-        btnNextPair = new javax.swing.JButton();
-        btnLastPair = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
-        jSeparator2 = new javax.swing.JSeparator();
-        panelSecondary1 = new javax.swing.JPanel();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        lstMeasurementPool1 = new javax.swing.JList();
-        lblPoolType1 = new javax.swing.JLabel();
-        btnAdd1 = new javax.swing.JButton();
-        btnRemove1 = new javax.swing.JButton();
+        seperatorButtons = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        panelMeasurements.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measurements"));
+
+        lblPrimary.setLabelFor(cboPrimary);
+        lblPrimary.setText("Fixed:");
+
+        cboPrimary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "C-ABC-1-4-1", "C-ABC-1-4-2" }));
+        cboPrimary.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboPrimaryActionPerformed(evt);
+            }
+        });
+
+        lblSecondary.setLabelFor(cboSecondary);
+        lblSecondary.setText("Moving:");
+
+        cboSecondary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "C-ABC-1-4-2", "C-ABC-1-4-1" }));
+        cboSecondary.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboSecondaryActionPerformed(evt);
+            }
+        });
+
+        btnAddMeasurement.setText("Add ");
+
+        btnSwap.setText("Swap");
+
+        org.jdesktop.layout.GroupLayout panelSwapLayout = new org.jdesktop.layout.GroupLayout(panelSwap);
+        panelSwap.setLayout(panelSwapLayout);
+        panelSwapLayout.setHorizontalGroup(
+            panelSwapLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelSwapLayout.createSequentialGroup()
+                .addContainerGap(17, Short.MAX_VALUE)
+                .add(btnSwap)
+                .addContainerGap())
+        );
+        panelSwapLayout.setVerticalGroup(
+            panelSwapLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelSwapLayout.createSequentialGroup()
+                .addContainerGap(17, Short.MAX_VALUE)
+                .add(btnSwap)
+                .addContainerGap())
+        );
+
+        btnResetMeasurements.setText("Reset");
+
+        org.jdesktop.layout.GroupLayout panelMeasurementsLayout = new org.jdesktop.layout.GroupLayout(panelMeasurements);
+        panelMeasurements.setLayout(panelMeasurementsLayout);
+        panelMeasurementsLayout.setHorizontalGroup(
+            panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelMeasurementsLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                    .add(lblPrimary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(lblSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 97, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(11, 11, 11)
+                .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(panelMeasurementsLayout.createSequentialGroup()
+                        .add(btnAddMeasurement)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(btnResetMeasurements))
+                    .add(panelMeasurementsLayout.createSequentialGroup()
+                        .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(cboSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(cboPrimary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(panelSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        panelMeasurementsLayout.setVerticalGroup(
+            panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelMeasurementsLayout.createSequentialGroup()
+                .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 62, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(panelMeasurementsLayout.createSequentialGroup()
+                        .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(lblPrimary)
+                            .add(cboPrimary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(lblSecondary)
+                            .add(cboSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)))
+                .add(18, 18, 18)
+                .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(btnAddMeasurement)
+                    .add(btnResetMeasurements))
+                .addContainerGap())
+        );
 
         panelCrossdates.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Cross dates"));
 
         splitCrossDates.setBorder(null);
         splitCrossDates.setDividerLocation(230);
         splitCrossDates.setDividerSize(8);
-        splitCrossDates.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         splitCrossDates.setOneTouchExpandable(true);
+        splitCrossDates.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         tableSignificantScores.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -105,6 +189,7 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        
         tableSignificantScores.setColumnSelectionAllowed(true);
         jScrollPane1.setViewportView(tableSignificantScores);
         tableSignificantScores.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -115,13 +200,13 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
             panelSignificantScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelSignificantScoresLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 662, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelSignificantScoresLayout.setVerticalGroup(
             panelSignificantScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelSignificantScoresLayout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -149,11 +234,11 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
             .add(panelAllScoresLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelAllScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 662, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
                     .add(panelAllScoresLayout.createSequentialGroup()
                         .add(lblDisplayStats)
                         .add(18, 18, 18)
-                        .add(cboDisplayStats, 0, 527, Short.MAX_VALUE)))
+                        .add(cboDisplayStats, 0, 514, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelAllScoresLayout.setVerticalGroup(
@@ -164,7 +249,7 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
                     .add(lblDisplayStats)
                     .add(cboDisplayStats, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -202,11 +287,11 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelHistogramLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelHistogramLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 662, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
                     .add(panelHistogramLayout.createSequentialGroup()
                         .add(lblDisplayHistogram)
                         .add(18, 18, 18)
-                        .add(cboDisplayHistogram, 0, 503, Short.MAX_VALUE)))
+                        .add(cboDisplayHistogram, 0, 490, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelHistogramLayout.setVerticalGroup(
@@ -217,7 +302,7 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
                     .add(lblDisplayHistogram)
                     .add(cboDisplayHistogram, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -229,11 +314,11 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
         panelChart.setLayout(panelChartLayout);
         panelChartLayout.setHorizontalGroup(
             panelChartLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 723, Short.MAX_VALUE)
+            .add(0, 710, Short.MAX_VALUE)
         );
         panelChartLayout.setVerticalGroup(
             panelChartLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 83, Short.MAX_VALUE)
+            .add(0, 245, Short.MAX_VALUE)
         );
 
         splitCrossDates.setRightComponent(panelChart);
@@ -242,37 +327,31 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
         panelCrossdates.setLayout(panelCrossdatesLayout);
         panelCrossdatesLayout.setHorizontalGroup(
             panelCrossdatesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(splitCrossDates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 723, Short.MAX_VALUE)
+            .add(splitCrossDates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE)
         );
         panelCrossdatesLayout.setVerticalGroup(
             panelCrossdatesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelCrossdatesLayout.createSequentialGroup()
-                .add(splitCrossDates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
-                .addContainerGap())
+            .add(splitCrossDates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
         );
 
-        btnApply.setText("Apply");
+        btnOK.setText("OK");
+        btnCancel.setText("Cancel");
 
         seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
         seperatorButtons.setOpaque(true);
-
-        btnCancel.setText("Cancel");
-
-        lblRedateSummary.setText("Redate C-ABC-1-1-A-B to 1023-1203 using C-ABC-2-3-A-B");
 
         org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
         panelButtons.setLayout(panelButtonsLayout);
         panelButtonsLayout.setHorizontalGroup(
             panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(lblRedateSummary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnApply)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnCancel)
-                .add(12, 12, 12))
+                .addContainerGap(671, Short.MAX_VALUE)
+                .add(panelButtonsLayout.createSequentialGroup()
+                		.add(btnOK)
+                		.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                		.add(btnCancel))
+                .add(16, 16, 16))
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 762, Short.MAX_VALUE)
         );
         panelButtonsLayout.setVerticalGroup(
             panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -280,248 +359,75 @@ public class Ui_CrossdateDialog extends javax.swing.JDialog {
                 .add(seperatorButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnCancel)
-                    .add(btnApply)
-                    .add(lblRedateSummary))
-                .addContainerGap())
-        );
-
-        panelMeasurementPool.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measurement Pool"));
-
-        lstMeasurementPool.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "CTC-150-A-B", "CTC-151-A-B", "CTC-152-A-B", "CTC-153-A-B" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        lstMeasurementPool.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane5.setViewportView(lstMeasurementPool);
-
-        lblPoolType.setText("Secondary:");
-
-        btnAdd.setText("+");
-
-        btnRemove.setText("-");
-
-        org.jdesktop.layout.GroupLayout panelSecondaryLayout = new org.jdesktop.layout.GroupLayout(panelSecondary);
-        panelSecondary.setLayout(panelSecondaryLayout);
-        panelSecondaryLayout.setHorizontalGroup(
-            panelSecondaryLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelSecondaryLayout.createSequentialGroup()
-                .add(lblPoolType)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 155, Short.MAX_VALUE)
-                .add(btnAdd, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 49, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnRemove, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 49, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(5, 5, 5))
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
-        );
-        panelSecondaryLayout.setVerticalGroup(
-            panelSecondaryLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelSecondaryLayout.createSequentialGroup()
-                .add(panelSecondaryLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnRemove)
-                    .add(btnAdd)
-                    .add(lblPoolType))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
-        );
-
-        btnFirstPair.setText("<<");
-
-        btnPreviousPair.setText("<");
-
-        btnNextPair.setText(">");
-
-        btnLastPair.setText(">>");
-
-        org.jdesktop.layout.GroupLayout panelPairSelectorsLayout = new org.jdesktop.layout.GroupLayout(panelPairSelectors);
-        panelPairSelectors.setLayout(panelPairSelectorsLayout);
-        panelPairSelectorsLayout.setHorizontalGroup(
-            panelPairSelectorsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelPairSelectorsLayout.createSequentialGroup()
-                .add(jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnFirstPair)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnPreviousPair)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnNextPair)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnLastPair)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jSeparator2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE))
-        );
-        panelPairSelectorsLayout.setVerticalGroup(
-            panelPairSelectorsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelPairSelectorsLayout.createSequentialGroup()
-                .add(panelPairSelectorsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelPairSelectorsLayout.createSequentialGroup()
-                        .add(22, 22, 22)
-                        .add(jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelPairSelectorsLayout.createSequentialGroup()
-                        .add(22, 22, 22)
-                        .add(jSeparator2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
-                    .add(panelPairSelectorsLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(panelPairSelectorsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(btnFirstPair)
-                            .add(btnPreviousPair)
-                            .add(btnNextPair)
-                            .add(btnLastPair))))
-                .addContainerGap())
-        );
-
-        lstMeasurementPool1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "CTC-150-A-B", "CTC-151-A-B", "CTC-152-A-B", "CTC-153-A-B" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        lstMeasurementPool1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane6.setViewportView(lstMeasurementPool1);
-
-        lblPoolType1.setText("Secondary:");
-
-        btnAdd1.setText("+");
-
-        btnRemove1.setText("-");
-
-        org.jdesktop.layout.GroupLayout panelSecondary1Layout = new org.jdesktop.layout.GroupLayout(panelSecondary1);
-        panelSecondary1.setLayout(panelSecondary1Layout);
-        panelSecondary1Layout.setHorizontalGroup(
-            panelSecondary1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelSecondary1Layout.createSequentialGroup()
-                .add(lblPoolType1)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 156, Short.MAX_VALUE)
-                .add(btnAdd1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 49, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnRemove1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 49, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(5, 5, 5))
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
-        );
-        panelSecondary1Layout.setVerticalGroup(
-            panelSecondary1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelSecondary1Layout.createSequentialGroup()
-                .add(panelSecondary1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnRemove1)
-                    .add(btnAdd1)
-                    .add(lblPoolType1))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
-        );
-
-        org.jdesktop.layout.GroupLayout panelMeasurementPoolLayout = new org.jdesktop.layout.GroupLayout(panelMeasurementPool);
-        panelMeasurementPool.setLayout(panelMeasurementPoolLayout);
-        panelMeasurementPoolLayout.setHorizontalGroup(
-            panelMeasurementPoolLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelMeasurementPoolLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelMeasurementPoolLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelPairSelectors, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(panelMeasurementPoolLayout.createSequentialGroup()
-                        .add(panelSecondary1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(18, 18, 18)
-                        .add(panelSecondary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        panelMeasurementPoolLayout.setVerticalGroup(
-            panelMeasurementPoolLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelMeasurementPoolLayout.createSequentialGroup()
-                .add(panelMeasurementPoolLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelSecondary1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(panelSecondary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelPairSelectors, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 52, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                		.add(btnOK)
+                		.add(btnCancel))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(panelMeasurementPool, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .add(layout.createSequentialGroup()
-                        .add(panelCrossdates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())))
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelCrossdates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelMeasurements, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .addContainerGap(20, Short.MAX_VALUE)
-                .add(panelMeasurementPool, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(14, 14, 14)
-                .add(panelCrossdates, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .add(panelMeasurements, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(panelCrossdates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                Ui_CrossdateDialog dialog = new Ui_CrossdateDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
+
+    private void cboPrimaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboPrimaryActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_cboPrimaryActionPerformed
+
+    private void cboSecondaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSecondaryActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_cboSecondaryActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAdd;
-    private javax.swing.JButton btnAdd1;
-    private javax.swing.JButton btnApply;
-    private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnFirstPair;
-    private javax.swing.JButton btnLastPair;
-    private javax.swing.JButton btnNextPair;
-    private javax.swing.JButton btnPreviousPair;
-    private javax.swing.JButton btnRemove;
-    private javax.swing.JButton btnRemove1;
-    private javax.swing.JComboBox cboDisplayHistogram;
-    private javax.swing.JComboBox cboDisplayStats;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JLabel lblDisplayHistogram;
-    private javax.swing.JLabel lblDisplayStats;
-    private javax.swing.JLabel lblPoolType;
-    private javax.swing.JLabel lblPoolType1;
-    private javax.swing.JLabel lblRedateSummary;
-    private javax.swing.JList lstMeasurementPool;
-    private javax.swing.JList lstMeasurementPool1;
-    private javax.swing.JPanel panelAllScores;
-    private javax.swing.JPanel panelButtons;
-    private javax.swing.JPanel panelChart;
-    private javax.swing.JPanel panelCrossdates;
-    private javax.swing.JPanel panelHistogram;
-    private javax.swing.JPanel panelMeasurementPool;
-    private javax.swing.JPanel panelPairSelectors;
-    private javax.swing.JPanel panelSecondary;
-    private javax.swing.JPanel panelSecondary1;
-    private javax.swing.JPanel panelSignificantScores;
-    private javax.swing.JSeparator seperatorButtons;
-    private javax.swing.JSplitPane splitCrossDates;
-    private javax.swing.JTable tableAllScores;
-    private javax.swing.JTable tableHistogram;
-    private javax.swing.JTable tableSignificantScores;
-    private javax.swing.JTabbedPane tabpanelStats;
+    protected javax.swing.JButton btnAddMeasurement;
+    protected javax.swing.JButton btnOK;
+    protected javax.swing.JButton btnCancel;
+    protected javax.swing.JButton btnResetMeasurements;
+    protected javax.swing.JButton btnSwap;
+    protected javax.swing.JComboBox cboDisplayHistogram;
+    protected javax.swing.JComboBox cboDisplayStats;
+    protected javax.swing.JComboBox cboPrimary;
+    protected javax.swing.JComboBox cboSecondary;
+    protected javax.swing.JScrollPane jScrollPane1;
+    protected javax.swing.JScrollPane jScrollPane2;
+    protected javax.swing.JScrollPane jScrollPane3;
+    protected javax.swing.JLabel lblDisplayHistogram;
+    protected javax.swing.JLabel lblDisplayStats;
+    protected javax.swing.JLabel lblPrimary;
+    protected javax.swing.JLabel lblSecondary;
+    protected javax.swing.JPanel panelAllScores;
+    protected javax.swing.JPanel panelButtons;
+    protected javax.swing.JPanel panelChart;
+    protected javax.swing.JPanel panelCrossdates;
+    protected javax.swing.JPanel panelHistogram;
+    protected javax.swing.JPanel panelMeasurements;
+    protected javax.swing.JPanel panelSignificantScores;
+    protected javax.swing.JPanel panelSwap;
+    protected javax.swing.JSeparator seperatorButtons;
+    protected javax.swing.JSplitPane splitCrossDates;
+    protected javax.swing.JTable tableAllScores;
+    protected javax.swing.JTable tableHistogram;
+    protected javax.swing.JTable tableSignificantScores;
+    protected javax.swing.JTabbedPane tabpanelStats;
     // End of variables declaration//GEN-END:variables
-    
 }

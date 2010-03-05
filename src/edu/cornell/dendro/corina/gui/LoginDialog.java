@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
@@ -13,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -22,14 +25,16 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
-import edu.cornell.dendro.corina.webdbi.Authenticate;
-import edu.cornell.dendro.corina.webdbi.ResourceEvent;
-import edu.cornell.dendro.corina.webdbi.ResourceEventListener;
-import edu.cornell.dendro.corina.webdbi.WebInterfaceException;
-import edu.cornell.dendro.corina.webdbi.WebPermissionsException;
+import edu.cornell.dendro.corina.wsi.corina.resources.AuthenticateResource;
+import edu.cornell.dendro.corina.wsi.ResourceEvent;
+import edu.cornell.dendro.corina.wsi.ResourceEventListener;
+import edu.cornell.dendro.corina.wsi.corina.WebInterfaceCode;
+import edu.cornell.dendro.corina.wsi.corina.WebInterfaceException;
+import edu.cornell.dendro.corina.wsi.corina.WebPermissionsException;
 import edu.cornell.dendro.corina.core.App;
 
 
@@ -37,6 +42,7 @@ public class LoginDialog extends JDialog {
 
 	private JTextField username;
 	private JPasswordField password;
+	private JTextField serverUrl;
 	private JCheckBox rememberUsername;
 	private JCheckBox rememberPassword;
 	private JCheckBox autoLogin;
@@ -47,6 +53,12 @@ public class LoginDialog extends JDialog {
 	
 	public LoginDialog(Frame frame) {
 		super(frame, true);
+		
+		initialize();
+	}
+
+	public LoginDialog(Dialog dialog) {
+		super(dialog, true);
 		
 		initialize();
 	}
@@ -62,50 +74,62 @@ public class LoginDialog extends JDialog {
 	 */
 	private void initialize() {
 		
-		//setIconImage(Builder.getImage("Tree.png"));
 		setResizable(false);
 
 		getContentPane().setLayout(new GridBagLayout());
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setTitle("Corina Login");
-		
+		setTitle(I18n.getText("login.Authentication"));
+        setIconImage(Builder.getApplicationIcon());
+
 		GridBagConstraints ogbc = new GridBagConstraints();
 
 		username = new JTextField();
-		username.setColumns(16);
+		username.setColumns(20);
 		
 		password = new JPasswordField();
-		password.setColumns(16);
+		password.setColumns(20);
 		
-		JLabel treeIcon = new JLabel(Builder.getIcon("encrypted.png"));
+		serverUrl = new JTextField();
+		serverUrl.setColumns(20);
+		serverUrl.setEditable(true);
+		new TextComponentWrapper(serverUrl, "corina.webservice.url", null);
+		serverUrl.setEnabled(false);
+		
+		
+		JLabel lockIcon = new JLabel(Builder.getIcon("lock.png", 128));
+		//lockIcon.setBorder(BorderFactory.createEtchedBorder());
+	
 		
 		ogbc.gridx = 0;
 		ogbc.gridy = 0;
-		ogbc.insets = new Insets(0, 0, 0, 50);
+		ogbc.insets = new Insets(20, 0, 0, 0);
 		ogbc.anchor = GridBagConstraints.NORTHWEST;		
-		getContentPane().add(treeIcon, ogbc);
+		getContentPane().add(lockIcon, ogbc);
 		ogbc.gridx++;
+		
+		
 		
 		// create an 'inside panel'
 		JPanel insidePanel = new JPanel(new GridBagLayout());
 		JLabel tmp;
 		GridBagConstraints igbc = new GridBagConstraints();
 
-		igbc.gridx = 0;
+		igbc.gridx = 1;
 		igbc.gridy = 0;
 		
 		// title for login
-		tmp = new JLabel("You must log in for access.");
-		igbc.anchor = GridBagConstraints.CENTER;
-		igbc.insets = new Insets(15, 0, 0, 0);
+		tmp = new JLabel(I18n.getText("login.requestLogin"));
+		igbc.anchor = GridBagConstraints.WEST;
+		igbc.insets = new Insets(0, 10, 0, 80);
 		igbc.gridwidth = 2;
 		
 		insidePanel.add(tmp, igbc);
 		
-		igbc.gridy++;
-		igbc.insets = new Insets(5, 0, 10, 0);
-		subtitle = new JLabel("Please provide your credentials.");
-		insidePanel.add(subtitle, igbc);
+		//igbc.gridy++;
+		//igbc.insets = new Insets(5, 0, 10, 0);
+		//subtitle = new JLabel("Please provide your credentials.");
+		//insidePanel.add(subtitle, igbc);
+		subtitle = new JLabel();
 		
 		igbc.anchor = GridBagConstraints.WEST;
 		igbc.gridwidth = 1;
@@ -113,11 +137,11 @@ public class LoginDialog extends JDialog {
 		// username label and field
 		igbc.gridx = 0;
 		igbc.gridy++;
-		igbc.insets = new Insets(8, 10, 0, 0);
-		tmp = new JLabel(I18n.getText("login.username"));
+		igbc.insets = new Insets(12, 10, 0, 0);
+		tmp = new JLabel(I18n.getText("login.username")+":");
 		tmp.setLabelFor(username);
 		
-		igbc.insets = new Insets(8, 10, 0, 0);
+		igbc.insets = new Insets(12, 10, 0, 20);
 		insidePanel.add(tmp, igbc);
 		
 		igbc.ipady = 0;
@@ -128,7 +152,7 @@ public class LoginDialog extends JDialog {
 		igbc.gridx = 0;
 		igbc.gridy++;
 		
-		tmp = new JLabel(I18n.getText("login.password"));
+		tmp = new JLabel(I18n.getText("login.password")+":");
 		tmp.setLabelFor(password);
 		
 		igbc.ipady = 0;
@@ -139,28 +163,44 @@ public class LoginDialog extends JDialog {
 		igbc.gridx++;
 		insidePanel.add(password, igbc);
 		
+		// server label and field
+		igbc.gridx = 0;
+		igbc.gridy++;	
+		
+		tmp = new JLabel(I18n.getText("login.serverurl"));
+		tmp.setLabelFor(serverUrl);
+		
+		igbc.ipady = 0;
+		igbc.ipadx = 0;
+		insidePanel.add(tmp, igbc);		
+		
+		igbc.ipady = 0;
+		igbc.gridx++;
+		insidePanel.add(serverUrl, igbc);		
+		
 		// checkboxes
 		igbc.gridwidth = 2;
-		igbc.insets = new Insets(10, 50, 0, 0);
-		igbc.gridx = 0;
+		igbc.anchor = GridBagConstraints.WEST;
+		igbc.insets = new Insets(10, 8, 0, 0);
+		igbc.gridx = 1;
 		
 		igbc.gridy++;
-		rememberUsername = new JCheckBox("Remember my username");
+		rememberUsername = new JCheckBox(I18n.getText("login.rememberMyUsername"));
 		insidePanel.add(rememberUsername, igbc);
 		
 		igbc.gridy++;
-		igbc.insets = new Insets(0, 50, 0, 0);
-		rememberPassword = new JCheckBox("Remember my password");
+		igbc.insets = new Insets(0, 8, 0, 0);
+		rememberPassword = new JCheckBox(I18n.getText("login.rememberMyPassword"));
 		insidePanel.add(rememberPassword, igbc);
 		
 		igbc.gridy++;		
-		autoLogin = new JCheckBox("Log in automatically");
+		autoLogin = new JCheckBox(I18n.getText("login.automatically"));
 		insidePanel.add(autoLogin, igbc);
 		
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		
 		final JDialog glue = this;
-		loginButton = new JButton("Log in");
+		loginButton = new JButton(I18n.getText("login"));
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				performAuthentication(0);
@@ -168,7 +208,7 @@ public class LoginDialog extends JDialog {
 		});
 		buttonPanel.add(loginButton);
 		
-		cancelButton = new JButton("Cancel");
+		cancelButton = new JButton(I18n.getText("general.cancel"));
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				glue.dispose();
@@ -178,20 +218,24 @@ public class LoginDialog extends JDialog {
 		
 		// TODO: Implement offline mode
 		JButton button;
-		button = new JButton("Work offline");
+		button = new JButton(I18n.getText("login.workOffline"));
 		button.setEnabled(false);
 		buttonPanel.add(button);
 
 		igbc.gridx = 0;
 		igbc.gridy++;
-		igbc.gridwidth = 3;
-		igbc.anchor = GridBagConstraints.WEST;
+		igbc.gridwidth = 2;
+		igbc.anchor = GridBagConstraints.EAST;
 		igbc.insets = new Insets(10, 0, 0, 0);
 		
 		insidePanel.add(buttonPanel, igbc);
 
+		//insidePanel.setBorder(BorderFactory.createEtchedBorder());
+
+		
 		// finish up the UI part
 		getContentPane().add(insidePanel, ogbc);
+		
 			
 		pack();
 		Center.center(this);
@@ -246,12 +290,9 @@ public class LoginDialog extends JDialog {
 	}
 	
 	private void loadSettings() {
-		String tmp;
 		
 		// remember the username? load it.
-		if((tmp = App.prefs.getPref("corina.login.remember_username")) != null &&
-				Boolean.valueOf(tmp) == true) {
-			
+		if(App.prefs.getBooleanPref("corina.login.remember_username", true)) {
 			rememberUsername.setSelected(true);
 			username.setText(App.prefs.getPref("corina.login.username", ""));			
 		} else {
@@ -259,9 +300,7 @@ public class LoginDialog extends JDialog {
 		}
 		
 		// remember the password? load it.
-		if((tmp = App.prefs.getPref("corina.login.remember_password")) != null &&
-				Boolean.valueOf(tmp) == true) {
-			
+		if(App.prefs.getBooleanPref("corina.login.remember_password", false)) {
 			rememberPassword.setSelected(true);
 			password.setText(decryptPassword(App.prefs.getPref("corina.login.password", "").toCharArray()));			
 		} else {
@@ -269,9 +308,7 @@ public class LoginDialog extends JDialog {
 		}
 		
 		// auto login?
-		if((tmp = App.prefs.getPref("corina.login.auto_login")) != null &&
-				Boolean.valueOf(tmp) == true) {	
-			
+		if(App.prefs.getBooleanPref("corina.login.auto_login", false)) {		
 			autoLogin.setSelected(true);
 		} else {
 			autoLogin.setSelected(false);
@@ -361,7 +398,7 @@ public class LoginDialog extends JDialog {
 	 * Do the actual server authentication
 	 * Danger! this runs in the event thread!
 	 */
-	private Authenticate authenticator;
+	private AuthenticateResource authenticator;
 	private SyncTaskDialog authenticationNotifier;
 	private void performAuthentication(final int recursionLevel) {
 		final JDialog glue = this;
@@ -389,7 +426,7 @@ public class LoginDialog extends JDialog {
 		
 		if(serverNonce == null) {
 			// ok, so we're trying to log in pre-emptively. First, we need a nonce from the server.
-			authenticator = new Authenticate();
+			authenticator = new AuthenticateResource();
 			
 			authenticator.addResourceEventListener(new ResourceEventListener() {
 				public void resourceChanged(ResourceEvent re) {
@@ -423,7 +460,7 @@ public class LoginDialog extends JDialog {
 		}
 		else {
 			// ok, so we have a nonce and we're trying to actually log in
-			authenticator = new Authenticate(getUsername(), getPassword(), serverNonce, serverNonceSeq);
+			authenticator = new AuthenticateResource(getUsername(), getPassword(), serverNonce, serverNonceSeq);
 			
 			authenticator.addResourceEventListener(new ResourceEventListener() {
 				public void resourceChanged(ResourceEvent re) {
@@ -443,7 +480,7 @@ public class LoginDialog extends JDialog {
 						// bad server nonce?
 						if(e instanceof WebInterfaceException && 
 								((WebInterfaceException)e).getMessageCode() == 
-									WebInterfaceException.ERROR_BAD_SERVER_NONCE) {
+									WebInterfaceCode.BAD_SERVER_NONCE) {
 							
 							setNonce(null, null);
 							performAuthentication(recursionLevel + 1);

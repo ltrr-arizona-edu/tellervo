@@ -113,11 +113,11 @@ public class Tucson implements Filetype {
 
 	@Override
 	public String toString() {
-		return I18n.getText("format.tucson");
+		return I18n.getText("format.tucson") + " (*"+ getDefaultExtension()+")";
 	}
 
 	public String getDefaultExtension() {
-		return ".CRN"; // .TUC? .MST?
+		return ".rwl"; 
 	}
 
 	// load 0-3 lines of header, if available, and fill meta appropriately
@@ -430,7 +430,7 @@ public class Tucson implements Filetype {
 		}
 
 		// relat or absol
-		line1.append(s.isAbsolute() ? "ABSOL" : "RELAT");
+		line1.append(s.isAbsolutelyDated() ? "ABSOL" : "RELAT");
 
 		// write
 		w.write(line1.toString());
@@ -441,10 +441,13 @@ public class Tucson implements Filetype {
 	private String make6digitCode(Sample s) {
 		String code;
 
-		if (s.hasMeta("id"))
-			code = s.getMeta("id").toString();
-		else
+		if (s.getIdentifier().getValue()!=null){
+			code = s.getIdentifier().getValue().toString();
+			code = code.substring(code.length()-6);
+		}
+		else{
 			code = "000000";
+		}
 
 		// ensure exactly 6 chars
 		if (code.length() > 6)
@@ -561,5 +564,20 @@ public class Tucson implements Filetype {
 		// first line, then data
 		saveFirstLine(s, w);
 		saveData(s, w);
+	}
+
+	public Boolean isPackedFileCapable() {
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format has almost no metadata capabilities. " +
+				"It does not handle the BC/AD boundary correctly so " +
+				"datasets that span this period are offset by one year.  " +
+				"This format is also unable to represent data prior to 1000BC.";
+	}
+
+	public Boolean isLossless() {
+		return false;
 	}
 }

@@ -65,7 +65,7 @@ public class ConfirmSave extends JDialog {
 	dlg.setLocation(docsize.width/2 - size.width/2, docsize.height/2 - size.height/2);// REFACTOR: move this code to Center.java!
 
 	// button: dont save
-	JButton dontSave = Builder.makeButton("dont_save"); // dispose
+	JButton dontSave = Builder.makeButton("general.dont_save"); // dispose
 	dontSave.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // close me
@@ -77,7 +77,7 @@ public class ConfirmSave extends JDialog {
 	    });
 
 	// button: cancel
-	JButton cancel = Builder.makeButton("cancel");
+	JButton cancel = Builder.makeButton("general.cancel");
 	cancel.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // just close me
@@ -86,7 +86,7 @@ public class ConfirmSave extends JDialog {
 	    });
 
 	// button: save
-	JButton save = Builder.makeButton("do_save"); // save, dispose
+	JButton save = Builder.makeButton("general.saveChanges"); // save, dispose
 	save.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 		    // close me

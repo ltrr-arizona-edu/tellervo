@@ -112,11 +112,11 @@ public class TucsonSimple implements Filetype {
 
 	@Override
 	public String toString() {
-		return I18n.getText("format.tucsonsimple");
+		return I18n.getText("format.tucsonsimple") + " (*"+ getDefaultExtension()+")";
 	}
 
 	public String getDefaultExtension() {
-		return ".RWL"; // .TUC? .MST?
+		return ".rwl"; // .TUC? .MST?
 	}
 
 	public Sample load(BufferedReader r) throws IOException {
@@ -251,5 +251,20 @@ public class TucsonSimple implements Filetype {
 	public void save(Sample s, BufferedWriter w) throws IOException {
 		// data only!
 		saveData(s, w);
+	}
+
+	public Boolean isPackedFileCapable() {
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " has almost no metadata capabilities. " +
+		"It does not handle the BC/AD boundary correctly so " +
+		"datasets that span this period are offset by one year.  " +
+		"This format is also unable to represent data prior to 1000BC.";
+	}
+
+	public Boolean isLossless() {
+		return false;
 	}
 }

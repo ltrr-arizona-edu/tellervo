@@ -1,82 +1,184 @@
 package edu.cornell.dendro.corina.cross;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableColumnModel;
+
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasGenericField;
 
 import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.cross.gui.Ui_CrossdatePanel;
 import edu.cornell.dendro.corina.graph.Graph;
+import edu.cornell.dendro.corina.graph.GraphActions;
 import edu.cornell.dendro.corina.graph.GraphController;
 import edu.cornell.dendro.corina.graph.GraphInfo;
+import edu.cornell.dendro.corina.graph.GraphToolbar;
+import edu.cornell.dendro.corina.graph.GrapherEvent;
+import edu.cornell.dendro.corina.graph.GrapherListener;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
-import edu.cornell.dendro.corina.graph.PlotAgents;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.ReverseScrollBar;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
-import edu.cornell.dendro.corina.index.DecimalRenderer;
+import edu.cornell.dendro.corina.io.Exporter.EncodingType;
 import edu.cornell.dendro.corina.sample.BaseSample;
+import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleSummary;
-/*
- * CrossDatingWizard.java
- *
- * Created on June 11, 2008, 10:35 AM
- */
+import edu.cornell.dendro.corina.schema.SearchOperator;
+import edu.cornell.dendro.corina.schema.SearchParameterName;
+import edu.cornell.dendro.corina.schema.SearchReturnObject;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
+import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 /**
  *
  * @author  peterbrewer
+ * @author Lucas Madar
  */
-public class CrossdateDialog extends javax.swing.JDialog {
+@SuppressWarnings("serial")
+public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListener {
+	private JFrame window;
+	
 	private ElementList crossdatingElements;
+	private Element firstFloating = null;
+	private Element firstReference = null;
 	private CrossdateCollection crossdates;
 	
 	private SigScoresTableModel sigScoresModel;
 	private AllScoresTableModel allScoresModel;
 	private HistogramTableModel histogramModel;
 
+	private GraphActions actions;
 	private GrapherPanel graph;
+	private GraphInfo graphInfo;
 	private GraphController graphController;
 	private List<Graph> graphSamples;
 	private JScrollPane graphScroller;
 	private Range newCrossdateRange;
-    
-    /** Creates new form CrossDatingWizard */
-    public CrossdateDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
-        initComponents();
-     
-        initialize(parent, null);
+
+	private Boolean reviewMode = false;
+	private CrossdateStatusBar status;
+	
+   
+	/**
+	 * Create a crossdate dialog with no preselected series
+	 * 
+	 * @param parent
+	 */
+    public CrossdateDialog(java.awt.Frame parent) {
+    	super();
+    	window = new JFrame();  
+        initialize();
     }
 
-    public CrossdateDialog(java.awt.Frame parent, boolean modal, ElementList preexistingElements) {
-        super(parent, modal);
-        initComponents();
+    /**
+     * Creates a new crossdate dialog with a list of preselected series
+     * and a particular series set as the first floating 
+     * 
+     * @param parent
+     * @param preexistingElements
+     * @param firstFloating
+     */
+    public CrossdateDialog(java.awt.Frame parent,
+    		ElementList preexistingElements, Element firstFloating) {
+    	super();
+    	window = new JFrame();
         
-        initialize(parent, preexistingElements);
+    	// Set up lists of series and initialize gui
+    	this.firstFloating = firstFloating;
+    	setSeriesPoolFromGUI(parent, preexistingElements);
+        initialize();
     }
+    
+    /**
+     * The specified element is shown in a crossdate dialog in 'review mode'
+     * so the user can inspect the decision that was made  
+     * 
+     * @param parent
+     * @param floating
+     */
+    public CrossdateDialog(java.awt.Frame parent, Element floating) {
+    	super();
+    	window = new JFrame();
+        
+    	// Load floating element and check it's a 'crossdate'
+		BaseSample bs;
+		try {
+			bs = floating.load();
+		} catch (IOException ioe) {
+			// shouldn't happen?
+			return;
+		}	
+		TridasDerivedSeries ds = (TridasDerivedSeries) bs.getSeries();
+		if(!ds.getType().getValue().equals("Crossdate"))
+		{
+			new Bug(new Exception(I18n.getText("error.mustBeCrossdate")));
+			return;
+		}
+		    	
+		// Query for the master chronology used to do the crossdate
+		SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
+		search.addSearchConstraint(SearchParameterName.SERIESDBID, 
+				SearchOperator.EQUALS, ds.getInterpretation().getDatingReference().getLinkSeries().getIdentifier().getValue());
+	
+		SeriesSearchResource searchResource = new SeriesSearchResource(search);
+		CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(new JDialog(), searchResource);
+		
+		// start our query (remotely)
+		searchResource.query();
+		dlg.setVisible(true);
+		
+		Element reference = null;
+		if(!dlg.isSuccessful()) {
+			new Bug(dlg.getFailException());
+		} else {
+			reference = searchResource.getAssociatedResult().get(0);
+		}
+    	
+    	// Set up lists of series
+    	ElementList tmp = new ElementList();
+    	tmp.add(reference);
+    	tmp.add(floating);
+    	crossdatingElements = tmp;
+    	this.firstFloating = floating;
+    	this.firstReference = reference;
+    	    	
+    	// Set up gui
+        initialize();
+        setReviewMode(true);
+    }   
     
     /**
      * Show an open dialog as a child of a frame
@@ -93,22 +195,6 @@ public class CrossdateDialog extends javax.swing.JDialog {
 		
 		return doOpenDialog(dbb, preexistingElements);
     }
-
-    /**
-     * Show an open dialog as a child of another dialog
-     * @param parent
-     * @param preexistingElements
-     */
-    private ElementList showOpenDialog(Dialog parent, ElementList preexistingElements) {
-    	DBBrowser dbb = new DBBrowser(parent, true, true) {
-			@Override
-			protected boolean finish() {
-				return (loadAllElements() && super.finish());
-			}			
-		};
-		
-		return doOpenDialog(dbb, preexistingElements);
-    }
     
     private ElementList doOpenDialog(DBBrowser dbb, ElementList preexistingElements) {
 		if(preexistingElements != null)
@@ -120,12 +206,11 @@ public class CrossdateDialog extends javax.swing.JDialog {
 		if(e != null) {
 			try	{
 				BaseSample bs = e.loadBasic();
-				
-				SampleSummary ss = (SampleSummary) bs.getMeta("::summary");
 
-				if(ss != null) {
-					dbb.selectSiteByCode(ss.getSiteCode());
-				}
+				String siteCode = bs.meta().getSiteCode();
+				if(siteCode != null)
+					dbb.selectSiteByCode(siteCode);
+				
 			} catch (Exception ex) {
 				// ignore...
 			}
@@ -142,32 +227,142 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	return dbb.getSelectedElements();
     }
 
-    private void initialize(Frame parent, ElementList preElements) {
+    /**
+     * Set the pool of series from which the crossdating gui works.  This takes a list 
+     * of existing series, and presents the user with a prepopulate DBBrowser to add 
+     * to this list
+     * 
+     * @param parent
+     * @param preexistingElements
+     */
+    private void setSeriesPoolFromGUI(Frame parent, ElementList preexistingElements)
+    {
     	// let user choose crossdates, exit if they close quietly
-    	if((crossdatingElements = showOpenDialog(parent, true, preElements)) == null) {
-    		dispose();
+    	if((crossdatingElements = showOpenDialog(parent, true, preexistingElements)) == null) {
+    		window.dispose();
     		return;
     	}
+    }
+    
+    /**
+     * Turn the dialog into review mode (read only) for inspecting an existing crossdate
+     */
+    private void setReviewMode(Boolean reviewMode)
+    {
+    	this.reviewMode = reviewMode;
+    	
+    	// More specific gui stuff to set
+    	if(reviewMode)
+    	{
+    		// Check that both floating and reference have been set before going any further
+    		if (firstFloating==null || firstReference==null) 
+    		{
+    			System.out.println("Floating and/or reference series have not been set");
+    			setReviewMode(false);
+    		}
+	    	
+	        // Move floating to the correct position
+	        Sample floatingSample;
+	        Sample referenceSample;
+	        String reviewString = null;
+	        	        
+	        try {
+				floatingSample = firstFloating.load();
+				referenceSample = firstReference.load();
+				TridasDerivedSeries floatingSeries = (TridasDerivedSeries) floatingSample.getSeries();
+				
+				setFloatingPosition(floatingSample.getRange());
+				
+				reviewString = floatingSample.getDisplayTitle() + " " + I18n.getText("crossdate.wasDatedUsing")+ ": " + referenceSample.getDisplayTitle() + ".\n";
+				reviewString += I18n.getText("meta.author")+": " + floatingSeries.getAuthor() + "\n";
+				for (TridasGenericField gf: floatingSample.getSeries().getGenericFields())
+				{
+					if(gf.getName().equals("corina.justification"))
+					{
+						reviewString += I18n.getText("general.justification") +": "+gf.getValue().toString() + "\n";
+					}
+					if(gf.getName().equals("corina.crossdateConfidenceLevel"))
+					{
+						reviewString += I18n.getText("general.certainty")+ ": " + gf.getValue().toString() + " "+ I18n.getText("general.star")+"\n";
+					}
+
+				}
+				
+				
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	
+			this.btnCancel.setText(I18n.getText("general.close"));
+			scrollInfo.setVisible(true);
+			txtInfo.setText(reviewString);
+
+    	} else 
+    	{
+    		this.btnCancel.setText(I18n.getText("general.cancel"));
+    		scrollInfo.setVisible(false);
+    	}
+    	
+    	// Set basic visible/enabled items
+    	Boolean action = false;
+    	if(reviewMode==false) action= true;    	
+    	this.paneStatistics.setEnabledAt(1, action);
+    	this.paneStatistics.setEnabledAt(2, action);
+    	this.cboFloating.setVisible(action);
+    	this.cboReference.setVisible(action);
+    	this.lblPrimary.setVisible(action);
+    	this.lblSecondary.setVisible(action);
+    	this.btnAddRemoveSeries.setVisible(action);
+    	this.btnOk.setVisible(action);
+
+
+    	
+    }
+    
+    /**
+     * Set the position of the floating series to the specified range
+     * 
+     * @param pos
+     */
+    private void setFloatingPosition(Range pos)
+    {
+    	tableSignificantScores.setRowSelectionInterval(sigScoresModel.getRowForRange(pos), sigScoresModel.getRowForRange(pos));
+    }
+    
+    private void initialize() {  	
     	
     	// start our new crossdates
     	crossdates = new CrossdateCollection();
+    	status = new CrossdateStatusBar();
     	crossdatingElements = crossdates.setElements(crossdatingElements);   	
      	
+    	// Hide unwanted components
+        btnSwap.setVisible(false);
+        scrollInfo.setVisible(false);
+    	
+        // Setup all components
     	setupTables();
     	setupGraph();
     	setupListeners();
     	setupLists();
+    	
+    	// add ourself to the window, center, maximize and show
+    	window.setContentPane(this);
+    	window.pack(); 	
+    	window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	Center.center(window);
+    	window.setExtendedState(window.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+    	window.setVisible(true);
+    	window.setIconImage(Builder.getApplicationIcon());
+    	
+    	if (tableSignificantScores.getRowCount()>0)	tableSignificantScores.setRowSelectionInterval(0, 0);
 
-    	Center.center(this);
-    	setVisible(true);
+    	
     }
     
     private void setupTables() {
-    	// all windows need a vertical scroll bar!
-    	jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-    	jScrollPane2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-    	jScrollPane3.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
     	// sig scores table
        	sigScoresModel = new SigScoresTableModel(tableSignificantScores);
     	tableSignificantScores.setModel(sigScoresModel);
@@ -177,55 +372,61 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	tableSignificantScores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     	tableSignificantScores.setRowSelectionAllowed(true);
     	tableSignificantScores.setColumnSelectionAllowed(false);
-    	
+    	    	
     	// all scores table
-    	allScoresModel = new AllScoresTableModel(tableAllScores);
-    	tableAllScores.setModel(allScoresModel);
+    	allScoresModel = new AllScoresTableModel(tblAllScores);
+    	tblAllScores.setModel(allScoresModel);
     	allScoresModel.applyFormatting();
     	
-    	tableAllScores.getTableHeader().setReorderingAllowed(false);
-    	tableAllScores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    	tableAllScores.setCellSelectionEnabled(true);
+    	tblAllScores.getTableHeader().setReorderingAllowed(false);
+    	tblAllScores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    	tblAllScores.setCellSelectionEnabled(true);
     	
     	// histogram table
-    	histogramModel = new HistogramTableModel(tableHistogram);
-    	tableHistogram.setModel(histogramModel);
+    	histogramModel = new HistogramTableModel(tblHistogram);
+    	tblHistogram.setModel(histogramModel);
     	histogramModel.applyFormatting();
     	
-    	tableHistogram.getTableHeader().setReorderingAllowed(false);    	
-    	tableHistogram.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    	tableHistogram.setRowSelectionAllowed(false);
-    	tableHistogram.setColumnSelectionAllowed(false);
+    	tblHistogram.getTableHeader().setReorderingAllowed(false);    	
+    	tblHistogram.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    	tblHistogram.setRowSelectionAllowed(false);
+    	tblHistogram.setColumnSelectionAllowed(false);
     }
     
     private void setupListeners() {    	
-    	final CrossdateDialog glue = this;
 
     	// whenever one of our combo boxes change...
     	ActionListener listChanged = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			int row = cboPrimary.getSelectedIndex();
-    			int col = cboSecondary.getSelectedIndex();
+    			int row = cboReference.getSelectedIndex();
+    			int col = cboFloating.getSelectedIndex();
     			
     			// make a nice title?
-    			glue.setTitle("Crossdating: " + cboPrimary.getSelectedItem().toString());
+    			window.setTitle(I18n.getText("crossdate.crossdating")+": " + cboFloating.getSelectedItem().toString());
     			
     			try {
     				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
+    				status.setPairing(pairing);
     				sigScoresModel.setCrossdates(pairing);
     				allScoresModel.setCrossdates(pairing);
     				histogramModel.setCrossdates(pairing);
+    				updateTables();
+    				
     			} catch (CrossdateCollection.NoSuchPairingException nspe) {
+    				status.setPairing(null);
     				sigScoresModel.clearCrossdates();
     				allScoresModel.clearCrossdates();
     				histogramModel.clearCrossdates();
     				newCrossdateRange = null;
     			}
+    			
+    			// If table has rows - select first (most significant)
+    			if (tableSignificantScores.getRowCount()>0)	tableSignificantScores.setRowSelectionInterval(0, 0);
     		}
     	};
     	
-    	cboPrimary.addActionListener(listChanged);
-    	cboSecondary.addActionListener(listChanged);
+    	cboReference.addActionListener(listChanged);
+    	cboFloating.addActionListener(listChanged);
     	
     	// now, when our table row changes
     	tableSignificantScores.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -234,7 +435,7 @@ public class CrossdateDialog extends javax.swing.JDialog {
 					return;
 				
 				// deselect anything in tblAllScores
-				tableAllScores.clearSelection();
+				tblAllScores.clearSelection();
 
 				int row = tableSignificantScores.getSelectedRow();
 				
@@ -251,15 +452,15 @@ public class CrossdateDialog extends javax.swing.JDialog {
 			public void valueChanged(ListSelectionEvent lse) {
 				// don't fire if we're deselecting
 				if(lse.getValueIsAdjusting() || 
-						tableAllScores.getSelectedColumn() == -1 || 
-						tableAllScores.getSelectedRow() == -1)
+						tblAllScores.getSelectedColumn() == -1 || 
+						tblAllScores.getSelectedRow() == -1)
 					return;
 				
 				// unset any selections in sig scores
 				tableSignificantScores.clearSelection();
 			
-				int row = tableAllScores.getSelectedRow();
-				int col = tableAllScores.getSelectedColumn();
+				int row = tblAllScores.getSelectedRow();
+				int col = tblAllScores.getSelectedColumn();
 				
 				// make our new range
 				newCrossdateRange = allScoresModel.getSecondaryRangeForCell(row, col); 
@@ -268,8 +469,8 @@ public class CrossdateDialog extends javax.swing.JDialog {
 				updateGraph(allScoresModel.getGraphForCell(row, col));
 			}
     	};
-    	tableAllScores.getSelectionModel().addListSelectionListener(allScoresSelectionListener);
-    	tableAllScores.getColumnModel().getSelectionModel().addListSelectionListener(allScoresSelectionListener);
+    	tblAllScores.getSelectionModel().addListSelectionListener(allScoresSelectionListener);
+    	tblAllScores.getColumnModel().getSelectionModel().addListSelectionListener(allScoresSelectionListener);
     	
     	// when the score type selected on our all scores table changes
     	cboDisplayStats.addActionListener(new ActionListener() {
@@ -279,39 +480,46 @@ public class CrossdateDialog extends javax.swing.JDialog {
     			// show scores for this class...
     			if(score != null)
     				allScoresModel.setScoreClass(score.scoreClass);
+    				histogramModel.setScoreClass(score.scoreClass);
+    				
     		}
     	});
-
-    	// when the score type selected on our histogram table changes
-    	cboDisplayHistogram.addActionListener(new ActionListener() {
+   	
+    	// Favourite stat type changed
+    	cboDisplayStats.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			ScoreType score = (ScoreType) cboDisplayHistogram.getSelectedItem();
-    			
-    			// show scores for this class...
-    			if(score != null)
-    				histogramModel.setScoreClass(score.scoreClass);
+    			updateTables();
     		}
     	});
     	
-    	// swap button...
-    	btnSwap.addActionListener(new ActionListener() {
+    	
+    	// reset button...
+    	btnResetPosition.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			int i1 = cboPrimary.getSelectedIndex();
-    			int i2 = cboSecondary.getSelectedIndex();
-    			
-    			cboPrimary.setSelectedIndex(i2);
-    			cboSecondary.setSelectedIndex(i1);
+    			if(reviewMode)
+    			{
+    		        // Move floating to the correct position
+    		        Sample s;
+    		        try {
+    					s = firstFloating.load();
+    					setFloatingPosition(s.getRange());
+    				} catch (IOException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+    			}
+    			else
+    			{
+    				initialize();
+    			}
     		}
     	});
-
-    	// modify and reset button
-    	btnResetMeasurements.setVisible(false);
-    	btnAddMeasurement.setText("Modify");
-    	btnAddMeasurement.addActionListener(new ActionListener() {
+    	
+    	btnAddRemoveSeries.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     	    	// let user choose crossdates, exit if they close quietly
     			ElementList tmpElements;
-    	    	if((tmpElements = showOpenDialog(glue, crossdatingElements)) == null)
+    	    	if((tmpElements = showOpenDialog(window, true, crossdatingElements)) == null)
     	    		return; // user cancelled
     	    	
     	    	crossdatingElements = tmpElements;
@@ -319,30 +527,44 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	    	// start our new crossdates
     	    	crossdates = new CrossdateCollection();
     	    	crossdatingElements = crossdates.setElements(crossdatingElements);   	
-    	    	
+
+    	    	// try to keep our settings where they were
+    	    	Object o1 = cboReference.getSelectedItem();
+    	    	Object o2 = cboFloating.getSelectedItem();    	    	
+    	    	if (o1 instanceof Sample){
+    	    		firstReference =  new CachedElement((Sample)o1);
+    	    	} else {
+    	    		firstReference = (Element) o1;
+    	    	}	
+    	    	if (o2 instanceof Sample){
+    	    		firstFloating =  new CachedElement((Sample)o2);
+    	    	} else {
+    	    		firstFloating = (Element) o2;
+    	    	}
     	    	setupLists();
+    	    	
+    	    	
     		}
     	});
-    	
-    	btnOK.setText("Apply");
-       	btnOK.addActionListener(new ActionListener() {
+
+       	btnOk.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			int row = cboPrimary.getSelectedIndex();
-    			int col = cboSecondary.getSelectedIndex();
+    			int row = cboReference.getSelectedIndex();
+    			int col = cboFloating.getSelectedIndex();
     			    			
     			try {
     				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
     				
-    				CrossdateCommitDialog commit = new CrossdateCommitDialog(glue);
-    				Center.center(commit, glue);
+    				CrossdateCommitDialog commit = new CrossdateCommitDialog(window, true);
+    				Center.center(commit, window);
     				
     				commit.setup(pairing.getPrimary(), pairing.getSecondary(), newCrossdateRange);
     				commit.setVisible(true);
     				
     				if(commit.didSave())
-    					dispose();
+    					window.dispose();
     			} catch (CrossdateCollection.NoSuchPairingException nspe) {
-    				JOptionPane.showMessageDialog(glue, "Choose a valid crossdate", 
+    				JOptionPane.showMessageDialog(window, "Choose a valid crossdate", 
     						"Can't crossdate", JOptionPane.ERROR_MESSAGE);
     			}
     		}
@@ -350,57 +572,68 @@ public class CrossdateDialog extends javax.swing.JDialog {
 
        	btnCancel.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {   
-    			dispose();
+    			window.dispose();
     		}
        	});
 }
     
-    private void setupGraph() {
-		// initialize our plotting agents
-		PlotAgents agents = new PlotAgents();
-		
+    private void setupGraph() {	    	
 		// create a new graphinfo structure, so we can tailor it to our needs.
-		GraphInfo gInfo = new GraphInfo();
+		graphInfo = new GraphInfo();
 		
 		// force no drawing of graph names and drawing of vertical axis
-		gInfo.overrideDrawGraphNames(false);
-		gInfo.overrideShowVertAxis(true);
+		graphInfo.setShowGraphNames(false);
+		graphInfo.setShowVertAxis(true);
 		
 		// set up our samples
 		graphSamples = new ArrayList<Graph>(2);
-		
-		// *grumble* we need a graph for GrapherPanel to init...
-		try {
-			Sample s = crossdatingElements.get(0).load();
-			graphSamples.add(new Graph(s));
-		} catch (Exception e) {
-			// shouldn't happen at all.
-			return;
-		}
-		
+				
 		// create a graph panel; put it in a scroll pane
-		graph = new GrapherPanel(graphSamples, agents, null, gInfo);
+		graph = new GrapherPanel(graphSamples, null, graphInfo) {
+			@Override
+			public Dimension getPreferredSize(Dimension parent, Dimension scroll) {
+				// our height is the size of the graph or the size of the viewport
+				// whichever is greater
+				return new Dimension(parent.width, Math.max(getGraphHeight(), scroll.height));
+			}
+		};
 		graph.setUseVerticalScrollbar(true);
+		graph.setEmptyGraphText("Choose a crossdate");
 		
 		graphScroller = new JScrollPane(graph,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		graphScroller.setVerticalScrollBar(new ReverseScrollBar());
 
-		graphController = new GraphController(graph, graphScroller);
-
-		// get our JLabel set up
-		updateGraph(null);
+		// make the default viewport background the same color as the graph
+		graphScroller.getViewport().setBackground(graphInfo.getBackgroundColor());
 		
+		graphController = new GraphController(graph, graphScroller);
+				
 		panelChart.setLayout(new BorderLayout());
 		panelChart.add(graphScroller, BorderLayout.CENTER);
+		
+		// add a toolbar
+    	actions = new GraphActions(graph, null, graphController);
+    	GraphToolbar graphToolbar = new GraphToolbar(actions);
+    	panelChart.add(graphToolbar, BorderLayout.NORTH);
+    	
+    	// add a status bar
+    	panelChart.add(status, BorderLayout.SOUTH);
+    	
+    	// listen to this graph
+    	graph.addGrapherListener(this);
+    	
+		// get our basic graph set up
+		updateGraph(null);
     }
     
     private void setupLists() {
     	ArrayList<Object> samples = new ArrayList<Object>();
+    	List<Element> myElements = crossdatingElements.toActiveList();
 
     	// make a list of samples... (so we can get range, etc)
-    	for(Element e : crossdatingElements.toActiveList()) {
+    	for(Element e : myElements) {
     		try {
     			Sample s = e.load();
     			samples.add(s);
@@ -409,11 +642,33 @@ public class CrossdateDialog extends javax.swing.JDialog {
     		}
     	}
     	
-    	cboPrimary.setModel(new DefaultComboBoxModel(samples.toArray()));
-    	cboSecondary.setModel(new DefaultComboBoxModel(samples.toArray()));
+    	cboReference.setModel(new DefaultComboBoxModel(samples.toArray()));
+    	cboFloating.setModel(new DefaultComboBoxModel(samples.toArray()));
     	
-    	cboPrimary.setSelectedIndex(0);
-    	cboSecondary.setSelectedIndex(1);
+    	// choose what shows up by default in our combos
+    	if(firstFloating == null && firstReference == null) {
+    		// easy case
+    		cboReference.setSelectedIndex(0);
+    		cboFloating.setSelectedIndex(1);
+    	}
+    	else {
+    		// ensure our 'reference' box is populated
+    		boolean haveReference = false;
+    		boolean haveFloating = false;
+    		
+    		for(int i = 0; (i < myElements.size()) && !(haveReference && haveFloating); i++) {
+    			Element e = myElements.get(i);
+    			
+    			if(!haveFloating && ((firstFloating == null && !e.equals(firstReference)) || e.equals(firstFloating))) {
+    				cboFloating.setSelectedIndex(i);
+    				haveFloating = true;
+    			}    			
+    			else if(!haveReference && (firstReference == null || e.equals(firstReference))) {
+    				cboFloating.setSelectedIndex(i);
+    				haveReference = true;
+    			}    			
+    		}
+    	}
     	
     	// Now, the score types
     	ArrayList<ScoreType> scoreTypes = new ArrayList<ScoreType>();
@@ -428,10 +683,10 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	
     	// and set the model
     	cboDisplayStats.setModel(new DefaultComboBoxModel(scoreTypes.toArray()));
-    	cboDisplayHistogram.setModel(new DefaultComboBoxModel(scoreTypes.toArray()));
+    	//cboDisplayHistogram.setModel(new DefaultComboBoxModel(scoreTypes.toArray()));
     	
     	cboDisplayStats.setSelectedIndex(0);
-    	cboDisplayHistogram.setSelectedIndex(0);
+    	//cboDisplayHistogram.setSelectedIndex(0);
     }
 
     /**
@@ -457,438 +712,160 @@ public class CrossdateDialog extends javax.swing.JDialog {
     	}
     }
     
-    private void updateGraph(List<Graph> newGraphs) {    	
-    	if(newGraphs == null || newGraphs.size() != 2) {
-    		JLabel invalid = new JLabel("Choose a valid crossdate");
-    		invalid.setAlignmentX(CENTER_ALIGNMENT);
-    		invalid.setHorizontalAlignment(SwingConstants.CENTER);
-
-    		graphScroller.setRowHeader(null);
-    		graphScroller.setViewportView(invalid);
-    		
-    		btnOK.setEnabled(false);
-    		return;
-    	}
-
-    	// copy the graphs over
-    	if(graphSamples.size() == 1) {
-    		graphSamples.set(0, newGraphs.get(0));
-    		graphSamples.add(newGraphs.get(1));
-    	}
-    	else {
-    		graphSamples.set(0, newGraphs.get(0));
-    		graphSamples.set(1, newGraphs.get(1));
-    	}
+    private void updateTables()
+    {
+    	sigScoresModel.sortByStatType(StatType.fromName(cboDisplayStats.getSelectedItem().toString()));
     	
-    	graph.update(false);
-    	graphController.scaleToFitHeight(); // calls graph.update(true) for us
-    	graphScroller.setViewportView(graph);
-		graph.setAxisVisible(true, true);
-		panelChart.revalidate();
-		btnOK.setEnabled(true);
     }
     
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private void updateGraph(List<Graph> newGraphs) {    	
+   		graphSamples.clear();
+   		
+    	if(!(newGraphs == null || newGraphs.size() != 2)) {
+    		// copy the graphs over
+    		graphSamples.add(newGraphs.get(0));
+    		graphSamples.add(newGraphs.get(1));
+    		
+    		// make sure we can't drag our fixed graph
+    		newGraphs.get(0).setDraggable(false);
+    		
+    		// also, display the moving range
+    		status.setMovingRange(newGraphs.get(1).getRange());
+    		
+    		// fit the height of the graph
+        	graphController.scaleToFitHeight(5);
+    	}
+    	else
+    		status.setMovingRange(null);
+    	
+		graphInfo.setShowVertAxis(true);
+    	graph.update(true);
+		btnOk.setEnabled(graphSamples.size() == 2);
+    }
 
-        panelMeasurements = new javax.swing.JPanel();
-        lblPrimary = new javax.swing.JLabel();
-        cboPrimary = new javax.swing.JComboBox();
-        lblSecondary = new javax.swing.JLabel();
-        cboSecondary = new javax.swing.JComboBox();
-        btnAddMeasurement = new javax.swing.JButton();
-        panelSwap = new javax.swing.JPanel();
-        btnSwap = new javax.swing.JButton();
-        btnResetMeasurements = new javax.swing.JButton();
-        panelCrossdates = new javax.swing.JPanel();
-        splitCrossDates = new javax.swing.JSplitPane();
-        tabpanelStats = new javax.swing.JTabbedPane();
-        panelSignificantScores = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tableSignificantScores = new javax.swing.JTable();
-        panelAllScores = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tableAllScores = new javax.swing.JTable();
-        lblDisplayStats = new javax.swing.JLabel();
-        cboDisplayStats = new javax.swing.JComboBox();
-        panelHistogram = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        tableHistogram = new javax.swing.JTable();
-        lblDisplayHistogram = new javax.swing.JLabel();
-        cboDisplayHistogram = new javax.swing.JComboBox();
-        panelChart = new javax.swing.JPanel();
-        panelButtons = new javax.swing.JPanel();
-        btnOK = new javax.swing.JButton();
-        btnCancel = new javax.swing.JButton();
-        seperatorButtons = new javax.swing.JSeparator();
+    /** Get notified when the graph changes */
+	public void graphChanged(GrapherEvent evt) {
+		if(evt.getEventType() == GrapherEvent.Type.XOFFSET_CHANGED) {
+			if(graphSamples.size() == 2)
+				status.setMovingRange(graphSamples.get(1).getRange());
+		}
+	}
+	
+	/**
+	 * A status bar that works with the graph
+	 * Shows all the scores, offset, moving range
+	 * 
+	 * @author Lucas Madar
+	 */
+	public static class CrossdateStatusBar extends JPanel {
+		private JLabel range;
+		private JLabel overlap;
+		private JLabel[] contentHeading;
+		private JLabel[] content;
+		private CrossdateCollection.Pairing pairing;
+		
+		public CrossdateStatusBar() {			
+			range = new JLabel();
+			overlap = new JLabel();
+			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+			add(range);
+			add(Box.createHorizontalStrut(8));
+			add(new JSeparator(JSeparator.VERTICAL));
+			add(Box.createHorizontalStrut(4));
+			add(overlap);
+			add(Box.createHorizontalStrut(8));
+			add(new JSeparator(JSeparator.VERTICAL));
+			add(Box.createHorizontalGlue());
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+			// create a bunch of JLabels...
+			int n = SigScoresTableModel.columns.size();
+			contentHeading = new JLabel[n];
+			content = new JLabel[n];
+			for(int i = 0; i < n; i++) {
+				if(i > 0) {
+					add(Box.createHorizontalStrut(8));
+					add(new JSeparator(JSeparator.VERTICAL));
+					add(Box.createHorizontalStrut(4));
+				}
+				contentHeading[i] = new JLabel(SigScoresTableModel.columns.get(i).heading);
+				add(contentHeading[i]);
+				add(Box.createHorizontalStrut(4));
+				content[i] = new JLabel("     ");
+				add(content[i]);
+			}
+			
+			setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
+		}
+		
+		private void clearContent() {
+			range.setText("");
+			overlap.setText("");
+			for(int i = 0; i < content.length; i++) {
+				content[i].setText("     ");
+			}
+		}
+		
+		public void setPairing(CrossdateCollection.Pairing pairing) {
+			this.pairing = pairing;
+			clearContent();
+		}
+		
+		public void setMovingRange(Range mRange) {
+			if(mRange == null) {
+				clearContent();
+				return;
+			}
+			
+			range.setText("Moving range: " + mRange);
+			overlap.setText("Overlap: " + mRange.overlap(pairing.getPrimary().getRange()));
+			
+			for(int i = 0; i < SigScoresTableModel.columns.size(); i++) {
+				// score type for this column
+				Class<?> scoreClass = SigScoresTableModel.columns.get(i).scoreType;
+				Cross cross = pairing.getCrossForClass(scoreClass);
 
-        panelMeasurements.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measurements"));
+				contentHeading[i].setEnabled(cross != null);
+				content[i].setEnabled(cross != null);
+				
+				if(cross == null) {
+					content[i].setText("n/a");
+					return;
+				}
+				
+				DecimalFormat df = new DecimalFormat(cross.getFormat());				
+				float val = cross.getScore(mRange.getEnd());
+				
+				content[i].setText(df.format(val));
+			}			
+		}
+	}
+	
+	public enum StatType {
+		TSCORE ("T-Score"),
+		DSCORE ("D-Score"),
+		TREND ("Trend"), 
+		WJ ("Weiserjahre"),
+		RVALUE ("R-Value");
+		
+		final String name;
+		
+		StatType(String name){
+		this.name = name;
 
-        lblPrimary.setLabelFor(cboPrimary);
-        lblPrimary.setText("Primary:");
+	}
+		
+	public final String toString(){ return this.name;}
 
-        cboPrimary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "C-ABC-1-4-1", "C-ABC-1-4-2" }));
-        cboPrimary.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cboPrimaryActionPerformed(evt);
-            }
-        });
-
-        lblSecondary.setLabelFor(cboSecondary);
-        lblSecondary.setText("Secondary:");
-
-        cboSecondary.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "C-ABC-1-4-2", "C-ABC-1-4-1" }));
-        cboSecondary.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cboSecondaryActionPerformed(evt);
-            }
-        });
-
-        btnAddMeasurement.setText("Add ");
-
-        btnSwap.setText("Swap");
-
-        org.jdesktop.layout.GroupLayout panelSwapLayout = new org.jdesktop.layout.GroupLayout(panelSwap);
-        panelSwap.setLayout(panelSwapLayout);
-        panelSwapLayout.setHorizontalGroup(
-            panelSwapLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(btnSwap)
-        );
-        panelSwapLayout.setVerticalGroup(
-            panelSwapLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelSwapLayout.createSequentialGroup()
-                .addContainerGap(17, Short.MAX_VALUE)
-                .add(btnSwap)
-                .addContainerGap())
-        );
-
-        btnResetMeasurements.setText("Reset");
-
-        org.jdesktop.layout.GroupLayout panelMeasurementsLayout = new org.jdesktop.layout.GroupLayout(panelMeasurements);
-        panelMeasurements.setLayout(panelMeasurementsLayout);
-        panelMeasurementsLayout.setHorizontalGroup(
-            panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelMeasurementsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(lblPrimary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(lblSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 97, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(11, 11, 11)
-                .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelMeasurementsLayout.createSequentialGroup()
-                        .add(btnAddMeasurement)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnResetMeasurements))
-                    .add(panelMeasurementsLayout.createSequentialGroup()
-                        .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(cboSecondary, 0, 482, Short.MAX_VALUE)
-                            .add(cboPrimary, 0, 482, Short.MAX_VALUE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(panelSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-        panelMeasurementsLayout.setVerticalGroup(
-            panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelMeasurementsLayout.createSequentialGroup()
-                .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelSwap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 62, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(panelMeasurementsLayout.createSequentialGroup()
-                        .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(lblPrimary)
-                            .add(cboPrimary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(panelMeasurementsLayout.createSequentialGroup()
-                                .add(lblSecondary)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 13, Short.MAX_VALUE))
-                            .add(cboSecondary, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 29, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .add(18, 18, 18)
-                .add(panelMeasurementsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnAddMeasurement)
-                    .add(btnResetMeasurements))
-                .addContainerGap())
-        );
-
-        panelCrossdates.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Cross dates"));
-
-        splitCrossDates.setBorder(null);
-        splitCrossDates.setDividerLocation(230);
-        splitCrossDates.setDividerSize(8);
-        splitCrossDates.setOneTouchExpandable(true);
-        splitCrossDates.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-
-        tableSignificantScores.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "#", "Position", "Overlap", "Trend", "T Score", "R Score", "D Score"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tableSignificantScores.setColumnSelectionAllowed(true);
-        jScrollPane1.setViewportView(tableSignificantScores);
-        tableSignificantScores.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-
-        org.jdesktop.layout.GroupLayout panelSignificantScoresLayout = new org.jdesktop.layout.GroupLayout(panelSignificantScores);
-        panelSignificantScores.setLayout(panelSignificantScoresLayout);
-        panelSignificantScoresLayout.setHorizontalGroup(
-            panelSignificantScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelSignificantScoresLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        panelSignificantScoresLayout.setVerticalGroup(
-            panelSignificantScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelSignificantScoresLayout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        tabpanelStats.addTab("Significant Scores", panelSignificantScores);
-
-        tableAllScores.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"1001", null, null, null, null, null, null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "Year", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "#"
-            }
-        ));
-        tableAllScores.setGridColor(new java.awt.Color(204, 204, 204));
-        jScrollPane2.setViewportView(tableAllScores);
-
-        lblDisplayStats.setText("Display values for:");
-
-        cboDisplayStats.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "R Score", "T Score", "D Score", "Trend" }));
-
-        org.jdesktop.layout.GroupLayout panelAllScoresLayout = new org.jdesktop.layout.GroupLayout(panelAllScores);
-        panelAllScores.setLayout(panelAllScoresLayout);
-        panelAllScoresLayout.setHorizontalGroup(
-            panelAllScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelAllScoresLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelAllScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
-                    .add(panelAllScoresLayout.createSequentialGroup()
-                        .add(lblDisplayStats)
-                        .add(18, 18, 18)
-                        .add(cboDisplayStats, 0, 514, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        panelAllScoresLayout.setVerticalGroup(
-            panelAllScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelAllScoresLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelAllScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblDisplayStats)
-                    .add(cboDisplayStats, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        tabpanelStats.addTab("All Scores", panelAllScores);
-
-        tableHistogram.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
-            },
-            new String [] {
-                "Stats Value", "#", "Histogram"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane3.setViewportView(tableHistogram);
-
-        lblDisplayHistogram.setText("Display histogram for:");
-
-        cboDisplayHistogram.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "R Score", "T Score", "D Score", "Trend" }));
-
-        org.jdesktop.layout.GroupLayout panelHistogramLayout = new org.jdesktop.layout.GroupLayout(panelHistogram);
-        panelHistogram.setLayout(panelHistogramLayout);
-        panelHistogramLayout.setHorizontalGroup(
-            panelHistogramLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelHistogramLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelHistogramLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
-                    .add(panelHistogramLayout.createSequentialGroup()
-                        .add(lblDisplayHistogram)
-                        .add(18, 18, 18)
-                        .add(cboDisplayHistogram, 0, 490, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        panelHistogramLayout.setVerticalGroup(
-            panelHistogramLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelHistogramLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelHistogramLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblDisplayHistogram)
-                    .add(cboDisplayHistogram, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        tabpanelStats.addTab("Histogram", panelHistogram);
-
-        splitCrossDates.setTopComponent(tabpanelStats);
-
-        org.jdesktop.layout.GroupLayout panelChartLayout = new org.jdesktop.layout.GroupLayout(panelChart);
-        panelChart.setLayout(panelChartLayout);
-        panelChartLayout.setHorizontalGroup(
-            panelChartLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 710, Short.MAX_VALUE)
-        );
-        panelChartLayout.setVerticalGroup(
-            panelChartLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 245, Short.MAX_VALUE)
-        );
-
-        splitCrossDates.setRightComponent(panelChart);
-
-        org.jdesktop.layout.GroupLayout panelCrossdatesLayout = new org.jdesktop.layout.GroupLayout(panelCrossdates);
-        panelCrossdates.setLayout(panelCrossdatesLayout);
-        panelCrossdatesLayout.setHorizontalGroup(
-            panelCrossdatesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(splitCrossDates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE)
-        );
-        panelCrossdatesLayout.setVerticalGroup(
-            panelCrossdatesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(splitCrossDates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-        );
-
-        btnOK.setText("OK");
-        btnCancel.setText("Cancel");
-
-        seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
-        seperatorButtons.setOpaque(true);
-
-        org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
-        panelButtons.setLayout(panelButtonsLayout);
-        panelButtonsLayout.setHorizontalGroup(
-            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonsLayout.createSequentialGroup()
-                .addContainerGap(671, Short.MAX_VALUE)
-                .add(panelButtonsLayout.createSequentialGroup()
-                		.add(btnOK)
-                		.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                		.add(btnCancel))
-                .add(16, 16, 16))
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 762, Short.MAX_VALUE)
-        );
-        panelButtonsLayout.setVerticalGroup(
-            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelButtonsLayout.createSequentialGroup()
-                .add(seperatorButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                		.add(btnOK)
-                		.add(btnCancel))
-                .addContainerGap(27, Short.MAX_VALUE))
-        );
-
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelCrossdates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelMeasurements, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelMeasurements, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(panelCrossdates, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void cboPrimaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboPrimaryActionPerformed
-        // TODO add your handling code here:
-}//GEN-LAST:event_cboPrimaryActionPerformed
-
-    private void cboSecondaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSecondaryActionPerformed
-        // TODO add your handling code here:
-}//GEN-LAST:event_cboSecondaryActionPerformed
-    
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAddMeasurement;
-    private javax.swing.JButton btnOK;
-    private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnResetMeasurements;
-    private javax.swing.JButton btnSwap;
-    private javax.swing.JComboBox cboDisplayHistogram;
-    private javax.swing.JComboBox cboDisplayStats;
-    private javax.swing.JComboBox cboPrimary;
-    private javax.swing.JComboBox cboSecondary;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JLabel lblDisplayHistogram;
-    private javax.swing.JLabel lblDisplayStats;
-    private javax.swing.JLabel lblPrimary;
-    private javax.swing.JLabel lblSecondary;
-    private javax.swing.JPanel panelAllScores;
-    private javax.swing.JPanel panelButtons;
-    private javax.swing.JPanel panelChart;
-    private javax.swing.JPanel panelCrossdates;
-    private javax.swing.JPanel panelHistogram;
-    private javax.swing.JPanel panelMeasurements;
-    private javax.swing.JPanel panelSignificantScores;
-    private javax.swing.JPanel panelSwap;
-    private javax.swing.JSeparator seperatorButtons;
-    private javax.swing.JSplitPane splitCrossDates;
-    private javax.swing.JTable tableAllScores;
-    private javax.swing.JTable tableHistogram;
-    private javax.swing.JTable tableSignificantScores;
-    private javax.swing.JTabbedPane tabpanelStats;
-    // End of variables declaration//GEN-END:variables
-    
+	public static StatType fromName(String name){ 
+		for (StatType val : StatType.values()){
+			if (val.toString().equals(name)) return val;
+		}
+		
+		return null;
+		
+	}
+	
+	}
+	
+	
 }

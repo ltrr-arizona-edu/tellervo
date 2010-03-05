@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gui.menus.OpenRecent;
 import edu.cornell.dendro.corina.io.Files;
 
 /**
@@ -50,6 +49,9 @@ public class FileElement implements SampleLoader {
 	/** The given filename */
 	private String filename;
 	
+	/** The type of sample we have */
+	private SampleType type = SampleType.UNKNOWN;
+	
 	public FileElement(String filename) {
 		// if it starts with a ?, this is a relative path, using :'s as separators
 		// ie, ?FOREST:ACM:moo123.pik
@@ -62,7 +64,7 @@ public class FileElement implements SampleLoader {
 				this.folder = fn.substring(0, pos);
 				this.basename = fn.substring(pos + 1, fn.length());
 				
-				this.filename = App.prefs.getPref("corina.dir.data") + File.separator +
+				this.filename = App.prefs.getPref("corina.dir.data", ".") + File.separator +
 								this.folder.replace(":", File.separator) + File.separator +
 								this.basename;
 			}
@@ -85,22 +87,32 @@ public class FileElement implements SampleLoader {
 		}
 		// otherwise, we got passed a whole file name. try and parse it up.
 		else {
+
+			this.filename = filename;
+			this.basename = new File(filename).getName();
+			return;
+			
+			
+			/*  THIS IS OLD STUFF WITH G:\DATA hardcoded
+			 *  Yuk!
+			 * 
 			String fn = filename;
 			
 			// if, for some reason, adaptive reading is turned off... 
 			// don't bother to parse it!
-			if(Boolean.valueOf(App.prefs.getPref("corina.dir.adaptiveread")).booleanValue() == false) {
+			if(App.prefs.getBooleanPref("corina.dir.adaptiveread", true) == false) {
 				this.filename = filename;
 				this.basename = new File(filename).getName();
 				return;				
 			}
 			
+			
 			// chop off any sort of beginning cruft
 			if(fn.startsWith("G:\\DATA\\")) {
 				fn = fn.substring(8);
 			}
-			else if(filename.startsWith(App.prefs.getPref("corina.dir.data") + File.separator)) {
-				fn = fn.substring(App.prefs.getPref("corina.dir.data").length() + File.separator.length());
+			else if(filename.startsWith(App.prefs.getPref("corina.dir.data", ".") + File.separator)) {
+				fn = fn.substring(App.prefs.getPref("corina.dir.data", ".").length() + File.separator.length());
 			}
 			else {
 				// we can't convert this into a special path.
@@ -128,7 +140,9 @@ public class FileElement implements SampleLoader {
 			else {
 				this.filename = filename;
 				this.basename = new File(filename).getName();
-			}
+			}*/
+			
+			
 		}
 	}
 
@@ -143,7 +157,12 @@ public class FileElement implements SampleLoader {
 	public Sample load() throws IOException {
 		Sample s = Files.load(filename);
 
+		if(s==null) return null;
+		
 		s.setLoader(this);
+		
+		// lazily-load this...?
+		type = s.getSampleType();
 		
 		// we loaded it, so tell our open menu...
 		// Don't do this here, it affects imports!
@@ -209,5 +228,12 @@ public class FileElement implements SampleLoader {
 	public void preload(BaseSample bs) {
 		// this isn't necessary because we know all the info for short/long names based on the
 		// resource descriptor (which is the file name in this case)
+	}
+
+	/**
+	 * Get the sample type we represent
+	 */
+	public SampleType getSampleType() {
+		return type;
 	}
 }

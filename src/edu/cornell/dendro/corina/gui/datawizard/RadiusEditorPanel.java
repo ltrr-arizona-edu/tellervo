@@ -10,9 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import edu.cornell.dendro.corina.dictionary.Taxon;
-import edu.cornell.dendro.corina.site.Radius;
-import edu.cornell.dendro.corina.site.Specimen;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.webdbi.IntermediateResource;
 
@@ -20,7 +20,7 @@ import edu.cornell.dendro.corina.webdbi.IntermediateResource;
  *
  * @author  peterbrewer
  */
-public class RadiusEditorPanel extends BaseEditorPanel<Radius> {
+public class RadiusEditorPanel extends BaseEditorPanel<TridasRadius> {
     
     /** Creates new form Site */
     public RadiusEditorPanel() {
@@ -55,25 +55,25 @@ public class RadiusEditorPanel extends BaseEditorPanel<Radius> {
         lblNamePrefix.setText(parentPrefix);
     }
     
-	public void setDefaultsFrom(Radius r) {
+	public void setDefaultsFrom(TridasRadius r) {
 		String v;
 		
 		// populate name
 		v = r.toString();
-		if(!v.equals(Radius.NAME_INVALID))
+		if(!v.equals(TridasRadius.NAME_INVALID))
 			txtRadiusName.setText(v);
 	}
     
     public void commit() {
-    	Radius radius = new Radius(Radius.ID_NEW, txtRadiusName.getText());
+    	TridasRadius radius = new TridasRadius(TridasRadius.ID_NEW, txtRadiusName.getText());
     	assimilateUpdateObject(radius);
     	IntermediateResource ir = new IntermediateResource(getParentObject(), radius);
     	
        	if(!createOrUpdateObject(ir))
     		return;
     	
-		if(ir.getObject().get(0) instanceof Radius) {
-			setNewObject((Radius) ir.getObject().get(0));
+		if(ir.getObject().get(0) instanceof TridasRadius) {
+			setNewObject((TridasRadius) ir.getObject().get(0));
 		}
 		
     	dispose();

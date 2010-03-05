@@ -6,33 +6,35 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-
-import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.editor.SampleDataView;
-import edu.cornell.dendro.corina.sample.CorinaWebElement;
+import edu.cornell.dendro.corina.editor.support.AbstractTableCellModifier;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
-import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.webdbi.ResourceIdentifier;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.PopupListener;
 
 public class ReconcileDataView extends SampleDataView implements SampleListener {
+	private static final long serialVersionUID = 1L;
+	
 	private JEditorPane reconcileInfo;
 	private final static String reconcileIntro = "<html><br>";
 
@@ -40,30 +42,40 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	private Reconciler reconciler;
 	private ReconcileNotifier notifier;
 	private TableSelectionChangeListener tableSelectionMonitor;
+	private Color greenColor;
+	private Color redColor;
+	private ReconcileWindow parent;
 	
-	public ReconcileDataView(Sample newSample, Sample reference) {
+	public ReconcileDataView(Sample newSample, Sample reference, Boolean showInfo, ReconcileWindow p) {
 		super(newSample);		
+		parent = p;
+		
+		greenColor = Color.getHSBColor(0.305f, 0.23f, 0.89f);
+		redColor = Color.getHSBColor(0f, 0.41f, 0.89f);
 		
 		this.newSample = newSample;
 		this.reference = reference;
 		
 		// create the reconciler
 		reconciler = new Reconciler(newSample, reference);
-		
+
 		// create the place where we check our stuffs
 		reconcileInfo = new JEditorPane();
 		reconcileInfo.setContentType("text/html");
 		reconcileInfo.setEditable(false);
-		reconcileInfo.setPreferredSize(new Dimension(140, 100));
+		reconcileInfo.setPreferredSize(new Dimension(140, 400));
+		reconcileInfo.setMinimumSize(new Dimension(140, 40));		
+		reconcileInfo.setMaximumSize(new Dimension(140, 99999));
 		reconcileInfo.setText(reconcileIntro);
-
+		
+		reconcileInfo.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+			
+		
 		// reconcile...
 		doReconciliation();
 
 		// create our special renderer
-		ReconcileRenderer rr = new ReconcileRenderer();
-		for(int i = 1; i <= 10; i++)
-			myTable.getColumnModel().getColumn(i).setCellRenderer(rr);		
+		myCellRenderer.addModifier(new ReconcileCellModifier());
 		
 		// make sure we're aware of selection changes
 		tableSelectionMonitor = new TableSelectionChangeListener(myTable, this);
@@ -73,8 +85,54 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	    
 	    // this column is useless in this case and just takes up space!
 	    myTable.getColumnModel().removeColumn(myTable.getColumnModel().getColumn(11));
+	    
+	    
+		// Overide mouse listener for table so that we can add a 'remeasure' button
+		myTable.addMouseListener(new PopupListener() {
+			@Override
+			public void showPopup(MouseEvent e) {
+				int row = myTable.rowAtPoint(e.getPoint());
+				int col = myTable.columnAtPoint(e.getPoint());
+				
+				// clicked on a row header?  don't do anything.
+				if (col == 0)
+					return;
+
+				// select the cell at e.getPoint()
+				myTable.setRowSelectionInterval(row, row);
+				myTable.setColumnSelectionInterval(col, col);
+				
+				// Create popup menu
+				JPopupMenu menu = new JPopupMenu();
+				
+				// Create a remeasure button
+				JMenuItem remeasure = Builder.makeMenuItem("remeasure", true, "measure.png");
+				remeasure.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent ae) {
+							parent.remeasureSelectedRing();
+						}
+					});				
+				menu.add(remeasure);
+				menu.addSeparator();
+				addAddDeleteMenu(menu);
+				menu.addSeparator();
+				addNotesMenu(menu, row, col);
+				
+				menu.show(myTable, e.getX(), e.getY());
+				}
+			
+		});
+	    
 		
-		add(reconcileInfo, BorderLayout.EAST);
+	    if(showInfo) 
+	    	add(this.getReconcileInfoPanel(), BorderLayout.WEST);
+	}
+	
+	
+	public JEditorPane getReconcileInfoPanel(){
+		
+		return reconcileInfo;
+
 	}
 	
 	private void doReconciliation() {
@@ -125,7 +183,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				selectionInfo.append("<br><b><u>Details for year " + y.toString() + "</u></b><br><br>");
 			
 				// just some info
-				selectionInfo.append("Current value : " + newSample.getData().get(idx) + "<br>");
+				selectionInfo.append("Primary value : " + newSample.getData().get(idx) + "<br>");
 				selectionInfo.append("Reference value : " + 
 						((reference.getData().size() > idx) ? reference.getData().get(idx) : "<n/a>") + 
 						"<br><br>");
@@ -160,6 +218,9 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 	public void forceReconciliation() {
 		reconciler.rereconcile();
 		doReconciliation();
+		
+		// we need this so we can repaint any backgrounds, borders, etc we might have
+		((DecadalModel) myModel).fireTableDataChanged();
 	}
 	
 	public int reconciliationErrorCount() {
@@ -260,31 +321,24 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
         }
     }
 
-	
-	// This makes our table look neat!
-	private class ReconcileRenderer extends DefaultTableCellRenderer {
+    // make our table look neat, and show icons!
+    // use nifty cell modifier!
+    private class ReconcileCellModifier extends AbstractTableCellModifier {
 		private final Border selBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
-		private final Border noBorder = BorderFactory.createEmptyBorder();
-
-		public ReconcileRenderer() {
-			setOpaque(true);
-		}
-
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
+		
+		public void modifyComponent(Component c, JTable table, Object value,
+				boolean isSelected, boolean hasFocus, int row, int column) {
 			
-			Component cell = super.getTableCellRendererComponent(table, value,
-					isSelected, hasFocus, row, column);
-	
+			JLabel cell = (JLabel) c;
+			
 			// Set default selection border
 			if(isSelected) {
-				setBorder(selBorder);				
+				cell.setBorder(selBorder);				
 			}
 			
 			// Right alignment
-			super.setHorizontalAlignment(JLabel.RIGHT);
-
+			cell.setHorizontalAlignment(JLabel.RIGHT);
+		
 			
 			// Determine how we paint the cells depending on type of errors	
 			// - 3% error only = Red background
@@ -297,14 +351,14 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				// There are failures
 				
 				Integer  borderWidth = 1;
-				Color myBorderColor = Color.RED;
+				Color myBorderColor = redColor;
 				// Enhance border width if cell is also selected
 				if (isSelected)	borderWidth = 2;
 				
 				if(failures.contains(Reconciler.FailureType.THREEPERCENT)) {
 					// 3% error so paint cell red 
 					cell.setForeground(Color.WHITE);
-					cell.setBackground(Color.RED);
+					cell.setBackground(redColor);
 					
 					// Overide border color if selected otherwise it is invisible
 					if (isSelected) myBorderColor = Color.BLACK;
@@ -316,31 +370,27 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				}
 				
 				
-				if(failures.contains(Reconciler.FailureType.TRENDPREV)) {
-					// Just trend to previous so no border on left of cell
-					setBorder(BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, borderWidth, myBorderColor));
-				}
-				if(failures.contains(Reconciler.FailureType.TRENDNEXT)) {
-					// Just trend to next so no border on right of cell
-					setBorder(BorderFactory.createMatteBorder(borderWidth, borderWidth, borderWidth, 0, myBorderColor));
-				}
 				if(( failures.contains(Reconciler.FailureType.TRENDPREV)) && (failures.contains(Reconciler.FailureType.TRENDNEXT)) ) {
 					// Trends to next and previous so no border on left OR right
-					setBorder(BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, 0, myBorderColor));
+					cell.setBorder(BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, 0, myBorderColor));
 				}	
+				else if(failures.contains(Reconciler.FailureType.TRENDPREV)) {
+					// Just trend to previous so no border on left of cell
+					cell.setBorder(BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, borderWidth, myBorderColor));
+				}
+				else if(failures.contains(Reconciler.FailureType.TRENDNEXT)) {
+					// Just trend to next so no border on right of cell
+					cell.setBorder(BorderFactory.createMatteBorder(borderWidth, borderWidth, borderWidth, 0, myBorderColor));
+				}
 				
 			} else {
 				// No errors so paint green
 				cell.setForeground(Color.BLACK);
-				cell.setBackground(Color.GREEN);
+				cell.setBackground(greenColor);
 			}
-			
 
-			
-			return cell;
 		}
-	}
-
+    }
 	
 	// SampleListener
 	public void sampleRedated(SampleEvent e) {

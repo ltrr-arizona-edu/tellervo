@@ -2,7 +2,9 @@ package edu.cornell.dendro.corina.ui;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.util.StringTokenizer;
 
 import javax.swing.AbstractAction;
@@ -18,7 +20,10 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.KeyStroke;
 
+import com.lowagie.text.BadElementException;
+
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
 
 // TODO: if on 1.4, use setDisplayedMnemonicIndex() so "Save &As..."
 // underlines the correct 'A'
@@ -29,23 +34,21 @@ public class Builder {
 	private Builder() {
 	}
 
-	// UNUSED!
 	public final static String INDENT = "    "; // 4 spaces
 
 	public static JMenu makeMenu(String key) {
 		JMenu m = new JMenu();
 
-		// TODO: set font only on java<1.4?
-		// NOTE: now using UIDefaults customization through Appearance Panel
-		// instead of corina.menubar.font property - cross this off PRIORITY list
+		setupMnemonics(m, key);
 
-		m.setText(I18n.getText(key));
-
-		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
-			if (mnemonic != null)
-				m.setMnemonic(mnemonic.charValue());
-		}
+		return m;
+	}
+	
+	public static JMenu makeMenu(String key, String iconfilename) {
+		JMenu m = new JMenu();
+		m.setIcon(getIcon(iconfilename, ICONS, 22));
+		
+		setupMnemonics(m, key);
 
 		return m;
 	}
@@ -53,21 +56,9 @@ public class Builder {
 	public static JMenuItem makeMenuItem(String key) {
 		JMenuItem m = new JMenuItem("");
 
-		// TODO: set font only on java<1.4?
-		// NOTE: now using UIDefaults customization through Appearance Panel
-		// instead of corina.menubar.font property - cross this off PRIORITY list
-
 		m.setText(I18n.getText(key));
 
-		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
-			if (mnemonic != null)
-				m.setMnemonic(mnemonic.charValue());
-		}
-
-		String keystroke = I18n.getKeyStroke(key);
-		if (keystroke != null)
-			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+		setupMnemonics(m, key);
 
 		return m;
 	}
@@ -91,20 +82,10 @@ public class Builder {
 		return m;
 	}
 	
-	public static JMenuItem makeMenuItem(String key, String action, String iconfilename){
-					
-		JMenuItem m = new JMenuItem(key, getIcon(iconfilename, "Icons"));
-		m.setText(I18n.getText(key));
+	public static JMenuItem makeMenuItem(String key, String action, String iconfilename){					
+		JMenuItem m = new JMenuItem(key, getIcon(iconfilename, ICONS, 22));
 
-		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
-			if (mnemonic != null)
-				m.setMnemonic(mnemonic.charValue());
-		}
-
-		String keystroke = I18n.getKeyStroke(key);
-		if (keystroke != null)
-			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+		setupMnemonics(m, key);
 		
 		if(action != null)
 			addAction(m, action);
@@ -120,23 +101,10 @@ public class Builder {
 	public static JCheckBoxMenuItem makeCheckBoxMenuItem(String key, String iconfilename) {
 		JCheckBoxMenuItem m = new JCheckBoxMenuItem("");
 
-		// TODO: set font only on java<1.4?
-		// NOTE: now using UIDefaults customization through Appearance Panel
-		// instead of corina.menubar.font property - cross this off PRIORITY list
-
-		m.setText(I18n.getText(key));
-
-		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
-			if (mnemonic != null)
-				m.setMnemonic(mnemonic.charValue());
-		}
-
-		String keystroke = I18n.getKeyStroke(key);
-		if (keystroke != null)
-			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+		setupMnemonics(m, key);		
 		
-		if (iconfilename!=null)	m.setIcon(getIcon(iconfilename, "Icons"));
+		if (iconfilename!=null)	
+			m.setIcon(getIcon(iconfilename, ICONS, 22));
 
 		return m;
 	}
@@ -144,21 +112,7 @@ public class Builder {
 	public static JRadioButtonMenuItem makeRadioButtonMenuItem(String key) {
 		JRadioButtonMenuItem m = new JRadioButtonMenuItem("");
 
-		// TODO: set font only on java<1.4?
-		// NOTE: now using UIDefaults customization through Appearance Panel
-		// instead of corina.menubar.font property - cross this off PRIORITY list
-
-		m.setText(I18n.getText(key));
-
-		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
-			if (mnemonic != null)
-				m.setMnemonic(mnemonic.charValue());
-		}
-
-		String keystroke = I18n.getKeyStroke(key);
-		if (keystroke != null)
-			m.setAccelerator(KeyStroke.getKeyStroke(keystroke));
+		setupMnemonics(m, key);
 
 		return m;
 	}
@@ -166,13 +120,7 @@ public class Builder {
 	public static JButton makeButton(String key) {
 		JButton b = new JButton();
 
-		b.setText(I18n.getText(key));
-
-		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
-			if (mnemonic != null)
-				b.setMnemonic(mnemonic.charValue());
-		}
+		setupMnemonics(b, key);
 
 		return b;
 	}
@@ -188,44 +136,211 @@ public class Builder {
 	public static JRadioButton makeRadioButton(String key) {
 		JRadioButton r = new JRadioButton();
 
-		r.setText(I18n.getText(key));
-
-		if (!App.platform.isMac()) {
-			Character mnemonic = I18n.getMnemonic(key);
-			if (mnemonic != null)
-				r.setMnemonic(mnemonic.charValue());
-		}
+		setupMnemonics(r, key);
 
 		return r;
 	}
+	
+	private static void setupMnemonics(AbstractButton b, String key) {
+		// set the text
+		b.setText(I18n.getText(key));
+		
+		// set button mnemonic
+		// WHY don't we do this on mac?
+		if (!App.platform.isMac()) {
+			Integer mnemonic = I18n.getMnemonic(key);
+			if (mnemonic != null) {
+				b.setMnemonic(mnemonic);
+				
+				// set the displayed mnemonic position
+				mnemonic = I18n.getMnemonicPosition(key);
+				if(mnemonic != null)
+					b.setDisplayedMnemonicIndex(mnemonic);
+			}
+		}
 
-	// i make icons from files in Images/ so often, i'll just make it a builder method.
-	// use: Builder.getIcon("x.png") returns an Icon made from the file "Images/x.png".
-	public static Icon getIcon(String name) {
-		return getIcon(name, "Images");
+		// if it's a menu item, set the mnemonic
+		if(b instanceof JMenuItem) {
+			KeyStroke keystroke = I18n.getKeyStroke(key);
+			if (keystroke != null)
+				((JMenuItem)b).setAccelerator(keystroke);
+		}
+	}
+
+	// Simple helper for supplying the application icon for use in title bars
+	public static Image getApplicationIcon()
+	{
+		Image ic = ((ImageIcon) Builder.getIcon("corina-application.png", 32)).getImage();
+	
+		return ic;
+	}
+	
+	/**
+	 * Get standard sized icon of specified filename from Icons folder
+	 * @param filename
+	 * @return ImageIcon
+	 * @deprecated old, need to specify size now
+	 */
+	@Deprecated
+	public static Icon getIcon(String filename) {
+		return getIcon(filename, ICONS, 22);
+	}
+	
+	/**
+	 * Get icon of specified size and filename from Icons folder
+	 * @param filename
+	 * @param size
+	 * @return ImageIcon
+	 */
+	public static Icon getIcon(String filename, int size) {
+		return getIcon(filename, ICONS, size);
 	}
 		
-	public static Icon getIcon(String name, String packagename){
+	/**
+	 * 
+	 * @param name
+	 * @param packagename
+	 * @return
+	 * @deprecated old, need to specify size now
+	 */
+	@Deprecated
+	public static Icon getIcon(String name, String packagename) {
+		return getIcon(name, packagename, 22);
+	}
+	
+	/**
+	 * Get an icon of the specified size from the specified package
+	 * 
+	 * @param name
+	 * @param packagename
+	 * @param size
+	 * @return
+	 */
+	public static Icon getIcon(String name, String packagename, int size) {
+	
+		java.net.URL url = cl.getResource(getIconURL(name, packagename, size));
 		
-		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/" + packagename + "/" + name);
 		if (url != null)
 			return new ImageIcon(url);
 		else
-			return null;
-	}
+			return getMissingIcon(size);
+	}	
+	
+	
+	
+	public static com.lowagie.text.Image getITextImageIcon(String name){
+		
+		java.net.URL url = cl.getResource(getIconURL(name, ICONS, 48));
+		
+		if (url != null){
+			try {
+				return com.lowagie.text.Image.getInstance(url);
+			} catch (BadElementException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
-	// TODO: Cursor makeCursor(String name)
-	// (yeah, it's pretty much the same as getIcon(), but don't tell anybody!)
+		return getITextImageMissingIcon();
+		
+	}
+	
+	public static com.lowagie.text.Image getITextImageMissingIcon(){
+		
+		java.net.URL url = cl.getResource(getIconURL("missingicon.png", ICONS, 48));
+		
+		if (url != null){
+			try {
+				return com.lowagie.text.Image.getInstance(url);
+			} catch (BadElementException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return null;
+		
+	}
+	
+
+	public static String getIconURL(String name, String packagename, int size){
+		StringBuffer urlBuffer = new StringBuffer();
+		
+		urlBuffer.append(RESOURCE_PACKAGE_PREFIX);
+		urlBuffer.append(packagename);
+		urlBuffer.append('/');
+		urlBuffer.append(size);
+		urlBuffer.append('x');
+		urlBuffer.append(size);
+		urlBuffer.append('/');		
+		urlBuffer.append(name);
+		
+		return urlBuffer.toString();
+		
+	}
+	
+	public static String getBodgeMissingIconURL(int size){
+		return getIconURL("missingicon.png", ICONS, size);
+	}
+	
+	public static String getBodgeIconURL(String name, String packagename, int size){
+				
+		StringBuffer urlBuffer = new StringBuffer();
+		
+		String returnurl = cl.getResource(urlBuffer.append(getIconURL(name, packagename, size)).toString()).toString();
+		
+		System.out.println("Icon: "+returnurl.substring(5));
+		return returnurl.substring(5);
+		
+	}
+	
+	
+	
+	/**
+	 * Retrieve the "missing icon" icon
+	 * @return
+	 */
+	public static Icon getMissingIcon(int size) {
+		String sizeStr = size + "x" + size;
+		String resourceurl = RESOURCE_PACKAGE_PREFIX + ICONS + "/" + sizeStr + "/missingicon.png";
+		java.net.URL url = cl.getResource(resourceurl);
+		if (url != null)
+			return new ImageIcon(url);
+		else {
+			IllegalStateException ise = new IllegalStateException("Can't load missing icon icon!");
+			new Bug(ise);
+			throw ise;
+		}
+	}
+	
 	public static Image getImage(String name) {
-		java.net.URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/" + name);
+		java.net.URL url = cl.getResource(IMAGES_PACKAGE_PREFIX + name);
 		if (url != null)
 			return new ImageIcon(url).getImage();
 		else
 			return null;
 	}
 
-	// my classloador, for getting icons as resources.
-	private static ClassLoader cl = edu.cornell.dendro.corina.ui.Builder.class.getClassLoader();
+	public final static String IMAGES = "Images";
+	public final static String ICONS = "Icons";
+	private final static String RESOURCE_PACKAGE_PREFIX = "edu/cornell/dendro/corina_resources/";
+	
+	private final static String IMAGES_PACKAGE_PREFIX = RESOURCE_PACKAGE_PREFIX + IMAGES;
+	
+	// my classloader, for getting icons as resources.
+	private final static ClassLoader cl = edu.cornell.dendro.corina.ui.Builder.class.getClassLoader();
 
 	// ----------------------------------------
 	/*
@@ -263,9 +378,10 @@ public class Builder {
 	 * fully-qualify the class name.
 	 * @param button a JButton or JMenuItem
 	 * @param action an action string */
-	public static void addAction(AbstractButton button, String action) {
+	@SuppressWarnings("serial")
+	public static void addAction(AbstractButton button, String actionValue) {
 		// parse |action|
-		action = action.trim();
+		final String action = actionValue.trim();
 		StringTokenizer tok = new StringTokenizer(action, " ();");
 		String arg1 = tok.nextToken();
 
@@ -273,17 +389,15 @@ public class Builder {
 		if (arg1.equals("new")) {
 			String arg2 = tok.nextToken();
 			try {
-				final Class c = Class.forName(arg2);
+				final Class<?> c = Class.forName(arg2);
 
 				button.addActionListener(new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						try {
 							c.newInstance();
 						} catch (Exception ex) {
-							System.out
-									.println("Builder.addAction(): can't instantiate "
-											+ c);
-							// FIXME?  (state what the action was, at least)
+							System.out.println("Builder.addAction(): can't instantiate " + 
+									c + "; action was " + action);
 							ex.printStackTrace(System.out);
 						}
 					}
@@ -311,7 +425,7 @@ public class Builder {
 		final String methodNameGlue = methodName;
 
 		try {
-			Class c = Class.forName(className);
+			Class<?> c = Class.forName(className);
 			final Method m = c.getMethod(methodName, new Class[] {});
 
 			button.addActionListener(new AbstractAction() {

@@ -1,18 +1,24 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
 require_once('dbhelper.php');
 require_once('inc/note.php');
-require_once('inc/subSite.php');
 require_once('inc/region.php');
 
-class search 
+/**
+ * Class for directing search requests.  Compiles SQL commands from search parameters and compiles XML results.
+ *
+ */
+class search Implements IDBAccessor
 {
     var $id = NULL;
     var $xmldata = NULL;
@@ -20,6 +26,9 @@ class search
     var $lastErrorMessage = NULL;
     var $sqlcommand = NULL;
     var $deniedRecArray = array();
+    var $returnObject= NULL;
+    var $format = NULL;
+    var $recordHits = 0;
 
     /***************/
     /* CONSTRUCTOR */
@@ -43,7 +52,7 @@ class search
 
     function validateRequestParams($paramsObj, $crudMode)
     {
-        // Check parameters based on crudMode 
+    	
         switch($crudMode)
         {
             case "search":
@@ -68,12 +77,31 @@ class search
     /***********/
     /*ACCESSORS*/
     /***********/
+    
+    /**
+     * Actually do the search
+     *
+     * @param searchParameters $paramsClass
+     * @param Auth $auth
+     * @param Boolean $includePermissions
+     * @param String $format
+     * @return Boolean
+     */
     function doSearch($paramsClass, $auth, $includePermissions, $format)
     {
 
         global $dbconn;
+        global $debugFlag;
+        global $myMetaHeader;
+        global $firebug;
+        
         $myAuth       = $auth;
         $myRequest    = $paramsClass;
+		
+        $this->returnObject = $paramsClass->returnObject;
+        $this->format = $format;
+        
+        
         $orderBySQL   = NULL;
         $groupBySQL   = NULL;
         $filterSQL    = NULL;
@@ -82,17 +110,20 @@ class search
         $xmldata      = NULL;
 
         // Overide return object to vmeasurement if measurement requested
-        if($myRequest->returnObject=='measurement')
+        if(($myRequest->returnObject=='measurementSeries') || ($myRequest->returnObject=='derivedSeries'))
         {
             $myRequest->returnObject='vmeasurement';
+            $this->returnObject = 'vmeasurement';
         }
 
         // Build return object dependent SQL
-        $returnObjectSQL = $this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id as id ";
-        $orderBySQL      = "\n ORDER BY ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id asc ";
-        $groupBySQL      = "\n GROUP BY ".$this->tableName($myRequest->returnObject).".".$this->variableName($myRequest->returnObject)."id" ;
-        if ($myRequest->limit) $limitSQL = "\n LIMIT ".$myRequest->limit;
-        if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".$myRequest->skip;
+        $returnObjectSQL = "DISTINCT ON (".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id)". $this->tableName($this->returnObject).".* ";
+        //$returnObjectSQL = $this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id as id ";
+        $orderBySQL      = "\n ORDER BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id asc ";
+        //$groupBySQL      = "\n GROUP BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id" ;
+        $groupBySQL = NULL;
+        if ($myRequest->limit) $limitSQL = "\n LIMIT ".pg_escape_string($myRequest->limit);
+        if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".pg_escape_string($myRequest->skip);
 
         if($myRequest->allData===FALSE)
         {
@@ -101,135 +132,178 @@ class search
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // Build filter SQL
-                if ($myRequest->siteParamsArray)         $filterSQL .= $this->paramsToFilterSQL($myRequest->siteParamsArray, "site");
-                if ($myRequest->subSiteParamsArray)      $filterSQL .= $this->paramsToFilterSQL($myRequest->subSiteParamsArray, "subsite");
-                if ($myRequest->treeParamsArray)         $filterSQL .= $this->paramsToFilterSQL($myRequest->treeParamsArray, "tree");
-                if ($myRequest->specimenParamsArray)     $filterSQL .= $this->paramsToFilterSQL($myRequest->specimenParamsArray, "specimen");
-                if ($myRequest->radiusParamsArray)       $filterSQL .= $this->paramsToFilterSQL($myRequest->radiusParamsArray, "radius");
-                if ($myRequest->vmeasurementParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementParamsArray, "vmeasurement");
-                if ($myRequest->measurementParamsArray)  $filterSQL .= $this->paramsToFilterSQL($myRequest->measurementParamsArray, "measurement");
-                if ($myRequest->vmeasurementMetaCacheParamsArray) $filterSQL .= $this->paramsToFilterSQL($myRequest->vmeasurementMetaCacheParamsArray, "vmeasurementmetacache");
-                // Trim off final ' and ' from filter SQL
-                $filterSQL = substr($filterSQL, 0, -5);
+                $filterSQL .= $this->paramsToFilterSQL($myRequest->paramsArray);
             }
         }
 
         // Compile full SQL statement from parts
-        if(isset($filterSQL))
+        if($filterSQL!=NULL)
         {
-            $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest)." WHERE ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
+            $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest->paramsArray)." WHERE ".$filterSQL.$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
         }
         else
         {
-            $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest).$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
+            $fullSQL = "SELECT ".$returnObjectSQL.$this->fromSQL($myRequest->paramsArray).$groupBySQL.$orderBySQL.$limitSQL.$skipSQL;
         }
 
         // Add SQL to XML output
+        $firebug->log($fullSQL, "Search SQL");
         $this->sqlcommand .= $fullSQL;
+        
+        $firebug->log("Compilation of search SQL complete");
 
         // Do SQL Query
         pg_send_query($dbconn, $fullSQL);
         $result = pg_get_result($dbconn);
-            /*echo "rows = ".pg_num_rows($result);
-            if(pg_num_rows($result)==0)
+        $this->recordHits = pg_num_rows($result);
+
+        $result = pg_query($dbconn, $fullSQL);
+
+
+        $firebug->log("Begin permissions check");
+        while ($row = pg_fetch_array($result))
+        {                   	
+            // Check user has permission to read requested entity
+            if($this->returnObject=="object") 
             {
-                // No records match the id specified
-                $this->setErrorMessage("903","No records matched the criteria specified. SQL statement was: $fullSQL");
+            	$firebug->log("Checking object permissions");
+                $myReturnObject = new object();
+                $hasPermission = $myAuth->getPermission("read", "object", $row['objectid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['objectid']);
+                	$firebug->log($row['objectid'], "Permission denied on objectid");	 
+                	continue;
+                }              
+            }
+            elseif($this->returnObject=="element")
+            {
+                $myReturnObject = new element();
+                $hasPermission = $myAuth->getPermission("read", "element", $row['elementid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['elementid']); 
+                	$firebug->log($row['elementid'], "Permission denied on elementid");	 
+                	continue;
+                }
+                
+            }
+            elseif($this->returnObject=="sample") 
+            {
+                $myReturnObject = new sample();
+                $hasPermission = $myAuth->getPermission("read", "sample", $row['sampleid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['sampleid']); 
+                	$firebug->log($row['sampleid'], "Permission denied on sampleid");	 
+                	continue;
+                }              
+            }
+            elseif($this->returnObject=="radius") 
+            {
+                $myReturnObject = new radius();
+                $hasPermission = $myAuth->getPermission("read", "radius", $row['radiusid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['radiusid']); 
+                	$firebug->log($row['radiusid'], "Permission denied on radiusid");	 
+                	continue;
+                }            
+            }
+            elseif($this->returnObject=="vmeasurement")
+            {
+		        /**
+		         * SORT THIS OUT!
+		         * 
+		         * We have serious performance issues so for now disable check on
+		         * whether the user can read the series or not.  
+		         */            	
+            	
+                $myReturnObject = new measurement();
+                /*$hasPermission = $myAuth->getPermission("read", "measurement", $row['vmeasurementid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['vmeasurementid']); 
+                	$firebug->log($row['vmeasurementid'], "Permission denied on vmeasurementid");	                 	
+                	continue;            
+                }*/
             }
             else
-            {*/
-
-            $result = @pg_query($dbconn, $fullSQL);
-            while ($row = @pg_fetch_array($result))
             {
-                // Check user has permission to read then create a new object
-                if($myRequest->returnObject=="site") 
-                {
-                    $myReturnObject = new site();
-                    $hasPermission = $myAuth->getPermission("read", "site", $row['id']);
-                }
-                elseif($myRequest->returnObject=="subsite")
-                {
-                    $myReturnObject = new subSite();
-                    $hasPermission = $myAuth->getPermission("read", "subSite", $row['id']);
-                }
-                elseif($myRequest->returnObject=="tree") 
-                {
-                    $myReturnObject = new tree();
-                    $hasPermission = $myAuth->getPermission("read", "tree", $row['id']);
-                }
-                elseif($myRequest->returnObject=="specimen")
-                {
-                    $myReturnObject = new specimen();
-                    $hasPermission = $myAuth->getPermission("read", "specimen", $row['id']);
-                }
-                elseif($myRequest->returnObject=="radius") 
-                {
-                    $myReturnObject = new radius();
-                    $hasPermission = $myAuth->getPermission("read", "radius", $row['id']);
-                }
-                elseif($myRequest->returnObject=="vmeasurement")
-                {
-                    $myReturnObject = new measurement();
-                    $hasPermission = $myAuth->getPermission("read", "measurement", $row['id']);
-                }
-                else
-                {
-                    $this->setErrorMessage("901","Invalid return object ".$myRequest->returnObject." specified.  Must be one of site, subsite, tree, specimen, radius or measurement");
-                }
-
-                if($hasPermission===FALSE)
-                {
-                    array_push($this->deniedRecArray, $row['id']); 
-                    continue;
-                }
-
-                // Set parameters on new object and return XML
-                $success = $myReturnObject->setParamsFromDB($row['id'], $format);
-
-                // Get permissions if requested
-                if($includePermissions===TRUE) $myReturnObject->getPermissions($myAuth->getID());
-
-                //$success = $myReturnObject->setParamsFromDB($row['id'], "brief");
-                if($success)
-                {
-                    $xmldata.=$myReturnObject->asXML($format, "all");
-
-                }
-                else
-                {
-                    $this->setErrorMessage($myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage());
-                }
+                $this->setErrorMessage("901","Invalid return object ".$this->returnObject." specified.  Must be one of object, element, sample radius or measurement");
             }
+
+            $firebug->log("Permissions check complete");
+
+            // Set parameters on new object and return XML
+            $firebug->log("Get current entities details from database");
+            $success = $myReturnObject->setParamsFromDBRow($row, $format);
+            //$success = $myReturnObject->setParamsFromDB($row['id']);
+            $firebug->log("Got details from database");
+
+            // Do children if requested
+            if($paramsClass->includeChildren===TRUE)
+            {
+            	$myReturnObject->setChildParamsFromDB(true);
+            }
+            
+            $firebug->log($xmldata, "XML data");
+            
+          
+            // Get permissions if requested
+            if($includePermissions===TRUE) $myReturnObject->getPermissions($myAuth->getID());
+
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Get current entities XML");
+            //$success = $myReturnObject->setParamsFromDB($row['id'], "brief");
+            if($success)
+            {
+                $xmldata.=$myReturnObject->asXML($format);
+
+            }
+            else
+            {
+                $this->setErrorMessage($myReturnObject->getLastErrorCode(), $myReturnObject->getLastErrorMessage());
+            }
+        }
         // }
 
-            if(count($this->deniedRecArray)>0 )
-            {
-                $errMessage = "Permission denied on the following ".$myRequest->returnObject."id(s): ";
-                foreach ($this->deniedRecArray as $id)
-                {
-                    $errMessage .= $id.", ";
-                }
-                $errMessage = substr($errMessage, 0, -2).".";
-                $this->setErrorMessage("103", $errMessage);
-            }
 
-            // Put xmldata into class variable
-            if($xmldata!=NULL)
+        
+        
+        if(count($this->deniedRecArray)>0 )
+        {
+            $errMessage = "Permission denied on the following ".$this->returnObject." id(s): ";
+            foreach ($this->deniedRecArray as $id)
             {
-                $this->xmldata=$xmldata;
+                $errMessage .= $id.", ";
             }
+            $errMessage = substr($errMessage, 0, -2).".";
+            $this->setErrorMessage("103", $errMessage);
+        }
 
-            if($this->lastErrorCode==NULL)
-            {
-                return true;
-            } 
-            else
-            {
-                return false;
-            }
+        if ($debugFlag===TRUE) $myMetaHeader->setTiming("Permissions checks complete"); 
+        
+        // Put xmldata into class variable
+        if($xmldata!=NULL)
+        {
+            $this->xmldata=$xmldata;
+        }
+
+        if($this->lastErrorCode==NULL)
+        {
+            return true;
+        } 
+        else
+        {
+            return false;
+        }
     }
 
+    function xmlDebugOutput()
+    {
+    	//$xmldata = "<sql records=\"".$this->recordHits."\">".htmlSpecialChars($this->sqlcommand)."</sql>";
+    	//return $xmldata;
+    	global $firebug;
+    	
+    	$firebug->log($this->recordHits, "Number of hits");
+    	$firebug->log($this->sqlcommand, "SQL used");
+    }
+    
     function asXML($format='standard', $mode="all")
     {
         if(isset($this->xmldata))
@@ -240,18 +314,6 @@ class search
         {
             return false;
         }
-    }
-
-    function asKML($mode="all")
-    {
-    }
-
-    function getParentTagBegin()
-    {
-    }
-
-    function getParentTagEnd()
-    {
     }
 
     function getLastErrorCode()
@@ -272,61 +334,105 @@ class search
     /*FUNCTIONS*/
     /***********/
 
-    function paramsToFilterSQL($paramsArray, $paramName)
+    private function paramsToFilterSQL($paramsArray)
     {
         $filterSQL = NULL;
+
         foreach($paramsArray as $param)
         {
-            // Set operator
-            switch ($param['operator'])
-            {
-            case ">":
-                $operator = ">";
-                $value = " '".$param['value']."'";
-                break;
-            case "<":
-                $operator = "<";
-                $value = " '".$param['value']."'";
-                break;
-            case "=":
-                $operator = "=";
-                $value = " '".$param['value']."'";
-                break;
-            case "!=":
-                $operator = "!=";
-                $value = " '".$param['value']."'";
-                break;
-            case "like":
-                $operator = "ilike";
-                $value = " '%".$param['value']."%'";
-                break;
-            default :
-                $operator = "=";
-                $value = " '".$param['value']."'";
-            }
-            $filterSQL .= $this->tableName($paramName).".".$param['name']." ".$operator.$value." and ";
+        	// Intercept special cases first
+        	if($param['field']=='anyparentobjectid')
+        	{
+        		switch ($param['operator'])
+        		{
+        			case "=":
+        				$operator = "IN";
+        				$value = "'".$param['value']."'";
+        				break;
+        			case "!=":
+        				$operator = "NOT IN";
+        				$value = "'".$param['value']."'";
+        				break;
+        			default:
+    					// No other operators allowed
+    					$this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
+        				return null;     				
+        		}
+        		$filterSQL.= $param['table'].".objectid ";
+        		$filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true))\n AND ";
+        	}
+        	elseif($param['field']=='anyparentobjectcode')
+        	{
+        		switch ($param['operator'])
+        		{
+        			case "=":
+        				$operator = "IN";
+        				$value = "'".$param['value']."'";
+        				break;
+        			case "!=":
+        				$operator = "NOT IN";
+        				$value = "'".$param['value']."'";
+        				break;
+        			default:
+    					// No other operators allowed
+    					$this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
+        				return null;     				
+        		}
+        		$filterSQL.= $param['table'].".code ";
+        		$filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)))\n AND ";
+        	}
+        	// All other cases can be handled generically
+        	else
+        	{ 	
+	            // Set operator
+	            switch ($param['operator'])
+	            {
+	            case ">":
+	                $operator = ">";
+	                $value = " '".$param['value']."'";
+	                break;
+	            case "<":
+	                $operator = "<";
+	                $value = " '".$param['value']."'";
+	                break;
+	            case "!=":
+	                $operator = "!=";
+	                $value = " '".$param['value']."'";
+	                break;
+	            case "like":
+	                $operator = "ilike";
+	                $value = " '%".$param['value']."%'";
+	                break;
+	            case "is":
+	            	$operator = "is";
+	            	$value = " ".$param['value']." ";
+	            	break;
+	            default :
+	                $operator = "=";
+	                $value = " '".$param['value']."'";
+	            }
+	            $filterSQL .= $param['table'].".".$param['field']." ".$operator.$value."\n AND ";
+        	}
         }
 
-
+        // Trim off last 'and'
+        $filterSQL = substr($filterSQL, 0, -5);
         return $filterSQL;
     }
 
-    function variableName($objectName)
+    private function variableName($objectName)
     {
 
         switch($objectName)
         {
-        case "site":
-            return "site";
+        case "object":
+            return "object";
             break;
-        case "subsite":
-            return "subsite";
+        case "element":
+            return "element";
             break;
-        case "tree":
-            return "tree";
-            break;
-        case "specimen":
-            return "specimen";
+        case "sample":
+            return "sample";
             break;
         case "radius":
             return "radius";
@@ -340,102 +446,115 @@ class search
 
     }
 
-    function tableName($objectName)
+    private function tableName($objectName)
     {
 
         switch($objectName)
         {
-        case "site":
-            return "vwtblsite";
+        case "object":
+            return "vwtblobject";
             break;
-        case "subsite":
-            return "vwtblsubsite";
+        case "element":
+            return "vwtblelement";
             break;
-        case "tree":
-            return "vwtbltree";
-            break;
-        case "specimen":
-            return "vwtblspecimen";
+        case "sample":
+            return "vwtblsample";
             break;
         case "radius":
             return "vwtblradius";
             break;
         case "measurement":
-            return "vwtblmeasurement";
+            return "vwcomprehensivevm";
             break;
         case "vmeasurement":
-            return "vwtblvmeasurement";
+            return "vwcomprehensivevm";
             break;
         case "vmeasurementmetacache":
-            return "vwtblvmeasurementmetacache";
+            return "vwcomprehensivevm";
             break;
-//        case "vmeasurementresult":
-//            return "vwtblvmeasurementresult";
-//            break;
+        case "vmeasurement":
+        	return "vwcomprehensivevm";
+        	break;
         case "vmeasurementderivedcache":
-            return "tblvmeasurementderivedcache";
+            return "vwcomprehensivevm";
             break;
         default:
-            return false;
+        	echo "unable to determine table name.  Fatal error.";
+            die();
         }
 
     }
     
-    function fromSQL($myRequest)
+    private function tablesFromParams($paramsArray)
     {
+    	// Create an array of tables that are being used
+    	$uniqTables = array();
+    	foreach ($paramsArray as $param)
+    	{
+    		array_push($uniqTables, $param['table']);
+    	}
+    	$uniqTables = array_unique($uniqTables);
+    	return $uniqTables;
+    }
+    
+    
+    private function fromSQL($paramsArray)
+    {    
+    	$tables = $this->tablesFromParams($paramsArray);	
         $fromSQL = "\nFROM ";
         $withinJoin = FALSE;
 
-        if( (($this->getLowestRelationshipLevel($myRequest)<=6) && ($this->getHighestRelationshipLevel($myRequest)>=6)) || ($myRequest->returnObject == 'site'))
+        /*if( (($this->getLowestRelationshipLevel($myRequest)<=6) && ($this->getHighestRelationshipLevel($myRequest)>=6)) || ($this->returnObject == 'project'))
         {
-            $fromSQL .= $this->tableName("site")." \n";
+            $fromSQL .= $this->tableName("project")." \n";
             $withinJoin = TRUE;
-        }
+        }*/
+              
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=5) && ($this->getHighestRelationshipLevel($myRequest)>=5)) || ($myRequest->returnObject == 'subsite'))  
+        if( (($this->getLowestRelationshipLevel($tables)<=5) && ($this->getHighestRelationshipLevel($tables)>=5)) || ($this->returnObject == 'object'))  
         {
             if($withinJoin)
             {
-                $fromSQL .= "INNER JOIN ".$this->tableName("subsite")." ON ".$this->tableName("site").".siteid = ".$this->tableName("subsite").".siteid \n";
+                $fromSQL .= $this->tableName("object")." \n";
             }
             else
             {
-                $fromSQL .= $this->tableName("subsite")." \n";
+                $fromSQL .= $this->tableName("object")." \n";
                 $withinJoin = TRUE;
             }
         }
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=4) && ($this->getHighestRelationshipLevel($myRequest)>=4)) || ($myRequest->returnObject == 'tree'))
+        if( (($this->getLowestRelationshipLevel($tables)<=4) && ($this->getHighestRelationshipLevel($tables)>=4)) || ($this->returnObject == 'element'))
         {
             if($withinJoin)
             {
-                $fromSQL .= "INNER JOIN ".$this->tableName("tree")." ON ".$this->tableName("subsite").".subsiteid = ".$this->tableName("tree").".subsiteid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("element")." ON ".$this->tableName("object").".objectid = ".$this->tableName("element").".objectid \n";
             }
             else
             {
-                $fromSQL .= $this->tableName("tree")." \n";
+                $fromSQL .= $this->tableName("element")." \n";
                 $withinJoin = TRUE;
             }
         }        
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=3) && ($this->getHighestRelationshipLevel($myRequest)>=3)) || ($myRequest->returnObject == 'specimen'))
+        if( (($this->getLowestRelationshipLevel($tables)<=3) && ($this->getHighestRelationshipLevel($tables)>=3)) || ($this->returnObject == 'sample'))
         {
             if($withinJoin)
             {
-                $fromSQL .= "INNER JOIN ".$this->tableName("specimen")." ON ".$this->tableName("tree").".treeid = ".$this->tableName("specimen").".treeid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("sample")." ON ".$this->tableName("element").".elementid = ".$this->tableName("sample").".elementid \n";
             }
             else
             {
-                $fromSQL .= $this->tableName("specimen")." \n";
+                $fromSQL .= $this->tableName("sample")." \n";
                 $withinJoin = TRUE;
             }
         }
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=2) && ($this->getHighestRelationshipLevel($myRequest)>=2)) || ($myRequest->returnObject == 'radius'))
+        if( (($this->getLowestRelationshipLevel($tables)<=2) && ($this->getHighestRelationshipLevel($tables)>=2)) || ($this->returnObject == 'radius'))
         {
             if($withinJoin)
             {
-                $fromSQL .= "INNER JOIN ".$this->tableName("radius")." ON ".$this->tableName("specimen").".specimenid = ".$this->tableName("radius").".specimenid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("radius")." ON ".$this->tableName("sample").".sampleid = ".$this->tableName("radius").".sampleid \n";
             }
             else
             {
@@ -444,7 +563,25 @@ class search
             }
         }
         
-        if( (($this->getLowestRelationshipLevel($myRequest)<=1) && ($this->getHighestRelationshipLevel($myRequest)>=1)) || ($myRequest->returnObject == 'measurement'))  
+        
+        if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'vmeasurement') || ($this->returnObject =='vmeasurement'))  
+        {
+            if($withinJoin)
+            {
+                $fromSQL .= "INNER JOIN tblmeasurement ON tblmeasurement.radiusid = ".$this->tableName("radius").".radiusid \n";
+                $fromSQL .= "INNER JOIN tblvmeasurementderivedcache dc ON dc.measurementid = tblmeasurement.measurementid \n";
+                $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurement")." ON dc.vmeasurementid = ".$this->tableName("vmeasurement").".vmeasurementid \n";
+            }
+            else
+            {
+                $fromSQL .= $this->tableName("vmeasurement")." \n";
+                $withinJoin = TRUE;
+            }
+
+        }
+
+        /*
+        if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'vmeasurement'))  
         {
             if($withinJoin)
             {
@@ -460,98 +597,86 @@ class search
                 $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurement")." ON ".$this->tableName("vmeasurementderivedcache").".vmeasurementid = ".$this->tableName("vmeasurement").".vmeasurementid \n";
                 $fromSQL .= "INNER JOIN ".$this->tableName("vmeasurementmetacache")." ON ".$this->tableName("vmeasurement").".vmeasurementid = ".$this->tableName("vmeasurementmetacache").".vmeasurementid \n";
             }
-        }
+        }*/
                
         return $fromSQL;
     }
 
-    function getLowestRelationshipLevel($theRequest)
+    private function getLowestRelationshipLevel($tables)
     {
         // This function returns an interger representing the most junior level of relationship required in this query
-        // tblsite         -- 6 -- most senior
-        // tblsubsite      -- 5 --
-        // tbltree         -- 4 --
-        // tblspecimen     -- 3 --
+        // tblproject      -- 6 -- most senior
+        // tblobject       -- 5 --
+        // tblelement      -- 4 --
+        // tblsample       -- 3 --
         // tblradius       -- 2 --
         // tblmeasurement  -- 1 -- most junior
-        
-        $myRequest = $theRequest;
-        
-        if (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'vmeasurement'))
+    	
+        if ((in_array('vwcomprehensivevm', $tables))  			||
+		         ($this->returnObject == 'vmeasurement') 
+                     )
         {
             return 1;
         }
-        elseif (($myRequest->radiusParamsArray) || ($myRequest->returnObject == 'radius'))
+        elseif ((in_array('vwtblradius', $tables)) || ($this->returnObject == 'radius'))
         {
             return 2;
         }
-        elseif (($myRequest->specimenParamsArray) || ($myRequest->returnObject == 'specimen'))
+        elseif ((in_array('vwtblsample', $tables)) || ($this->returnObject == 'sample'))
         {
             return 3;
         }
-        elseif (($myRequest->treeParamsArray) || ($myRequest->returnObject == 'tree'))
+        elseif ((in_array('vwtblelement', $tables)) || ($this->returnObject == 'element'))
         {
             return 4;
         }
-        elseif (($myRequest->subSiteParamsArray) || ($myRequest->returnObject == 'subsite'))
+        elseif ((in_array('vwtblobject', $tables)) || ($this->returnObject == 'object'))
         {
             return 5;
         }
-        if (($myRequest->siteParamsArray) || ($myRequest->returnObject == 'site'))
-        {
-            return 6;
-        }
+        //elseif ((in_array('vwtblproject')) || ($this->returnObject == 'project'))
+        //{
+        //    return 6;
+        //}
         else
         {
             return false;
         }
     }
 
-    function getHighestRelationshipLevel($theRequest)
+    private function getHighestRelationshipLevel($tables)
     {
         // This function returns an interger representing the most senior level of relationship required in this query
-        // tblsite         -- 6 -- most senior
-        // tblsubsite      -- 5 --
-        // tbltree         -- 4 --
-        // tblspecimen     -- 3 --
+        // tblproject      -- 6 -- most senior
+        // tblobject       -- 5 --
+        // tblelement      -- 4 --
+        // tblsample       -- 3 --
         // tblradius       -- 2 --
         // tblmeasurement  -- 1 -- most junior
 
-        $myRequest = $theRequest;
-
-        if (($myRequest->siteParamsArray) || ($myRequest->returnObject == 'site'))
-        {
-            return 6;
-        }
-        elseif (($myRequest->subSiteParamsArray) || ($myRequest->returnObject == 'subsite'))
+        //if (($myRequest->projectParamsArray) || ($this->returnObject == 'project'))
+        //{
+        //    return 6;
+        //}
+        if ((in_array('vwtblobject', $tables)) || ($this->returnObject == 'object'))
         {
             return 5;
         }
-        elseif (($myRequest->treeParamsArray) || ($myRequest->returnObject == 'tree'))
+        elseif ((in_array('vwtblelement', $tables)) || ($this->returnObject == 'element'))
         {
             return 4;
         }
-        elseif (($myRequest->specimenParamsArray) || ($myRequest->returnObject == 'specimen'))
+        elseif ((in_array('vwtblsample', $tables)) || ($this->returnObject == 'sample'))
         {
             return 3;
         }
-        elseif (($myRequest->radiusParamsArray) || ($myRequest->returnObject == 'radius'))
+        elseif ((in_array('vwtblradius', $tables)) || ($this->returnObject == 'radius'))
         {
             return 2;
         }
-        elseif (($myRequest->measurementParamsArray) || ($myRequest->returnObject == 'measurement'))
-        {
-            return 1;
-        }
-        elseif (($myRequest->vmeasurementParamsArray) || ($myRequest->returnObject == 'measurement'))
-        {
-            return 1;
-        }
-        elseif (($myRequest->vmeasurementMetaCacheParamsArray) || ($myRequest->returnObject == 'measurement'))
-        {
-            return 1;
-        }
-        elseif (($myRequest->derivedCacheParamsArray) || ($myRequest->returnObject == 'measurement'))
+        elseif ( (in_array('vwcomprehensivevm', $tables)) || 
+		         ($this->returnObject == 'vmeasurement') 
+		       )
         {
             return 1;
         }
@@ -561,7 +686,7 @@ class search
         }
     }
 
-    function getRelationshipSQL($theRequest)
+    private function getRelationshipSQL($theRequest)
     {
         // Returns the 'where' clause part of the query SQL for the table relationships 
 
@@ -570,8 +695,6 @@ class search
         $highestLevel = $this->getHighestRelationshipLevel($myRequest);
         $sql ="";
 
-        //echo "high = $highestLevel\n";
-        //echo "low = $lowestLevel\n";
 
         if (($lowestLevel==1) && ($highestLevel>=1))
         {
@@ -583,24 +706,36 @@ class search
         }
         if (($lowestLevel<=2) && ($highestLevel>2))
         {
-            $sql .= "vwtblradius.specimenid=vwtblspecimen.specimenid and ";
+            $sql .= "vwtblradius.sampleid=vwtblample.sampleid and ";
         }
         if (($lowestLevel<=3) && ($highestLevel>3))
         {
-            $sql .= "vwtblspecimen.treeid=vwtbltree.treeid and ";
+            $sql .= "vwtblsample.elementid=vwtblelement.elementid and ";
         }
         if (($lowestLevel<=4) && ($highestLevel>4))
         {
-            $sql .= "vwtbltree.subsiteid=vwtblsubsite.subsiteid and ";
+            $sql .= "vwtblelement.objectid=vwtblobject.objectid and ";
         }
-        if (($lowestLevel<=5) && ($highestLevel>5))
-        {
-            $sql .= "vwtblsubsite.siteid=vwtblsite.siteid and ";
-        }
+        //if (($lowestLevel<=5) && ($highestLevel>5))
+        //{
+        //    $sql .= "vwtblsubsite.siteid=vwtblsite.siteid and ";
+        //}
 
         return $sql;
     }
 
+    
+    function writeToDB()
+    {
+    	trigger_error("667"."search class should not be asked to write to db", E_USER_ERROR);
+    	return false;
+    }
+    
+    function deleteFromDB()
+    {
+    	trigger_error("667"."search class should not be asked to delete from the db", E_USER_ERROR);
+    	return false;
+    }
 
 
 // End of Class

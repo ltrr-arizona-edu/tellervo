@@ -1,10 +1,10 @@
 package edu.cornell.dendro.corina.gui.datawizard;
 
-import edu.cornell.dendro.corina.site.Radius;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.Specimen;
-import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.tridas.Subsite;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 
 public class EditorPanelFactory {
     /**
@@ -14,16 +14,16 @@ public class EditorPanelFactory {
      * @return
      */
     public static BaseEditorPanel<?> createPanelForClass(Class<?> content) {
-    	if(content.equals(Site.class))
-    		return (BaseEditorPanel<Site>) new SiteEditorPanel();
+    	if(content.equals(TridasObject.class))
+    		return (BaseEditorPanel<TridasObject>) new SiteEditorPanel();
     	if(content.equals(Subsite.class))
     		return (BaseEditorPanel<Subsite>) new SubsiteEditorPanel();
-    	if(content.equals(Tree.class))
-    		return (BaseEditorPanel<Tree>) new TreeEditorPanel();
-    	if(content.equals(Specimen.class))
-    		return (BaseEditorPanel<Specimen>) new SpecimenEditorPanel();
-    	if(content.equals(Radius.class))
-    		return (BaseEditorPanel<Radius>) new RadiusEditorPanel();
+    	if(content.equals(TridasElement.class))
+    		return (BaseEditorPanel<TridasElement>) new TreeEditorPanel();
+    	if(content.equals(TridasSample.class))
+    		return (BaseEditorPanel<TridasSample>) new SpecimenEditorPanel();
+    	if(content.equals(TridasRadius.class))
+    		return (BaseEditorPanel<TridasRadius>) new RadiusEditorPanel();
     	return null;
     }
 }

@@ -1,14 +1,14 @@
 package edu.cornell.dendro.corina.cross.legacy;
 
+import edu.cornell.dendro.corina.tridas.LegacySite;
+import edu.cornell.dendro.corina.tridas.LegacySiteDB;
+import edu.cornell.dendro.corina.tridas.SiteNotFoundException;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.cross.DScore;
 import edu.cornell.dendro.corina.cross.RValue;
 import edu.cornell.dendro.corina.cross.TScore;
 import edu.cornell.dendro.corina.cross.Trend;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.LegacySite;
-import edu.cornell.dendro.corina.site.LegacySiteDB;
-import edu.cornell.dendro.corina.site.SiteNotFoundException;
 
 import java.text.DecimalFormat;
 

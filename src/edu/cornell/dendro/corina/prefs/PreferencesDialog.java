@@ -1,21 +1,22 @@
 package edu.cornell.dendro.corina.prefs;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-
-import say.swing.JFontChooser;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
@@ -25,8 +26,9 @@ import edu.cornell.dendro.corina.prefs.wrappers.RadioButtonWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.SpinnerWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
-import edu.cornell.dendro.corina.webdbi.PrototypeLoadDialog;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 
 
 
@@ -35,6 +37,7 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 	private static JFrame dialog;
 
 	public synchronized static void showPreferences() {
+
 		// does it already exist? just bring it to the front
 		if(dialog != null) {
 			dialog.setVisible(true);
@@ -46,7 +49,7 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		
 		// construct a new dialog!
 		dialog = new JFrame("Preferences");
-		dialog.setIconImage(Builder.getImage("Preferences16.gif"));
+		dialog.setIconImage(Builder.getApplicationIcon());
 		dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		// steal the content pane from an instance of PreferencesDialog
@@ -84,6 +87,48 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		lblProxyServer1.setEnabled(isEnabled);
 		lblProxyPort.setEnabled(isEnabled);
 		lblProxyPort1.setEnabled(isEnabled);
+	}
+	
+	private void setupCOMPort()
+	{
+		if (LegacySerialSampleIO.hasSerialCapability()) {
+
+			boolean addedPort = false;
+	
+			// first, enumerate all the ports.
+			Vector comportlist = LegacySerialSampleIO.enumeratePorts();
+	
+			// do we have a COM port selected that's not in the list? (ugh!)
+			String curport = App.prefs.getPref("corina.serialsampleio.port");
+			if (curport != null && !comportlist.contains(curport)) {
+				comportlist.add(curport);
+				addedPort = true;
+			} else if (curport == null) {
+				curport = "<choose a serial port>";
+				comportlist.add(curport);
+			}
+	
+			// make the combobox, and select the current port...
+			//final JComboBox comports = new JComboBox(comportlist);
+			
+			ArrayListModel<String> portmodel = new ArrayListModel<String>();
+			
+			portmodel.addAll(comportlist);
+			cboPort.setModel(portmodel);
+			
+			if (curport != null)
+				cboPort.setSelectedItem(curport);
+	
+				
+			
+			this.cboPort.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					App.prefs.setPref("corina.serialsampleio.port",
+							(String) cboPort.getSelectedItem());
+				}
+			});
+		}
+
 	}
 	
 	private void populateDialog() {
@@ -134,10 +179,13 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		new TextComponentWrapper(txtWSURL, "corina.webservice.url", null);
 		new TextComponentWrapper(txtSMTPServer, "corina.mail.mailhost", null);
 		
+		// Measuring platform stuff
+		setupCOMPort();
+		
 		// force dictionary reload
 		btnReloadDictionary.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PrototypeLoadDialog dlg = new PrototypeLoadDialog(App.dictionary);
+				CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(App.dictionary);
 				
 				App.dictionary.query();
 				dlg.setVisible(true);

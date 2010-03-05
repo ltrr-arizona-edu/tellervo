@@ -66,11 +66,11 @@ public class Hohenheim implements Filetype {
 
     @Override
 	public String toString() {
-	return I18n.getText("format.hohenheim");
+	return I18n.getText("format.hohenheim")+ " (*"+ getDefaultExtension()+")";
     }
 
     public String getDefaultExtension() {
-	return ".M"; // ???
+	return ".m"; // ???
     }
 
     public Sample load(BufferedReader r) throws IOException {
@@ -251,4 +251,16 @@ public class Hohenheim implements Filetype {
 	    }
 	}
     }
+
+	public Boolean isPackedFileCapable() {
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format has limited metadata capabilities.";
+	}
+
+	public Boolean isLossless() {
+		return false;
+	}
 }

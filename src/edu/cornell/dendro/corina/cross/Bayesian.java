@@ -194,7 +194,7 @@ public class Bayesian {
 
 	    // if distribution for |cross| isn't loaded, load it
 	    if (!distros.containsKey(cross.getClass().getName()))
-		distros.put(cross.getClass().getName(), new Bayesian(cross.getClass()));
+	    	distros.put(cross.getClass().getName(), new Bayesian(cross.getClass()));
 
 	    // look it up (it's guaranteed to be there now)
 	    Bayesian b = (Bayesian) distros.get(cross.getClass().getName());
@@ -229,7 +229,7 @@ public class Bayesian {
     // keep distributions in memory -- they're so small, i won't worry
     // about keeping them weakly-referenced or something looney like that.
     // this is a (classname => bayesian) map.
-    private static Map distros = new HashMap();
+    private static Map<String, Bayesian> distros = new HashMap<String, Bayesian>();
 
     // ------------------------------------------------------------
     // everything above here is class, below is instance ('cept main)
@@ -257,8 +257,8 @@ public class Bayesian {
       r = new BufferedReader(new InputStreamReader(stream)); // NULL!
       try {
         String line;
-        List intBuf = new ArrayList();
-        List scoreBuf = new ArrayList();
+        List<Float> intBuf = new ArrayList<Float>();
+        List<Float> scoreBuf = new ArrayList<Float>();
         while ((line = r.readLine()) != null) { // THIS IS THE ONLY THING THAT CAN THROW AN IOE (?)
             line = line.trim();
             if (line.startsWith("#") || line.length()==0)
@@ -293,7 +293,7 @@ public class Bayesian {
   }
 
     // load an existing bayesian distribution
-    public Bayesian(Class algorithm) throws IOException {
+    public Bayesian(Class<? extends Cross> algorithm) throws IOException {
 	this.algorithm = algorithm.getName();
 	load();
     }
@@ -302,13 +302,13 @@ public class Bayesian {
     // this pretty much demands threading ability, which means it pretty much needs to be its
     // own class (getProgress, getState, extends Thread), but that can come with the next iteration.
     // FIXME: |algorithm| param can simply be the name (as a string) -- why a class?
-    public Bayesian(Class algorithm, String folder, int numberOfPairs) throws IOException {
+    public Bayesian(Class<? extends Cross> algorithm, String folder, int numberOfPairs) throws IOException {
 	// this is done in 3 phases:
 
 	// PHASE 1: enumerate files -- assume there might be 50,000 or so
 	File root = new File(folder);
 	long t1 = System.currentTimeMillis();
-	List filenames = new ArrayList();
+	List<String> filenames = new ArrayList<String>();
 	addAllFiles(filenames, root);
 	long t2 = System.currentTimeMillis();
 	System.out.println("PHASE 1 (enumeration) took " + (t2-t1) + " milliseconds");
@@ -316,8 +316,8 @@ public class Bayesian {
 	// PHASE 2: pick random files, and load into buffer
 	t1 = System.currentTimeMillis();
 	Random random = new Random();
-	Map samples = new HashMap();
-	List pairs = new ArrayList();
+	Map<String, Sample> samples = new HashMap<String, Sample>();
+	List<Pair> pairs = new ArrayList<Pair>();
 	for (int i=0; i<numberOfPairs; i++) {
 	    // pick A, and load
 	    int A=-1; // compiler is stupid
@@ -384,7 +384,7 @@ public class Bayesian {
 	// PHASE 3: run crossdates
 	t1 = System.currentTimeMillis();
 	long total = 0; // total number of scores checked
-	List allScores = new ArrayList();
+	List<Float> allScores = new ArrayList<Float>();
 	for (int i=0; i<pairs.size(); i++) {
 	    // get samples to crossdate
 	    Pair pair = (Pair) pairs.get(i);
@@ -399,7 +399,7 @@ public class Bayesian {
 	    // add all scores
 	    int n = c.getRange().span();
 	    for (int j=0; j<n; j++) {
-		float score = c.getScoreOLD(j);
+		float score = c.getScore(j);
 
 		// bad value; FIXME: shouldn't inf's count?
 		if (Float.isNaN(score) || Float.isInfinite(score))
@@ -476,7 +476,7 @@ public class Bayesian {
     // (why can't this be automatically generated?  well,
     // it could be, but it's probably more trouble than it's worth in java.)
 
-    private void addAllFiles(List filenames, File root) {
+    private void addAllFiles(List<String> filenames, File root) {
 	File children[] = root.listFiles();
 	for (int i=0; i<children.length; i++) {
 	    File child = children[i];
@@ -500,7 +500,8 @@ public class Bayesian {
     // -- args[0] = folder
     // -- args[1] = algorithm (optional, default=t-score)
     // -- args[2] = number-of-pairs (optional, default=100)
-    public static void main(String args[]) throws Exception /* don't! */ {
+    @SuppressWarnings("unchecked")
+	public static void main(String args[]) throws Exception /* don't! */ {
 	if (args.length<1 || args.length>3) {
 	    System.err.println("whoops: i'm expecting 1-3 arguments:");
 	    System.err.println("    -- folder to analyze");
@@ -514,11 +515,11 @@ public class Bayesian {
 
 	String folder = args[0];
 
-	Class algorithm;
+	Class<? extends Cross> algorithm;
 	if (args.length >= 2) {
-	    algorithm = Class.forName(args[1]);
+	    algorithm = (Class<Cross>) Class.forName(args[1]);
 	} else {
-	    algorithm = Class.forName("edu.cornell.dendro.corina.cross.TScore");
+	    algorithm = (Class<Cross>) Class.forName("edu.cornell.dendro.corina.cross.TScore");
 	}
 
 	int numberOfPairs;

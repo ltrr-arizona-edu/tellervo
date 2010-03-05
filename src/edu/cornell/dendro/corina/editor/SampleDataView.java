@@ -24,27 +24,34 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-import javax.swing.ListSelectionModel;
+
+import org.tridas.schema.TridasValue;
+
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.support.ModifiableTableCellRenderer;
+import edu.cornell.dendro.corina.editor.support.TableCellModifier;
+import edu.cornell.dendro.corina.editor.support.TableCellModifierListener;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.remarks.Remarks;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
@@ -69,18 +76,24 @@ import edu.cornell.dendro.corina.util.PopupListener;
 public class SampleDataView extends JPanel implements SampleListener,
 		PrefsListener {
 
+	private static final long serialVersionUID = 1L;
+
+	private RingAnnotations remarksPanel = null;
+	
 	private Sample mySample;
 
 	public JTable myTable;
 
 	protected TableModel myModel;
+	
+	protected ModifiableTableCellRenderer myCellRenderer;
 
 	// pass this along to the table
 	@Override
 	public void requestFocus() {
 		myTable.requestFocus();
 	}
-
+	
 	// (for Editor)
 	public void stopEditing(boolean disableFutureEdits) {
 		
@@ -166,73 +179,10 @@ public class SampleDataView extends JPanel implements SampleListener,
 				int row = myTable.rowAtPoint(e.getPoint());
 				int col = myTable.columnAtPoint(e.getPoint());
 
-				// clicked on a row header?  don't do anything.
-				if (col == 0)
-					return;
-
-				// select the cell at e.getPoint()
-				myTable.setRowSelectionInterval(row, row);
-				myTable.setColumnSelectionInterval(col, col);
-				// (does this work?  it does, but
-				// the table doesn't get hilited
-				// immediately..)
-
-				// TODO: if it's not a valid data cell, don't show popup
-				// TODO: if you can't ins/del a year here, dim those menuitems [done?]
-
-				// show a popup here.
-				JPopupMenu popup = new JPopupMenu();
-				// PERF: build this popup lazily here, and hold on to it.
-
-				// TODO: use buttongroup (what for? -- oh, the marks)
-
-				/* DISABLED
-				 JMenu marks = new JMenu("Mark with");
-				 for (int i=0; i<Mark.defaults.length; i++)
-				 marks.add(new JRadioButtonMenuItem(Mark.defaults[i].icon, false));
-				 marks.addSeparator();
-				 marks.add(new JRadioButtonMenuItem("None", true));
-				 */
-
-				JMenuItem insert = Builder.makeMenuItem("insert_year");
-				insert.addActionListener(new AbstractAction() {
-					public void actionPerformed(ActionEvent ae) {
-						insertYear();
-					}
-				});
-
-				JMenuItem insertMR = Builder.makeMenuItem("insert_mr");
-				insertMR.addActionListener(new AbstractAction() {
-					public void actionPerformed(ActionEvent ae) {
-						insertMR();
-					}
-				});
-
-				JMenuItem delete = Builder.makeMenuItem("delete_year");
-				delete.addActionListener(new AbstractAction() {
-					public void actionPerformed(ActionEvent ae) {
-						deleteYear();
-					}
-				});
-
-				popup.add(insert);
-				popup.add(insertMR);
-				popup.add(delete);
-				// DISABLED until they're implemented.
-				// popup.addSeparator();
-				// popup.add(marks);
-				// popup.addSeparator();
-				// popup.add(new JMenuItem("Edit note..."));
-				// TODO: hook up edit_note, with i18n
-
-				// (dim insert/insertMR/delete, if it's not an editable sample.)
-				if (!mySample.isEditable()) {
-					insert.setEnabled(false);
-					insertMR.setEnabled(false);
-					delete.setEnabled(false);
-				}
-
-				popup.show(myTable, e.getX(), e.getY());
+				JPopupMenu menu = createPopupMenu(row, col);
+				
+				if(menu != null)
+					menu.show(myTable, e.getX(), e.getY());
 			}
 		});
 
@@ -255,7 +205,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// make the last column a jprogressbar, % of max
 		int max = 0;
-		if (mySample.getCount() != null)
+		if (mySample.hasCount())
 			max = (Collections.max(mySample.getCount())).intValue();
 		// DISABLED: use column-header renderer for first column (pseudo-row-headers)
 		// -- it doesn't look that great, since there are still gridlines between
@@ -264,7 +214,11 @@ public class SampleDataView extends JPanel implements SampleListener,
 		//         javax.swing.table.JTableHeader().getDefaultRenderer());
 		myTable.getColumnModel().getColumn(11).setCellRenderer(
 				new CountRenderer(max));
-
+		
+		myCellRenderer = new ModifiableTableCellRenderer(new IconBackgroundCellRenderer(mySample));
+		for(int i = 1; i < 11; i++)
+			myTable.getColumnModel().getColumn(i).setCellRenderer(myCellRenderer);
+		
 		// make nulls elsewhere shaded, to indicate "can't use"
 		// DISABLED, because it doesn't hit the area below the table yet (how?).
 		// (but it looks really cool.)
@@ -274,7 +228,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		//myTable.setIntercellSpacing(new Dimension(0, 0));
 
 		// set font, gridlines, colors ==> handled by refreshFromPreferences()
-
+		
 		// add to panel
 		setLayout(new BorderLayout(0, 0)); // huh?
 		JScrollPane sp = new JScrollPane(myTable,
@@ -282,10 +236,111 @@ public class SampleDataView extends JPanel implements SampleListener,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		add(sp, BorderLayout.CENTER);
-		add(new Modeline(myTable, mySample), BorderLayout.SOUTH);
-
+		add(new StatusBar(myTable, mySample), BorderLayout.SOUTH);
+		
 		initPrefs();
 		App.prefs.addPrefsListener(this);
+	}
+	
+	protected JPopupMenu createPopupMenu(int row, int col) {
+		// clicked on a row header?  don't do anything.
+		if (col == 0)
+			return null;
+
+		// select the cell at e.getPoint()
+		myTable.setRowSelectionInterval(row, row);
+		myTable.setColumnSelectionInterval(col, col);
+		// (does this work?  it does, but
+		// the table doesn't get hilited
+		// immediately..)
+
+		// TODO: if it's not a valid data cell, don't show popup
+		// TODO: if you can't ins/del a year here, dim those menuitems [done?]
+
+		// show a popup here.
+		JPopupMenu popup = new JPopupMenu();
+		// PERF: build this popup lazily here, and hold on to it.
+
+		// TODO: use buttongroup (what for? -- oh, the marks)
+
+		/* DISABLED
+		 JMenu marks = new JMenu("Mark with");
+		 for (int i=0; i<Mark.defaults.length; i++)
+		 marks.add(new JRadioButtonMenuItem(Mark.defaults[i].icon, false));
+		 marks.addSeparator();
+		 marks.add(new JRadioButtonMenuItem("None", true));
+		 */
+
+		addAddDeleteMenu(popup);
+		popup.addSeparator();
+		addNotesMenu(popup, row, col);
+		
+		return popup;
+	}
+	
+	protected final void addAddDeleteMenu(JPopupMenu menu){
+		
+		JMenuItem insert = Builder.makeMenuItem("menus.edit.insert_year", true, "insertyear.png");
+		insert.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				insertYear();
+			}
+		});
+
+		JMenuItem insertMR = Builder.makeMenuItem("menus.edit.insert_mr", true, "insertmissingyear.png");
+		insertMR.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				insertMR();
+			}
+		});
+
+		JMenuItem delete = Builder.makeMenuItem("menus.edit.delete_year", true, "deleteyear.png");
+		delete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				deleteYear();
+			}
+		});
+
+		menu.add(insert);
+		menu.add(insertMR);
+		menu.add(delete);
+		// DISABLED until they're implemented.
+		// popup.addSeparator();
+		// popup.add(marks);
+		// popup.addSeparator();
+		// popup.add(new JMenuItem("Edit note..."));
+		// TODO: hook up edit_note, with i18n
+
+		// (dim insert/insertMR/delete, if it's not an editable sample.)
+		if (!mySample.isEditable()) {
+			insert.setEnabled(false);
+			insertMR.setEnabled(false);
+			delete.setEnabled(false);
+		}
+		
+	}
+	
+	protected final void addNotesMenu(JPopupMenu menu, final int row, final int col) {
+		// get the year
+		final Year y = ((DecadalModel) myModel).getYear(row, col);
+		
+		if(!mySample.getRange().contains(y))
+			return;
+
+		TridasValue value = mySample.getValueForYear(y);
+		
+		Runnable onRemarkChange = new Runnable() {
+			public void run() {
+				// notify the table that its data has changed
+				((DecadalModel) myModel).fireTableCellUpdated(row, col);
+				
+				// set the sample as modified
+				mySample.setModified();
+				mySample.fireSampleDataChanged();
+			}
+		};
+		
+		Remarks.appendRemarksToMenu(menu, value, onRemarkChange, mySample.isEditable());
 	}
 
 	/** Return the Year of the currently selected cell.
@@ -297,7 +352,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 	// default is an empty string to type in.
 	public void insertYear() {
-		insertYear("", true);
+		insertYear(0, true);
 	}
 
 	// use Sample.MR for now.
@@ -307,7 +362,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		insertYear(new Integer(Sample.MR), true);
 	}
 
-	public void insertYear(Object val, boolean selectAndEdit) {
+	public void insertYear(Integer val, boolean selectAndEdit) {
 		// note: ideally this would never be called for isSummed() or
 		// isIndexed() samples, so these checks will be obselete.
 
@@ -368,7 +423,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		}
 	}
 
-	public void insertYears(Object val, int nYears) {
+	public void insertYears(Integer val, int nYears) {
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
 			Alert.error("Can't Modify Data",
@@ -420,7 +475,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	public void deleteYear() {
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
-			Bug.bug(new IllegalArgumentException(
+			new Bug(new IllegalArgumentException(
 					"deleteYear() called on non-editable sample"));
 			return;
 		}
@@ -482,7 +537,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 	private void initPrefs() {
 		// reset fonts
-		Font font = Font.decode(App.prefs.getPref("corina.edit.font"));
+		Font font = App.prefs.getFontPref("corina.edit.font", null);
 		if (font != null)
 			myTable.setFont(font);
 
@@ -490,6 +545,8 @@ public class SampleDataView extends JPanel implements SampleListener,
 		myTable.setRowHeight((font == null ? 12 : font.getSize()) + 4);
 		// BUG: this seems to not work sometimes (?) -- try zapfino
 
+		myTable.setRowHeight(16);
+		
 		// disable gridlines, if requested
 		boolean gridlines = Boolean.valueOf(
 				App.prefs.getPref(Prefs.EDIT_GRIDLINES, "true")).booleanValue();
@@ -570,5 +627,33 @@ public class SampleDataView extends JPanel implements SampleListener,
 		myTable.setColumnSelectionInterval(col, col);
 		
 		return retYear;
+	}
+
+	/**
+	 * Add a cell modifier to the table and repaint
+	 * @param modifier
+	 */
+	public void addCellModifier(TableCellModifier modifier) {
+		myCellRenderer.addModifier(modifier);
+		
+		// repaint the table on notification
+		modifier.setListener(new TableCellModifierListener() {
+			public void cellModifierChanged(TableCellModifier modifier) {
+				myTable.repaint();
+			}
+		});
+		
+		// repaint now, to be safe
+		myTable.repaint();
+	}
+	
+	/**
+	 * Remove a cell modifier from the table and repaint
+	 * @param modifier
+	 */
+	public void removeCellModifier(TableCellModifier modifier) {
+		myCellRenderer.removeModifier(modifier);
+		modifier.setListener(null);
+		myTable.repaint();
 	}
 }

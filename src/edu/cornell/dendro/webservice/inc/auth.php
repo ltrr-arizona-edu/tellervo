@@ -1,12 +1,21 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.0
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
+
+/**
+ * This class handles all the authentication requirements for the webservice.  It is not to be confused with authenticate.php which is used to direct 
+ * authentication requests from the user.
+ *
+ */
 
 class auth 
 {
@@ -21,7 +30,11 @@ class auth
   var $lastErrorCode = NULL;
   var $lastErrorMessage = NULL;
 
-  function auth()
+  /**
+   * Constructor for the Auth class
+   *
+   */
+  function __construct()
   {
     session_start();  
     if(isset($_SESSION['initiated']))
@@ -42,6 +55,16 @@ class auth
     }
   }
 
+  /**
+   * Login using a nonce
+   *
+   * @param String $theUsername
+   * @param String $theClientHash
+   * @param String $theClientNonce
+   * @param String $theServerNonce
+   * @param String $theSequence
+   * @return unknown
+   */
   function loginWithNonce($theUsername, $theClientHash, $theClientNonce, $theServerNonce, $theSequence)
   {
     global $dbconn;
@@ -55,7 +78,7 @@ class auth
     }
 
     
-    $sql = "select * from tblsecurityuser where username='$theUsername' and isactive=true";
+    $sql = "select * from tblsecurityuser where username='".pg_escape_string($theUsername)."' and isactive=true";
  
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -102,11 +125,19 @@ class auth
     return $this->isLoggedIn;
   }
 
-  function login($theUsername, $thePassword)
+  
+  /**
+   * Login using a plain username and pasword
+   *
+   * @param String $theUsername
+   * @param String $thePassword
+   * @return unknown
+   */
+  public function login($theUsername, $thePassword)
   {
     global $dbconn;
 
-    $sql = "select * from tblsecurityuser where username='$theUsername' and isactive=true";
+    $sql = "select * from tblsecurityuser where username='".pg_escape_string($theUsername)."' and isactive=true";
     
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -158,6 +189,10 @@ class auth
     return $this->isLoggedIn;
   }
 
+  /**
+   * Logout the current user
+   *
+   */
   function logout()
   {
     $this->isLoggedIn = FALSE;
@@ -171,6 +206,12 @@ class auth
     $session_destroy;
   }
   
+  /**
+   * Log the user's IP address for security auditing
+   *
+   * @param String $method defaults to 'login'
+   * @return unknown
+   */
   function logIP($method="login")
   {
       global $dbconn;
@@ -199,28 +240,33 @@ class auth
       }
   }
 
-  function logRequest($type)
+  /**
+   * Log request for security auditing purposes
+   *
+   * @param String $requestType  
+   */
+  function logRequest($requestType)
   {
     global $dbconn;
     global $wsversion;
 
-    if ($type=="loginPlain")
+    if ($requestType=="loginPlain")
     {
         $request = "Logged in using plain text";
     }
-    elseif ($type=="loginSecure")
+    elseif ($requestType=="loginSecure")
     {
         $request = "Logged in with security";
     }
-    elseif ($type=="logout")
+    elseif ($requestType=="logout")
     {
         $request = "Logged out";
     }
-    elseif ($type=="loginFailure")
+    elseif ($requestType=="loginFailure")
     {
         $request = "Failed login attempt for username: '".$this->username."'";
     }
-    elseif ($type=="invalidSNonce")
+    elseif ($requestType=="invalidSNonce")
     {
         $request = "Server nonce supplied was invalid";
     }
@@ -231,11 +277,11 @@ class auth
 
     if ($this->getID()==NULL) 
     {
-        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion')";
+        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".pg_escape_string($request)."', '".$_SERVER['REMOTE_ADDR']."', '".pg_escape_string($wsversion)."')";
     }
     else
     {
-        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".addslashes($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion')";
+        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".pg_escape_string($request)."', '".$_SERVER['REMOTE_ADDR']."', '".pg_escape_string($wsversion)."')";
     }
 
     pg_send_query($dbconn, $sql);
@@ -244,41 +290,78 @@ class auth
     {
         echo pg_result_error($result)."--- SQL was $sql";
     }
-
-
   }
 
-  function isLoggedIn()
+
+   /*********/
+   /*GETTERS*/
+   /*********/
+  
+  /**
+   * Is the user logged in?
+   *
+   * @return Boolean
+   */
+  public function isLoggedIn()
   {
     return $this->isLoggedIn;
   }
 
-  function getFirstname()
+  /**
+   * Get the first name of the current user
+   *
+   * @return String
+   */
+  public function getFirstname()
   {
     return $this->firstname;
   }
   
-  function getLastname()
+  /**
+   * Get the last name of the current user
+   *
+   * @return String
+   */
+  public function getLastname()
   {
     return $this->lastname;
   }
   
-  function getUsername()
+  /**
+   * Get the username of the current user
+   *
+   * @return String
+   */
+  public function getUsername()
   {
     return $this->username;
   }
 
-  function getID()
+  /**
+   * Get the user ID of the current user
+   *
+   * @return Integer
+   */
+  public function getID()
   {
     return $this->securityuserid;
   }
 
-  function getPermission($thePermissionType, $theObjectType, $theObjectID)
+  /**
+   * Enter description here...
+   *
+   * @param unknown_type $thePermissionType
+   * @param unknown_type $theObjectType
+   * @param unknown_type $theObjectID
+   * @return unknown
+   */
+  public function getPermission($thePermissionType, $theObjectType, $theObjectID)
   {
         // $theObjectType should be one of site,tree, vmeasurement, default
 
         global $dbconn;
-
+		global $firebug;
+        
         // Always allow access to dictionaries
         if ( ($theObjectType=='dictionaries') || ($theObjectType=='authentication') )
         {
@@ -361,8 +444,9 @@ class auth
             }
         }
 
-        // Dp the actual perms lookup
-        $sql = "select * from cpgdb.getuserpermissionset($this->securityuserid, '$theObjectType', $theObjectID)";
+        // Do the actual perms lookup
+        $sql = "select * from cpgdb.getuserpermissionset($this->securityuserid, '$theObjectType', '$theObjectID'::uuid)";
+        $firebug->log($sql, "Get permissions sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -418,7 +502,12 @@ class auth
         }
   }
 
-  function isAdmin()
+  /**
+   * Does the current user have admin priviledges?
+   *
+   * @return boolean
+   */
+  public function isAdmin()
   {
         global $dbconn;
         $sql = "select * from cpgdb.isadmin(".$this->securityuserid.") where isadmin=true";
@@ -441,24 +530,24 @@ class auth
         return false;
   }
 
-  function setPassword($username, $password)
-  {
-    global $dbconn;
-
-    $sql = "update tblsecurityuser set password='".hash('md5', $password)."' where username='$username'";
-    $dbconnstatus = pg_connection_status($dbconn);
-    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-    {
-        $result = pg_query($dbconn, $sql);
-    }
-  }
-
-  function sequence() 
+  /**
+   * Get the sequence number
+   *
+   * @return Integer
+   */
+  public function sequence() 
   {
      return mt_rand(1, 1048576);
   }
 
-  function nonce($seq, $timeseed="current")
+  /**
+   * Get the nonce for a particular sequence for now or 1 minute ago
+   *
+   * @param Integer $seq
+   * @param String $timeseed defaults to 'current'
+   * @return String
+   */
+  public function nonce($seq, $timeseed="current")
   {
     if ($timeseed=="current")
     {
@@ -472,6 +561,15 @@ class auth
     }
   }
 
+  /**
+   * Check the client hash is correct
+   *
+   * @param String $dbPasswordHash
+   * @param String $cnonce
+   * @param Integer $seq
+   * @param String $clientHash
+   * @return Boolean
+   */
   function checkClientHash($dbPasswordHash, $cnonce, $seq, $clientHash)
   {
     $serverHashCurrent = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce($seq, "current").":".$cnonce);
@@ -495,6 +593,13 @@ class auth
 
   }
 
+  /**
+   * Check whether server nonce is valid with particular sequence
+   *
+   * @param String $snonce
+   * @param Integer $seq
+   * @return Boolean
+   */
   function isValidServerNonce($snonce, $seq)
   {
       if( ($snonce==$this->nonce($seq, 'current')) || ($snonce==$this->nonce($seq, 'previous'))  )
@@ -507,24 +612,61 @@ class auth
       }
         
   }
-
+	
+  /**
+   * Set error message
+   *
+   * @param Integer $theCode
+   * @param String $theMessage
+   */
   function setLastErrorMessage($theCode, $theMessage)
   {
         $this->lastErrorMessage = $theMessage;
         $this->lastErrorCode = $theCode;
+        trigger_error($theCode.$theMessage, E_USER_ERROR);
   }
 
+  /**
+   * Get the error code for the last error
+   *
+   * @return Integer
+   */
   function getLastErrorCode()
   {
         return $this->lastErrorCode;
   }
   
+  /**
+   * Get the error message for the last error
+   *
+   * @return String
+   */
   function getLastErrorMessage()
   {
         return $this->lastErrorMessage;
   }
 
+   /*********/
+   /*GETTERS*/
+   /*********/
 
+  /**
+   * Set the password for this user
+   *
+   * @param String $password
+   */
+  protected function setPassword($password)
+  {
+    global $dbconn;
+
+    $sql = "update tblsecurityuser set password='".hash('md5', pg_escape_string($password))."' where username='".pg_escape_string($this->username)."'";
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+        $result = pg_query($dbconn, $sql);
+    }
+  }  
+  
 // End of class
 } 
 ?>

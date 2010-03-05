@@ -535,11 +535,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 
 				// label
 				// Maybe this should really be changed? - lucas
-				String barTitle;
-				if (!bs.hasMeta("title"))
-					barTitle = bs.toString(); // this is what it should be, anyway -- title is an ms-dos-ism
-				else
-					barTitle = bs.getMeta("title").toString();
+				String barTitle = bs.getDisplayTitle();
 				// BUG: doesn't this assume the map can't hold nulls?  how do i know that?
 
 				g2.setColor(Color.black); // EXTRACT const!
@@ -634,7 +630,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 	// color, based on species.
 	// REFACTOR: shouldn't this belong in Species.java?
 	private Color speciesToColor(BaseSample s) {
-		Object species = s.getMeta("species");
+		String species = s.meta().getTaxon();
 		if (species == null || !(species instanceof String))
 			return unColor;
 		String str = ((String) species).toUpperCase(); // PERF: allocates new string!
@@ -838,11 +834,15 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		});
 		JToolBar tb = new JToolBar();
 		tb.setFloatable(false);
-		tb.add(Layout.flowLayoutL(new JLabel("Scale:"), new JLabel(Builder.getIcon("Narrower.png")), zoomer, new JLabel(Builder
-				.getIcon("Wider.png"))));
+		tb.add(Layout.flowLayoutL(new JLabel("Scale:"), new JLabel(Builder.getIcon("viewmag-.png")), zoomer, new JLabel(Builder
+				.getIcon("viewmag+.png"))));
 		getContentPane().add(tb, BorderLayout.NORTH);
 
 		// create popup
+		/*
+		 * TODO: Fix the popup menu on the bar graph
+		 * Will do when GANTT charting is made to work nicely
+		 * 
 		popup = new SamplePopupMenu();
 		bgp.addMouseListener(new PopupListener() {
 			@Override
@@ -873,6 +873,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		});
+		*/
 
 		/*
 		    // enable drop-loading for panel

@@ -41,6 +41,14 @@ import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasSample;
+
+import com.lowagie.text.Chunk;
+
 /**
    Mecki Pohl's original (MS-DOS) Corina format.
 
@@ -180,7 +188,7 @@ public class Corina implements Filetype {
 
 	@Override
 	public String toString() {
-		return I18n.getText("format.corina") + " (legacy)";
+		return I18n.getText("format.corina");
 	}
 
 	// read chars until a space char, or eof.
@@ -538,9 +546,25 @@ public class Corina implements Filetype {
 	private void saveTag(Sample s, BufferedWriter w, String tag)
 			throws IOException {
 		// get value, and print it, as long as it's not null
-		Object o = s.getMeta(tag);
-		if (o != null)
-			w.write(";" + tag.toUpperCase() + " " + o);
+		String fieldvalue = null;
+		
+		
+		TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
+		
+		if (tag.equals("species")){
+			fieldvalue = telem.getTaxon().getNormal().toString();
+		}
+		else if (tag.equals("filename")){
+			fieldvalue = "CorinaWSI:" + s.getSeries().getIdentifier().getDomain() + s.getSeries().getIdentifier().getValue();
+		}
+		else if (tag.equals("")){
+			
+		}
+		
+		// Write to buffer
+		if(tag!=null && fieldvalue!=null)
+			w.write(";" + tag.toUpperCase() + " " + fieldvalue);
+		
 	}
 
 	private void saveMeta(Sample s, BufferedWriter w) throws IOException {
@@ -635,7 +659,7 @@ public class Corina implements Filetype {
 		// count for 9990 is the same as the last count, for reasons i
 		// don't claim to understand.
 		List<Integer> count = null;
-		if (s.getCount() != null) {
+		if (s.hasCount()) {
 			count = new ArrayList<Integer>();
 			count.addAll(s.getCount());
 			count.add(count.get(count.size() - 1));
@@ -754,8 +778,24 @@ public class Corina implements Filetype {
 	}
 
 	private void saveAuthor(Sample s, BufferedWriter w) throws IOException {
+
+		ITridasSeries sss = s.getSeries();
+		TridasMeasurementSeries mseries = null;
+		TridasDerivedSeries dseries = null;
+		String author;
+		
+		if(sss instanceof TridasMeasurementSeries) 
+		{ 
+			mseries = (TridasMeasurementSeries) sss; 
+			author = mseries.getAnalyst().toString();
+		}
+		else
+		{
+			dseries = (TridasDerivedSeries) sss;
+			author = dseries.getAuthor().toString();
+		}
+		
 		w.write("~");
-		String author = s.getMetaString("author");
 		if (author != null)
 			w.write(" " + author);
 		w.newLine();
@@ -771,6 +811,21 @@ public class Corina implements Filetype {
 
 	// default extension -- well, there isn't really one...
 	public String getDefaultExtension() {
-		return ".RAW";
+		return ".raw";
+	}
+
+	public Boolean isPackedFileCapable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public Boolean isLossless() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		// TODO Auto-generated method stub
+		return "The " + this.toString() + " format contains a limited number of metadata fields.";
 	}
 }

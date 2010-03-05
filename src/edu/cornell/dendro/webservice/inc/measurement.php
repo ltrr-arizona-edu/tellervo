@@ -1,1856 +1,2035 @@
 <?php
-//*******************************************************************
-////// PHP Corina Middleware
-////// License: GPL
-////// Author: Peter Brewer
-////// E-Mail: p.brewer@cornell.edu
-//////
-////// Requirements : PHP >= 5.0
-//////*******************************************************************
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ *
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
 require_once('dbhelper.php');
-require_once('inc/note.php');
+require_once('inc/readingNote.php');
 
-class measurement 
+/**
+ * Class for interacting with a measurementEntity.  This contains the logic of how to read and write data from the database as well as error checking etc.
+ *
+ */
+class measurement extends measurementEntity implements IDBAccessor
 {
-    var $measurementID = NULL;
-    var $vmeasurementID = NULL;
-    var $vmeasurementResultID = NULL;
-    var $vmeasurementOpID = 5;
-    var $vmeasurementOpParam = NULL;
-    var $vmeasurementOp = "Direct";
-    var $vmeasurementUnits = NULL;
-    var $indexType = NULL;
-    var $radiusID = NULL;
-    var $isReconciled = FALSE;
-    var $startYear = NULL;
-    var $isLegacyCleaned = NULL;
-    var $datingTypeID = 3;
-    var $datingType = "Relative";
-    var $datingErrorPositive = NULL;
-    var $datingErrorNegative = NULL;
-    var $isPublished = NULL;
-    var $measuredByID = NULL;
-    var $measuredBy = NULL;
-    var $ownerUserID = NULL;
-    var $owner = NULL;
-    var $readingsArray = array();
-    var $readingsUnits = NULL;
-    var $referencesArray = array();
-    var $vmeasurementNoteArray = array();
-    var $createdTimeStamp = NULL;
-    var $lastModifiedTimeStamp = NULL;
-    var $name = NULL;
-    var $readingCount = NULL;
-    var $measurementCount = NULL;
-    var $description = NULL;
-    var $centroidLat = NULL;
-    var $centroidLong = NULL;
-    var $minLat = NULL;
-    var $maxLat = NULL;
-    var $minLong = NULL;
-    var $maxLong = NULL;
-    
-    var $masterVMeasurementID = NULL;
-    var $justification = NULL;
-    var $certaintyLevel = NULL;
-    var $newStartYear = NULL;
+	/***************/
+	/* CONSTRUCTOR */
+	/***************/
 
-    var $summarySiteCode = NULL;
-    var $summarySiteCount = NULL;
-    var $summaryTaxonName = NULL;
-    var $summaryTaxonCount = NULL;
-    var $labPrefix = NULL;
-    var $fullLabCode = NULL;
-    
-    var $includePermissions = FALSE;
-    var $canCreate = NULL;
-    var $canUpdate = NULL;
-    var $canDelete = NULL;
+	function __construct()
+	{
+		// Constructor for this class.
+		//$this->setVMeasurementOp(5);
+		parent::__construct();
+	}
 
-    var $parentXMLTag = "measurement"; 
-    var $lastErrorMessage = NULL;
-    var $lastErrorCode = NULL;
+	/***********/
+	/* SETTERS */
+	/***********/
 
-    /***************/
-    /* CONSTRUCTOR */
-    /***************/
+	function setParamsFromDBRow($row, $format="standard")
+	{
+		global $debugFlag;
+		global $myMetaHeader;
+		global $firebug;
+		
+		if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting measurement parameters from DB result");
 
-    function __construct()
-    {
-        // Constructor for this class.
-        $this->vmeasurementOpID = 5;
-    }
+		$this->setTitle($row['code']);		
+		$this->setID($row['vmeasurementid']);
+		$this->setCreatedTimestamp($row['createdtimestamp']);
+		$this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);		
+		$this->setComments($row['comments']);
+		$this->setBirthDate($row['birthdate']);
+		$this->setVMeasurementOp($row['vmeasurementopid'], $row['opname']);
+			if($this->vmeasurementOp=='Index') $this->setVMeasurementOpParam($row['vmeasurementopparameter']);
+			if($this->vmeasurementOp=='Crossdate') $this->setCrossdateParamsFromDB();				
+		$this->setObjective($row['objective']);
+		$this->setStandardizingMethod($row['vmeasurementopparameter'], null);
+		$this->setAuthor($row['owneruserid']);		
+		$this->setAnalyst($row['measuredbyid']);
+		$this->setDendrochronologist($row['supervisedbyid']);
+		$this->setMeasuringMethod($row['measuringmethodid'], NULL);
+		$this->setVersion($row['version']);
+	 	$this->location->setGeometry($row['extentgeometry']);
+		$this->setFirstYear($row['startyear']);
+		//datingreference	
+		//$this->setSignificanceLevel();	
+		$this->setProvenance($row['provenance']);
+		$this->setRadiusID($row['radiusid']);
+				
+		// 'Values' fields
+		$this->setUnits($row['unitid'], NULL);	
+		$this->setMeasuringUnits($row['unitid'], NULL, $row['power']);
+		$this->setVariable($row['measurementvariableid'], NULL);		
 
-    /***********/
-    /* SETTERS */
-    /***********/
-
-    function setErrorMessage($theCode, $theMessage)
-    {
-        // Set the error latest error message and code for this object.
-        $this->lastErrorCode = $theCode;
-        $this->lastErrorMessage = $theMessage;
-    }
-
-    function setParamsFromDB($theID, $format="standard")
-    {
-        // Set the current objects parameters from the database
-        global $dbconn;
-        
-        $this->vmeasurementID=$theID;
-
-        // the uberquery - one query to rule them all?
-        $sql = "SELECT vm.*, mc.*, su.username, op.name as opname, dt.label as datingtype, ".
-		"m.radiusid, m.isreconciled, m.islegacycleaned, m.datingtypeid, m.datingerrorpositive, m.datingerrornegative, m.measuredbyid, ".
-		"x(centroid(vmextent)), y(centroid(vmextent)), xmin(vmextent), xmax(vmextent), ymin(vmextent), ymax(vmextent) ".
-		"FROM tblvmeasurement vm ".
-		"INNER JOIN tlkpvmeasurementop op ON vm.vmeasurementopid=op.vmeasurementopid ".
-		"LEFT JOIN tblmeasurement m ON vm.measurementid=m.measurementid ".
-		"LEFT JOIN tblvmeasurementmetacache mc ON vm.vmeasurementid=mc.vmeasurementid ".
-		"LEFT JOIN tlkpdatingtype dt ON m.datingtypeid=dt.datingtypeid ".
-		"LEFT JOIN tblsecurityuser su ON vm.owneruserid=su.securityuserid ".
-		"WHERE vm.vmeasurementid=".$this->vmeasurementID;
-	// the query that makes the server make the measurement
-        $sql2 = "select * from cpgdb.getvmeasurementresult('$theID')";
-        
-	// the old query - here for posterity
-        //$sql2 = "select tblvmeasurement.* from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            // Kludge city - the dbconn occassionally has results left on it from somewhere not sure
-            // where so retrieve results before sending SQL otherwise you'll get a messy notice
-            $result = pg_get_result($dbconn); 
-            pg_send_query($dbconn, $sql);
-            $result = pg_get_result($dbconn); 
-
-            if(pg_num_rows($result)==0)
-            {
-                // No records match the id specified
-                $this->setErrorMessage("903", "No match for measurement id=".$theID);
-                return FALSE;
-            }
-            else
-            {
-                // Set parameters from db
-                $row = pg_fetch_array($result);
-                $this->name = $row['name'];
-                $this->description = $row['description'];
-                
-                // Commented out the vmid here - we should have it passed to this function
-                // as a variable shouldn't we?
-                //$this->vmeasurementID = $row['vmeasurementid'];
-                
-                
-                //$this->vmeasurementResultID = $row['vmeasurementresultid'];
-                //$this->vmeasurementOpID = $row['vmeasurementopid'];
-                //$this->vmeasurementOpParam = $row['vmeasurementparamid'];
-                $this->radiusID = $row['radiusid'];
-                $this->isReconciled = fromPGtoPHPBool($row['isreconciled']);
-                $this->startYear = $row['startyear'];
-                $this->isLegacyCleaned = fromPGtoPHPBool($row['islegacycleaned']);
-                $this->datingErrorPositive = $row['datingerrorpositive'];
-                $this->datingErrorNegative = $row['datingerrornegative'];
-                $this->createdTimeStamp = $row['createdtimestamp'];
-                $this->lastModifiedTimeStamp = $row['lastmodifiedtimestamp'];
-                //$this->setMeasuredByID($row['measuredbyid']);
-
-                // not this way... 
-		/*
- 	               $this->setDatingTypeID($row['datingtypeid']);
-			$this->setMeasurementID();
-	                $this->setVMeasurementOp($row2['vmeasurementopid']);
-	                $this->setOwnerUserID($row2['owneruserid']);
-		*/
-		$this->datingTypeID = $row['datingtypeid'];
-		$this->datingType = $row['datingtype'];
-		$this->measurementID = $row['measurementid'];
-		$this->vmeasurementOpID = $row['vmeasurementopid'];
-		$this->vmeasurementOp = $row['opname'];
-		$this->ownerUserID = $row['owneruserid'];
-                $this->setMeasuredByID($row['measuredbyid']);
-		$this->owner = $row['username'];
-
-		// all the metacache stuff...
-                $this->minLat = $row['ymin'];
-                $this->maxLat = $row['ymax'];
-                $this->minLong = $row['xmin'];
-                $this->maxLong = $row['xmax'];
-                $this->centroidLat = $row['y'];
-                $this->centroidLong = $row['x'];
-                $this->readingCount = $row['readingcount'];
-                $this->measurementCount = $row['measurementcount'];
-                $this->summarySiteCode = $row['sitecode'];
-                $this->summarySiteCount = $row['sitecount'];
-                $this->summaryTaxonName = $row['commontaxonname'];
-                $this->summaryTaxonCount = $row['taxoncount'];
-                $this->labPrefix = $row['prefix'];
-
-                // assemble our full lab code
-                $this->fullLabCode = $this->labPrefix . $this->name;
-
-                if($this->vmeasurementOp=='Index')
-                {
-                    // indexid for a sum
-                    $this->setVMeasurementOpParam($this->getIndexNameFromParamID($row['vmeasurementopparameter']));
-                }
-
-                if($this->vmeasurementOp=='Crossdate')
-                {
-                    $this->setCrossdateParamsFromDB();
-                }
-
-                if (($format=="standard") || ($format=="comprehensive") || ($format=="summary") )
-                {
-                    $this->setReferencesFromDB();
-                }
+		// Generic Fields (Corina specific)
+		$this->setJustification($row['justification']);
+		$this->setConfidenceLevel($row['confidence']);		
+		$this->setIsPublished(dbHelper::formatBool($row['ispublished']));
+		$this->setDatingType($row['datingtypeid'],$row['datingtype']);
+		$this->dating->setDatingErrors($row['datingerrorpositive'], $row['datingerrornegative']);	
+		$this->setIsReconciled(dbHelper::formatBool($row['isreconciled']));
+				
+		// Autogenerated Generic Fields
+		$this->setSummaryElementTitle($row['elementcode']);
+		$this->setSummarySampleTitle($row['samplecode']);
+		$this->setSummaryRadiusTitle($row['radiuscode']);
+		$this->setSummaryTaxonName($row['commontaxonname']);
+		$this->setSummaryTaxonCount($row['taxoncount']);
+		//$this->setSummaryInfo($row['objectcode'], $row['objectcount'], $row['commontaxonname'], $row['taxoncount'], $row['prefix']);
+		$this->setMeasurementCount($row['measurementcount']);
+		$this->setReadingCount($row['readingcount']);	
+		$this->setDirectChildCount($row['directchildcount']);
+		
+		// Corina specific backend fields
+		$this->setMasterVMeasurementID($row['mastervmeasurementid']);
+		$this->setMeasurementID($row['measurementid']);
+		
+		
+		// Only load summary fields if this is a summary...
+		//if($format=='summary') $this->setSummaryObjectArray($row['objectid']);
+		$this->setSummaryObjectArray($row['objectid']);		
 
 		// Deal with readings if we actually need them...
-		if($format=="standard" || $format=="comprehensive") {
-                    pg_send_query($dbconn, $sql2);
-                    $result2 = pg_get_result($dbconn);
-                    $row2 = pg_fetch_array($result2);
+		if($format!="summary") $this->setReadingsFromDB();
 
-                    $this->vmeasurementResultID = $row2['vmeasurementresultid'];
-                    $success = $this->setReadingsFromDB();
-                    return $success;
+		// Set References
+		$this->setReferencesFromDB();
+
+		if ($debugFlag===TRUE)
+		$myMetaHeader->setTiming("Completed setting measurement parameters from DB result");
+
+		return true;
+	}
+
+	function setParamsFromDB($theID, $format="standard")
+	{
+		global $dbconn;
+		global $myMetaHeader;
+		global $debugFlag;
+		global $firebug;
+		 
+		// Set the current objects parameters from the database
+
+		$this->setID($theID);
+
+		// the uberquery - one query to rule them all?
+		$sql = "SELECT * FROM vwcomprehensivevm WHERE vmeasurementid='".pg_escape_string($this->getID())."'";
+		 
+		$dbconnstatus = pg_connection_status($dbconn);
+		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+		{
+                        do{$result = pg_get_result($dbconn);}
+                        while($result!=NULL);
+                    
+			if ($debugFlag===TRUE) $myMetaHeader->setTiming("Starting setParamsFromDB SQL query");
+			pg_send_query($dbconn, $sql);
+			$result = pg_get_result($dbconn);
+			if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setParamsFromDB SQL query");
+
+			if(pg_num_rows($result)==0)
+			{
+				// No records match the id specified
+				$this->setErrorMessage("903", "No match for measurement id=".$this->getID());
+				return FALSE;
+			}
+			else
+			{
+				// Set parameters from db
+				$row = pg_fetch_array($result);
+							
+				
+				$this->setParamsFromDBRow($row, $format);
+			}
+
 		}
-            }
+		else
+		{
+			// Connection bad
+			$this->setErrorMessage("001", "Error connecting to database");
+			return FALSE;
+		}
 
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
+		return TRUE;
+	}
 
-        return TRUE;
-    }
+	/**
+	 * @todo
+	 *
+	 */
+	function setParentsFromDB()
+	{
+		require_once('radius.php');
+		global $dbconn;
+		global $corinaNS;
+		global $tridasNS;
+		global $gmlNS;
 
-    private function setCrossdateParamsFromDB()
-    {
-        global $dbconn;
-        $sql = "select * from tblcrossdate where vmeasurementid=".$this->vmeasurementID;
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            while ($row = pg_fetch_array($result))
-            {
-                $this->masterVMeasurementID = $row['mastervmeasurementid'];
-                $this->startYear = $row['startyear'];
-                $this->justification = $row['justification'];
-                $this->certaintyLevel = $row['confidence'];
-            }
-        }
+		if($this->radiusID == NULL)
+		{
+			$this->setErrorMessage("903", "There are no radii associated with measurement id=".$this->getID());
+			return FALSE;
+		}
 
-    }
+		// Empty array before populating it
+		$this->parentEntityArray = array();
 
-    private function setReadingsFromDB()
-    {
-        // Add all readings data to the object
-        global $dbconn;
+		// see if we've cached it already
+		if(($myRadius = dbEntity::getCachedEntity("radius", $this->radiusID)) != NULL)
+		{
+			array_push($this->parentEntityArray, $myRadius);
+			return;
+		}
+		 
+		$myRadius = new radius();
+		$success = $myRadius->setParamsFromDB($this->radiusID);
+		if($success===FALSE)
+		trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage());
 
-        // Empty the reading array in case we have data already in there
-        unset($this->readingsArray);
-        $this->readingsArray = array();
+		// Add to the array of parents
+		array_push($this->parentEntityArray,$myRadius);
+	}
 
-        $sql  = "select * from cpgdb.getvmeasurementreadingresult('".$this->vmeasurementResultID."') order by relyear asc";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            $relYearCheck = 0;
-            while ($row = pg_fetch_array($result))
-            {
-                if ($relYearCheck==$row['relyear'])
-                {
-                    // Get all reading values to array 
-                    $this->readingsArray[$row['relyear']] = array('reading' => $row['reading'], 
+
+
+	private function setReadingsFromDB()
+	{
+		// Add all readings data to the object
+		global $dbconn;
+		global $myMetaHeader;
+		global $debugFlag;
+		global $firebug;
+		
+		// Empty the reading array in case we have data already in there
+		unset($this->readingsArray);
+		$this->readingsArray = array();
+
+
+		// Call getVMeasurementResult().
+		if ($debugFlag===TRUE) $myMetaHeader->setTiming("Running cpgdb.getVMeasurementResult()");
+		$sql2 = "SELECT * FROM cpgdb.getvmeasurementresult('".pg_escape_string($this->getID())."')";
+		pg_send_query($dbconn, $sql2);
+		
+		$result2 = pg_get_result($dbconn);
+		$row2 = pg_fetch_array($result2);
+		$firebug->log(__LINE__, "Line number");	
+		$firebug->log($sql2, "getvmeasurementresult sql");	
+		if (pg_result_error($result2))
+		{
+			$this->setErrorMessage("701", pg_result_error($result2));
+			return FALSE;
+		}
+		
+		$this->vmeasurementResultID = $row2['vmeasurementresultid'];
+
+		
+		// Bodge for setting units by checking if any parents are 'indexes'	
+		//@TODO Should be replaced by extra field in getvmeasurementresult to say the extra query
+		$sql3 = "select * from cpgdb.findvmparents('".$this->getID()."', true) where op='Index'";
+		$dbconnstatus = pg_connection_status($dbconn);	
+		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+		{
+			$result3 = pg_query($dbconn, $sql3);			
+			if(pg_numrows($result3)>0)
+			{
+				$theUnits = null;
+			}
+			else
+			{
+				$theUnits = "db-default";
+				$this->setUnits(null, "micrometres");
+			}
+		}		
+		
+		// Call getVMeasurementReadingResult()
+		$sql  = "SELECT * FROM vwjsonnotedreadingresult where vmeasurementresultid='".pg_escape_string($this->getVMeasurementResultID())."' ".
+        		"ORDER BY relyear ASC";
+		$dbconnstatus = pg_connection_status($dbconn);
+		
+		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+		{
+			$result = pg_query($dbconn, $sql);
+			$relYearCheck = 0;
+			
+			while ($row = pg_fetch_array($result))
+			{
+				if ($relYearCheck==$row['relyear'])
+				{
+					// Compile notes array
+							
+					$jsonNotes = json_decode($row['jsonnotes'], true);
+
+					$notesArray = array();
+					
+					if($jsonNotes)
+					{
+						foreach($jsonNotes as $note)
+						{			
+							$currReadingNote = new readingNote();
+							$currReadingNote->setID($note['stdid']);
+							$currReadingNote->setNote($note['note']);
+							$currReadingNote->setInheritedCount($note['icnt']);
+							$currReadingNote->setControlledVoc(null, $note['std']);				
+							
+							// All note to the readingsArray
+							array_push($notesArray, $currReadingNote); 
+						}	
+					}
+							
+					
+					// Get all reading values to array
+					$this->readingsArray[$row['relyear']] = array('value' => unit::unitsConverter($row['reading'], $theUnits, "db-default"),
                                                                   'wjinc' => $row['wjinc'], 
                                                                   'wjdec' => $row['wjdec'], 
                                                                   'count' => $row['count'],
-                                                                  'notesArray' => array()
-                                                                 );
-                    $relYearCheck++;
-                }
-                else
-                {
-                    // Something screwy going on with relyears in the vmeasurementResult
-                    $this->setErrorMessage("701", "The relative years dating in the database has gone screwy. Please tell someone!");
-                    return FALSE;
-
-                }
-
-            }
-
-            // If this is a direct measurement then add any notes as a subarray
-            if($row['readingid'])
-            {
-                $noteSQL = "SELECT tlkpreadingnote.*, tblreadingreadingnote.readingid FROM tlkpreadingnote, tblreadingreadingnote WHERE tblreadingreadingnote.readingid = ".$row['readingid'];
-                $noteResult = pg_query($dbconn, $noteSQL);
-                while($noteRow = pg_fetch_array($noteResult))
-                {
-                    // Get all reading values to array 
-                    array_push($this->readingsArray[$row['relyear']][notesArray], $noteRow['readingnoteid']); 
-                }
-            }
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-
-        return TRUE;
-    }
-
-    private function setReferencesFromDB()
-    {
-        //echo "setReferencesFromDB called";
-        // Add any vmeasurements that the current measurement has been made from
-        global $dbconn;
-        
-        
-        $sql  = "select * from cpgdb.findvmparents('".$this->vmeasurementID."', 'false') where recursionlevel=0";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $this->referencesArray = array();
-            $result = pg_query($dbconn, $sql);
-            while ($row = pg_fetch_array($result))
-            {
-                // Get add all reading values to array 
-                array_push($this->referencesArray, $row['vmeasurementid']);
-            }
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-
-        return TRUE;
-    }
-
-
-    function setParamsFromParamsClass($paramsClass, $auth)
-    {
-        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if ($paramsClass->radiusID!=NULL)              $this->setRadiusID($paramsClass->radiusID);
-        if (isset($paramsClass->isReconciled))         $this->setIsReconciled($paramsClass->isReconciled);
-        if (isset($paramsClass->startYear))            $this->setStartYear($paramsClass->startYear);
-        if (isset($paramsClass->isLegacyCleaned))      $this->setIsLegacyCleaned($paramsClass->isLegacyCleaned);
-        //if (isset($paramsClass->datingTypeID))        $this->setDatingTypeID($paramsClass->datingTypeID);
-        if (isset($paramsClass->datingType))           $this->setDatingType($paramsClass->datingType);
-        if (isset($paramsClass->datingErrorPositive))  $this->setDatingErrorPositive($paramsClass->datingErrorPositive);
-        if (isset($paramsClass->datingErrorNegative))  $this->setDatingErrorNegative($paramsClass->datingErrorNegative);
-        if (isset($paramsClass->name))                 $this->setName($paramsClass->name);
-        if (isset($paramsClass->description))          $this->setDescription($paramsClass->description);
-        if (isset($paramsClass->isPublished))          $this->setIsPublished($paramsClass->isPublished);
-        if (isset($paramsClass->vmeasurementOp))       $this->setVMeasurementOp($paramsClass->vmeasurementOp);
-        if (isset($paramsClass->vmeasurementOpParam))  $this->setVMeasurementOpParam($paramsClass->vmeasurementOpParam);
-        if (sizeof($paramsClass->referencesArray)>0)   $this->setReferencesArray($paramsClass->referencesArray);
-        if (isset($paramsClass->masterVMeasurementID)) $this->setMasterVMeasurementID($paramsClass->masterVMeasurementID);
-        if (isset($paramsClass->justification))        $this->setJustification($paramsClass->justification);
-        if (isset($paramsClass->certaintyLevel))       $this->setCertaintyLevel($paramsClass->certaintyLevel);
-        if (isset($paramsClass->newStartYear))         $this->setNewStartYear($paramsClass->newStartYear);
-        if (isset($paramsClass->readingsUnits))        $this->setUnits($paramsClass->readingsUnits);
-        if (sizeof($paramsClass->readingsArray)>0)     $this->setReadingsArray($paramsClass->readingsArray);
-
-        //echo "BEFORE\n";
-        //print_r($this->readingsArray);
-        
-        // Convert readings provided by user to microns
-        if (sizeof($paramsClass->readingsArray)>0) 
-        {
-            foreach($this->readingsArray as $key => $value)
-            {
-                $convValue = $this->unitsHandler($value['reading'], $this->readingsUnits, 'db-default');
-                $this->readingsArray[$key]['reading'] = $convValue;
-            } 
-        }
-        //echo "AFTER\n";
-        //print_r($this->readingsArray);
-        
-        // Set Owner and Measurer IDs if specified otherwise use current user details
-        if (isset($paramsClass->ownerUserID))
-        {
-            $this->setOwnerUserID($paramsClass->ownerUserID);
-        }
-        else
-        {
-            $this->setOwnerUserID($auth->getID());
-        }
-        if (isset($paramsClass->measuredByID))
-        {
-            $this->setMeasuredByID($paramsClass->measuredByID);
-        }
-        else
-        {
-            $this->setMeasuredByID($auth->getID());
-        }
-
-        return true;
-    }
-
-
-    function validateRequestParams($paramsObj, $crudMode)
-    {
-        // Check parameters based on crudMode 
-        switch($crudMode)
-        {
-            case "read":
-                if($paramsObj->id==NULL)
-                {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a measurement.");
-                    return false;
-                }
-                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
-                {
-                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer.  It is currently a ".gettype($paramsObj->id));
-                    return false;
-                }
-                if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
-                {
-                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer.");
-                    return false;
-                }
-                return true;
-         
-            case "update":
-                if($paramsObj->id==NULL)
-                {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when updating measurement.");
-                    return false;
-                }
-                if(($paramsObj->readingsArray) && (count($paramsObj->readingsArray)< 10)) 
-                {
-                    $this->setErrorMessage("902","Invalid parameter - You have only supplied ".count($paramsObj->readingsArray)." readings.  Minimum number required is 10.");
-                    return false;
-                }
-                if($paramsObj->readingsArray)
-                {
-                    foreach ($paramsObj->readingsArray as $reading)
-                    {
-                        if(!is_numeric($reading['reading'])) 
-                        {
-                            $this->setErrorMessage("902","Invalid parameter - All your readings must be numbers.");
-                            return false;
-                        }
-                    }
-                }
-                if($paramsObj->referencesArray)
-                {
-                    foreach ($paramsObj->referencesArray as $reference)
-                    {
-                        if(!is_numeric( (int) $reference[0])) 
-                        {
-                            $this->setErrorMessage("902","Invalid parameter - All your reference ID's must be numbers.");
-                            break;
-                        }
-                    }
-                }
-                
-                // Only allow update on a measurement which is not used by other vm's downstream
-                global $dbconn;
-                $sql = "select cpgdb.findvmchildren(".$paramsObj->id.", false)";
-                $dbconnstatus = pg_connection_status($dbconn);
-                if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-                {
-                    pg_send_query($dbconn, $sql);
-                    $result = pg_get_result($dbconn);
-                    if(pg_num_rows($result)>0)
-                    {
-                        // No records match the label specified
-                        $this->setErrorMessage("902", "The measurement that you have specified cannot be updated as it is referred to by other measurements (sums, indexes etc).");
-                        return FALSE;
-                    }
-                }
-                else
-                {
-                    // Connection bad
-                    $this->setErrorMessage("001", "Error connecting to database");
-                    return FALSE;
-                }
-
-                
-                return true;
-
-
-
-            case "delete":
-                if($paramsObj->id == NULL) 
-                {
-                    $this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a measurement.");
-                    return false;
-                }
-                return true;
-
-            case "create":
-                if(($paramsObj->referencesArray == NULL) && ($paramsObj->readingsArray == NULL)) 
-                {
-                    $this->setErrorMessage("902","Missing parameter - you must specify either references or readings when creating a new measurement.");
-                    return false;
-                }
-                if(($paramsObj->readingsArray) && ($paramsObj->radiusID== NULL))
-                {
-                    $this->setErrorMessage("902","Missing parameter - a new direct measurement must include a radiusID.");
-                    return false;
-                }
-                if( ($paramsObj->name==NULL) ) 
-                {   
-                    $this->setErrorMessage("902","Missing parameter - a new measurement requires the name parameter.");
-                    return false;
-                }
-                if(($paramsObj->readingsArray) && ($paramsObj->startYear== NULL) && ($paramsObj->datingTypeID==1))
-                {
-                    $this->setErrorMessage("902","Missing parameter - a new absolute direct measurement must include a startYear.");
-                    return false;
-                }
-                /*if(($paramsObj->readingsArray) && ($paramsObj->datingTypeID==NULL))
-                {
-                    $this->setErrorMessage("902","Missing parameter - a new direct measurement must include a datingTypeID.");
-                    return false;
-                }*/
-                if(($paramsObj->readingsArray) && (count($paramsObj->readingsArray)< 10)) 
-                {
-                    $this->setErrorMessage("902","Invalid parameter - You have only supplied ".count($paramsObj->readingsArray)." readings.  Minimum number required is 10.", E_USER_ERROR);
-                    return false;
-                }
-                if(($paramsObj->referencesArray) && ($paramsObj->radiusID)) 
-                {
-                    $this->setErrorMessage("902","Invalid parameter - a new measurement based on other measurements cannot include a radiusID.");
-                    return false;
-                }
-                if((sizeof($paramsObj->referencesArray)>0) && ($paramsObj->vmeasurementOp==NULL)) 
-                {
-                    $this->setErrorMessage("902","Missing parameter - a new measurement based on other measurements must include an operation.");
-                    return false;
-                }
-                if( (!(isset($paramsObj->referencesArray))) && (isset($paramsObj->vmeasurementOp)) )
-                {
-                    $this->setErrorMessage("902","Missing parameter - you have included an operation which suggests you are creating a new measurement based on others. However, you have not specified any references to other measurements.");
-                    return false;
-                }
-                if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->startYear))) )
-                {
-                    $this->setErrorMessage("902","Missing parameter - a startYear is required when doing a crossdate.");
-                    return false;
-                } 
-                if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->masterVMeasurementID))) )
-                {
-                    $this->setErrorMessage("902","Missing parameter - a basedOnMeasurementID is required when doing a crossdate.");
-                    return false;
-                } 
-                if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->certaintyLevel))) )
-                {
-                    $this->setErrorMessage("902","Missing parameter - a certaintyLevel is required when doing a crossdate.");
-                    return false;
-                } 
-                if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->newStartYear))) )
-                {
-                    $this->setErrorMessage("902","Missing parameter - a new startYear  is required when doing a crossdate.");
-                    return false;
-                } 
-                if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->justification))) )
-                {
-                    $this->setErrorMessage("902","Missing parameter - a justification is required when doing a crossdate.");
-                    return false;
-                } 
-                   
-                return true;
-
-            default:
-                $this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
-                return false;
-        }
-    }
-
-    function setOwnerUserID($theOwnerUserID)
-    {
-        if($theOwnerUserID)
-        {
-            //Only run if valid parameter has been provided
-            global $dbconn;
-
-            $this->ownerUserID = $theOwnerUserID;
-            
-            $sql  = "select username from tblsecurityuser where securityuserid=".$this->ownerUserID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->owner = $row['username'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        return FALSE;
-    }
-
-    function setVMeasurementOp($theVMeasurementOp)
-    {    
-        if(is_numeric($theVMeasurementOp))
-        {
-            // ID provided
-            global $dbconn;
-
-            $this->vmeasurementOpID = $theVMeasurementOp;
-            
-            $sql  = "select name from tlkpvmeasurementop where vmeasurementopid=".$this->vmeasurementOpID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->vmeasurementOp = $row['name'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        elseif(is_string($theVMeasurementOp))
-        {
-            global $dbconn;
-
-            $this->vmeasurementOp = ucfirst(strtolower($theVMeasurementOp));
-            
-            $sql  = "select vmeasurementopid from tlkpvmeasurementop where name ilike'".$theVMeasurementOp."'";
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->vmeasurementOpID = $row['vmeasurementopid'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        else
-        {
-            return FALSE;
-        }
-    }
-
-    function setVMeasurementOpParam($theParam)
-    {
-        global $dbconn;
-        if(is_numeric($theParam))
-        {
-            // Param is numeric - probably a year for use in redating
-            $this->vmeasurementOpParam = $theParam;
-            return true;
-        }
-        elseif(is_string($theParam))
-        {
-            // Param is string - probably index type
-            $sql  = "select indexid from tlkpindextype where indexname ilike '$theParam'";
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->vmeasurementOpParam = $row['indexid'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database for index type lookup");
-                return FALSE;
-            }
-            
-        } 
-        elseif($theParam==NULL)
-        {
-            return TRUE;
-        }
-        else
-        {
-            // Shouldn't be here!!
-            $this->setErrorMessage("667", "Program bug - measurement operation parameter not recognised");
-            return FALSE;
-        }
-    }
-    
-    function setMeasurementID()
-    {
-        if($this->vmeasurementID)
-        {
-            //Only run if valid parameter has been provided
-            global $dbconn;
-            
-            $sql  = "select measurementid from tblvmeasurement where vmeasurementid=".$this->vmeasurementID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->measurementID = $row['measurementid'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        return FALSE;
-    }
-    
-    function setUnits($units)
-    {
-        $this->readingsUnits = $units;
-    }
-    
-    function setNewStartYear($year)
-    {
-        $this->newStartYear = $year;
-    }
-    
-    function setCertaintyLevel($level)
-    {
-        $this->certaintyLevel = $level;
-    }
-    
-    function setJustification($justification)
-    {
-        $this->justification = $justification;
-    }
-    
-    function setMasterVMeasurementID($id)
-    {
-        $this->masterVMeasurementID = $id;
-    }
-    
-    function setReadingsArray($theReadingsArray)
-    {
-        $this->readingsArray = $theReadingsArray;
-    }
-    
-    function setReferencesArray($theReferencesArray)
-    {
-        $this->referencesArray = array();
-        $this->referencesArray = $theReferencesArray;
-    }
-    
-    function setRadiusID($theRadiusID)
-    {
-        $this->radiusID = $theRadiusID;
-    }
-
-    function setIsReconciled($isReconciled)
-    {
-        $this->isReconciled = fromStringtoPHPBool($isReconciled);
-    }
-
-    function setStartYear($theStartYear)
-    {
-        $this->startYear = $theStartYear;
-    }
-
-    function setIsLegacyCleaned($isLegacyCleaned)
-    {
-        $this->isLegacyCleaned = fromStringtoPHPBool($isLegacyCleaned);
-    }
-    
-    function setMeasuredByID($theMeasuredByID)
-    {
-        if($theMeasuredByID)
-        {
-            global $dbconn;
-
-            $this->measuredByID = $theMeasuredByID;
-            
-            $sql  = "select username from tblsecurityuser where securityuserid=".$this->measuredByID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->measuredBy = $row['username'];
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        return FALSE;
-    }
-    
-    function setDatingType($theDatingType)
-    {
-        if ($theDatingType)
-        {
-            global $dbconn;
-
-            $this->datingType = $theDatingType;
-            
-            $sql  = "select datingtypeid from tlkpdatingtype where label='".ucfirst(strtolower($this->datingType))."'";
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->datingTypeID = $row['datingtypeid'];
-                }
-            }            
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-       return FALSE;
-    }
-
-    function setDatingTypeID($theDatingTypeID)
-    {
-        if ($theDatingTypeID)
-        {
-            global $dbconn;
-
-            $this->datingTypeID = $theDatingTypeID;
-            
-            $sql  = "select label from tlkpdatingtype where datingtypeid=".$this->datingTypeID;
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
-                {
-                    $this->datingType = $row['label'];
-                }
-            }            
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-            return TRUE;
-        }
-        return FALSE;
-     }
-
-
-    function setDatingErrorPositive($theDatingErrorPositive)
-    {
-        $this->datingErrorPositive = $theDatingErrorPositive;
-    }
-    
-    function setDatingErrorNegative($theDatingErrorNegative)
-    {
-        $this->datingErrorNegative = $theDatingErrorNegative;
-    }
-
-    function setName($theName)
-    {
-        $this->name = $theName;
-
-        // assemble our full lab code, if we can
-        if($this->labPrefix != NULL)
-           $this->fullLabCode = $this->labPrefix . $this->name;
-    }
-    
-    function setDescription($theDescription)
-    {
-        $this->description = $theDescription;
-    }
-
-    function setIsPublished($isPublished)
-    {
-        $this->isPublished = fromStringtoPHPBool($isPublished);
-    }
-
-    function setChildParamsFromDB()
-    {
-        // Add the id's of the current objects direct children from the database
-
-        global $dbconn;
-
-        $sql  = "select vmeasurementnoteid from tblvmeasurementvmeasurementnote where vmeasurementid=".$this->vmeasurementID;
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            while ($row = pg_fetch_array($result))
-            {
-                // Get all tree note id's for this tree and store 
-                array_push($this->vmeasurementNoteArray, $row['vmeasurementnoteid']);
-            }
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-
-        return TRUE;
-    }
-
-    function getPermissions($securityUserID)
-    {
-        global $dbconn;
-
-        $sql = "select * from cpgdb.getuserpermissionset($securityUserID, 'measurement', $this->vmeasurementID)";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            $row = pg_fetch_array($result);
-            
-            $this->canCreate = fromPGtoPHPBool($row['cancreate']);
-            $this->canUpdate = fromPGtoPHPBool($row['canupdate']);
-            $this->canDelete = fromPGtoPHPBool($row['candelete']);
-            $this->includePermissions = TRUE;
-    
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-
-        return TRUE;
-        
-    }
-
-
-    /***********/
-    /*ACCESSORS*/
-    /***********/
-
-    function getEndYear()
-    {
-        $length = count($this->readingsArray);
-        return $this->startYear + $length;
-    }
-
-    function asTimelineXML()
-    {
-            // Only return XML when there are no errors.
-            $xml = "<event ";
-            $xml.= "isDuration='true' ";
-            $xml.= "start='".$this->startYear."' ";
-            $xml.= "end='".$this->getEndYear()."' ";
-            $xml.= "title='".$this->name."' ";
-            $xml.= ">".$this->name."</event>\n";
-        
-       return $xml;     
-
-    }
-
-    function asXML($format='standard', $parts="full")
-    {
-
-        // Only direct measurements can have comprehensive format so overide if necessary
-        if( ($format=='comprehensive') && ($this->vmeasurementOp!='Direct'))
-        {
-            $format = 'standard';
-        }
-
-        switch($format)
-        {
-        case "comprehensive":
-            require_once('site.php');
-            require_once('subSite.php');
-            require_once('tree.php');
-            require_once('specimen.php');
-            require_once('radius.php');
-            global $dbconn;
-            $xml = NULL;
-
-            $sql = "SELECT tblsubsite.siteid, tblsubsite.subsiteid, tbltree.treeid, tblspecimen.specimenid, tblradius.radiusid, tblmeasurement.measurementid, tblvmeasurement.vmeasurementid 
-                FROM tblsubsite 
-                INNER JOIN tbltree ON tblsubsite.subsiteid=tbltree.subsiteid
-                INNER JOIN tblspecimen ON tbltree.treeid=tblspecimen.treeid
-                INNER JOIN tblradius ON tblspecimen.specimenid = tblradius.specimenid
-                INNER JOIN tblmeasurement ON tblradius.radiusid = tblmeasurement.radiusid
-                INNER JOIN tblvmeasurement ON tblmeasurement.measurementid=tblvmeasurement.measurementid
-                where tblvmeasurement.vmeasurementid='".$this->vmeasurementID."'";
-
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                pg_send_query($dbconn, $sql);
-                $result = pg_get_result($dbconn); 
-
-                if(pg_num_rows($result)==0)
-                {
-                    // No records match the id specified
-                    $this->setErrorMessage("903", "No match for measurement id=".$this->vmeasurementID);
-                    return FALSE;
-                }
-                else
-                {
-                    $row = pg_fetch_array($result);
-
-                    $mySite = new site();
-                    $mySubSite = new subSite();
-                    $myTree = new tree();
-                    $mySpecimen = new specimen();
-                    $myRadius = new radius();
-
-                    $success = $mySite->setParamsFromDB($row['siteid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($mySite->getLastErrorCode().$mySite->getLastErrorMessage());
-                    }
-                    
-                    $success = $mySubSite->setParamsFromDB($row['subsiteid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($mySubSite->getLastErrorCode().$mySubSite->getLastErrorMessage());
-                    }
-                    
-                    $success = $myTree->setParamsFromDB($row['treeid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($myTree->getLastErrorCode().$myTree->getLastErrorMessage());
-                    }
-                    
-                    $success = $mySpecimen->setParamsFromDB($row['specimenid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($mySpecimen->getLastErrorCode().$mySpecimen->getLastErrorMessage());
-                    }
-                    
-                    $success = $myRadius->setParamsFromDB($row['radiusid']);
-                    if($success===FALSE)
-                    {
-                        trigger_error($myRadius->getLastErrorCode().$myRadius->getLastErrorMessage());
-                    }
-
-                    $xml = $mySite->asXML("summary", "beginning");
-                    $xml.= $mySubSite->asXML("summary", "beginning");
-                    $xml.= $myTree->asXML("summary", "beginning");
-                    $xml.= $mySpecimen->asXML("summary", "beginning");
-                    $xml.= $myRadius->asXML("summary", "beginning");
-                    $xml.= $this->_asXML("standard", "all");
-                    $xml.= $myRadius->asXML("summary", "end");
-                    $xml.= $mySpecimen->asXML("summary", "end");
-                    $xml.= $myTree->asXML("summary", "end");
-                    $xml.= $mySubSite->asXML("summary", "end");
-                    $xml.= $mySite->asXML("summary", "end");
-                }
-            }
-            return $xml;
-        
-        case "standard":
-            return $this->_asXML($format, $parts);
-
-        case "summary":
-            return $this->_asXML($format, $parts);
-
-        case "minimal":
-            return $this->_asXML($format, $parts);
-
-        
-        default:
-            $this->setErrorMessage("901", "Unknown format. Must be one of 'standard', 'summary' or 'comprehensive'");
-            return false;
-        }
-    }
-
-
-
-    private function _asXML($format, $parts, $recurseLevel=2)
-    {
-
-        // Return a string containing the current object in XML format
-
-        // $recurseLevel = the number of levels of references tags you would like 
-        //      in your XML output.  
-        //      Default = 2 - which means the current measurement and its immediate parents
-        // $format = the type of XML output
-        //      standard = all XML including notes and readings
-        //      summary = only metadata
-        
-        global $domain;
-        $xml = "";
-
-        // Check whether we are at the requested level of recursion or not
-        if($recurseLevel==-1)
-        {
-            return;
-        }
-        else
-        {
-            // Decrement recurse level
-            $recurseLevel=$recurseLevel-1;
-        }
-
-        // Proceed if there are no errors already
-        if (!isset($this->lastErrorCode))
-        {
-            // Only return XML when there are no errors.
-            $xml.= "<measurement ";
-            $xml.= "id=\"".$this->vmeasurementID."\">";
-            $xml.= getResourceLinkTag("measurement", $this->vmeasurementID);
-
-            // Include map reference tag if appropriate
-            if( (isset($this->centroidLat)) && (isset($this->centroidLong)) )
-            {
-                $xml.= getResourceLinkTag("measurement", $this->vmeasurementID, "map");
-            }
-
-            // Include permissions details if requested
-            if($this->includePermissions===TRUE) 
-            {
-                $xml.= "<permissions canCreate=\"".fromPHPtoStringBool($this->canCreate)."\" ";
-                $xml.= "canUpdate=\"".fromPHPtoStringBool($this->canUpdate)."\" ";
-                $xml.= "canDelete=\"".fromPHPtoStringBool($this->canDelete)."\" />\n";
-            } 
-            
-            if($format!="minimal") $xml.= "<metadata>\n";
-            if(isset($this->name))                  $xml.= "<name>".escapeXMLChars($this->name)."</name>\n";
-
-
-            // Only output the remainder of the data if we're not using the 'minimal' format
-            if ($format!="minimal")
-            {
-                if(isset($this->isReconciled))          $xml.= "<isReconciled>".fromPHPtoStringBool($this->isReconciled)."</isReconciled>\n";
-
-                $xml.="<dating ";
-                if(isset($this->startYear))             $xml.= "startYear=\"".$this->startYear."\" ";
-                if(isset($this->readingCount))          $xml.= "count=\"".$this->readingCount."\" ";
-                if(isset($this->datingType))            $xml.= "type=\"".$this->datingType."\" ";
-                if(isset($this->datingErrorPositive))   $xml.= "positiveError=\"".$this->datingErrorPositive."\" ";
-                if(isset($this->datingErrorNegative))   $xml.= "negativeError=\"".$this->datingErrorNegative."\" ";
-                $xml.="/>";
-
-                if(isset($this->isLegacyCleaned))       $xml.= "<isLegacyCleaned>".fromPHPtoStringBool($this->isLegacyCleaned)."</isLegacyCleaned>\n";
-                if(isset($this->measuredByID))          $xml.= "<measuredBy id=\"".$this->measuredByID."\">".escapeXMLChars($this->measuredBy)."</measuredBy>\n";
-                if(isset($this->ownerUserID))           $xml.= "<owner id=\"".$this->ownerUserID."\">".escapeXMLChars($this->owner)."</owner>\n";
-                if(isset($this->description))           $xml.= "<description>".escapeXMLChars($this->description)."</description>\n";
-                if(isset($this->isPublished))           $xml.= "<isPublished>".fromPHPtoStringBool($this->isPublished)."</isPublished>\n";
-                if(isset($this->vmeasurementOp))
-                {
-                    // Include operation details if applicable
-                    if(isset($this->vmeasurementOpParam))
-                    {
-                        $xml.= "<operation parameter=\"".$this->getIndexNameFromParamID($this->vmeasurementOpParam)."\">".strtolower($this->vmeasurementOp)."</operation>\n";
-                    }
-                    else
-                    {
-                        $xml.= "<operation>".strtolower($this->vmeasurementOp)."</operation>\n";
-                    }
-                }
-                
-                if($this->vmeasurementOp=="Crossdate")
-                {
-                    // Include crossdate info if applicable
-                    $xml.= "<crossdate>\n";
-                    $xml.= "<basedOn><measurement id=\"".$this->masterVMeasurementID."\"/></basedOn>\n";
-                    $xml.= "<startYear>".$this->startYear."</startYear>\n";
-                    $xml.= "<certaintyLevel>".$this->certaintyLevel."</certaintyLevel>\n";
-                    $xml.= "<justification>".escapeXMLChars($this->justification)."</justification>\n";
-                    $xml.= "</crossdate>\n";
-                }
-                
-                if(isset($this->createdTimeStamp))      $xml.= "<createdTimeStamp>".$this->createdTimeStamp."</createdTimeStamp>\n";
-                if(isset($this->lastModifiedTimeStamp)) $xml.= "<lastModifiedTimeStamp>".$this->lastModifiedTimeStamp."</lastModifiedTimeStamp>\n";
-                if( (isset($this->minLat)) && (isset($this->minLong)) && (isset($this->maxLat)) && (isset($this->maxLong)))
-                {
-                    $xml.= "<extent minLat=\"".$this->minLat."\" maxLat=\"".$this->maxLat."\" minLong=\"".$this->minLong."\" maxLong=\"".$this->maxLong."\" centroidLat=\"".$this->centroidLat."\" centroidLong=\"".$this->centroidLong."\" />";
-                }
-
-		// show summary information in standard and summary modes
-		if($format=="summary" || $format=="standard") {
-                    // Return special summary section
-                    $xml.="<summary>";
-                    $xml.="<labPrefix>".escapeXMLChars($this->labPrefix)."</labPrefix>\n";
-                    $xml.="<fullLabCode>".escapeXMLChars($this->fullLabCode)."</fullLabCode>\n";
-                    $xml.="<taxon count=\"".$this->summaryTaxonCount."\" commonAncestor=\"".$this->summaryTaxonName."\"/>\n";
-                    $xml.="<site count=\"".$this->summarySiteCount."\" ";
-                    if($this->summarySiteCount=1) $xml.="siteCode=\"".$this->summarySiteCode."\"/>\n";
-                    if($this->measurementCount!=NULL) $xml.="<measurement count=\"".$this->measurementCount."\"/>";
-                    $xml.="</summary>";
+                                                                  'notesArray' => $notesArray
+															);
+					$relYearCheck++;
+				}
+				else
+				{
+					// Something screwy going on with relyears in the vmeasurementResult
+					$this->setErrorMessage("701", "The relative years dating in the database has gone screwy. Please tell someone!");
+					return FALSE;
+
+				}
+
+			}
+
+			// If this is a direct measurement then add any notes as a subarray
+			if($row['readingid'])
+			{
+				$noteSQL = "SELECT tlkpreadingnote.*, tblreadingreadingnote.readingid FROM tlkpreadingnote, tblreadingreadingnote WHERE tblreadingreadingnote.readingid = ".pg_escape_string($row['readingid']);
+				$noteResult = pg_query($dbconn, $noteSQL);
+				while($noteRow = pg_fetch_array($noteResult))
+				{
+					// Get all reading values to array
+					array_push($this->readingsArray[$row['relyear']][notesArray], $noteRow['readingnoteid']);
+				}
+			}
+		}
+		else
+		{
+			// Connection bad
+			$this->setErrorMessage("001", "Error connecting to database");
+			return FALSE;
 		}
 
-                // Using 'summary' format so just give minimal XML for all references and nothing else
-                if($format=="summary")
-                {
-                    // Only look up references if recursion level is greater than 0
-                    if($recurseLevel>0)
-                    {
-                        if(sizeof($this->referencesArray)>0)
-                        {
-                            $xml.="<references>";
-                            foreach($this->referencesArray as $value)
-                            {
-                                $myReference = new measurement();
-                                $success = $myReference->setParamsFromDB($value, "summary");
+		return TRUE;
+	}
+	
+	private function setReferencesFromDB()
+	{
+		// Add any vmeasurements that the current measurement has been made from
+		global $dbconn;
 
-                                if($success)
-                                {
-                                    $xml.=$myReference->_asXML("minimal", "all", $recurseLevel);
-                                }
-                                else
-                                {
-                                    $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
-                                }
-                            }
-                            $xml.="</references>";
-                        }
-                    }
+		$sql  = "select * from cpgdb.findvmparents('".pg_escape_string($this->getID())."', 'false') where recursionlevel=0";
 
-                    $xml.="</metadata>\n";
-                    $xml.= "</measurement>\n";
-                    return $xml;
-                }
+		$dbconnstatus = pg_connection_status($dbconn);
+		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+		{
+			$this->referencesArray = array();
+			$result = pg_query($dbconn, $sql);
+			while ($row = pg_fetch_array($result))
+			{
+				// Get add all reading values to array
+				array_push($this->referencesArray, $row['vmeasurementid']);
+			}
+		}
+		else
+		{
+			// Connection bad
+			$this->setErrorMessage("001", "Error connecting to database");
+			return FALSE;
+		}
+		return TRUE;
+	}
+	
 
-                // Standard or Comprehensive format so give the whole lot
-                else
-                {
-                
-                    // Include site notes if present
-                    if ($this->vmeasurementNoteArray)
-                    {
-                        $xml.= "<siteNotes>\n";
-                        foreach($this->vmeasurementNoteArray as $value)
-                        {
-                            $myVMeasurementNote = new vmeasurementNote();
-                            $success = $myVMeasurementNote->setParamsFromDB($value);
+	/**
+	 * Set attributes of this class using a parametersClass
+	 *
+	 * @param measurementParameters $paramsClass
+	 * @param auth $auth
+	 * @return Boolean
+	 */
+	function setParamsFromParamsClass($paramsClass, $auth)
+	{
+		// Alters the parameter values based upon values supplied by the user and passed as a parameters class
+		if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());	
+		if ($paramsClass->getComments()!=NULL)				$this->setComments($paramsClass->getComments());
+		if ($paramsClass->getMeasuringDate()!=NULL)			$this->setMeasuringDate($paramsClass->getMeasuringDate());
+			// Set Owner and Measurer IDs if specified otherwise use current user details
+		if ($paramsClass->getAuthor()!=NULL)
+		{
+			$this->setAuthor($paramsClass->getAuthor(true));
+		}
+		else
+		{
+			$this->setAuthor($auth->getID());
+		}
+		if ($paramsClass->getAnalyst()!=NULL)
+		{
+			$this->setAnalyst($paramsClass->getAnalyst(true));
+		}
+		else
+		{
+			$this->setAnalyst($auth->getID());
+		}
+		if ($paramsClass->getDendrochronologist()!=NULL)
+		{
+			$this->setDendrochronologist($paramsClass->getDendrochronologist(true));
+		}
+		else
+		{
+			$this->setDendrochronologist($auth->getID());
+		}		
+		if ($paramsClass->getMeasuringMethod()!=NULL)		$this->setMeasuringMethod($paramsClass->getMeasuringMethod(TRUE), NULL);		
+		if ($paramsClass->getDerivationDate()!=NULL)		$this->setDerivationDate($paramsClass->getDerivationDate());
+		if (isset($paramsClass->vmeasurementOp))
+		{
+			$this->setVMeasurementOp($paramsClass->vmeasurementOp->getID(), $paramsClass->vmeasurementOp->getValue());
+			$this->vmeasurementOp->setStandardizingMethod($paramsClass->vmeasurementOp->getParamID(), $paramsClass->vmeasurementOp->getStandardizingMethod());
+		}
+		if (sizeof($paramsClass->referencesArray)>0)   		$this->setReferencesArray($paramsClass->referencesArray);
+		if ($paramsClass->getObjective()!=NULL)				$this->setObjective($paramsClass->getObjective());
+		if ($paramsClass->getAuthor()!=NULL)				$this->setAuthor($paramsClass->getAuthor(TRUE));
+		if ($paramsClass->getVersion()!=NULL)				$this->setVersion($paramsClass->getVersion());
+		
+		// Interpretation fields
+		if ($paramsClass->getFirstYear()!=NULL)            	$this->setFirstYear($paramsClass->getFirstYear());
+		if ($paramsClass->getProvenance()!=NULL)			$this->setProvenance($paramsClass->getProvenance());
+		
+		// Value fields
+		if($paramsClass->getUnits()!=NULL)					$this->setUnits(NULL, $paramsClass->getUnits());
+		//if (isset($paramsClass->readingsUnits))        $this->setUnits($paramsClass->readingsUnits);
+		if (sizeof($paramsClass->readingsArray)>0)     $this->setReadingsArray($paramsClass->readingsArray);
+		
+		// Corina specific genericFields
+		if ($paramsClass->getIsReconciled()!=NULL)         	$this->setIsReconciled($paramsClass->getIsReconciled());
+		if ($paramsClass->getMasterVMeasurementID()!=NULL)  $this->setMasterVMeasurementID($paramsClass->getMasterVMeasurementID());
+		if ($paramsClass->getJustification()!=NULL)			$this->setJustification($paramsClass->getJustification());
+		if ($paramsClass->getConfidenceLevel()!=NULL)		$this->setConfidenceLevel($paramsClass->getConfidenceLevel());
+		if ($paramsClass->getNewStartYear()!=NULL)			$this->setNewStartYear($paramsClass->getNewStartYear());
 
-                            if($success)
-                            {
-                                $xml.=$myVMeasurementNote->asXML();
-                            }
-                            else
-                            {
-                                $this->setErrorMessage($myVMeasurementNote->getLastErrorCode, $myVMeasurementNote->getLastErrorMessage);
-                            }
-                        }
-                        $xml.= "</siteNotes>\n";
-                    }
-                    
-                    // Include all refences to other vmeasurements recursing if requested 
-                    if ($this->referencesArray)
-                    {
-                        // Only look up references if recursion level is greater than 0
-                        if($recurseLevel>0)
-                        {
-                            $xml.="<references>";
-                            foreach($this->referencesArray as $value)
-                            {
-                                $myReference = new measurement();
-                                $success = $myReference->setParamsFromDB($value, "summary");
+		// Only read dating type from user if doing a redate
+		if (($paramsClass->getVMeasurementOp()=='Redate') && ($paramsClass->dating->getValue()!=NULL))
+															$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
+		
+															//if ($paramsClass->dating->getDatingErrorPositive()!=NULL) $this->dating->setDatingErrors($paramsClass->dating->getDatingErrorPositive(), $paramsClass->dating->getDatingErrorNegative());
 
-                                if($success)
-                                {
-                                    $xml.=$myReference->_asXML("summary", "all", $recurseLevel);
-                                }
-                                else
-                                {
-                                    $this->setErrorMessage($myReference->getLastErrorCode, $myReference->getLastErrorMessage);
-                                }
-                            }
-                            $xml.="</references>\n";
-                        }
-                    }
-                    else
-                    {
-                        $xml.="<references>\n";
-                        $xml.= getResourceLinkTag("radius", $this->radiusID);
-                        $xml.="</references>\n";
-                    }
-                    
-                    $xml.= "</metadata>\n";
+		if ($paramsClass->getNewEndYear()!=NULL)			$this->setNewEndYear($paramsClass->getNewEndYear());
+		
+		if ($paramsClass->parentID!=NULL)
+		{
+			$parentObj = new radius();
+			$parentObj->setParamsFromDB($paramsClass->parentID);
+			array_push($this->parentEntityArray, $parentObj);
+		}
 
-                    // Include all readings 
-                    if ($this->readingsArray)
-                    {
-                        // Initially set yearvalue to 1001 default
-                        if ($this->datingType=='Relative')
-                        {
-                            $yearvalue = 1001;
-                        }
-                        else
-                        {
-                            if($this->startYear==NULL)
-                            {
-                                $this->setErrorMessage(667, "Start year missing from absolute or absolute with error measurement.  You shouldn't have been able to get this far!");
-                                return false;    
-                            }
-                            else
-                            {
-                                $yearvalue = $this->startYear;
-                            }
-                        }
+		return true;
+	}
 
 
-                        $xml.="<readings type=\"annual\" units=\"-5\">\n";
-                        foreach($this->readingsArray as $key => $value)
-                        {
-                            // Calculate absolute year where possible
-                            if ($this->datingType!='Relative')
-                            {
-                                if($yearvalue==0)
-                                {
-                                    // If year value is 0 increment to 1 as there is no such year as 0bc/ad
-                                    $yearvalue = 1;
-                                }
-                            }
+	/**
+	 * Validate the parameters passed from a measurementParameters class
+	 *
+	 * @param measurementParameters $paramsObj
+	 * @param String $crudMode
+	 * @return Boolean
+	 */
+	function validateRequestParams($paramsObj, $crudMode)
+	{
+		// Check parameters based on crudMode
+		switch($crudMode)
+		{
+			case "read":
+				if($paramsObj->getID()==NULL)
+				{
+					$this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a measurement.");
+					return false;
+				}
+				return true;
+				 
+			case "update":
+				if($paramsObj->getID()==NULL)
+				{
+					$this->setErrorMessage("902","Missing parameter - 'id' field is required when updating measurement.");
+					return false;
+				}
+				if(($paramsObj->readingsArray) && (count($paramsObj->readingsArray)< 10))
+				{
+					$this->setErrorMessage("902","Invalid parameter - You have only supplied ".count($paramsObj->readingsArray)." readings.  Minimum number required is 10.");
+					return false;
+				}
+				if($paramsObj->readingsArray)
+				{
+					foreach ($paramsObj->readingsArray as $reading)
+					{
+						if(!is_numeric($reading['value']))
+						{
+							$this->setErrorMessage("902","Invalid parameter - All your readings must be numbers.");
+							return false;
+						}
+					}
+				}
+				if($paramsObj->referencesArray)
+				{
+					foreach ($paramsObj->referencesArray as $reference)
+					{
+						if(!is_numeric( (int) $reference[0]))
+						{
+							$this->setErrorMessage("902","Invalid parameter - All your reference ID's must be numbers.");
+							break;
+						}
+					}
+				}
+				
 
-                            $xml.="<reading year=\"".$yearvalue."\" ";
-                            if (!($value['wjinc'] === NULL && $value['wjdec'] === NULL))
-                            {
-                                $xml.="weiserjahre=\"".$value['wjinc']."/".$value['wjdec']."\" ";
-                            }
-                            $xml .="count=\"".$value['count']."\" value=\"".$this->unitsHandler($value['reading'], "db-default", "ws-default")."\">";
-                         
+				// Only allow update on a measurement which is not used by other vm's downstream
+				global $dbconn;
+				$sql = "select cpgdb.findvmchildren('".pg_escape_string($paramsObj->getID())."', false)";
+				$dbconnstatus = pg_connection_status($dbconn);
+				if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+				{
+					pg_send_query($dbconn, $sql);
+					$result = pg_get_result($dbconn);
+					if(pg_num_rows($result)>0)
+					{
+						// No records match the label specified
+						$this->setErrorMessage("902", "The measurement that you have specified cannot be updated as it is referred to by other measurements (sums, indexes etc).");
+						return FALSE;
+					}
+				}
+				else
+				{
+					// Connection bad
+					$this->setErrorMessage("001", "Error connecting to database");
+					return FALSE;
+				}
 
-                            // Add any notes that are in the notesArray subarray
-                            if(count($value['notesArray']) > 0)
-                            {
-                                foreach($value['notesArray'] as $notevalue)
-                                {
-                                    $myReadingNote = new readingNote;
-                                    $success = $myReadingNote->setParamsFromDB($notevalue);
 
-                                    if($success)
-                                    {
-                                        $xml.=$myReadingNote->asXML();
-                                    }
-                                    else
-                                    {
-                                        $this->setErrorMessage($myReadingNote->getLastErrorCode(), $myReadingNote->getLastErrorMessage());
-                                    }
-                                }
-                            }
+				return true;
 
-                            $xml.="</reading>\n";
 
-                            // Increment yearvalue for next loop
-                            $yearvalue++;
 
-                        }
-                        $xml.="</readings>\n";
-                    }
-                }    
-            }
-            $xml.= "</measurement>\n";
-            return $xml;
+			case "delete":
+				if($paramsObj->getID() == NULL)
+				{
+					$this->setErrorMessage("902","Missing parameter - 'id' field is required when deleting a measurement.");
+					return false;
+				}
+				return true;
+
+			case "create":
+				if(($paramsObj->referencesArray == NULL) && ($paramsObj->readingsArray == NULL))
+				{
+					$this->setErrorMessage("902","Missing parameter - you must specify either references or readings when creating a new measurement.");
+					return false;
+				}
+				if(($paramsObj->readingsArray) && ($paramsObj->parentID== NULL))
+				{
+					$this->setErrorMessage("902","Missing parameter - a new direct measurement must include a radiusID.");
+					return false;
+				}
+				if( ($paramsObj->getTitle()==NULL) )
+				{
+					$this->setErrorMessage("902","Missing parameter - a new measurement requires the title parameter.");
+					return false;
+				}
+				if(($paramsObj->readingsArray) && ($paramsObj->getFirstYear()== NULL) && (isset($paramsObj->dating)) )
+				{
+					if ($paramsObj->dating->getID()==1)
+					{
+						$this->setErrorMessage("902","Missing parameter - a new absolute direct measurement must include a startYear.");
+						return false;
+					}
+				}
+				/*if(($paramsObj->readingsArray) && ($paramsObj->datingTypeID==NULL))
+				 {
+				 $this->setErrorMessage("902","Missing parameter - a new direct measurement must include a datingTypeID.");
+				 return false;
+				 }*/
+				if(($paramsObj->readingsArray) && (count($paramsObj->readingsArray)< 10))
+				{
+					$this->setErrorMessage("902","Invalid parameter - You have only supplied ".count($paramsObj->readingsArray)." readings.  Minimum number required is 10.", E_USER_ERROR);
+					return false;
+				}
+				if(($paramsObj->referencesArray) && ($paramsObj->parentID))
+				{
+					$this->setErrorMessage("902","Invalid parameter - a new measurement based on other measurements cannot include a radiusID.");
+					return false;
+				}
+				if((sizeof($paramsObj->referencesArray)>0) && ($paramsObj->vmeasurementOp==NULL))
+				{
+					$this->setErrorMessage("902","Missing parameter - a new measurement based on other measurements must include an operation.");
+					return false;
+				}
+				if((sizeof($paramsObj->referencesArray)<2) && ($paramsObj->getType()=='Sum') )
+				{
+					$this->setErrorMessage("902","You need to supply two or more measurements if you want to create a sum", E_USER_ERROR);
+					return false;
+				}
+				if( (!(isset($paramsObj->referencesArray))) && (isset($paramsObj->vmeasurementOp)) )
+				{
+					$this->setErrorMessage("902","Missing parameter - you have included an operation which suggests you are creating a new measurement based on others. However, you have not specified any references to other measurements.");
+					return false;
+				}
+				if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->startYear))) )
+				{
+					$this->setErrorMessage("902","Missing parameter - a startYear is required when doing a crossdate.");
+					return false;
+				}
+				if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->masterVMeasurementID))) )
+				{
+					$this->setErrorMessage("902","Missing parameter - a basedOnMeasurementID is required when doing a crossdate.");
+					return false;
+				}
+				if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->certaintyLevel))) )
+				{
+					$this->setErrorMessage("902","Missing parameter - a certaintyLevel is required when doing a crossdate.");
+					return false;
+				}
+				if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->newStartYear))) )
+				{
+					$this->setErrorMessage("902","Missing parameter - a new startYear  is required when doing a crossdate.");
+					return false;
+				}
+				if( ($paramsObj->vmeasurementOp=='Crossdate') && (!(isset($paramsObj->justification))) )
+				{
+					$this->setErrorMessage("902","Missing parameter - a justification is required when doing a crossdate.");
+					return false;
+				}
+				 
+				return true;
+
+			default:
+				$this->setErrorMessage("667", "Program bug - invalid crudMode specified when validating request");
+				return false;
+		}
+	}
+
+
+	function setChildParamsFromDB()
+	{
+
+
+		return TRUE;
+	}
+
+	/***********/
+	/*ACCESSORS*/
+	/***********/
+
+
+	function asTimelineXML()
+	{
+		// Only return XML when there are no errors.
+		$xml = "<event ";
+		$xml.= "isDuration='true' ";
+		$xml.= "start='".$this->startYear."' ";
+		$xml.= "end='".$this->getEndYear()."' ";
+		$xml.= "title='".$this->name."' ";
+		$xml.= ">".$this->name."</event>\n";
+
+		return $xml;
+
+	}
+
+        // given a Sample, get its box or NULL if it doesn't have one
+	function getSampleBox(&$sample) {
+		$boxID = $sample->getBoxID();
+
+		if($boxID == NULL) 
+			return NULL;
+
+		// see if we've cached it already
+		if(($myBox = dbEntity::getCachedEntity("box", $boxID)) != NULL)
+			return $myBox;
+
+		$myBox = new box();
+		$success = $myBox->setParamsFromDB($boxID);
+		if($success===FALSE) {
+			trigger_error($myBox->getLastErrorCode().$myBox->getLastErrorMessage());
+		}
+
+		return $myBox;
         }
-        else
-        {
-            // Errors so returning false
-            return FALSE;
-        }
-    }
 
-    function getParentTagBegin()
-    {
-        // Return a string containing the start XML tag for the current object's parent
-        $xml = "<".$this->parentXMLTag." lastModified='".getLastUpdateDate("tblmeasurement")."'>";
-        return $xml;
-    }
+	function recursiveSetParentsFromDB()
+	{
+		// load radius
+		$this->setParentsFromDB();
+		// load sample
+		$this->parentEntityArray[0]->setParentsFromDB();
+		// load element
+		$this->parentEntityArray[0]->parentEntityArray[0]->setParentsFromDB();
+		// load objects
+		$this->parentEntityArray[0]->parentEntityArray[0]->parentEntityArray[0]->setParentsFromDB();
+	}
 
-    function getParentTagEnd()
-    {
-        // Return a string containing the end XML tag for the current object's parent
-        $xml = "</".$this->parentXMLTag.">";
-        return $xml;
-    }
+	function loadDerivationTree(&$direct, &$derived, &$all, $format='standard', $depth=1)
+	{
+		$myformat = ($format=='standard')?'summary':$format;
 
-    function getID()
-    {
-        return $this->vmeasurementID;
-    }
-    function getLastErrorCode()
-    {
-        // Return an integer containing the last error code recorded for this object
-        $error = $this->lastErrorCode; 
-        return $error;  
-    }
+		// if we're on the first level, or we're comprehensive, traverse looking for children
+		if($depth == 1 || $myformat!='summary')
+		{
+			foreach($this->referencesArray as $ref)
+			{
+				if(array_key_exists($ref, $all))
+				continue; // duplicate!
 
-    function getLastErrorMessage()
-    {
-        // Return a string containing the last error message recorded for this object
-        $error = $this->lastErrorMessage;
-        return $error;
-    }
+				$refMeasurement = new measurement();
+				$refMeasurement->setParamsFromDB($ref, $myformat);
 
-    /***********/
-    /*FUNCTIONS*/
-    /***********/
+				$all[$ref] = $refMeasurement;
 
-    function writeToDB()
-    {
-        // Write the current object to the database
+				if($refMeasurement->getTridasSeriesType()=='measurementSeries') {
+					// store this measurement in the direct array
+					array_push($direct, $refMeasurement);
 
-        global $dbconn;
+					// load parents
+					$refMeasurement->recursiveSetParentsFromDB();
+				}
+				else
+				{
+					// add any 'derived' children
+					$refMeasurement->loadDerivationTree($direct, $derived, $all, $myformat, $depth+1);
+				}
+			}
+		}
+
+		// add myself to the appropriate list
+		if($this->getTridasSeriesType()=='measurementSeries')
+		{
+			// first level measurement? load myself!
+			if($depth == 1)
+			$this->recursiveSetParentsFromDB();
+			array_push($direct, $this);
+		}
+		else if($this->getTridasSeriesType()=='derivedSeries')
+		array_push($derived, $this);
+	}
+
+	function buildDerivationTrees(&$direct, &$objectToElementMap, &$elementTree, &$objectTree, &$all, &$boxes)
+	{
+		foreach($direct as $d) {
+			$myradius = $d->parentEntityArray[0];
+			$mysample = $myradius->parentEntityArray[0];
+			$myelement = $mysample->parentEntityArray[0];
+			$myobjects = $myelement->parentEntityArray;
+			$lastobject = $myobjects[count($myobjects) - 1];
+
+			// get the box, add it to the list if we don't have it
+			$mybox = $this->getSampleBox($mysample);
+			if($mybox != null && !array_key_exists($mybox->getID(), $boxes))
+				array_push($boxes, $mybox);
+
+			// get some IDs...
+			$rid = $myradius->getID();
+			$sid = $mysample->getID();
+			$eid = $myelement->getID();
+			$did = $d->getID();
+			$loid = $lastobject->getID();
+
+			// now, we have a map from element -> sample -> radius -> measurementSeries
+			$elementTree[$eid][$sid][$rid][$did] = 1;
+			// and last object id to radius map...
+			$objectToElementMap[$loid][$eid] = 1;
+
+			// make a map from type,id -> class
+			$all['measurement'][$did] = $d;
+			$all['radius'][$rid] = $myradius;
+			$all['sample'][$sid] = $mysample;
+			$all['element'][$eid] = $myelement;
+
+			// now, make a tree $objectTree[objid1][objid2][objid3]...
+			$lastArray = &$objectTree;
+			foreach($myobjects as $obj)
+			{
+				$objid = $obj->getID();
+
+				// add it to the map (like before)
+				$all['object'][$objid] = $obj;
+
+				// make a tree of objects
+				if(!array_key_exists($objid, $lastArray))
+				$lastArray[$objid] = array();
+				$lastArray = &$lastArray[$objid];
+			}
+		}
+	}
+
+	function textAsNode($text, $dom)
+	{
+		global $corinaNS;
+		global $tridasNS;
+		global $gmlNS;
+
+		$domhead = "<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">";
+		$domfoot = "</root>";
+
+		$tmpdom = new DomDocument();
+		if($tmpdom->loadXML($domhead.$text.$domfoot) === FALSE) {
+			trigger_error("Malformed XML in textAsNode: Internal Error.\n".$text);
+		}
+		
+		return $dom->importNode($tmpdom->documentElement->childNodes->item(0), true);
+
+	}
+
+	function outputElementDerivationTree($elementID, &$dom, $curNode, &$elementTree, &$all, $format)
+	{
+		$myElement = $all['element'][$elementID];
+		$myElementNode = $this->textAsNode($myElement->asXML(), $dom);
+		$curNode->appendChild($myElementNode);
+
+		foreach($elementTree[$elementID] as $sampleID => $radii)
+		{
+			$mySample = $all['sample'][$sampleID];
+			$mySampleNode = $this->textAsNode($mySample->asXML(), $dom);
+			$myElementNode->appendChild($mySampleNode);
+
+			foreach($radii as $radiusID => $measurements)
+			{
+				$myRadius = $all['radius'][$radiusID];
+				$myRadiusNode = $this->textAsNode($myRadius->asXML(), $dom);
+				$mySampleNode->appendChild($myRadiusNode);
+
+				foreach($measurements as $measurementID => $dummy)
+				{
+					$myMeasurement = $all['measurement'][$measurementID];
+					$myFormat = ($myMeasurement == $this) ? $format : (($format=='standard') ? 'summary' : $format);
+
+					$myMeasurementNode = $this->textAsNode($myMeasurement->_asXML($myFormat, "full"), $dom);
+					$myRadiusNode->appendChild($myMeasurementNode);
+				}
+			}
+		}
+	}
+
+	// this has to be recursive and strange, because we can have an unknown depth tree of objects
+	function outputDerivationTree(&$dom, $curNode, &$objectTree, &$elementTree, &$objectToElementMap, &$all, $format)
+	{
+		foreach($objectTree as $objid => $subObjectTree)
+		{
+			$obj = $all['object'][$objid];
+
+			$node = $this->textAsNode($obj->asXML(), $dom);
+			$curNode->appendChild($node);
+
+			// do subtrees first
+			if(count($subObjectTree) > 0)
+			$this->outputDerivationTree($dom, $node, $subObjectTree, $elementTree, $objectToElementMap, $all, $format);
+
+			// ok, done with any subtrees. Do I have any elements in this object?
+			if(array_key_exists($objid, $objectToElementMap))
+			{
+				foreach($objectToElementMap[$objid] as $elementID => $dummy)
+				$this->outputElementDerivationTree($elementID, $dom, $node, $elementTree, $all, $format);
+			}
+		}
+	}
+
+	function fullSeriesAsXML($format='standard')
+	{
+		global $corinaNS;
+		global $tridasNS;
+		global $gmlNS;
+		global $xlinkNS;
+		global $firebug;
+
+		// first off, load everything
+		$direct = Array();
+		$derived = Array();
+		$all = Array();
+		$this->loadDerivationTree($direct, $derived, $all, $format);
+
+		// then, sort everything
+		$objectToElementMap = array();
+		$all = array();
+		$elementTree = array();
+		$objectTree = array();
+                $boxes = array();
+		$this->buildDerivationTrees($direct, $objectToElementMap, $elementTree, $objectTree, $all, $boxes);
+
+		$dom = new DomDocument();
+		$dom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\"></root>");
+		$this->outputDerivationTree($dom, $dom->documentElement, $objectTree, $elementTree, $objectToElementMap, $all, $format);
+
+		$firebug->log($derived, "Derived");
+		$firebug->log($direct, "Direct");		
+		
+		// now, just print out the derivedSeries in order. $this is going to be last.
+		foreach($derived as $d)
+		{
+			$myformat = ($d == $this) ? $format : (($format=='standard') ? 'summary' : $format);
+			try{
+			   $dom->documentElement->appendChild($this->textAsNode($d->_asXML($myformat, "full"), $dom));
+			}
+			catch (Exception $e){
+				$firebug->log($e->getMessage(), "DOM exception");	
+			}
+		
+		}
+
+		$txml = "";
+		foreach($dom->documentElement->childNodes as $child)
+			$txml .= $dom->saveXML($child);
+
+		foreach($boxes as $box)
+			$txml .= $box->asXML("minimal");
+
+		return $txml;
+	}
+
+	function asXML($format='standard', $parts="full")
+	{
+		global $firebug;		 
+		// Only direct measurements can have comprehensive format so overide if necessary
+		/*if( ($format=='comprehensive') && ($this->vmeasurementOp!='Direct'))
+		{
+		$format = 'standard';
+		}*/	
+		
+		switch($format)
+		{
+			case "comprehensive":
+			case "standard":
+				if($this->getTridasSeriesType()=='measurementSeries')
+				{
+					return $this->fullSeriesAsXML($format);
+				}
+				elseif($this->getTridasSeriesType()=='derivedSeries')
+				{
+					return $this->fullSeriesAsXML($format);
+				}
+				else
+				{
+					echo "error";
+					die();
+				}
+
+			case "summary":
+				return $this->_asXML($format, $parts);
+			case "minimal":
+				return $this->_asXML($format, $parts);
+			default:
+				trigger_error("901"."Unknown format. Must be one of 'standard', 'summary', 'minimal' or 'comprehensive'");
+				return false;
+		}
+	}
+
+	public function asKML()
+	{
+		global $firebug;
+		$firebug->log($this->getSummaryObjectCode(), "Summary object code");
+	
+		$kml = "<Placemark>";
+			
+		if($this->getTridasSeriesType()=='measurementSeries')
+		{			
+			$kml.="<name>".$this->getSummaryObjectCode()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name>";
+		}
+		else
+		{
+			$kml.="<name>".$this->getTitle()."</name>";	
+		}
+		
+		$kml.= "<description><![CDATA[<table>
+					<tr><td><b>Series Type:</b></td><td> ".$this->getType()."</td></tr>
+					<tr><td><b>Analyst:</b></td><td> ".$this->getAnalyst()."</td></tr>
+					<tr><td><b>Dendrochronologist:</b></td><td> ".$this->getDendrochronologist()."</td></tr>
+					<tr><td><b>Dating Type:</b></td><td> ".$this->dating->getValue()."</td></tr>
+					<tr><td><b>First Year:</b></td><td> ".$this->getFirstYear()."</td></tr>
+					<tr><td><b>Sprout Year:</b></td><td> ".$this->getSproutYear()."</td></tr>
+					<tr><td><b>Death Year:</b></td><td> ".$this->getDeathYear()."</td></tr>
+					</table>
+					<br><b>Other comments:</b><br> ".$this->getComments()."]]></description>";
+		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
+			
+
+			
+		if($this->getTridasSeriesType()=='measurementSeries')
+		{
+			// Should be a point
+			$kml .= $this->location->asKML();
+		}
+		else
+		{
+			// Hopefully a polygon
+			$kml .= $this->location->asKML("2", "POLYGON");
+		}
+		
+		$kml .= "</Placemark>";
+		return $kml;
+	}
+	
+	public function asKMLWithValue($value)
+	{
+		$kml = "<Placemark>";
+			
+		if($this->getTridasSeriesType()=='measurementSeries')
+		{			
+			$kml.="<name>".$this->getSummaryObjectCode()."-".$this->getSummaryElementTitle()."-".$this->getSummarySampleTitle()."-".$this->getSummaryRadiusTitle()."-".$this->getTitle()."</name>";
+		}
+		else
+		{
+			$kml.="<name>".$this->getTitle()."</name>";	
+		}
+		
+		$kml.= "<description><![CDATA[<table>
+					<tr><td><b>Series Type:</b></td><td> ".$this->getType()."</td></tr>
+					<tr><td><b>Analyst:</b></td><td> ".$this->getAnalyst()."</td></tr>
+					<tr><td><b>Dendrochronologist:</b></td><td> ".$this->getDendrochronologist()."</td></tr>
+					<tr><td><b>Dating Type:</b></td><td> ".$this->dating->getValue()."</td></tr>
+					<tr><td><b>First Year:</b></td><td> ".$this->getFirstYear()."</td></tr>
+					<tr><td><b>Sprout Year:</b></td><td> ".$this->getSproutYear()."</td></tr>
+					<tr><td><b>Death Year:</b></td><td> ".$this->getDeathYear()."</td></tr>
+					</table>
+					<br><b>Other comments:</b><br> ".$this->getComments()."]]></description>";				
+		$roundvalue = round($value);
+		
+		if($roundvalue>=10) $tagstyle = "#tscore10";
+		else if($roundvalue>=9)  $tagstyle = "#tscore9";
+		else if($roundvalue>=8) $tagstyle = "#tscore8";
+		else if($roundvalue>=7) $tagstyle = "#tscore7";
+		else if($roundvalue>=6) $tagstyle = "#tscore6";
+		else if($roundvalue>=5) $tagstyle = "#tscore5";
+		else if($roundvalue>=4) $tagstyle = "#tscore4";
+		else  					$tagstyle = "#tscore3";
+
+		$kml .= "<styleUrl>$tagstyle</styleUrl>\n";
+					
+		if($this->getTridasSeriesType()=='measurementSeries')
+		{
+			// Should be a point
+			$kml .= $this->location->asKML();
+		}
+		else
+		{
+			// Hopefully a polygon
+			$kml .= $this->location->asKML("2", "POLYGON");
+		}
+		
+		$kml .= "</Placemark>";
+		return $kml;
+	}	
+	
+	
+
+	private function _asXML($format, $parts, $recurseLevel=2)
+	{
+
+		 
+		// Return a string containing the current object in XML format
+
+		// $recurseLevel = the number of levels of references tags you would like
+		//      in your XML output.
+		//      Default = 2 - which means the current measurement and its immediate parents
+		// $format = the type of XML output
+		//      standard = all XML including notes and readings
+		//      summary = only metadata
+
+		global $domain;
+		$xml = "";
+
+		// Check whether we are at the requested level of recursion or not
+		if($recurseLevel==-1)
+		{
+			return;
+		}
+		else
+		{
+			// Decrement recurse level
+			$recurseLevel=$recurseLevel-1;
+		}
+
+		// Proceed if there are no errors already
+		if ($this->getLastErrorCode()==NULL)
+		{
+			// Only return XML when there are no errors.
+			if($this->getTridasSeriesType()=='measurementSeries')
+			{
+				return $this->getMeasurementSeriesXML($format, $parts, $recurseLevel);
+			}
+			else
+			{
+				return $this->getDerivedSeriesXML($format, $parts, $recurseLevel);
+			}
+			 
+
+		}
+		else
+		{
+			// Errors so returning false
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Get the Corina specific (genericField) XML tags that summarise the higher levels of the TRiDaS hierarchy
+	 *
+	 * @return String
+	 */
+	private function getSummaryXMLTags()
+	{
+		$tags = "";
+		$i = 1;
+		foreach($this->summaryObjectArray as $object)
+		{
+			$tags .= "<tridas:genericField name=\"corina.objectTitle.$i\" type=\"xs:string\">".dbHelper::escapeXMLChars($object->getTitle())."</tridas:genericField>\n";
+			$tags .= "<tridas:genericField name=\"corina.objectCode.$i\" type=\"xs:string\">".dbHelper::escapeXMLChars($object->getCode())."</tridas:genericField>\n";
+			$i++;
+		}
+		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryElementTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummarySampleTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryRadiusTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.seriesCount\" type=\"xs:int\">".dbHelper::escapeXMLChars($this->getMeasurementCount())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.summaryTaxonName\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryTaxonName())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"corina.summaryTaxonCount\" type=\"xs:int\">".dbHelper::escapeXMLChars($this->getSummaryTaxonCount())."</tridas:genericField>\n";
+		return $tags;
+	}
+
+	private function getDerivedSeriesXML($format, $parts, $recurseLevel=2)
+	{
+		global $domain;
+		$xml = "";
+
+		$xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
+		$xml.= $this->getIdentifierXML();
+		
+		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".pg_escape_string($this->getComments())."</tridas:comments>\n";
+		if($this->getBirthDate()!=NULL)	$xml.= "<tridas:derivationDate>".pg_escape_string($this->getBirthDate())."</tridas:derivationDate>\n";	
+
+		if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".dbhelper::escapeXMLChars($this->vmeasurementOp->getValue())."</tridas:type>\n";
+		if(isset($this->referencesArray))
+		{											$xml.= "<tridas:linkSeries>\n";
+		foreach($this->referencesArray as $ref)
+		{
+			$xml.= "<tridas:series><tridas:identifier domain=\"$domain\">".$ref."</tridas:identifier></tridas:series>\n";
+		}
+		$xml.= "</tridas:linkSeries>\n";
+		}
+		if($this->getObjective()!=NULL)				$xml.= "<tridas:objective>".dbhelper::escapeXMLChars($this->getObjective())."</tridas:objective>\n";
+		
+		if($this->getStandardizingMethod()!=NULL)	$xml.= "<tridas:standardizingMethod>".dbhelper::escapeXMLChars($this->getStandardizingMethod())."</tridas:standardizingMethod>\n";
+		if($this->getAuthor()!=NULL)				$xml.= "<tridas:author>".dbhelper::escapeXMLChars($this->getAuthor())."</tridas:author>\n";
+		if($this->getVersion()!=NULL)				$xml.= "<tridas:version>".dbhelper::escapeXMLChars($this->getVersion())."</tridas:version>\n";
+
+		$xml .= $this->getInterpretationXML();
+		
+		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"corina.justification\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getJustification())."</tridas:genericField>\n";
+		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"corina.crossdateConfidenceLevel\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getConfidenceLevel())."</tridas:genericField>\n";
+		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"corina.operationParameter\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getIndexNameFromParamID($this->vmeasurementOpParam))."</tridas:genericField>\n";
+		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"corina.authorID\" type=\"xs:int\">".dbhelper::escapeXMLChars($this->author->getID())."</tridas:genericField>\n";
+	    											$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
+		
+		$xml .= $this->getPermissionsXML();
+		if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
+		
+		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
+		$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
+
+
+
+
+		// Using 'summary' format so just give minimal XML for all references and nothing else
+		if($format=="summary")
+		{
+			$xml.= $this->getSummaryXMLTags()."\n";
+			$xml.= "</tridas:".$this->getTridasSeriesType().">";
+			return $xml;
+		}
+
+		// Standard or Comprehensive format so give the whole lot
+		else 
+		{
+			$xml.=$this->getValuesXML();
+			
+			if ($this->getMeasurementCount()>1) $xml.=$this->getValuesXML(true);
+			$xml.= "</tridas:".$this->getTridasSeriesType().">";
+			return $xml;
+		}
+
+	}
+
+	private function getMeasurementSeriesXML($format, $parts, $recurseLevel=2)
+	{
+
+		$xml = "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">\n";
+		$xml.= $this->getIdentifierXML();
+
+
+		// Only output the remainder of the data if we're not using the 'minimal' format
+		if ($format!="minimal")
+		{
+			if($this->getComments()!=NULL)				$xml.= "<tridas:comments>".dbHelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
+			if($this->getBirthDate()!=NULL)				$xml.= "<tridas:measuringDate>".dbhelper::escapeXMLChars($this->getMeasuringDate())."</tridas:measuringDate>\n";
+			if($this->analyst->getFormattedName()!=NULL) $xml.= "<tridas:analyst>".dbHelper::escapeXMLChars($this->analyst->getFormattedName())."</tridas:analyst>\n";
+			if($this->dendrochronologist->getFormattedName()!=NULL) $xml.= "<tridas:dendrochronologist>".dbHelper::escapeXMLChars($this->dendrochronologist->getFormattedName())."</tridas:dendrochronologist>\n";
+		}
+		
+		$xml.= "<tridas:measuringMethod normalTridas=\"".$this->measuringMethod->getValue()."\"/>\n";
+		
+		if ($format!="minimal")
+		{		
+			$xml .= $this->getInterpretationXML();
+				
+			// Include permissions details if requested
+			$xml .= $this->getPermissionsXML();
+			if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
+			
+			if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->isReconciled, "english")."</tridas:genericField>\n";
+			if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\" type=\"xs:boolean\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
+			if($this->analyst->getID()!=NULL)			$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"xs:int\">".$this->analyst->getID()."</tridas:genericField>\n";
+			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"xs:int\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
+			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
+														$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
+					$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
+														
+			// show summary information in standard and summary modes
+			/*if($format=="summary" || $format=="standard") {
+			// Return special summary section
+			$xml.="<summary>";
+			$xml.="<labPrefix>".dbHelper::escapeXMLChars($this->labPrefix)."</labPrefix>\n";
+			$xml.="<fullLabCode>".dbHelper::escapeXMLChars($this->fullLabCode)."</fullLabCode>\n";
+			$xml.="<taxon count=\"".$this->summaryTaxonCount."\" commonAncestor=\"".$this->summaryTaxonName."\"/>\n";
+			$xml.="<site count=\"".$this->summarySiteCount."\" ";
+			if($this->summarySiteCount=1) $xml.="siteCode=\"".$this->summarySiteCode."\"/>\n";
+			if($this->measurementCount!=NULL) $xml.="<measurement count=\"".$this->measurementCount."\"/>";
+			$xml.="</summary>";
+			}*/
+
+			// Using 'summary' format so just give minimal XML for all references and nothing else
+			if($format=="summary")
+			{
+				$xml.= $this->getSummaryXMLTags()."\n";
+				$xml.= "</tridas:".$this->getTridasSeriesType().">";
+				return $xml;
+			}
+
+			// Standard or Comprehensive format so give the whole lot
+			else
+			{
+				$xml.=$this->getValuesXML();
+				$xml.= "</tridas:".$this->getTridasSeriesType().">";
+				return $xml;
+			}
+		}
+
+	}
+	
+	private function getInterpretationXML()
+	{
+		global $domain;
+		
+		$xml = NULL;
+		if(($this->getFirstYear()!=NULL) || ($this->getSproutYear()!=NULL) || ($this->getDeathYear()!=NULL) || ($this->getProvenance()!=NULL))
+		{
+			$xml.= "<tridas:interpretation>\n";	
+			if($this->dating->getValue()!=NULL)			$xml.= "<tridas:dating type=\"".$this->dating->getValue()."\" />";
+			if($this->getFirstYear()!=NULL)				$xml.= "<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getFirstYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getFirstYear())."</tridas:firstYear>\n";
+			if($this->getMasterVMeasurementID()!=NULL)	$xml.= "<tridas:datingReference>\n<tridas:linkSeries>\n<tridas:identifier domain=\"$domain\">".$this->getMasterVMeasurementID()."</tridas:identifier>\n</tridas:linkSeries>\n</tridas:datingReference>\n";
+			if($this->getSproutYear()!=NULL)			$xml.= "<tridas:sproutYear certainty=\"".$this->getSproutYearCertainty()."\" suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getSproutYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getSproutYear())."</tridas:sproutYear>\n";
+			if($this->getDeathYear()!=NULL)				$xml.= "<tridas:deathYear certainty=\"".$this->getDeathYearCertainty()."\" suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getDeathYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getDeathYear())."</tridas:deathYear>\n";
+			if($this->getProvenance()!=NULL)			$xml.= "<tridas:provenance>".addslashes($this->getProvenance())."</tridas:provenance>\n";
+			$xml.= "</tridas:interpretation>\n";
+		}
+		else
+		{
+			$xml.= "<tridas:interpretationUnsolved/>";
+		}
+		
+		return $xml;
+	}
+
+
+	private function getValuesXML($wj=false)
+	{
+		global $wsDefaultUnits;
+		
+		if (!$this->readingsArray)
+		{
+			return false;
+		}
+		 
+		if($wj===TRUE && $this->getVMeasurementOp()=='Index')
+		{
+			return false;
+		}
+		 
+		
+		// Initially set yearvalue to 1001 default
+		if ($this->dating->getValue()=='Relative')
+		{
+			$yearvalue = 1001;
+		}
+		else
+		{
+			if($this->getFirstYear()==NULL)
+			{
+				$this->setErrorMessage(667, "First year missing from absolute or absolute with error series (this is a ".$this->dating->getValue()." series).  You shouldn't have been able to get this far!");
+				return false;
+			}
+			else
+			{
+				$yearvalue = $this->getFirstYear();
+			}
+		}
+
+		// Begin <values> block
+		$xml = "<tridas:values>\n";
+
+		
+		// Set variable and units
+		if($wj===TRUE)
+		{
+			$xml .="<tridas:variable normalStd=\"Corina\" normal=\"Weiserjahre\"/>\n";
+			$xml.="<tridas:unitless/>\n";
+		}
+		else
+		{
+			$xml .="<tridas:variable normalTridas=\"".$this->getVariable()."\"/>\n";
+			if( ($this->getUnits()!=NULL) && ($this->getUnits()!=''))
+			{
+				$xml.="<tridas:unit normalTridas=\"$wsDefaultUnits\" />\n";
+			}
+			else
+			{
+				$xml.="<tridas:unitless/>\n";
+			}				
+		}
+
+
+
+		// Set the actual value tags
+		foreach($this->readingsArray as $key => $value)
+		{
+			// Calculate absolute year where possible
+			if ($this->dating->getValue()!='Relative')
+			{
+				if($yearvalue==0)
+				{
+					// If year value is 0 increment to 1 as there is no such year as 0bc/ad
+					$yearvalue = 1;
+				}
+			}
+
+			// Add year index
+			$xml.="<tridas:value index=\"nr".$yearvalue."\" ";
+			 
+			// Add actual value
+			if($wj===TRUE)
+			{
+				$xml.= "value=\"".$value['wjinc']."/".$value['wjdec']."\" ";
+			}
+			else
+			{
+				// Current units of values is null if unitless otherwise db-default
+				$currentUnits = null;
+				if($this->getUnits()!=null)	$currentUnits = "db-default";
+				$xml.= "value=\"".unit::unitsConverter($value['value'], $currentUnits, "ws-default")."\" ";
+			}
+			 
+			// Add count if appropriate
+			if(($value['count']!=NULL) && ($wj===FALSE))
+			{
+				$xml.= "count=\"".$value['count']."\"";
+			}
+			 
+			$xml .=">";
+
+			// Add any notes that are in the notesArray subarray
+			if(count($value['notesArray']) > 0)
+			{
+				foreach($value['notesArray'] as $myReadingNote)
+				{
+						$xml.="\n".$myReadingNote->asXML();
+				}
+			}
+
+			$xml.="</tridas:value>\n";
+
+			// Increment yearvalue for next loop
+			$yearvalue++;
+	
+		}
+		$xml.="</tridas:values>\n";
+
+		return $xml;
+	}
+
+	/**
+	 * Creates the sql for doing a cpgdb.createnewvmeasurement()
+	 *
+	 * @return UUID
+	 */
+	private function getCreateNewVMeasurementSQL()
+	{
+		/*
+		 -- VMeasurementOp          - Varchar - From tlkpVMeasurementOp
+		 -- VMeasurementOpParameter - Integer - Must be specified for REDATE or INDEX; otherwise NULL
+         -- OwerUserID				- Integer - 
+		 -- Name                    - Varchar - Must be specified
+		 -- Comments                - Varchar - May be NULL
+		 -- MeasurementID           - Integer - For direct only; the measurement derived from.
+		 -- Constituents            - Array   - Array of VMeasurementID - Must be NULL for DIRECT type, an array of one value for any type
+		 --                                     other than SUM and DIRECT, and an array of one or more values for SUM
+		 -- Objective               - Varchar -
+		 -- Version                 - Varchar -
+		 -- Birthdate				- Date    - maps to measuringDate and derivationDate
+		 -- RETURNS: A new VMeasurementID
+		 */
+
+		$sql = "select * from cpgdb.createnewvmeasurement(";
+
+		// Operation
+		$sql.= "'".pg_escape_string($this->getVMeasurementOp())."', ";
+
+		// Operation parameters
+		if($this->getStandardizingMethod()!=NULL)
+		{
+			$sql.= "'".pg_escape_string($this->vmeasurementOp->getStandardizingMethodID())."', ";
+		}
+		else
+		{
+			$sql.= "NULL, ";
+		}
+
+		// Author
+		if($this->author->getID()!=NULL)
+		{
+			$sql.= pg_escape_string($this->author->getID()).", ";
+		}
+		else
+		{
+			$sql.= pg_escape_string($myAuth->getID()).", ";
+		}
+
+		// Code
+		$sql.= "'".pg_escape_string($this->getTitle())."', ";
+
+		// Comments
+		if($this->getComments()!=NULL)
+		{
+			$sql.= "'".pg_escape_string($this->getComments())."', ";
+		}
+		else
+		{
+			$sql.= "NULL, ";
+		}
+
+		// Base measurement
+		if($this->getVMeasurementOp()=='Direct')
+		{
+			$sql.= pg_escape_string($this->getMeasurementID()).", ";
+		}
+		else
+		{
+			$sql.= "NULL, ";
+		}
+
+		// Constituents
+		if($this->getVMeasurementOp()!='Direct')
+		{
+			$sql.= "ARRAY[";
+			foreach($this->referencesArray as $value)
+			{
+				$sql.= "'".pg_escape_string($value)."', ";
+			}
+			$sql = substr($sql, 0, -2)."], ";
+		}
+		else
+		{
+			$sql.= "NULL, ";
+		}
+
+		// Objective
+		if($this->getObjective()!=NULL)
+		{
+			$sql.= "'".pg_escape_string($this->getObjective())."', ";
+		}
+		else
+		{
+			$sql.="NULL, ";
+		}
+
+		// Version
+		if($this->getVersion()!=NULL)
+		{
+			$sql.= "'".pg_escape_string($this->getVersion())."', ";
+		}
+		else
+		{
+			$sql.= "NULL, ";
+		}
+
+		// Birth (measuring/derivation) Date
+		if($this->getMeasuringDate()!=NULL)
+		{
+			$sql.= "'".pg_escape_string($this->getBirthDate())."')";
+		}
+		else
+		{
+			$sql.= "NULL)";
+		}
+		
+		//echo $sql;
+		return $sql;
+		 
+	}
+
+
+
+	/***********/
+	/*FUNCTIONS*/
+	/***********/
+
+	/**
+	 * Writes this object to the database
+	 *
+	 * @return Boolean
+	 */
+	function writeToDB()
+	{
+		// Write the current object to the database
+
+		/**
+		 * ORDER OF PLAY
+		 * *************
+		 * New direct measurements:
+		 * 1) Insert tblmeasurement row
+		 * 2) Insert multiple tblreading rows
+		 * 3) Create new vmeasurement with cpgdb.createnewvmeasurement()
+		 * 4) Add new notes using cpgdb.addreadingnote()
+		 *
+		 * New derived measurement:
+		 * 1) Use cpgdb.createnewvmeasurement()
+		 * 2) Use cpgdb.finishcrossdate(), cpgdb.finishtruncate() or cpgdb.finishredate() if it's a crossdate, truncate or redate
+		 * 3) Add notes using cpgdb.addreadingnote() which have inheritedCount=-1, 0 or NULL (-1 is overide inheritance)
+		 *
+		 * Edit existing direct measurement:
+		 * 1) Delete tblreading entries
+		 * 2) Reinsert tblreading entries
+		 * 3) Update tblmeasurement row
+		 * 4) Update tblvmeasurement row
+         * 5) Use clearReadingNotes() to delete notes
+		 * 6) Add notes using cpgdb.addreadingnotes()
+		 * 
+		 * Edit existing derived measurement:
+		 * 1) Delete relevant tblvmeasurementgroup entries
+         * 2) Reinsert relevant tblvmeasurementgroup entries 
+		 * 3) Update tblvmeasurement row
+		 * 4) Use clearReadingNotes() to delete notes
+		 * 5) Add notes using cpgdb.addreadingnote() which have inheritedCount=-1, 0 or NULL (-1 is overide inheritance)
+		 *
+		 * **************
+		 */
+		 
+
+		global $dbconn;
+		global $myAuth;
+		global $firebug;
+		
+		//Only attempt to run SQL if there are no errors so far
+		if($this->getLastErrorCode() == NULL)
+		{
+
+			// Check DB connection is OK before continueing
+			$dbconnstatus = pg_connection_status($dbconn);
+			if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+			{
+				//
+				// New record
+				//
+				if(($this->getID() == NULL))
+				{
+					if($this->getVMeasurementOp()=='Direct')
+					{
+						// New direct measurement so create tblmeasurement record first
+						$sql = "insert into tblmeasurement  (  ";
+						if(isset($this->parentEntityArray[0]))              $sql.= "radiusid, ";
+						if($this->getIsReconciled()!=NULL)    				$sql.= "isreconciled, ";
+						if($this->getFirstYear())				            $sql.= "startyear, ";
+						if(isset($this->analyst))					        $sql.= "measuredbyid, ";
+						if($this->dating->getID()!=NULL)
+						{
+							//$sql.= "datingtypeid, ";
+							if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "datingerrornegative, ";
+							if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "datingerrorpositive, ";
+						}
+						if(isset($this->variable))							$sql.= "measurementvariableid, ";
+						if($this->getProvenance()!=NULL)					$sql.= "provenance, ";
+						if(isset($this->measuringMethod))					$sql.= "measuringmethodid, ";
+						if($this->dendrochronologist->getID()!=NULL)				$sql.= "supervisedbyid, ";
+						// Trim off trailing space and comma
+						$sql = substr($sql, 0, -2);
+						$sql.=") values (";
+						if(isset($this->parentEntityArray[0]))              $sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
+						if($this->getIsReconciled()!=NULL)    				$sql.= "'".dbHelper::formatBool($this->getIsReconciled(), 'english')."', ";
+						if($this->getFirstYear())				            $sql.= "'".pg_escape_string($this->getFirstYear())."', ";
+						if(isset($this->analyst))					        $sql.= "'".pg_escape_string($this->analyst->getID())."', ";
+						if($this->dating->getID()!=NULL)
+						{
+							//$sql.= "'".pg_escape_string($this->dating->getID())."', ";
+							if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "'".pg_escape_string($this->dating->getDatingErrorNegative())."', ";
+							if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "'".pg_escape_string($this->dating->getDatingErrorPositive())."', ";
+						}
+						if(isset($this->variable))							$sql.= "'".$this->variable->getID()."', ";
+						if($this->getProvenance()!=NULL)					$sql.= "'".pg_escape_string($this->getProvenance())."', ";
+						if(isset($this->measuringMethod))					$sql.= "'".pg_escape_string($this->measuringMethod->getID())."', ";
+						if($this->dendrochronologist->getID()!=NULL)		$sql.= "'".pg_escape_string($this->dendrochronologist->getID())."', ";
+						// Trim off trailing space and comma
+						$sql = substr($sql, 0, -2);
+						$sql.=")";
+
+						// Run SQL
+						$firebug->log($sql, "SQL Transaction for writeToDB");
+						pg_send_query($dbconn, $sql);
+						$result = pg_get_result($dbconn);
+						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+						{
+
+							if(substr(pg_result_error($result), 8, 21)=='EVERSIONALREADYEXISTS')
+							{
+								trigger_error("911"."A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
+								return FALSE;
+							}			
+											
+							$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+							return FALSE;
+						}
+						else
+						{
+							// Insert successful so retrieve automated field values
+							$sql2 = "select * from tblmeasurement where measurementid=currval('tblmeasurement_measurementid_seq')";
+							$result = pg_query($dbconn, $sql2);
+							while ($row = pg_fetch_array($result))
+							{							 
+								$this->setMeasurementID($row['measurementid']);
+							}
+						}
+
+						// Insert new readings
+						$relyear = 0;
+						foreach($this->readingsArray as $key => $value)
+						{
+							// First loop through the readingsArray and create insert statement for tblreading table
+							$insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".pg_escape_string($this->measurementID).", ".pg_escape_string($relyear).", ".pg_escape_string($value['value']).")";
+							$relyear++;
+
+							// Do tblreading inserts
+							$firebug->log($insertSQL, "SQL Transaction for writeToDB");
+							pg_send_query($dbconn, $insertSQL);
+							$result = pg_get_result($dbconn);
+							if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+							{
+								if(substr(pg_result_error($result), 8, 21)=='EVERSIONALREADYEXISTS')
+								{
+									trigger_error("911"."A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
+									return FALSE;
+								}								
+								// Insert failed
+								$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $insertSQL");
+								return FALSE;
+							}
+						}
+						// End of Readings insert
+
+
+					}
+
+					// Create new vmeasurement
+					$sql = $this->getCreateNewVMeasurementSQL();
+
+
+					// Run SQL
+					$firebug->log($sql, "SQL Transaction for writeToDB");
+					pg_send_query($dbconn, $sql);
+					$result = pg_get_result($dbconn);
+					if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+					{
+						if(substr(pg_result_error($result), 8, 21)=='EVERSIONALREADYEXISTS')
+						{
+							trigger_error("911"."A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
+							return FALSE;
+						}
+												
+						$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+						return FALSE;
+					}
+					else
+					{
+						// Successful so retrieve the automated fields for this new vmeasurement
+						while ($row = pg_fetch_array($result))
+						{
+							$localVMID = $row['createnewvmeasurement'];
+							//$this->setParamsFromDB($row['createnewvmeasurement']);
+						}
+					}		
+					$firebug->log($this->dating->getID(), "dating");
+					
+					// This extra SQL query is needed to finish off a crossdate, truncate or redate
+					if(($this->getVMeasurementOp()=='Crossdate') || 
+					($this->getVMeasurementOp()=='Truncate') || 
+					($this->getVMeasurementOp()=='Redate'))
+					{
+						// Build SQL statement
+						$sql = "select cpgdb.finish".$this->getVMeasurementOp()."('".pg_escape_string($localVMID)."', ".
+								"'".pg_escape_string($this->getNewStartYear())."', ";
+						
+						// Remaining parameters depend on finish type
+						if($this->getVMeasurementOp()=='Crossdate')
+						{
+							$sql.=  "'".pg_escape_string($this->getMasterVMeasurementID())."', ".
+									"'".pg_escape_string($this->getJustification())."', ".
+									"'".pg_escape_string($this->getConfidenceLevel())."')";
+						}						
+						elseif($this->getVMeasurementOp()=='Truncate')
+						{
+							$sql.= 	"'".pg_escape_string($this->getNewEndYear())."', ".
+									"'".pg_escape_string($this->getJustification())."') ";
+						}						
+						elseif($this->getVMeasurementOp()=='Redate')
+						{
+							if ($this->dating->getID()==NULL)
+							{
+								$sql.= 	"null, ";
+							}
+							else
+							{
+								$sql.= "'".pg_escape_string($this->dating->getID())."', ";
+							}
+
+							$sql.= "'".pg_escape_string($this->getJustification())."') ";
+						}
+												
+						$firebug->log($sql, "SQL Transaction for finishing cross, trunc or re- date");
+						pg_send_query($dbconn, $sql);
+						$result = pg_get_result($dbconn);
+						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+						{
+							$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+							return FALSE;
+						}
+					}
+
+					// Add reading notes to DB
+					$this->addReadingNotesToDB($localVMID);
+																					
+					// Successful so retrieve the automated fields for this new vmeasurement
+					$this->setParamsFromDB($localVMID);
+					
+
+
+				}
+				else
+				{
+					// Editing an exisiting record
+					$deleteSQL = NULL;
+					$insertSQL	= NULL;
+					$updateSQL2 = NULL;
+
+					// Update references or readings depending on whether the measurement is direct or not
+					if ($this->vmeasurementOp->getValue()!=="Direct")
+					{
+						// Update references to other vmeasurements
+						$deleteSQL = "DELETE FROM tblvmeasurementgroup WHERE vmeasurementid='".pg_escape_string($this->getID())."'; ";
+						$relyear = 0;
+						foreach($this->referencesArray as $key => $value)
+						{
+							$insertSQL .= "INSERT INTO tblvmeasurementgroup (vmeasurementid, membervmeasurementid) VALUES ('".pg_escape_string($this->getID())."', '".pg_escape_string($value)."'); ";
+							$relyear++;
+						}
+					}
+					elseif($this->vmeasurementOp->getValue()=="Direct")
+					{
+						// Update the tblmeasurement table
+						$updateSQL2.= "UPDATE tblmeasurement SET ";
+						if(isset($this->parentEntityArray[0]))            			$updateSQL2.= "radiusid = '".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
+						if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled='".dbHelper::formatBool($this->getIsReconciled(),'pg')."', ";
+						if($this->getFirstYear()!=NULL)           					$updateSQL2.= "startyear = ".pg_escape_string($this->getFirstYear()).", ";
+						if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".pg_escape_string($this->analyst->getID()).", ";
+						//if($this->dating->getID()!=NULL)        					$updateSQL2.= "datingtypeid = ".pg_escape_string($this->dating->getID()).", ";
+						if($this->dating->getDatingErrorPositive()!=NULL) 			$updateSQL2.= "datingerrorpositive = ".pg_escape_string($this->dating->getDatingErrorPositive()).", ";
+						if($this->dating->getDatingErrorNegative()!=NULL) 			$updateSQL2.= "datingerrornegative = ".pg_escape_string($this->dating->getDatingErrorNegative()).", ";
+						$updateSQL2 = substr($updateSQL2, 0 , -2);
+						$updateSQL2.= " WHERE measurementid=".pg_escape_string($this->getMeasurementID())."; ";
+
+						// Update readings
+						$deleteSQL = "DELETE FROM tblreading WHERE measurementid=".pg_escape_string($this->getMeasurementID())."; ";
+						$relyear = 0;
+						foreach($this->readingsArray as $key => $value)
+						{
+							$insertSQL .= "INSERT INTO tblreading (measurementid, relyear, reading) VALUES (".pg_escape_string($this->getMeasurementID()).", ".pg_escape_string($relyear).", ".pg_escape_string($value['value'])."); ";
+							$relyear++;
+						}
+					}
+
+					// Update the tblvmeasurement table
+					$updateSQL = "UPDATE tblvmeasurement SET ";
+
+					if($this->getVMeasurementOp()!=NULL)			$updateSQL.= "vmeasurementopid ='".pg_escape_string($this->vmeasurementOp->getID())."', ";
+					if($this->vmeasurementOp->getParamID()!=NULL)	$updateSQL.= "vmeasurementopparameter ='".pg_escape_string($this->vmeasurementOp->getParamID())."', ";
+					if($this->getTitle()!=NULL)               		$updateSQL.= "code = '".pg_escape_string($this->getTitle())."', ";
+					if($this->getComments()!=NULL)        			$updateSQL.= "comments = '".pg_escape_string($this->getComments())."', ";
+					if($this->author->getID()!=NULL)				$updateSQL.= "owneruserid = '".pg_escape_string($this->author->getID())."', ";
+					if($this->objective!=NULL)						$updateSQL.= "objective= '".pg_escape_string($this->objective)."', ";
+					if($this->version!=NULL)						$updateSQL.= "version= '".pg_escape_string($this->version)."', ";
+					$updateSQL = substr($updateSQL, 0 , -2);
+					$updateSQL.= " WHERE vmeasurementid='".$this->getID()."'; ";					
+					
+					// Perform query using transactions so that if anything goes wrong we can roll back
+					$transaction = array("begin;", $deleteSQL, $insertSQL, $updateSQL2, $updateSQL );
+					
+					$firebug->log($transaction, "SQL Transaction for writeToDB");
+					
+					foreach($transaction as $stmt)
+					{
+						if ($stmt==NULL) continue;
+						pg_send_query($dbconn, $stmt);
+						$result = pg_get_result($dbconn);	
+						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+						{
+							if(substr(pg_result_error($result), 8, 21)=='EVERSIONALREADYEXISTS')
+							{
+								trigger_error("911"."A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
+							}	
+							else
+							{
+								trigger_error("002".pg_result_error($result)."--- SQL was $stmt", E_USER_ERROR);
+							}
+							
+							pg_query($dbconn, "rollback;");
+							return FALSE;
+						}
+					}
+
+					// All gone well so commit transaction to db
+					$result = pg_query($dbconn, "commit;");
+					
+					// Now clear and add all reading notes
+					$this->clearReadingNotesFromDB();
+					$this->addReadingNotesToDB();
+					
+				}
+			}
+			else
+			{
+				// Connection bad
+				$this->seterrormessage("001", "error connecting to database");
+				return false;
+			}
+		}
+
+		// Return true as write to DB went ok.
+		return TRUE;
+	}
+
+	private function clearReadingNotesFromDB($localVMID=NULL)
+	{
+		global $dbconn;	
+		
+		// Either use the passed vmid or get it from the class
+		if($localVMID==NULL) $localVMID = $this->getID();
+		
+		$sql = "SELECT cpgdb.clearReadingNotes('".$localVMID."')";
+
+		$result = pg_query($dbconn, $sql);		
+		if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+		{
+			// Insert failed
+			$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+			return FALSE;
+		}			
+		return TRUE;
+	}
+	
+	private function addReadingNotesToDB($localVMID=NULL)
+	{
+		global $dbconn;
+		global $firebug;
+		
+		// Either use the passed vmid or get it from the class
+		if($localVMID==NULL) $localVMID = $this->getID();
+				
+		// Add reading notes 
+		$relyear = 0;
+		foreach($this->readingsArray as $key => $value)
+		{		
+			
+			
+			if(count($value['notesArray']) > 0)
+			{
+				$firebug->log($value['notesArray'], "Notes array for ring $relyear");
+				// There are notes associated with this reading.  
+				foreach($value['notesArray'] as $note )
+				{						
+					if(($note->getControlledVocName()==NULL)  && ($note->getNote()!=NULL))
+					{
+						// Free text note so first we need to add it.
+						$sql = "INSERT INTO tlkpreadingnote (note, vocabularyid) values ('".pg_escape_string($note->getNote())."', 0)";
+						$firebug->log($sql, "SQL Transaction for addReadingNotesToDB");
+						
+						$result = pg_query($dbconn, $sql);		
+						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+						{
+							// Insert failed
+							trigger_error("002"."Error inserting note to database. Database returned: ".pg_result_error($result).".  SQL was $sql", E_USER_ERROR);
+							return FALSE;
+						}	
+						$note->setControlledVoc("0", "[Custom]");
+											
+					}
+					
+					if($note->getNote()!=NULL)
+					{	
+						if($this->getVMeasurementOp()=='Direct')
+						{
+							$disabledoverride = 'null';
+							if(($note->getInheritedCount()!=NULL) || ($note->getInheritedCount()!=0))
+							{
+								trigger_error("667"."InheritanceCount can only be 0 or NULL for notes in measurementSeries", E_USER_ERROR);
+							}
+						}
+						else
+						{
+							if(($note->getInheritedCount()==NULL) || ($note->getInheritedCount()==0))
+							{
+								$disabledoverride = 'false';
+							}
+							elseif($note->getInheritedCount()<0)
+							{
+								$disabledoverride = 'true';
+							}
+							else
+							{
+								// Skip this note as it is inherited!
+								continue;
+							}
+						}
+															
+						$sql = "SELECT cpgdb.addreadingnote('".$localVMID."', $relyear, (SELECT readingnoteid from cpgdb.getNote('".$note->getControlledVocName()."', '".$note->getNote()."')), $disabledoverride)";
+
+						$firebug->log($sql, "SQL Transaction for addReadingNotesToDB");
+						
+						$result = pg_query($dbconn, $sql);		
+						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+						{
+							// Insert failed
+							trigger_error("002"."Error inserting note to database. Database returned: ".pg_result_error($result).".  SQL was $sql", E_USER_ERROR);
+							return FALSE;
+						}
+					}
+					else
+					{
+						
+					}
+				}
+			}
+		
+		// Increment relative year 
+		$relyear++;
+		}
+	}
+	
+	
+	function deleteFromDB()
+	{
+		// Delete the record in the database matching the current object's ID
+                global $firebug;
+		global $dbconn;
+
+		// Check for required parameters
+		if($this->getID() == NULL)
+		{
+			$this->setErrorMessage("902", "Missing parameter - 'id' field is required.");
+			return FALSE;
+		}
+
+		//Only attempt to run SQL if there are no errors so far
+		if($this->getLastErrorCode() == NULL)
+		{
+			$dbconnstatus = pg_connection_status($dbconn);
+			if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+			{
+				$sql = "SELECT * FROM cpgdb.findvmchildren('".$this->getID()."', FALSE)";
+				pg_send_query($dbconn, $sql);
+				$result = pg_get_result($dbconn);
+
+				// Check whether there are any vmeasurements that rely upon this one
+				if(pg_num_rows($result)>0)
+				{
+					$this->setErrorMessage("903", "There are existing measurements that rely upon this measurement.  You must delete all child measurements before deleting the parent.");
+					return FALSE;
+				}
+				else
+				{
+					// Retrieve data for record about to be deleted
+					$this->setParamsFromDB($this->getID());
+
+					if($this->vmeasurementOp->getValue()=="Direct")
+					{
+						// This is a direct measurement so we can delete the tblmeasurement entry and everything else should cascade delete
+	    $deleteSQL = "DELETE FROM tblmeasurement WHERE measurementid='".pg_escape_string($this->getMeasurementID())."';";
+					}
+					else
+					{
+						// This is a derived measurement so we just delete the tblvmeasurement record and let everything else cascade delete
+    	    $deleteSQL = "DELETE FROM tblvmeasurement WHERE vmeasurementid='".pg_escape_string($this->getID())."';";
+					}
+
+					// Perform deletes using transactions
+					$transaction = "BEGIN;".$deleteSQL;
+					pg_send_query($dbconn, $transaction);
+					$result = pg_get_result($dbconn);
+					$status = pg_transaction_status($dbconn);
+					if($status === PGSQL_TRANSACTION_INERROR)
+					{
+						// All gone badly so throw error and rollback
+						$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $transaction");
+						pg_send_query($dbconn, "ROLLBACK;");
+						return FALSE;
+					}
+					else
+					{
+							$result = pg_get_result($dbconn);
+						// All gone well so commit transaction to db
+						pg_send_query($dbconn, "COMMIT;");
+						return TRUE;
+					}
+				}
+
+			}
+			else
+			{
+				// Connection bad
+				$this->setErrorMessage("001", "Error connecting to database");
+				return FALSE;
+			}
+		}
+
+		// Return true as write to DB went ok.
+		return TRUE;
+	}
+
+
+
+
+    
         
-        // Check for required parameters
-        if($this->name == NULL) 
-        {
-            //$this->setErrorMessage("902", "Missing parameter - 'name' field is required.");
-            //return FALSE;
-        }
 
-        //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
-        {
-
-            // Check DB connection is OK before continueing
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                // 
-                // New record
-                //
-                if(($this->vmeasurementID == NULL))
-                {
-                    if($this->vmeasurementOp=='Direct')
-                    {
-                        // New direct measurement so create tblmeasurement record first
-                        $sql = "insert into tblmeasurement  (  ";
-                            if($this->radiusID)              $sql.= "radiusid, "; 
-                            if($this->isReconciled!=NULL)    $sql.= "isreconciled, "; 
-                            if($this->startYear)             $sql.= "startyear, "; 
-                            if($this->isLegacyCleaned!=NULL) $sql.= "islegacycleaned, "; 
-                            if($this->measuredByID)          $sql.= "measuredbyid, "; 
-                            if($this->datingErrorPositive)   $sql.= "datingerrorpositive, "; 
-                            if($this->datingErrorNegative)   $sql.= "datingerrornegative, "; 
-                            if($this->datingTypeID)          $sql.= "datingtypeid, "; 
-                        // Trim off trailing space and comma
-                        $sql = substr($sql, 0, -2);
-                        $sql.=") values (";
-                            if($this->radiusID)               $sql.= "'".$this->radiusID."', ";
-                            if($this->isReconciled!=NULL)     $sql.= "'".fromPHPtoPGBool($this->isReconciled)."', ";
-                            if($this->startYear)              $sql.=     $this->startYear.", ";
-                            if($this->isLegacyCleaned!=NULL)  $sql.= "'".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
-                            if($this->measuredByID)           $sql.= "'".$this->measuredByID."', ";
-                            if($this->datingErrorPositive)    $sql.= "'".$this->datingErrorPositive."', ";
-                            if($this->datingErrorNegative)    $sql.= "'".$this->datingErrorNegative."', ";
-                            if($this->datingTypeID)           $sql.= "'".$this->datingTypeID."', ";
-                        // Trim off trailing space and comma
-                        $sql = substr($sql, 0, -2);
-                        $sql.=")";
-
-                        // Run SQL 
-                        pg_send_query($dbconn, $sql);
-                        $result = pg_get_result($dbconn);
-                        if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                        {
-                            $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
-                            return FALSE;
-                        }
-                        else
-                        {
-                            // Insert successful so retrieve automated field values
-                            $sql2 = "select * from tblmeasurement where measurementid=currval('tblmeasurement_measurementid_seq')";
-                            $result = pg_query($dbconn, $sql2);
-                            while ($row = pg_fetch_array($result))
-                            {
-                                $this->measurementID=$row['measurementid'];   
-                            }
-                        }    
-                        
-                        // Insert new readings
-                        $relyear = 0;
-                        foreach($this->readingsArray as $key => $value)
-                        {
-                            // First loop through the readingsArray and create insert statement for tblreading table
-                            $insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value['reading'].")";
-                            $relyear++;
-                            
-                            // Do tblreading inserts
-                            pg_send_query($dbconn, $insertSQL);
-                            $result = pg_get_result($dbconn);
-                            if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                            {
-                                // Insert failed
-                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $insertSQL");
-                                return FALSE;
-                            }
-                            else
-                            {
-                                // Insert successful
-                                if(count($value['notesArray']) > 0)
-                                {
-                                    // There are notes associated with this reading.  Before insert new notes we first need the pkey of the newly inserted record
-                                    $sql3 = "SELECT * from tblreading where readingid=currval('tblreading_readingid_seq')";
-                                    $result3 = pg_query($dbconn, $sql3);
-                                    while ($row3 = pg_fetch_array($result3))
-                                    {
-                                        $thisReadingID = $row3['readingid'];
-                                    }
-
-                                    foreach($value['notesArray'] as $noteKey )
-                                    {
-                                        // Looping through notes and creating SQL insert statements
-                                        $insertSQL = "INSERT INTO tblreadingreadingnote (readingid, readingnoteid) value(".$thisReadingID.", ".$noteKey.")";
-                                    
-                                        // Do tblreadingreadingnote inserts
-                                        pg_send_query($dbconn, $insertSQL);
-                                        $result4 = pg_get_result($dbconn);
-                                        if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                                        {
-                                            // Insert failed
-                                            $this->setErrorMessage("002", pg_result_error($result4)."--- SQL was $insertSQL");
-                                            return FALSE;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        // End of Readings insert
-
-
-                    }
-
-
-                    /*
-                        -- CreateNewVMeasurement(VMeasurementOp, VMeasurementOpParameter, OwnerUserID, Name,
-                        --                       Description, MeasurementID, Constituents)
-                        -- VMeasurementOp - Varchar - From tlkpVMeasurementOp
-                        -- VMeasurementOpParameter - Integer - Must be specified for REDATE or INDEX; otherwise NULL
-                        -- Name - Varchar - Must be specified
-                        -- Description - Varchar - May be NULL
-                        -- MeasurementID - Integer - For direct only; the measurement derived from.
-                        -- Constituents - Array of VMeasurementID - Must be NULL for DIRECT type, an array of one value for any type
-                        --                other than SUM and DIRECT, and an array of one or more values for SUM
-                        -- RETURNS: A new VMeasurementID
-                    */
-
-                    $sql = "select * from cpgdb.createnewvmeasurement(";
-                    $sql.= "'".$this->vmeasurementOp."', ";
-                    if($this->vmeasurementOpParam)      { $sql.= "'".$this->vmeasurementOpParam."', "; } else { $sql.= "NULL, "; }
-                    $sql.= $this->ownerUserID.", ";
-                    $sql.= "'".$this->name."', ";
-                    if($this->description)              { $sql.= "'".$this->description."', ";         } else { $sql.= "NULL, "; }
-                    if($this->vmeasurementOp=='Direct') { $sql.= $this->measurementID.", ";            } else { $sql.= "NULL, "; }
-                    if($this->vmeasurementOp!='Direct') 
-                    { 
-                        $sql.= "ARRAY[";
-                        foreach($this->referencesArray as $value)
-                        {
-                            $sql.= $value.", ";
-                        }
-                        $sql = substr($sql, 0, -2)."])";            
-                    } 
-                    else 
-                    { 
-                        $sql.= "NULL) "; 
-                    }
-
-                    // Run SQL 
-                    pg_send_query($dbconn, $sql);
-                    $result = pg_get_result($dbconn);
-                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                    {
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
-                        return FALSE;
-                    }
-                    else
-                    {
-                        // Successful so retrieve the automated fields for this new vmeasurement
-                        while ($row = pg_fetch_array($result))
-                        {
-                            $localVMID = $row['createnewvmeasurement'];
-                            $this->setParamsFromDB($row['createnewvmeasurement']);
-                        }
-                    }
-
-                    // This extra SQL query is needed to finish off a crossdate
-                    if($this->vmeasurementOp=='Crossdate')
-                    {
-                        $sql = "select cpgdb.finishCrossdate(".$localVMID.", ".$this->newStartYear.", ".$this->masterVMeasurementID.", '".$this->justification."', ".$this->certaintyLevel.")";
-                        pg_send_query($dbconn, $sql);
-                        $result = pg_get_result($dbconn);
-                        if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-                        {
-                            $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
-                            return FALSE;
-                        }
-                    }
-                    
-                    // Successful so retrieve the automated fields for this new vmeasurement
-                    $this->setParamsFromDB($localVMID);
-
-
-                }
-                else
-                {
-                    // Editing an exisiting record
-
-                    // First update the tblvmeasurement table
-                    $updateSQL2 = NULL;
-                    $updateSQL = "update tblvmeasurement set ";
-                    $insertSQL="";
-                    if($this->name)               $updateSQL.= "name = '".$this->name."', ";
-                    if($this->description)        $updateSQL.= "description = '".$this->description."', ";
-                    if(isset($this->isPublished)) $updateSQL.= "ispublished='".fromPHPtoPGBool($this->isPublished)."' ,";
-                    if($this->ownerUserID)        $updateSQL.= "owneruserid = ".$this->ownerUserID.", ";
-                    $updateSQL = substr($updateSQL, 0 , -2);
-                    $updateSQL.= " where vmeasurementid=".$this->vmeasurementID."; ";
-
-                    // Then update references or readings depending on whether the measurement is direct or not
-                    if ($this->vmeasurementOp!=="Direct")
-                    {
-                        // Update references to other vmeasurements
-                        $deleteSQL = "delete from tblvmeasurementgroup where vmeasurementid=".$this->vmeasurementID."; ";
-                        $relyear = 0;
-                        foreach($this->referencesArray as $key => $value)
-                        {
-                            $insertSQL .= "insert into tblvmeasurementgroup (vmeasurementid, membervmeasurementid) values (".$this->vmeasurementID.", ".$value."); ";
-                            $relyear++;
-                        }
-                    }
-                    elseif($this->vmeasurementOp=="Direct")
-                    {
-                        // Update the tblmeasurement table
-                        $updateSQL2.= "update tblmeasurement set ";
-                        if(isset($this->radiusID))            $updateSQL2.= "radiusid = ".$this->radiusID.", ";
-                        if(isset($this->isReconciled))        $updateSQL2.= "isreconciled='".fromPHPtoPGBool($this->isReconciled)."', ";
-                        if(isset($this->startYear))           $updateSQL2.= "startyear = ".$this->startYear.", ";
-                        if(isset($this->isLegacyCleaned))     $updateSQL2.= "islegacycleaned='".fromPHPtoPGBool($this->isLegacyCleaned)."', ";
-                        if(isset($this->measuredByID))        $updateSQL2.= "measuredbyid = ".$this->measuredByID.", ";
-                        if(isset($this->datingTypeID))        $updateSQL2.= "datingtypeid = ".$this->datingTypeID.", ";
-                        if(isset($this->datingerrorpositive)) $updateSQL2.= "datingerrorpositive = ".$this->datingerrorpositive.", ";
-                        if(isset($this->datingerrornegative)) $updateSQL2.= "datingerrornegative = ".$this->datingerrornegative.", ";
-                        $updateSQL2 = substr($updateSQL2, 0 , -2);
-                        $updateSQL2.= " where measurementid=".$this->measurementID."; ";
-
-                        // Update readings
-                        $deleteSQL = "delete from tblreading where measurementid=".$this->measurementID."; ";
-                        $relyear = 0;
-                        foreach($this->readingsArray as $key => $value)
-                        {
-                            $insertSQL .= "insert into tblreading (measurementid, relyear, reading) values (".$this->measurementID.", ".$relyear.", ".$value['reading']."); ";
-                            $relyear++;
-                        }
-                    }
-                    
-                    // Perform query using transactions so that if anything goes wrong we can roll back
-                    $transaction = array("begin;", $deleteSQL, $insertSQL, $updateSQL, $updateSQL2);
-
-                    foreach($transaction as $stmt)
-                    {
-                        $result = pg_query($dbconn, $stmt);
-                        //$result = pg_get_result($dbconn);
-                        if($result===FALSE)
-                        {
-                            // All gone badly so throw error and rollback
-                            $this->setErrorMessage("002", pg_last_error()."--- SQL was $stmt");
-                            pg_query($dbconn, "rollback;");
-                            return FALSE;
-                        }
-                    }
-
-                    // All gone well so commit transaction to db
-                    $result = pg_query($dbconn, "commit;");
-                }
-            }
-            else
-            {
-                // Connection bad
-                $this->seterrormessage("001", "error connecting to database");
-                return false;
-            }
-        }
-
-        // Return true as write to DB went ok.
-        return TRUE;
-    }
-
-    function deleteFromDB()
-    {
-        // Delete the record in the database matching the current object's ID
-
-        global $dbconn;
-
-        // Check for required parameters
-        if($this->vmeasurementID == NULL) 
-        {
-            $this->setErrorMessage("902", "Missing parameter - 'id' field is required.");
-            return FALSE;
-        }
-        
-        //Only attempt to run SQL if there are no errors so far
-        if($this->lastErrorCode == NULL)
-        {
-            $dbconnstatus = pg_connection_status($dbconn);
-            if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-            {
-                $sql = "select * from cpgdb.findvmchildren('".$this->vmeasurementID."', FALSE)";
-                pg_send_query($dbconn, $sql);
-                $result = pg_get_result($dbconn);
-
-                // Check whether there are any vmeasurements that rely upon this one
-                if(pg_num_rows($result)>0)
-                {
-                    $this->setErrorMessage("903", "There are existing measurements that rely upon this measurement.  You must delete all child measurements before deleting the parent.");
-                    return FALSE;
-                }
-                else
-                {
-                    // Retrieve data for record about to be deleted
-                    $this->setParamsFromDB($this->vmeasurementID);
-
-                    if($this->vmeasurementOp=="Direct")
-                    {
-                        // This is a direct measurement so we can delete the tblmeasurement entry and everything else should cascade delete
-                        $deleteSQL = "delete from tblmeasurement where measurementid=".$this->measurementID.";"; 
-                    }
-                    else
-                    {
-                        // This is a derived measurement so we just delete the tblvmeasurement record and let everything else cascade delete
-                        $deleteSQL = "delete from tblvmeasurement where vmeasurementid=".$this->vmeasurementID.";"; 
-                    }
-
-                    // Perform deletes using transactions
-                    $transaction = "begin;".$deleteSQL;
-
-                    pg_send_query($dbconn, $transaction);
-                    $result = pg_get_result($dbconn);
-                    $status = pg_transaction_status($dbconn);
-                    if($status === PGSQL_TRANSACTION_INERROR)
-                    {
-                        // All gone badly so throw error and rollback
-                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $transaction");
-                        pg_send_query($dbconn, "rollback;");
-                        return FALSE;
-                    }
-                    else
-                    {
-                        while($result==TRUE)
-                        {
-                           $result = pg_get_result($dbconn); 
-                           //echo $result;
-                        }
-                        // All gone well so commit transaction to db
-                        pg_send_query($dbconn, "commit;");
-                        return TRUE;
-                    }
-                }
-
-            }
-            else
-            {
-                // Connection bad
-                $this->setErrorMessage("001", "Error connecting to database");
-                return FALSE;
-            }
-        }
-        
-        // Return true as write to DB went ok.
-        return TRUE;
-    }
-
-    function getIndexNameFromParamID($paramid)
-    {
-        global $dbconn;
-
-        $sql  = "select indexname from tlkpindextype where indexid='".$paramid."'";
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-            $result = pg_query($dbconn, $sql);
-            while ($row = pg_fetch_array($result))
-            {
-                return $row['indexname'];
-            }
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-    }
-
-    function unitsHandler($value, $inputUnits, $outputUnits)
-    {   
-        // This is a helper function to deal with the units of readings 
-        // Internally Corina uses microns as this is (hopefully) the smallest 
-        // unit required in dendro
-        //
-        // To use default units set $inputUnits or $outputUnits to "default"
-
-        // Set units to default (microns) if requested
-        if($inputUnits == 'db-default') $inputUnits = -6;
-        if($outputUnits == 'db-default') $outputUnits = -6;
-        if($inputUnits == 'ws-default') $inputUnits = -5;
-        if($outputUnits == 'ws-default') $outputUnits = -5;
-
-        // Calculate difference between input and output units
-        $convFactor = $inputUnits - $outputUnits;
-
-        switch($convFactor)
-        {
-            case 0:
-                return $value;
-            case -1:
-                return round($value/10);
-            case -2:
-                return round($value/100);
-            case -3:
-                return round($value/1000);
-            case -4:
-                return round($value/10000);
-            case -5:
-                return round($value/100000);
-            case 1:
-                return $value*10;
-            case 2:
-                return $value*100;
-            case 3:
-                return $value*1000;
-            case 4:
-                return $value*10000;
-            case 5:
-                return $value*100000;
-            default:
-                // Not supported
-                $this->setErrorMessage("905", "This level of units is not supported");
-                return false;
-        }
-    }
-
-// End of Class
-} 
+	// End of Class
+}
 
 ?>

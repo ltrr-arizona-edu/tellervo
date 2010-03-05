@@ -1,25 +1,47 @@
 package edu.cornell.dendro.corina.dictionary;
 
-public class User extends BasicDictionaryElement {
-	public User(String internalRepresentation, String value) {
-		super(internalRepresentation, value);
+import org.jdom.Element;
+
+public class User extends DictionaryElement {
+	public User(Element e) {
+		super(DictionaryElement.Type.User, e);
+		
+		fullname = e.getAttributeValue("lastName") + ", " + e.getAttributeValue("firstName");
+		firstname = e.getAttributeValue("firstName");
+		lastname = e.getAttributeValue("lastName");
+		
+		if (e.getAttributeValue("enabled").compareTo("true")==1){
+			enabled = true;
+		}
+		else{
+			enabled = false;
+		}
+		
+	}
+
+	private String fullname;
+    private String firstname;
+    private String lastname;
+    private Boolean enabled; 
+    
+	
+	/**
+	 * Only for creating a user when we don't have one in the dictionary
+	 * @param name
+	 */
+	public User(String name) {
+		super("invalid", name);
+		fullname = name;
 	}
 	
-	private String username;
-	private String fullname;
 	
 	/**
 	 * @return the username
 	 */
 	public String getUsername() {
-		return username;
+		return getValue();
 	}
-	/**
-	 * @param username the username to set
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
+		
 	/**
 	 * @return the fullname
 	 */
@@ -27,27 +49,18 @@ public class User extends BasicDictionaryElement {
 		return fullname;
 	}
 	
-	/**
-	 * @param firstname
-	 * @param lastname
-	 */
-	public void setFullname(String firstname, String lastname) {
-		if(firstname == null) {
-			if(lastname == null)
-				fullname = "[invalid user, id " + getInternalRepresentation() + "]";
-			else
-				fullname = lastname;
-		}
-		else if(lastname == null) {
-			if(firstname == null)
-				fullname = "[invalid user, id " + getInternalRepresentation() + "]";
-			else
-				fullname = firstname;
-		}
-		else 
-			fullname = lastname + ", " + firstname;
+	public String getFirstname(){
+		return firstname;
 	}
 	
+	public String getLastname(){
+		return lastname;
+	}
+	
+	public Boolean isEnabled(){
+		return enabled;
+	}		
+		
 	public String toString() {
 		return fullname;
 	}

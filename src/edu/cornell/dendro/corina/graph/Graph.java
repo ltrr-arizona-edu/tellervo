@@ -20,13 +20,13 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.sample.Sample;
-
-import java.util.List;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.List;
+
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.sample.Sample;
 
 /*
   the purpose of this class is:
@@ -39,21 +39,30 @@ import java.awt.Graphics2D;
   for DP addicts, i believe it's a decorator.
 */
 
-public class Graph {
+public final class Graph {
 
     // should these members be public?  or private, with getters and
     // setters?  that way it could extend Observable, which would be
     // very cool.  [what did i mean by that?]
 
     // the thing-to-graph
-    public Graphable graph;
+    public final Graphable graph;
 
     // offsets
     public int xoffset=0, yoffset=0;
 
     // scaling
     public float scale=1.0f;
+    
+    /** Can the graph agent be changed? */
+    private boolean canChangeAgent = true;
+    
+    /** Can this graph be dragged? */
+    private boolean draggable = true;
 
+    /** Is this graph selection-highlighted? */
+    private boolean highlighted = false;
+    
     /** Create a graph from a Graphable object.
         @param g the Graphable object */
     public Graph(Graphable g) {
@@ -65,10 +74,17 @@ public class Graph {
         
         // save name...
         graphName = g.toString();
+        
+        if(graph instanceof DensityGraph) {
+        	setAgent(PlotAgent.TOOTHED);
+        	canChangeAgent = false;
+        }
+        else
+        	setAgent(PlotAgent.getDefault());
     }
-
+    
     // an arbitrary List of Numbers, starting at a Year.  (used for graphing density of masters.)
-    public Graph(List l, Year y, String n) {
+    public Graph(List<Integer> l, Year y, String n) {
         // create graph
         graph = new DensityGraph(l, y, n);
         
@@ -76,7 +92,10 @@ public class Graph {
         scale = graph.getScale();
         
         // save name...
-        graphName = graph.toString();        
+        graphName = graph.toString();
+        
+        setAgent(PlotAgent.TOOTHED);
+        canChangeAgent = false;
     }
 
     // meaning, 25%, but (fixme) i should just say that
@@ -109,7 +128,7 @@ public class Graph {
             return "<!-- not a sample (" + graph + ") -->"; // what to do?
 
         // filename
-        String filename = (String) ((Sample) graph).getMeta("filename");
+        String filename = (String) ((Sample) graph).getDisplayTitle();
 
         // crunch together an XML tag
         return "<graph scale=\"" + scale + "\" " +
@@ -149,6 +168,10 @@ public class Graph {
     	return mainColor;
     }
     
+    public boolean hasColor() {
+    	return mainColor != null;
+    }
+    
     // default line thickness
     int lineThickness = 1;
     int printerlineThickness = 1;
@@ -172,11 +195,55 @@ public class Graph {
     public String getGraphName() { return graphName; }
     public void setGraphName(String name) { graphName = name; }
     
-    private CorinaGraphPlotter graphingAgent;
-    public void setAgent(CorinaGraphPlotter agent) { graphingAgent = agent; }
-    public CorinaGraphPlotter getAgent() { return graphingAgent; }
+    /** The Plot Agent that holds the plotter that draws this graph */
+    private PlotAgent graphAgent;
+    
+    /**
+     * Set the plotting agent
+     * @param agent
+     */
+    public void setAgent(PlotAgent agent) { 
+    	if(canChangeAgent)
+    		graphAgent = agent; 
+    }
+
+    /**
+     * Set whether or not the user can click on this graph and drag it
+     * @param draggable
+     */
+    public void setDraggable(boolean draggable) {
+    	this.draggable = draggable;
+    }
+    
+    public boolean isDraggable() {
+    	return draggable;
+    }
+
+    /**
+     * Set the highlighted state of this graph
+     * @param highlighted
+     */
+    public void setHighlighted(boolean highlighted) {
+    	this.highlighted = highlighted;
+    }
+    
+    /**
+     * Is this graph mouseover highlighted
+     * @return true on highlgiht
+     */
+    public boolean isHighlighted() {
+    	return highlighted;
+    }
+    
+    /**
+     * Get the plotter
+     * @return The plotter used to graph this
+     */
+    public CorinaGraphPlotter getPlotter() {
+    	return graphAgent.getPlotter();
+    }
     
     public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, int thickness, int xscroll) {
-    	graphingAgent.draw(gInfo, g2, bottom, this, thickness, xscroll);
+    	graphAgent.getPlotter().draw(gInfo, g2, bottom, this, thickness, xscroll);
     }
 }

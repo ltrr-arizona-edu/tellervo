@@ -1,32 +1,36 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JDialog;
-import javax.swing.JTable;
-import javax.swing.WindowConstants;
-import javax.swing.JScrollPane;
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
-import java.util.List;
-import javax.swing.JComboBox;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-import java.awt.Dimension;
 import java.awt.Color;
-import javax.swing.table.TableCellRenderer;
 import java.awt.Component;
-import javax.swing.DefaultCellEditor;
-import javax.swing.ListCellRenderer;
-import javax.swing.JList;
-import javax.swing.JLabel;
-import javax.swing.JComponent;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.BasicStroke;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
+
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
-import java.awt.FlowLayout;
-import java.awt.event.*;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
+import javax.swing.WindowConstants;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 
 public class GraphExportDialog extends JPanel {
 	JDialog myframe;

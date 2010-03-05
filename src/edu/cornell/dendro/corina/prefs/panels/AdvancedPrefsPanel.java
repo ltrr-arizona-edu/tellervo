@@ -46,7 +46,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.filechooser.FileFilter;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.io.SerialSampleIO;
+import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.prefs.components.BoolPrefComponent;
 import edu.cornell.dendro.corina.prefs.components.FontPrefComponent;
 import edu.cornell.dendro.corina.util.DocumentListener2;
@@ -227,7 +227,7 @@ public class AdvancedPrefsPanel extends JPanel {
 		} // END OVERRIDES
 
 		// serial IO capability...?
-		if (SerialSampleIO.hasSerialCapability()) {
+		if (LegacySerialSampleIO.hasSerialCapability()) {
 			JPanel box = new JPanel(new GridBagLayout());
 			box.setBorder(BorderFactory
 					.createTitledBorder("Measuring device configuration"));
@@ -238,7 +238,7 @@ public class AdvancedPrefsPanel extends JPanel {
 			boolean addedPort = false;
 			JLabel label = new JLabel("Sample Recorder Data Port");
 			// first, enumerate all the ports.
-			Vector comportlist = SerialSampleIO.enumeratePorts();
+			Vector comportlist = LegacySerialSampleIO.enumeratePorts();
 
 			// do we have a COM port selected that's not in the list? (ugh!)
 			String curport = App.prefs.getPref("corina.serialsampleio.port");

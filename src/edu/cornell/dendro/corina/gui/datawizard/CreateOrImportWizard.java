@@ -26,12 +26,12 @@ import javax.swing.JTextPane;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.site.GenericIntermediateObject;
-import edu.cornell.dendro.corina.site.Radius;
-import edu.cornell.dendro.corina.site.Site;
-import edu.cornell.dendro.corina.site.Specimen;
-import edu.cornell.dendro.corina.site.Subsite;
-import edu.cornell.dendro.corina.site.Tree;
+import edu.cornell.dendro.corina.tridas.Subsite;
+import edu.cornell.dendro.corina.tridas.TridasElement;
+import edu.cornell.dendro.corina.tridas.TridasEntityBase;
+import edu.cornell.dendro.corina.tridas.TridasObject;
+import edu.cornell.dendro.corina.tridas.TridasRadius;
+import edu.cornell.dendro.corina.tridas.TridasSample;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.LegacySampleExtractor;
@@ -65,11 +65,11 @@ public class CreateOrImportWizard extends javax.swing.JDialog implements WizardP
         /***************************/
         cards = new BaseContentPanel<?>[6];
         
-        cards[0] = new BaseContentPanel<Site>(this, Site.class);
+        cards[0] = new BaseContentPanel<TridasObject>(this, TridasObject.class);
         cards[1] = new BaseContentPanel<Subsite>(this, Subsite.class);
-        cards[2] = new BaseContentPanel<Tree>(this, Tree.class);
-        cards[3] = new BaseContentPanel<Specimen>(this, Specimen.class);
-        cards[4] = new BaseContentPanel<Radius>(this, Radius.class);
+        cards[2] = new BaseContentPanel<TridasElement>(this, TridasElement.class);
+        cards[3] = new BaseContentPanel<TridasSample>(this, TridasSample.class);
+        cards[4] = new BaseContentPanel<TridasRadius>(this, TridasRadius.class);
         cards[5] = new MeasurementPanel(this);
         
         // populate the site list
@@ -113,7 +113,7 @@ public class CreateOrImportWizard extends javax.swing.JDialog implements WizardP
 				
 				// did the card say it was ok to continue?
 				if(cards[cardIdx].verifyAndSelectNextPanel()) {
-					GenericIntermediateObject newParent = cards[cardIdx].getPanelObject(); // the selected object of this box...
+					TridasEntityBase newParent = cards[cardIdx].getPanelObject(); // the selected object of this box...
 					
 					// NEXT!
 					cardIdx++;
@@ -152,7 +152,7 @@ public class CreateOrImportWizard extends javax.swing.JDialog implements WizardP
 						}
 												
 						// special handling for site...
-						if(cards[i].getContentClass().equals(Site.class)) {
+						if(cards[i].getContentClass().equals(TridasObject.class)) {
 							prefix.append("C-");
 							prefix.append(cardPrefix);
 						} else {
@@ -306,14 +306,14 @@ public class CreateOrImportWizard extends javax.swing.JDialog implements WizardP
     	
     	// these can be null!
     	if((o = lse.asSite()) != null)
-    		defaultsMap.put(Site.class, o);
+    		defaultsMap.put(TridasObject.class, o);
     	if((o = lse.asSubsite()) != null)
     		defaultsMap.put(Subsite.class, o);
     	
     	// these are guaranteed
-    	defaultsMap.put(Tree.class, lse.asTree());
-    	defaultsMap.put(Specimen.class, lse.asSpecimen());
-    	defaultsMap.put(Radius.class, lse.asRadius());
+    	defaultsMap.put(TridasElement.class, lse.asTree());
+    	defaultsMap.put(TridasSample.class, lse.asSpecimen());
+    	defaultsMap.put(TridasRadius.class, lse.asRadius());
        	defaultsMap.put(Sample.class, lse.asMeasurement());
     	
     	// whichever card is 'visible', let it know

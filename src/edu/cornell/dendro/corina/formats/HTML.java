@@ -111,7 +111,7 @@ public class HTML implements Filetype {
 
     @Override
 	public String toString() {
-	return I18n.getText("format.html");
+	return I18n.getText("format.html") + " (*"+ getDefaultExtension()+")";
     }
 
     public String getDefaultExtension() {
@@ -439,4 +439,19 @@ public class HTML implements Filetype {
 						IOException {
 	throw new IOException("HTML is a write-only format for samples");
     }
+
+	public Boolean isPackedFileCapable() {
+		return false;
+	}
+
+	public String getDeficiencyDescription() {
+		return this.toString() + " file format is not a data transfer format." +
+				" It may be useful for displaying a human readable version of " +
+				"your data but you are probably much better off using the print preview " +
+				"option to produce a typeset PDF.";
+	}
+
+	public Boolean isLossless() {
+		return false;
+	}
 }

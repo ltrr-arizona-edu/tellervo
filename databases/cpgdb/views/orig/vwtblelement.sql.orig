@@ -1,0 +1,15 @@
+ SELECT tblelement.elementid, tblelement.taxonid, tblelement.locationprecision, tblelement.code, tblelement.createdtimestamp, tblelement.lastmodifiedtimestamp, tblelement.locationgeometry, 
+tblelement.islivetree, tblelement.originaltaxonname, tblelement.locationtypeid, tblelement.locationcomment, tblelement.file, tblelement.description, tblelement.processing, tblelement.marks, 
+tblelement.diameter, tblelement.width, tblelement.height, tblelement.depth, tblelement.unsupportedxml, tblelement.units, tblelement.objectid, tblelement.elementtypeid, 
+tblelement.elementauthenticityid, tblelement.elementshapeid, auth.authid, auth.elementauthenticity, shape.shapeid, shape.elementshape, tbltype.typeid, tbltype.elementtype, loctype.locid, 
+loctype.locationtype, tblelement.altitude, tblelement.slopeangle, tblelement.slopeazimuth, tblelement.soildescription, tblelement.soildepth, tblelement.bedrockdescription
+   FROM tblelement
+   LEFT JOIN ( SELECT tlkpelementauthenticity.elementauthenticityid AS authid, tlkpelementauthenticity.elementauthenticity
+           FROM tlkpelementauthenticity) auth ON tblelement.elementauthenticityid = auth.authid
+   LEFT JOIN ( SELECT tlkpelementshape.elementshapeid AS shapeid, tlkpelementshape.elementshape
+      FROM tlkpelementshape) shape ON tblelement.elementshapeid = shape.shapeid
+   LEFT JOIN ( SELECT tlkpelementtype.elementtypeid AS typeid, tlkpelementtype.elementtype
+   FROM tlkpelementtype) tbltype ON tblelement.elementtypeid = tbltype.typeid
+   LEFT JOIN ( SELECT tlkplocationtype.locationtypeid AS locid, tlkplocationtype.locationtype
+   FROM tlkplocationtype) loctype ON tblelement.locationtypeid = loctype.locid;
+

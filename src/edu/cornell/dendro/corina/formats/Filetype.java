@@ -25,6 +25,7 @@ import edu.cornell.dendro.corina.sample.Sample;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 /**
    This is the interface which all file formats must implement.
@@ -67,8 +68,8 @@ public interface Filetype {
        @param s the sample to save
        @param w the writer to write to
     */
-    public void save(Sample s, BufferedWriter w) throws IOException;
-
+    public void save(Sample s, BufferedWriter w) throws IOException;  
+    
     /**
        The human-readable name of this file format.
 
@@ -90,4 +91,10 @@ public interface Filetype {
        @return the default extension (including the period)
     */
     public String getDefaultExtension();
+    
+    public Boolean isPackedFileCapable();
+ 
+    public Boolean isLossless();
+    
+    public String getDeficiencyDescription(); 
 }

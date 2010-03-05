@@ -20,6 +20,17 @@
 
 package edu.cornell.dendro.corina;
 
+import java.math.BigInteger;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
+
+import org.tridas.schema.DatingSuffix;
+
+import edu.cornell.dendro.corina.util.Years;
+
 /**
    <p>A calendar year.  It normally acts similar to an integer, but
    skips the mythical "year 0".</p>
@@ -37,11 +48,14 @@ package edu.cornell.dendro.corina;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public final class Year implements Comparable {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "year")
+public final class Year implements Comparable<Year> {
     /** The default year: 1001. */
-    public static final Year DEFAULT = new Year(1001);
+    public static transient final Year DEFAULT = Years.valueOf(1001);
 
     /** Holds the year value as an <code>int</code>. */
+    @XmlValue
     private final int y;
 
     /**
@@ -142,6 +156,21 @@ public final class Year implements Comparable {
     }
 
     /**
+     * Retrieve this year as a tridas schema year (incl bc/ad)
+     * @return
+     */
+    public org.tridas.schema.Year tridasYearValue() {
+    	org.tridas.schema.Year tridasYear = new org.tridas.schema.Year();
+    	tridasYear.setValue(BigInteger.valueOf(Math.abs(y)));
+    	if(y < 0)
+    		tridasYear.setSuffix(DatingSuffix.BC);
+    	else if(y > 0)
+    		tridasYear.setSuffix(DatingSuffix.AD);
+    	
+    	return tridasYear;
+    }
+
+    /**
        Return true, iff this is year 1.  (This actually comes up
        fairly often.)
 
@@ -188,7 +217,7 @@ public final class Year implements Comparable {
         // convert back, and return
         if (r <= 0)
             r--;
-        return new Year(r);
+        return Years.valueOf(r);
     }
 
     /**
@@ -273,12 +302,12 @@ public final class Year implements Comparable {
        Compares this and <code>o</code>.
 
        @see java.lang.Comparable
-       @param o Object to compare
+       @param o2 Object to compare
        @return >0, =0, or <0 if this is greater-than, equal-to, or less-than o
        @throws ClassCastException if o is not a Year
     */
-    public int compareTo(Object o) {
-        return this.y - ((Year) o).y;
+    public int compareTo(Year o2) {
+        return this.y - o2.y;
     }
 
     /**
@@ -297,10 +326,12 @@ public final class Year implements Comparable {
     // since i define equals(), i need to define hashCode()
     @Override
 	public int hashCode() {
-	// returning something based on y is logical, but returning y
-	// itself might make people mistakenly think this is like
-	// intValue(), so let's do something weird to it first.
-	return y*y*y;
+    	// returning something based on y is logical, but returning y
+    	// itself might make people mistakenly think this is like
+    	// intValue(), so let's do something weird to it first.
+    	
+    	// seriously? No. Let's not do that.
+    	return y;
     }
 
     // THESE TWO METHODS ARE BUGGY AND NEED WORK!

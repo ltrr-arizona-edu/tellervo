@@ -1,9 +1,10 @@
 package edu.cornell.dendro.corina.dictionary;
 
-public class Taxon extends BasicDictionaryElement implements Comparable {
+import org.jdom.Element;
 
-	public Taxon(String internalRepresentation, String value) {
-		super(internalRepresentation, value);
+public class Taxon extends DictionaryElement implements Comparable {
+	public Taxon(Element e) {
+		super(DictionaryElement.Type.Standardized, e);
 	}
 
 	public int compareTo(Object o) {

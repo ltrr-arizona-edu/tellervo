@@ -1,10 +1,10 @@
 -- First parameter: VMeasurementResultID
-CREATE OR REPLACE FUNCTION cpgdb.qupdVMeasurementResultInfo(varchar) RETURNS boolean AS $$
+CREATE OR REPLACE FUNCTION cpgdbj.qupdVMeasurementResultInfo(uuid) RETURNS boolean AS $$
 DECLARE
    ResultID ALIAS FOR $1;
    vmid tblVMeasurement.VMeasurementID%TYPE;
-   n tblVMeasurement.Name%TYPE;
-   desc tblVMeasurement.Description%TYPE;
+   c tblVMeasurement.Code%TYPE;
+   comm tblVMeasurement.Comments%TYPE;
    ispub tblVMeasurement.isPublished%TYPE;
    createTS tblVMeasurement.CreatedTimestamp%TYPE;
    modTS tblVMeasurement.LastModifiedTimestamp%TYPE;
@@ -15,16 +15,16 @@ BEGIN
       RETURN FALSE;
    END IF;
 
-   SELECT Name, Description, isPublished, CreatedTimestamp, LastModifiedTimestamp
-     INTO n, desc, ispub, createTS, modTS
+   SELECT Code, Comments, isPublished, CreatedTimestamp, LastModifiedTimestamp
+     INTO c, comm, ispub, createTS, modTS
      FROM tblVMeasurement WHERE VMeasurementID = vmid;
 
    IF NOT FOUND THEN
       RETURN FALSE;
    END IF;
 
-   UPDATE tblVMeasurementResult SET (Name, Description, isPublished, CreatedTimestamp, LastModifiedTimestamp) =
-      (n, desc, ispub, createTS, modTS) 
+   UPDATE tblVMeasurementResult SET (Code, Comments, isPublished, CreatedTimestamp, LastModifiedTimestamp) =
+      (c, comm, ispub, createTS, modTS) 
       WHERE VMeasurementResultID = ResultID;
 
    RETURN TRUE;

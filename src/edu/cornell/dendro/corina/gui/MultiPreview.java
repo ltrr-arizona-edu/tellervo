@@ -40,7 +40,6 @@ import javax.swing.JScrollPane;
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.cross.legacy.Grid;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
@@ -113,7 +112,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 		// left: buttons (add)
 		add = Builder.makeButton("add");
 		if (!App.platform.isMac())
-			add.setIcon(Builder.getIcon("Forward16.gif"));
+			add.setIcon(Builder.getIcon("1downarrow.png", 32));
 		add.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				if(files != null) {			
@@ -132,7 +131,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 		// left: buttons (remove)
 		remove = Builder.makeButton("remove");
 		if (!App.platform.isMac())
-			remove.setIcon(Builder.getIcon("Back16.gif"));
+			remove.setIcon(Builder.getIcon("1uparrow.png", 32));
 		remove.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				panel.removeSelectedRows();
@@ -180,6 +179,9 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 			return;
 		}
 
+		showPreview(new Preview.NotDendroDataPreview());
+
+		/*
 		try {
 			Previewable s = null;
 
@@ -199,6 +201,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 		} catch (IOException ioe) {
 			showPreview(new Preview.ErrorLoadingPreview(ioe));
 		}
+		*/
 	}
 
 	// implements PropertyChangeListener

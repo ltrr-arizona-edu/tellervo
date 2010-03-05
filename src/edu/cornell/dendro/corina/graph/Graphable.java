@@ -20,9 +20,9 @@
 
 package edu.cornell.dendro.corina.graph;
 
-import edu.cornell.dendro.corina.Year;
-
 import java.util.List;
+
+import edu.cornell.dendro.corina.Year;
 
 /**
    An interface for classes that can be graphed.  To be
@@ -48,7 +48,7 @@ public interface Graphable {
 
        @return data to graph
     */
-    public List<Object> getData();
+    public List<? extends Number> getData();
     // THIS IS WHAT'S HOLDING ME BACK.
     // it's a list because sample holds a list for editing, which forces graphable to take a list,
     // which forces index to use a list, which just sucks everywhere.  i still want to be able

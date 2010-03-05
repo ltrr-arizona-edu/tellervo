@@ -103,7 +103,7 @@ public class Summary {
 			String field = f.getVariable();
 			if (bs.hasMeta(field)) { // |details| should be |meta|
 				Object value = bs.getMeta(field);
-				String text = StringUtils.escapeForXML(value.toString());
+				String text = (value == null) ? "" : StringUtils.escapeForXML(value.toString());
 				w.write("    <" + field + ">" + text + "</" + field + ">");
 				w.newLine();
 			}

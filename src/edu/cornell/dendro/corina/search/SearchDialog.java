@@ -101,9 +101,9 @@ public class SearchDialog extends JDialog {
     private JButton help, cancel, ok; // these needed permanently?
 
     private JPanel makeButtons() {
-	help = Builder.makeButton("help");
-	cancel = Builder.makeButton("cancel");
-	ok = Builder.makeButton("search");
+	help = Builder.makeButton("menus.help");
+	cancel = Builder.makeButton("general.cancel");
+	ok = Builder.makeButton("general.search");
 
 	Help.addToButton(help, "searching");
 

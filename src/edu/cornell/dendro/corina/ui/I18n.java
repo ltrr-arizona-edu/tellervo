@@ -23,6 +23,8 @@ package edu.cornell.dendro.corina.ui;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import javax.swing.KeyStroke;
+
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.util.StringUtils;
 
@@ -122,114 +124,147 @@ import edu.cornell.dendro.corina.util.StringUtils;
 */
 public class I18n {
 
-    private I18n() {
-	// don't instantiate me
-    }
-
-    /**
-       Get the text for this key.  The text has no special control
-       characters in it, and can be presented to the user.
-
-       <p>For example, if the localization file has the line
-       <code>copy = &amp;Copy [accel C]</code>, the string "Copy" is
-       returned.</p>
-
-       @param key the key to look up in the localization file
-       @return the text
-    */
-    public static String getText(String key) {
-	String value = msg.getString(key);
-
-	StringBuffer buf = new StringBuffer();
-
-	int n = value.length();
-	boolean ignore = false;
-	for (int i=0; i<n; i++) {
-	    char c = value.charAt(i);
-	    switch (c) {
-	    case '&': continue;
-	    case '[': ignore = true; break;
-	    case ']': ignore = false; break;
-	    default:
-		if (!ignore)
-		    buf.append(c);
-	    }
+	private I18n() {
+		// don't instantiate me
 	}
 
-	return buf.toString().trim();
-    }
+	/**
+	 * Get the text for this key. The text has no special control characters in
+	 * it, and can be presented to the user.
+	 * 
+	 * <p>
+	 * For example, if the localization file has the line
+	 * <code>copy = &amp;Copy [accel C]</code>, the string "Copy" is returned.
+	 * </p>
+	 * 
+	 * @param key
+	 *            the key to look up in the localization file
+	 * @return the text
+	 */
+	public static String getText(String key) {
+		String value = msg.getString(key);
+		
+		StringBuffer buf = new StringBuffer();
 
-    /**
-       Get the keystroke string for this key.  This string can be
-       passed directly to the Keystroke.getKeyStroke() method.
+		int n = value.length();
+		boolean ignore = false;
+		for (int i = 0; i < n; i++) {
+			char c = value.charAt(i);
+			switch (c) {
+			case '&':
+				continue;
+			case '[':
+				ignore = true;
+				break;
+			case ']':
+				ignore = false;
+				break;
+			default:
+				if (!ignore)
+					buf.append(c);
+			}
+		}
 
-       <p>For example, if the localization file has the line
-       <code>copy = &amp;Copy [accel C]</code>, the string "control C"
-       is returned (or on the Mac, "meta C").</p>
+		return buf.toString().trim();
+	}
 
-       <p>If the string has no [keystroke] listed, null is
-       returned.</p>
+	/**
+	 * Get the keystroke string for this key. This string can be passed directly
+	 * to the Keystroke.getKeyStroke() method.
+	 * 
+	 * <p>
+	 * For example, if the localization file has the line
+	 * <code>copy = &amp;Copy [accel C]</code>, the string "control C" is
+	 * returned (or on the Mac, "meta C").
+	 * </p>
+	 * 
+	 * <p>
+	 * If the string has no [keystroke] listed, null is returned.
+	 * </p>
+	 * 
+	 * @param key
+	 *            the key to look up in the localization file
+	 * @return the keystroke
+	 */
+	public static KeyStroke getKeyStroke(String key) {
+		String value = msg.getString(key);
 
-       @param key the key to look up in the localization file
-       @return the keystroke string
-    */
-    public static String getKeyStroke(String key) {
-	String value = msg.getString(key);
+		int left = value.indexOf('[');
+		int right = value.indexOf(']');
 
-	int left = value.indexOf('[');
-	int right = value.indexOf(']');
+		if (left == -1 || right == -1)
+			return null;
 
-	if (left==-1 || right==-1)
-	    return null;
+		String stroke = value.substring(left + 1, right).trim();
 
-	String stroke = value.substring(left+1, right).trim();
+		// accel = command (in java-ese: "meta") on mac, control on pc
+		String accel = (App.platform.isMac() ? "meta" : "control");
+		stroke = StringUtils.substitute(stroke, "accel", accel);
 
-	// accel = command (in java-ese: "meta") on mac, control on pc
-	String accel = (App.platform.isMac() ? "meta" : "control");
-	stroke = StringUtils.substitute(stroke, "accel", accel);
+		return KeyStroke.getKeyStroke(stroke);
+	}
 
-	return stroke;
-    }
+	/**
+	 * Get the mnemonic character this key.
+	 * 
+	 * <p>
+	 * For example, if the localization file has the line
+	 * <code>copy = &amp;Copy [accel C]</code>, the character "C" is returned.
+	 * </p>
+	 * 
+	 * <p>
+	 * If the string has no &amp;mnemonic listed, null is returned.
+	 * </p>
+	 * 
+	 * @param key
+	 *            the key to look up in the localization file
+	 * @return the integer representing the mnemonic character
+	 */
+	public static Integer getMnemonic(String key) {
+		String value = msg.getString(key);
 
-    /**
-       Get the mnemonic character this key.
+		int amp = value.indexOf('&');
 
-       <p>For example, if the localization file has the line
-       <code>copy = &amp;Copy [accel C]</code>, the character "C" is
-       returned.</p>
+		if (amp == -1 || amp == value.length() - 1)
+			return null;
 
-       <p>If the string has no &amp;mnemonic listed, null is
-       returned.</p>
+		return new Integer(Character.toUpperCase(value.charAt(amp + 1)));
+	}
+	
+	/**
+	 * Get the position of the mnemonic character in the string
+	 * Used for setDisplayedMnemonicIndex
+	 * @param key
+	 * @return an Integer, or null
+	 */
+	public static Integer getMnemonicPosition(String key) {
+		String value = msg.getString(key);
 
-       @param key the key to look up in the localization file
-       @return the mnemonic character
-    */
-    public static Character getMnemonic(String key) {
-	String value = msg.getString(key);
+		int amp = value.indexOf('&');
 
-	int amp = value.indexOf('&');
+		if (amp == -1 || amp == value.length() - 1)
+			return null;
+		
+		return amp;
+	}
 
-	if (amp==-1 || amp==value.length()-1)
-	    return null;
 
-	return new Character(Character.toUpperCase(value.charAt(amp+1)));
-    }
+	// the resource bundle to use
+	private final static ResourceBundle msg;
 
-    // the resource bundle to use
-    private final static ResourceBundle msg;
-    
-    static {
-      ResourceBundle bundle;
-      try {
-        bundle = ResourceBundle.getBundle("edu/cornell/dendro/corina_resources/Translations/TextBundle");
-      } catch (MissingResourceException mre) {
-        try {
-          bundle = ResourceBundle.getBundle("TextBundle");
-        } catch (MissingResourceException mre2) {
-          mre2.printStackTrace();
-          bundle = new DefaultResourceBundle();
-        }
-      }
-      msg = bundle;
-    }
+	static {
+		ResourceBundle bundle;
+		try {
+			bundle = ResourceBundle
+					.getBundle("edu/cornell/dendro/corina_resources/Translations/TextBundle");
+		} catch (MissingResourceException mre) {
+			try {
+				bundle = ResourceBundle.getBundle("TextBundle");
+			} catch (MissingResourceException mre2) {
+				mre2.printStackTrace();
+				bundle = new DefaultResourceBundle();
+			}
+		}
+		msg = bundle;
+	}
 }

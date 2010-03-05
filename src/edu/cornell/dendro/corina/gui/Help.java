@@ -119,21 +119,11 @@ public class Help {
        @param id the id string in the manual that clicking this button
        should jump to
     */
-    public static void addToButton(JButton button, String id) {
-	/*
-	// redundant?
-	if (hs == null) {
-	    createHelpSet();
-	    hb = hs.createHelpBroker();
-	}
+    public static void assignHelpPageToButton(JButton button, final String page) {
 
-	hb.enableHelpOnButton(button, id, hs);
-	*/
-
-	// pure-java method:
 	button.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-		    showHelp();
+			HelpWiki.showHelp("http://dendro.cornell.edu/corina-manual/" + page);
 		}
 	    });
     }

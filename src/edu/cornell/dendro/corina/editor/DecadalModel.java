@@ -20,17 +20,22 @@
 
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.Year;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
+
+import javax.swing.JFrame;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.manip.Redate;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.manip.RedateDialog;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.gui.Bug;
-
-import javax.swing.table.*;
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.CannotRedoException;
+import edu.cornell.dendro.corina.util.Years;
 
 /**
    Table model for a decadal dataset.
@@ -45,6 +50,8 @@ import javax.swing.undo.CannotRedoException;
 public class DecadalModel extends AbstractTableModel {
 	// BUG! -- if the length changes (e.g., truncate), there's a problem
 	// with sums.  ouch.  (<-- what did i mean by this?)
+
+	private static final long serialVersionUID = 1L;
 
 	/** The sample whose data is being displayed. */
 	protected Sample s;
@@ -85,9 +92,9 @@ public class DecadalModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int col) {
 		if (col == 0)
-			return I18n.getText("year");
+			return I18n.getText("editor.year");
 		else if (col == 11)
-			return I18n.getText("number");
+			return I18n.getText("general.hash");
 		else
 			return Integer.toString(col - 1);
 	}
@@ -140,19 +147,20 @@ public class DecadalModel extends AbstractTableModel {
 	 @param col the column in question
 	 @return the Year that the (row,col) cell should display */
 	public/* protected */Year getYear(int row, int col) {
+		return Years.forRowAndColumn(row + row_min, col - 1);
 		// System.out.println("getYear() called (n=" + __n++ + ")");
-		return new Year(row + row_min, // offset row by row_min (top row is 0)
-				col - 1); // offset col by 1 (left col is year label)
+		//return new Year(row + row_min, // offset row by row_min (top row is 0)
+		//		col - 1); // offset col by 1 (left col is year label)
 	}
 
 	// private static int __n=0;
 
 	// i'll have a lot of these.  better to use only one (flyweight).
-	protected final static Integer ZERO = new Integer(0);
+	protected final static Integer ZERO = Integer.valueOf(0);
 
 	protected final Integer getMean(int row) {
 		// if no count, just return zero
-		if (s.getCount() == null)
+		if (!s.hasCount())
 			return ZERO;
 
 		// compute left end of range
@@ -182,8 +190,6 @@ public class DecadalModel extends AbstractTableModel {
 		int mean = Math.round((float) sum / span);
 		return new Integer(mean);
 	}
-
-	private int __a = 0, __b = 0;
 
 	public Object getValueAt(int row, int col) {
 		if (col == 0) {
@@ -216,7 +222,7 @@ public class DecadalModel extends AbstractTableModel {
 	 @param col the column to query
 	 @return the column's class */
 	@Override
-	public Class getColumnClass(int col) {
+	public Class<?> getColumnClass(int col) {
 		return ((col >= 1 && col <= 10) ? Integer.class : String.class);
 	}
 
@@ -252,7 +258,7 @@ public class DecadalModel extends AbstractTableModel {
 
 	// oldval from /previous/ edit -- because typing into a cell
 	// counts as 2 edits, oldvalue->"", ""->newvalue
-	private Object lastOldVal = null;
+	private Number lastOldVal = null;
 
 	@Override
 	public void setValueAt(Object value, int row, int col) {
@@ -268,52 +274,68 @@ public class DecadalModel extends AbstractTableModel {
 					return;
 				
 				Range newRange = s.getRange().redateStartTo(newYear);
-
-				// redate, and post undo
-				s.postEdit(Redate.redate(s, newRange));
-				return;
+				
+				// get the current top level window
+				Window windowFocusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+				if(windowFocusOwner instanceof JFrame)
+					new RedateDialog(s, (JFrame) windowFocusOwner, newRange).setVisible(true);
+				
 			} catch (NumberFormatException nfe) {
 				// tell the user this is bad?
 			} catch (Exception e) {
-				Bug.bug(e);
+				new Bug(e);
 			}
 
 			// stop, either way
 			return;
 		}
 
+		// if we get a String, make it into an Integer
+		// [Q: what else could it be?]
+		Integer intValue;
+		if ((value instanceof String) && ((String) value).length() > 0) {
+			try {
+				intValue = Integer.parseInt((String) value);
+			} catch (NumberFormatException nfe) {
+				return;
+			} catch (Exception e) {
+				new Bug(e);
+				return;
+			}
+		}
+		else if(value instanceof Integer) {
+			intValue = (Integer) value;
+		}
+		else if(value == null)
+			intValue = null;
+		else
+			return;
+		
+		// at this point, value is an integer! Guaranteed!
+
 		// if user just typed into end+1, we'll need to increase the size!
 		final boolean bigger = s.getRange().getEnd().add(+1).equals(
 				getYear(row, col));
-
-		// if we get a String, make it into an Integer
-		// [Q: what else could it be?]
-		if ((value instanceof String) && ((String) value).length() > 0)
-			try {
-				value = Integer.decode((String) value);
-			} catch (NumberFormatException nfe) {
-				value = new Integer(0); // can't parse, give 'em 0
-			} catch (Exception e) {
-				Bug.bug(e);
-			}
-
 		final Year y = (bigger ? s.getRange().getEnd().add(+1) : getYear(row, col));
-		Object tmp = (bigger ? null : s.getData().get(y.diff(s.getRange().getStart())));
+		Number tmp = (bigger ? null : s.getData().get(y.diff(s.getRange().getStart())));
 		if (tmp != null && tmp.toString().length() == 0) {
 			tmp = lastOldVal;
 		} else {
 			lastOldVal = tmp;
 		}
-		final Object oldVal = tmp;
+		final Number oldVal = tmp;
 
-		if (bigger) {
-			s.getData().add(value);
-			// s.range.end = s.range.getEnd().add(+1);
+		if (bigger) {	
+			// no legitimate value just yet, don't change the underlying data model
+			if(intValue == null)
+				return;
+			
+			s.getData().add(intValue);
 			s.setRange(new Range(s.getRange().getStart(), s.getRange().getEnd().add(+1)));
 		} else {
 			if(value.equals(oldVal))
 				return;
-			s.getData().set(y.diff(s.getRange().getStart()), value);
+			s.getData().set(y.diff(s.getRange().getStart()), intValue);
 		}
 		fireTableCellUpdated(row, col);
 
@@ -326,10 +348,12 @@ public class DecadalModel extends AbstractTableModel {
 		// add undo-able
 		if (value == null || value.toString().length() == 0)
 			return; // better to use collapsing undo-edits -- solves both problems
-		final Object glue = value;
+		
+		final Integer glue = intValue;
 		s.postEdit(new AbstractUndoableEdit() {
-			private Object newVal = glue;
-
+			private static final long serialVersionUID = 1L;
+			
+			private Integer newVal = glue;
 			private boolean grew = bigger; // BIGGER IS ALWAYS FALSE HERE -- LASTVAL PROBLEM!
 
 			@Override
