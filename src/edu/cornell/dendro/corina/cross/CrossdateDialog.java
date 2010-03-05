@@ -33,7 +33,6 @@ import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasGenericField;
 
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.cross.gui.Ui_CrossdatePanel;
 import edu.cornell.dendro.corina.graph.Graph;
 import edu.cornell.dendro.corina.graph.GraphActions;
 import edu.cornell.dendro.corina.graph.GraphController;
@@ -44,6 +43,7 @@ import edu.cornell.dendro.corina.graph.GrapherListener;
 import edu.cornell.dendro.corina.graph.GrapherPanel;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.ReverseScrollBar;
+import edu.cornell.dendro.corina.gui.cross.Ui_CrossdatePanel;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.io.Exporter.EncodingType;
 import edu.cornell.dendro.corina.sample.BaseSample;
