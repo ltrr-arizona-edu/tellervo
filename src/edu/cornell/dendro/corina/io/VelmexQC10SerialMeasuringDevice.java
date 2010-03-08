@@ -24,8 +24,8 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 	
 	public VelmexQC10SerialMeasuringDevice(String portName) throws IOException {
 		super(portName);
-		setStopBits(SerialPort.STOPBITS_2);
-		setFlowControl(SerialPort.FLOWCONTROL_RTSCTS_OUT);
+		//setStopBits(SerialPort.STOPBITS_2);
+		//setFlowControl(SerialPort.FLOWCONTROL_RTSCTS_OUT);
 	}
 
 	public VelmexQC10SerialMeasuringDevice() {
@@ -93,11 +93,21 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 			    OutputStream out=new FileOutputStream(f,true);
 			    byte buf[]=new byte[1024];
 			    int len;
+			    String value = null;
 			    while((len=input.read(buf))>0)
-			    out.write(buf,0,len);
-			    out.close();
+			    {
+			    	out.write(buf,0,len);
+			    	out.close();
+			    	//fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, len);
+			    }
+
+			    
 				
 			    //end of dedugging code
+			    
+			    
+			    
+			    
 			}
 			catch (IOException ioe) {
 				// uh.. ?
@@ -137,7 +147,7 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 				break;
 					
 				case NORMAL: {
-					int counter, valuehi, valuelo, value;
+					/*int counter, valuehi, valuelo, value;
 					
 					// if any of these are -1, we timed out. 
 					// something was most likely invalid in the send/serial link...
@@ -156,7 +166,10 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 					lastSerial = counter;
 					value = (256 * valuehi) + valuelo;
 					
-					fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, new Integer(value));					
+					
+					input.
+					
+					fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, new Integer(value));*/					
 				}
 				break;
 				
