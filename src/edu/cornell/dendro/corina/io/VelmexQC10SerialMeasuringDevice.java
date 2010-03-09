@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.io;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -78,6 +79,7 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 	public void serialEvent(SerialPortEvent e) {
 		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			InputStream input;
+			OutputStream output;
 			
 			try {
 				input = getPort().getInputStream();
@@ -90,16 +92,15 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 				
 				//String path = 
 				File f=new File(home+"outFile.txt");
-			    OutputStream out=new FileOutputStream(f,true);
-			    
-				
+			    OutputStream outToFile=new FileOutputStream(f,true);
+			    				
 			    byte buf[]=new byte[1024];
 			    int len;
-			    while((len=input.read(buf))>0)
+			    while((len=input.read(buf))==7)
 			    {
 			    	//Debug values to text file
-			    	out.write(buf,0,len);
-			    	out.close();
+			    	outToFile.write(buf,0,len);
+			    	outToFile.close();
 			    		
 			    	
 			    	// Read byte buffer into string
@@ -114,6 +115,18 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 			    	
 			    	// Fire event
 			    	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+			    	
+			    	//zero the data with "@3"
+			    	try {
+				    output = getPort().getOutputStream();
+				    OutputStream outToPort=new DataOutputStream(output);
+				    String strZeroDataCommand = "@3";
+				    outToPort.write(strZeroDataCommand.getBytes());
+				    
+			    	}
+			    	catch (IOException ioe) {
+						System.out.println("Error writing to serial port: " + ioe);
+			    	}			    	
 			    }
 
 			  
