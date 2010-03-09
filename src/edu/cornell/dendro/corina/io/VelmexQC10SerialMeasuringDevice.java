@@ -85,6 +85,9 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 				input = getPort().getInputStream();
 				//TODO remove the following debugging code
 				
+			    output = getPort().getOutputStream();
+			    OutputStream outToPort=new DataOutputStream(output);
+		/*		
 				String home = System.getProperty("user.home");
 				
 				if (!home.endsWith(File.separator))
@@ -93,15 +96,15 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 				//String path = 
 				File f=new File(home+"outFile.txt");
 			    OutputStream outToFile=new FileOutputStream(f,true);
-			    				
+		*/	    				
 			    byte buf[]=new byte[1024];
 			    int len;
-			    while((len=input.read(buf))==7)
+			    if((len=input.read(buf))==7)
 			    {
-			    	//Debug values to text file
+		/*	    	//Debug values to text file
 			    	outToFile.write(buf,0,len);
 			    	outToFile.close();
-			    		
+		*/	    		
 			    	
 			    	// Read byte buffer into string
 			    	String value = new String(buf);
@@ -118,15 +121,16 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 			    	
 			    	//zero the data with "@3"
 			    	try {
-				    output = getPort().getOutputStream();
-				    OutputStream outToPort=new DataOutputStream(output);
-				    String strZeroDataCommand = "@3";
+				    String strZeroDataCommand = "@3\n\r";
 				    outToPort.write(strZeroDataCommand.getBytes());
-				    
 			    	}
 			    	catch (IOException ioe) {
 						System.out.println("Error writing to serial port: " + ioe);
 			    	}			    	
+			    }
+			    else
+			    {			    	
+			    	fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);	
 			    }
 
 			  
