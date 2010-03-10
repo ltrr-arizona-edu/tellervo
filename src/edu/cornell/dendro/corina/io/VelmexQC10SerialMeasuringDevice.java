@@ -83,10 +83,11 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 			
 			try {
 				input = getPort().getInputStream();
-				//TODO remove the following debugging code
 				
 			    output = getPort().getOutputStream();
 			    OutputStream outToPort=new DataOutputStream(output);
+			    
+			    
 		/*		
 				String home = System.getProperty("user.home");
 				
@@ -96,24 +97,42 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 				//String path = 
 				File f=new File(home+"outFile.txt");
 			    OutputStream outToFile=new FileOutputStream(f,true);
-		*/	    				
+		    				
 			    byte buf[]=new byte[1024];
 			    int len;
 			    if((len=input.read(buf))==7)
-			    {
+	*/		    
+			    StringBuffer readBuffer = new StringBuffer();
+			    int intReadFromPort;
+			    	//Read from port into buffer while not LF (10)
+			    	while ((intReadFromPort=input.read()) != 10){
+			    		//If a timeout then show bad sample
+						if(intReadFromPort == -1) {
+							fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+							return;
+						}
+						//Ignore CR (13)
+			    		if(intReadFromPort!=13)  {
+			    			readBuffer.append((char) intReadFromPort);
+			    		}
+			    	}
+
+                 String strReadBuffer = readBuffer.toString();
+
 		/*	    	//Debug values to text file
 			    	outToFile.write(buf,0,len);
 			    	outToFile.close();
-		*/	    		
+			    		
 			    	
 			    	// Read byte buffer into string
 			    	String value = new String(buf);
 			    	
 			    	// Trim off blanks and last two characters (\n\r)
 			    	value = value.substring(0, len-2);
-			    	
-			    	// Round up to integer of 1/100th mm
-			    	Float fltValue = new Float(value)*100;
+		*/   	
+			    	// Raw data is in mm like "2.575"
+                 	// Round up to integer of 1/100th mm
+			    	Float fltValue = new Float(strReadBuffer)*100;
 			    	Integer intValue = Math.round(fltValue);
 			    	
 			    	// Fire event
@@ -123,22 +142,18 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 			    	try {
 				    String strZeroDataCommand = "@3\n\r";
 				    outToPort.write(strZeroDataCommand.getBytes());
+				    outToPort.close();
 			    	}
 			    	catch (IOException ioe) {
 						System.out.println("Error writing to serial port: " + ioe);
 			    	}			    	
 			    }
-			    else
-			    {			    	
-			    	fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);	
-			    }
+	  
 
-			  
-			}
-	
 			catch (IOException ioe) {
 				System.out.println("Error reading from serial port: " + ioe);
 			}
-		}		
+		
+		}
 	}
 }
