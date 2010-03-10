@@ -25,6 +25,8 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 	
 	public VelmexQC10SerialMeasuringDevice(String portName) throws IOException {
 		super(portName);
+		//MeasureJ2X defaults to using 2 stop bits but Corina/Java/something bombs if you 
+		//try to write to the port with 2 stop bits set.  So lets stick with 1 stop bit for now!
 		//setStopBits(SerialPort.STOPBITS_2);
 		//setFlowControl(SerialPort.FLOWCONTROL_RTSCTS_OUT);
 	}
@@ -83,25 +85,7 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 			
 			try {
 				input = getPort().getInputStream();
-				
-			    output = getPort().getOutputStream();
-			    OutputStream outToPort=new DataOutputStream(output);
-			    
-			    
-		/*		
-				String home = System.getProperty("user.home");
-				
-				if (!home.endsWith(File.separator))
-					home = home + File.separator;
-				
-				//String path = 
-				File f=new File(home+"outFile.txt");
-			    OutputStream outToFile=new FileOutputStream(f,true);
-		    				
-			    byte buf[]=new byte[1024];
-			    int len;
-			    if((len=input.read(buf))==7)
-	*/		    
+	    
 			    StringBuffer readBuffer = new StringBuffer();
 			    int intReadFromPort;
 			    	//Read from port into buffer while not LF (10)
@@ -117,43 +101,47 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 			    		}
 			    	}
 
-                 String strReadBuffer = readBuffer.toString();
-
-		/*	    	//Debug values to text file
-			    	outToFile.write(buf,0,len);
-			    	outToFile.close();
-			    		
+                String strReadBuffer = readBuffer.toString();
+ 	
+		    	// Raw data is in mm like "2.575"
+             	// Round up to integer of 1/100th mm
+		    	Float fltValue = new Float(strReadBuffer)*100;
+		    	Integer intValue = Math.round(fltValue);
+		    	
+		    	// Fire event
+		    	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+			    							
 			    	
-			    	// Read byte buffer into string
-			    	String value = new String(buf);
-			    	
-			    	// Trim off blanks and last two characters (\n\r)
-			    	value = value.substring(0, len-2);
-		*/   	
-			    	// Raw data is in mm like "2.575"
-                 	// Round up to integer of 1/100th mm
-			    	Float fltValue = new Float(strReadBuffer)*100;
-			    	Integer intValue = Math.round(fltValue);
-			    	
-			    	// Fire event
-			    	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
-			    	
-			    	//zero the data with "@3"
-			    	try {
-				    String strZeroDataCommand = "@3\n\r";
-				    outToPort.write(strZeroDataCommand.getBytes());
-				    outToPort.close();
-			    	}
-			    	catch (IOException ioe) {
-						System.out.println("Error writing to serial port: " + ioe);
-			    	}			    	
-			    }
-	  
-
-			catch (IOException ioe) {
-				System.out.println("Error reading from serial port: " + ioe);
+							
 			}
-		
+			catch (IOException ioe) {
+					System.out.println("Error reading from or writing to serial port: " + ioe);
+			}   	
+			    	
+			zeroVelmex();
+	
 		}
+	}
+	
+	/**
+	 * Send zero command to Quadra-check QC10
+	 */
+	private void zeroVelmex()
+	{
+		OutputStream output;
+
+    	//zero the data with "@3"
+    	try {
+    		
+	    output = getPort().getOutputStream();
+	    OutputStream outToPort=new DataOutputStream(output); 
+	    String strZeroDataCommand = "@3\r\n";
+	    byte[] command = strZeroDataCommand.getBytes();
+	    outToPort.write(command);
+	    
+    	}
+    	catch (IOException ioe) {
+			System.out.println("Error writing to serial port: " + ioe);
+    	}	
 	}
 }
