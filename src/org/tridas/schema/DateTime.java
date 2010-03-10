@@ -36,7 +36,7 @@ import org.tridas.annotations.TridasEditProperties;
  * &lt;complexType name="dateTime">
  *   &lt;simpleContent>
  *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>dateTime">
- *       &lt;attribute name="certainty" type="{http://www.tridas.org/1.3}certainty" />
+ *       &lt;attribute name="certainty" type="{http://www.tridas.org/1.2.1}certainty" />
  *     &lt;/extension>
  *   &lt;/simpleContent>
  * &lt;/complexType>

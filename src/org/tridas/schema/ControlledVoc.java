@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -40,6 +42,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *       &lt;attribute name="normalStd" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="normalId" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="normal" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="lang" type="{http://www.w3.org/2001/XMLSchema}language" />
  *     &lt;/extension>
  *   &lt;/simpleContent>
  * &lt;/complexType>
@@ -75,6 +78,10 @@ public class ControlledVoc
     @XmlAttribute(name = "normal")
     @XmlSchemaType(name = "anySimpleType")
     protected String normal;
+    @XmlAttribute(name = "lang")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "language")
+    protected String lang;
 
     /**
      * Gets the value of the value property.
@@ -188,6 +195,34 @@ public class ControlledVoc
         return (this.normal!= null);
     }
 
+    /**
+     * Gets the value of the lang property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getLang() {
+        return lang;
+    }
+
+    /**
+     * Sets the value of the lang property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLang(String value) {
+        this.lang = value;
+    }
+
+    public boolean isSetLang() {
+        return (this.lang!= null);
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof ControlledVoc)) {
             equalsBuilder.appendSuper(false);
@@ -201,6 +236,7 @@ public class ControlledVoc
         equalsBuilder.append(this.getNormalStd(), that.getNormalStd());
         equalsBuilder.append(this.getNormalId(), that.getNormalId());
         equalsBuilder.append(this.getNormal(), that.getNormal());
+        equalsBuilder.append(this.getLang(), that.getLang());
     }
 
     public boolean equals(Object object) {
@@ -220,6 +256,7 @@ public class ControlledVoc
         hashCodeBuilder.append(this.getNormalStd());
         hashCodeBuilder.append(this.getNormalId());
         hashCodeBuilder.append(this.getNormal());
+        hashCodeBuilder.append(this.getLang());
     }
 
     public int hashCode() {
@@ -248,6 +285,11 @@ public class ControlledVoc
             String theNormal;
             theNormal = this.getNormal();
             toStringBuilder.append("normal", theNormal);
+        }
+        {
+            String theLang;
+            theLang = this.getLang();
+            toStringBuilder.append("lang", theLang);
         }
     }
 
@@ -290,6 +332,14 @@ public class ControlledVoc
             copy.setNormal(copyNormal);
         } else {
             copy.normal = null;
+        }
+        if (this.isSetLang()) {
+            String sourceLang;
+            sourceLang = this.getLang();
+            String copyLang = ((String) copyBuilder.copy(sourceLang));
+            copy.setLang(copyLang);
+        } else {
+            copy.lang = null;
         }
         return copy;
     }

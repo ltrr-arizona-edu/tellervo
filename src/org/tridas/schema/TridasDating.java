@@ -31,7 +31,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="type" use="required" type="{http://www.tridas.org/1.3}normalTridasDatingType" />
+ *       &lt;attribute name="type" use="required" type="{http://www.tridas.org/1.2.1}normalTridasDatingType" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>

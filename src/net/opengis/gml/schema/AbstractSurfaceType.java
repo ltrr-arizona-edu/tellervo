@@ -46,8 +46,8 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AbstractSurfaceType")
 @XmlSeeAlso({
-    PolygonType.class,
-    SurfaceType.class
+    SurfaceType.class,
+    PolygonType.class
 })
 public class AbstractSurfaceType
     extends AbstractGeometricPrimitiveType

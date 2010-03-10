@@ -35,13 +35,14 @@ import org.tridas.annotations.TridasEditProperties;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}dating" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}firstYear" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}datingReference" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}statFoundation" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}sproutYear" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}deathYear" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}provenance" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}dating" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}firstYear" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}lastYear" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}datingReference" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}statFoundation" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}pithYear" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}deathYear" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}provenance" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -54,9 +55,10 @@ import org.tridas.annotations.TridasEditProperties;
 @XmlType(name = "", propOrder = {
     "dating",
     "firstYear",
+    "lastYear",
     "datingReference",
     "statFoundations",
-    "sproutYear",
+    "pithYear",
     "deathYear",
     "provenance"
 })
@@ -70,12 +72,13 @@ public class TridasInterpretation
     protected TridasDating dating;
     @TridasEditProperties(finalType = true, readOnly = true)
     protected Year firstYear;
+    protected Year lastYear;
     protected TridasDatingReference datingReference;
     @XmlElement(name = "statFoundation")
     @TridasEditProperties(readOnly = true)
     protected List<TridasStatFoundation> statFoundations;
     @TridasEditProperties(finalType = true, readOnly = true)
-    protected Year sproutYear;
+    protected Year pithYear;
     @TridasEditProperties(finalType = true, readOnly = true)
     protected Year deathYear;
     protected String provenance;
@@ -134,6 +137,34 @@ public class TridasInterpretation
 
     public boolean isSetFirstYear() {
         return (this.firstYear!= null);
+    }
+
+    /**
+     * Gets the value of the lastYear property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Year }
+     *     
+     */
+    public Year getLastYear() {
+        return lastYear;
+    }
+
+    /**
+     * Sets the value of the lastYear property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Year }
+     *     
+     */
+    public void setLastYear(Year value) {
+        this.lastYear = value;
+    }
+
+    public boolean isSetLastYear() {
+        return (this.lastYear!= null);
     }
 
     /**
@@ -202,31 +233,31 @@ public class TridasInterpretation
     }
 
     /**
-     * Gets the value of the sproutYear property.
+     * Gets the value of the pithYear property.
      * 
      * @return
      *     possible object is
      *     {@link Year }
      *     
      */
-    public Year getSproutYear() {
-        return sproutYear;
+    public Year getPithYear() {
+        return pithYear;
     }
 
     /**
-     * Sets the value of the sproutYear property.
+     * Sets the value of the pithYear property.
      * 
      * @param value
      *     allowed object is
      *     {@link Year }
      *     
      */
-    public void setSproutYear(Year value) {
-        this.sproutYear = value;
+    public void setPithYear(Year value) {
+        this.pithYear = value;
     }
 
-    public boolean isSetSproutYear() {
-        return (this.sproutYear!= null);
+    public boolean isSetPithYear() {
+        return (this.pithYear!= null);
     }
 
     /**
@@ -308,9 +339,10 @@ public class TridasInterpretation
         final TridasInterpretation that = ((TridasInterpretation) object);
         equalsBuilder.append(this.getDating(), that.getDating());
         equalsBuilder.append(this.getFirstYear(), that.getFirstYear());
+        equalsBuilder.append(this.getLastYear(), that.getLastYear());
         equalsBuilder.append(this.getDatingReference(), that.getDatingReference());
         equalsBuilder.append(this.getStatFoundations(), that.getStatFoundations());
-        equalsBuilder.append(this.getSproutYear(), that.getSproutYear());
+        equalsBuilder.append(this.getPithYear(), that.getPithYear());
         equalsBuilder.append(this.getDeathYear(), that.getDeathYear());
         equalsBuilder.append(this.getProvenance(), that.getProvenance());
     }
@@ -330,9 +362,10 @@ public class TridasInterpretation
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
         hashCodeBuilder.append(this.getDating());
         hashCodeBuilder.append(this.getFirstYear());
+        hashCodeBuilder.append(this.getLastYear());
         hashCodeBuilder.append(this.getDatingReference());
         hashCodeBuilder.append(this.getStatFoundations());
-        hashCodeBuilder.append(this.getSproutYear());
+        hashCodeBuilder.append(this.getPithYear());
         hashCodeBuilder.append(this.getDeathYear());
         hashCodeBuilder.append(this.getProvenance());
     }
@@ -355,6 +388,11 @@ public class TridasInterpretation
             toStringBuilder.append("firstYear", theFirstYear);
         }
         {
+            Year theLastYear;
+            theLastYear = this.getLastYear();
+            toStringBuilder.append("lastYear", theLastYear);
+        }
+        {
             TridasDatingReference theDatingReference;
             theDatingReference = this.getDatingReference();
             toStringBuilder.append("datingReference", theDatingReference);
@@ -365,9 +403,9 @@ public class TridasInterpretation
             toStringBuilder.append("statFoundations", theStatFoundations);
         }
         {
-            Year theSproutYear;
-            theSproutYear = this.getSproutYear();
-            toStringBuilder.append("sproutYear", theSproutYear);
+            Year thePithYear;
+            thePithYear = this.getPithYear();
+            toStringBuilder.append("pithYear", thePithYear);
         }
         {
             Year theDeathYear;
@@ -405,6 +443,14 @@ public class TridasInterpretation
         } else {
             copy.firstYear = null;
         }
+        if (this.isSetLastYear()) {
+            Year sourceLastYear;
+            sourceLastYear = this.getLastYear();
+            Year copyLastYear = ((Year) copyBuilder.copy(sourceLastYear));
+            copy.setLastYear(copyLastYear);
+        } else {
+            copy.lastYear = null;
+        }
         if (this.isSetDatingReference()) {
             TridasDatingReference sourceDatingReference;
             sourceDatingReference = this.getDatingReference();
@@ -422,13 +468,13 @@ public class TridasInterpretation
         } else {
             copy.unsetStatFoundations();
         }
-        if (this.isSetSproutYear()) {
-            Year sourceSproutYear;
-            sourceSproutYear = this.getSproutYear();
-            Year copySproutYear = ((Year) copyBuilder.copy(sourceSproutYear));
-            copy.setSproutYear(copySproutYear);
+        if (this.isSetPithYear()) {
+            Year sourcePithYear;
+            sourcePithYear = this.getPithYear();
+            Year copyPithYear = ((Year) copyBuilder.copy(sourcePithYear));
+            copy.setPithYear(copyPithYear);
         } else {
-            copy.sproutYear = null;
+            copy.pithYear = null;
         }
         if (this.isSetDeathYear()) {
             Year sourceDeathYear;

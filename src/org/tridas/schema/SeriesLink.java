@@ -52,7 +52,7 @@ import org.tridas.annotations.TridasEditProperties;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
- *         &lt;element ref="{http://www.tridas.org/1.3}identifier"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}identifier"/>
  *       &lt;/choice>
  *     &lt;/restriction>
  *   &lt;/complexContent>
