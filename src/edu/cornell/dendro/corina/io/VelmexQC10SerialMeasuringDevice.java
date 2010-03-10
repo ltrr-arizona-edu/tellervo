@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.io;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,8 +25,8 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 	
 	public VelmexQC10SerialMeasuringDevice(String portName) throws IOException {
 		super(portName);
-		setStopBits(SerialPort.STOPBITS_2);
-		setFlowControl(SerialPort.FLOWCONTROL_RTSCTS_OUT);
+		//setStopBits(SerialPort.STOPBITS_2);
+		//setFlowControl(SerialPort.FLOWCONTROL_RTSCTS_OUT);
 	}
 
 	public VelmexQC10SerialMeasuringDevice() {
@@ -78,11 +79,15 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 	public void serialEvent(SerialPortEvent e) {
 		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			InputStream input;
+			OutputStream output;
 			
 			try {
 				input = getPort().getInputStream();
 				//TODO remove the following debugging code
 				
+			    output = getPort().getOutputStream();
+			    OutputStream outToPort=new DataOutputStream(output);
+		/*		
 				String home = System.getProperty("user.home");
 				
 				if (!home.endsWith(File.separator))
@@ -90,80 +95,47 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 				
 				//String path = 
 				File f=new File(home+"outFile.txt");
-			    OutputStream out=new FileOutputStream(f,true);
+			    OutputStream outToFile=new FileOutputStream(f,true);
+		*/	    				
 			    byte buf[]=new byte[1024];
 			    int len;
-			    while((len=input.read(buf))>0)
-			    out.write(buf,0,len);
-			    out.close();
-				
-			    //end of dedugging code
+			    if((len=input.read(buf))==7)
+			    {
+		/*	    	//Debug values to text file
+			    	outToFile.write(buf,0,len);
+			    	outToFile.close();
+		*/	    		
+			    	
+			    	// Read byte buffer into string
+			    	String value = new String(buf);
+			    	
+			    	// Trim off blanks and last two characters (\n\r)
+			    	value = value.substring(0, len-2);
+			    	
+			    	// Round up to integer of 1/100th mm
+			    	Float fltValue = new Float(value)*100;
+			    	Integer intValue = Math.round(fltValue);
+			    	
+			    	// Fire event
+			    	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+			    	
+			    	//zero the data with "@3"
+			    	try {
+				    String strZeroDataCommand = "@3\n\r";
+				    outToPort.write(strZeroDataCommand.getBytes());
+			    	}
+			    	catch (IOException ioe) {
+						System.out.println("Error writing to serial port: " + ioe);
+			    	}			    	
+			    }
+			    else
+			    {			    	
+			    	fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);	
+			    }
+
+			  
 			}
-			catch (IOException ioe) {
-				// uh.. ?
-				System.out.println("Error getting serial port input stream: " + ioe);
-				return;
-			}
-			
-			try {
-				switch(getState())
-				{
-				case WAITING_FOR_ACK: {
-					int val = input.read();
-					
-					if(val == EVE_ACK) {
-						System.out.println("Received ACK from device, leaving initialize mode");
-						
-						// update our status...
-						synchronized(this) {
-							setState(PortState.POST_INIT);
-							
-							// tell our other thread
-							this.notify();							
-						}
-												
-						// wait for it to die..
-						finishInitialize();
-						
-						// dump any input we have...
-						while(input.read() != -1);
-						
-						fireSerialSampleEvent(SerialSampleIOEvent.INITIALIZED_EVENT, null);
-					}
-					else {
-						System.out.println("Received " + val + "while waiting for ACK");
-					}
-				}
-				break;
-					
-				case NORMAL: {
-					int counter, valuehi, valuelo, value;
-					
-					// if any of these are -1, we timed out. 
-					// something was most likely invalid in the send/serial link...
-					// don't worry, we still have to ACK everything.
-					if(((counter = input.read()) == -1) ||
-							((valuehi = input.read()) == -1) ||
-							((valuelo = input.read()) == -1)) {
-						fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
-						return;
-					}
-					
-					// this is a duplicate packet. ignore it!
-					if(counter == lastSerial)
-						return;
-					
-					lastSerial = counter;
-					value = (256 * valuehi) + valuelo;
-					
-					fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, new Integer(value));					
-				}
-				break;
-				
-				default:
-					break;					
-				}
-			}
+	
 			catch (IOException ioe) {
 				System.out.println("Error reading from serial port: " + ioe);
 			}
