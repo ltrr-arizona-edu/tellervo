@@ -815,7 +815,7 @@ public class SeriesReport extends ReportBase {
 		Paragraph p = new Paragraph();
 		p.setLeading(0, 1.2f);
 		Year firstyear = s.getSeries().getInterpretation().getFirstYear();
-		Year sproutyear = s.getSeries().getInterpretation().getSproutYear();
+		Year sproutyear = s.getSeries().getInterpretation().getPithYear();
 		Year deathyear = s.getSeries().getInterpretation().getDeathYear();
 		Boolean isRelativelyDated = false;
 		p.add(new Chunk("Interpretation:", subSubSectionFont));

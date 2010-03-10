@@ -101,7 +101,6 @@ public final class TridasRingWidthWrapper {
 	private final class DataWrapper extends AbstractList<Number> {
 		// get the indexes to where we want them
 		public DataWrapper() {
-			reindex();
 		}
 		
 		/**
@@ -123,20 +122,7 @@ public final class TridasRingWidthWrapper {
 			else
 				return Double.valueOf(value);
 		}
-		
-		/**
-		 * Re-index the tridas values list
-		 * we have to do this if we insert a value in the middle
-		 */
-		public final void reindex() {
-			int idx = 0;
-			
-			for(TridasValue value : values) {
-				value.setIndex("i" + idx);
-				idx++;
-			}
-		}
-		
+				
 		@Override
 		public Number get(int index) {
 			TridasValue tridasValue = values.get(index);
@@ -154,14 +140,7 @@ public final class TridasRingWidthWrapper {
 		public void add(int index, Number element) {
 			TridasValue newValue = new TridasValue();
 			newValue.setValue(element.toString());
-			newValue.setIndex("i" + index);
-			
-			// are we inserting somewhere other than at the end of the list?
-			if(index != size()) {
-				// well, now we have to reindex!
-				reindex();
-			}
-			
+						
 			values.add(index, newValue);
 		}
 
@@ -213,9 +192,6 @@ public final class TridasRingWidthWrapper {
 		
 		for(Number n : in)
 			data.add(n);
-		
-		// get the indexes into our format
-		data.reindex();
 	}
 	
 	public final List<Number> getData() {
