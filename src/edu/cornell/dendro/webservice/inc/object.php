@@ -54,7 +54,14 @@ class object extends objectEntity implements IDBAccessor
         $this->setCreator($row['creator']);
         $this->setOwner($row['owner']);
         $this->setCoverageTemporal($row['coveragetemporal'], $row['coveragetemporalfoundation']);
-        $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
+        $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision']);
+        $this->location->setComment($row['locationcomment']);
+        $this->location->setAddressLine1($row['locationaddressline1']);
+        $this->location->setAddressLine2($row['locationaddressline2']);
+        $this->location->setCityOrTown($row['locationcityortown']);
+        $this->location->setStateProvinceRegion($row['locationstateprovinceregion']);
+        $this->location->setPostalCode($row['locationpostalcode']);
+        $this->location->setCountry($row['locationcountry']);
         $this->setCountOfChildVMeasurements($row['countofchildvmeasurements']);
 		$this->setCode($row['code']);
 

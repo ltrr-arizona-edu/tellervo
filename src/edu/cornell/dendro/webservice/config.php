@@ -22,7 +22,7 @@
 $dbName = corina_dev;
 
 // Domain name of the server this software is running on
-$domain = "dendro.cornell.edu/dev/";
+$domain = "dendro.cornell.edu/dev2/";
 
 // Whether to display debug messages
 $debugFlag = TRUE; 
@@ -33,14 +33,11 @@ $timingFlag = FALSE;
 // Version number to be displayed in output headers
 $wsversion = "0.2.".exec(svnversion); 
 
-// Path to RelaxNG schema
-$rngSchema = "/var/www/corina-webservice/dev/schemas/corina.rng"; 
-
 // Path to Corina XSD
-$corinaXSD = "/var/www/corina-webservice/dev/schemas/corina.xsd";
+$corinaXSD = "/var/www/corina-webservice/tridas1.2.1/schemas/corina.xsd";
 
 // Web accessible temporary folder
-$tempFolder = "/var/www/corina-webservice/dev/temp/";
+$tempFolder = "/var/www/corina-webservice/tridas1.2.1/temp/";
 
 // Base URL of web accessible temporary folder
 $tempFolderURL = "https://".$domain."temp/";
@@ -49,7 +46,7 @@ $tempFolderURL = "https://".$domain."temp/";
 $corinaNS = "http://dendro.cornell.edu/schema/corina/1.0";
 
 // TRiDaS Namespace URL
-$tridasNS = "http://www.tridas.org/1.3";
+$tridasNS = "http://www.tridas.org/1.2.1";
 
 // XLink Namespace URL
 $xlinkNS = "http://www.w3.org/1999/xlink";

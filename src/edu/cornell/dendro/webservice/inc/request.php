@@ -113,7 +113,9 @@ class request
         global $corinaNS;
         global $tridasNS;
     	global $myMetaHeader;
-    	global $myAuth;         
+    	global $myAuth;      
+        global $firebug;
+    	
 
         $origErrorLevel = error_reporting(E_ERROR);
         $xmlrequest = trim(dbHelper::xmlSpecialCharReplace($xmlrequest));

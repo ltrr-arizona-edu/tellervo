@@ -112,7 +112,14 @@ class element extends elementEntity implements IDBAccessor
         $this->setDimensions($row['units'],$row['height'], $row['width'], $row['depth']);       
         $this->setDiameter($row['diameter']);        
         $this->setAuthenticity($row['elementauthenticity']);
-        $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision'], $row['locationcomment']);
+        $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision']);
+        $this->location->setComment($row['locationcomment']);
+        $this->location->setAddressLine1($row['locationaddressline1']);
+        $this->location->setAddressLine2($row['locationaddressline2']);
+        $this->location->setCityOrTown($row['locationcityortown']);
+        $this->location->setStateProvinceRegion($row['locationstateprovinceregion']);
+        $this->location->setPostalCode($row['locationpostalcode']);
+        $this->location->setCountry($row['locationcountry']);
         $this->setProcessing($row['processing']);
         $this->setMarks($row['marks']);     
         $this->setAltitude($row['altitude']);

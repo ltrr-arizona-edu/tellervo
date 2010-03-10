@@ -1040,7 +1040,7 @@ class measurementParameters extends measurementEntity implements IParams
 			   				// Kludgey and gross.
 			   				if($this->getVMeasurementOp()=="Direct") $this->setFirstYear($interpTag->nodeValue);
 			   				break;
-			   			case "sproutYear": break;
+			   			case "pithYear": break;
 			   			case "deathYear":  break;
 		   				default:
 		   					trigger_error("901"."Unknown tag &lt;".$interpTag->tagName."&gt;. Tag is being ignored", E_USER_NOTICE);
