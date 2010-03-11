@@ -99,7 +99,7 @@ public class CorinaSchema {
     	// namespace, filename, prefix
     	{ "http://www.w3.org/1999/xlink", "xlinks.xsd", "xlink" },
     	{ "http://www.opengis.net/gml", "gmlsf.xsd", "gml" },
-    	{ "http://www.tridas.org/1.3", "tridas.xsd", "tridas" },
+    	{ "http://www.tridas.org/1.2.1", "tridas.xsd", "tridas" },
     	{ "http://dendro.cornell.edu/schema/corina/1.0", "corina.xsd", "c"},
     };
     
