@@ -23,6 +23,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 import org.tridas.adapters.IntegerAdapter;
+import org.tridas.annotations.TridasEditProperties;
 
 
 /**
@@ -71,7 +72,9 @@ public class TridasWoodCompleteness
     @XmlElement(type = String.class)
     @XmlJavaTypeAdapter(IntegerAdapter.class)
     @XmlSchemaType(name = "int")
+    @TridasEditProperties(machineOnly = true)
     protected Integer ringCount;
+    @TridasEditProperties(machineOnly = true)
     protected Double averageRingWidth;
     @XmlElement(type = String.class)
     @XmlJavaTypeAdapter(IntegerAdapter.class)
