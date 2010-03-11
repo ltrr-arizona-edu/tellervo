@@ -22,19 +22,6 @@ This file is for custom annotations applied to tridas objects
 		</annox:annotate>	
 	</bindings>
 	
-	<bindings node="//xs:element[@name='ringCount']">
-  		<annox:annotate target="class">
-			<ta:TridasEditProperties machineOnly="true" />
-		</annox:annotate>	
-	</bindings>	
-	
-	<bindings node="//xs:element[@name='averageRingWidth']">
-  		<annox:annotate target="class">
-			<ta:TridasEditProperties machineOnly="true" />
-		</annox:annotate>	
-	</bindings>	
-	
-
 	<bindings node="//xs:element[@name='genericField']/xs:complexType">
   		<annox:annotate target="class">
 			<ta:TridasEditProperties machineOnly="true" />
@@ -86,7 +73,7 @@ This file is for custom annotations applied to tridas objects
 	<bindings node="//xs:complexType[@name='seriesLinks']/xs:sequence/xs:element[@name='series']">
 		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true"/></annox:annotate>
 	</bindings>
-
+	
 	<!-- No element.linkSeries -->
 	<bindings node="//xs:element[@name='element']/xs:complexType/xs:complexContent/xs:extension/xs:sequence/xs:element[@name='linkSeries']">
 		<annox:annotate target="field"><ta:TridasEditProperties machineOnly="true"/></annox:annotate>
@@ -177,6 +164,20 @@ This file is for custom annotations applied to tridas objects
 	
 	<!-- hide measurementSeries.woodCompleteness -->
 	<bindings node="//xs:element[@name='measurementSeries']/xs:complexType/xs:complexContent/xs:restriction/xs:sequence/xs:element[@ref='woodCompleteness']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>
+	
+	<!-- hide averageRingWidth
+	<bindings node="//xs:element[@name='woodCompleteness']/xs:complexType/xs:sequence/xs:element[@ref='averageRingWidth']">
+  		<annox:annotate target="field">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>
+	
+	<!-- hide ringCount
+	<bindings node="//xs:element[@name='woodCompleteness']/xs:complexType/xs:sequence/xs:element[@ref='ringCount']">
   		<annox:annotate target="field">
 			<ta:TridasEditProperties machineOnly="true" />
 		</annox:annotate>	
