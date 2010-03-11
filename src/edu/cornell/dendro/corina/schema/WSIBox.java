@@ -41,15 +41,15 @@ import org.tridas.schema.TridasSample;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}title"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}identifier" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}createdTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}lastModifiedTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}comments" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}title"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}identifier" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}createdTimestamp" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}lastModifiedTimestamp" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}comments" minOccurs="0"/>
  *         &lt;element name="trackingLocation" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="curationLocation" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="sampleCount" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}sample" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}sample" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -75,15 +75,15 @@ public class WSIBox implements Serializable, CopyTo, Copyable, Equals, HashCode,
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlElement(namespace = "http://www.tridas.org/1.3", required = true)
+    @XmlElement(namespace = "http://www.tridas.org/1.2.1", required = true)
     protected String title;
-    @XmlElement(namespace = "http://www.tridas.org/1.3")
+    @XmlElement(namespace = "http://www.tridas.org/1.2.1")
     protected TridasIdentifier identifier;
-    @XmlElement(namespace = "http://www.tridas.org/1.3")
+    @XmlElement(namespace = "http://www.tridas.org/1.2.1")
     protected DateTime createdTimestamp;
-    @XmlElement(namespace = "http://www.tridas.org/1.3")
+    @XmlElement(namespace = "http://www.tridas.org/1.2.1")
     protected DateTime lastModifiedTimestamp;
-    @XmlElement(namespace = "http://www.tridas.org/1.3")
+    @XmlElement(namespace = "http://www.tridas.org/1.2.1")
     protected String comments;
     protected String trackingLocation;
     protected String curationLocation;
@@ -91,7 +91,7 @@ public class WSIBox implements Serializable, CopyTo, Copyable, Equals, HashCode,
     @XmlJavaTypeAdapter(IntegerAdapter.class)
     @XmlSchemaType(name = "int")
     protected Integer sampleCount;
-    @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.3")
+    @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.2.1")
     protected List<TridasSample> samples;
 
     /**

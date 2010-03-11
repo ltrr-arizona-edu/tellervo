@@ -5,8 +5,11 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -20,6 +23,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.adapters.IntegerAdapter;
 
 
 /**
@@ -32,10 +36,10 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}missingHeartwoodRingsToPith" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}missingHeartwoodRingsToPithFoundation" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}missingHeartwoodRingsToPith" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}missingHeartwoodRingsToPithFoundation" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.3}complexPresenceAbsence" />
+ *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.2.1}complexPresenceAbsence" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -54,7 +58,10 @@ public class TridasHeartwood
 {
 
     private final static long serialVersionUID = 1001L;
-    protected String missingHeartwoodRingsToPith;
+    @XmlElement(type = String.class)
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
+    @XmlSchemaType(name = "int")
+    protected Integer missingHeartwoodRingsToPith;
     protected String missingHeartwoodRingsToPithFoundation;
     @XmlAttribute(name = "presence", required = true)
     protected ComplexPresenceAbsence presence;
@@ -67,7 +74,7 @@ public class TridasHeartwood
      *     {@link String }
      *     
      */
-    public String getMissingHeartwoodRingsToPith() {
+    public Integer getMissingHeartwoodRingsToPith() {
         return missingHeartwoodRingsToPith;
     }
 
@@ -79,7 +86,7 @@ public class TridasHeartwood
      *     {@link String }
      *     
      */
-    public void setMissingHeartwoodRingsToPith(String value) {
+    public void setMissingHeartwoodRingsToPith(Integer value) {
         this.missingHeartwoodRingsToPith = value;
     }
 
@@ -183,7 +190,7 @@ public class TridasHeartwood
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            String theMissingHeartwoodRingsToPith;
+            Integer theMissingHeartwoodRingsToPith;
             theMissingHeartwoodRingsToPith = this.getMissingHeartwoodRingsToPith();
             toStringBuilder.append("missingHeartwoodRingsToPith", theMissingHeartwoodRingsToPith);
         }
@@ -208,9 +215,9 @@ public class TridasHeartwood
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasHeartwood copy = ((target == null)?((TridasHeartwood) createCopy()):((TridasHeartwood) target));
         if (this.isSetMissingHeartwoodRingsToPith()) {
-            String sourceMissingHeartwoodRingsToPith;
+            Integer sourceMissingHeartwoodRingsToPith;
             sourceMissingHeartwoodRingsToPith = this.getMissingHeartwoodRingsToPith();
-            String copyMissingHeartwoodRingsToPith = ((String) copyBuilder.copy(sourceMissingHeartwoodRingsToPith));
+            Integer copyMissingHeartwoodRingsToPith = ((Integer) copyBuilder.copy(sourceMissingHeartwoodRingsToPith));
             copy.setMissingHeartwoodRingsToPith(copyMissingHeartwoodRingsToPith);
         } else {
             copy.missingHeartwoodRingsToPith = null;

@@ -36,25 +36,25 @@ import org.tridas.annotations.TridasEditProperties;
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.tridas.org/1.3}tridasEntity">
+ *     &lt;extension base="{http://www.tridas.org/1.2.1}tridasEntity">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}type" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}description" minOccurs="0"/>
- *         &lt;element name="linkSeries" type="{http://www.tridas.org/1.3}seriesLinks" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}file" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}taxon"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}shape" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}dimensions" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}authenticity" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}location" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}processing" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}marks" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}altitude" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}slope" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}soil" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}bedrock" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}genericField" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}sample" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}type" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}description" minOccurs="0"/>
+ *         &lt;element name="linkSeries" type="{http://www.tridas.org/1.2.1}seriesLinksWithPreferred" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}file" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}taxon"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}shape" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}dimensions" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}authenticity" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}location" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}processing" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}marks" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}altitude" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}slope" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}soil" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}bedrock" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}genericField" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}sample" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -94,7 +94,7 @@ public class TridasElement
     protected ControlledVoc type;
     protected String description;
     @TridasEditProperties(machineOnly = true)
-    protected SeriesLinks linkSeries;
+    protected SeriesLinksWithPreferred linkSeries;
     @XmlElement(name = "file")
     protected List<TridasFile> files;
     @XmlElement(required = true)
@@ -177,10 +177,10 @@ public class TridasElement
      * 
      * @return
      *     possible object is
-     *     {@link SeriesLinks }
+     *     {@link SeriesLinksWithPreferred }
      *     
      */
-    public SeriesLinks getLinkSeries() {
+    public SeriesLinksWithPreferred getLinkSeries() {
         return linkSeries;
     }
 
@@ -189,10 +189,10 @@ public class TridasElement
      * 
      * @param value
      *     allowed object is
-     *     {@link SeriesLinks }
+     *     {@link SeriesLinksWithPreferred }
      *     
      */
-    public void setLinkSeries(SeriesLinks value) {
+    public void setLinkSeries(SeriesLinksWithPreferred value) {
         this.linkSeries = value;
     }
 
@@ -736,7 +736,7 @@ public class TridasElement
             toStringBuilder.append("description", theDescription);
         }
         {
-            SeriesLinks theLinkSeries;
+            SeriesLinksWithPreferred theLinkSeries;
             theLinkSeries = this.getLinkSeries();
             toStringBuilder.append("linkSeries", theLinkSeries);
         }
@@ -838,9 +838,9 @@ public class TridasElement
             copy.description = null;
         }
         if (this.isSetLinkSeries()) {
-            SeriesLinks sourceLinkSeries;
+            SeriesLinksWithPreferred sourceLinkSeries;
             sourceLinkSeries = this.getLinkSeries();
-            SeriesLinks copyLinkSeries = ((SeriesLinks) copyBuilder.copy(sourceLinkSeries));
+            SeriesLinksWithPreferred copyLinkSeries = ((SeriesLinksWithPreferred) copyBuilder.copy(sourceLinkSeries));
             copy.setLinkSeries(copyLinkSeries);
         } else {
             copy.linkSeries = null;

@@ -88,7 +88,7 @@ public class TridasRingWidthWrapper_Legacy implements NumericArrayListHook {
 			TridasValue value = new TridasValue();
 
 			value.setValue(data.get(i).toString());
-			value.setIndex(Integer.toString(i));
+			//value.setIndex(Integer.toString(i));
 
 			values.add(value);
 		}
@@ -143,15 +143,6 @@ public class TridasRingWidthWrapper_Legacy implements NumericArrayListHook {
 		return data;
 	}
 	
-	/**
-	 * Go through TridasValues and set indexes to be sequential
-	 */
-	private void reindex() {
-		for(int i = 0, len = values.size(); i < len; i++) {
-			values.get(i).setIndex(Integer.toString(i));
-		}
-	}
-
 	private final void copyOverCounts() {
 		for(int i = 0, len = values.size(); i < len; i++)
 			values.get(i).setCount(count.get(i));
@@ -176,16 +167,11 @@ public class TridasRingWidthWrapper_Legacy implements NumericArrayListHook {
 			// create a new tridas value!
 			TridasValue tv = new TridasValue();
 			
-			tv.setIndex(Integer.toString(index));
 			tv.setValue(e.toString());
 			tv.setCount(1);
 			
 			values.add(tv);
 						
-			// reindex if data was inserted out-of-order
-			if(shouldReindex)
-				reindex();
-
 			if(usesCounts) {
 				checkCountsValid();
 				

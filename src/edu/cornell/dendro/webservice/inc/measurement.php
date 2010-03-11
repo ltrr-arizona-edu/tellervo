@@ -1240,7 +1240,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			if($this->dating->getValue()!=NULL)			$xml.= "<tridas:dating type=\"".$this->dating->getValue()."\" />";
 			if($this->getFirstYear()!=NULL)				$xml.= "<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getFirstYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getFirstYear())."</tridas:firstYear>\n";
 			if($this->getMasterVMeasurementID()!=NULL)	$xml.= "<tridas:datingReference>\n<tridas:linkSeries>\n<tridas:identifier domain=\"$domain\">".$this->getMasterVMeasurementID()."</tridas:identifier>\n</tridas:linkSeries>\n</tridas:datingReference>\n";
-			if($this->getSproutYear()!=NULL)			$xml.= "<tridas:sproutYear certainty=\"".$this->getSproutYearCertainty()."\" suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getSproutYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getSproutYear())."</tridas:sproutYear>\n";
+			if($this->getSproutYear()!=NULL)			$xml.= "<tridas:pithYear certainty=\"".$this->getSproutYearCertainty()."\" suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getSproutYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getSproutYear())."</tridas:pithYear>\n";
 			if($this->getDeathYear()!=NULL)				$xml.= "<tridas:deathYear certainty=\"".$this->getDeathYearCertainty()."\" suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getDeathYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getDeathYear())."</tridas:deathYear>\n";
 			if($this->getProvenance()!=NULL)			$xml.= "<tridas:provenance>".addslashes($this->getProvenance())."</tridas:provenance>\n";
 			$xml.= "</tridas:interpretation>\n";
@@ -1325,8 +1325,8 @@ class measurement extends measurementEntity implements IDBAccessor
 				}
 			}
 
-			// Add year index
-			$xml.="<tridas:value index=\"nr".$yearvalue."\" ";
+			
+			$xml.="<tridas:value ";
 			 
 			// Add actual value
 			if($wj===TRUE)

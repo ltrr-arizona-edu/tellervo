@@ -35,8 +35,8 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * &lt;complexType name="year">
  *   &lt;simpleContent>
  *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>positiveInteger">
- *       &lt;attribute name="certainty" type="{http://www.tridas.org/1.3}certainty" />
- *       &lt;attribute name="suffix" use="required" type="{http://www.tridas.org/1.3}datingSuffix" />
+ *       &lt;attribute name="certainty" type="{http://www.tridas.org/1.2.1}certainty" />
+ *       &lt;attribute name="suffix" use="required" type="{http://www.tridas.org/1.2.1}datingSuffix" />
  *     &lt;/extension>
  *   &lt;/simpleContent>
  * &lt;/complexType>

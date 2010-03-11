@@ -35,7 +35,7 @@ import org.tridas.schema.TridasRemark;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}remark" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}remark" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -53,7 +53,7 @@ public class WSIReadingNoteDictionary implements Serializable, CopyTo, Copyable,
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlElement(name = "remark", namespace = "http://www.tridas.org/1.3")
+    @XmlElement(name = "remark", namespace = "http://www.tridas.org/1.2.1")
     protected List<TridasRemark> remarks;
 
     /**

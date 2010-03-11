@@ -34,7 +34,8 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}project" maxOccurs="unbounded"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}project" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}vocabulary" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -45,7 +46,8 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "projects"
+    "projects",
+    "vocabulary"
 })
 @XmlRootElement(name = "tridas")
 public class TridasTridas
@@ -53,8 +55,9 @@ public class TridasTridas
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlElement(name = "project", required = true)
+    @XmlElement(name = "project")
     protected List<TridasProject> projects;
+    protected TridasVocabulary vocabulary;
 
     /**
      * Gets the value of the projects property.
@@ -94,6 +97,34 @@ public class TridasTridas
     }
 
     /**
+     * Gets the value of the vocabulary property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TridasVocabulary }
+     *     
+     */
+    public TridasVocabulary getVocabulary() {
+        return vocabulary;
+    }
+
+    /**
+     * Sets the value of the vocabulary property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TridasVocabulary }
+     *     
+     */
+    public void setVocabulary(TridasVocabulary value) {
+        this.vocabulary = value;
+    }
+
+    public boolean isSetVocabulary() {
+        return (this.vocabulary!= null);
+    }
+
+    /**
      * Sets the value of the projects property.
      * 
      * @param projects
@@ -115,6 +146,7 @@ public class TridasTridas
         }
         final TridasTridas that = ((TridasTridas) object);
         equalsBuilder.append(this.getProjects(), that.getProjects());
+        equalsBuilder.append(this.getVocabulary(), that.getVocabulary());
     }
 
     public boolean equals(Object object) {
@@ -131,6 +163,7 @@ public class TridasTridas
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
         hashCodeBuilder.append(this.getProjects());
+        hashCodeBuilder.append(this.getVocabulary());
     }
 
     public int hashCode() {
@@ -144,6 +177,11 @@ public class TridasTridas
             List<TridasProject> theProjects;
             theProjects = this.getProjects();
             toStringBuilder.append("projects", theProjects);
+        }
+        {
+            TridasVocabulary theVocabulary;
+            theVocabulary = this.getVocabulary();
+            toStringBuilder.append("vocabulary", theVocabulary);
         }
     }
 
@@ -163,6 +201,14 @@ public class TridasTridas
             copy.setProjects(copyProjects);
         } else {
             copy.unsetProjects();
+        }
+        if (this.isSetVocabulary()) {
+            TridasVocabulary sourceVocabulary;
+            sourceVocabulary = this.getVocabulary();
+            TridasVocabulary copyVocabulary = ((TridasVocabulary) copyBuilder.copy(sourceVocabulary));
+            copy.setVocabulary(copyVocabulary);
+        } else {
+            copy.vocabulary = null;
         }
         return copy;
     }

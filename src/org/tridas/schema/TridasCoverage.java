@@ -34,8 +34,8 @@ import org.tridas.annotations.TridasCustomDictionaryType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}coverageTemporal"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}coverageTemporalFoundation"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}coverageTemporal"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}coverageTemporalFoundation"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

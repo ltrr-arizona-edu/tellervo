@@ -42,24 +42,24 @@ import org.tridas.interfaces.ITridasDerivedSeries;
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.tridas.org/1.3}baseSeries">
+ *     &lt;restriction base="{http://www.tridas.org/1.2.1}baseSeries">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}title"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}identifier" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}createdTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}lastModifiedTimestamp" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}comments" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}derivationDate" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}type"/>
- *         &lt;element name="linkSeries" type="{http://www.tridas.org/1.3}seriesLinks"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}objective" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}standardizingMethod" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}author" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}version" minOccurs="0"/>
- *         &lt;group ref="{http://www.tridas.org/1.3}interpretationType" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}location" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}genericField" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}values" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}title"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}identifier" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}createdTimestamp" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}lastModifiedTimestamp" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}comments" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}derivationDate" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}type"/>
+ *         &lt;element name="linkSeries" type="{http://www.tridas.org/1.2.1}seriesLinks"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}objective" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}standardizingMethod" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}author" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}version" minOccurs="0"/>
+ *         &lt;group ref="{http://www.tridas.org/1.2.1}interpretationType" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}location" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}genericField" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}values" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *     &lt;/restriction>

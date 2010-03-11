@@ -28,11 +28,11 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * <pre>
  * &lt;complexType name="seriesLinksWithPreferred">
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.tridas.org/1.3}seriesLinks">
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="preferredSeries" type="{http://www.tridas.org/1.3}seriesLink" minOccurs="0"/>
+ *         &lt;element name="preferredSeries" type="{http://www.tridas.org/1.2.1}seriesLink" minOccurs="0"/>
  *       &lt;/sequence>
- *     &lt;/extension>
+ *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -44,7 +44,6 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
     "preferredSeries"
 })
 public class SeriesLinksWithPreferred
-    extends SeriesLinks
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
@@ -87,7 +86,6 @@ public class SeriesLinksWithPreferred
         if (this == object) {
             return ;
         }
-        super.equals(object, equalsBuilder);
         final SeriesLinksWithPreferred that = ((SeriesLinksWithPreferred) object);
         equalsBuilder.append(this.getPreferredSeries(), that.getPreferredSeries());
     }
@@ -105,7 +103,6 @@ public class SeriesLinksWithPreferred
     }
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
-        super.hashCode(hashCodeBuilder);
         hashCodeBuilder.append(this.getPreferredSeries());
     }
 
@@ -116,7 +113,6 @@ public class SeriesLinksWithPreferred
     }
 
     public void toString(ToStringBuilder toStringBuilder) {
-        super.toString(toStringBuilder);
         {
             SeriesLink thePreferredSeries;
             thePreferredSeries = this.getPreferredSeries();
@@ -132,7 +128,6 @@ public class SeriesLinksWithPreferred
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final SeriesLinksWithPreferred copy = ((target == null)?((SeriesLinksWithPreferred) createCopy()):((SeriesLinksWithPreferred) target));
-        super.copyTo(copy, copyBuilder);
         if (this.isSetPreferredSeries()) {
             SeriesLink sourcePreferredSeries;
             sourcePreferredSeries = this.getPreferredSeries();

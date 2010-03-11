@@ -36,12 +36,12 @@ import org.tridas.adapters.IntegerAdapter;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}nrOfSapwoodRings" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}lastRingUnderBark" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}missingSapwoodRingsToBark" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}missingSapwoodRingsToBarkFoundation" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}nrOfSapwoodRings" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}lastRingUnderBark" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}missingSapwoodRingsToBark" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}missingSapwoodRingsToBarkFoundation" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.3}complexPresenceAbsence" />
+ *       &lt;attribute name="presence" use="required" type="{http://www.tridas.org/1.2.1}complexPresenceAbsence" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -67,7 +67,10 @@ public class TridasSapwood
     @XmlSchemaType(name = "int")
     protected Integer nrOfSapwoodRings;
     protected TridasLastRingUnderBark lastRingUnderBark;
-    protected String missingSapwoodRingsToBark;
+    @XmlElement(type = String.class)
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
+    @XmlSchemaType(name = "int")
+    protected Integer missingSapwoodRingsToBark;
     protected String missingSapwoodRingsToBarkFoundation;
     @XmlAttribute(name = "presence", required = true)
     protected ComplexPresenceAbsence presence;
@@ -136,7 +139,7 @@ public class TridasSapwood
      *     {@link String }
      *     
      */
-    public String getMissingSapwoodRingsToBark() {
+    public Integer getMissingSapwoodRingsToBark() {
         return missingSapwoodRingsToBark;
     }
 
@@ -148,7 +151,7 @@ public class TridasSapwood
      *     {@link String }
      *     
      */
-    public void setMissingSapwoodRingsToBark(String value) {
+    public void setMissingSapwoodRingsToBark(Integer value) {
         this.missingSapwoodRingsToBark = value;
     }
 
@@ -266,7 +269,7 @@ public class TridasSapwood
             toStringBuilder.append("lastRingUnderBark", theLastRingUnderBark);
         }
         {
-            String theMissingSapwoodRingsToBark;
+            Integer theMissingSapwoodRingsToBark;
             theMissingSapwoodRingsToBark = this.getMissingSapwoodRingsToBark();
             toStringBuilder.append("missingSapwoodRingsToBark", theMissingSapwoodRingsToBark);
         }
@@ -307,9 +310,9 @@ public class TridasSapwood
             copy.lastRingUnderBark = null;
         }
         if (this.isSetMissingSapwoodRingsToBark()) {
-            String sourceMissingSapwoodRingsToBark;
+            Integer sourceMissingSapwoodRingsToBark;
             sourceMissingSapwoodRingsToBark = this.getMissingSapwoodRingsToBark();
-            String copyMissingSapwoodRingsToBark = ((String) copyBuilder.copy(sourceMissingSapwoodRingsToBark));
+            Integer copyMissingSapwoodRingsToBark = ((Integer) copyBuilder.copy(sourceMissingSapwoodRingsToBark));
             copy.setMissingSapwoodRingsToBark(copyMissingSapwoodRingsToBark);
         } else {
             copy.missingSapwoodRingsToBark = null;

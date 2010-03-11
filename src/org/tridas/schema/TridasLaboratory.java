@@ -35,7 +35,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}identifier" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}identifier" minOccurs="0"/>
  *         &lt;element name="name">
  *           &lt;complexType>
  *             &lt;simpleContent>
@@ -45,8 +45,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *             &lt;/simpleContent>
  *           &lt;/complexType>
  *         &lt;/element>
- *         &lt;element name="place" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="country" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}address"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -59,8 +58,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
 @XmlType(name = "", propOrder = {
     "identifier",
     "name",
-    "place",
-    "country"
+    "address"
 })
 @XmlRootElement(name = "laboratory")
 public class TridasLaboratory
@@ -72,9 +70,7 @@ public class TridasLaboratory
     @XmlElement(required = true)
     protected TridasLaboratory.Name name;
     @XmlElement(required = true)
-    protected String place;
-    @XmlElement(required = true)
-    protected String country;
+    protected TridasAddress address;
 
     /**
      * 
@@ -135,59 +131,31 @@ public class TridasLaboratory
     }
 
     /**
-     * Gets the value of the place property.
+     * Gets the value of the address property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link TridasAddress }
      *     
      */
-    public String getPlace() {
-        return place;
+    public TridasAddress getAddress() {
+        return address;
     }
 
     /**
-     * Sets the value of the place property.
+     * Sets the value of the address property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link TridasAddress }
      *     
      */
-    public void setPlace(String value) {
-        this.place = value;
+    public void setAddress(TridasAddress value) {
+        this.address = value;
     }
 
-    public boolean isSetPlace() {
-        return (this.place!= null);
-    }
-
-    /**
-     * Gets the value of the country property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getCountry() {
-        return country;
-    }
-
-    /**
-     * Sets the value of the country property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setCountry(String value) {
-        this.country = value;
-    }
-
-    public boolean isSetCountry() {
-        return (this.country!= null);
+    public boolean isSetAddress() {
+        return (this.address!= null);
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
@@ -201,8 +169,7 @@ public class TridasLaboratory
         final TridasLaboratory that = ((TridasLaboratory) object);
         equalsBuilder.append(this.getIdentifier(), that.getIdentifier());
         equalsBuilder.append(this.getName(), that.getName());
-        equalsBuilder.append(this.getPlace(), that.getPlace());
-        equalsBuilder.append(this.getCountry(), that.getCountry());
+        equalsBuilder.append(this.getAddress(), that.getAddress());
     }
 
     public boolean equals(Object object) {
@@ -220,8 +187,7 @@ public class TridasLaboratory
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
         hashCodeBuilder.append(this.getIdentifier());
         hashCodeBuilder.append(this.getName());
-        hashCodeBuilder.append(this.getPlace());
-        hashCodeBuilder.append(this.getCountry());
+        hashCodeBuilder.append(this.getAddress());
     }
 
     public int hashCode() {
@@ -242,14 +208,9 @@ public class TridasLaboratory
             toStringBuilder.append("name", theName);
         }
         {
-            String thePlace;
-            thePlace = this.getPlace();
-            toStringBuilder.append("place", thePlace);
-        }
-        {
-            String theCountry;
-            theCountry = this.getCountry();
-            toStringBuilder.append("country", theCountry);
+            TridasAddress theAddress;
+            theAddress = this.getAddress();
+            toStringBuilder.append("address", theAddress);
         }
     }
 
@@ -277,21 +238,13 @@ public class TridasLaboratory
         } else {
             copy.name = null;
         }
-        if (this.isSetPlace()) {
-            String sourcePlace;
-            sourcePlace = this.getPlace();
-            String copyPlace = ((String) copyBuilder.copy(sourcePlace));
-            copy.setPlace(copyPlace);
+        if (this.isSetAddress()) {
+            TridasAddress sourceAddress;
+            sourceAddress = this.getAddress();
+            TridasAddress copyAddress = ((TridasAddress) copyBuilder.copy(sourceAddress));
+            copy.setAddress(copyAddress);
         } else {
-            copy.place = null;
-        }
-        if (this.isSetCountry()) {
-            String sourceCountry;
-            sourceCountry = this.getCountry();
-            String copyCountry = ((String) copyBuilder.copy(sourceCountry));
-            copy.setCountry(copyCountry);
-        } else {
-            copy.country = null;
+            copy.address = null;
         }
         return copy;
     }

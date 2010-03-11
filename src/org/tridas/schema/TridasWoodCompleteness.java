@@ -6,7 +6,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -20,6 +22,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.tridas.adapters.IntegerAdapter;
 
 
 /**
@@ -32,10 +35,14 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}pith"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}heartwood"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}sapwood"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}bark"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}ringCount" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}averageRingWidth" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}nrOfUnmeasuredInnerRings" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}nrOfUnmeasuredOuterRings" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}pith"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}heartwood"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}sapwood"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}bark"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -46,6 +53,10 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
+    "ringCount",
+    "averageRingWidth",
+    "nrOfUnmeasuredInnerRings",
+    "nrOfUnmeasuredOuterRings",
     "pith",
     "heartwood",
     "sapwood",
@@ -57,6 +68,19 @@ public class TridasWoodCompleteness
 {
 
     private final static long serialVersionUID = 1001L;
+    @XmlElement(type = String.class)
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
+    @XmlSchemaType(name = "int")
+    protected Integer ringCount;
+    protected Double averageRingWidth;
+    @XmlElement(type = String.class)
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
+    @XmlSchemaType(name = "int")
+    protected Integer nrOfUnmeasuredInnerRings;
+    @XmlElement(type = String.class)
+    @XmlJavaTypeAdapter(IntegerAdapter.class)
+    @XmlSchemaType(name = "int")
+    protected Integer nrOfUnmeasuredOuterRings;
     @XmlElement(required = true)
     protected TridasPith pith;
     @XmlElement(required = true)
@@ -65,6 +89,118 @@ public class TridasWoodCompleteness
     protected TridasSapwood sapwood;
     @XmlElement(required = true)
     protected TridasBark bark;
+
+    /**
+     * Gets the value of the ringCount property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public Integer getRingCount() {
+        return ringCount;
+    }
+
+    /**
+     * Sets the value of the ringCount property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRingCount(Integer value) {
+        this.ringCount = value;
+    }
+
+    public boolean isSetRingCount() {
+        return (this.ringCount!= null);
+    }
+
+    /**
+     * Gets the value of the averageRingWidth property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getAverageRingWidth() {
+        return averageRingWidth;
+    }
+
+    /**
+     * Sets the value of the averageRingWidth property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setAverageRingWidth(Double value) {
+        this.averageRingWidth = value;
+    }
+
+    public boolean isSetAverageRingWidth() {
+        return (this.averageRingWidth!= null);
+    }
+
+    /**
+     * Gets the value of the nrOfUnmeasuredInnerRings property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public Integer getNrOfUnmeasuredInnerRings() {
+        return nrOfUnmeasuredInnerRings;
+    }
+
+    /**
+     * Sets the value of the nrOfUnmeasuredInnerRings property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNrOfUnmeasuredInnerRings(Integer value) {
+        this.nrOfUnmeasuredInnerRings = value;
+    }
+
+    public boolean isSetNrOfUnmeasuredInnerRings() {
+        return (this.nrOfUnmeasuredInnerRings!= null);
+    }
+
+    /**
+     * Gets the value of the nrOfUnmeasuredOuterRings property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public Integer getNrOfUnmeasuredOuterRings() {
+        return nrOfUnmeasuredOuterRings;
+    }
+
+    /**
+     * Sets the value of the nrOfUnmeasuredOuterRings property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNrOfUnmeasuredOuterRings(Integer value) {
+        this.nrOfUnmeasuredOuterRings = value;
+    }
+
+    public boolean isSetNrOfUnmeasuredOuterRings() {
+        return (this.nrOfUnmeasuredOuterRings!= null);
+    }
 
     /**
      * Gets the value of the pith property.
@@ -187,6 +323,10 @@ public class TridasWoodCompleteness
             return ;
         }
         final TridasWoodCompleteness that = ((TridasWoodCompleteness) object);
+        equalsBuilder.append(this.getRingCount(), that.getRingCount());
+        equalsBuilder.append(this.getAverageRingWidth(), that.getAverageRingWidth());
+        equalsBuilder.append(this.getNrOfUnmeasuredInnerRings(), that.getNrOfUnmeasuredInnerRings());
+        equalsBuilder.append(this.getNrOfUnmeasuredOuterRings(), that.getNrOfUnmeasuredOuterRings());
         equalsBuilder.append(this.getPith(), that.getPith());
         equalsBuilder.append(this.getHeartwood(), that.getHeartwood());
         equalsBuilder.append(this.getSapwood(), that.getSapwood());
@@ -206,6 +346,10 @@ public class TridasWoodCompleteness
     }
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
+        hashCodeBuilder.append(this.getRingCount());
+        hashCodeBuilder.append(this.getAverageRingWidth());
+        hashCodeBuilder.append(this.getNrOfUnmeasuredInnerRings());
+        hashCodeBuilder.append(this.getNrOfUnmeasuredOuterRings());
         hashCodeBuilder.append(this.getPith());
         hashCodeBuilder.append(this.getHeartwood());
         hashCodeBuilder.append(this.getSapwood());
@@ -219,6 +363,26 @@ public class TridasWoodCompleteness
     }
 
     public void toString(ToStringBuilder toStringBuilder) {
+        {
+            Integer theRingCount;
+            theRingCount = this.getRingCount();
+            toStringBuilder.append("ringCount", theRingCount);
+        }
+        {
+            Double theAverageRingWidth;
+            theAverageRingWidth = this.getAverageRingWidth();
+            toStringBuilder.append("averageRingWidth", theAverageRingWidth);
+        }
+        {
+            Integer theNrOfUnmeasuredInnerRings;
+            theNrOfUnmeasuredInnerRings = this.getNrOfUnmeasuredInnerRings();
+            toStringBuilder.append("nrOfUnmeasuredInnerRings", theNrOfUnmeasuredInnerRings);
+        }
+        {
+            Integer theNrOfUnmeasuredOuterRings;
+            theNrOfUnmeasuredOuterRings = this.getNrOfUnmeasuredOuterRings();
+            toStringBuilder.append("nrOfUnmeasuredOuterRings", theNrOfUnmeasuredOuterRings);
+        }
         {
             TridasPith thePith;
             thePith = this.getPith();
@@ -249,6 +413,38 @@ public class TridasWoodCompleteness
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final TridasWoodCompleteness copy = ((target == null)?((TridasWoodCompleteness) createCopy()):((TridasWoodCompleteness) target));
+        if (this.isSetRingCount()) {
+            Integer sourceRingCount;
+            sourceRingCount = this.getRingCount();
+            Integer copyRingCount = ((Integer) copyBuilder.copy(sourceRingCount));
+            copy.setRingCount(copyRingCount);
+        } else {
+            copy.ringCount = null;
+        }
+        if (this.isSetAverageRingWidth()) {
+            Double sourceAverageRingWidth;
+            sourceAverageRingWidth = this.getAverageRingWidth();
+            Double copyAverageRingWidth = ((Double) copyBuilder.copy(sourceAverageRingWidth));
+            copy.setAverageRingWidth(copyAverageRingWidth);
+        } else {
+            copy.averageRingWidth = null;
+        }
+        if (this.isSetNrOfUnmeasuredInnerRings()) {
+            Integer sourceNrOfUnmeasuredInnerRings;
+            sourceNrOfUnmeasuredInnerRings = this.getNrOfUnmeasuredInnerRings();
+            Integer copyNrOfUnmeasuredInnerRings = ((Integer) copyBuilder.copy(sourceNrOfUnmeasuredInnerRings));
+            copy.setNrOfUnmeasuredInnerRings(copyNrOfUnmeasuredInnerRings);
+        } else {
+            copy.nrOfUnmeasuredInnerRings = null;
+        }
+        if (this.isSetNrOfUnmeasuredOuterRings()) {
+            Integer sourceNrOfUnmeasuredOuterRings;
+            sourceNrOfUnmeasuredOuterRings = this.getNrOfUnmeasuredOuterRings();
+            Integer copyNrOfUnmeasuredOuterRings = ((Integer) copyBuilder.copy(sourceNrOfUnmeasuredOuterRings));
+            copy.setNrOfUnmeasuredOuterRings(copyNrOfUnmeasuredOuterRings);
+        } else {
+            copy.nrOfUnmeasuredOuterRings = null;
+        }
         if (this.isSetPith()) {
             TridasPith sourcePith;
             sourcePith = this.getPith();

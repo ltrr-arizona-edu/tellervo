@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -34,7 +33,7 @@ import org.tridas.annotations.TridasEditProperties;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="series" type="{http://www.tridas.org/1.3}seriesLink" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="series" type="{http://www.tridas.org/1.2.1}seriesLink" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -46,9 +45,6 @@ import org.tridas.annotations.TridasEditProperties;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "seriesLinks", propOrder = {
     "series"
-})
-@XmlSeeAlso({
-    SeriesLinksWithPreferred.class
 })
 public class SeriesLinks
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString

@@ -34,8 +34,8 @@ import org.tridas.interfaces.NormalTridasVoc;
  * <pre>
  * &lt;complexType>
  *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.tridas.org/1.3>controlledVoc">
- *       &lt;attribute name="normalTridas" type="{http://www.tridas.org/1.3}normalTridasRemark" />
+ *     &lt;extension base="&lt;http://www.tridas.org/1.2.1>controlledVoc">
+ *       &lt;attribute name="normalTridas" type="{http://www.tridas.org/1.2.1}normalTridasRemark" />
  *       &lt;attribute name="inheritedCount" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/extension>
  *   &lt;/simpleContent>

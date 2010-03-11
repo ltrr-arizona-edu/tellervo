@@ -33,22 +33,22 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.tridas.org/1.3}tridasEntity">
+ *     &lt;extension base="{http://www.tridas.org/1.2.1}tridasEntity">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}type" maxOccurs="unbounded"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}description" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}file" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}laboratory" maxOccurs="unbounded"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}category"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}investigator"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}period"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}requestDate" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}commissioner" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}reference" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}research" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}genericField" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}object" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}derivedSeries" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}type" maxOccurs="unbounded"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}description" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}file" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}laboratory" maxOccurs="unbounded"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}category"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}investigator"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}period"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}requestDate" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}commissioner" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}reference" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}research" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}genericField" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}object" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}derivedSeries" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>

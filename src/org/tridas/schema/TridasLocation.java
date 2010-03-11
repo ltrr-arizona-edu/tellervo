@@ -32,10 +32,11 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}locationGeometry"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}locationType" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}locationPrecision" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}locationComment" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}locationGeometry"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}locationType" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}locationPrecision" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}locationComment" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}address" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -49,7 +50,8 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
     "locationGeometry",
     "locationType",
     "locationPrecision",
-    "locationComment"
+    "locationComment",
+    "address"
 })
 @XmlRootElement(name = "location")
 public class TridasLocation
@@ -62,6 +64,7 @@ public class TridasLocation
     protected NormalTridasLocationType locationType;
     protected String locationPrecision;
     protected String locationComment;
+    protected TridasAddress address;
 
     /**
      * Gets the value of the locationGeometry property.
@@ -175,6 +178,34 @@ public class TridasLocation
         return (this.locationComment!= null);
     }
 
+    /**
+     * Gets the value of the address property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TridasAddress }
+     *     
+     */
+    public TridasAddress getAddress() {
+        return address;
+    }
+
+    /**
+     * Sets the value of the address property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TridasAddress }
+     *     
+     */
+    public void setAddress(TridasAddress value) {
+        this.address = value;
+    }
+
+    public boolean isSetAddress() {
+        return (this.address!= null);
+    }
+
     public void equals(Object object, EqualsBuilder equalsBuilder) {
         if (!(object instanceof TridasLocation)) {
             equalsBuilder.appendSuper(false);
@@ -188,6 +219,7 @@ public class TridasLocation
         equalsBuilder.append(this.getLocationType(), that.getLocationType());
         equalsBuilder.append(this.getLocationPrecision(), that.getLocationPrecision());
         equalsBuilder.append(this.getLocationComment(), that.getLocationComment());
+        equalsBuilder.append(this.getAddress(), that.getAddress());
     }
 
     public boolean equals(Object object) {
@@ -207,6 +239,7 @@ public class TridasLocation
         hashCodeBuilder.append(this.getLocationType());
         hashCodeBuilder.append(this.getLocationPrecision());
         hashCodeBuilder.append(this.getLocationComment());
+        hashCodeBuilder.append(this.getAddress());
     }
 
     public int hashCode() {
@@ -235,6 +268,11 @@ public class TridasLocation
             String theLocationComment;
             theLocationComment = this.getLocationComment();
             toStringBuilder.append("locationComment", theLocationComment);
+        }
+        {
+            TridasAddress theAddress;
+            theAddress = this.getAddress();
+            toStringBuilder.append("address", theAddress);
         }
     }
 
@@ -277,6 +315,14 @@ public class TridasLocation
             copy.setLocationComment(copyLocationComment);
         } else {
             copy.locationComment = null;
+        }
+        if (this.isSetAddress()) {
+            TridasAddress sourceAddress;
+            sourceAddress = this.getAddress();
+            TridasAddress copyAddress = ((TridasAddress) copyBuilder.copy(sourceAddress));
+            copy.setAddress(copyAddress);
+        } else {
+            copy.address = null;
         }
         return copy;
     }

@@ -1977,6 +1977,25 @@ class radiusEntity extends dbEntity
      */
     protected $azimuth = NULL;
     
+    
+    /**
+    * Field for recording whether there are any rings at the inner (i.e. towards pith)
+    * edge of the sample that have not been measured.  Typically used to note when 
+    * rings are too damaged to measure.
+    * 
+    * @var Integer
+    */
+    protected $nrOfUnmeasuredInnerRings = NULL;
+    
+    /**
+     * Field for recording whether there are any rings at the outer (i.e. towards bark) 
+     * edge of the sample that have not been measured.  Typically used to note when 
+     * rings are too damaged to measure.
+     * 
+     * @var Integer
+     */
+    protected $nrOfUnmeasuredOuterRings = NULL;
+    
     function __construct()
     {
         $groupXMLTag = "radii";
@@ -1989,6 +2008,26 @@ class radiusEntity extends dbEntity
 	/***********/
     /* SETTERS */
     /***********/   
+	
+	/**
+	 * Set the number of unmeasured rings towards the pith
+	 * 
+	 * @param $value
+	 */
+	function setNrOfUnmeasuredInnerRings($value)
+	{
+		$this->nrOfUnmeasuredInnerRings = $value;
+	}
+	
+	/**
+	 * Set the number of unmeasured rings towards the bark
+	 * 
+	 * @param $value
+	 */
+	function setNrOfUnmeasuredOuterRings($value)
+	{
+		$this->nrOfUnmeasuredOuterRings = $value;
+	}	
 	
 	/**
 	 * Set the angle of this radius from true north
@@ -2161,6 +2200,28 @@ class radiusEntity extends dbEntity
     /* GETTERS */
     /***********/   	
 
+	/**
+	 * Get the number of unmeasured rings towards the pith
+	 * 
+	 * @return Integer
+	 */
+	function getNrOfUnmeasuredInnerRings()
+	{
+		return $this->nrOfUnmeasuredInnerRings;
+	}
+	
+	
+	/**
+	 * Get the number of unmeasured rings towards the bark
+	 * 
+	 * @return Integer
+	 */
+	function getNrOfUnmeasuredOuterRings()
+	{
+		return $this->nrOfUnmeasuredOuterRings;
+	}
+	
+	
 	/**
 	 * Get the angle of this radius from true norht
 	 *
@@ -3537,7 +3598,7 @@ class measurementEntity extends dbEntity
 	    	}
     	}
     	
-    	return "approximately";
+    	return "before";
     }
     
     /**
@@ -3572,12 +3633,14 @@ class measurementEntity extends dbEntity
     	$radiusObj = $this->parentEntityArray[0];
     	
     	if ($radiusObj==NULL) return "unknown";
-    	if($radiusObj->getBarkPresent())
+    	if($radiusObj->getBarkPresent() || $radiusObj->getSapwood()=='complete')
     	{
     		return "exact";  		
     	}
-    		 	
-    	return "approximately";
+    	else
+    	{
+    		return "after";
+    	}
     }
     
     /**

@@ -38,10 +38,9 @@ import org.tridas.adapters.IntegerAdapter;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}remark" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}remark" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="index" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="count" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -64,8 +63,6 @@ public class TridasValue
     protected List<TridasRemark> remarks;
     @XmlAttribute(name = "value", required = true)
     protected String value;
-    @XmlAttribute(name = "index", required = true)
-    protected String index;
     @XmlAttribute(name = "count")
     @XmlJavaTypeAdapter(IntegerAdapter.class)
     @XmlSchemaType(name = "int")
@@ -137,34 +134,6 @@ public class TridasValue
     }
 
     /**
-     * Gets the value of the index property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getIndex() {
-        return index;
-    }
-
-    /**
-     * Sets the value of the index property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setIndex(String value) {
-        this.index = value;
-    }
-
-    public boolean isSetIndex() {
-        return (this.index!= null);
-    }
-
-    /**
      * Gets the value of the count property.
      * 
      * @return
@@ -215,7 +184,6 @@ public class TridasValue
         final TridasValue that = ((TridasValue) object);
         equalsBuilder.append(this.getRemarks(), that.getRemarks());
         equalsBuilder.append(this.getValue(), that.getValue());
-        equalsBuilder.append(this.getIndex(), that.getIndex());
         equalsBuilder.append(this.getCount(), that.getCount());
     }
 
@@ -234,7 +202,6 @@ public class TridasValue
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
         hashCodeBuilder.append(this.getRemarks());
         hashCodeBuilder.append(this.getValue());
-        hashCodeBuilder.append(this.getIndex());
         hashCodeBuilder.append(this.getCount());
     }
 
@@ -254,11 +221,6 @@ public class TridasValue
             String theValue;
             theValue = this.getValue();
             toStringBuilder.append("value", theValue);
-        }
-        {
-            String theIndex;
-            theIndex = this.getIndex();
-            toStringBuilder.append("index", theIndex);
         }
         {
             Integer theCount;
@@ -291,14 +253,6 @@ public class TridasValue
             copy.setValue(copyValue);
         } else {
             copy.value = null;
-        }
-        if (this.isSetIndex()) {
-            String sourceIndex;
-            sourceIndex = this.getIndex();
-            String copyIndex = ((String) copyBuilder.copy(sourceIndex));
-            copy.setIndex(copyIndex);
-        } else {
-            copy.index = null;
         }
         if (this.isSetCount()) {
             Integer sourceCount;

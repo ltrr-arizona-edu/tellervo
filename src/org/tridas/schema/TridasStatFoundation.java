@@ -33,10 +33,10 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tridas.org/1.3}statValue"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}type"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}significanceLevel" minOccurs="0"/>
- *         &lt;element ref="{http://www.tridas.org/1.3}usedSoftware"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}statValue"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}type"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}significanceLevel" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tridas.org/1.2.1}usedSoftware"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
