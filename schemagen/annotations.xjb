@@ -21,6 +21,19 @@ This file is for custom annotations applied to tridas objects
 			<ta:TridasEditProperties machineOnly="true" />
 		</annox:annotate>	
 	</bindings>
+	
+	<bindings node="//xs:element[@name='ringCount']">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>	
+	
+	<bindings node="//xs:element[@name='averageRingWidth']">
+  		<annox:annotate target="class">
+			<ta:TridasEditProperties machineOnly="true" />
+		</annox:annotate>	
+	</bindings>	
+	
 
 	<bindings node="//xs:element[@name='genericField']/xs:complexType">
   		<annox:annotate target="class">
