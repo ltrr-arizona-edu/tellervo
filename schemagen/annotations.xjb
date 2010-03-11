@@ -123,7 +123,7 @@ This file is for custom annotations applied to tridas objects
 			<ta:TridasEditProperties readOnly="true" />
 		</annox:annotate>	
 	</bindings>
-	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='sproutYear']">
+	<bindings node="//xs:element[@name='interpretation']/xs:complexType/xs:sequence/xs:element[@ref='pithYear']">
   		<annox:annotate target="field">
 			<ta:TridasEditProperties readOnly="true" finalType="true" />
 		</annox:annotate>	
