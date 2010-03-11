@@ -251,10 +251,20 @@ class element extends elementEntity implements IDBAccessor
 		if ($paramsClass->getDimensionUnits()!=NULL)		$this->setDimensionUnits($paramsClass->getDimensionUnits());       
         if ($paramsClass->getDiameter()!=NULL)				$this->setDiameter($paramsClass->getDiameter());
         if ($paramsClass->getAuthenticity()!=NULL)			$this->setAuthenticity($paramsClass->getAuthenticity());
-		if ($paramsClass->hasGeometry())					$this->location->setGeometry($paramsClass->location->getLocationGeometry(),
+		if ($paramsClass->hasGeometry())					
+		{
+															$this->location->setGeometry($paramsClass->location->getLocationGeometry(),
 																						 $paramsClass->location->getType(),
 																						 $paramsClass->location->getPrecision(),
-																						 $paramsClass->location->getComment());        
+																						 $paramsClass->location->getComment());
+
+			if ($paramsClass->location->getAddressLine1()!=NULL)	$this->location->setAddressLine1($paramsClass->location->getAddressLine1());
+			if ($paramsClass->location->getAddressLine2()!=NULL)	$this->location->setAddressLine2($paramsClass->location->getAddressLine2());
+			if ($paramsClass->location->getCityOrTown()!=NULL)		$this->location->setCityOrTown($paramsClass->location->getCityOrTown());
+			if ($paramsClass->location->getStateProvinceRegion()!=NULL)	$this->location->setStateProvinceRegion($paramsClass->location->getStateProvinceRegion());
+			if ($paramsClass->location->getPostalCode()!=NULL)		$this->location->setPostalCode($paramsClass->location->getPostalCode());
+			if ($paramsClass->location->getCountry()!=NULL)			$this->location->setCountry($paramsClass->location->getCountry());
+		}  
         if ($paramsClass->getProcessing()!=NULL)			$this->setProcessing($paramsClass->getProcessing());
 		if ($paramsClass->getMarks()!=NULL)					$this->setMarks($paramsClass->getMarks());
         if ($paramsClass->getAltitude()!=NULL)				$this->setAltitude($paramsClass->getAltitude());
@@ -656,6 +666,13 @@ class element extends elementEntity implements IDBAccessor
                         if ($this->location->getPrecision()!=NULL)				$sql.= "locationprecision, ";
                         if ($this->location->getComment()!=NULL)				$sql.= "locationcomment, ";
                         if ($this->location->getGeometry()!=NULL)				$sql.= "locationgeometry, ";
+                        if ($this->location->getAddressLine1()!=NULL)			$sql.= "locationaddressline1, ";
+                        if ($this->location->getAddressLine2()!=NULL)			$sql.= "locationaddressline2, ";
+                        if ($this->location->getCityOrTown()!=NULL)				$sql.= "locationcityortown, ";
+                        if ($this->location->getStateProvinceRegion()!=NULL)	$sql.= "locationstateprovinceregion, ";
+                        if ($this->location->getPostalCode()!=NULL)				$sql.= "locationpostalcode, ";
+                        if ($this->location->getCountry()!=NULL)				$sql.= "locationcountry, ";                                                                        
+                        
                         if ($this->getProcessing()!=NULL)						$sql.= "processing, ";
                         if ($this->getMarks()!=NULL)							$sql.= "marks, ";
                         if ($this->getAltitude()!=NULL)							$sql.= "altitude, ";                        
@@ -689,6 +706,12 @@ class element extends elementEntity implements IDBAccessor
                         if ($this->location->getPrecision()!=NULL)				$sql.= "'".pg_escape_string($this->location->getPrecision())."', ";
                         if ($this->location->getComment()!=NULL)				$sql.= "'".pg_escape_string($this->location->getComment())."', ";
                         if ($this->location->getGeometry()!=NULL)				$sql.= "'".pg_escape_string($this->location->getGeometry())."', ";
+                        if ($this->location->getAddressLine1()!=NULL)			$sql.= "'".pg_escape_string($this->location->getAddressLine1())."', ";
+                        if ($this->location->getAddressLine2()!=NULL)			$sql.= "'".pg_escape_string($this->location->getAddressLine2())."', ";
+                        if ($this->location->getCityOrTown()!=NULL)				$sql.= "'".pg_escape_string($this->location->getCityOrTown())."', ";
+                        if ($this->location->getStateProvinceRegion()!=NULL)	$sql.= "'".pg_escape_string($this->location->getStateProvinceRegion())."', ";
+                        if ($this->location->getPostalCode()!=NULL)				$sql.= "'".pg_escape_string($this->location->getPostalCode())."', ";
+                        if ($this->location->getCountry()!=NULL)				$sql.= "'".pg_escape_string($this->location->getCountry())."', ";
                         if ($this->getProcessing()!=NULL)						$sql.= "'".pg_escape_string($this->getProcessing())."', ";
                         if ($this->getMarks()!=NULL)							$sql.= "'".pg_escape_string($this->getMarks())."', ";
                         if ($this->getAltitude()!=NULL)							$sql.= "'".pg_escape_string($this->getAltitude())."', ";
@@ -728,6 +751,12 @@ class element extends elementEntity implements IDBAccessor
                         if ($this->location->getPrecision()!=NULL)				$sql.= "locationprecision='".pg_escape_string($this->location->getPrecision())."', ";
                         if ($this->location->getComment()!=NULL)				$sql.= "locationcomment='".pg_escape_string($this->location->getComment())."', ";
                         if ($this->location->getGeometry()!=NULL)				$sql.= "locationgeometry='".pg_escape_string($this->location->getGeometry())."', ";
+                        if ($this->location->getAddressLine1()!=NULL)			$sql.= "locationaddressline1='".pg_escape_string($this->location->getAddressLine1())."', ";
+                        if ($this->location->getAddressLine2()!=NULL)			$sql.= "locationaddressline2='".pg_escape_string($this->location->getAddressLine2())."', ";
+                        if ($this->location->getCityOrTown()!=NULL)				$sql.= "locationcityortown='".pg_escape_string($this->location->getCityOrTown())."', ";
+                        if ($this->location->getStateProvinceRegion()!=NULL)	$sql.= "locationstateprovinceregion='".pg_escape_string($this->location->getStateProvinceRegion())."', ";
+                        if ($this->location->getPostalCode()!=NULL)				$sql.= "locationpostalcode='".pg_escape_string($this->location->getPostalCode())."', ";
+                        if ($this->location->getCountry()!=NULL)				$sql.= "locationcountry='".pg_escape_string($this->location->getCountry())."', ";
                         if ($this->getProcessing()!=NULL)						$sql.= "processing='".pg_escape_string($this->getProcessing())."', ";
                         if ($this->getMarks()!=NULL)							$sql.= "marks='".pg_escape_string($this->getMarks())."', ";
                         if ($this->getAltitude()!=NULL)							$sql.= "altitude='".pg_escape_string($this->getAltitude())."', ";

@@ -409,7 +409,26 @@ class objectParameters extends objectEntity implements IParams
 		  	 			case "locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
 		  	 			case "locationComment" : $this->location->setComment($tag->nodeValue); break;
 		  	 			case "locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
-		  	 			case "locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	 
+		  	 			case "locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	
+		  	 			case "address":		
+		  	 				$addressTags = $tag->childNodes;  
+		  	 				foreach($addressTags as $addtag)
+							{	
+					  	 		if($addtag->nodeType != XML_ELEMENT_NODE) continue;  
+					  	 		
+					  	 		switch($addtag->tagName)
+					  	 		{	
+					  	 			case "addressLine1":		$this->location->setAddressLine1($addtag->nodeValue); break;	  	 				
+					  	 			case "addressLine2":		$this->location->setAddressLine2($addtag->nodeValue); break;	
+					  	 			case "cityOrTown":			$this->location->setCityOrTown($addtag->nodeValue); break;	
+					  	 			case "stateProvinceRegion":	$this->location->setStateProvinceRegion($addtag->nodeValue); break;  	 				
+					  	 			case "postalCode":			$this->location->setPostalCode($addtag->nodeValue); break;
+					  	 			case "country":				$this->location->setCountry($addtag->nodeValue); break;
+					  	 			default:
+									trigger_error("901"."Unknown tag ".$addtag->tagName." in address section of the 'element' entity. This tag is being ignored", E_USER_NOTICE);		  	 			
+					  	 		}
+							}
+					  	 	break;  		  	 			 
 		  	 			default:
 						trigger_error("901"."Unknown tag ".$tag->tagName." in location section of the 'object' entity. This tag is being ignored", E_USER_NOTICE);
 		  	 				
@@ -590,6 +609,25 @@ class elementParameters extends elementEntity implements IParams
 		  	 			case "locationComment" : $this->location->setComment($tag->nodeValue); break;
 		  	 			case "locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
 		  	 			case "locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	 
+		  	 			case "address":		
+		  	 				$addressTags = $tag->childNodes;  
+		  	 				foreach($addressTags as $addtag)
+							{	
+					  	 		if($addtag->nodeType != XML_ELEMENT_NODE) continue;  
+					  	 		
+					  	 		switch($addtag->tagName)
+					  	 		{	
+					  	 			case "addressLine1":		$this->location->setAddressLine1($addtag->nodeValue); break;	  	 				
+					  	 			case "addressLine2":		$this->location->setAddressLine2($addtag->nodeValue); break;	
+					  	 			case "cityOrTown":			$this->location->setCityOrTown($addtag->nodeValue); break;	
+					  	 			case "stateProvinceRegion":	$this->location->setStateProvinceRegion($addtag->nodeValue); break;  	 				
+					  	 			case "postalCode":			$this->location->setPostalCode($addtag->nodeValue); break;
+					  	 			case "country":				$this->location->setCountry($addtag->nodeValue); break;
+					  	 			default:
+									trigger_error("901"."Unknown tag ".$addtag->tagName." in address section of the 'element' entity. This tag is being ignored", E_USER_NOTICE);		  	 			
+					  	 		}
+							}
+					  	 	break;  
 		  	 			default:
 						trigger_error("901"."Unknown tag ".$tag->tagName." in location section of the 'element' entity. This tag is being ignored", E_USER_NOTICE);
 		  	 				
@@ -847,6 +885,15 @@ class radiusParameters extends radiusEntity implements IParams
 		   			if($tag->nodeType != XML_ELEMENT_NODE) continue;
 		   			switch ($tag->tagName)
 		   			{
+		   				case "nrOfUnmeasuredInnerRings":
+		   					$this->setNrOfUnmeasuredInnerRings($tag->nodeValue);
+		   					$firebug->log($tag->nodeValue, "setting unmeasured inner rings");
+		   					break;
+		   					
+		   				case "nrOfUnmeasuredOuterRings":
+		   					$this->setNrOfUnmeasuredOuterRings($tag->nodeValue);
+		   					break;		   					
+		   				
 		   				case "pith":
 		   					$this->setPith(NULL, $tag->getAttribute("presence"));
 		   					break;
