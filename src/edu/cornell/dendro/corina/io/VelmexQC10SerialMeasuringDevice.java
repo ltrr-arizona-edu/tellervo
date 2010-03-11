@@ -108,8 +108,16 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 		    	Float fltValue = new Float(strReadBuffer)*100;
 		    	Integer intValue = Math.round(fltValue);
 		    	
-		    	// Fire event
-		    	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+		    	if(intValue>0)
+		    	{	    	
+			    	// Fire event
+			    	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+		    	}
+		    	else
+		    	{
+		    		// Fire bad event as value is a negative number
+		    		fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+		    	}
 			    							
 			    	
 							
