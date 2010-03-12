@@ -713,6 +713,9 @@ class elementParameters extends elementEntity implements IParams
 		   		}
 		   		break;
 	
+		   	case "sample":
+		   		break;
+		   		
 		   	default:
 		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'element' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
 		   

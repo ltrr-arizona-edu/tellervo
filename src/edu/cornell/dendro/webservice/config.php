@@ -90,7 +90,7 @@ $onlyAllowKnownClients = TRUE;
 $dbDefaultUnits = "micrometres";
 
 // Default Units for the webservice to output (needs to be valid TRiDaS standard units)
-$wsDefaultUnits = "1/100th millimetres";
+$wsDefaultUnits = "micrometres";
 
 //************************
 
