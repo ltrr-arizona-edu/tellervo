@@ -39,6 +39,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasValue;
 
 import edu.cornell.dendro.corina.Range;
@@ -116,7 +117,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		  // disable editing
 		  if(disableFutureEdits)
-			  ((DecadalModel)myModel).enableEditing(false);
+			  ((UnitAwareDecadalModel)myModel).enableEditing(false);
 		  
 		  // reselect whatever we just deselected
 		  myTable.setRowSelectionInterval(row, row);
@@ -126,7 +127,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	}
 	
 	public void startEditing() {
-		((DecadalModel)myModel).enableEditing(true);
+		((UnitAwareDecadalModel)myModel).enableEditing(true);
 	}
 
 
@@ -144,7 +145,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		mySample.addSampleListener(this);
 
 		// create table
-		myModel = new DecadalModel(mySample);
+		myModel = new UnitAwareDecadalModel(mySample);
 		/*
 		 final Color DARK = new Color(0.7333f, 0.7765f, 0.8431f); // EXTRACT CONSTs!
 		 final Color LIGHT = new Color(0.8196f, 0.8510f, 0.9216f);
@@ -322,7 +323,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	
 	protected final void addNotesMenu(JPopupMenu menu, final int row, final int col) {
 		// get the year
-		final Year y = ((DecadalModel) myModel).getYear(row, col);
+		final Year y = ((UnitAwareDecadalModel) myModel).getYear(row, col);
 		
 		if(!mySample.getRange().contains(y))
 			return;
@@ -332,7 +333,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		Runnable onRemarkChange = new Runnable() {
 			public void run() {
 				// notify the table that its data has changed
-				((DecadalModel) myModel).fireTableCellUpdated(row, col);
+				((UnitAwareDecadalModel) myModel).fireTableCellUpdated(row, col);
 				
 				// set the sample as modified
 				mySample.setModified();
@@ -346,7 +347,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	/** Return the Year of the currently selected cell.
 	 @return the selected Year */
 	public Year getSelectedYear() {
-		return ((DecadalModel) myModel).getYear(myTable.getSelectedRow(),
+		return ((UnitAwareDecadalModel) myModel).getYear(myTable.getSelectedRow(),
 				myTable.getSelectedColumn());
 	}
 
@@ -378,7 +379,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		int col = myTable.getSelectedColumn();
 
 		// get year => get data index
-		Year y = ((DecadalModel) myModel).getYear(row, col);
+		Year y = ((UnitAwareDecadalModel) myModel).getYear(row, col);
 		int i = y.diff(mySample.getRange().getStart());
 
 		// make sure it's a valid place to insert a year
@@ -396,7 +397,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// REFACTOR: by LoD, should be range.extend()
 
 		// fire event -- obsolete?
-		((DecadalModel) myModel).fireTableDataChanged();
+		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
 
 		// select this cell again?  edit it
 		myTable.setRowSelectionInterval(row, row);
@@ -436,7 +437,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		int col = myTable.getSelectedColumn();
 
 		// get year => get data index
-		Year y = ((DecadalModel) myModel).getYear(row, col);
+		Year y = ((UnitAwareDecadalModel) myModel).getYear(row, col);
 		int i = y.diff(mySample.getRange().getStart());
 
 		// make sure it's a valid place to insert a year
@@ -455,7 +456,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// REFACTOR: by LoD, should be range.extend()
 
 		// fire event -- obsolete?
-		((DecadalModel) myModel).fireTableDataChanged();
+		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
 
 		// select this cell again?  edit it
 		myTable.setRowSelectionInterval(row, row);
@@ -485,7 +486,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		int col = myTable.getSelectedColumn();
 
 		// get year => get data index
-		Year y = ((DecadalModel) myModel).getYear(row, col);
+		Year y = ((UnitAwareDecadalModel) myModel).getYear(row, col);
 		int i = y.diff(mySample.getRange().getStart());
 
 		// make sure there's data to delete
@@ -502,7 +503,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 				.getEnd().add(-1)));
 
 		// fire event
-		((DecadalModel) myModel).fireTableDataChanged();
+		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
 
 		// select this cell again
 		myTable.setRowSelectionInterval(row, row);
@@ -520,12 +521,12 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 	public void sampleRedated(SampleEvent e) {
 		// update data view
-		((DecadalModel) myModel).fireTableDataChanged();
+		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
 	}
 
 	public void sampleDataChanged(SampleEvent e) {
 		// update data view
-		((DecadalModel) myModel).fireTableDataChanged();
+		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
 		// FIXME: make myModel an AbstractTableModel, so i don't have to cast
 	}
 
@@ -573,7 +574,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		 */
 		
 		// figure out what year we're looking at now -- BREAKS IF EDITING=TRUE
-		Year y = ((DecadalModel) myTable.getModel()).getYear(myTable
+		Year y = ((UnitAwareDecadalModel) myTable.getModel()).getYear(myTable
 				.getSelectedRow(), myTable.getSelectedColumn());
 
 		// beyond the end?  extend.
@@ -655,5 +656,21 @@ public class SampleDataView extends JPanel implements SampleListener,
 		myCellRenderer.removeModifier(modifier);
 		modifier.setListener(null);
 		myTable.repaint();
+	}
+
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		
+		if (myModel instanceof UnitAwareDecadalModel)
+		{
+			String pref = App.prefs.getPref("corina.displayunits");
+			String value = NormalTridasUnit.HUNDREDTH_MM.value();
+			String str = NormalTridasUnit.HUNDREDTH_MM.toString();
+			String name = NormalTridasUnit.HUNDREDTH_MM.name();
+			
+			((UnitAwareDecadalModel) myModel).setDisplayUnits(NormalTridasUnit.valueOf(pref));
+		}
+		
+		
+		
 	}
 }

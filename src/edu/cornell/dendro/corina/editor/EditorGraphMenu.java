@@ -104,4 +104,10 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 
 	public void sampleElementsChanged(SampleEvent e) {
 	}
+
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

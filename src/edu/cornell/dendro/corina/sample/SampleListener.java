@@ -61,6 +61,13 @@ public interface SampleListener extends EventListener {
     */
     public void sampleElementsChanged(SampleEvent e);
 
+    /**
+     * The display units were changed
+     * 
+     * @param e the Event object
+     */
+    public void sampleDisplayUnitsChanged(SampleEvent e);
+    
     // 
     // -> add other types of events here
     // 

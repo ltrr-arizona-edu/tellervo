@@ -1,4 +1,4 @@
-
+	
 package org.tridas.schema;
 
 import java.io.Serializable;

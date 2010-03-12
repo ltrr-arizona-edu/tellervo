@@ -127,7 +127,12 @@ public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 						return;
 					
 					lastSerial = counter;
-					value = (256 * valuehi) + valuelo;
+					
+					// Get value 
+					value = ((256 * valuehi) + valuelo);
+					
+					// Convert from 1/100th mm to our default units = microns
+					value = value * 10;
 					
 					fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, new Integer(value));					
 				}

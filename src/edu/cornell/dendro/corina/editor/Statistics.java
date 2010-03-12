@@ -110,7 +110,7 @@ public class Statistics extends JLabel implements SampleListener {
 
 	// total radius
 	f = new DecimalFormat("0.00 " + I18n.getText("editor.mm"));
-	float radius = sample.computeRadius() / 100f; // in mm -- UNUSED if sample isIndexed
+	float radius = sample.computeRadius() / 1000f; // in mm -- UNUSED if sample isIndexed
 	stat_values[i++] = (sample.isIndexed() ? NA : f.format(radius));
 
 	// (fall-through on f, radius)
@@ -177,4 +177,9 @@ public class Statistics extends JLabel implements SampleListener {
     public void sampleElementsChanged(SampleEvent e) {
 	sampleDataChanged(e);
     }
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

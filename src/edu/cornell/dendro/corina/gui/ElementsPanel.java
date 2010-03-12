@@ -680,4 +680,10 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			return (rev ? -x : x);
 		}
 	}
+
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

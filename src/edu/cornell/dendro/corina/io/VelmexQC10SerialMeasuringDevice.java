@@ -104,8 +104,8 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
                 String strReadBuffer = readBuffer.toString();
  	
 		    	// Raw data is in mm like "2.575"
-             	// Round up to integer of 1/100th mm
-		    	Float fltValue = new Float(strReadBuffer)*100;
+             	// Round up to integer of 1/1000th mm
+		    	Float fltValue = new Float(strReadBuffer)*1000;
 		    	Integer intValue = Math.round(fltValue);
 		    	
 		    	if(intValue>0)

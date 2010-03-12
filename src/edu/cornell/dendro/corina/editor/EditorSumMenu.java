@@ -226,5 +226,11 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 	public void sampleElementsChanged(SampleEvent e) {
 		// clean: if summed (what's that mean, exactly?)
 		cleanMenu.setEnabled(sample.isSummed());
+	}
+
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
 	}	
 }
