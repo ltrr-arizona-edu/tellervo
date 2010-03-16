@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Corina
+Comment=Dendrochronology
+Exec=/usr/share/corina/corina.sh
+Terminal=false
+Type=Application
+StartupNotify=false
+Icon=/usr/share/corina/corina-application.png
+Categories=Science

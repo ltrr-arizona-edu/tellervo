@@ -1,0 +1,15 @@
+Source: corina
+Section: science
+Priority: extra
+Maintainer: Peter Brewer <p.brewer@cornell.edu>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.1
+Homepage: http://dendro.cornell.edu
+
+Package: corina
+Architecture: all
+Depends: sun-java6-jre
+Description: Corina dendrochronology
+ Corina is an open source, freely available, 
+ dendrochronology program used and developed 
+ by the Cornell Tree-Ring Laboratory.
