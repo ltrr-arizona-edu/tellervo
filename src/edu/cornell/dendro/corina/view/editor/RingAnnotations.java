@@ -4,26 +4,26 @@ import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.Vector;
 
 import javax.swing.DefaultBoundedRangeModel;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
-import javax.swing.ToolTipManager;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellEditor;
 
-public class RingAnnotations extends JPanel {
+import edu.cornell.dendro.corina.model.editor.EditorModel;
+
+public class RingAnnotations extends JPanel implements TableModelListener{
 	
 	 // Variables declaration - do not modify                     
     protected javax.swing.JButton btnApply;
@@ -36,13 +36,10 @@ public class RingAnnotations extends JPanel {
     protected javax.swing.JTable tblRingAnnotations;
     protected javax.swing.JTextArea txtCustomNote;
     
-    public AnnotationTableModel model;
-    private String[] columnNames = { "Annotation", "Type", "Filter", "Threshold" };
-    private boolean[] canEdit = { false, false, true, true };
-    
+    private EditorModel model = EditorModel.getInstance();
     
     public static void main(String[] args){
-    	JFrame frame = new JFrame();
+    	/*JFrame frame = new JFrame();
     	frame.setDefaultCloseOperation( 3);
     	RingAnnotations ra = new RingAnnotations();
     	frame.add(ra);
@@ -50,11 +47,34 @@ public class RingAnnotations extends JPanel {
     	ra.model.addRow( new Object[]{ "test", "User", true, 39});
     	ra.tblRingAnnotations.repaint();
     	ToolTipManager.sharedInstance().setDismissDelay( 10000);
-    	ToolTipManager.sharedInstance().setInitialDelay( 1000);
+    	ToolTipManager.sharedInstance().setInitialDelay( 1000);*/
     }
+    
     /** Creates new form RingAnnotations */
     public RingAnnotations() {
         initComponents();
+        initListeners();
+        populateTable();
+    }
+    
+    public void initListeners(){
+    	model.getTableModel().addTableModelListener(this);
+    }
+
+    @Override
+	public void tableChanged( TableModelEvent e) {
+		if(e.getType() != TableModelEvent.UPDATE){
+			System.out.println("Not an update table event: "+e);
+			return;
+		}
+		
+		
+	}
+    
+    
+    public void populateTable(){
+        tblRingAnnotations.setDefaultEditor( Integer.class, new JSliderEditor());
+        tblRingAnnotations.setModel(model.getTableModel());
     }
     
     /** This method is called from within the constructor to
@@ -76,14 +96,8 @@ public class RingAnnotations extends JPanel {
         lblCustomNote = new javax.swing.JLabel();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Ring Annotations"));
-        model = new AnnotationTableModel( columnNames, canEdit) ;
-        tblRingAnnotations.setModel(model);
         scrRingAnnotations.setViewportView(tblRingAnnotations);
-        
-        // set the renderer for the slider
-        tblRingAnnotations.setDefaultEditor( Integer.class, new JSliderEditor());
-		//tblRingAnnotations.setDefaultRenderer( Integer.class, new SliderRenderer());
-		
+        		
         btnApply.setText("Apply");
 
         btnCancel.setText("Cancel");
@@ -149,73 +163,6 @@ public class RingAnnotations extends JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>                        
-}
-
-class AnnotationTableModel extends AbstractTableModel {
-	private static final long serialVersionUID = 1L;
-
-	private final String[] columnNames;
-	
-	private ArrayList<ArrayList<Object>> rows = new ArrayList<ArrayList<Object>>();
-	public boolean[] canEdit;
-	
-	public AnnotationTableModel(String[] argColumnNames, boolean[] isEditable){
-		columnNames = argColumnNames;
-		canEdit = isEditable;
-		if(argColumnNames.length != isEditable.length){
-			throw new RuntimeException("Column names length must equal isEditable length");
-		}
-	}
-	
-	public void addRow(Object[] argRow){
-		ArrayList<Object> row = new ArrayList<Object>();
-		for(Object o: argRow){
-			row.add( o);
-		}
-		rows.add(row);
-	}
-	  public void setValueAt(Object value, int r, int c) {
-		  rows.get(r).set(c, value);
-	  }
-
-	/**
-	 * @see javax.swing.table.AbstractTableModel#getColumnName(int)
-	 */
-	@Override
-	public String getColumnName(final int column) {
-		return columnNames[column];
-	}
-
-	/**
-	 * @see javax.swing.table.TableModel#getColumnCount()
-	 */
-	public int getColumnCount() {
-		return columnNames.length;
-	}
-
-	/**
-	 * @see javax.swing.table.TableModel#getRowCount()
-	 */
-	public int getRowCount() {
-		return rows.size();
-	}
-
-	/**
-	 * @see javax.swing.table.TableModel#getValueAt(int, int)
-	 */
-	public Object getValueAt(final int rowIndex, final int columnIndex) {
-		return rows.get(rowIndex).get( columnIndex);
-	}
-	
-	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex){
-		return canEdit[columnIndex];
-	}
-	
-	@Override
-	public Class<?> getColumnClass(final int column) {
-		return rows.get(0).get( column).getClass();
-	}
 }
 
 /*class SliderRenderer extends DefaultTableCellRenderer implements TableCellRenderer {

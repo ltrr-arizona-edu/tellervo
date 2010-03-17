@@ -12,12 +12,10 @@ import java.util.Vector;
  * to the corresponding listeners.
  * @author daniel
  */
-public class EventDispatcher {
-	private final HashMap<String, Vector<IEventListener>> listeners;
+public class MVCEventCenter {
+	private static final HashMap<String, Vector<IEventListener>> listeners = new HashMap<String, Vector<IEventListener>>();
 	
-	public EventDispatcher() {
-		listeners = new HashMap<String, Vector<IEventListener>>();
-	}
+	private MVCEventCenter() {}
 
 	/**
 	 * Adds a listener for the given event key.
@@ -25,7 +23,7 @@ public class EventDispatcher {
 	 * @param argKey
 	 * @param argReciever
 	 */
-	public void addEventListener(final String argKey, final IEventListener argListener) {
+	public static void addEventListener(final String argKey, final IEventListener argListener) {
 
 		if (listeners.containsKey(argKey)) {
 			listeners.get(argKey).add(argListener);
@@ -43,7 +41,7 @@ public class EventDispatcher {
 	 * @param argKey
 	 * @return
 	 */
-	protected Vector<IEventListener> getListeners(final String argKey) {
+	public static Vector<IEventListener> getListeners(final String argKey) {
 		if (listeners.containsKey(argKey)) {
 			return listeners.get(argKey);
 		}
@@ -62,7 +60,7 @@ public class EventDispatcher {
 	 * @return true if the listener was removed, and false if it wasn't there to
 	 *         begin with
 	 */
-	public boolean removeEventListener(final String argKey, final IEventListener argListener) {
+	public static boolean removeEventListener(final String argKey, final IEventListener argListener) {
 		if (listeners.containsKey(argKey)) {
 			final Vector<IEventListener> vec = listeners.get(argKey);
 			return vec.remove(argListener);
@@ -70,10 +68,20 @@ public class EventDispatcher {
 		return false;
 	}
 
-	/**
+	/*
 	 * Dispatches a event to the listeners.
-	 */
-	public void dispatchEvent(final CEvent argEvent) {
+	 *
+	public static void dispatchEvent(final CEvent argEvent) {
+		if (listeners.containsKey(argEvent.key)) {
+			final Iterator<IEventListener> it = listeners.get(argEvent.key).iterator();
+			
+			while (it.hasNext()) {
+				it.next().eventReceived( argEvent);
+			}
+		}
+	}*/
+	
+	protected static void dispatchEvent(final CEvent argEvent) {
 		if (listeners.containsKey(argEvent.key)) {
 			final Iterator<IEventListener> it = listeners.get(argEvent.key).iterator();
 			
@@ -83,9 +91,9 @@ public class EventDispatcher {
 		}
 	}
 
-	/**
+	/*
 	 * @see java.util.HashMap#hashCode()
-	 */
+	 *
 	@Override
 	public int hashCode() {
 		return listeners.hashCode();
@@ -96,7 +104,7 @@ public class EventDispatcher {
 		if (this == argOther) {
 			return true;
 		}
-		final EventDispatcher disp = (EventDispatcher) argOther;
+		final MVCEventCenter disp = (MVCEventCenter) argOther;
 		return listeners.equals(disp.listeners);
-	}
+	}*/
 }

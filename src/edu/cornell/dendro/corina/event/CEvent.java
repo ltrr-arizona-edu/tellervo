@@ -19,4 +19,8 @@ public class CEvent {
 	public String toString() {
 		return super.toString() + "-" + key;
 	}
+	
+	public void dispatch(){
+		MVCEventCenter.dispatchEvent( this);
+	}
 }
