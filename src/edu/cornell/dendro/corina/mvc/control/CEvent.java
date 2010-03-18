@@ -1,7 +1,7 @@
 /**
  * Created at 2:22:05 AM, Mar 12, 2010
  */
-package edu.cornell.dendro.corina.event;
+package edu.cornell.dendro.corina.mvc.control;
 
 /**
  * Simple event, stands for Corina Event (Event is already in Java, so we don't
@@ -20,7 +20,11 @@ public class CEvent {
 		return super.toString() + "-" + key;
 	}
 	
+	/**
+	 * Dispatches the event.  Events are dispatched globally, so make
+	 * sure you're key is unique!
+	 */
 	public void dispatch(){
-		MVCEventCenter.dispatchEvent( this);
+		CorinaMVC.dispatchEvent( this);
 	}
 }

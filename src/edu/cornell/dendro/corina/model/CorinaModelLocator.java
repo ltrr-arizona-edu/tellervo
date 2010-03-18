@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.model;
 
+import edu.cornell.dendro.corina.mvc.model.AbstractModel;
+
 /**
  *
  * @author daniel

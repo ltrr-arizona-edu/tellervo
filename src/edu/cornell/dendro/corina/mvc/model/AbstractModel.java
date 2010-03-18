@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.model;
+package edu.cornell.dendro.corina.mvc.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

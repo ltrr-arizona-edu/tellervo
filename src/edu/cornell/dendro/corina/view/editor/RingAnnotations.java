@@ -3,7 +3,11 @@ package edu.cornell.dendro.corina.view.editor;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.EventObject;
 import java.util.Vector;
 
@@ -17,13 +21,14 @@ import javax.swing.SwingConstants;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableModel;
 
+import edu.cornell.dendro.corina.control.editor.AnnotationsApplyEvent;
 import edu.cornell.dendro.corina.model.editor.EditorModel;
 
-public class RingAnnotations extends JPanel implements TableModelListener{
+@SuppressWarnings("serial")
+public class RingAnnotations extends JPanel implements PropertyChangeListener{
 	
 	 // Variables declaration - do not modify                     
     protected javax.swing.JButton btnApply;
@@ -58,23 +63,30 @@ public class RingAnnotations extends JPanel implements TableModelListener{
     }
     
     public void initListeners(){
-    	model.getTableModel().addTableModelListener(this);
+    	btnApply.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed( ActionEvent e) {
+				AnnotationsApplyEvent event = new AnnotationsApplyEvent();
+				event.dispatch();
+			}
+		});
+    	model.addPropertyChangeListener(this);
     }
-
-    @Override
-	public void tableChanged( TableModelEvent e) {
-		if(e.getType() != TableModelEvent.UPDATE){
-			System.out.println("Not an update table event: "+e);
-			return;
-		}
-		
-		
-	}
     
+    @Override
+    public void propertyChange( PropertyChangeEvent argEvent){
+    	if(argEvent.getPropertyName().equals( EditorModel.ANNOTATIONS_TABLE_MODEL)){
+			//tblRingAnnotations.getModel().removeTableModelListener(this);
+			tblRingAnnotations.setModel( (TableModel) argEvent.getNewValue());
+			//tblRingAnnotations.getModel().addTableModelListener(this);
+			tblRingAnnotations.repaint();
+    	}else if(argEvent.getPropertyName().equals( EditorModel.CUSTOM_NOTE)){
+    		txtCustomNote.setText( argEvent.getNewValue().toString());
+    	}
+    }
     
     public void populateTable(){
-        tblRingAnnotations.setDefaultEditor( Integer.class, new JSliderEditor());
-        tblRingAnnotations.setModel(model.getTableModel());
+        tblRingAnnotations.setModel(model.getAnnotationsTableModel());
     }
     
     /** This method is called from within the constructor to
@@ -94,6 +106,8 @@ public class RingAnnotations extends JPanel implements TableModelListener{
         scrCustomNote = new javax.swing.JScrollPane();
         txtCustomNote = new javax.swing.JTextArea();
         lblCustomNote = new javax.swing.JLabel();
+
+        tblRingAnnotations.setDefaultEditor( Integer.class, new JSliderEditor());
 
         setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Ring Annotations"));
         scrRingAnnotations.setViewportView(tblRingAnnotations);
@@ -178,6 +192,7 @@ public class RingAnnotations extends JPanel implements TableModelListener{
 	}
 }*/
 
+@SuppressWarnings("serial")
 class JSliderEditor extends JSlider implements TableCellEditor {
 	
 	protected transient ValueTooltip tooltip = new ValueTooltip();
@@ -198,7 +213,6 @@ class JSliderEditor extends JSlider implements TableCellEditor {
 			}
 		});
 	}
-	
 	
 	public class ValueTooltip extends JWindow {
 	    private JLabel value = new JLabel();

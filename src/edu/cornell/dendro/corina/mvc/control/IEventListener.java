@@ -1,7 +1,7 @@
 /**
  * Created at 2:20:27 AM, Mar 12, 2010
  */
-package edu.cornell.dendro.corina.event;
+package edu.cornell.dendro.corina.mvc.control;
 
 /**
  * Interface for an event receiver.

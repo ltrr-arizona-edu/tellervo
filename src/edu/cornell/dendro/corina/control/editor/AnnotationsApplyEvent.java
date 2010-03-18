@@ -3,7 +3,7 @@
  */
 package edu.cornell.dendro.corina.control.editor;
 
-import edu.cornell.dendro.corina.event.CEvent;
+import edu.cornell.dendro.corina.mvc.control.CEvent;
 
 /**
  *

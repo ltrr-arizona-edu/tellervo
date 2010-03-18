@@ -3,17 +3,21 @@
  */
 package edu.cornell.dendro.corina.model.editor;
 
-import edu.cornell.dendro.corina.model.AbstractModel;
+import edu.cornell.dendro.corina.mvc.model.AbstractModel;
 
 /**
  *
  * @author daniel
  */
 public class EditorModel extends AbstractModel {
+	public final static String ANNOTATIONS_TABLE_MODEL = "annotationTableModel";
+	public final static String CUSTOM_NOTE = "customNote";
+	
 	private final static EditorModel model = new EditorModel();
 	
-	private AnnotationTableModel tableModel;
-	
+	private AnnotationTableModel annotationTableModel;
+	private String customNote = "";
+
 	private EditorModel(){
 		
 	}
@@ -22,14 +26,24 @@ public class EditorModel extends AbstractModel {
 		return true;
 	}
 	
-	public AnnotationTableModel getTableModel(){
-		return tableModel;
+	public String getCustomNote() {
+		return customNote;
+	}
+
+	public void setCustomNote( String argCustomNote) {
+		String old = customNote;
+		customNote = argCustomNote;
+		super.firePropertyChange( CUSTOM_NOTE, old, customNote);
 	}
 	
-	public void setTableModel(AnnotationTableModel argModel){
-		AnnotationTableModel old = tableModel;
-		tableModel = argModel;
-		super.firePropertyChange( "TableModel", old, tableModel);
+	public AnnotationTableModel getAnnotationsTableModel(){
+		return annotationTableModel;
+	}
+	
+	public void setAnnotationsTableModel(AnnotationTableModel argModel){
+		AnnotationTableModel old = annotationTableModel;
+		annotationTableModel = argModel;
+		super.firePropertyChange( ANNOTATIONS_TABLE_MODEL, old, annotationTableModel);
 	}
 	
 	public final static EditorModel getInstance(){
