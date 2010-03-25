@@ -21,11 +21,15 @@ import javax.swing.SwingConstants;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
 
-import edu.cornell.dendro.corina.control.editor.AnnotationsApplyEvent;
+import edu.cornell.dendro.corina.control.editor.EditorController;
 import edu.cornell.dendro.corina.model.editor.EditorModel;
+import edu.cornell.dendro.corina.mvc.control.CEvent;
+import edu.cornell.dendro.corina.mvc.control.events.ObjectEvent;
 
 @SuppressWarnings("serial")
 public class RingAnnotations extends JPanel implements PropertyChangeListener{
@@ -62,14 +66,56 @@ public class RingAnnotations extends JPanel implements PropertyChangeListener{
         populateTable();
     }
     
-    public void initListeners(){
+    private void initListeners(){
+    	// initialize our listeners, so we can fire off mvc events from user actions
     	btnApply.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed( ActionEvent e) {
-				AnnotationsApplyEvent event = new AnnotationsApplyEvent();
+				CEvent event = new CEvent(EditorController.ANNOTATIONS_APPLY_EVENT);
 				event.dispatch();
 			}
 		});
+    	btnCancel.addActionListener( new ActionListener() {
+			
+			@Override
+			public void actionPerformed( ActionEvent e) {
+				CEvent event = new CEvent( EditorController.ANNOTATIONS_CANCEL_EVENT);
+				event.dispatch();
+			}
+		});
+    	btnCustom.addActionListener( new ActionListener() {
+			
+			@Override
+			public void actionPerformed( ActionEvent e) {
+				CEvent event = new CEvent( EditorController.ANNOTATIONS_ADD_EDIT_CUSTOM_EVENT);
+				event.dispatch();
+			}
+		});
+    	// we have to use the document listener, as it fires the event after the document changes
+    	txtCustomNote.getDocument().addDocumentListener( new DocumentListener() {
+			@Override
+			public void removeUpdate( DocumentEvent e) {
+				ObjectEvent<String> event = new ObjectEvent<String>(
+						EditorController.ANNOTATIONS_CUSTOM_TEXT_CHANGE_EVENT,
+						txtCustomNote.getText());
+				event.dispatch();
+			}
+			@Override
+			public void insertUpdate( DocumentEvent e) {
+				ObjectEvent<String> event = new ObjectEvent<String>(
+						EditorController.ANNOTATIONS_CUSTOM_TEXT_CHANGE_EVENT,
+						txtCustomNote.getText());
+				event.dispatch();
+			}
+			@Override
+			public void changedUpdate( DocumentEvent e) {
+				ObjectEvent<String> event = new ObjectEvent<String>(
+						EditorController.ANNOTATIONS_CUSTOM_TEXT_CHANGE_EVENT,
+						txtCustomNote.getText());
+				event.dispatch();
+			}
+		});
+    	// listen to the model so we can change our 
     	model.addPropertyChangeListener(this);
     }
     
@@ -81,6 +127,9 @@ public class RingAnnotations extends JPanel implements PropertyChangeListener{
 			//tblRingAnnotations.getModel().addTableModelListener(this);
 			tblRingAnnotations.repaint();
     	}else if(argEvent.getPropertyName().equals( EditorModel.CUSTOM_NOTE)){
+    		if(txtCustomNote.getText().equals( argEvent.getNewValue().toString())){
+    			return;
+    		}
     		txtCustomNote.setText( argEvent.getNewValue().toString());
     	}
     }

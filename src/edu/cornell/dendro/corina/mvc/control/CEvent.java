@@ -11,6 +11,8 @@ package edu.cornell.dendro.corina.mvc.control;
 public class CEvent {
 	public final String key;
 	
+	private volatile boolean propagate = true;
+	
 	public CEvent(final String argKey) {
 		key = argKey;
 	}
@@ -18,6 +20,18 @@ public class CEvent {
 	@Override
 	public String toString() {
 		return super.toString() + "-" + key;
+	}
+	
+	/**
+	 * Stops the event from propagating to the rest of the listeners.  Listeners are stored
+	 * as a stack, so newer listeners recieve events first.
+	 */
+	public void stopPropagation(){
+		propagate = false;
+	}
+	
+	protected boolean isPropagating(){
+		return propagate;
 	}
 	
 	/**

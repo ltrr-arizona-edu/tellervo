@@ -10,6 +10,7 @@ import edu.cornell.dendro.corina.model.editor.AnnotationTableModel;
 import edu.cornell.dendro.corina.model.editor.EditorModel;
 import edu.cornell.dendro.corina.mvc.control.CEvent;
 import edu.cornell.dendro.corina.mvc.control.FrontController;
+import edu.cornell.dendro.corina.mvc.control.events.ObjectEvent;
 import edu.cornell.dendro.corina.view.editor.RingAnnotations;
 
 /**
@@ -17,17 +18,38 @@ import edu.cornell.dendro.corina.view.editor.RingAnnotations;
  * @author daniel
  */
 public class EditorController extends FrontController{
+	public static final String ANNOTATIONS_APPLY_EVENT = "ANNOTATIONS_APPLY_EVENT";
+	public static final String ANNOTATIONS_CANCEL_EVENT = "ANNOTATIONS_CANCEL_EVENT";
+	public static final String ANNOTATIONS_ADD_EDIT_CUSTOM_EVENT = "ANNOTATIONS_CUSTOM_EVENT";
+	public static final String ANNOTATIONS_CUSTOM_TEXT_CHANGE_EVENT = "ANNOTATIONS_CUSTOM_TEXT_CHANGE_EVENT";
 
 	private EditorModel model = EditorModel.getInstance();
 	
-	private boolean isDerivedSet = false;
+	private boolean isDerivedSet = true;
 	
 	public EditorController(){
-		registerEventKey( AnnotationsApplyEvent.ANNOTATIONS_APPLY, "applyButtonPushed");
+		registerEventKey( ANNOTATIONS_APPLY_EVENT, "applyButtonPushed");
+		registerEventKey( ANNOTATIONS_CANCEL_EVENT, "cancelButtonPushed");
+		registerEventKey( ANNOTATIONS_ADD_EDIT_CUSTOM_EVENT, "customButtomPushed");
+		registerEventKey( ANNOTATIONS_CUSTOM_TEXT_CHANGE_EVENT, "customTextChanged");
 	}
 	
 	public void applyButtonPushed(CEvent argEvent){
-		System.out.println("I WILL SAVE YOU!!");
+		System.out.println("apply button");
+	}
+	
+	public void cancelButtonPushed(CEvent argEvent){
+		System.out.println("cancel button");
+	}
+	
+	public void customButtomPushed(CEvent argEvent){
+		System.out.println("custom button");
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void customTextChanged(CEvent argEvent){
+		ObjectEvent<String> event = (ObjectEvent<String>) argEvent;
+		System.out.println("text changed: '"+event.getObject()+"'");
 	}
 	
 	
@@ -47,6 +69,8 @@ public class EditorController extends FrontController{
 			tblModel = new AnnotationTableModel( concreteColumnNames, concreteColumnClasses, concreteCanEdit);
 		}
 		
+		tblModel.addRow( new Object[]{"Test","Test again", true, 19});
+		
 		model.setAnnotationsTableModel( tblModel);
 		
 		JFrame frame = new JFrame();
@@ -56,5 +80,10 @@ public class EditorController extends FrontController{
     	frame.setVisible(true);
     	ToolTipManager.sharedInstance().setDismissDelay( 10000);
     	ToolTipManager.sharedInstance().setInitialDelay( 1000);
+	}
+	
+	public static void main(String[] args){
+		EditorController controller = new EditorController();
+		controller.showAnnotationWindow();
 	}
 }
