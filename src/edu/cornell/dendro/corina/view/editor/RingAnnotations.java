@@ -11,6 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.util.EventObject;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,18 +47,6 @@ public class RingAnnotations extends JPanel implements PropertyChangeListener{
     protected javax.swing.JTextArea txtCustomNote;
     
     private EditorModel model = EditorModel.getInstance();
-    
-    public static void main(String[] args){
-    	/*JFrame frame = new JFrame();
-    	frame.setDefaultCloseOperation( 3);
-    	RingAnnotations ra = new RingAnnotations();
-    	frame.add(ra);
-    	frame.setVisible(true);
-    	ra.model.addRow( new Object[]{ "test", "User", true, 39});
-    	ra.tblRingAnnotations.repaint();
-    	ToolTipManager.sharedInstance().setDismissDelay( 10000);
-    	ToolTipManager.sharedInstance().setInitialDelay( 1000);*/
-    }
     
     /** Creates new form RingAnnotations */
     public RingAnnotations() {
@@ -258,7 +247,7 @@ class JSliderEditor extends JSlider implements TableCellEditor {
 			@Override
 			public void stateChanged( ChangeEvent e) {
 				DefaultBoundedRangeModel source = (DefaultBoundedRangeModel) e.getSource();
-				tooltip.setValue( source.getValue());
+				tooltip.setValue( source.getValue()+"%");
 			}
 		});
 	}
@@ -267,28 +256,26 @@ class JSliderEditor extends JSlider implements TableCellEditor {
 	    private JLabel value = new JLabel();
 
 
-	    private int w = 50;
+	    private int w = 35;
 
 	    private int h = 24;
 
 	    public ValueTooltip() {
 	      setSize(w, h);
 	      JPanel p = new JPanel();
-	      //p.setBorder(BorderFactory.createLineBorder(Color.gray));
-	      //okB.setBorder(null);
-	      //cancelB.setBorder(null);
+	      p.setBorder(BorderFactory.createRaisedBevelBorder());
 	      p.add(value);
 	      setContentPane(p);
 	      this.setAlwaysOnTop( true);
 	    }
 	    
-	    public void setValue(Integer argValue){
-	    	value.setText( ""+ argValue);
+	    public void setValue(String argValue){
+	    	value.setText(argValue);
 	    }
 	  }
 	
 	public String getToolTipText(MouseEvent e) {
-        return getValue()+"";
+        return getValue()+"%";
     }
 
 	public Component getTableCellEditorComponent( JTable table, Object value, boolean isSelected,
@@ -306,8 +293,8 @@ class JSliderEditor extends JSlider implements TableCellEditor {
 		editing = true;
 		Point p = table.getLocationOnScreen();
 		Rectangle r = table.getCellRect( row, column, true);
-		tooltip.setLocation( r.x + p.x + getWidth() - 50, r.y + p.y + getHeight());
-		tooltip.setValue( getValue());
+		tooltip.setLocation( r.x + p.x + getWidth() - 35, r.y + p.y + getHeight());
+		tooltip.setValue( getValue()+"%");
 		tooltip.setVisible( true);
 		return this;
 	}
