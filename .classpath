@@ -37,5 +37,6 @@
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/jaxb2-basics-runtime-0.5.1.jar"/>
 	<classpathentry kind="lib" path="Libraries/PDFRenderer.jar"/>
 	<classpathentry kind="lib" path="Libraries/mozswing-complete.jar"/>
+	<classpathentry kind="lib" path="Libraries/tridas1.2.1.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
