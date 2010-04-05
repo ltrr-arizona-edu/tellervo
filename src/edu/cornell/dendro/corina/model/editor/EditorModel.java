@@ -15,7 +15,9 @@ public class EditorModel extends AbstractModel {
 	
 	private final static EditorModel model = new EditorModel();
 	
+	private AnnotationTableModel cleanAnnotationTableModel;
 	private AnnotationTableModel annotationTableModel;
+	private String cleanCustomNote = "";
 	private String customNote = "";
 
 	private EditorModel(){
@@ -33,6 +35,7 @@ public class EditorModel extends AbstractModel {
 	public void setCustomNote( String argCustomNote) {
 		String old = customNote;
 		customNote = argCustomNote;
+		updateDirty(cleanCustomNote != customNote);
 		super.firePropertyChange( CUSTOM_NOTE, old, customNote);
 	}
 	
@@ -43,10 +46,23 @@ public class EditorModel extends AbstractModel {
 	public void setAnnotationsTableModel(AnnotationTableModel argModel){
 		AnnotationTableModel old = annotationTableModel;
 		annotationTableModel = argModel;
+		updateDirty(!cleanAnnotationTableModel.equals( annotationTableModel));
 		super.firePropertyChange( ANNOTATIONS_TABLE_MODEL, old, annotationTableModel);
 	}
 	
 	public final static EditorModel getInstance(){
 		return model;
+	}
+
+	@Override
+	protected void revert() {
+		setCustomNote( cleanCustomNote );
+		setAnnotationsTableModel( (AnnotationTableModel) cleanAnnotationTableModel.clone());
+	}
+	
+	@Override
+	protected void save() {
+		cleanCustomNote = customNote;
+		cleanAnnotationTableModel.cloneFrom( annotationTableModel);
 	}
 }

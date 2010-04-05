@@ -4,9 +4,9 @@
 package edu.cornell.dendro.corina.mvc.control;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Stack;
 
 /**
  * This stores all the listener information, and will dispatch events
@@ -16,7 +16,7 @@ import java.util.Stack;
 public class CorinaMVC extends Thread{
 	private static final CorinaMVC thread = new CorinaMVC();
 
-	private final HashMap<String, Stack<IEventListener>> listeners = new HashMap<String, Stack<IEventListener>>();
+	private final HashMap<String, LinkedList<IEventListener>> listeners = new HashMap<String, LinkedList<IEventListener>>();
 	private final Queue<CEvent> eventQueue = new LinkedList<CEvent>();
 	private volatile boolean running = false;
 	
@@ -38,11 +38,11 @@ public class CorinaMVC extends Thread{
 			if( isEventListener( argKey, argListener)){
 				return;
 			}
-			thread.listeners.get(argKey).add(argListener);
+			thread.listeners.get(argKey).addFirst(argListener);
 		}
 		else {
-			final Stack<IEventListener> stack = new Stack<IEventListener>();
-			stack.push(argListener);
+			final LinkedList<IEventListener> stack = new LinkedList<IEventListener>();
+			stack.addFirst(argListener);
 			thread.listeners.put(argKey, stack);
 		}
 	}
@@ -58,7 +58,7 @@ public class CorinaMVC extends Thread{
 			return false;
 		}
 		
-		Stack<IEventListener> stack = thread.listeners.get( argKey);
+		LinkedList<IEventListener> stack = thread.listeners.get( argKey);
 		return stack.contains( argListener);
 	}
 
@@ -68,12 +68,12 @@ public class CorinaMVC extends Thread{
 	 * @param argKey
 	 * @return
 	 */
-	public synchronized static Stack<IEventListener> getListeners( String argKey) {
+	public synchronized static LinkedList<IEventListener> getListeners( String argKey) {
 		if (thread.listeners.containsKey(argKey)) {
 			return thread.listeners.get(argKey);
 		}
 		else {
-			Stack<IEventListener> stack = new Stack<IEventListener>();
+			LinkedList<IEventListener> stack = new LinkedList<IEventListener>();
 			thread.listeners.put(argKey, stack);
 			return stack;
 		}
@@ -89,7 +89,7 @@ public class CorinaMVC extends Thread{
 	 */
 	public static synchronized boolean removeEventListener( String argKey, IEventListener argListener) {
 		if (thread.listeners.containsKey(argKey)) {
-			Stack<IEventListener> stack = thread.listeners.get(argKey);
+			LinkedList<IEventListener> stack = thread.listeners.get(argKey);
 			return stack.remove(argListener);
 		}
 		return false;
@@ -134,10 +134,11 @@ public class CorinaMVC extends Thread{
 	}
 	
 	private synchronized void internalDispatchEvent(CEvent argEvent){
-		Stack<IEventListener> stack = listeners.get(argEvent.key);
+		LinkedList<IEventListener> stack = listeners.get(argEvent.key);
 		
-		while(!stack.isEmpty() && argEvent.isPropagating()){
-			stack.pop().eventReceived( argEvent);
+		Iterator<IEventListener> it = stack.iterator();
+		while(it.hasNext() && argEvent.isPropagating()){
+			it.next().eventReceived( argEvent);
 		}
 	}
 }

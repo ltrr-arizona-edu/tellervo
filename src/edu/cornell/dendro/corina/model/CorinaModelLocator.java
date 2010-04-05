@@ -17,4 +17,16 @@ public class CorinaModelLocator extends AbstractModel{
 	public static CorinaModelLocator getInstance(){
 		return model;
 	}
+
+	@Override
+	protected void revert() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void save() {
+		// TODO Auto-generated method stub
+		
+	}
 }

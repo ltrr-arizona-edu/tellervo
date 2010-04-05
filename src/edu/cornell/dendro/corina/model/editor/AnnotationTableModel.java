@@ -4,15 +4,26 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-public class AnnotationTableModel extends AbstractTableModel {
+import edu.cornell.dendro.corina.mvc.model.CloneableArrayList;
+import edu.cornell.dendro.corina.mvc.model.ICloneable;
+
+public class AnnotationTableModel extends AbstractTableModel implements ICloneable{
 	private static final long serialVersionUID = 1L;
 
-	private final String[] columnNames;
-	private final Class<?>[] columnClasses;
+	private String[] columnNames = null;
+	private Class<?>[] columnClasses = null;
 
-	private ArrayList<ArrayList<Object>> rows = new ArrayList<ArrayList<Object>>();
-	public boolean[] canEdit;
+	private CloneableArrayList<CloneableArrayList<Object>> rows = new CloneableArrayList<CloneableArrayList<Object>>();
+	public boolean[] canEdit = null;
 
+	public AnnotationTableModel() {
+		
+	}
+	
+	public AnnotationTableModel( AnnotationTableModel argOther) {
+		cloneFrom(argOther);
+	}
+	
 	public AnnotationTableModel( String[] argColumnNames, Class<?>[] argColumnClasses,
 									boolean[] argEditableColumns) {
 		columnNames = argColumnNames;
@@ -29,7 +40,7 @@ public class AnnotationTableModel extends AbstractTableModel {
 	 * and the second is for each object by column.
 	 * @return
 	 */
-	public ArrayList<ArrayList<Object>> getRowData(){
+	public CloneableArrayList<CloneableArrayList<Object>> getRowData(){
 		return rows;
 	}
 	
@@ -51,7 +62,7 @@ public class AnnotationTableModel extends AbstractTableModel {
 	}
 
 	public void addRow( Object[] argRow) {
-		ArrayList<Object> row = new ArrayList<Object>();
+		CloneableArrayList<Object> row = new CloneableArrayList<Object>();
 		for ( Object o : argRow) {
 			row.add( o);
 		}
@@ -101,4 +112,21 @@ public class AnnotationTableModel extends AbstractTableModel {
 		return columnClasses[column];
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.cornell.dendro.corina.mvc.model.ICloneable#cloneFrom(edu.cornell.dendro.corina.mvc.model.ICloneable)
+	 */
+	@Override
+	public void cloneFrom( ICloneable argOther) {
+		AnnotationTableModel other = (AnnotationTableModel) argOther;
+		columnNames = other.columnNames.clone();
+		columnClasses = other.columnClasses.clone();
+		canEdit = other.canEdit.clone();
+		rows.cloneFrom( other.rows);
+	}
+	
+	@Override
+	public ICloneable clone(){
+		AnnotationTableModel other = new AnnotationTableModel( this);
+		return other;
+	}
 }
