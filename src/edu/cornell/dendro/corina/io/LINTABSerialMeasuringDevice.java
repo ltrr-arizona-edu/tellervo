@@ -115,8 +115,11 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
                 	 *Peter had mentioned that Corina can now handle 1/1000th
                 	 *Maybe this could be dynamic here? and even read what the device is set too?
                 	 */
+                	
+                	//Chop the three characters of ";10" off the right side of the string to leave the number.
+                	String strReadPosition = strReadBuffer.substring(0,(strReadBuffer.length())-3);
                 	// Round up to integer of 1/100th mm
-                	Float fltValue = new Float(strReadBuffer)*100;
+                	Float fltValue = new Float(strReadPosition)*100;
                 	Integer intValue = Math.round(fltValue);
 		    	
                 	// Fire event
