@@ -23,6 +23,8 @@ public class SerialDeviceSelector {
 				device = new EVESerialMeasuringDevice(portName);
 			}else if(selectedDevice.equals(SerialMeasuringDeviceConstants.VELMEX)){
 				device = new VelmexQC10SerialMeasuringDevice(portName);
+			}else if(selectedDevice.equals(SerialMeasuringDeviceConstants.LINTAB)){
+				device = new LINTABSerialMeasuringDevice(portName);
 			}
 			else{
 				device = null;
