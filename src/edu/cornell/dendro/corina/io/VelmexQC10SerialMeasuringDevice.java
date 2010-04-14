@@ -12,10 +12,6 @@ import gnu.io.SerialPortEvent;
 
 public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 
-	/*TODO
-	 * implement reset serial writing
-	 */
-	
 	private static final int EVE_ENQ = 5;
 	private static final int EVE_ACK = 6;
 	//private static final int EVE_NAK = 7;
@@ -104,6 +100,10 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
                 String strReadBuffer = readBuffer.toString();
  	
 		    	// Raw data is in mm like "2.575"
+                /*TODO Investigate changing this to allow for 1/1000th resolution
+                 *Peter had mentioned that Corina can now handle 1/1000th
+                 *Maybe this could be dynamic here? and even read what the device is set too?
+                 */
              	// Round up to integer of 1/100th mm
 		    	Float fltValue = new Float(strReadBuffer)*100;
 		    	Integer intValue = Math.round(fltValue);
