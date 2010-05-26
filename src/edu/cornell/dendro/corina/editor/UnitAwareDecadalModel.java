@@ -80,7 +80,10 @@ public class UnitAwareDecadalModel extends DecadalModel {
 		}
 		else
 		{
-			Number val = (((Number) (value)).intValue());
+			Number val = null;
+			try{
+			val = (((Number) (value)).intValue());
+			} catch (NullPointerException e){}
 			
 			if(val!=null) 
 			{

@@ -141,7 +141,7 @@
 
     <property name="batik.jar" value="(set this in build.properties!)"/>
     <property name="junit.jar" value="(set this in build.properties!)"/>
-    <property name="RXTXcomm.jar" value="(set this in build.properties!)"/>
+    <property name="cd comm.jar" value="(set this in build.properties!)"/>
     <property name="postgresql-8.2-506.jdbc.jar" value="(set this in build.properties!)"/>
     <property name="jdom.jar" value="(set this in build.properties!)"/>
     <property name="pljava.jar" value="(set this in build.properties!)"/>
