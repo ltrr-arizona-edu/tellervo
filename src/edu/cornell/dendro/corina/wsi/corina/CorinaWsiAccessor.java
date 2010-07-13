@@ -66,6 +66,7 @@ public class CorinaWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRootEl
 		net.opengis.gml.schema.ObjectFactory.class,
 		org.tridas.schema.ObjectFactory.class,
 		edu.cornell.dendro.corina.schema.ObjectFactory.class,
-		edu.cornell.dendro.corina.tridasv2.TridasObjectEx.class
+		//edu.cornell.dendro.corina.tridasv2.TridasObjectEx.class
+		//org.tridas.util.TridasObjectEx.class
 	};
 }

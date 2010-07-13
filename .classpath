@@ -37,5 +37,6 @@
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/jaxb2-basics-runtime-0.5.1.jar"/>
 	<classpathentry kind="lib" path="Libraries/PDFRenderer.jar"/>
 	<classpathentry kind="lib" path="Libraries/mozswing-complete.jar"/>
+	<classpathentry kind="lib" path="Libraries/DendroFileIO-0.0.1-SNAPSHOT.jar" sourcepath="Libraries/src/TridasJLib-0.0.1-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

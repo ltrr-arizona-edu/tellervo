@@ -9,46 +9,25 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
-import javax.swing.table.AbstractTableModel;
-
-import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.BaseSeries;
-import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasEntity;
-import org.tridas.schema.TridasLastRingUnderBark;
-import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
-import org.tridas.schema.TridasRadius;
-import org.tridas.schema.TridasRemark;
-import org.tridas.schema.TridasSample;
-import org.tridas.schema.TridasWoodCompleteness;
-import org.tridas.schema.Year;
+import org.tridas.util.TridasObjectEx;
 
 import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
-import com.lowagie.text.Font;
 import com.lowagie.text.HeaderFooter;
-import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.ColumnText;
-import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.editor.DecadalModel;
-import edu.cornell.dendro.corina.editor.WJTableModel;
-import edu.cornell.dendro.corina.formats.Metadata;
-import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
@@ -56,17 +35,13 @@ import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.ArrayListModel;
-import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
-import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
-import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 
 public class ProSheet extends ReportBase {

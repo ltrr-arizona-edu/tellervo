@@ -23,7 +23,7 @@ import edu.cornell.dendro.corina.gui.dbbrowse.ElementListTableSorter;
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
+import org.tridas.util.TridasObjectEx;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 
 /**

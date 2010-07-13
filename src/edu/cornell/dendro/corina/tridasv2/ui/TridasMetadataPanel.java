@@ -57,7 +57,7 @@ import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
+import org.tridas.util.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.ui.support.ScrollableJButtonBar;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityListHolder;

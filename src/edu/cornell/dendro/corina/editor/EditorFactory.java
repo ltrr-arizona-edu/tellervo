@@ -3,8 +3,6 @@
  */
 package edu.cornell.dendro.corina.editor;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +19,7 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasMeasuringMethod;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
@@ -33,7 +32,6 @@ import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.support.XMLDateUtils;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
