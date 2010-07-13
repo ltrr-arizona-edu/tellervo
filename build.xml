@@ -467,7 +467,7 @@
 <!--
    Cleans (deletes) corina, tridas, gml schema
 -->
-	<target name="cleanschema" description="Clean webservice schemas">
+	<!--<target name="cleanschema" description="Clean webservice schemas">
 		<delete>
 	    	<fileset dir="src">
 				<include name="edu/cornell/dendro/schema/**/*.java" />
@@ -475,18 +475,18 @@
 				<include name="org/tridas/schema/**/*.java" />
 			</fileset>
 		</delete>
-	</target>
+	</target>-->
 <!--
    Creates corina, tridas, gml schema
 -->
-	<target name="buildschema" description="Rebuild webservice schemas">
-		<!-- Compile the schema into java code -->
+	<!--<target name="buildschema" description="Rebuild webservice schemas">
+		 Compile the schema into java code 
 		<xjc destdir="src" target="2.1">
 			<arg value="-Xannotate" />
 			<arg value="-Xtridas-annotations" />
 			<arg value="-Xifins" />
 			<arg value="-Xcollection-setter-injector" />
-			<!-- <arg value="-Xinject-prop-listeners" /> -->
+		 <arg value="-Xinject-prop-listeners" /> 
 			<arg value="-Xequals" />
 			<arg value="-XhashCode" />
 			<arg value="-XtoString" />
@@ -509,7 +509,7 @@
 			</produces>
 		</xjc>
 
-		<!-- Make a javadoc for the java code --> 
+		 Make a javadoc for the java code  
 		<mkdir dir="${dist.home}/docs/jaxbschema" />
 	    <javadoc
 	           classpathref="compile.classpath"
@@ -530,4 +530,5 @@
     		</fileset>
 	    </javadoc>
 	</target>
+	-->
 </project>
