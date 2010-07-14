@@ -1,13 +1,15 @@
 package edu.cornell.dendro.corina.model;
 
-import edu.cornell.dendro.corina.mvc.model.AbstractModel;
+import edu.cornell.dendro.corina.control.editor.EditorController;
 
 /**
  *
  * @author daniel
  */
-public class CorinaModelLocator extends AbstractModel{
+public class CorinaModelLocator {
 	private static final CorinaModelLocator model = new CorinaModelLocator();
+	
+	private EditorController editorController = new EditorController();
 	
 	private CorinaModelLocator(){
 		
@@ -16,17 +18,5 @@ public class CorinaModelLocator extends AbstractModel{
 	
 	public static CorinaModelLocator getInstance(){
 		return model;
-	}
-
-	@Override
-	protected void revert() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void save() {
-		// TODO Auto-generated method stub
-		
 	}
 }

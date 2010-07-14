@@ -27,10 +27,11 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
 
+import com.dmurph.mvc.MVCEvent;
+import com.dmurph.mvc.ObjectEvent;
+
 import edu.cornell.dendro.corina.control.editor.EditorController;
 import edu.cornell.dendro.corina.model.editor.EditorModel;
-import edu.cornell.dendro.corina.mvc.control.CEvent;
-import edu.cornell.dendro.corina.mvc.control.events.ObjectEvent;
 
 @SuppressWarnings("serial")
 public class RingAnnotations extends JPanel implements PropertyChangeListener{
@@ -60,7 +61,7 @@ public class RingAnnotations extends JPanel implements PropertyChangeListener{
     	btnApply.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed( ActionEvent e) {
-				CEvent event = new CEvent(EditorController.ANNOTATIONS_APPLY_EVENT);
+				MVCEvent event = new MVCEvent(EditorController.ANNOTATIONS_APPLY_EVENT);
 				event.dispatch();
 			}
 		});
@@ -68,7 +69,7 @@ public class RingAnnotations extends JPanel implements PropertyChangeListener{
 			
 			@Override
 			public void actionPerformed( ActionEvent e) {
-				CEvent event = new CEvent( EditorController.ANNOTATIONS_CANCEL_EVENT);
+				MVCEvent event = new MVCEvent( EditorController.ANNOTATIONS_CANCEL_EVENT);
 				event.dispatch();
 			}
 		});
@@ -76,7 +77,7 @@ public class RingAnnotations extends JPanel implements PropertyChangeListener{
 			
 			@Override
 			public void actionPerformed( ActionEvent e) {
-				CEvent event = new CEvent( EditorController.ANNOTATIONS_ADD_EDIT_CUSTOM_EVENT);
+				MVCEvent event = new MVCEvent( EditorController.ANNOTATIONS_ADD_EDIT_CUSTOM_EVENT);
 				event.dispatch();
 			}
 		});

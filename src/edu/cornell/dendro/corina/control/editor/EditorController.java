@@ -6,11 +6,12 @@ package edu.cornell.dendro.corina.control.editor;
 import javax.swing.JFrame;
 import javax.swing.ToolTipManager;
 
+import com.dmurph.mvc.MVCEvent;
+import com.dmurph.mvc.ObjectEvent;
+import com.dmurph.mvc.control.FrontController;
+
 import edu.cornell.dendro.corina.model.editor.AnnotationTableModel;
 import edu.cornell.dendro.corina.model.editor.EditorModel;
-import edu.cornell.dendro.corina.mvc.control.CEvent;
-import edu.cornell.dendro.corina.mvc.control.FrontController;
-import edu.cornell.dendro.corina.mvc.control.events.ObjectEvent;
 import edu.cornell.dendro.corina.view.editor.RingAnnotations;
 
 /**
@@ -28,28 +29,28 @@ public class EditorController extends FrontController{
 	private boolean isDerivedSet = true;
 	
 	public EditorController(){
-		registerEventKey( ANNOTATIONS_APPLY_EVENT, "applyButtonPushed");
-		registerEventKey( ANNOTATIONS_CANCEL_EVENT, "cancelButtonPushed");
-		registerEventKey( ANNOTATIONS_ADD_EDIT_CUSTOM_EVENT, "customButtomPushed");
-		registerEventKey( ANNOTATIONS_CUSTOM_TEXT_CHANGE_EVENT, "customTextChanged");
+		registerCommand( ANNOTATIONS_APPLY_EVENT, "applyButtonPushed");
+		registerCommand( ANNOTATIONS_CANCEL_EVENT, "cancelButtonPushed");
+		registerCommand( ANNOTATIONS_ADD_EDIT_CUSTOM_EVENT, "customButtomPushed");
+		registerCommand( ANNOTATIONS_CUSTOM_TEXT_CHANGE_EVENT, "customTextChanged");
 	}
 	
-	public void applyButtonPushed(CEvent argEvent){
+	public void applyButtonPushed(MVCEvent argEvent){
 		System.out.println("apply button");
 	}
 	
-	public void cancelButtonPushed(CEvent argEvent){
+	public void cancelButtonPushed(MVCEvent argEvent){
 		System.out.println("cancel button");
 	}
 	
-	public void customButtomPushed(CEvent argEvent){
+	public void customButtomPushed(MVCEvent argEvent){
 		System.out.println("custom button");
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void customTextChanged(CEvent argEvent){
+	public void customTextChanged(MVCEvent argEvent){
 		ObjectEvent<String> event = (ObjectEvent<String>) argEvent;
-		System.out.println("text changed: '"+event.getObject()+"'");
+		System.out.println("text changed: '"+event.getValue()+"'");
 	}
 	
 	

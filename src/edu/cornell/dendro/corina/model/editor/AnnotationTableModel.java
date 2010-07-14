@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-import edu.cornell.dendro.corina.mvc.model.CloneableArrayList;
-import edu.cornell.dendro.corina.mvc.model.ICloneable;
+import com.dmurph.mvc.ICloneable;
+import com.dmurph.mvc.util.MVCArrayList;
 
 public class AnnotationTableModel extends AbstractTableModel implements ICloneable{
 	private static final long serialVersionUID = 1L;
@@ -13,7 +13,7 @@ public class AnnotationTableModel extends AbstractTableModel implements ICloneab
 	private String[] columnNames = null;
 	private Class<?>[] columnClasses = null;
 
-	private CloneableArrayList<CloneableArrayList<Object>> rows = new CloneableArrayList<CloneableArrayList<Object>>();
+	private MVCArrayList<MVCArrayList<Object>> rows = new MVCArrayList<MVCArrayList<Object>>();
 	public boolean[] canEdit = null;
 
 	public AnnotationTableModel() {
@@ -40,7 +40,7 @@ public class AnnotationTableModel extends AbstractTableModel implements ICloneab
 	 * and the second is for each object by column.
 	 * @return
 	 */
-	public CloneableArrayList<CloneableArrayList<Object>> getRowData(){
+	public MVCArrayList<MVCArrayList<Object>> getRowData(){
 		return rows;
 	}
 	
@@ -62,7 +62,7 @@ public class AnnotationTableModel extends AbstractTableModel implements ICloneab
 	}
 
 	public void addRow( Object[] argRow) {
-		CloneableArrayList<Object> row = new CloneableArrayList<Object>();
+		MVCArrayList<Object> row = new MVCArrayList<Object>();
 		for ( Object o : argRow) {
 			row.add( o);
 		}
