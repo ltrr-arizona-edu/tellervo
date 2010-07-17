@@ -9,7 +9,9 @@ import com.dmurph.mvc.model.HashModel;
  * @author Daniel Murphy
  *
  */
-public class ElementModel extends HashModel {
+public class SingleElementModel extends HashModel {
+	private static final long serialVersionUID = 1L;	
+	
 	public static final String OBJECT_CODE = "Object Code";
 	public static final String ELEMENT_CODE = "Element Code";
 	public static final String TITLE = "Title";
@@ -29,15 +31,16 @@ public class ElementModel extends HashModel {
 	public static final String SOIL_DESCRIPTION = "Soil Description";
 	public static final String SOIL_DEPTH = "Soil Depth";
 	public static final String BEDROCK_DESCRIPTION = "Bedrock Description";
-	
+	public static final String IMPORTED = "Imported";
+
 	public static final String[] PROPERTIES = {
 		ELEMENT_CODE, TITLE, COMMENTS, TYPE, DESCRIPTION, TAXON,
 		SHAPE, HEIGHT, WIDTH, DEPTH, UNIT, LATITUDE, LONGTITUDE,
 		SLOPE_ANGLE, SLOPE_AZIMUTH, SOIL_DESCRIPTION, SOIL_DEPTH,
-		BEDROCK_DESCRIPTION
+		BEDROCK_DESCRIPTION, IMPORTED
 	};
 	
-	public ElementModel(){
+	public SingleElementModel(){
 		for(String s : PROPERTIES){
 			if(s.equals(ELEMENT_CODE)){
 				continue;
@@ -45,9 +48,14 @@ public class ElementModel extends HashModel {
 			registerProperty(s, PropertyType.READ_WRITE, null);
 		}
 		registerProperty(ELEMENT_CODE, PropertyType.READ_ONLY);
+		registerProperty(IMPORTED, PropertyType.READ_ONLY, false);
 	}
 	
 	public void setElementCode(String argCode){
 		registerProperty(ELEMENT_CODE, PropertyType.READ_ONLY, argCode);
+	}
+	
+	public void setImported(boolean argImported){
+		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
 	}
 }

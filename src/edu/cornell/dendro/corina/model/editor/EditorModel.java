@@ -3,7 +3,6 @@
  */
 package edu.cornell.dendro.corina.model.editor;
 
-import com.dmurph.mvc.ICloneable;
 import com.dmurph.mvc.model.AbstractRevertableModel;
 
 /**
@@ -11,6 +10,8 @@ import com.dmurph.mvc.model.AbstractRevertableModel;
  * @author daniel
  */
 public class EditorModel extends AbstractRevertableModel {
+	private static final long serialVersionUID = 1L;
+	
 	public final static String ANNOTATIONS_TABLE_MODEL = "annotationTableModel";
 	public final static String CUSTOM_NOTE = "customNote";
 	
@@ -52,15 +53,6 @@ public class EditorModel extends AbstractRevertableModel {
 	}
 
 	/**
-	 * @see com.dmurph.mvc.model.AbstractRevertableModel#clone()
-	 */
-	@Override
-	public ICloneable clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
 	 * @see com.dmurph.mvc.model.AbstractRevertableModel#setProperty(java.lang.String, java.lang.Object)
 	 */
 	@Override
@@ -75,10 +67,4 @@ public class EditorModel extends AbstractRevertableModel {
 		}
 		return old;
 	}
-	
-	/**
-	 * @see com.dmurph.mvc.ICloneable#cloneFrom(com.dmurph.mvc.ICloneable)
-	 */
-	@Override
-	public void cloneFrom(ICloneable arg0) {}
 }
