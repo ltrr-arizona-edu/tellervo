@@ -5,6 +5,8 @@ package edu.cornell.dendro.corina.model.bulkImport;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -16,22 +18,45 @@ import com.dmurph.mvc.util.MVCArrayList;
  *
  */
 public class ObjectTableModel extends AbstractTableModel implements PropertyChangeListener {
+	private static final long serialVersionUID = 1L;
 	
 	private ObjectModel model;
+	private MVCArrayList<SingleObjectModel> models;
+	
+	private final ArrayList<String> columns = new ArrayList<String>();
+	private final HashMap<SingleObjectModel, Boolean> selected = new HashMap<SingleObjectModel, Boolean>();
 	
 	public ObjectTableModel(ObjectModel argModel){
 		setModel(argModel);
 	}
 	
+	public ArrayList<String> getColumns(){
+		return columns;
+	}
+	
 	public void setModel(ObjectModel model) {
 		if(this.model != null){
-			MVCArrayList<SingleObjectModel> models = (MVCArrayList<SingleObjectModel>) this.model.getProperty(ObjectModel.OBJECTS);
 			models.removePropertyChangeListener(this);
 		}
 		this.model = model;
-		MVCArrayList<SingleObjectModel> models = (MVCArrayList<SingleObjectModel>) this.model.getProperty(ObjectModel.OBJECTS);
+		this.models = (MVCArrayList<SingleObjectModel>) this.model.getProperty(ObjectModel.OBJECTS);
 		models.addPropertyChangeListener(this);
+		recreateSelected();
 	}
+	
+	private void recreateSelected() {
+		HashMap<SingleObjectModel, Boolean> newMap = new HashMap<SingleObjectModel, Boolean>();
+		for(SingleObjectModel som : models){
+			if(selected.containsKey(som)){
+				newMap.put(som, selected.get(som));
+			}else{
+				newMap.put(som, false);
+			}
+		}
+		selected.clear();
+		selected.putAll(newMap);
+	}
+	
 	public ObjectModel getModel() {
 		return model;
 	}
@@ -41,7 +66,10 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	 */
 	@Override
 	public String getColumnName(int column) {
-		return SingleObjectModel.PROPERTIES[column];
+		if(column == 0){
+			return " ";
+		}
+		return columns.get(column-1);
 	}
 	
 	/**
@@ -49,7 +77,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	 */
 	@Override
 	public int getColumnCount() {
-		return SingleObjectModel.PROPERTIES.length;
+		return columns.size()+1;
 	}
 	
 	/**
@@ -57,9 +85,17 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	 */
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		MVCArrayList<SingleObjectModel> models = (MVCArrayList<SingleObjectModel>) model.getProperty(ObjectModel.OBJECTS);
-		SingleObjectModel som = models.get(0);
-		return som.getProperty(SingleObjectModel.PROPERTIES[columnIndex]).getClass();
+		if(columnIndex == 0){
+			return Boolean.class;
+		}
+		columnIndex--;
+		if(models.size() == 0){
+			return String.class;
+		}else{
+			String column = columns.get(columnIndex);
+			SingleObjectModel som = models.get(0);
+			return som.getProperty(column).getClass();
+		}
 	}
 	
 	/**
@@ -67,7 +103,6 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	 */
 	@Override
 	public int getRowCount() {
-		MVCArrayList<SingleObjectModel> models = (MVCArrayList<SingleObjectModel>) model.getProperty(ObjectModel.OBJECTS);
 		return models.size();
 	}
 	
@@ -76,9 +111,29 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		MVCArrayList<SingleObjectModel> models = (MVCArrayList<SingleObjectModel>) model.getProperty(ObjectModel.OBJECTS);
+		if(columnIndex == 0){
+			SingleObjectModel som = models.get(rowIndex);
+			return selected.get(som);
+		}
+		columnIndex--;
+		String column = columns.get(columnIndex);
 		SingleObjectModel som = models.get(rowIndex);
-		return som.getProperty(SingleObjectModel.PROPERTIES[columnIndex]);
+		return som.getProperty(column);
+	}
+	
+	/**
+	 * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
+	 */
+	@Override
+	public void setValueAt(Object argAValue, int argRowIndex, int argColumnIndex) {
+		if(argColumnIndex == 0){
+			SingleObjectModel som = models.get(argRowIndex);
+			selected.put(som, (Boolean) argAValue);
+		}
+		argColumnIndex--;
+		String column = columns.get(argColumnIndex);
+		SingleObjectModel som = models.get(argRowIndex);
+		som.setProperty(column, argAValue);
 	}
 	
 	/**
@@ -86,12 +141,15 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	 */
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		MVCArrayList<SingleObjectModel> models = (MVCArrayList<SingleObjectModel>) model.getProperty(ObjectModel.OBJECTS);
+		String column = columns.get(columnIndex);
 		SingleObjectModel som = models.get(rowIndex);
-		if(som.getPropertyType(SingleObjectModel.PROPERTIES[columnIndex]) == PropertyType.READ_ONLY){
-			return false;
+		if(som.getPropertyType(column) == PropertyType.READ_WRITE){
+			if((Boolean)som.getProperty(SingleObjectModel.IMPORTED)){
+				return false;
+			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	/**
@@ -103,6 +161,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		
 		if(prop.equals(MVCArrayList.SIZE)){
 			fireTableStructureChanged();
+			recreateSelected();
 		}
 		else if(prop.equals(MVCArrayList.ELEMENT)){
 			fireTableDataChanged();
