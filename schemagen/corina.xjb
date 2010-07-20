@@ -69,4 +69,14 @@
 		</jaxb:bindings>						
 	</jaxb:bindings>
 	
+		<!-- Tridas schema. Prefix with 'Tridas'! -->
+	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/tridas.xsd" node="/xs:schema">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.tridas.schema"/>
+			<jaxb:nameXmlTransform>
+				<jaxb:elementName prefix="Tridas" />
+			</jaxb:nameXmlTransform>
+		</jaxb:schemaBindings>
+	</jaxb:bindings>
+	
 </jaxb:bindings> 

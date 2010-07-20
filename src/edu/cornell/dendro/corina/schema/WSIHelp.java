@@ -20,6 +20,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
+import org.w3c.dom.Element;
 
 
 /**
@@ -32,7 +33,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;any/>
+ *         &lt;any processContents='skip'/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -51,18 +52,18 @@ public class WSIHelp
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlAnyElement(lax = true)
-    protected Object any;
+    @XmlAnyElement
+    protected Element any;
 
     /**
      * Gets the value of the any property.
      * 
      * @return
      *     possible object is
-     *     {@link Object }
+     *     {@link Element }
      *     
      */
-    public Object getAny() {
+    public Element getAny() {
         return any;
     }
 
@@ -71,10 +72,10 @@ public class WSIHelp
      * 
      * @param value
      *     allowed object is
-     *     {@link Object }
+     *     {@link Element }
      *     
      */
-    public void setAny(Object value) {
+    public void setAny(Element value) {
         this.any = value;
     }
 
@@ -118,7 +119,7 @@ public class WSIHelp
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            Object theAny;
+            Element theAny;
             theAny = this.getAny();
             toStringBuilder.append("any", theAny);
         }
@@ -133,9 +134,9 @@ public class WSIHelp
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIHelp copy = ((target == null)?((WSIHelp) createCopy()):((WSIHelp) target));
         if (this.isSetAny()) {
-            Object sourceAny;
+            Element sourceAny;
             sourceAny = this.getAny();
-            Object copyAny = ((Object) copyBuilder.copy(sourceAny));
+            Element copyAny = ((Element) copyBuilder.copy(sourceAny));
             copy.setAny(copyAny);
         } else {
             copy.any = null;
