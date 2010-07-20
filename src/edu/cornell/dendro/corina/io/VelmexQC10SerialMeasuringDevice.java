@@ -90,8 +90,9 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 						if(intReadFromPort == -1) {
 							fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
 							return;
+
 						}
-<<<<<<< .working
+/**<<<<<<< .working
 						//Ignore CR (13)
 			    		if(intReadFromPort!=13)  {
 			    			readBuffer.append((char) intReadFromPort);
@@ -106,6 +107,7 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
                  *Maybe this could be dynamic here? and even read what the device is set too?
                  */
              	// Round up to integer of 1/100th mm
+/**
 		    	Float fltValue = new Float(strReadBuffer)*100;
 		    	Integer intValue = Math.round(fltValue);
 		    	
@@ -114,7 +116,7 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 			    							
 			    	
 							
-=======
+=======**/
 						//Ignore CR (13)
 			    		if(intReadFromPort!=13)  {
 			    			readBuffer.append((char) intReadFromPort);
@@ -141,7 +143,7 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 			    							
 			    	
 							
->>>>>>> .merge-right.r2361
+//>>>>>>> .merge-right.r2361
 			}
 			catch (IOException ioe) {
 					System.out.println("Error reading from or writing to serial port: " + ioe);
