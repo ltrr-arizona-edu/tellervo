@@ -42,5 +42,8 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Corina/LibraryDocsAndSources/java-simple-mvc-1.2.2-SNAPSHOT-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="Libraries/DendroFileIO-0.0.1-SNAPSHOT.jar" sourcepath="Libraries/src/TridasJLib-0.0.1-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="Libraries/src/DendroFileIO-0.0.1-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="Libraries/src/TridasJLib-0.0.1-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

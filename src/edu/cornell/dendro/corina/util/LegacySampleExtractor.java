@@ -302,13 +302,17 @@ public class LegacySampleExtractor {
 		}
 		
 		if((val = s.getMetaString("unmeas_pre")) != null) {
-			heartwood.setMissingHeartwoodRingsToPith(val);
+			try{
+			heartwood.setMissingHeartwoodRingsToPith(Integer.valueOf(val));
 			heartwood.setMissingHeartwoodRingsToPithFoundation("Observed but not measured");
+			} catch (NumberFormatException e){}
 		}
 
 		if((val = s.getMetaString("unmeas_post")) != null) {
-			sapwood.setMissingSapwoodRingsToBark(val);
+			try{
+			sapwood.setMissingSapwoodRingsToBark(Integer.valueOf(val));
 			sapwood.setMissingSapwoodRingsToBarkFoundation("Observed but not measured");
+			} catch (NumberFormatException e){}
 		}
 		
 		if((val = s.getMetaString("sapwood")) != null) {	

@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
@@ -33,8 +33,6 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Metadata;
-import edu.cornell.dendro.corina.gui.XMLDebugView;
-import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
@@ -42,7 +40,6 @@ import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
@@ -275,7 +272,7 @@ public class BoxLabel extends ReportBase{
 			// from more than one subobject in the box 
 			if(objdone.size()>0)
 			{
-				for(TridasObject tlo : objdone){
+				try{for(TridasObject tlo : objdone){
 					TridasObjectEx tloex = (TridasObjectEx) tlo;
 					TridasObjectEx myobjex = (TridasObjectEx) myobj;
 					
@@ -287,7 +284,7 @@ public class BoxLabel extends ReportBase{
 						// Object has not been done so add to the done list and keep going
 						objdone.add(myobj);
 					}
-				}
+				}} catch (Exception e){}
 				
 			}
 			else

@@ -815,7 +815,7 @@ public class SeriesReport extends ReportBase {
 		Paragraph p = new Paragraph();
 		p.setLeading(0, 1.2f);
 		Year firstyear = s.getSeries().getInterpretation().getFirstYear();
-		Year sproutyear = s.getSeries().getInterpretation().getSproutYear();
+		Year pithyear = s.getSeries().getInterpretation().getPithYear();
 		Year deathyear = s.getSeries().getInterpretation().getDeathYear();
 		Boolean isRelativelyDated = false;
 		p.add(new Chunk("Interpretation:", subSubSectionFont));
@@ -835,13 +835,13 @@ public class SeriesReport extends ReportBase {
 			if(isRelativelyDated==false) p.add(new Chunk(firstyear.getSuffix().toString() + ". ", bodyFont));
 		}
 		
-		if(sproutyear!=null && deathyear!=null){
+		if(pithyear!=null && deathyear!=null){
 			p.add(new Chunk("\n- This tree sprouted ", bodyFont));
-			if (sproutyear.getCertainty()!=null){
-				p.add(certaintyToNaturalString(sproutyear.getCertainty().toString()));
+			if (pithyear.getCertainty()!=null){
+				p.add(certaintyToNaturalString(pithyear.getCertainty().toString()));
 			}
-			p.add(new Chunk(sproutyear.getValue().toString(), bodyFont));
-			if(isRelativelyDated==false) p.add(new Chunk(sproutyear.getSuffix().toString(), bodyFont));
+			p.add(new Chunk(pithyear.getValue().toString(), bodyFont));
+			if(isRelativelyDated==false) p.add(new Chunk(pithyear.getSuffix().toString(), bodyFont));
 			p.add(new Chunk(" and died ", bodyFont));
 			if (deathyear.getCertainty()!=null){
 				p.add(certaintyToNaturalString(deathyear.getCertainty().toString()));

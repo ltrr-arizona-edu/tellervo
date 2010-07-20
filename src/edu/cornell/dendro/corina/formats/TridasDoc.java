@@ -434,7 +434,10 @@ public class TridasDoc implements Filetype {
 
 	public void save(Sample s, BufferedWriter w) throws IOException {
 		
+
 		
+		
+
 	}
 
 

@@ -13,7 +13,7 @@ import org.tridas.schema.TridasWoodCompleteness;
 
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
+import org.tridas.util.TridasObjectEx;
 
 public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata {
 	@SuppressWarnings("unused")

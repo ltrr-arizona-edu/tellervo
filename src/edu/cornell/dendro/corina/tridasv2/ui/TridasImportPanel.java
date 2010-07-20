@@ -14,7 +14,7 @@ import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
+import org.tridas.util.TridasObjectEx;
 import edu.cornell.dendro.corina.util.LegacySampleExtractor;
 
 /**

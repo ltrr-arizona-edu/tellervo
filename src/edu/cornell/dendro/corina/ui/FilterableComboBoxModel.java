@@ -9,8 +9,6 @@ import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.MutableComboBoxModel;
 
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
-
 /**
  * From: http://forums.sun.com/thread.jspa?threadID=712032
  * Slightly modified

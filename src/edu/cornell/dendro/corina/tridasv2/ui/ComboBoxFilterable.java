@@ -29,7 +29,7 @@ import javax.swing.event.PopupMenuListener;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.ControlledVoc;
 
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
+import org.tridas.util.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.ui.support.NotPresent;
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
 

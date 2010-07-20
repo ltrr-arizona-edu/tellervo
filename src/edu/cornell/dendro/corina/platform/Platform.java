@@ -89,8 +89,9 @@ public class Platform extends AbstractSubsystem {
 		// don't need to do anything on destroy
 	}
 
-	public boolean isMac() {
-		return isMac;
+	public static boolean isMac() {
+	    String osName = System.getProperty("os.name");
+	    return osName.startsWith("Mac OS X");
 	}
 
 	public boolean isWindows() {

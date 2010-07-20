@@ -7,6 +7,7 @@ import java.util.Comparator;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
 /**
  * A simple comparator for sorting lists of ITridas objects by

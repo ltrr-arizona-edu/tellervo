@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.3" targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.2.1" targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!--
 %%%%%%%%%%%%%%
 %		EXTERNAL SCHEMAS	
 %%%%%%%%%%%%%% -->
 	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlinks.xsd"/>
-	<xs:import namespace="http://www.tridas.org/1.3" schemaLocation="tridas.xsd"/>
+	<xs:import namespace="http://www.tridas.org/1.2.1" schemaLocation="tridas.xsd"/>
 	<!--
 %%%%%%%%%%%%%%
 %		TYPES
@@ -611,7 +611,7 @@
 <xs:element name="help">
 	<xs:complexType>
 		<xs:sequence>
-			<xs:any/>
+			<xs:any processContents="skip"/>
 		</xs:sequence>
 	</xs:complexType>
 </xs:element>

@@ -4,36 +4,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasDerivedSeries;
-import org.tridas.schema.TridasIdentifier;
 
 import edu.cornell.dendro.corina.cross.CrossdateDialog;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.graph.GraphWindow;
-import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.BaseSample;
-import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
-import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.schema.SearchOperator;
-import edu.cornell.dendro.corina.schema.SearchParameterName;
-import edu.cornell.dendro.corina.schema.SearchReturnObject;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectEx;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
-import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
-import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 public class ElementListPopupMenu extends JPopupMenu {
 	private static final long serialVersionUID = 1L;

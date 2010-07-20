@@ -70,7 +70,6 @@ public class TridasWeiserjahreWrapper implements NumericArrayListHook {
 		for(int i = 0, len = incr.size(); i < len; i++) {
 			TridasValue tv = new TridasValue();
 			
-			tv.setIndex(Integer.toString(i));
 			tv.setValue(wjForIndex(i));
 			
 			values.add(tv);

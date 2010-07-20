@@ -551,15 +551,22 @@ public class Corina implements Filetype {
 		
 		TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
 		
-		if (tag.equals("species")){
-			fieldvalue = telem.getTaxon().getNormal().toString();
-		}
-		else if (tag.equals("filename")){
-			fieldvalue = "CorinaWSI:" + s.getSeries().getIdentifier().getDomain() + s.getSeries().getIdentifier().getValue();
-		}
-		else if (tag.equals("")){
+		try{
+			
+			if (tag.equals("species")){
+				fieldvalue = telem.getTaxon().getNormal().toString();
+			}
+			else if (tag.equals("filename")){
+				fieldvalue = "CorinaWSI:" + s.getSeries().getIdentifier().getDomain() + s.getSeries().getIdentifier().getValue();
+			}
+			else if (tag.equals("")){
+				
+			}
+		} catch (NullPointerException e)
+		{
 			
 		}
+		
 		
 		// Write to buffer
 		if(tag!=null && fieldvalue!=null)
