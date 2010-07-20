@@ -502,6 +502,10 @@
 			</produces>
 		</xjc>
 
+		<!-- Delete out all the GML and TRiDaS schemas as we're using external libs for these-->
+		<delete dir="src/org/tridas/schema"/>
+		<delete dir="src/net/opengis/gml"/>
+		
 		 <!--Make a javadoc for the java code
 		<mkdir dir="${dist.home}/docs/jaxbschema" />
 	    <javadoc
