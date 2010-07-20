@@ -78,16 +78,16 @@ $cdbCredentialsFile = "/home/aps03pwb/.corina_server_credentials";
 // Array of known clients and the minimum version that can be used when accessing this webservice
 $corinaClientIdentifiers = array( 
 								array("name" => "Corina WSI", 	
-										"minVersion" => "2.13.0", 						
+										"minVersion" => "2.11", 						
 									 ), 
 								array("name" => "Firefox", 		
-										"minVersion" => "3.6.8", 
+										"minVersion" => "1.0", 
 									 ),  
 								array("name" => "Safari",		
-										"minVersion" => "1.0.0", 
+										"minVersion" => "1.0", 
 									 ),
 								array("name" => "Gecko", 		
-										"minVersion" => "1.0.0", 
+										"minVersion" => "1.0", 
 									 )
 								);
 								

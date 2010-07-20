@@ -150,7 +150,7 @@ class meta
 	  	if (strstr($this->clientversion, $app['name']))
 	  	{
 	  		$appversion = substr(strstr($this->clientversion, $app['name']), strlen($app['name'])+1);
-	  		$pos = strrpos($appversion, " ");
+	  		$pos = strpos($appversion, " ");
 	  		$appversion = substr($appversion, 0, $pos);
 	  		return $appversion;
 	  		break;
@@ -179,7 +179,7 @@ class meta
 	  		$clientVersionArray      = explode(".", $this->getClientVersion());
 	  		$minRequiredVersionArray = explode(".", $this->getMinRequiredClientVersion());
 	  		
-	  		for ($i=0; $i<=sizeof($clientVersionArray) && $i<=sizeof($minRequiredVersionArray); $i++)
+	  		for ($i=0; $i<sizeof($clientVersionArray) && $i<sizeof($minRequiredVersionArray); $i++)
 	  		{
 	  			if($clientVersionArray[$i]==$minRequiredVersionArray[$i])
 	  			{
@@ -200,7 +200,11 @@ class meta
 	  				$firebug->log($minRequiredVersionArray, "Required Version");
 	  				return true;
 	  			}
+
 	  		}
+	  			  		
+	  		// Version matches required version
+	  		return true;
 	  	}	
   	}
 
