@@ -117,4 +117,10 @@ public class WJTableModel extends DecadalModel implements SampleListener {
     public void sampleDataChanged(SampleEvent e) { }
     public void sampleMetadataChanged(SampleEvent e) { }
     public void sampleElementsChanged(SampleEvent e) { }
+
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

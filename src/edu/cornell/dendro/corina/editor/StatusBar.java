@@ -24,6 +24,7 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.gui.ElementsPanel;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.ui.I18n;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -36,6 +37,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.ChangeEvent;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
 /**
@@ -70,16 +72,19 @@ public class StatusBar extends JPanel
     // private Tree icon;
 
     // label
-    private JLabel label;
+    private JLabel widthLabel;
 
     // statistics
     private Statistics stats;
+    private UnitsPanel units;
 
     // optional: table
     private JTable table;
 
     // the sample to get data values from
     private Sample sample;
+    
+
 
     /** Update the modeline, when a selection change occurs.  The
 	modeline will look something like this:
@@ -98,7 +103,7 @@ public class StatusBar extends JPanel
 
 	// bail out if not on data
 	if (col<1 || col>10) {
-	    label.setText(EMPTY);
+	    widthLabel.setText(EMPTY);
 	    return;
 	}
 
@@ -110,19 +115,20 @@ public class StatusBar extends JPanel
 
 	// bail out if out of range
 	if (i<0 || i>=sample.getData().size()) {
-	    label.setText(EMPTY);
+		widthLabel.setText(EMPTY);
 	    return;
 	}
 
-	// get modeline from year, index
-	String modeline = y + ": " + sample.getData().get(i);
-	if (sample.hasCount())
-	    modeline += " [" + sample.getCount().get(i) + "]";
+	// get ring value 
+	String strRingWidthValue = sample.getData().get(i).toString();
+/*	if (sample.hasCount())
+	    strRingWidthValue += " [" + sample.getCount().get(i) + "]";
 	if (sample.hasWeiserjahre())
-	    modeline += " " + Weiserjahre.toString(sample, i);
-
+	    strRingWidthValue += " " + Weiserjahre.toString(sample, i);
+*/
 	// set modeline
-	label.setText(modeline);
+	widthLabel.setText(I18n.getText("editor.year")+ ": " + y.toString() + " = " + strRingWidthValue);
+	
     }
 
     // if i set it to "", it would have no height, either.  force it
@@ -166,27 +172,32 @@ public class StatusBar extends JPanel
 	// BUG: if data changes (how can this happen?), might need to change text.
 	// so add myself as a samplelistener, too.
 
-	// label, border
-	label = new JLabel();
-	label.setBorder(BorderFactory.createEmptyBorder());
-
-	// icon -- DISABLED
-	// icon = new Tree(sample);
-
-	// stats, like mean sensitivity
+	// Width label
+	widthLabel = new JLabel();
+	//widthLabel.setBorder(BorderFactory.createEtchedBorder());
+	
+	// Stats, like mean sensitivity
 	stats = new Statistics(sample);
-
+	//stats.setBorder(BorderFactory.createEtchedBorder());
+	
+	// Units 
+	units = new UnitsPanel(sample);
+	
 	// initial text
 	update();
 
 	// pack stuff
-	setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+	setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 	setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 	add(Box.createHorizontalStrut(2));
 	// add(icon);
 	// add(Box.createHorizontalStrut(4));
-	add(label);
+	add(units);
+	add(new JLabel("  |  "));
+	add(widthLabel);
+	add(new JLabel("  |  "));
 	add(Box.createHorizontalGlue());
+	add(new JLabel("  |  "));
 	add(stats);
 	add(Box.createHorizontalStrut(2));
     }

@@ -170,7 +170,6 @@ public class TridasRingWidthWrapper_Legacy implements NumericArrayListHook {
 			
 			values.add(tv);
 						
-
 			if(usesCounts) {
 				checkCountsValid();
 				

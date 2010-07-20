@@ -101,7 +101,6 @@ public final class TridasRingWidthWrapper {
 	private final class DataWrapper extends AbstractList<Number> {
 		// get the indexes to where we want them
 		public DataWrapper() {
-
 		}
 		
 		/**
@@ -193,7 +192,6 @@ public final class TridasRingWidthWrapper {
 		
 		for(Number n : in)
 			data.add(n);
-		
 	}
 	
 	public final List<Number> getData() {

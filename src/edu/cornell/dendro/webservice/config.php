@@ -22,7 +22,7 @@
 $dbName = corina_dev;
 
 // Domain name of the server this software is running on
-$domain = "dendro.cornell.edu/dev/";
+$domain = "dendro.cornell.edu/dev2/";
 
 // Whether to display debug messages
 $debugFlag = TRUE; 
@@ -34,10 +34,10 @@ $timingFlag = FALSE;
 $wsversion = "0.2.".exec(svnversion); 
 
 // Path to Corina XSD
-$corinaXSD = "/var/www/corina-webservice/dev/schemas/corina.xsd";
+$corinaXSD = "/var/www/corina-webservice/tridas1.2.1/schemas/corina.xsd";
 
 // Web accessible temporary folder
-$tempFolder = "/var/www/corina-webservice/dev/temp/";
+$tempFolder = "/var/www/corina-webservice/tridas1.2.1/temp/";
 
 // Base URL of web accessible temporary folder
 $tempFolderURL = "https://".$domain."temp/";
@@ -98,7 +98,7 @@ $onlyAllowKnownClients = TRUE;
 $dbDefaultUnits = "micrometres";
 
 // Default Units for the webservice to output (needs to be valid TRiDaS standard units)
-$wsDefaultUnits = "1/100th millimetres";
+$wsDefaultUnits = "micrometres";
 
 //************************
 

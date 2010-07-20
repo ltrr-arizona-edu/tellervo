@@ -356,6 +356,25 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		return values.getValues().get(idx);		
 	}
 	
+	/**
+	 * Is this sample unitless?
+	 * 
+	 * @return Boolean
+	 */
+	public Boolean isUnitless()
+	{
+		ITridasSeries series = this.getSeries();
+		TridasValues value = series.getValues().get(0);
+		if(value.getUnitless()!=null)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	public synchronized void addSampleListener(SampleListener l) {
 		if (!listeners.contains(l))
 			listeners.add(l);
@@ -443,6 +462,10 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	}
 	public void fireSampleRedated() {
 		fireSampleEvent("sampleRedated");
+	}
+	
+	public void fireDisplayUnitsChanged(){
+		fireSampleEvent("sampleDisplayUnitsChanged");
 	}
 
 	/**

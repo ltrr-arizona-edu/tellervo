@@ -488,6 +488,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		dataView = new SampleDataView(sample);
 		rolodex.add(dataView, I18n.getText("editor.tab_data"));
 		rolodex.add(metaView, I18n.getText("editor.tab_metadata"));
+		
 
 		// wj and elements, if it's summed
 		if (sample.hasWeiserjahre())
@@ -516,6 +517,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// rolodex.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0)); -- but the old frame is still there!  hmm...
 		addCards();
 		getContentPane().add(rolodex, BorderLayout.CENTER);
+		
+		// Fire of display units changed to make sure they are shown correctly to start with
+		sample.fireDisplayUnitsChanged();
 	}
 
 	public Sample getSample() {
@@ -883,5 +887,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		} catch (UserCancelledException uce) {
 			System.out.println("user cancelled");
 		}
+	}
+
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

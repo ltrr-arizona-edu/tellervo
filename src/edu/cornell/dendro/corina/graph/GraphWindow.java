@@ -801,4 +801,10 @@ public class GraphWindow extends XFrame implements SampleListener,
 	public Object getSavedDocument() {
 		return plot;
 	}
+
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

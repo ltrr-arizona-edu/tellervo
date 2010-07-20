@@ -34,6 +34,9 @@ public class SampleAdapter implements SampleListener {
     public void sampleDataChanged(SampleEvent e) { }
     public void sampleMetadataChanged(SampleEvent e) { }
     public void sampleElementsChanged(SampleEvent e) { }
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) { }
+    
 
     // 
     // -> add other types of events here

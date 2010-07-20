@@ -815,7 +815,7 @@ public class SeriesReport extends ReportBase {
 		Paragraph p = new Paragraph();
 		p.setLeading(0, 1.2f);
 		Year firstyear = s.getSeries().getInterpretation().getFirstYear();
-		Year pithyear = s.getSeries().getInterpretation().getPithYear();
+		Year pithYear = s.getSeries().getInterpretation().getPithYear();
 		Year deathyear = s.getSeries().getInterpretation().getDeathYear();
 		Boolean isRelativelyDated = false;
 		p.add(new Chunk("Interpretation:", subSubSectionFont));
@@ -832,28 +832,27 @@ public class SeriesReport extends ReportBase {
 				p.add(new Chunk(firstyear.getCertainty().toString().toLowerCase() + " ", bodyFont));
 			}
 			p.add(new Chunk(firstyear.getValue().toString(), bodyFont));
-			if(isRelativelyDated==false) p.add(new Chunk(firstyear.getSuffix().toString() + ". ", bodyFont));
+			if(isRelativelyDated==false) p.add(new Chunk(firstyear.getSuffix().toString(), bodyFont));
+			p.add(new Chunk(".\n", bodyFont));
 		}
 		
-		if(pithyear!=null && deathyear!=null){
-			p.add(new Chunk("\n- This tree sprouted ", bodyFont));
-			if (pithyear.getCertainty()!=null){
-				p.add(certaintyToNaturalString(pithyear.getCertainty().toString()));
+		if(pithYear!=null && deathyear!=null){
+			p.add(new Chunk("- The pith of this radius was laid down ", bodyFont));
+			if (pithYear.getCertainty()!=null){
+				p.add(certaintyToNaturalString(pithYear.getCertainty().toString()));
 			}
-			p.add(new Chunk(pithyear.getValue().toString(), bodyFont));
-			if(isRelativelyDated==false) p.add(new Chunk(pithyear.getSuffix().toString(), bodyFont));
+			if(isRelativelyDated) p.add(new Chunk("relative year ", bodyFont));
+			p.add(new Chunk(pithYear.getValue().toString(), bodyFont));
+			if(isRelativelyDated==false) p.add(new Chunk(pithYear.getSuffix().toString(), bodyFont));
 			p.add(new Chunk(" and died ", bodyFont));
 			if (deathyear.getCertainty()!=null){
 				p.add(certaintyToNaturalString(deathyear.getCertainty().toString()));
 			}
+			if(isRelativelyDated) p.add(new Chunk("relative year ", bodyFont));
 			p.add(new Chunk(deathyear.getValue().toString(), bodyFont));
-			if(isRelativelyDated==false) {
-				p.add(new Chunk(deathyear.getSuffix().toString() + ".\n", bodyFont));
-			}
-			else
-			{
-				p.add(new Chunk(".\n", bodyFont));
-			}
+			if(isRelativelyDated==false) p.add(new Chunk(deathyear.getSuffix().toString(), bodyFont));
+			p.add(new Chunk(".\n", bodyFont));
+			
 		}
 		
 		
@@ -878,13 +877,13 @@ public class SeriesReport extends ReportBase {
 	{
 		Chunk c = new Chunk();
 		
-		if(certainty.equals("exact")){
+		if(certainty.equalsIgnoreCase("exact")){
 			c.append("in exactly ");
 		}
-		else if (certainty.equals("after")){
+		else if (certainty.equalsIgnoreCase("after")){
 			c.append("after ");
 		}
-		else if (certainty.equals("before")){
+		else if (certainty.equalsIgnoreCase("before")){
 			c.append("before ");
 		}		
 		else{
@@ -929,10 +928,13 @@ public class SeriesReport extends ReportBase {
 		}
 		
 		// Ring count 
-		p.add(new Chunk("- A total of "+ String.valueOf(s.countRings()) + " rings were measured.\n",bodyFont));
+		p.add(new Chunk("- A total of "+ String.valueOf(s.countRings()) + " rings were measured.",bodyFont));
 		
-
-		
+		// Unmeasured rings
+		p.add(new Chunk(" Additional rings were observed but not measured ("+String.valueOf(woodCompleteness.getNrOfUnmeasuredInnerRings())+
+				" towards the pith and " + String.valueOf(woodCompleteness.getNrOfUnmeasuredOuterRings()) + " towards the bark.",bodyFont));
+		p.add(new Chunk("\n"));
+				
 		// Extract Heartwood and sapwood info
 		p.add(getHeartSapwoodDetails(woodCompleteness, WoodType.HEARTWOOD));
 		p.add(getHeartSapwoodDetails(woodCompleteness, WoodType.SAPWOOD));

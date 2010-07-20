@@ -91,6 +91,7 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 							fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
 							return;
 						}
+<<<<<<< .working
 						//Ignore CR (13)
 			    		if(intReadFromPort!=13)  {
 			    			readBuffer.append((char) intReadFromPort);
@@ -113,6 +114,34 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 			    							
 			    	
 							
+=======
+						//Ignore CR (13)
+			    		if(intReadFromPort!=13)  {
+			    			readBuffer.append((char) intReadFromPort);
+			    		}
+			    	}
+
+                String strReadBuffer = readBuffer.toString();
+ 	
+		    	// Raw data is in mm like "2.575"
+             	// Round up to integer of 1/100th mm
+		    	Float fltValue = new Float(strReadBuffer)*100;
+		    	Integer intValue = Math.round(fltValue);
+		    	
+		    	if(intValue>0)
+		    	{	    	
+			    	// Fire event
+			    	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+		    	}
+		    	else
+		    	{
+		    		// Fire bad event as value is a negative number
+		    		fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+		    	}
+			    							
+			    	
+							
+>>>>>>> .merge-right.r2361
 			}
 			catch (IOException ioe) {
 					System.out.println("Error reading from or writing to serial port: " + ioe);

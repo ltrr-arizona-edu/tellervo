@@ -287,4 +287,9 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 				sample.getElements().size() >= 2);
 				*/
 	}
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

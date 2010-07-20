@@ -51,6 +51,8 @@ public class DecadalModel extends AbstractTableModel {
 	// BUG! -- if the length changes (e.g., truncate), there's a problem
 	// with sums.  ouch.  (<-- what did i mean by this?)
 
+	private Double unitMultiplier = 0.0;
+	
 	private static final long serialVersionUID = 1L;
 
 	/** The sample whose data is being displayed. */

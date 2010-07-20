@@ -472,4 +472,10 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 	public void sampleElementsChanged(SampleEvent e) {
 	}
+
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }
