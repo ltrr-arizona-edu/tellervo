@@ -143,11 +143,16 @@ class meta
   function getClientVersion()
   {
   	global $corinaClientIdentifiers;
+  	global $firebug;
+  	
   	foreach($corinaClientIdentifiers as $app)
   	{ 	
 	  	if (strstr($this->clientversion, $app['name']))
 	  	{
-	  		return (float) substr(strstr($this->clientversion, $app['name']), strlen($app['name'])+1);
+	  		$appversion = substr(strstr($this->clientversion, $app['name']), strlen($app['name'])+1);
+	  		$pos = strrpos($appversion, " ");
+	  		$appversion = substr($appversion, 0, $pos);
+	  		return $appversion;
 	  		break;
 	  	}	
   	}	
@@ -163,25 +168,43 @@ class meta
   {
   	global $corinaClientIdentifiers;
 	global $onlyAllowKnownClients;
-	
+	global $firebug;
 	
   	foreach($corinaClientIdentifiers as $app)
-  	{ 	
+  	{ 			
 	  	if (strstr($this->clientversion, $app['name']))
 	  	{
-	  		$minVersion =  $app['minVersion'];
-	  		if($this->getClientVersion()>=$minVersion) 
+	  		// Client recognised so check version
+	  		
+	  		$clientVersionArray      = explode(".", $this->getClientVersion());
+	  		$minRequiredVersionArray = explode(".", $this->getMinRequiredClientVersion());
+	  		
+	  		for ($i=0; $i<=sizeof($clientVersionArray) && $i<=sizeof($minRequiredVersionArray); $i++)
 	  		{
-	  			return true;
-	  		}
-	  		else
-	  		{
-	  			return false;
+	  			if($clientVersionArray[$i]==$minRequiredVersionArray[$i])
+	  			{
+	  				$firebug->log("not sure if client version is ok yet...");
+	  				continue;
+	  			}
+	  			else if($clientVersionArray[$i]<$minRequiredVersionArray[$i])
+	  			{
+	  				$firebug->log("Client too old");
+	  				$firebug->log($clientVersionArray, "Client Version");
+	  				$firebug->log($minRequiredVersionArray, "Required Version");
+	  				return false;
+	  			}
+	  			else if ($clientVersionArray[$i]>$minRequiredVersionArray[$i])
+	  			{
+	  				$firebug->log("Client ok");
+	  				$firebug->log($clientVersionArray, "Client Version");
+	  				$firebug->log($minRequiredVersionArray, "Required Version");
+	  				return true;
+	  			}
 	  		}
 	  	}	
   	}
 
-  	// Return either false or null depending on if strict client checking is enabled
+  	// Client not recognised so return either false or null depending on if strict client checking is enabled
   	if($onlyAllowKnownClients===TRUE)
   	{ 
   		return false;

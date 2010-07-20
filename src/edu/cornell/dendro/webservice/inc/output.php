@@ -105,15 +105,8 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
     }
     
    	// Set root XML tag
-   	// If client is unsupported play safe and don't use namespaces
-    if ( (isset($metaHeader->messages[0][107])) || (isset($metaHeader->messages[0][108])) )
-    {
-        $outputStr.= "\n<corina>\n";
-    }
-    else
-    {
-    	$outputStr.= "\n<corina xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\">\n";
-    }
+    $outputStr.= "\n<corina xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\">\n";
+    
     
     
     $outputStr.= $metaHeader->asXML();

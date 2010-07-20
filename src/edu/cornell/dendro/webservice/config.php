@@ -33,9 +33,6 @@ $timingFlag = FALSE;
 // Version number to be displayed in output headers
 $wsversion = "0.2.".exec(svnversion); 
 
-// Path to RelaxNG schema
-$rngSchema = "/var/www/corina-webservice/dev/schemas/corina.rng"; 
-
 // Path to Corina XSD
 $corinaXSD = "/var/www/corina-webservice/dev/schemas/corina.xsd";
 
@@ -49,7 +46,7 @@ $tempFolderURL = "https://".$domain."temp/";
 $corinaNS = "http://dendro.cornell.edu/schema/corina/1.0";
 
 // TRiDaS Namespace URL
-$tridasNS = "http://www.tridas.org/1.3";
+$tridasNS = "http://www.tridas.org/1.2.1";
 
 // XLink Namespace URL
 $xlinkNS = "http://www.w3.org/1999/xlink";
@@ -80,10 +77,18 @@ $cdbCredentialsFile = "/home/aps03pwb/.corina_server_credentials";
 
 // Array of known clients and the minimum version that can be used when accessing this webservice
 $corinaClientIdentifiers = array( 
-								array("name" => "Corina WSI", 	"minVersion" => "2.20"), 
-								array("name" => "Firefox", 		"minVersion" => "1.0"),  
-								array("name" => "Safari",		"minVersion" => "1.0"),
-								array("name" => "Gecko", 		"minVersion" => "1.0")
+								array("name" => "Corina WSI", 	
+										"minVersion" => "2.13.0", 						
+									 ), 
+								array("name" => "Firefox", 		
+										"minVersion" => "3.6.8", 
+									 ),  
+								array("name" => "Safari",		
+										"minVersion" => "1.0.0", 
+									 ),
+								array("name" => "Gecko", 		
+										"minVersion" => "1.0.0", 
+									 )
 								);
 								
 // Only accept known clients								
