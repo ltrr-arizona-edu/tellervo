@@ -25,7 +25,7 @@ $dbName = corina_dev;
 $domain = "dendro.cornell.edu/dev2/";
 
 // Whether to display debug messages
-$debugFlag = TRUE; 
+$debugFlag = FALSE; 
 
 // Include timing in debug messages
 $timingFlag = FALSE;
