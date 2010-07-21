@@ -33,6 +33,7 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
 
 /**
@@ -107,7 +108,7 @@ public class WSIRequest
     protected WSIRequest.Dictionaries dictionaries;
     @XmlElement(name = "project", namespace = "http://www.tridas.org/1.2.1")
     protected List<TridasProject> projects;
-    @XmlElement(name = "object", namespace = "http://www.tridas.org/1.2.1")
+    @XmlElement(name = "object", namespace = "http://www.tridas.org/1.2.1", type = TridasObjectEx.class)
     protected List<TridasObject> objects;
     @XmlElement(name = "element", namespace = "http://www.tridas.org/1.2.1")
     protected List<TridasElement> elements;

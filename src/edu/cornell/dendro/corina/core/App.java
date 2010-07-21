@@ -56,21 +56,6 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
       meter.setProgress(2);
     }
 
-    // <init prefs>
-    //prefs = new Prefs();
-    //prefs.init();
-
-    // if the user hasn't specified a parser with
-    // -Dorg.xml.sax.driver=..., use crimson.
-    // No! it's not 1998 anymore...
-    //if (System.getProperty("org.xml.sax.driver") == null)
-    //  System.setProperty("org.xml.sax.driver", "org.apache.crimson.parser.XMLReaderImpl");
-    // xerces: "org.apache.xerces.parsers.SAXParser"
-    // gnu/jaxp: "gnu.xml.aelfred2.SAXDriver"
-
-    // migrate old prefs (!!!)
-    // WAS: Migrate.migrate();
-
     // load properties -- messagedialog here is UGLY!
     if (meter != null) {
       meter.setNote(I18n.getText("login.initPreferences"));
@@ -156,6 +141,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	}
     }
     
+    // Cache the TRiDaS objects 
     if (meter != null) {
     	meter.setNote(I18n.getText("login.initObjectList"));
     }

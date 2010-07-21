@@ -77,6 +77,13 @@
 				<jaxb:elementName prefix="Tridas" />
 			</jaxb:nameXmlTransform>
 		</jaxb:schemaBindings>
+		
+		<!-- Rename object element to custom class -->
+		<jaxb:bindings node="//xs:element[@name='object']">
+			<jaxb:class implClass="org.tridas.util.TridasObjectEx" />
+		</jaxb:bindings>
 	</jaxb:bindings>
+	
+
 	
 </jaxb:bindings> 
