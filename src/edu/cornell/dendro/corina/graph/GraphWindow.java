@@ -558,7 +558,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// summed -- add count, too
 		if (s.isSummed())
 			samples.add(new Graph(s.getCount(), s.getRange().getStart(), I18n
-					.getText("number_of_samples")));
+					.getText("graph.number_of_samples")));
 
 		// observe
 		s.addSampleListener(this);
@@ -636,7 +636,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// summed -- add count, too
 		if (s.isSummed())
 			samples.add(new Graph(s.getCount(), s.getRange().getStart(), I18n
-					.getText("number_of_samples")));
+					.getText("graph.number_of_samples")));
 
 		// observe
 		s.addSampleListener(this);

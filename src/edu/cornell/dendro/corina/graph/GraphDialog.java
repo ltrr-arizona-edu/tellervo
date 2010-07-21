@@ -72,7 +72,7 @@ public class GraphDialog extends JDialog {
 			// summed -- add count, too
 			if (primary.isSummed())
 				samples.add(new Graph(primary.getCount(), primary.getRange().getStart(), 
-						I18n.getText("number_of_samples")));
+						I18n.getText("graph.number_of_samples")));
 		}
 
 		for (int i = 0; i < elements.size(); i++) {
