@@ -14,8 +14,12 @@ public class ObjectModel extends HashModel{
 	private static final long serialVersionUID = 1L;
 	
 	public static final String OBJECTS = "objects";
+	public static final String TABLE_MODEL = "tableModel";
 	
 	public ObjectModel(){
 		registerProperty(OBJECTS, PropertyType.READ_ONLY, new MVCArrayList<SingleObjectModel>());
+		registerProperty(TABLE_MODEL, PropertyType.READ_ONLY, new ObjectTableModel(this));
 	}
+	
+	
 }
