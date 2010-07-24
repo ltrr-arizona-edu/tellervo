@@ -15,9 +15,11 @@ public class ObjectModel extends HashModel{
 	
 	public static final String OBJECTS = "objects";
 	public static final String TABLE_MODEL = "tableModel";
+	public static final String COLUMN_MODEL = "columnModel";
 	
 	public ObjectModel(){
-		registerProperty(OBJECTS, PropertyType.READ_ONLY, new MVCArrayList<SingleObjectModel>());
-		registerProperty(TABLE_MODEL, PropertyType.READ_ONLY, new ObjectTableModel(this));
+		registerProperty(OBJECTS, PropertyType.FINAL, new MVCArrayList<SingleObjectModel>());
+		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ObjectTableModel(this));
+		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel());
 	}
 }

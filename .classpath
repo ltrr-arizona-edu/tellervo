@@ -37,12 +37,12 @@
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/jaxb2-basics-runtime-0.5.1.jar"/>
 	<classpathentry kind="lib" path="Libraries/PDFRenderer.jar"/>
 	<classpathentry kind="lib" path="Libraries/mozswing-complete.jar"/>
-	<classpathentry kind="lib" path="Libraries/java-simple-mvc-1.2.2-SNAPSHOT.jar" sourcepath="LibraryDocsAndSources/java-simple-mvc-1.2.2-SNAPSHOT-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/Corina/LibraryDocsAndSources/java-simple-mvc-1.2.2-SNAPSHOT-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="Libraries/DendroFileIO-0.0.1-SNAPSHOT.jar" sourcepath="Libraries/src/DendroFileIO-0.0.1-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/TridasJLib-0.0.1-SNAPSHOT.jar" sourcepath="Libraries/src/TridasJLib-0.0.1-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="Libraries/java-simple-mvc-1.2.3-SNAPSHOT.jar" sourcepath="LibraryDocsAndSources/java-simple-mvc-1.2.3-SNAPSHOT-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Corina/LibraryDocsAndSources/java-simple-mvc-1.2.3-SNAPSHOT-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build"/>
 </classpath>

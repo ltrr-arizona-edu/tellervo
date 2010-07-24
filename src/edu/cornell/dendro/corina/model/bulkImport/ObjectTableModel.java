@@ -3,6 +3,7 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
+import java.beans.IndexedPropertyChangeEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	private ObjectModel model;
 	private MVCArrayList<SingleObjectModel> models;
 	
-	private final ArrayList<String> columns = new ArrayList<String>();
+	private  MVCArrayList<String> columns;
 	private final HashMap<SingleObjectModel, Boolean> selected = new HashMap<SingleObjectModel, Boolean>();
 	
 	public ObjectTableModel(ObjectModel argModel){
@@ -37,13 +38,17 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		return columns;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void setModel(ObjectModel model) {
 		if(this.model != null){
 			models.removePropertyChangeListener(this);
+			columns.removePropertyChangeListener(this);
 		}
 		this.model = model;
 		this.models = (MVCArrayList<SingleObjectModel>) this.model.getProperty(ObjectModel.OBJECTS);
+		this.columns = (MVCArrayList<String>) this.model.getProperty(ObjectModel.COLUMN_MODEL);
 		models.addPropertyChangeListener(this);
+		columns.addPropertyChangeListener(this);
 		recreateSelected();
 	}
 	
@@ -173,13 +178,32 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
-		
-		if(prop.equals(MVCArrayList.SIZE)){
-			fireTableStructureChanged();
-			recreateSelected();
+		Object source = evt.getSource();
+		if(source == models){
+			if(prop.equals(MVCArrayList.REMOVED)){
+				fireTableStructureChanged();
+				recreateSelected();
+			}
+			else if(prop.equals(MVCArrayList.ELEMENT)){
+				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
+				fireTableRowsUpdated(event.getIndex(), event.getIndex());
+			}
+			else if(prop.equals(MVCArrayList.INSERTED)){
+				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
+				fireTableRowsInserted(event.getIndex(), event.getIndex());
+				recreateSelected();
+			}
 		}
-		else if(prop.equals(MVCArrayList.ELEMENT)){
-			fireTableDataChanged();
+		else if(source == columns){
+			if(prop.equals(MVCArrayList.REMOVED)){
+				fireTableStructureChanged();
+			}
+			else if(prop.equals(MVCArrayList.ELEMENT)){
+				fireTableStructureChanged();
+			}
+			else if(prop.equals(MVCArrayList.INSERTED)){
+				fireTableStructureChanged();
+			}
 		}
 	}
 }

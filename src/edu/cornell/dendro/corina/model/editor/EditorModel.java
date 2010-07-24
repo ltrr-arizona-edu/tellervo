@@ -3,13 +3,13 @@
  */
 package edu.cornell.dendro.corina.model.editor;
 
-import com.dmurph.mvc.model.AbstractRevertableModel;
+import com.dmurph.mvc.model.AbstractRevertibleModel;
 
 /**
  *
  * @author daniel
  */
-public class EditorModel extends AbstractRevertableModel {
+public class EditorModel extends AbstractRevertibleModel {
 	private static final long serialVersionUID = 1L;
 	
 	public final static String ANNOTATIONS_TABLE_MODEL = "annotationTableModel";
