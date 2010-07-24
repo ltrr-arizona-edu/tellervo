@@ -28,6 +28,9 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	
 	public ObjectTableModel(ObjectModel argModel){
 		setModel(argModel);
+		columns.add(SingleObjectModel.TITLE);
+		columns.add(SingleObjectModel.OBJECT_CODE);
+		columns.add(SingleObjectModel.DESCRIPTION);
 	}
 	
 	public ArrayList<String> getColumns(){
@@ -94,7 +97,14 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		}else{
 			String column = columns.get(columnIndex);
 			SingleObjectModel som = models.get(0);
-			return som.getProperty(column).getClass();
+			if(som == null){
+				return Object.class;
+			}
+			Object o = som.getProperty(column);
+			if(o == null){
+				return Object.class;
+			}
+			return o.getClass();
 		}
 	}
 	
@@ -129,6 +139,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		if(argColumnIndex == 0){
 			SingleObjectModel som = models.get(argRowIndex);
 			selected.put(som, (Boolean) argAValue);
+			return;
 		}
 		argColumnIndex--;
 		String column = columns.get(argColumnIndex);
@@ -141,6 +152,10 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	 */
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		if(columnIndex == 0){
+			return true;
+		}
+		columnIndex--;
 		String column = columns.get(columnIndex);
 		SingleObjectModel som = models.get(rowIndex);
 		if(som.getPropertyType(column) == PropertyType.READ_WRITE){

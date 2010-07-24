@@ -12,14 +12,19 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.CellEditorListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
 
+import com.dmurph.mvc.util.MVCArrayList;
+
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
+import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
 
 /**
  * @author Daniel Murphy
@@ -38,7 +43,7 @@ public class ObjectView extends JPanel{
 	private JButton importSelected;
 	
 	public ObjectView(ObjectModel argModel){
-		
+		model = argModel;
 		initComponents();
 		linkModel();
 		addListeners();
@@ -62,15 +67,21 @@ public class ObjectView extends JPanel{
 		box.add(showHideColumns);
 		add(box, "North");
 		
-		add(table, "Center");
+		JScrollPane panel = new JScrollPane(table);
+		panel.setPreferredSize(new Dimension(500, 400));
+		table.setAutoCreateRowSorter(true);
+		table.setFillsViewportHeight(true);
+		add(panel, "Center");
 		
 		box = Box.createHorizontalBox();
 		box.add(Box.createHorizontalGlue());
 		box.add(selectAll);
 		box.add(selectNone);
-		box.add(removeSelected);
 		box.add(Box.createRigidArea(new Dimension(30, 1)));
+		box.add(removeSelected);
+		box.add(Box.createHorizontalGlue());
 		box.add(importSelected);
+		add(box, "South");
 	}
 	
 	private void linkModel() {

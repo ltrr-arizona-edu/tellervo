@@ -20,6 +20,4 @@ public class ObjectModel extends HashModel{
 		registerProperty(OBJECTS, PropertyType.READ_ONLY, new MVCArrayList<SingleObjectModel>());
 		registerProperty(TABLE_MODEL, PropertyType.READ_ONLY, new ObjectTableModel(this));
 	}
-	
-	
 }
