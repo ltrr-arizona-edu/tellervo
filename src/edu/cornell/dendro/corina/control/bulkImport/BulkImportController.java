@@ -13,10 +13,11 @@ import edu.cornell.dendro.corina.view.bulkImport.ColumnChooserView;
  *
  */
 public class BulkImportController extends FrontController {
-	public static final String SHOW_HIDE_COLUMNS_PRESSED = "BULK_IMPORT_SHOW_HIDE_COLUMNS_PRESSED";
-	
+	public static final String DISPLAY_COLUMN_CHOOSER = "BULK_IMPORT_DISPLAY_COLUMN_CHOOSER";
+	public static final String HIDE_COLUMN_CHOOSER = "BULK_IMPORT_HIDE_COLUMN_CHOOSER";
+
 	
 	public BulkImportController(){
-		registerCommand(SHOW_HIDE_COLUMNS_PRESSED, "showColumnWindow");
+		registerCommand(DISPLAY_COLUMN_CHOOSER, "showColumnWindow");
 	}
 }

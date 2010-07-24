@@ -16,16 +16,17 @@ import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
  * @author Daniel Murphy
  *
  */
-public class BulkImportView extends JPanel {
+public class BulkImportWindow extends JFrame {
 	
 	private JTabbedPane tabs;
 	private ObjectView objects;
 	
-	public BulkImportView() {
+	public BulkImportWindow() {
 		initComponents();
 		linkModel();
 		addListeners();
 		populateLocale();
+		pack();
 	}
 	
 	public void initComponents() {
