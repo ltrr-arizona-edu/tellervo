@@ -3,6 +3,16 @@
  */
 package edu.cornell.dendro.corina.view.bulkImport;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowStateListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -10,6 +20,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import com.dmurph.mvc.util.MVCArrayList;
+
+import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
+import edu.cornell.dendro.corina.control.bulkImport.ColumnsModifiedEvent;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 
@@ -21,6 +35,7 @@ public class ColumnChooserView extends JDialog{
 
 	private JTable checkboxList;
 	private JButton okButton;
+	private final TableModel tableModel;
 	
 	private final ColumnChooserModel model;
 	private final String[] columns;
@@ -29,27 +44,78 @@ public class ColumnChooserView extends JDialog{
 		super(argParent, true);
 		model = argModel;
 		columns = argColumns;
+		tableModel = new TableModel();
+
+		this.addWindowListener(new WindowListener() {
+			@Override
+			public void windowOpened(WindowEvent argE) {
+				linkModel();
+				addListeners();
+			}
+			@Override
+			public void windowClosed(WindowEvent argE) {
+				unlinkModel();
+			}
+			@Override
+			public void windowIconified(WindowEvent argE) {}
+			@Override
+			public void windowDeiconified(WindowEvent argE) {}
+			@Override
+			public void windowDeactivated(WindowEvent argE) {}
+			@Override
+			public void windowClosing(WindowEvent argE) {}
+			@Override
+			public void windowActivated(WindowEvent argE) {}
+		});
 		initComponents();
-		linkModel();
-		addListeners();
 		populateLocale();
 	}
 	
 	public void initComponents() {
 		checkboxList = new JTable();
 		okButton = new JButton();
-	}
-	
-	public void linkModel() {
+		setLayout(new BorderLayout());
 		
+		add(checkboxList.getTableHeader(), "North");
+		add(checkboxList, "Center");
+		
+		Box box = Box.createHorizontalBox();
+		box.add(Box.createHorizontalGlue());
+		box.add(okButton);
+		add(box);
 	}
 	
-	public void addListeners() {
-
+	PropertyChangeListener pclistener = new PropertyChangeListener() {
+		@Override
+		public void propertyChange(PropertyChangeEvent argEvt) {
+			String prop = argEvt.getPropertyName();
+			if(prop.equals(MVCArrayList.SIZE)){
+				tableModel.fireTableDataChanged();
+			}
+		}
+	};
+	
+	private void linkModel() {
+		checkboxList.setModel(tableModel);
+		
+		model.addPropertyChangeListener(pclistener);
 	}
 	
-	public void populateLocale() {
-
+	private void unlinkModel(){
+		model.removePropertyChangeListener(pclistener);
+	}
+	
+	private void addListeners() {
+		okButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent argE) {
+				setVisible(false);
+			}
+		});
+	}
+	
+	private void populateLocale() {
+		okButton.setText("Ok");
 	}
 	
 	class TableModel extends AbstractTableModel{
@@ -99,6 +165,25 @@ public class ColumnChooserView extends JDialog{
 				return model.contains(columns[argRowIndex]);
 			}
 			return model.get(argRowIndex);
+		}
+		
+		/**
+		 * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
+		 */
+		@Override
+		public void setValueAt(Object argAValue, int argRowIndex, int argColumnIndex) {
+			Boolean val = (Boolean) argAValue;
+			if(val == Boolean.TRUE){
+				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED,
+																	  columns[argRowIndex],
+																	  model);
+				event.dispatch();
+			}else{
+				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_REMOVED,
+						  columns[argRowIndex],
+						  model);
+				event.dispatch();
+			}
 		}
 	}
 }
