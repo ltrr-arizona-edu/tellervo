@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
 
 import com.dmurph.mvc.model.HashModel.PropertyType;
 import com.dmurph.mvc.util.MVCArrayList;
@@ -195,13 +196,10 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 			}
 		}
 		else if(source == columns){
-			if(prop.equals(MVCArrayList.REMOVED)){
+			if(prop.equals(MVCArrayList.ELEMENT)){
 				fireTableStructureChanged();
 			}
-			else if(prop.equals(MVCArrayList.ELEMENT)){
-				fireTableStructureChanged();
-			}
-			else if(prop.equals(MVCArrayList.INSERTED)){
+			else if(prop.equals(MVCArrayList.SIZE)){
 				fireTableStructureChanged();
 			}
 		}

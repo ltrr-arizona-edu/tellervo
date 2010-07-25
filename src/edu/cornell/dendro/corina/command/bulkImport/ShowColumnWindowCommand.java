@@ -54,6 +54,7 @@ public class ShowColumnWindowCommand implements ICommand {
 		}catch (IllegalThreadException e) { e.printStackTrace();}
 		catch (IncorrectThreadException e) { e.printStackTrace();}
 		
+		view.pack();
 		view.setVisible(true);
 	}
 	

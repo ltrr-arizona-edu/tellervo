@@ -81,7 +81,7 @@ public class ColumnChooserView extends JDialog{
 		Box box = Box.createHorizontalBox();
 		box.add(Box.createHorizontalGlue());
 		box.add(okButton);
-		add(box);
+		add(box, "South");
 	}
 	
 	PropertyChangeListener pclistener = new PropertyChangeListener() {
@@ -175,7 +175,7 @@ public class ColumnChooserView extends JDialog{
 			if(argColumnIndex == 0){
 				return model.contains(columns[argRowIndex]);
 			}
-			return model.get(argRowIndex);
+			return columns[argRowIndex];
 		}
 		
 		/**

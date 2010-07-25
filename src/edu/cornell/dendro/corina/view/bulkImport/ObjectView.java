@@ -8,6 +8,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.EventObject;
 
 import javax.swing.AbstractCellEditor;
@@ -19,12 +21,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.CellEditorListener;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.dmurph.mvc.util.MVCArrayList;
 
 import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
+import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
@@ -54,7 +60,7 @@ public class ObjectView extends JPanel{
 	}
 
 	private void initComponents(){
-		table = new JTable();
+		table = new JTable(0,3);
 		addRow = new JButton();
 		showHideColumns = new JButton();
 		removeSelected = new JButton();
@@ -69,7 +75,7 @@ public class ObjectView extends JPanel{
 		box.add( Box.createHorizontalGlue());
 		box.add(showHideColumns);
 		add(box, "North");
-		
+
 		JScrollPane panel = new JScrollPane(table);
 		panel.setPreferredSize(new Dimension(500, 400));
 		table.setAutoCreateRowSorter(true);
@@ -89,6 +95,16 @@ public class ObjectView extends JPanel{
 	
 	private void linkModel() {
 		table.setModel((TableModel) model.getProperty(ObjectModel.TABLE_MODEL));
+		ColumnChooserModel ccmodel = (ColumnChooserModel)model.getProperty(ObjectModel.COLUMN_MODEL);
+//		ccmodel.addPropertyChangeListener(new PropertyChangeListener() {
+//			@Override
+//			public void propertyChange(PropertyChangeEvent argEvt) {
+//				TableColumn column = table.getColumnModel().getColumn(0);
+//				column.setWidth(10);
+//				column.setPreferredWidth(10);
+//				column.setResizable(false);
+//			}
+//		});
 	}
 	
 	private void addListeners() {
