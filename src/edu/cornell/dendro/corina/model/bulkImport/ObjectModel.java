@@ -19,7 +19,7 @@ public class ObjectModel extends HashModel{
 	
 	public ObjectModel(){
 		registerProperty(OBJECTS, PropertyType.FINAL, new MVCArrayList<SingleObjectModel>());
-		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ObjectTableModel(this));
 		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel());
+		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ObjectTableModel(this));
 	}
 }

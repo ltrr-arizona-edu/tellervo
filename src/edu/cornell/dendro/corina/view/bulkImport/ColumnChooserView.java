@@ -4,6 +4,7 @@
 package edu.cornell.dendro.corina.view.bulkImport;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -45,16 +46,12 @@ public class ColumnChooserView extends JDialog{
 		model = argModel;
 		columns = argColumns;
 		tableModel = new TableModel();
-
 		this.addWindowListener(new WindowListener() {
 			@Override
 			public void windowOpened(WindowEvent argE) {
-				linkModel();
-				addListeners();
 			}
 			@Override
 			public void windowClosed(WindowEvent argE) {
-				unlinkModel();
 			}
 			@Override
 			public void windowIconified(WindowEvent argE) {}
@@ -68,6 +65,8 @@ public class ColumnChooserView extends JDialog{
 			public void windowActivated(WindowEvent argE) {}
 		});
 		initComponents();
+		linkModel();
+		addListeners();
 		populateLocale();
 	}
 	
@@ -120,6 +119,18 @@ public class ColumnChooserView extends JDialog{
 	
 	class TableModel extends AbstractTableModel{
 		
+		
+		/**
+		 * @see javax.swing.table.AbstractTableModel#getColumnName(int)
+		 */
+		@Override
+		public String getColumnName(int column) {
+			if(column == 0){
+				return "Visible";
+			}else{
+				return "Column Name";
+			}
+		}
 		/**
 		 * @see javax.swing.table.TableModel#getColumnCount()
 		 */

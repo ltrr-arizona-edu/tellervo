@@ -6,6 +6,8 @@ package edu.cornell.dendro.corina.view.bulkImport;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.EventObject;
 
 import javax.swing.AbstractCellEditor;
@@ -22,6 +24,7 @@ import javax.swing.table.TableModel;
 
 import com.dmurph.mvc.util.MVCArrayList;
 
+import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
@@ -89,8 +92,14 @@ public class ObjectView extends JPanel{
 	}
 	
 	private void addListeners() {
-		// TODO Auto-generated method stub
-		
+		showHideColumns.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DisplayColumnChooserEvent event = new DisplayColumnChooserEvent(model);
+				event.dispatch();
+			}
+		});
 	}
 
 	private void populateLocale() {

@@ -9,6 +9,8 @@ import javax.swing.JTabbedPane;
 
 import com.dmurph.mvc.util.MVCArrayList;
 
+import edu.cornell.dendro.corina.model.CorinaModelLocator;
+import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
 
@@ -32,8 +34,7 @@ public class BulkImportWindow extends JFrame {
 	public void initComponents() {
 		tabs = new JTabbedPane();
 		
-		ObjectModel model = new ObjectModel();
-		objects = new ObjectView(model);
+		objects = new ObjectView(BulkImportModel.getInstance().getObjectModel());
 		
 		add(tabs,"Center");
 		tabs.add("Objects", objects);
@@ -52,14 +53,20 @@ public class BulkImportWindow extends JFrame {
 	}
 	
 	public static void main(String[] args) {
-		ObjectModel model = new ObjectModel();
+		CorinaModelLocator locator = CorinaModelLocator.getInstance();
+		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
 		SingleObjectModel smodel = new SingleObjectModel();
-		smodel.setProperty(SingleObjectModel.TITLE, "TEST");
+		smodel.setProperty(SingleObjectModel.TITLE, "Test title");
+		smodel.setProperty(SingleObjectModel.COMMENTS, "Some comments right here");
+		smodel.setProperty(SingleObjectModel.DESCRIPTION, "My description");
+		smodel.setObjectCode("OBJECT CODE 2");
+		smodel.setProperty(SingleObjectModel.OBJECT_CODE, "OBJECT CODE");
+		smodel.setProperty(SingleObjectModel.TYPE, "my type");
 		MVCArrayList<SingleObjectModel> objects = (MVCArrayList<SingleObjectModel>) model.getProperty(ObjectModel.OBJECTS);
 		objects.add(smodel);
 		
-		JFrame frame = new JFrame();
-		frame.add(new ObjectView(model));
+		BulkImportWindow frame = new BulkImportWindow();
+		BulkImportModel.getInstance().setMainView(frame);
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(3);

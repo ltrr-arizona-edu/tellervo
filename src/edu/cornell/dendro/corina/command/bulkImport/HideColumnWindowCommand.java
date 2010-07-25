@@ -10,7 +10,6 @@ import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 
 /**
  * @author Daniel Murphy
- *
  */
 public class HideColumnWindowCommand implements ICommand {
 	
@@ -22,8 +21,10 @@ public class HideColumnWindowCommand implements ICommand {
 		
 		BulkImportModel model = BulkImportModel.getInstance();
 		if(model.getCurrColumnChooser() == null){
-			
+			return;
 		}
+		model.getCurrColumnChooser().setVisible(false);
+		model.setCurrColumnChooser(null);
 	}
 	
 }
