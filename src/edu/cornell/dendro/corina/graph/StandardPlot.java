@@ -159,7 +159,8 @@ public class StandardPlot implements CorinaGraphPlotter {
 		// move to the first point -- THIS IS NOT REALLY A SPECIAL CASE!
 		int value;
 		try {
-			value = yTransform(((Number) g.graph.getData().get(0)).intValue() * g.scale);
+			value = ((Number) g.graph.getData().get(0)).intValue();
+			value = yTransform(value * g.scale);
 		} catch (ClassCastException cce) {
 			value = yTransform(0); // BAD!  instead: (1) just continue now, and (2) NEXT point is a move-to.
 		}

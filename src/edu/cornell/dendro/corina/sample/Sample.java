@@ -543,10 +543,16 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 			return known;
 	}
 
-	/** Return the default scale factor for graphing.
-	 @return scale factor of 1.0, or 0.1 for indexed files */
+	/**
+	 * Return the default scale factor for graphing.
+	 * Always returns 0.1 so that our default micron values are shown as
+	 * 1/100th mm.  This is because the graphing was designed for these units
+	 * and will need fixing (axis, grids etc) to cope with different units.
+	 * 
+	 * @return scale factor
+	 */
 	public float getScale() {
-		return (isIndexed() ? 0.1f : 1.0f);
+		return 0.1f;
 	}
 
 	/** Return the start date for a graph.
