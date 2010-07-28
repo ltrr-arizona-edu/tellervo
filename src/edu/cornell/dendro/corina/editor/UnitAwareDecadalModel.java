@@ -1,17 +1,17 @@
 package edu.cornell.dendro.corina.editor;
 
 import org.tridas.schema.NormalTridasUnit;
-import org.tridas.schema.TridasUnit;
 
 import edu.cornell.dendro.corina.sample.Sample;
 
 public class UnitAwareDecadalModel extends DecadalModel {
 
-	
+
+	private static final long serialVersionUID = 1L;
 	private NormalTridasUnit displayUnits = NormalTridasUnit.HUNDREDTH_MM;
 	
 	public UnitAwareDecadalModel() {
-		// TODO Auto-generated constructor stub
+	
 	}
 
 	public UnitAwareDecadalModel(Sample s) {
@@ -50,7 +50,12 @@ public class UnitAwareDecadalModel extends DecadalModel {
 			
 			if(val!=null) 
 			{
-				if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				if (s.getTridasUnits()==null)
+				{
+					// No units so leave values as they are
+				}
+				
+				else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 				{
 					val = val.intValue() / 10;
 				}

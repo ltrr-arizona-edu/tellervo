@@ -198,18 +198,32 @@ public class GraphActions {
 		
 		zoomIn = new CorinaAction("graph.vzoom_in", "vaxiszoomin.png", Builder.ICONS, 22){
 			public void actionPerformed(ActionEvent e) {
-				int height = info.getTenUnitHeight();
+				System.out.println("Zooming in on vertical scale");
+				int height = info.getTenUnitHeight();			
 				float fheight = ((float) height) * 1.25f;
+				int newHeight = (height == (int) fheight) ? height + 1 : (int) fheight;
 				
-				info.setTenUnitHeight((height == (int) fheight) ? height - 1 : (int) fheight);
+				System.out.println("Int   height = "+height);
+				System.out.println("Float height = "+fheight);
+				System.out.println("Setting height to = "+newHeight);
+				
+				info.setTenUnitHeight(newHeight);
 			}
 		};
 		zoomOut = new CorinaAction("graph.vzoom_out", "vaxiszoomout.png", Builder.ICONS, 22){
 			public void actionPerformed(ActionEvent e) {
+				System.out.println("Zooming out on vertical scale");
+
 				int height = info.getTenUnitHeight();
 				float fheight = ((float) height) / 1.25f;
+				int newHeight = (height == (int) fheight) ? height - 1 : (int) fheight;
+				if(newHeight==0) newHeight=1;
 				
-				info.setTenUnitHeight((height == (int) fheight) ? height + 1 : (int) fheight);
+				System.out.println("Int   height = "+height);
+				System.out.println("Float height = "+fheight);
+				System.out.println("Setting height to = "+newHeight);
+				
+				info.setTenUnitHeight(newHeight);
 			}
 		};
 		zoomReset = new CorinaAction("graph.zoom_reset"){

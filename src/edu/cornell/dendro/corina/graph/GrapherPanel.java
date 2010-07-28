@@ -316,9 +316,13 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			dragGraph = graphs.get(current);
 
 		// change yoffset[n], but only if no ctrl
+		
 		if(!e.isControlDown())
+		{
 			dragGraph.yoffset = (int) dragStart.getY() - e.getY();
 
+		}
+			
 		// change xoffset[n], but only if no shift
 		if (!e.isShiftDown()) {
 			int dx = (int) (e.getX() - dragStart.getX());

@@ -304,6 +304,10 @@ public class IndexDialog extends JDialog {
 		graphSamples.get(0).setDraggable(false);
 		graphSamples.get(1).setDraggable(false);
 		
+		// Override units and show labels
+		gInfo.setTenUnitHeight(2);
+		gInfo.setShowGraphNames(true);
+				
 		// create a graph panel; put it in a scroll pane
 		graphPanel = new GrapherPanel(graphSamples, null, gInfo) {
 			private static final long serialVersionUID = 1L;
@@ -317,6 +321,8 @@ public class IndexDialog extends JDialog {
 			}
 		};
 
+		
+		
 		JScrollPane scroller = new JScrollPane(graphPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -327,10 +333,14 @@ public class IndexDialog extends JDialog {
 		GraphActions actions = new GraphActions(graphPanel, null, new GraphController(graphPanel, scroller));
 		GraphToolbar toolbar = new GraphToolbar(actions);
 		
+		
+		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.add(scroller, BorderLayout.CENTER);
 		panel.add(toolbar, BorderLayout.NORTH);
+		
+		
 		
 		return panel;
 	}
@@ -499,13 +509,19 @@ public class IndexDialog extends JDialog {
 				// propagate old scale
 				graphSamples.get(0).scale = scale;
 				graphSamples.get(1).scale = scale;
-				graphSamples.get(2).scale = scale * 0.1f;
+				graphSamples.get(2).scale = scale;
+				//graphSamples.get(2).scale = scale * 0.1f;
 				
 				// Make sure the graphs can't be dragged
 				graphSamples.get(0).setDraggable(false);
 				graphSamples.get(1).setDraggable(false);				
-				graphSamples.get(2).setDraggable(false);				
+				graphSamples.get(2).setDraggable(false);	
 				
+				// Label lines with friendly names
+				graphSamples.get(0).setGraphName("Original data");
+				graphSamples.get(1).setGraphName(i.getName());
+				graphSamples.get(2).setGraphName("Normalized data");
+						
 				if(graphPanel != null)
 					graphPanel.update();
 			}

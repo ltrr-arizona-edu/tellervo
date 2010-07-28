@@ -142,7 +142,14 @@ public class I18n {
 	 * @return the text
 	 */
 	public static String getText(String key) {
-		String value = msg.getString(key);
+		
+		String value;
+		try{
+			value = msg.getString(key);
+		} catch (MissingResourceException e)
+		{
+			value = key;
+		}
 		
 		StringBuffer buf = new StringBuffer();
 

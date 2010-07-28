@@ -10,7 +10,7 @@ import java.io.OutputStream;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 
-public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
+public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 
 	private static final int EVE_ENQ = 5;
 	private static final int EVE_ACK = 6;
@@ -19,7 +19,7 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 	/** serial NUMBER of the last data point... */
 	private int lastSerial = -1;
 	
-	public VelmexQC10SerialMeasuringDevice(String portName) throws IOException {
+	public QC10SerialMeasuringDevice(String portName) throws IOException {
 		super(portName);
 		//MeasureJ2X defaults to using 2 stop bits but Corina/Java/something bombs if you 
 		//try to write to the port with 2 stop bits set.  So lets stick with 1 stop bit for now!
@@ -27,7 +27,7 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 		//setFlowControl(SerialPort.FLOWCONTROL_RTSCTS_OUT);
 	}
 
-	public VelmexQC10SerialMeasuringDevice() {
+	public QC10SerialMeasuringDevice() {
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
 
 	@Override
 	public String getMeasuringDeviceName() {
-		return "Velmex QC-10 IO device";
+		return "Quadra-Chek QC-10 IO device";
 	}
 
 	@Override
@@ -126,8 +126,8 @@ public class VelmexQC10SerialMeasuringDevice extends AbstractSerialMeasuringDevi
                 String strReadBuffer = readBuffer.toString();
  	
 		    	// Raw data is in mm like "2.575"
-             	// Round up to integer of 1/100th mm
-		    	Float fltValue = new Float(strReadBuffer)*100;
+             	// Round up to microns
+		    	Float fltValue = new Float(strReadBuffer)*1000;
 		    	Integer intValue = Math.round(fltValue);
 		    	
 		    	if(intValue>0)

@@ -22,7 +22,7 @@ public class SerialDeviceSelector {
 			if(selectedDevice.equals(SerialMeasuringDeviceConstants.EVE)){
 				device = new EVESerialMeasuringDevice(portName);
 			}else if(selectedDevice.equals(SerialMeasuringDeviceConstants.VELMEX)){
-				device = new VelmexQC10SerialMeasuringDevice(portName);
+				device = new QC10SerialMeasuringDevice(portName);
 			}else if(selectedDevice.equals(SerialMeasuringDeviceConstants.LINTAB)){
 				device = new LINTABSerialMeasuringDevice(portName);
 			}

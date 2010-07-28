@@ -27,7 +27,7 @@ import edu.cornell.dendro.corina.Year;
 /**
    An interface for classes that can be graphed.  To be
    <code>Graphable</code>, an object must have a start
-   <code>Year</code>, and an <code>List</code> of
+   <code>Year</code>, and a <code>List</code> of
    <code>Number</code>s.<p>
 
    Graphs must now also be able to suggest their vertical scale, which

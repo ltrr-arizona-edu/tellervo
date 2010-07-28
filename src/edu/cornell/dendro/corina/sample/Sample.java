@@ -356,6 +356,16 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		return values.getValues().get(idx);		
 	}
 	
+	public TridasUnit getTridasUnits()
+	{
+		if(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH).isSetUnit())
+		{
+			return tridasValuesMap.get(NormalTridasVariable.RING_WIDTH).getUnit();
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Is this sample unitless?
 	 * 

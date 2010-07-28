@@ -62,4 +62,9 @@ public abstract class PrefHolder {
 	protected final static PrefHandle<Integer> mkPref(String prefix, String name, Integer deflt) {
 		return mkPref(prefix, name, Integer.class, deflt);
 	}
+	
+	protected final static PrefHandle<Double> mkPref(String prefix, String name, Double deflt) {
+		return mkPref(prefix, name, Double.class, deflt);
+	}
+	
 }
