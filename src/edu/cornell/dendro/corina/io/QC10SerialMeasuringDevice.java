@@ -94,31 +94,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 							return;
 
 						}
-/**<<<<<<< .working
-						//Ignore CR (13)
-			    		if(intReadFromPort!=13)  {
-			    			readBuffer.append((char) intReadFromPort);
-			    		}
-			    	}
 
-                String strReadBuffer = readBuffer.toString();
- 	
-		    	// Raw data is in mm like "2.575"
-                /*TODO Investigate changing this to allow for 1/1000th resolution
-                 *Peter had mentioned that Corina can now handle 1/1000th
-                 *Maybe this could be dynamic here? and even read what the device is set too?
-                 */
-             	// Round up to integer of 1/100th mm
-/**
-		    	Float fltValue = new Float(strReadBuffer)*100;
-		    	Integer intValue = Math.round(fltValue);
-		    	
-		    	// Fire event
-		    	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
-			    							
-			    	
-							
-=======**/
 						//Ignore CR (13)
 			    		if(intReadFromPort!=13)  {
 			    			readBuffer.append((char) intReadFromPort);
@@ -141,7 +117,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 				}
                 
                 
-             	// Round up to microns
+             	// Round up to micron integers
 		    	Float fltValue = new Float(strReadBuffer)*1000;
 		    	Integer intValue = Math.round(fltValue);
 		    	
@@ -156,12 +132,10 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 		    		fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
 		    	}
 			    							
-			    	
-							
-//>>>>>>> .merge-right.r2361
+
 			}
-			catch (IOException ioe) {
-					System.out.println("Error reading from or writing to serial port: " + ioe);
+			catch (Exception ioe) {
+					System.out.println("Error reading from serial port: " + ioe.toString());
 			}   	
 			    	
 			zeroVelmex();
@@ -186,8 +160,8 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	    outToPort.write(command);
 	    
     	}
-    	catch (IOException ioe) {
-			System.out.println("Error writing to serial port: " + ioe);
+    	catch (Exception ioe) {
+			System.out.println("Error sending zero command to serial port: " + ioe.toString());
     	}	
 	}
 }

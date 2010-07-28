@@ -118,8 +118,8 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
                 	
                 	//Chop the three characters of ";10" off the right side of the string to leave the number.
                 	String strReadPosition = strReadBuffer.substring(0,(strReadBuffer.length())-3);
-                	// Round up to integer of 1/100th mm
-                	Float fltValue = new Float(strReadPosition)*100;
+                	// Round up to integer of 1/1000th mm
+                	Float fltValue = new Float(strReadPosition)*1000;
                 	Integer intValue = Math.round(fltValue);
 		    	
                 	// Fire event
