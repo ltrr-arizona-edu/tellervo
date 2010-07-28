@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
@@ -126,6 +128,19 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
                 String strReadBuffer = readBuffer.toString();
  	
 		    	// Raw data is in mm like "2.575"
+                // Strip label or units if present
+				String regex = "[0-9.]+";
+				Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+				Matcher m = p.matcher(strReadBuffer);
+				if (m.find()) {
+					strReadBuffer = m.group();
+				}
+				else
+				{
+					System.out.println("invalid value received from device");
+				}
+                
+                
              	// Round up to microns
 		    	Float fltValue = new Float(strReadBuffer)*1000;
 		    	Integer intValue = Math.round(fltValue);

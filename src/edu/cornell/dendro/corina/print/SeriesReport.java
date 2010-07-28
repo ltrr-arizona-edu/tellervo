@@ -24,6 +24,7 @@ import org.apache.commons.lang.WordUtils;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.ComplexPresenceAbsence;
 import org.tridas.schema.NormalTridasRemark;
+import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -399,9 +400,22 @@ public class SeriesReport extends ReportBase {
 		{
 			colHeadCell.setPhrase(new Phrase("inc/dec", tableHeaderFont));
 		}
+		else if (this.s.getTridasUnits()==null)
+		{
+			// Unitless
+			colHeadCell.setPhrase(new Phrase(" ", tableHeaderFont));
+		}
 		else
 		{
-			colHeadCell.setPhrase(new Phrase("1/100th mm", tableHeaderFont));
+			// Normal tridas units
+			try{ 
+				if(this.s.getTridasUnits().getNormalTridas().equals(NormalTridasUnit.MICROMETRES))
+				{
+					colHeadCell.setPhrase(new Phrase("microns", tableHeaderFont));
+				}
+			} catch (Exception e){
+				colHeadCell.setPhrase(new Phrase(" ", tableHeaderFont));
+			}
 		}
 		colHeadCell.setBorderWidthBottom(headerLineWidth);
 		colHeadCell.setBorderWidthTop(headerLineWidth);

@@ -830,12 +830,12 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			dataPort = new SerialDeviceSelector ().getDevice();
 			dataPort.initialize();
 		}
-		catch (IOException ioe) {
+		catch (Exception ioe) {
 			Alert.error(I18n.getText("error"), 
 					I18n.getText("error.initExtComms") + ": " +
 					ioe.toString());
 			return;
-		}
+		} 
 		
 		editorEditMenu.setMeasuring(true);
 		dataView.enableEditing(false);
