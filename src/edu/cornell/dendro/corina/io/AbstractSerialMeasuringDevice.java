@@ -343,6 +343,8 @@ public abstract class AbstractSerialMeasuringDevice
 			receiver.receiverUpdateStatus("Initialized; ready to read measurements.");
 		}
 		else if(sse.getType() == SerialSampleIOEvent.NEW_SAMPLE_EVENT) {
+			Object blah = sse.getValue();
+		
 			Integer value = (Integer) sse.getValue();
 			
 			receiver.receiverNewMeasurement(value);

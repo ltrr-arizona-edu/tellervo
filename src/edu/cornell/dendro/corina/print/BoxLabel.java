@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 
@@ -33,8 +32,6 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Metadata;
-import edu.cornell.dendro.corina.gui.XMLDebugView;
-import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
@@ -105,7 +102,7 @@ public class BoxLabel extends ReportBase{
 			cb = writer.getDirectContent();			
 			
 			// Set basic metadata
-		    document.addAuthor("Peter Brewer"); 
+		    document.addAuthor("Corina"); 
 		    document.addSubject("Box Label"); 
 				
 		    for(WSIBox b : this.boxlist)
@@ -267,10 +264,12 @@ public class BoxLabel extends ReportBase{
 		Integer sampleCountInBox = 0; 
 		
 		// Loop through objects
-		List<TridasObject> objdone = new ArrayList<TridasObject>(); // Array of top level objects that have already been dealt with
+		ArrayList<TridasObject> objdone = new ArrayList<TridasObject>(); // Array of top level objects that have already been dealt with
 		mainobjloop:
 		for(TridasObject myobj : obj)
 		{	
+			ArrayList<TridasObject> tempobjdone = new ArrayList<TridasObject>();
+			
 			// Need to check if this object has already been done as there will be duplicate top level objects if there are samples 
 			// from more than one subobject in the box 
 			if(objdone.size()>0)
@@ -285,7 +284,7 @@ public class BoxLabel extends ReportBase{
 					}
 					else {
 						// Object has not been done so add to the done list and keep going
-						objdone.add(myobj);
+						tempobjdone.add(myobj);
 					}
 				}
 				
@@ -294,6 +293,8 @@ public class BoxLabel extends ReportBase{
 			{
 				objdone.add(myobj);
 			}
+			
+			objdone.addAll(tempobjdone);
 		
 			// Add object code to first column			
 			PdfPCell dataCell = new PdfPCell();
