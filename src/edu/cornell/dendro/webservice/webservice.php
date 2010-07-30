@@ -166,10 +166,10 @@ if($myMetaHeader->status != "Error")
                     $myID = $paramObj->id;
                     break;
                 case "securityUser":
-                    $myID = $paramObj->id;
+                    $myID = $paramObj->getID();
                     break;
                 case "securityGroup":
-                    $myID = $paramObj->id;
+                    $myID = $paramObj->getID();
                     break;
                 case "box":
                 	$myID = null;

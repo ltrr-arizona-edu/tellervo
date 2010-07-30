@@ -1343,7 +1343,7 @@ class securityUserParameters extends securityUserEntity implements IParams
     	global $firebug;
 		global $corinaNS;
         global $tridasNS;
-	
+		$firebug->log("blah");
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
      
@@ -1356,12 +1356,13 @@ class securityUserParameters extends securityUserEntity implements IParams
 		   
 		   if ($child->tagName=='user')
 		   {
+		   		$firebug->log($child->getAttribute("isActive"), "child");
 		   		if($child->hasAttribute("id")) $this->setID($child->getAttribute("id"), null);
 		   		if($child->hasAttribute("username")) $this->setUsername($child->getAttribute("username"));
 		   		if($child->hasAttribute("firstName")) $this->setFirstname($child->getAttribute("firstName"));
 		   		if($child->hasAttribute("lastName")) $this->setLastname($child->getAttribute("lastName"));
 		   		if($child->hasAttribute("isActive")) $this->setIsActive(dbhelper::formatBool($child->getAttribute("isActive"),"php"));
-		   		if($child->hasAttribute("password")) $this->setPassword($child->getAttribute("password"), "plain");
+		   		if($child->hasAttribute("hashOfPassword")) $this->setPassword($child->getAttribute("hashOfPassword"), "hash");
 		   } 
         }   
     }	

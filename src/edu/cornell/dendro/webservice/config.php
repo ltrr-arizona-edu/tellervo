@@ -25,7 +25,7 @@ $dbName = corina_dev;
 $domain = "dendro.cornell.edu/dev2/";
 
 // Whether to display debug messages
-$debugFlag = FALSE; 
+$debugFlag = TRUE; 
 
 // Include timing in debug messages
 $timingFlag = FALSE;
@@ -34,10 +34,10 @@ $timingFlag = FALSE;
 $wsversion = "0.2.".exec(svnversion); 
 
 // Path to Corina XSD
-$corinaXSD = "/var/www/corina-webservice/tridas1.2.1/schemas/corina.xsd";
+$corinaXSD = "/var/www/corina-webservice/dev/schemas/corina.xsd";
 
 // Web accessible temporary folder
-$tempFolder = "/var/www/corina-webservice/tridas1.2.1/temp/";
+$tempFolder = "/var/www/corina-webservice/dev/temp/";
 
 // Base URL of web accessible temporary folder
 $tempFolderURL = "https://".$domain."temp/";

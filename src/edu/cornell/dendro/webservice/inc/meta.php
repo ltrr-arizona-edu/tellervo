@@ -147,12 +147,27 @@ class meta
   	
   	foreach($corinaClientIdentifiers as $app)
   	{ 	
+  		
 	  	if (strstr($this->clientversion, $app['name']))
 	  	{
-	  		$appversion = substr(strstr($this->clientversion, $app['name']), strlen($app['name'])+1);
-	  		$pos = strpos($appversion, " ");
-	  		$appversion = substr($appversion, 0, $pos);
-	  		return $appversion;
+	  		$wholeClientString = strstr($this->clientversion, $app['name']);
+	  		//$firebug->log($wholeClientString, "Client");
+	  			  		
+	  		$lengthOfName = strlen($app['name'])+1;
+	  		//$firebug->log($lengthOfName, "LenOfName");
+	  		
+	  		$versionWithTrailing = substr($wholeClientString, $lengthOfName);
+	  		//$firebug->log($versionWithTrailing, "VersionWithTrailing");
+	  		
+	  		$endMarkerPos = strpos($versionWithTrailing, " ");
+	  		if($endMarkerPos==null) $endMarkerPos = strlen($versionWithTrailing);
+	  		//$firebug->log($endMarkerPos, "Endpos");
+	  		 		
+	  		$appVersion = substr($versionWithTrailing, 0, $endMarkerPos);
+	  		//$firebug->log($appVersion, "AppVersion");
+	  		
+
+	  		return $appVersion;
 	  		break;
 	  	}	
   	}	

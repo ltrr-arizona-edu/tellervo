@@ -114,14 +114,19 @@ class securityUser extends securityUserEntity implements IDBAccessor
     
     function setParamsFromParamsClass($paramsClass)
     {
-        // Alters the parameter values based upon values supplied by the user and passed as a parameters class
+    	global $firebug;
+        $firebug->log($paramsClass, "ParamsClass");
+    	
+    	// Alters the parameter values based upon values supplied by the user and passed as a parameters class
         if ($paramsClass->getID()!=null)           		$this->id   = $paramsClass->getID();
         if ($paramsClass->getUsername()!=null)     		$this->setUsername($paramsClass->getUsername());
         if ($paramsClass->getFirstName()!=null)    		$this->setFirstName($paramsClass->getFirstName());
         if ($paramsClass->getLastName()!=null)     		$this->setLastName($paramsClass->getLastName());
-        //if (isset($paramsClass->hashPassword))   		$this->setPassword($paramsClass->hashPassword, "hash");
         if ($paramsClass->getHashedPassword()!=null)    $this->setPassword($paramsClass->getHashedPassword(), "hash");
-        if ($paramsClass->getIsActive()!=null)     		$this->setIsActive($paramsClass->getIsActive());
+
+        if (($paramsClass->getIsActive()==TRUE) || ($paramsClass->getIsActive()==FALSE))   		
+        												$this->setIsActive(dbhelper::formatBool($paramsClass->getIsActive(),"php"));
+       
         
         if (isset($paramsClass->groupArray) && count($paramsClass->groupArray)>0)
         {
@@ -134,6 +139,8 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 array_push($this->groupArray, $item);
             }
         }   
+        
+        $firebug->log($this, "This");
         return true;
     }
 
@@ -190,7 +197,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 }
                 if($paramsObj->getHashedPassword() == NULL)  
                 {
-                    $this->setErrorMessage("902","Missing parameter - 'password' field is required when creating a user.");
+                    $this->setErrorMessage("902","Missing parameter - 'hashOfPassword' field is required when creating a user.");
                     return false;
                 }
                 return true;
@@ -335,7 +342,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
-                        $this->setParamasFromDB($row['securityuserid']);   
+                        $this->setParamsFromDB($row['securityuserid']);   
                     }
                 }
                 

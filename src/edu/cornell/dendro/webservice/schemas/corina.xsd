@@ -581,7 +581,7 @@
 			<xs:attribute name="firstName" type="xs:string" use="optional" />
 			<xs:attribute name="lastName" type="xs:string" use="optional" />
 			<xs:attribute name="isActive" type="xs:boolean" use="optional" />
-			<xs:attribute name="password" type="xs:string" use="optional"/>
+			<xs:attribute name="hashOfPassword" type="xs:string" use="optional"/>
 		</xs:complexType>
 
 		<xs:complexType name="securityGroup">

@@ -2453,7 +2453,6 @@ class boxEntity extends dbEntity
 class securityUserEntity extends dbEntity
 {
 
-    protected $id = NULL;
     protected $username = NULL;
     protected $firstName = NULL;
     protected $lastName = NULL;
@@ -2509,6 +2508,8 @@ class securityUserEntity extends dbEntity
     
     function setIsActive($theIsActive)
     {
+    	global $firebug;
+    	$firebug->log($theIsActive, "setting");
         // Set the current objects precision 
         $this->isActive=$theIsActive;
     }
