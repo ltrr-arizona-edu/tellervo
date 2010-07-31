@@ -21,7 +21,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.dmurph.mvc.util.MVCArrayList;
+import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
 import edu.cornell.dendro.corina.control.bulkImport.ColumnsModifiedEvent;

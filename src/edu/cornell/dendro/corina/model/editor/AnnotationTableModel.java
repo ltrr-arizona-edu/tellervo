@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 import com.dmurph.mvc.ICloneable;
-import com.dmurph.mvc.util.MVCArrayList;
+import com.dmurph.mvc.model.MVCArrayList;
 
 public class AnnotationTableModel extends AbstractTableModel implements ICloneable{
 	private static final long serialVersionUID = 1L;

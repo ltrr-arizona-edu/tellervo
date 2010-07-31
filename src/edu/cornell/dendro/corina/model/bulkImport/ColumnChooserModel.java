@@ -3,7 +3,7 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
-import com.dmurph.mvc.util.MVCArrayList;
+import com.dmurph.mvc.model.MVCArrayList;
 
 /**
  * @author daniel

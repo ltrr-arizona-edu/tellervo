@@ -13,7 +13,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
 import com.dmurph.mvc.model.HashModel.PropertyType;
-import com.dmurph.mvc.util.MVCArrayList;
+import com.dmurph.mvc.model.MVCArrayList;
 
 /**
  * @author Daniel Murphy
@@ -185,18 +185,18 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 				fireTableStructureChanged();
 				recreateSelected();
 			}
-			else if(prop.equals(MVCArrayList.ELEMENT)){
+			else if(prop.equals(MVCArrayList.ADDED)){
 				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
 				fireTableRowsUpdated(event.getIndex(), event.getIndex());
 			}
-			else if(prop.equals(MVCArrayList.INSERTED)){
+			else if(prop.equals(MVCArrayList.CHANGED)){
 				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
 				fireTableRowsInserted(event.getIndex(), event.getIndex());
 				recreateSelected();
 			}
 		}
 		else if(source == columns){
-			if(prop.equals(MVCArrayList.ELEMENT)){
+			if(prop.equals(MVCArrayList.CHANGED)){
 				fireTableStructureChanged();
 			}
 			else if(prop.equals(MVCArrayList.SIZE)){
