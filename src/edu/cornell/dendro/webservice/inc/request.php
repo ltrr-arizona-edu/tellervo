@@ -289,8 +289,8 @@ class request
 	                		$myParamObj = new boxParameters($newxml);
                             break;	
 
-	                	case 'securityuser':
-	                		$newxml = "<root><securityUser id='".$item->getAttribute('id')."'/></root>";
+	                	case 'user':
+	                		$newxml = "<root><user id='".$item->getAttribute('id')."'/></root>";
 	                		$myParamObj = new securityUserParameters($newxml);
                             break;	                            
                                                         
@@ -344,10 +344,10 @@ class request
             		case "tridas:derivedSeries":
             			$myParamObj = new measurementParameters($this->xmlRequestDom->saveXML($item), $parentID);
             			break; 
-            		case "c:securityUser":
+            		case "securityUser":
             			$myParamObj = new securityUserParameters("<root>".$this->xmlRequestDom->saveXML($item)."</root>");
 						break;
-            		case "cor:box":
+            		case "box":
             			$myParamObj = new boxParameters($this->xmlRequestDom->saveXML($item));
             			break;
             		default:

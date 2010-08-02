@@ -84,7 +84,7 @@ public class AuthenticateResource extends CorinaResource {
 	 * @param in
 	 * @return an md5 hash, in string format
 	 */
-	private String md5(String in) {
+	public static String md5(String in) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			

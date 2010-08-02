@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.cornell.dendro.corina.wsi.corina.resources;
 
 import java.util.List;

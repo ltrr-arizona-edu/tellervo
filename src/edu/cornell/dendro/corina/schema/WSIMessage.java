@@ -86,8 +86,8 @@ public class WSIMessage
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Element }
      * {@link String }
+     * {@link Element }
      * 
      * 
      */
@@ -139,8 +139,8 @@ public class WSIMessage
      * 
      * @param content
      *     allowed object is
-     *     {@link Element }
      *     {@link String }
+     *     {@link Element }
      *     
      */
     public void setContent(List<Object> content) {

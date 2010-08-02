@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
@@ -68,11 +69,12 @@ import org.tridas.interfaces.IdAble;
 @XmlType(name = "securityUser", propOrder = {
     "memberOf"
 })
-public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, HumanName, IdAble
+@XmlRootElement(name = "securityUser")
+public class WSISecurityUser implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, HumanName, IdAble
 {
 
     private final static long serialVersionUID = 1001L;
-    protected SecurityUser.MemberOf memberOf;
+    protected WSISecurityUser.MemberOf memberOf;
     @XmlAttribute(name = "id")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
@@ -93,10 +95,10 @@ public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, Has
      * 
      * @return
      *     possible object is
-     *     {@link SecurityUser.MemberOf }
+     *     {@link WSISecurityUser.MemberOf }
      *     
      */
-    public SecurityUser.MemberOf getMemberOf() {
+    public WSISecurityUser.MemberOf getMemberOf() {
         return memberOf;
     }
 
@@ -105,10 +107,10 @@ public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, Has
      * 
      * @param value
      *     allowed object is
-     *     {@link SecurityUser.MemberOf }
+     *     {@link WSISecurityUser.MemberOf }
      *     
      */
-    public void setMemberOf(SecurityUser.MemberOf value) {
+    public void setMemberOf(WSISecurityUser.MemberOf value) {
         this.memberOf = value;
     }
 
@@ -289,14 +291,14 @@ public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, Has
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
-        if (!(object instanceof SecurityUser)) {
+        if (!(object instanceof WSISecurityUser)) {
             equalsBuilder.appendSuper(false);
             return ;
         }
         if (this == object) {
             return ;
         }
-        final SecurityUser that = ((SecurityUser) object);
+        final WSISecurityUser that = ((WSISecurityUser) object);
         equalsBuilder.append(this.getMemberOf(), that.getMemberOf());
         equalsBuilder.append(this.getId(), that.getId());
         equalsBuilder.append(this.getUsername(), that.getUsername());
@@ -307,7 +309,7 @@ public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, Has
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof SecurityUser)) {
+        if (!(object instanceof WSISecurityUser)) {
             return false;
         }
         if (this == object) {
@@ -336,7 +338,7 @@ public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, Has
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            SecurityUser.MemberOf theMemberOf;
+            WSISecurityUser.MemberOf theMemberOf;
             theMemberOf = this.getMemberOf();
             toStringBuilder.append("memberOf", theMemberOf);
         }
@@ -379,11 +381,11 @@ public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, Has
     }
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
-        final SecurityUser copy = ((target == null)?((SecurityUser) createCopy()):((SecurityUser) target));
+        final WSISecurityUser copy = ((target == null)?((WSISecurityUser) createCopy()):((WSISecurityUser) target));
         if (this.isSetMemberOf()) {
-            SecurityUser.MemberOf sourceMemberOf;
+            WSISecurityUser.MemberOf sourceMemberOf;
             sourceMemberOf = this.getMemberOf();
-            SecurityUser.MemberOf copyMemberOf = ((SecurityUser.MemberOf) copyBuilder.copy(sourceMemberOf));
+            WSISecurityUser.MemberOf copyMemberOf = ((WSISecurityUser.MemberOf) copyBuilder.copy(sourceMemberOf));
             copy.setMemberOf(copyMemberOf);
         } else {
             copy.memberOf = null;
@@ -445,7 +447,7 @@ public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, Has
     }
 
     public Object createCopy() {
-        return new SecurityUser();
+        return new WSISecurityUser();
     }
 
 
@@ -530,19 +532,19 @@ public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, Has
         }
 
         public void equals(Object object, EqualsBuilder equalsBuilder) {
-            if (!(object instanceof SecurityUser.MemberOf)) {
+            if (!(object instanceof WSISecurityUser.MemberOf)) {
                 equalsBuilder.appendSuper(false);
                 return ;
             }
             if (this == object) {
                 return ;
             }
-            final SecurityUser.MemberOf that = ((SecurityUser.MemberOf) object);
+            final WSISecurityUser.MemberOf that = ((WSISecurityUser.MemberOf) object);
             equalsBuilder.append(this.getSecurityGroups(), that.getSecurityGroups());
         }
 
         public boolean equals(Object object) {
-            if (!(object instanceof SecurityUser.MemberOf)) {
+            if (!(object instanceof WSISecurityUser.MemberOf)) {
                 return false;
             }
             if (this == object) {
@@ -578,7 +580,7 @@ public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, Has
         }
 
         public Object copyTo(Object target, CopyBuilder copyBuilder) {
-            final SecurityUser.MemberOf copy = ((target == null)?((SecurityUser.MemberOf) createCopy()):((SecurityUser.MemberOf) target));
+            final WSISecurityUser.MemberOf copy = ((target == null)?((WSISecurityUser.MemberOf) createCopy()):((WSISecurityUser.MemberOf) target));
             if (this.isSetSecurityGroups()) {
                 List<SecurityGroup> sourceSecurityGroups;
                 sourceSecurityGroups = this.getSecurityGroups();
@@ -597,7 +599,7 @@ public class SecurityUser implements Serializable, CopyTo, Copyable, Equals, Has
         }
 
         public Object createCopy() {
-            return new SecurityUser.MemberOf();
+            return new WSISecurityUser.MemberOf();
         }
 
     }

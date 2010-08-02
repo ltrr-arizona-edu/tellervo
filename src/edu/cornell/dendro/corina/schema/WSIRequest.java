@@ -57,7 +57,7 @@ import org.tridas.util.TridasObjectEx;
  *           &lt;element ref="{http://www.tridas.org/1.2.1}radius" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://www.tridas.org/1.2.1}measurementSeries" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://www.tridas.org/1.2.1}derivedSeries" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element name="user" type="{http://dendro.cornell.edu/schema/corina/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}box" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;/sequence>
  *         &lt;sequence>
@@ -93,7 +93,7 @@ import org.tridas.util.TridasObjectEx;
     "radiuses",
     "measurementSeries",
     "derivedSeries",
-    "users",
+    "securityUsers",
     "boxes",
     "entities",
     "authenticate",
@@ -120,8 +120,8 @@ public class WSIRequest
     protected List<TridasMeasurementSeries> measurementSeries;
     @XmlElement(namespace = "http://www.tridas.org/1.2.1")
     protected List<TridasDerivedSeries> derivedSeries;
-    @XmlElement(name = "user")
-    protected List<SecurityUser> users;
+    @XmlElement(name = "securityUser")
+    protected List<WSISecurityUser> securityUsers;
     @XmlElement(name = "box")
     protected List<WSIBox> boxes;
     @XmlElement(name = "entity")
@@ -425,40 +425,40 @@ public class WSIRequest
     }
 
     /**
-     * Gets the value of the users property.
+     * Gets the value of the securityUsers property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the users property.
+     * This is why there is not a <CODE>set</CODE> method for the securityUsers property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getUsers().add(newItem);
+     *    getSecurityUsers().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link SecurityUser }
+     * {@link WSISecurityUser }
      * 
      * 
      */
-    public List<SecurityUser> getUsers() {
-        if (users == null) {
-            users = new ArrayList<SecurityUser>();
+    public List<WSISecurityUser> getSecurityUsers() {
+        if (securityUsers == null) {
+            securityUsers = new ArrayList<WSISecurityUser>();
         }
-        return this.users;
+        return this.securityUsers;
     }
 
-    public boolean isSetUsers() {
-        return ((this.users!= null)&&(!this.users.isEmpty()));
+    public boolean isSetSecurityUsers() {
+        return ((this.securityUsers!= null)&&(!this.securityUsers.isEmpty()));
     }
 
-    public void unsetUsers() {
-        this.users = null;
+    public void unsetSecurityUsers() {
+        this.securityUsers = null;
     }
 
     /**
@@ -760,15 +760,15 @@ public class WSIRequest
     }
 
     /**
-     * Sets the value of the users property.
+     * Sets the value of the securityUsers property.
      * 
-     * @param users
+     * @param securityUsers
      *     allowed object is
-     *     {@link SecurityUser }
+     *     {@link WSISecurityUser }
      *     
      */
-    public void setUsers(List<SecurityUser> users) {
-        this.users = users;
+    public void setSecurityUsers(List<WSISecurityUser> securityUsers) {
+        this.securityUsers = securityUsers;
     }
 
     /**
@@ -812,7 +812,7 @@ public class WSIRequest
         equalsBuilder.append(this.getRadiuses(), that.getRadiuses());
         equalsBuilder.append(this.getMeasurementSeries(), that.getMeasurementSeries());
         equalsBuilder.append(this.getDerivedSeries(), that.getDerivedSeries());
-        equalsBuilder.append(this.getUsers(), that.getUsers());
+        equalsBuilder.append(this.getSecurityUsers(), that.getSecurityUsers());
         equalsBuilder.append(this.getBoxes(), that.getBoxes());
         equalsBuilder.append(this.getEntities(), that.getEntities());
         equalsBuilder.append(this.getAuthenticate(), that.getAuthenticate());
@@ -843,7 +843,7 @@ public class WSIRequest
         hashCodeBuilder.append(this.getRadiuses());
         hashCodeBuilder.append(this.getMeasurementSeries());
         hashCodeBuilder.append(this.getDerivedSeries());
-        hashCodeBuilder.append(this.getUsers());
+        hashCodeBuilder.append(this.getSecurityUsers());
         hashCodeBuilder.append(this.getBoxes());
         hashCodeBuilder.append(this.getEntities());
         hashCodeBuilder.append(this.getAuthenticate());
@@ -901,9 +901,9 @@ public class WSIRequest
             toStringBuilder.append("derivedSeries", theDerivedSeries);
         }
         {
-            List<SecurityUser> theUsers;
-            theUsers = this.getUsers();
-            toStringBuilder.append("users", theUsers);
+            List<WSISecurityUser> theSecurityUsers;
+            theSecurityUsers = this.getSecurityUsers();
+            toStringBuilder.append("securityUsers", theSecurityUsers);
         }
         {
             List<WSIBox> theBoxes;
@@ -1021,14 +1021,14 @@ public class WSIRequest
         } else {
             copy.unsetDerivedSeries();
         }
-        if (this.isSetUsers()) {
-            List<SecurityUser> sourceUsers;
-            sourceUsers = this.getUsers();
+        if (this.isSetSecurityUsers()) {
+            List<WSISecurityUser> sourceSecurityUsers;
+            sourceSecurityUsers = this.getSecurityUsers();
             @SuppressWarnings("unchecked")
-            List<SecurityUser> copyUsers = ((List<SecurityUser> ) copyBuilder.copy(sourceUsers));
-            copy.setUsers(copyUsers);
+            List<WSISecurityUser> copySecurityUsers = ((List<WSISecurityUser> ) copyBuilder.copy(sourceSecurityUsers));
+            copy.setSecurityUsers(copySecurityUsers);
         } else {
-            copy.unsetUsers();
+            copy.unsetSecurityUsers();
         }
         if (this.isSetBoxes()) {
             List<WSIBox> sourceBoxes;

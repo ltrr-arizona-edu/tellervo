@@ -1,15 +1,27 @@
 package edu.cornell.dendro.corina.admin;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import javax.swing.JOptionPane;
+
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.SecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.StringUtils;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.AuthenticateResource;
+import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
 
 /**
  * Dialog for setting users own password, or for user with admin
@@ -17,7 +29,7 @@ import edu.cornell.dendro.corina.ui.I18n;
  *
  * @author  peterbrewer
  */
-public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
+public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, ActionListener{
     
 	SecurityUser thisUser;
 	
@@ -28,9 +40,19 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     public SetPasswordUI(java.awt.Frame parent) {
         super(parent, true);
         initComponents();
-        setupGui();   
+        setupGui(App.isAdmin);   
         internationalizeComponents();
         
+    }
+    
+    /**
+     * Remove preferences for remembering password and autologging in
+     */
+    public static void forgetPassword()
+    {
+		App.prefs.removePref("corina.login.remember_password");
+		App.prefs.removePref("corina.login.password");
+		App.prefs.removePref("corina.login.auto_login");
     }
     
     private void internationalizeComponents()
@@ -39,8 +61,8 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	lblOld.setText(I18n.getText("admin.oldPassword")+":");
     	lblNew.setText(I18n.getText("admin.newPassword")+":");
     	lblVerify.setText(I18n.getText("admin.verify")+":");
-    	btnCancel.setText(I18n.getText("general.ok"));
-    	btnOk.setText(I18n.getText("general.cancel"));
+    	btnCancel.setText(I18n.getText("general.cancel"));
+    	btnOk.setText(I18n.getText("general.ok"));
     }
     
     /**
@@ -71,7 +93,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	{
     		// Set admin specific GUI items
     		lblOld.setText(I18n.getText("admin.yourPassword")+":");
-    		lblUserText.setText(thisUser.getUsername());
+    		//lblUserText.setText(thisUser.getUsername());
     	}
     	else
     	{
@@ -83,7 +105,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	// Add listeners
     	pwdOld.addKeyListener(this);
     	pwdNew.addKeyListener(this);
-    	pwdVerify.addKeyListener(this);    	
+    	pwdVerify.addKeyListener(this); 
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
         		public void actionPerformed(java.awt.event.ActionEvent evt) {
         			dispose();
@@ -94,9 +116,9 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     			if(isPasswordCorrect(pwdNew.getPassword()))
     			{
     				
-    				setPassword(pwdNew.getPassword());
+    				Boolean success = setPassword(pwdNew.getPassword());
     				
-    				dispose();
+    				if(success) dispose();
     			}
     			else
     			{
@@ -144,16 +166,70 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
      * Set password of specified user.  Only users with
      * admin rights are able to do this.
      * 
-     * @param user
+     * @param thisUser
      * @param pwd
      * @return
      * @todo implement
      */
-    private Boolean setPassword(SecurityUser user, char[] pwd)
+    private Boolean setPassword(WSISecurityUser thisUser, char[] pwd)
     {
+    	/*SecurityUser usr = (SecurityUser) App.currentUser.createCopy();
+    	usr.setPassword(AuthenticateResource.md5(this.pwdNew.getPassword().toString()));
     	
-    	
+    	WSIRequest req = new WSIRequest();
+    	req.setType(CorinaRequestType.UPDATE);
+    	ArrayList<SecurityUser> users = new ArrayList<SecurityUser>();
+    	users.add(usr);
+    	req.setUsers(users);
+
+    	CorinaEntityAssociatedResource<SecurityUser> resource;
 		return null;
+		*/
+		
+		// create an entity for reading
+    	
+    	
+    	/*
+		WSIEntity entity = new WSIEntity();
+		entity.setId(uuid.toString());
+		entity.setType(EntityType.USER);
+		*/
+    	
+    	WSISecurityUser usr = App.currentUser;
+    	
+    	// Set password to hash
+    	MessageDigest digest;
+		try {
+			digest = MessageDigest.getInstance("MD5");
+			String pwd1 = new String(this.pwdNew.getPassword());
+			digest.update(pwd1.getBytes());
+	    	usr.setHashOfPassword(StringUtils.bytesToHex(digest.digest()));
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// associate a resource
+    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, usr);
+    	
+    	
+		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
+		rsrc.query();
+		accdialog.setVisible(true);
+		
+		if(accdialog.isSuccessful())
+		{
+			rsrc.getAssociatedResult();
+			JOptionPane.showMessageDialog(this, "Password changed successfully", "Success", JOptionPane.NO_OPTION);
+			return true;
+		}
+		
+		JOptionPane.showMessageDialog(this, "Error updating: " + accdialog.getFailException().
+				getLocalizedMessage(), "blah blah", JOptionPane.ERROR_MESSAGE);
+		
+		return false;
+		
+		
     	
     }
     
@@ -166,7 +242,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
      */
     private Boolean setPassword(char[] pwd)
     {
-    	SecurityUser thisUser = App.currentUser;
+    	WSISecurityUser thisUser = App.currentUser;
     	    	   	
     	return setPassword(thisUser, pwd);
     	
@@ -416,6 +492,12 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     protected javax.swing.JPasswordField pwdVerify;
     protected javax.swing.JSeparator sep;
     // End of variables declaration//GEN-END:variables
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		System.out.println("hello");
+	}
 
 
     

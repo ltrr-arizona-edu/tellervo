@@ -3,6 +3,7 @@
 
 package edu.cornell.dendro.corina.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.cornell.dendro.corina.gui.LoginDialog;
@@ -13,7 +14,9 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.schema.SecurityGroup;
 import edu.cornell.dendro.corina.schema.SecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ListUtil;
@@ -32,9 +35,10 @@ public class App {
   public static Logging logging;
   public static Dictionary dictionary;
   public static TridasObjectList tridasObjects;
-  public static SecurityUser currentUser;
+  public static WSISecurityUser currentUser;
+  public static Boolean isAdmin;
   private static String username;
-  
+    
   
   private final static boolean DEBUGGING = false;
 
@@ -131,14 +135,31 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	meter.setProgress(7);
     }
 
-    // Get the current users details from the dictionary 
+    // Get the current users details from the dictionary
+    isAdmin=false;
     if (isLoggedIn){
     	List<?> dictionary = (List<?>) Dictionary.getDictionary("securityUserDictionary");
-		List<SecurityUser> users = (List<SecurityUser>) ListUtil.subListOfType(dictionary, SecurityUser.class);
+		List<WSISecurityUser> users = (List<WSISecurityUser>) ListUtil.subListOfType(dictionary, WSISecurityUser.class);
 		
-    	for(SecurityUser su: users){
-    		if(su.getUsername().compareTo(username)==0) currentUser = su;
+    	for(WSISecurityUser su: users){
+    		if(su.getUsername().compareTo(username)==0) 
+    		{
+    			currentUser = su;
+    	    	// Set whether the current user is an administrator or not so that 
+    	    	// it is easy to disable options that will result in a 'no permissions' 
+    	    	// error
+    	    	 try{    				  
+    				  for(SecurityGroup grp : su.getMemberOf().getSecurityGroups())
+    				  {
+    					  if(grp.getId().equals("1")) isAdmin=true;
+    				  }
+    			    } catch (Exception e){  }
+    		}
     	}
+    	
+
+
+	  
     }
     
     // Cache the TRiDaS objects 
@@ -174,4 +195,5 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // will point out bad design and/or bugs
     if (!initialized) throw new IllegalStateException("AppContext already destroyed.");
   }
+    
 }

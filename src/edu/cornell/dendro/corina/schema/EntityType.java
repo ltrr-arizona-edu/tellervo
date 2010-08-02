@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="measurementSeries"/>
  *     &lt;enumeration value="derivedSeries"/>
  *     &lt;enumeration value="box"/>
- *     &lt;enumeration value="user"/>
+ *     &lt;enumeration value="securityUser"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -48,8 +48,8 @@ public enum EntityType {
     DERIVED_SERIES("derivedSeries"),
     @XmlEnumValue("box")
     BOX("box"),
-    @XmlEnumValue("user")
-    USER("user");
+    @XmlEnumValue("securityUser")
+    SECURITY_USER("securityUser");
     private final String value;
 
     EntityType(String v) {

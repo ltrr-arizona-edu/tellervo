@@ -29,6 +29,7 @@ import javax.swing.JMenuItem;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.schema.SecurityUser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -83,7 +84,11 @@ private JFrame frame;
 	  JMenuItem changepwd = Builder.makeMenuItem("menus.admin.changepwd",
             "edu.cornell.dendro.corina.admin.SetPasswordUI.loadDialog()", "password.png");
  	  add(changepwd); 
-	  
+ 	  
+	  JMenuItem forgetpwd = Builder.makeMenuItem("menus.admin.forgetpwd",
+	            "edu.cornell.dendro.corina.admin.SetPasswordUI.forgetPassword()", "forgetpassword.png");
+	  add(forgetpwd); 
+ 	  	  
       addSeparator();
 	  addReportsMenu();
 	  addLabelMenu();
@@ -132,10 +137,16 @@ private JFrame frame;
 	*/
 	protected void addUserGroupMenu() {
 		
+		
+		
 	  	JMenuItem usergroup = Builder.makeMenuItem("menus.admin.usersandgroups",
 	            "edu.cornell.dendro.corina.admin.UserGroupAdmin.main()", "edit_group.png");
 	
-		usergroup.setEnabled(true);
+	  	
+		// Enable if user is an admin
+	  	Boolean adm = App.isAdmin;
+		usergroup.setEnabled(adm);
+		
 		add(usergroup);
 	}
 

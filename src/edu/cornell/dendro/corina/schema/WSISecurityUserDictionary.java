@@ -34,7 +34,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="user" type="{http://dendro.cornell.edu/schema/corina/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="securityUser" type="{http://dendro.cornell.edu/schema/corina/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -45,63 +45,63 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "users"
+    "securityUsers"
 })
 @XmlRootElement(name = "securityUserDictionary")
 public class WSISecurityUserDictionary implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlElement(name = "user")
-    protected List<SecurityUser> users;
+    @XmlElement(name = "securityUser")
+    protected List<WSISecurityUser> securityUsers;
 
     /**
-     * Gets the value of the users property.
+     * Gets the value of the securityUsers property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the users property.
+     * This is why there is not a <CODE>set</CODE> method for the securityUsers property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getUsers().add(newItem);
+     *    getSecurityUsers().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link SecurityUser }
+     * {@link WSISecurityUser }
      * 
      * 
      */
-    public List<SecurityUser> getUsers() {
-        if (users == null) {
-            users = new ArrayList<SecurityUser>();
+    public List<WSISecurityUser> getSecurityUsers() {
+        if (securityUsers == null) {
+            securityUsers = new ArrayList<WSISecurityUser>();
         }
-        return this.users;
+        return this.securityUsers;
     }
 
-    public boolean isSetUsers() {
-        return ((this.users!= null)&&(!this.users.isEmpty()));
+    public boolean isSetSecurityUsers() {
+        return ((this.securityUsers!= null)&&(!this.securityUsers.isEmpty()));
     }
 
-    public void unsetUsers() {
-        this.users = null;
+    public void unsetSecurityUsers() {
+        this.securityUsers = null;
     }
 
     /**
-     * Sets the value of the users property.
+     * Sets the value of the securityUsers property.
      * 
-     * @param users
+     * @param securityUsers
      *     allowed object is
-     *     {@link SecurityUser }
+     *     {@link WSISecurityUser }
      *     
      */
-    public void setUsers(List<SecurityUser> users) {
-        this.users = users;
+    public void setSecurityUsers(List<WSISecurityUser> securityUsers) {
+        this.securityUsers = securityUsers;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
@@ -113,7 +113,7 @@ public class WSISecurityUserDictionary implements Serializable, CopyTo, Copyable
             return ;
         }
         final WSISecurityUserDictionary that = ((WSISecurityUserDictionary) object);
-        equalsBuilder.append(this.getUsers(), that.getUsers());
+        equalsBuilder.append(this.getSecurityUsers(), that.getSecurityUsers());
     }
 
     public boolean equals(Object object) {
@@ -129,7 +129,7 @@ public class WSISecurityUserDictionary implements Serializable, CopyTo, Copyable
     }
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
-        hashCodeBuilder.append(this.getUsers());
+        hashCodeBuilder.append(this.getSecurityUsers());
     }
 
     public int hashCode() {
@@ -140,9 +140,9 @@ public class WSISecurityUserDictionary implements Serializable, CopyTo, Copyable
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            List<SecurityUser> theUsers;
-            theUsers = this.getUsers();
-            toStringBuilder.append("users", theUsers);
+            List<WSISecurityUser> theSecurityUsers;
+            theSecurityUsers = this.getSecurityUsers();
+            toStringBuilder.append("securityUsers", theSecurityUsers);
         }
     }
 
@@ -154,14 +154,14 @@ public class WSISecurityUserDictionary implements Serializable, CopyTo, Copyable
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSISecurityUserDictionary copy = ((target == null)?((WSISecurityUserDictionary) createCopy()):((WSISecurityUserDictionary) target));
-        if (this.isSetUsers()) {
-            List<SecurityUser> sourceUsers;
-            sourceUsers = this.getUsers();
+        if (this.isSetSecurityUsers()) {
+            List<WSISecurityUser> sourceSecurityUsers;
+            sourceSecurityUsers = this.getSecurityUsers();
             @SuppressWarnings("unchecked")
-            List<SecurityUser> copyUsers = ((List<SecurityUser> ) copyBuilder.copy(sourceUsers));
-            copy.setUsers(copyUsers);
+            List<WSISecurityUser> copySecurityUsers = ((List<WSISecurityUser> ) copyBuilder.copy(sourceSecurityUsers));
+            copy.setSecurityUsers(copySecurityUsers);
         } else {
-            copy.unsetUsers();
+            copy.unsetSecurityUsers();
         }
         return copy;
     }

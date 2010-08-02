@@ -66,7 +66,9 @@
 			<ai:interfaces check="false">
 				org.tridas.interfaces.ITridas
 			</ai:interfaces>
-		</jaxb:bindings>						
+		</jaxb:bindings>
+	
+								
 	</jaxb:bindings>
 	
 		<!-- Tridas schema. Prefix with 'Tridas'! -->

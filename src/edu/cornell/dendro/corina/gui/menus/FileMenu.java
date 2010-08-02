@@ -106,6 +106,8 @@ public class FileMenu extends JMenu {
 		addIOMenus();
 		addExportMenus();
 		addSeparator();
+		addDataEntryMenus();
+		addSeparator();
 		addCloseSaveMenus();
 		addSeparator();
 		addPrintingMenus();
@@ -145,6 +147,10 @@ public class FileMenu extends JMenu {
 	
 	public void addExportMenus(){
 		add(Builder.makeMenuItem("menus.file.export", "edu.cornell.dendro.corina.gui.menus.FileMenu.exportMultiDB()", "fileexport.png"));		
+	}
+	
+	public void addDataEntryMenus(){
+		add(Builder.makeMenuItem("menus.file.bulkimport", "edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow.main()", "database.png"));		
 	}
 
 	// ask the user for a file to open, and open it

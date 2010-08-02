@@ -57,7 +57,7 @@ public class BulkImportWindow extends JFrame {
 
 	}
 	
-	public static void main(String[] args) {
+	public static void main() {
 		JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(new AnalyticsConfigData("UA-17109202-7"), GoogleAnalyticsVersion.V_4_7_2);
 		MVC.setTracker(tracker);
 		CorinaModelLocator.getInstance();
