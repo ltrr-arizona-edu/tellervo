@@ -3,6 +3,7 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
+import com.dmurph.mvc.IModel;
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 
@@ -10,16 +11,22 @@ import com.dmurph.mvc.model.MVCArrayList;
  * @author Daniel Murphy
  *
  */
-public class ObjectModel extends HashModel{
+public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 	private static final long serialVersionUID = 1L;
 	
-	public static final String OBJECTS = "objects";
 	public static final String TABLE_MODEL = "tableModel";
-	public static final String COLUMN_MODEL = "columnModel";
 	
 	public ObjectModel(){
-		registerProperty(OBJECTS, PropertyType.FINAL, new MVCArrayList<SingleObjectModel>());
-		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel());
+		registerProperty(ROWS, PropertyType.FINAL, new MVCArrayList<SingleObjectModel>());
+		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel(SingleObjectModel.PROPERTIES));
 		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ObjectTableModel(this));
+	}
+	
+	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#createRowInstance()
+	 */
+	@Override
+	public ISingleRowModel createRowInstance() {
+		return new SingleObjectModel();
 	}
 }

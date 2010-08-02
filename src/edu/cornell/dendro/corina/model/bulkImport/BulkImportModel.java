@@ -3,8 +3,6 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
-import com.dmurph.mvc.model.AbstractModel;
-
 import edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow;
 import edu.cornell.dendro.corina.view.bulkImport.ColumnChooserView;
 
@@ -16,7 +14,7 @@ public class BulkImportModel {
 	private static BulkImportModel model = null;
 	
 	private final ObjectModel objectModel;
-	private ColumnChooserView currColumnChooser = null;
+	private volatile ColumnChooserView currColumnChooser = null;
 	private BulkImportWindow mainView;
 	
 	private BulkImportModel(){

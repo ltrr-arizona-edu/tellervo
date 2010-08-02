@@ -11,6 +11,7 @@ import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
+import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
 
@@ -59,10 +60,15 @@ public class BulkImportWindow extends JFrame {
 		smodel.setProperty(SingleObjectModel.TITLE, "Test title");
 		smodel.setProperty(SingleObjectModel.COMMENTS, "Some comments right here");
 		smodel.setProperty(SingleObjectModel.DESCRIPTION, "My description");
-		smodel.setObjectCode("OBJECT CODE 2");
+		smodel.setProperty(SingleObjectModel.OBJECT_CODE, "OBJECT CODE 2");
 		smodel.setProperty(SingleObjectModel.OBJECT_CODE, "OBJECT CODE");
 		smodel.setProperty(SingleObjectModel.TYPE, "my type");
-		MVCArrayList<SingleObjectModel> objects = (MVCArrayList<SingleObjectModel>) model.getProperty(ObjectModel.OBJECTS);
+		
+		ColumnChooserModel cmodel = (ColumnChooserModel) model.getProperty(ObjectModel.COLUMN_MODEL);
+		cmodel.add(SingleObjectModel.OBJECT_CODE);
+		cmodel.add(SingleObjectModel.IMPORTED);
+
+		MVCArrayList<SingleObjectModel> objects = (MVCArrayList<SingleObjectModel>) model.getProperty(ObjectModel.ROWS);
 		objects.add(smodel);
 		
 		BulkImportWindow frame = new BulkImportWindow();

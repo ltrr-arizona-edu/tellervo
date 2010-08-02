@@ -12,6 +12,7 @@ import com.dmurph.mvc.control.ICommand;
 import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
+import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
 import edu.cornell.dendro.corina.view.bulkImport.ColumnChooserView;
@@ -35,18 +36,8 @@ public class ShowColumnWindowCommand implements ICommand {
 			return;
 		}
 	
-		String[] columns;
-		ColumnChooserModel model;
-		if(event.model instanceof ObjectModel){
-			columns = SingleObjectModel.PROPERTIES;
-			model = (ColumnChooserModel) event.model.getProperty(ObjectModel.COLUMN_MODEL);
-		}else{
-			// TODO
-			throw new RuntimeException();
-		}
-			
-		
-		ColumnChooserView view = new ColumnChooserView(model, biModel.getMainView(), columns);
+		ColumnChooserModel model = (ColumnChooserModel) event.model.getProperty(IBulkImportSectionModel.COLUMN_MODEL);
+		ColumnChooserView view = new ColumnChooserView(model, biModel.getMainView());
 		biModel.setCurrColumnChooser(view);
 		
 		try {

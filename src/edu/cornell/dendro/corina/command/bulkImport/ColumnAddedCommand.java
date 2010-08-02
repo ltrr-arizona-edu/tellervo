@@ -10,8 +10,7 @@ import edu.cornell.dendro.corina.control.bulkImport.ColumnsModifiedEvent;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 
 /**
- * @author daniel
- *
+ * @author Daniel Murphy
  */
 public class ColumnAddedCommand implements ICommand{
 
@@ -22,7 +21,17 @@ public class ColumnAddedCommand implements ICommand{
 	public void execute(MVCEvent argEvent) {
 		ColumnsModifiedEvent event = (ColumnsModifiedEvent) argEvent;
 		ColumnChooserModel model = event.model;
-		model.add(event.getValue());
+		int i=0;
+		for(int j=0; j<model.possibleColumns.length; j++){
+			if(model.possibleColumns[j].equals(event.getValue())){
+				model.add(i, event.getValue());
+ 				return;
+			}
+			if(model.contains(model.possibleColumns[j])){
+				i++;
+			}
+		}
+		System.out.println("not added: "+event.getValue());
+		
 	}
-	
 }

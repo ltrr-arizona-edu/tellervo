@@ -3,13 +3,8 @@
  */
 package edu.cornell.dendro.corina.control.bulkImport;
 
-import javax.swing.JFrame;
-
-import com.dmurph.mvc.IModel;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.model.HashModel;
-
-import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 
 /**
  * @author daniel

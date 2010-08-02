@@ -3,12 +3,11 @@
  */
 package edu.cornell.dendro.corina.control.bulkImport;
 
-import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.FrontController;
 
+import edu.cornell.dendro.corina.command.bulkImport.AddRowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.HideColumnWindowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.ShowColumnWindowCommand;
-import edu.cornell.dendro.corina.view.bulkImport.ColumnChooserView;
 
 /**
  * @author daniel
@@ -17,10 +16,11 @@ import edu.cornell.dendro.corina.view.bulkImport.ColumnChooserView;
 public class BulkImportController extends FrontController {
 	public static final String DISPLAY_COLUMN_CHOOSER = "BULK_IMPORT_DISPLAY_COLUMN_CHOOSER";
 	public static final String HIDE_COLUMN_CHOOSER = "BULK_IMPORT_HIDE_COLUMN_CHOOSER";
+	public static final String ADD_ROW = "BULK_IMPORT_ADD_ROW";
 
-	
 	public BulkImportController(){
 		registerCommand(DISPLAY_COLUMN_CHOOSER, ShowColumnWindowCommand.class);
 		registerCommand(HIDE_COLUMN_CHOOSER, HideColumnWindowCommand.class);
+		registerCommand(ADD_ROW, AddRowCommand.class);
 	}
 }

@@ -11,5 +11,10 @@ import com.dmurph.mvc.model.MVCArrayList;
  */
 public class ColumnChooserModel extends MVCArrayList<String> {	
 	private static final long serialVersionUID = 1L;
-
+	
+	public final String[] possibleColumns;
+	
+	public ColumnChooserModel(String[] argPossibleProperties){
+		possibleColumns = argPossibleProperties;
+	}
 }

@@ -15,6 +15,7 @@ public class ColumnsModifiedEvent extends StringEvent {
 	private static final long serialVersionUID = 2L;
 	
 	public final ColumnChooserModel model;
+	
 	public ColumnsModifiedEvent(String argKey, String argValue, ColumnChooserModel argModel) {
 		super(argKey, argValue);
 		model = argModel;

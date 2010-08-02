@@ -29,6 +29,7 @@ import javax.swing.table.TableModel;
 
 import com.dmurph.mvc.model.MVCArrayList;
 
+import edu.cornell.dendro.corina.control.bulkImport.AddRowEvent;
 import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
@@ -95,7 +96,7 @@ public class ObjectView extends JPanel{
 	
 	private void linkModel() {
 		table.setModel((TableModel) model.getProperty(ObjectModel.TABLE_MODEL));
-		ColumnChooserModel ccmodel = (ColumnChooserModel)model.getProperty(ObjectModel.COLUMN_MODEL);
+//		ColumnChooserModel ccmodel = (ColumnChooserModel)model.getProperty(ObjectModel.COLUMN_MODEL);
 //		ccmodel.addPropertyChangeListener(new PropertyChangeListener() {
 //			@Override
 //			public void propertyChange(PropertyChangeEvent argEvt) {
@@ -109,11 +110,32 @@ public class ObjectView extends JPanel{
 	
 	private void addListeners() {
 		showHideColumns.addActionListener(new ActionListener() {
-			
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				DisplayColumnChooserEvent event = new DisplayColumnChooserEvent(model);
 				event.dispatch();
+			}
+		});
+		
+		addRow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent argE) {
+				AddRowEvent event = new AddRowEvent(model);
+				event.dispatch();
+			}
+		});
+		
+		selectAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent argE) {
+				// skip controller
+				ObjectTableModel tmodel = (ObjectTableModel) model.getProperty(ObjectModel.TABLE_MODEL);
+				tmodel.selectAll();
+			}
+		});
+		
+		selectNone.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent argE) {
+				// skip controller
+				ObjectTableModel tmodel = (ObjectTableModel) model.getProperty(ObjectModel.TABLE_MODEL);
+				tmodel.selectNone();
 			}
 		});
 	}

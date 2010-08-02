@@ -25,6 +25,7 @@ import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
 import edu.cornell.dendro.corina.control.bulkImport.ColumnsModifiedEvent;
+import edu.cornell.dendro.corina.control.bulkImport.HideColumnChooserEvent;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 
@@ -41,29 +42,11 @@ public class ColumnChooserView extends JDialog{
 	private final ColumnChooserModel model;
 	private final String[] columns;
 	
-	public ColumnChooserView(ColumnChooserModel argModel, JFrame argParent, String[] argColumns){
+	public ColumnChooserView(ColumnChooserModel argModel, JFrame argParent){
 		super(argParent, true);
 		model = argModel;
-		columns = argColumns;
+		columns = argModel.possibleColumns;
 		tableModel = new TableModel();
-		this.addWindowListener(new WindowListener() {
-			@Override
-			public void windowOpened(WindowEvent argE) {
-			}
-			@Override
-			public void windowClosed(WindowEvent argE) {
-			}
-			@Override
-			public void windowIconified(WindowEvent argE) {}
-			@Override
-			public void windowDeiconified(WindowEvent argE) {}
-			@Override
-			public void windowDeactivated(WindowEvent argE) {}
-			@Override
-			public void windowClosing(WindowEvent argE) {}
-			@Override
-			public void windowActivated(WindowEvent argE) {}
-		});
 		initComponents();
 		linkModel();
 		addListeners();
@@ -90,6 +73,7 @@ public class ColumnChooserView extends JDialog{
 			String prop = argEvt.getPropertyName();
 			if(prop.equals(MVCArrayList.SIZE)){
 				tableModel.fireTableDataChanged();
+				checkboxList.repaint();
 			}
 		}
 	};
@@ -108,7 +92,8 @@ public class ColumnChooserView extends JDialog{
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent argE) {
-				setVisible(false);
+				HideColumnChooserEvent event = new HideColumnChooserEvent();
+				event.dispatch();
 			}
 		});
 	}
@@ -185,11 +170,13 @@ public class ColumnChooserView extends JDialog{
 		public void setValueAt(Object argAValue, int argRowIndex, int argColumnIndex) {
 			Boolean val = (Boolean) argAValue;
 			if(val == Boolean.TRUE){
+				System.out.println("true");
 				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED,
 																	  columns[argRowIndex],
 																	  model);
 				event.dispatch();
 			}else{
+				System.out.println("false");
 				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_REMOVED,
 						  columns[argRowIndex],
 						  model);

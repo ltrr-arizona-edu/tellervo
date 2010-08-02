@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumn;
 
 import com.dmurph.mvc.model.HashModel.PropertyType;
 import com.dmurph.mvc.model.MVCArrayList;
@@ -30,9 +29,6 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	
 	public ObjectTableModel(ObjectModel argModel){
 		setModel(argModel);
-		columns.add(SingleObjectModel.TITLE);
-		columns.add(SingleObjectModel.OBJECT_CODE);
-		columns.add(SingleObjectModel.DESCRIPTION);
 	}
 	
 	public ArrayList<String> getColumns(){
@@ -46,11 +42,32 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 			columns.removePropertyChangeListener(this);
 		}
 		this.model = model;
-		this.models = (MVCArrayList<SingleObjectModel>) this.model.getProperty(ObjectModel.OBJECTS);
+		this.models = (MVCArrayList<SingleObjectModel>) this.model.getProperty(ObjectModel.ROWS);
 		this.columns = (MVCArrayList<String>) this.model.getProperty(ObjectModel.COLUMN_MODEL);
 		models.addPropertyChangeListener(this);
 		columns.addPropertyChangeListener(this);
 		recreateSelected();
+	}
+	
+	public void getSelected(ArrayList<SingleObjectModel> argModels){
+		for(SingleObjectModel key : selected.keySet()){
+			if(selected.get(key)){
+				argModels.add(key);
+			}
+		}
+	}
+	
+	public void selectAll(){
+		selected.clear();
+		for(SingleObjectModel som : models){
+			selected.put(som, true);
+		}
+		fireTableDataChanged();
+	}
+	
+	public void selectNone(){
+		selected.clear();
+		fireTableDataChanged();
 	}
 	
 	private void recreateSelected() {
@@ -76,7 +93,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	@Override
 	public String getColumnName(int column) {
 		if(column == 0){
-			return " ";
+			return "Selected";
 		}
 		return columns.get(column-1);
 	}
@@ -165,9 +182,6 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		String column = columns.get(columnIndex);
 		SingleObjectModel som = models.get(rowIndex);
 		if(som.getPropertyType(column) == PropertyType.READ_WRITE){
-			if((Boolean)som.getProperty(SingleObjectModel.IMPORTED)){
-				return false;
-			}
 			return true;
 		}
 		return false;
@@ -185,11 +199,11 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 				fireTableStructureChanged();
 				recreateSelected();
 			}
-			else if(prop.equals(MVCArrayList.ADDED)){
-				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
-				fireTableRowsUpdated(event.getIndex(), event.getIndex());
-			}
 			else if(prop.equals(MVCArrayList.CHANGED)){
+				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
+				fireTableCellUpdated(event.getIndex(), event.getIndex());
+			}
+			else if(prop.equals(MVCArrayList.ADDED)){
 				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
 				fireTableRowsInserted(event.getIndex(), event.getIndex());
 				recreateSelected();
