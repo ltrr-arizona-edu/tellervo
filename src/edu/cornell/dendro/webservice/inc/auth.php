@@ -357,7 +357,13 @@ class auth
    */
   public function getPermission($thePermissionType, $theObjectType, $theObjectID)
   {
-        // $theObjectType should be one of site,tree, vmeasurement, default
+        // If user is admin give them the world
+        if ($this->isAdmin)
+        {
+            return true;
+        }
+  	
+        // $theObjectType should be one of site,tree, vmeasurement, default, securityUser, securityGroup
 
         global $dbconn;
 		global $firebug;
@@ -386,18 +392,22 @@ class auth
             $this->authFailReason = "Not logged in";
             return false;
         }
-
-        // If user is admin give them the world
-        if ($this->isAdmin)
-        {
-            return true;
-        }
-
-        // For security functions user *must* be admin
+        
         if (($theObjectType=='securityUser') || ($theObjectType=='securityGroup'))
         {
-            $this->authFailReason = "Only admin users can use security functions";
-            return false;
+        	if(($thePermissionType=='update' || $thePermissionType=='read') 
+        	    && $theObjectID==$this->getID()
+        	    && $theObjectType=='securityUser')
+        	{
+        		// User is trying to read or update their own details
+        		return true;        		
+        	}
+        	else
+        	{
+        		// For other security functions user *must* be admin
+            	$this->authFailReason = "Only admin users can use security functions.";
+            	return false;
+        	}
         }
 
         // For objects that don't have direct security, we need to move up the object chain to check perms

@@ -270,7 +270,7 @@ class meta
     $xml="<header>\n";
     if (!($this->username==NULL))
     {
-        $xml.="<user id=\"".$this->securityUserID."\" username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$this->lastname."\" />\n";
+        $xml.="<securityUser id=\"".$this->securityUserID."\" username=\"".$this->username."\" firstname=\"".$this->firstname."\" lastname=\"".$this->lastname."\" />\n";
     }
     $xml.="<wsVersion>".$this->wsversion."</wsVersion>\n";
     $xml.="<clientVersion>".$this->clientversion."</clientVersion>\n";

@@ -229,6 +229,12 @@ if($myMetaHeader->status != "Error")
                 if($success)
                 {
                     $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
+                    // Override these so that the WS with continue as if its a 'read' request and will show the
+                    // user their credentials
+                    $myObject = new securityUser(); 
+                    $paramObj = new securityUserParameters("<request></request>");
+                   	$paramObj->setID($myAuth->getID());
+                                        
                 }
                 else
                 {
@@ -249,6 +255,12 @@ if($myMetaHeader->status != "Error")
                 if($success)
                 {
                     $myMetaHeader->setUser($myAuth->getUsername(), $myAuth->getFirstname(), $myAuth->getLastname(), $myAuth->getID());
+                    
+                    // Override these so that the WS with continue as if its a 'read' request and will show the
+                    // user their credentials
+                    $myObject = new securityUser(); 
+                    $paramObj = new securityUserParameters("<request></request>");
+                   	$paramObj->setID($myAuth->getID());
                 }
                 else
                 {
@@ -261,7 +273,8 @@ if($myMetaHeader->status != "Error")
         // Populate class with data stored in db 
         // ********************
                         	
-        if( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete') )
+        if( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete') ||
+        	($myRequest->getCrudMode()=='plainlogin')  || ($myRequest->getCrudMode()=='securelogin'))
         {
             if($myMetaHeader->status != "Error")
             {   

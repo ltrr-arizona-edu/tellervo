@@ -270,7 +270,7 @@ class dbEntity
      * @param String $domain
      * @return Boolean
      */
-    final protected function setID($identifier, $domain=NULL)
+    protected function setID($identifier, $domain=NULL)
     {
     	$this->id = $identifier;
     	$this->identifierDomain = $domain;	
@@ -2485,6 +2485,19 @@ class securityUserEntity extends dbEntity
         $this->lastName=$theLastname;
     }
     
+    /**
+     * Set the identifier and from what domain it came
+     *
+     * @param UUID $identifier
+     * @param String $domain
+     * @return Boolean
+     */
+    function setID($identifier, $domain=NULL)
+    {
+    	$this->id = $identifier;
+    	$this->identifierDomain = $domain;	
+    	return true;	
+    }
     
     function setPassword($thePassword, $format="plain")
     {
@@ -2508,8 +2521,6 @@ class securityUserEntity extends dbEntity
     
     function setIsActive($theIsActive)
     {
-    	global $firebug;
-    	$firebug->log($theIsActive, "setting");
         // Set the current objects precision 
         $this->isActive=$theIsActive;
     }

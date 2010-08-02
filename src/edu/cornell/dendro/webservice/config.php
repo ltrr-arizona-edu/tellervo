@@ -22,7 +22,7 @@
 $dbName = corina_dev;
 
 // Domain name of the server this software is running on
-$domain = "dendro.cornell.edu/dev2/";
+$domain = "dendro.cornell.edu/dev/";
 
 // Whether to display debug messages
 $debugFlag = TRUE; 

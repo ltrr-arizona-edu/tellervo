@@ -1354,7 +1354,7 @@ class securityUserParameters extends securityUserEntity implements IParams
         	
 		   $firebug->log($child->hasAttribute("id"), "has id?");
 		   
-		   if ($child->tagName=='user')
+		   if ($child->tagName=='securityUser')
 		   {
 		   		$firebug->log($child->getAttribute("isActive"), "child");
 		   		if($child->hasAttribute("id")) $this->setID($child->getAttribute("id"), null);

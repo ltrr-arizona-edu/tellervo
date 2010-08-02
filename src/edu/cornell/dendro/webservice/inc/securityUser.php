@@ -114,8 +114,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
     
     function setParamsFromParamsClass($paramsClass)
     {
-    	global $firebug;
-        $firebug->log($paramsClass, "ParamsClass");
+
     	
     	// Alters the parameter values based upon values supplied by the user and passed as a parameters class
         if ($paramsClass->getID()!=null)           		$this->id   = $paramsClass->getID();
@@ -127,7 +126,6 @@ class securityUser extends securityUserEntity implements IDBAccessor
         if (($paramsClass->getIsActive()==TRUE) || ($paramsClass->getIsActive()==FALSE))   		
         												$this->setIsActive(dbhelper::formatBool($paramsClass->getIsActive(),"php"));
        
-        
         if (isset($paramsClass->groupArray) && count($paramsClass->groupArray)>0)
         {
             // Remove any existing groups,  ready to be replaced with what user has specified
@@ -140,7 +138,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
             }
         }   
         
-        $firebug->log($this, "This");
+
         return true;
     }
 
@@ -222,7 +220,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
         if (!isset($this->lastErrorCode))
         {
             // Only return XML when there are no errors.
-            $xml.= "<user ";
+            $xml.= "<securityUser ";
             $xml.= "id=\"".$this->id."\" ";
             $xml.= "username=\"".dbHelper::escapeXMLChars($this->username)."\" ";
             $xml.= "firstName=\"".dbHelper::escapeXMLChars($this->firstName)."\" ";
@@ -253,7 +251,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
 
             }
             
-            $xml.= "</user>\n";
+            $xml.= "</securityUser>\n";
             return $xml;
         }
         else
