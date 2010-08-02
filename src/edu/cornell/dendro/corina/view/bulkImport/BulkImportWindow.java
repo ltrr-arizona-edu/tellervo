@@ -7,7 +7,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.model.MVCArrayList;
+import com.dmurph.tracking.AnalyticsConfigData;
+import com.dmurph.tracking.JGoogleAnalyticsTracker;
+import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
@@ -54,7 +58,9 @@ public class BulkImportWindow extends JFrame {
 	}
 	
 	public static void main(String[] args) {
-		CorinaModelLocator locator = CorinaModelLocator.getInstance();
+		JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(new AnalyticsConfigData("UA-17109202-7"), GoogleAnalyticsVersion.V_4_7_2);
+		MVC.setTracker(tracker);
+		CorinaModelLocator.getInstance();
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
 		SingleObjectModel smodel = new SingleObjectModel();
 		smodel.setProperty(SingleObjectModel.TITLE, "Test title");

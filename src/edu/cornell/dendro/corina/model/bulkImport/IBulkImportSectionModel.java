@@ -3,8 +3,6 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
-import com.dmurph.mvc.IModel;
-
 /**
  * @author daniel
  *
