@@ -6,13 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlMixed;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -26,8 +22,6 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
-import org.tridas.adapters.IntegerAdapter;
-import org.w3c.dom.Element;
 
 
 /**
@@ -40,9 +34,8 @@ import org.w3c.dom.Element;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="sourceCode" type="{http://www.w3.org/2001/XMLSchema}anyType" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}securityGroup" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="code" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -52,116 +45,79 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "content"
+    "securityGroups"
 })
-@XmlRootElement(name = "message")
-public class WSIMessage
-    implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
+@XmlRootElement(name = "securityGroupDictionary")
+public class WSISecurityGroupDictionary implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlMixed
-    @XmlAnyElement
-    protected List<Object> content;
-    @XmlAttribute(name = "code")
-    @XmlJavaTypeAdapter(IntegerAdapter.class)
-    @XmlSchemaType(name = "int")
-    protected Integer code;
+    @XmlElement(name = "securityGroup")
+    protected List<WSISecurityGroup> securityGroups;
 
     /**
-     * Gets the value of the content property.
+     * Gets the value of the securityGroups property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the content property.
+     * This is why there is not a <CODE>set</CODE> method for the securityGroups property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getContent().add(newItem);
+     *    getSecurityGroups().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Element }
-     * {@link String }
+     * {@link WSISecurityGroup }
      * 
      * 
      */
-    public List<Object> getContent() {
-        if (content == null) {
-            content = new ArrayList<Object>();
+    public List<WSISecurityGroup> getSecurityGroups() {
+        if (securityGroups == null) {
+            securityGroups = new ArrayList<WSISecurityGroup>();
         }
-        return this.content;
+        return this.securityGroups;
     }
 
-    public boolean isSetContent() {
-        return ((this.content!= null)&&(!this.content.isEmpty()));
+    public boolean isSetSecurityGroups() {
+        return ((this.securityGroups!= null)&&(!this.securityGroups.isEmpty()));
     }
 
-    public void unsetContent() {
-        this.content = null;
-    }
-
-    /**
-     * Gets the value of the code property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public Integer getCode() {
-        return code;
+    public void unsetSecurityGroups() {
+        this.securityGroups = null;
     }
 
     /**
-     * Sets the value of the code property.
+     * Sets the value of the securityGroups property.
      * 
-     * @param value
+     * @param securityGroups
      *     allowed object is
-     *     {@link String }
+     *     {@link WSISecurityGroup }
      *     
      */
-    public void setCode(Integer value) {
-        this.code = value;
-    }
-
-    public boolean isSetCode() {
-        return (this.code!= null);
-    }
-
-    /**
-     * Sets the value of the content property.
-     * 
-     * @param content
-     *     allowed object is
-     *     {@link Element }
-     *     {@link String }
-     *     
-     */
-    public void setContent(List<Object> content) {
-        this.content = content;
+    public void setSecurityGroups(List<WSISecurityGroup> securityGroups) {
+        this.securityGroups = securityGroups;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
-        if (!(object instanceof WSIMessage)) {
+        if (!(object instanceof WSISecurityGroupDictionary)) {
             equalsBuilder.appendSuper(false);
             return ;
         }
         if (this == object) {
             return ;
         }
-        final WSIMessage that = ((WSIMessage) object);
-        equalsBuilder.append(this.getContent(), that.getContent());
-        equalsBuilder.append(this.getCode(), that.getCode());
+        final WSISecurityGroupDictionary that = ((WSISecurityGroupDictionary) object);
+        equalsBuilder.append(this.getSecurityGroups(), that.getSecurityGroups());
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof WSIMessage)) {
+        if (!(object instanceof WSISecurityGroupDictionary)) {
             return false;
         }
         if (this == object) {
@@ -173,8 +129,7 @@ public class WSIMessage
     }
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
-        hashCodeBuilder.append(this.getContent());
-        hashCodeBuilder.append(this.getCode());
+        hashCodeBuilder.append(this.getSecurityGroups());
     }
 
     public int hashCode() {
@@ -185,14 +140,9 @@ public class WSIMessage
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            List<Object> theContent;
-            theContent = this.getContent();
-            toStringBuilder.append("content", theContent);
-        }
-        {
-            Integer theCode;
-            theCode = this.getCode();
-            toStringBuilder.append("code", theCode);
+            List<WSISecurityGroup> theSecurityGroups;
+            theSecurityGroups = this.getSecurityGroups();
+            toStringBuilder.append("securityGroups", theSecurityGroups);
         }
     }
 
@@ -203,23 +153,15 @@ public class WSIMessage
     }
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
-        final WSIMessage copy = ((target == null)?((WSIMessage) createCopy()):((WSIMessage) target));
-        if (this.isSetContent()) {
-            List<Object> sourceContent;
-            sourceContent = this.getContent();
+        final WSISecurityGroupDictionary copy = ((target == null)?((WSISecurityGroupDictionary) createCopy()):((WSISecurityGroupDictionary) target));
+        if (this.isSetSecurityGroups()) {
+            List<WSISecurityGroup> sourceSecurityGroups;
+            sourceSecurityGroups = this.getSecurityGroups();
             @SuppressWarnings("unchecked")
-            List<Object> copyContent = ((List<Object> ) copyBuilder.copy(sourceContent));
-            copy.setContent(copyContent);
+            List<WSISecurityGroup> copySecurityGroups = ((List<WSISecurityGroup> ) copyBuilder.copy(sourceSecurityGroups));
+            copy.setSecurityGroups(copySecurityGroups);
         } else {
-            copy.unsetContent();
-        }
-        if (this.isSetCode()) {
-            Integer sourceCode;
-            sourceCode = this.getCode();
-            Integer copyCode = ((Integer) copyBuilder.copy(sourceCode));
-            copy.setCode(copyCode);
-        } else {
-            copy.code = null;
+            copy.unsetSecurityGroups();
         }
         return copy;
     }
@@ -230,7 +172,7 @@ public class WSIMessage
     }
 
     public Object createCopy() {
-        return new WSIMessage();
+        return new WSISecurityGroupDictionary();
     }
 
 }

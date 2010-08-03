@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -33,69 +32,37 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  * 
  * <pre>
  * &lt;complexType>
- *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
- *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}token" />
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="description" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="isActive" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *     &lt;/extension>
- *   &lt;/simpleContent>
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}token" />
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="description" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="isActive" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
  * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "value"
-})
+@XmlType(name = "")
 @XmlRootElement(name = "securityGroup")
 public class WSISecurityGroup
     implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
-    @XmlValue
-    protected String value;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "id")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String id;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "name")
     protected String name;
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "description")
     protected String description;
-    @XmlAttribute(name = "isActive", required = true)
-    protected boolean isActive;
-
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public boolean isSetValue() {
-        return (this.value!= null);
-    }
+    @XmlAttribute(name = "isActive")
+    protected Boolean isActive;
 
     /**
      * Gets the value of the id property.
@@ -184,6 +151,10 @@ public class WSISecurityGroup
     /**
      * Gets the value of the isActive property.
      * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
      */
     public boolean isIsActive() {
         return isActive;
@@ -192,13 +163,21 @@ public class WSISecurityGroup
     /**
      * Sets the value of the isActive property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
      */
     public void setIsActive(boolean value) {
         this.isActive = value;
     }
 
     public boolean isSetIsActive() {
-        return true;
+        return (this.isActive!= null);
+    }
+
+    public void unsetIsActive() {
+        this.isActive = null;
     }
 
     public void equals(Object object, EqualsBuilder equalsBuilder) {
@@ -210,7 +189,6 @@ public class WSISecurityGroup
             return ;
         }
         final WSISecurityGroup that = ((WSISecurityGroup) object);
-        equalsBuilder.append(this.getValue(), that.getValue());
         equalsBuilder.append(this.getId(), that.getId());
         equalsBuilder.append(this.getName(), that.getName());
         equalsBuilder.append(this.getDescription(), that.getDescription());
@@ -230,7 +208,6 @@ public class WSISecurityGroup
     }
 
     public void hashCode(HashCodeBuilder hashCodeBuilder) {
-        hashCodeBuilder.append(this.getValue());
         hashCodeBuilder.append(this.getId());
         hashCodeBuilder.append(this.getName());
         hashCodeBuilder.append(this.getDescription());
@@ -244,11 +221,6 @@ public class WSISecurityGroup
     }
 
     public void toString(ToStringBuilder toStringBuilder) {
-        {
-            String theValue;
-            theValue = this.getValue();
-            toStringBuilder.append("value", theValue);
-        }
         {
             String theId;
             theId = this.getId();
@@ -265,7 +237,7 @@ public class WSISecurityGroup
             toStringBuilder.append("description", theDescription);
         }
         {
-            boolean theIsActive;
+            Boolean theIsActive;
             theIsActive = this.isIsActive();
             toStringBuilder.append("isActive", theIsActive);
         }
@@ -279,35 +251,37 @@ public class WSISecurityGroup
 
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSISecurityGroup copy = ((target == null)?((WSISecurityGroup) createCopy()):((WSISecurityGroup) target));
-        {
-            String sourceValue;
-            sourceValue = this.getValue();
-            String copyValue = ((String) copyBuilder.copy(sourceValue));
-            copy.setValue(copyValue);
-        }
-        {
+        if (this.isSetId()) {
             String sourceId;
             sourceId = this.getId();
             String copyId = ((String) copyBuilder.copy(sourceId));
             copy.setId(copyId);
+        } else {
+            copy.id = null;
         }
-        {
+        if (this.isSetName()) {
             String sourceName;
             sourceName = this.getName();
             String copyName = ((String) copyBuilder.copy(sourceName));
             copy.setName(copyName);
+        } else {
+            copy.name = null;
         }
-        {
+        if (this.isSetDescription()) {
             String sourceDescription;
             sourceDescription = this.getDescription();
             String copyDescription = ((String) copyBuilder.copy(sourceDescription));
             copy.setDescription(copyDescription);
+        } else {
+            copy.description = null;
         }
-        {
-            boolean sourceIsActive;
+        if (this.isSetIsActive()) {
+            Boolean sourceIsActive;
             sourceIsActive = this.isIsActive();
-            boolean copyIsActive = ((boolean) copyBuilder.copy(sourceIsActive));
+            Boolean copyIsActive = ((Boolean) copyBuilder.copy(sourceIsActive));
             copy.setIsActive(copyIsActive);
+        } else {
+            copy.unsetIsActive();
         }
         return copy;
     }

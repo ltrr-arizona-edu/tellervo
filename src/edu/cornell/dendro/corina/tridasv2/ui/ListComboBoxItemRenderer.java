@@ -10,7 +10,7 @@ import javax.swing.JList;
 
 import org.tridas.schema.ControlledVoc;
 
-import edu.cornell.dendro.corina.schema.SecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
 /**
  * @author Lucas Madar
@@ -59,8 +59,8 @@ public class ListComboBoxItemRenderer extends DefaultListCellRenderer implements
 				else
 					setText("<invalid controlled vocabulary>");
 			}
-			else if(value instanceof SecurityUser) {
-				SecurityUser u = (SecurityUser) value;
+			else if(value instanceof WSISecurityUser) {
+				WSISecurityUser u = (WSISecurityUser) value;
 				
 				setText(u.getLastName() + ", " + u.getFirstName());
 			}

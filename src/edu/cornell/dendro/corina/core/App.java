@@ -14,8 +14,7 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.Prefs;
-import edu.cornell.dendro.corina.schema.SecurityGroup;
-import edu.cornell.dendro.corina.schema.SecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -149,17 +148,13 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	    	// it is easy to disable options that will result in a 'no permissions' 
     	    	// error
     	    	 try{    				  
-    				  for(SecurityGroup grp : su.getMemberOf().getSecurityGroups())
+    				  for(WSISecurityGroup grp : su.getMemberOf().getSecurityGroups())
     				  {
     					  if(grp.getId().equals("1")) isAdmin=true;
     				  }
     			    } catch (Exception e){  }
     		}
     	}
-    	
-
-
-	  
     }
     
     // Cache the TRiDaS objects 

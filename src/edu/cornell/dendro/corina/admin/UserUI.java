@@ -1,4 +1,19 @@
 package edu.cornell.dendro.corina.admin;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import edu.cornell.dendro.corina.util.StringUtils;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
+
 /*
  * UserUI.java
  *
@@ -12,12 +27,27 @@ package edu.cornell.dendro.corina.admin;
  * 
  * @author  peterbrewer
  */
-public class UserUI extends javax.swing.JDialog {
+public class UserUI extends javax.swing.JDialog implements ActionListener{
     
+	WSISecurityUser user = new WSISecurityUser();
+	Boolean isNewUser = true;
+	
     /** Creates new form UserUI */
-    public UserUI(java.awt.Frame parent, boolean modal) {
+    public UserUI(JDialog parent, boolean modal) {
         super(parent, modal);
         initComponents();
+    	isNewUser = true;
+        setupGUI();
+
+    }
+    
+    public UserUI(JDialog parent, boolean modal, WSISecurityUser user) {
+        super(parent, modal);
+        this.user = user;
+        initComponents();
+    	isNewUser = false;
+    	setupGUI();
+
     }
     
     /** This method is called from within the constructor to
@@ -40,9 +70,13 @@ public class UserUI extends javax.swing.JDialog {
         chkEnabled = new javax.swing.JCheckBox();
         scrollPane = new javax.swing.JScrollPane();
         tblGroups = new javax.swing.JTable();
-        btnApply = new javax.swing.JButton();
-        btnOk = new javax.swing.JButton();
+        btnDoIt = new javax.swing.JButton();
+        btnClose = new javax.swing.JButton();
         btnSetPwd = new javax.swing.JButton();
+        txtPassword = new javax.swing.JPasswordField();
+        lblPassword = new javax.swing.JLabel();
+        lblPassword2 = new javax.swing.JLabel();
+        txtPassword2 = new javax.swing.JPasswordField();
 
         jLabel1.setText("jLabel1");
 
@@ -87,11 +121,15 @@ public class UserUI extends javax.swing.JDialog {
         });
         scrollPane.setViewportView(tblGroups);
 
-        btnApply.setText("Apply");
+        btnDoIt.setText("Apply");
 
-        btnOk.setText("OK");
+        btnClose.setText("OK");
 
         btnSetPwd.setText("Reset Password");
+
+        lblPassword.setText("Password:");
+
+        lblPassword2.setText("Confirm:");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -100,30 +138,37 @@ public class UserUI extends javax.swing.JDialog {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblUser)
-                            .add(lblId))
-                        .add(12, 12, 12)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                                .add(txtId, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(chkEnabled))
-                            .add(txtUsername, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)))
-                    .add(layout.createSequentialGroup()
-                        .add(lblName)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(txtFirstname, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(txtLastname, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE))
+                    .add(scrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(btnSetPwd)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 93, Short.MAX_VALUE)
-                        .add(btnApply)
+                        .add(btnDoIt)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnOk))
-                    .add(scrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE))
+                        .add(btnClose))
+                    .add(layout.createSequentialGroup()
+                        .add(lblId)
+                        .add(64, 64, 64)
+                        .add(txtId, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(chkEnabled))
+                    .add(layout.createSequentialGroup()
+                        .add(lblName)
+                        .add(14, 14, 14)
+                        .add(txtFirstname, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 140, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(txtLastname, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
+                    .add(layout.createSequentialGroup()
+                        .add(lblUser)
+                        .add(12, 12, 12)
+                        .add(txtUsername, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE))
+                    .add(layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(lblPassword)
+                            .add(lblPassword2))
+                        .add(19, 19, 19)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(txtPassword2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
+                            .add(txtPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -136,59 +181,171 @@ public class UserUI extends javax.swing.JDialog {
                     .add(txtId, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(lblName)
+                    .add(txtLastname, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(txtFirstname, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblUser)
                     .add(txtUsername, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblName)
-                    .add(txtFirstname, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(txtLastname, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(scrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
+                    .add(txtPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblPassword))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnOk)
-                    .add(btnApply)
+                    .add(lblPassword2)
+                    .add(txtPassword2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(scrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(btnClose)
+                    .add(btnDoIt)
                     .add(btnSetPwd))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                UserUI dialog = new UserUI(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
-    
+        
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JButton btnApply;
-    protected javax.swing.JButton btnOk;
+    protected javax.swing.JButton btnClose;
+    protected javax.swing.JButton btnDoIt;
     protected javax.swing.JButton btnSetPwd;
     protected javax.swing.JCheckBox chkEnabled;
     protected javax.swing.JLabel jLabel1;
     protected javax.swing.JLabel jLabel3;
     protected javax.swing.JLabel lblId;
     protected javax.swing.JLabel lblName;
+    protected javax.swing.JLabel lblPassword;
+    protected javax.swing.JLabel lblPassword2;
     protected javax.swing.JLabel lblUser;
     protected javax.swing.JScrollPane scrollPane;
     protected javax.swing.JTable tblGroups;
     protected javax.swing.JTextField txtFirstname;
     protected javax.swing.JTextField txtId;
     protected javax.swing.JTextField txtLastname;
+    protected javax.swing.JPasswordField txtPassword;
+    protected javax.swing.JPasswordField txtPassword2;
     protected javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
+ 
+    private void setupGUI()
+    {
+    	this.lblId.setVisible(false);
+    	this.txtId.setVisible(false);
+    	
+    	if(isNewUser)
+    	{
+        	this.setTitle("Create user");
+        	btnDoIt.setText("Create");
+        	btnClose.setText("Cancel");
+        	btnSetPwd.setVisible(false);   		
+    	}
+    	else
+    	{
+        	this.setTitle("Edit user");
+        	btnDoIt.setText("Apply");
+        	btnClose.setText("Close");
+        	lblPassword.setVisible(false);
+        	txtPassword.setVisible(false);
+        	lblPassword2.setVisible(false);
+        	txtPassword2.setVisible(false);
+	    	if(user.isSetFirstName()) txtFirstname.setText(user.getFirstName());
+	    	if(user.isSetLastName())  txtLastname.setText(user.getLastName());
+	    	if(user.isSetId()) 		  txtId.setText(user.getId());
+	    	if(user.isSetUsername())  txtUsername.setText(user.getUsername());
+	    	if(user.isSetIsActive())  chkEnabled.setSelected(user.isIsActive());
+    	}
+    	
+    	this.btnDoIt.addActionListener(this);
+    	this.btnClose.addActionListener(this);
+    	
+    }
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==this.btnClose) 
+		{
+			this.dispose();
+		}	
+		else if (e.getSource()==this.btnDoIt)
+		{
+			saveChangesToUser();
+		}
+	}
+	
+	private void saveChangesToUser()
+	{
+		user.setFirstName(txtFirstname.getText());
+		user.setLastName(txtLastname.getText());
+		user.setUsername(txtUsername.getText());
+		user.setIsActive(this.chkEnabled.isSelected());
+		
+		if(isNewUser)
+		{
+			// Creating new user
+	    	
+			// Check passwords match
+			if(!this.txtPassword.equals(this.txtPassword2))
+			{
+				JOptionPane.showMessageDialog(this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+	    	// Set password to hash
+	    	MessageDigest digest;
+			try {
+				digest = MessageDigest.getInstance("MD5");
+				String pwd1 = new String(this.txtPassword.getPassword());
+				digest.update(pwd1.getBytes());
+		    	user.setHashOfPassword(StringUtils.bytesToHex(digest.digest()));
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+						
+			// associate a resource
+	    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.CREATE, user);
+	    	
+	    	
+			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
+			rsrc.query();
+			accdialog.setVisible(true);
+			
+			if(accdialog.isSuccessful())
+			{
+				rsrc.getAssociatedResult();
+				dispose();
+			}
+			
+			JOptionPane.showMessageDialog(this, "Error creating user.  Make sure the username is unique." + accdialog.getFailException().
+					getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
+		}
+		else 
+		{
+			// Editing existing user
+			
+			// associate a resource
+	    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, user);
+	    	
+			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
+			rsrc.query();
+			accdialog.setVisible(true);
+			
+			if(accdialog.isSuccessful())
+			{
+				rsrc.getAssociatedResult();
+			}
+			
+			JOptionPane.showMessageDialog(this, "Error updating user: " + accdialog.getFailException().
+					getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		
+
+	}
     
 }

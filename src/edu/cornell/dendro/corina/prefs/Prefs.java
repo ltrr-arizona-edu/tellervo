@@ -488,7 +488,7 @@ public class Prefs extends AbstractSubsystem {
 	public String getPref(String pref) {
 		return prefs.getProperty(pref);
 	}
-
+	
 	/**
 	 * Get a preference result as an enum
 	 * 

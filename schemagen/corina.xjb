@@ -54,12 +54,19 @@
 		</jaxb:bindings>
 		
 		<!-- Add IdAble interface to securityUser -->
-		<jaxb:bindings node="//xs:complexType[@name='securityUser']">
+		<!--<jaxb:bindings node="//xs:element[@name='securityUser']">
 			<ai:interfaces check="false">
 				org.tridas.interfaces.IdAble
 				org.tridas.interfaces.HumanName
 			</ai:interfaces>
-		</jaxb:bindings>
+		</jaxb:bindings>-->
+		
+		<!-- Add ICorinaEntity interface to ITridas-like things that are specific to Corina -->
+		<bindings node="//xs:element[@name='securityUser']/xs:complexType">
+			<ai:interfaces check="false">
+				edu.cornell.dendro.corina.interfaces.ICorinaEntity
+			</ai:interfaces>
+		</bindings>
 					
 		<!-- Add ITridas interface to box (kludge) -->
 		<jaxb:bindings node="//xs:element[@name='box']/xs:complexType">
@@ -71,7 +78,7 @@
 								
 	</jaxb:bindings>
 	
-		<!-- Tridas schema. Prefix with 'Tridas'! -->
+	<!-- Tridas schema. Prefix with 'Tridas'! -->
 	<jaxb:bindings schemaLocation="../src/edu/cornell/dendro/webservice/schemas/tridas.xsd" node="/xs:schema">
 		<jaxb:schemaBindings>
 			<jaxb:package name="org.tridas.schema"/>
@@ -85,7 +92,5 @@
 			<jaxb:class implClass="org.tridas.util.TridasObjectEx" />
 		</jaxb:bindings>
 	</jaxb:bindings>
-	
-
-	
+		
 </jaxb:bindings> 

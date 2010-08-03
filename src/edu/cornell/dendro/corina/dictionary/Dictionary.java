@@ -1,6 +1,7 @@
 package edu.cornell.dendro.corina.dictionary;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -109,4 +110,17 @@ public class Dictionary extends CorinaResource {
 
 		return (dictionary == null) ? Collections.emptyList() : Collections.unmodifiableList(dictionary);
 	}
+	
+	/**
+	 * Retrieve a dictionary
+	 * 
+	 * @param dictionaryName
+	 * @return
+	 */
+	public static ArrayList<?> getDictionaryAsArrayList(String dictionaryName) {
+		ArrayList<?> dictionary = (ArrayList<?>) dictionaries.get(dictionaryName);
+
+		return dictionary;
+	}
+	
 }

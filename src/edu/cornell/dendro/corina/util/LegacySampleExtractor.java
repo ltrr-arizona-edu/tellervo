@@ -35,7 +35,7 @@ import edu.cornell.dendro.corina.dictionary.Taxon;
 import edu.cornell.dendro.corina.editor.EditorFactory.BarcodeDialogResult;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.schema.SecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 
 /**
@@ -396,7 +396,7 @@ public class LegacySampleExtractor {
 		// author... hey, guess!
 		if(s.hasMeta("author")) {
 			String author = s.getMetaString("author");
-			SecurityUser user = findUser(author);
+			WSISecurityUser user = findUser(author);
 			
 			if(user != null) {
 				series.setAnalyst(user.getFirstName() + " " + user.getLastName());
@@ -408,11 +408,11 @@ public class LegacySampleExtractor {
 		}
 	}
 	
-	private SecurityUser findUser(String author) {
+	private WSISecurityUser findUser(String author) {
 		List<?> dictionary = Dictionary.getDictionary("securityUserDictionary");
-		List<SecurityUser> users = ListUtil.subListOfType(dictionary, SecurityUser.class);
+		List<WSISecurityUser> users = ListUtil.subListOfType(dictionary, WSISecurityUser.class);
 		
-		for(SecurityUser user : users) {
+		for(WSISecurityUser user : users) {
 			String name = user.getFirstName() + " " + user.getLastName();
 			if(name.equalsIgnoreCase(author))
 				return user;

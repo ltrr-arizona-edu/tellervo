@@ -19,7 +19,7 @@ import org.tridas.schema.TridasGenericField;
 import com.l2fprod.common.propertysheet.Property;
 
 import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.schema.SecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.util.ListUtil;
 
@@ -168,8 +168,8 @@ public class TridasDictionaryEntityProperty extends TridasEntityProperty {
 		case CORINA_GENERICID:
 			if(value instanceof IdAble) {
 				// security user: First Last (it's really just for show)
-				if(value instanceof SecurityUser) {
-					SecurityUser user = (SecurityUser) value;
+				if(value instanceof WSISecurityUser) {
+					WSISecurityUser user = (WSISecurityUser) value;
 					
 					return user.getFirstName() + " " + user.getLastName();
 				}

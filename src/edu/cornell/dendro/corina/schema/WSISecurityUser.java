@@ -26,17 +26,15 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBCopyBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBEqualsBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBHashCodeBuilder;
 import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
-import org.tridas.interfaces.HumanName;
-import org.tridas.interfaces.IdAble;
 
 
 /**
- * <p>Java class for securityUser complex type.
+ * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="securityUser">
+ * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -45,7 +43,7 @@ import org.tridas.interfaces.IdAble;
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element name="securityGroup" type="{http://dendro.cornell.edu/schema/corina/1.0}securityGroup" maxOccurs="unbounded" minOccurs="0"/>
+ *                   &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}securityGroup" maxOccurs="unbounded" minOccurs="0"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
  *             &lt;/complexContent>
@@ -66,11 +64,11 @@ import org.tridas.interfaces.IdAble;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "securityUser", propOrder = {
+@XmlType(name = "", propOrder = {
     "memberOf"
 })
 @XmlRootElement(name = "securityUser")
-public class WSISecurityUser implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString, HumanName, IdAble
+public class WSISecurityUser implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
 {
 
     private final static long serialVersionUID = 1001L;
@@ -461,7 +459,7 @@ public class WSISecurityUser implements Serializable, CopyTo, Copyable, Equals, 
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element name="securityGroup" type="{http://dendro.cornell.edu/schema/corina/1.0}securityGroup" maxOccurs="unbounded" minOccurs="0"/>
+     *         &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}securityGroup" maxOccurs="unbounded" minOccurs="0"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -480,7 +478,7 @@ public class WSISecurityUser implements Serializable, CopyTo, Copyable, Equals, 
 
         private final static long serialVersionUID = 1001L;
         @XmlElement(name = "securityGroup")
-        protected List<SecurityGroup> securityGroups;
+        protected List<WSISecurityGroup> securityGroups;
 
         /**
          * Gets the value of the securityGroups property.
@@ -500,13 +498,13 @@ public class WSISecurityUser implements Serializable, CopyTo, Copyable, Equals, 
          * 
          * <p>
          * Objects of the following type(s) are allowed in the list
-         * {@link SecurityGroup }
+         * {@link WSISecurityGroup }
          * 
          * 
          */
-        public List<SecurityGroup> getSecurityGroups() {
+        public List<WSISecurityGroup> getSecurityGroups() {
             if (securityGroups == null) {
-                securityGroups = new ArrayList<SecurityGroup>();
+                securityGroups = new ArrayList<WSISecurityGroup>();
             }
             return this.securityGroups;
         }
@@ -524,10 +522,10 @@ public class WSISecurityUser implements Serializable, CopyTo, Copyable, Equals, 
          * 
          * @param securityGroups
          *     allowed object is
-         *     {@link SecurityGroup }
+         *     {@link WSISecurityGroup }
          *     
          */
-        public void setSecurityGroups(List<SecurityGroup> securityGroups) {
+        public void setSecurityGroups(List<WSISecurityGroup> securityGroups) {
             this.securityGroups = securityGroups;
         }
 
@@ -567,7 +565,7 @@ public class WSISecurityUser implements Serializable, CopyTo, Copyable, Equals, 
 
         public void toString(ToStringBuilder toStringBuilder) {
             {
-                List<SecurityGroup> theSecurityGroups;
+                List<WSISecurityGroup> theSecurityGroups;
                 theSecurityGroups = this.getSecurityGroups();
                 toStringBuilder.append("securityGroups", theSecurityGroups);
             }
@@ -582,10 +580,10 @@ public class WSISecurityUser implements Serializable, CopyTo, Copyable, Equals, 
         public Object copyTo(Object target, CopyBuilder copyBuilder) {
             final WSISecurityUser.MemberOf copy = ((target == null)?((WSISecurityUser.MemberOf) createCopy()):((WSISecurityUser.MemberOf) target));
             if (this.isSetSecurityGroups()) {
-                List<SecurityGroup> sourceSecurityGroups;
+                List<WSISecurityGroup> sourceSecurityGroups;
                 sourceSecurityGroups = this.getSecurityGroups();
                 @SuppressWarnings("unchecked")
-                List<SecurityGroup> copySecurityGroups = ((List<SecurityGroup> ) copyBuilder.copy(sourceSecurityGroups));
+                List<WSISecurityGroup> copySecurityGroups = ((List<WSISecurityGroup> ) copyBuilder.copy(sourceSecurityGroups));
                 copy.setSecurityGroups(copySecurityGroups);
             } else {
                 copy.unsetSecurityGroups();

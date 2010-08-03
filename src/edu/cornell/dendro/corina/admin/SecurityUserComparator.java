@@ -8,7 +8,7 @@ import java.util.Comparator;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasSample;
 
-import edu.cornell.dendro.corina.schema.SecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
 /**
  * A simple comparator for sorting lists of SecurityUser objects 
@@ -16,7 +16,7 @@ import edu.cornell.dendro.corina.schema.SecurityUser;
  * @author Peter Brewer
  * @version $Id$
  */
-public class SecurityUserComparator implements Comparator<SecurityUser> {
+public class SecurityUserComparator implements Comparator<WSISecurityUser> {
 	
 	
 	public SecurityUserComparator() {
@@ -24,7 +24,7 @@ public class SecurityUserComparator implements Comparator<SecurityUser> {
 	}
 
 	
-	public int compare(SecurityUser o1, SecurityUser o2) {
+	public int compare(WSISecurityUser o1, WSISecurityUser o2) {
 		// TODO Auto-generated method stub
 		
 		

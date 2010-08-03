@@ -2,18 +2,36 @@ package edu.cornell.dendro.corina.admin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
+import java.awt.event.MouseEvent;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.table.AbstractTableModel;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.RowFilter;
+import javax.swing.table.TableRowSorter;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.dictionary.User;
-import edu.cornell.dendro.corina.schema.SecurityGroup;
-import edu.cornell.dendro.corina.schema.SecurityUser;
-import edu.cornell.dendro.corina.tridasv2.TridasComparator;
+import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.gui.dbbrowse.ElementListPopupMenu;
+import edu.cornell.dendro.corina.gui.dbbrowse.ElementListTableModel;
+import edu.cornell.dendro.corina.gui.dbbrowse.ElementListTableSorter;
+import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.EntityType;
+import edu.cornell.dendro.corina.schema.WSIEntity;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.PopupListener;
+import edu.cornell.dendro.corina.util.StringUtils;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
+import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
 
 /**
  * GUI class for administering users and groups.  Allows user with the correct
@@ -26,6 +44,8 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     
 	private static final long serialVersionUID = -7039984838996355038L;
 	private SecurityUserTableModel utm;
+	private SecurityUserTableSorter sorter;
+	private TableRowSorter<SecurityUserTableModel> sorter2;
 	
     /** Creates new form UserGroupAdmin */
     public UserGroupAdmin(java.awt.Frame parent, boolean modal) {
@@ -41,14 +61,59 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         setLocationRelativeTo(null);
                 
         // Populate user list
-        List<SecurityUser> lstofUsers = (List<SecurityUser>) Dictionary.getDictionary("securityUserDictionary");  
+        ArrayList<WSISecurityUser> lstofUsers = (ArrayList<WSISecurityUser>) Dictionary.getDictionaryAsArrayList("securityUserDictionary");  
         
         utm = new SecurityUserTableModel(lstofUsers);
         tblUsers.setModel(utm);
+        sorter2 = new TableRowSorter<SecurityUserTableModel>(utm);
+        
+        tblUsers.setRowSorter(sorter2);
+
+        
+		//sorter = new SecurityUserTableSorter(utm, tblUsers);
+		//sorter.sortOnColumn(0, false);
+		//tblUsers.getTableHeader().addMouseListener(sorter); // add sorter & header renderer
+		//tblUsers.setColumnSelectionAllowed(false);
+		//tblUsers.setRowSelectionAllowed(true);
+		
         
         btnOk.addActionListener(this);
+        btnDeleteUser.addActionListener(this);
+        btnNewUser.addActionListener(this);
         
         setIconImage(Builder.getApplicationIcon());
+        
+        this.chkShowDisabledUsers.setSelected(false);
+        showDisabledAccounts(false);
+        
+		/*tblUsers.addMouseListener(new PopupListener() {
+			@Override
+			public void showPopup(MouseEvent e) {
+				// only clicks on tables
+				if(!(e.getSource() instanceof JTable))
+					return;
+				
+				JTable table = (JTable) e.getSource();
+				ElementListTableModel model = (ElementListTableModel) table.getModel();
+				
+				// get the row and sanity check
+				int row = table.rowAtPoint(e.getPoint());
+				if(row < 0 || row >= model.getRowCount())
+					return;
+				
+				// select it?
+				table.setRowSelectionInterval(row, row);
+				
+				// get the element
+				Element element = model.getElementAt(row);
+				
+				// create and show the menu
+				//JPopupMenu popup = new ElementListPopupMenu(element, DBBrowser.this);
+				//popup.show(table, e.getX(), e.getY());
+			}
+		});*/
+        
+        
     }
     
     private void internationlizeComponents()
@@ -292,15 +357,17 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditUser444ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditUser444ActionPerformed
-        // TODO add your handling code here:
+    	WSISecurityUser seluser = utm.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow()));
+        UserUI userDialog = new UserUI(this, true, seluser);
+        userDialog.setVisible(true); 
     }//GEN-LAST:event_btnEditUser444ActionPerformed
 
+    
     private void chkShowDisabledUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledUsersActionPerformed
-        // TODO add your handling code here:
+    	showDisabledAccounts(chkShowDisabledUsers.isSelected());
     }//GEN-LAST:event_chkShowDisabledUsersActionPerformed
 
-    private void chkShowDisabledGroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledGroupsActionPerformed
-        // TODO add your handling code here:
+    private void chkShowDisabledGroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledGroupsActionPerformed  
     }//GEN-LAST:event_chkShowDisabledGroupsActionPerformed
     
     /**
@@ -344,7 +411,82 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     // End of variables declaration//GEN-END:variables
 
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource()==this.btnOk) this.dispose();
+		if(e.getSource()==this.btnOk) 
+		{
+			this.dispose();
+		}
+		else if (e.getSource()==this.btnDeleteUser)
+		{
+			Object[] options = {"OK",
+            "Cancel"};
+			int ret = JOptionPane.showOptionDialog(getParent(), 
+					"Are you sure you want to delete the user '"+ utm.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow())).getUsername() +"'?", 
+					"Confirm delete", 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+			
+			if(ret == JOptionPane.YES_OPTION)
+			{
+				deleteUser(utm.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow())).getId());
+			}
+		}
+		else if (e.getSource()==this.btnNewUser)
+		{
+	        UserUI userDialog = new UserUI(this, true);
+	        userDialog.setVisible(true);
+		}
+	}
+	
+	private Boolean deleteUser(String usrid)
+	{
+		WSIEntity entity = new WSIEntity();
+		
+		entity.setId(usrid);
+		
+		entity.setType(EntityType.SECURITY_USER);
+    			
+		// associate a resource
+    	WSIEntityResource rsrc = new WSIEntityResource(CorinaRequestType.DELETE, entity);
+    	
+		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
+		rsrc.query();
+		accdialog.setVisible(true);
+		
+		if(accdialog.isSuccessful())
+		{
+			rsrc.getAssociatedResult();
+			JOptionPane.showMessageDialog(this, "User deleted", "Success", JOptionPane.NO_OPTION);
+			return true;
+		}
+		
+		JOptionPane.showMessageDialog(this, "Unable to delete user as their details are referenced by data in the database.\n" +
+				"If the user is no longer active you can disable instead.", "Error", JOptionPane.ERROR_MESSAGE);
+		
+		return false;
 	}
     
+	/**
+	 * Hide or show disabled user accounts
+	 * 
+	 * @param show
+	 */
+	public void showDisabledAccounts(Boolean show)
+	{
+    	if(show)
+    	{
+    		sorter2.setRowFilter(null);
+    	}
+    	else	
+    	{
+	        RowFilter<SecurityUserTableModel, Object> rf = null;
+	        //If current expression doesn't parse, don't update.
+	        try {
+	            rf = RowFilter.regexFilter("t", 5);
+	        } catch (java.util.regex.PatternSyntaxException e) {
+	            return;
+	        }
+	        sorter2.setRowFilter(rf);
+    	}
+	}
+	
 }

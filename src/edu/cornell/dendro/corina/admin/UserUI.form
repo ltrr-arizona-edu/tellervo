@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.5" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+<Form version="1.5" maxVersion="1.5" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <NonVisualComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
@@ -36,36 +36,44 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblUser" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblId" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="txtId" pref="226" max="32767" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="chkEnabled" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="txtUsername" pref="313" max="32767" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="lblName" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="txtFirstname" pref="145" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="txtLastname" pref="164" max="32767" attributes="0"/>
-                  </Group>
+                  <Component id="scrollPane" alignment="0" pref="395" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="btnSetPwd" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="93" max="32767" attributes="0"/>
-                      <Component id="btnApply" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnDoIt" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btnOk" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnClose" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="scrollPane" alignment="0" pref="395" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="lblId" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="64" max="-2" attributes="0"/>
+                      <Component id="txtId" pref="226" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="chkEnabled" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="lblName" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+                      <Component id="txtFirstname" min="-2" pref="140" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="txtLastname" pref="167" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="lblUser" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                      <Component id="txtUsername" pref="313" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lblPassword" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblPassword2" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="txtPassword2" alignment="0" pref="313" max="32767" attributes="0"/>
+                          <Component id="txtPassword" alignment="0" pref="313" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -82,21 +90,31 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblName" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtLastname" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtFirstname" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="lblUser" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtUsername" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="lblName" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtFirstname" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtLastname" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtPassword" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblPassword" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="scrollPane" pref="98" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnOk" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnApply" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblPassword2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtPassword2" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="scrollPane" pref="100" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="btnClose" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnDoIt" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnSetPwd" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -180,12 +198,12 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="btnApply">
+    <Component class="javax.swing.JButton" name="btnDoIt">
       <Properties>
         <Property name="text" type="java.lang.String" value="Apply"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="btnOk">
+    <Component class="javax.swing.JButton" name="btnClose">
       <Properties>
         <Property name="text" type="java.lang.String" value="OK"/>
       </Properties>
@@ -194,6 +212,20 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Reset Password"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JPasswordField" name="txtPassword">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblPassword">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Password:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblPassword2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Confirm:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JPasswordField" name="txtPassword2">
     </Component>
   </SubComponents>
 </Form>

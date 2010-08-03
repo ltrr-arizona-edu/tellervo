@@ -394,7 +394,7 @@
 				<xs:element ref="tridas:measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="securityUser" type="securityUser" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
 
                 <xs:element ref="objectTypeDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="elementTypeDictionary" minOccurs="0" maxOccurs="1"/>
@@ -412,6 +412,7 @@
                 <xs:element ref="regionDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="readingNoteDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="securityUserDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="securityGroupDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="boxDictionary" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:choice>
@@ -561,39 +562,18 @@
         <xs:element name="securityUserDictionary">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="securityUser" type="securityUser" minOccurs="0" maxOccurs="unbounded" />
+                        <xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
 	
-		<xs:complexType name="securityUser">
+	<xs:element name="securityGroupDictionary">
+		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="memberOf" minOccurs="0" maxOccurs="1">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="securityGroup" type="securityGroup" minOccurs="0" maxOccurs="unbounded" />
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
+				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
-			<xs:attribute name="id" type="xs:token" use="optional"/>
-			<xs:attribute name="username" type="xs:string" use="optional" />
-			<xs:attribute name="firstName" type="xs:string" use="optional" />
-			<xs:attribute name="lastName" type="xs:string" use="optional" />
-			<xs:attribute name="isActive" type="xs:boolean" use="optional" />
-			<xs:attribute name="hashOfPassword" type="xs:string" use="optional"/>
 		</xs:complexType>
-
-		<xs:complexType name="securityGroup">
-			<xs:simpleContent>
-				<xs:extension base="xs:string">
-					<xs:attribute name="id" type="xs:token" use="optional"/>
-					<xs:attribute name="name" type="xs:string" use="optional"/>
-					<xs:attribute name="description" type="xs:string" use="optional"/>
-					<xs:attribute name="isActive" type="xs:boolean" use="optional"/>
-				</xs:extension>
-			</xs:simpleContent>
-		</xs:complexType>
+	</xs:element>
 	
 	<xs:element name="boxDictionary">
 		<xs:complexType>
@@ -688,13 +668,44 @@
 		%%%%%%%%%%%%%%
 		%		USER
 		%%%%%%%%%%%%%% -->
-	<xs:element name="securityUser" type="securityUser">
+	<xs:element name="securityUser" >
 		<xs:annotation>
 			<xs:documentation>
 				A user in the Corina database
 			</xs:documentation>
 		</xs:annotation>
-		
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="memberOf" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:token" use="optional"/>
+			<xs:attribute name="username" type="xs:string" use="optional" />
+			<xs:attribute name="firstName" type="xs:string" use="optional" />
+			<xs:attribute name="lastName" type="xs:string" use="optional" />
+			<xs:attribute name="isActive" type="xs:boolean" use="optional" />
+			<xs:attribute name="hashOfPassword" type="xs:string" use="optional"/>
+		</xs:complexType>
 	</xs:element>	
 	
+	
+	<!--
+		%%%%%%%%%%%%%%
+		% SECURITY GROUP
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="securityGroup" >
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:token" use="optional"/>
+			<xs:attribute name="name" type="xs:string" use="optional"/>
+			<xs:attribute name="description" type="xs:string" use="optional"/>
+			<xs:attribute name="isActive" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+		
 </xs:schema>

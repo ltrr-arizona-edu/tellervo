@@ -29,7 +29,6 @@ import javax.swing.JMenuItem;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.schema.SecurityUser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -80,15 +79,7 @@ private JFrame frame;
   protected void init() {
 
 	  addUserGroupMenu();
-     
-	  JMenuItem changepwd = Builder.makeMenuItem("menus.admin.changepwd",
-            "edu.cornell.dendro.corina.admin.SetPasswordUI.loadDialog()", "password.png");
- 	  add(changepwd); 
- 	  
-	  JMenuItem forgetpwd = Builder.makeMenuItem("menus.admin.forgetpwd",
-	            "edu.cornell.dendro.corina.admin.SetPasswordUI.forgetPassword()", "forgetpassword.png");
-	  add(forgetpwd); 
- 	  	  
+	  addPasswordMenu();
       addSeparator();
 	  addReportsMenu();
 	  addLabelMenu();
@@ -100,6 +91,35 @@ private JFrame frame;
   }
 
 
+  	@SuppressWarnings("deprecation")
+	protected void addPasswordMenu()
+  	{
+  	  JMenuItem changepwd = Builder.makeMenuItem("menus.admin.changepwd",
+              "edu.cornell.dendro.corina.admin.SetPasswordUI.loadDialog()", "password.png");
+   	  add(changepwd); 
+   	  
+   	  
+   	  if(App.prefs.getPref("corina.login.remember_password") != null)
+   	  {
+   		  JMenuItem forgetpwd = Builder.makeMenuItem("menus.admin.forgetpwd",
+   				  "edu.cornell.dendro.corina.gui.menus.AdminMenu.forgetPassword()", "forgetpassword.png");
+   		  add(forgetpwd);
+   	  }
+   	  
+  	}
+  	
+    /**
+     * Remove preferences for remembering password and autologging in
+     */
+    public static void forgetPassword()
+    {
+		App.prefs.removePref("corina.login.remember_password");
+		App.prefs.removePref("corina.login.password");
+		App.prefs.removePref("corina.login.auto_login");
+		// TODO Would be good to disable or remove the button after this
+    }
+    
+  
     /**
        Add the "Labels" menuitem.
     */
@@ -136,8 +156,6 @@ private JFrame frame;
 	 Add the "User and groups" menuitem.
 	*/
 	protected void addUserGroupMenu() {
-		
-		
 		
 	  	JMenuItem usergroup = Builder.makeMenuItem("menus.admin.usersandgroups",
 	            "edu.cornell.dendro.corina.admin.UserGroupAdmin.main()", "edit_group.png");
