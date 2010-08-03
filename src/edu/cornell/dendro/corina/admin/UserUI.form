@@ -164,21 +164,25 @@
         <Component class="javax.swing.JTable" name="tblGroups">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="2" rowCount="3">
-                <Column editable="true" title="Member" type="java.lang.Boolean">
-                  <Data value="true"/>
-                  <Data value="true"/>
-                  <Data value="null"/>
-                </Column>
-                <Column editable="false" title="Group" type="java.lang.Object">
-                  <Data value="Admin"/>
-                  <Data value="Staff"/>
-                  <Data value="Students"/>
-                </Column>
+              <Table columnCount="4" rowCount="3">
+                <Column editable="false" title="ID" type="java.lang.String"/>
+                <Column editable="false" title="Group" type="java.lang.String"/>
+                <Column editable="false" title="Description" type="java.lang.String"/>
+                <Column editable="true" title="Member" type="java.lang.Boolean"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
               <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
                 <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                   <Title/>
                   <Editor/>

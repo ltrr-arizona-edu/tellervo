@@ -1,6 +1,6 @@
 package edu.cornell.dendro.corina.admin;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -19,8 +19,8 @@ import edu.cornell.dendro.corina.ui.I18n;
 public class SecurityUserTableModel extends AbstractTableModel {
 	
 	private static final long serialVersionUID = -8612040164917147271L;
-	private List<WSISecurityUser> userList;
-	private List<WSISecurityUser> completeUserList;
+	private ArrayList<WSISecurityUser> userList;
+	private ArrayList<WSISecurityUser> completeUserList;
 	private Boolean hideDisabled = true;    	
 	
     private final String[] columnNames = {
@@ -32,12 +32,12 @@ public class SecurityUserTableModel extends AbstractTableModel {
             I18n.getText("general.enabled"),
         };
 	
-	public SecurityUserTableModel(List<WSISecurityUser> usrLst){
+	public SecurityUserTableModel(ArrayList<WSISecurityUser> usrLst){
 		userList = usrLst;
 		completeUserList = userList;
 	}
     
-    public void setUsers(List<WSISecurityUser> usrList){
+    public void setUsers(ArrayList<WSISecurityUser> usrList){
     	userList = usrList;  
 		completeUserList = userList;
 
@@ -63,7 +63,7 @@ public class SecurityUserTableModel extends AbstractTableModel {
 		return columnNames[index];
 	}
 	
-	public List<WSISecurityUser> getUsers() {
+	public ArrayList<WSISecurityUser> getUsers() {
 		return userList;
 	}
 	
@@ -87,7 +87,7 @@ public class SecurityUserTableModel extends AbstractTableModel {
 	
 	public String getGroupsAsString(WSISecurityUser usr)
 	{
-		List<WSISecurityGroup> grps = usr.getMemberOf().getSecurityGroups();
+		ArrayList<WSISecurityGroup> grps = (ArrayList<WSISecurityGroup>) usr.getMemberOf().getSecurityGroups();
 		String str = "";
 		for(WSISecurityGroup grp : grps)
 		{

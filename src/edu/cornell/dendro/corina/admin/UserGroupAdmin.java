@@ -3,6 +3,7 @@ package edu.cornell.dendro.corina.admin;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIEntity;
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -40,12 +42,14 @@ import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
  *
  * @author  peterbrewer
  */
-public class UserGroupAdmin extends javax.swing.JDialog implements ActionListener {
+public class UserGroupAdmin extends javax.swing.JDialog implements ActionListener, MouseListener
+{
     
 	private static final long serialVersionUID = -7039984838996355038L;
-	private SecurityUserTableModel utm;
-	private SecurityUserTableSorter sorter;
-	private TableRowSorter<SecurityUserTableModel> sorter2;
+	private SecurityUserTableModel usersModel;
+	private TableRowSorter<SecurityUserTableModel> usersSorter;
+	private SecurityGroupTableModel groupsModel;
+	private TableRowSorter<SecurityGroupTableModel> groupsSorter;
 	
     /** Creates new form UserGroupAdmin */
     public UserGroupAdmin(java.awt.Frame parent, boolean modal) {
@@ -59,23 +63,23 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 	private void setupGui(){
     	// Set up basic dialog 
         setLocationRelativeTo(null);
+        
                 
         // Populate user list
         ArrayList<WSISecurityUser> lstofUsers = (ArrayList<WSISecurityUser>) Dictionary.getDictionaryAsArrayList("securityUserDictionary");  
-        
-        utm = new SecurityUserTableModel(lstofUsers);
-        tblUsers.setModel(utm);
-        sorter2 = new TableRowSorter<SecurityUserTableModel>(utm);
-        
-        tblUsers.setRowSorter(sorter2);
+        usersModel = new SecurityUserTableModel(lstofUsers);
+        tblUsers.setModel(usersModel);
+        usersSorter = new TableRowSorter<SecurityUserTableModel>(usersModel);
+        tblUsers.setRowSorter(usersSorter);
 
+        tblUsers.addMouseListener(this);
         
-		//sorter = new SecurityUserTableSorter(utm, tblUsers);
-		//sorter.sortOnColumn(0, false);
-		//tblUsers.getTableHeader().addMouseListener(sorter); // add sorter & header renderer
-		//tblUsers.setColumnSelectionAllowed(false);
-		//tblUsers.setRowSelectionAllowed(true);
-		
+        // Populate groups list
+        /*ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
+        groupsModel = new SecurityGroupTableModel(lstofGroups, null);
+        tblGroups.setModel(groupsModel);
+        groupsSorter = new TableRowSorter<SecurityGroupTableModel>(groupsModel);
+        tblGroups.setRowSorter(usersSorter);*/
         
         btnOk.addActionListener(this);
         btnDeleteUser.addActionListener(this);
@@ -357,9 +361,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditUser444ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditUser444ActionPerformed
-    	WSISecurityUser seluser = utm.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow()));
-        UserUI userDialog = new UserUI(this, true, seluser);
-        userDialog.setVisible(true); 
+    	editUser();
     }//GEN-LAST:event_btnEditUser444ActionPerformed
 
     
@@ -376,7 +378,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     public static void main() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                UserGroupAdmin dialog = new UserGroupAdmin(new javax.swing.JFrame(), true);
+                UserGroupAdmin dialog = new UserGroupAdmin(new javax.swing.JFrame(), false);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
 
@@ -420,14 +422,14 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 			Object[] options = {"OK",
             "Cancel"};
 			int ret = JOptionPane.showOptionDialog(getParent(), 
-					"Are you sure you want to delete the user '"+ utm.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow())).getUsername() +"'?", 
+					"Are you sure you want to delete the user '"+ usersModel.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow())).getUsername() +"'?", 
 					"Confirm delete", 
 					JOptionPane.YES_NO_OPTION, 
 					JOptionPane.WARNING_MESSAGE, null, options, options[1]);
 			
 			if(ret == JOptionPane.YES_OPTION)
 			{
-				deleteUser(utm.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow())).getId());
+				deleteUser(usersModel.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow())).getId());
 			}
 		}
 		else if (e.getSource()==this.btnNewUser)
@@ -474,7 +476,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 	{
     	if(show)
     	{
-    		sorter2.setRowFilter(null);
+    		usersSorter.setRowFilter(null);
     	}
     	else	
     	{
@@ -485,8 +487,33 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 	        } catch (java.util.regex.PatternSyntaxException e) {
 	            return;
 	        }
-	        sorter2.setRowFilter(rf);
+	        usersSorter.setRowFilter(rf);
     	}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getClickCount()>1)
+		{
+			// Edit user when table is double clicked
+			editUser();
+		}
+		
+	}
+	@Override
+	public void mouseEntered(MouseEvent e) { }
+	@Override
+	public void mouseExited(MouseEvent e) { }
+	@Override
+	public void mousePressed(MouseEvent e) { }
+	@Override
+	public void mouseReleased(MouseEvent e) {	}
+	
+	private void editUser()
+	{
+    	WSISecurityUser seluser = usersModel.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow()));
+        UserUI userDialog = new UserUI(this, true, seluser);
+        userDialog.setVisible(true); 
 	}
 	
 }

@@ -2,14 +2,22 @@ package edu.cornell.dendro.corina.admin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.table.TableRowSorter;
 
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityUser.MemberOf;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
@@ -27,10 +35,12 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource
  * 
  * @author  peterbrewer
  */
-public class UserUI extends javax.swing.JDialog implements ActionListener{
+public class UserUI extends javax.swing.JDialog implements ActionListener, MouseListener{
     
 	WSISecurityUser user = new WSISecurityUser();
 	Boolean isNewUser = true;
+	private SecurityGroupTableModel groupsModel;
+	private TableRowSorter<SecurityGroupTableModel> groupsSorter;
 	
     /** Creates new form UserUI */
     public UserUI(JDialog parent, boolean modal) {
@@ -96,19 +106,19 @@ public class UserUI extends javax.swing.JDialog implements ActionListener{
 
         tblGroups.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {new Boolean(true), "Admin"},
-                {new Boolean(true), "Staff"},
-                {null, "Students"}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Member", "Group"
+                "ID", "Group", "Description", "Member"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.Object.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false
+                false, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -231,17 +241,26 @@ public class UserUI extends javax.swing.JDialog implements ActionListener{
     protected javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
  
-    private void setupGUI()
+    @SuppressWarnings("unchecked")
+	private void setupGUI()
     {
+    	this.setLocationRelativeTo(getRootPane());
     	this.lblId.setVisible(false);
     	this.txtId.setVisible(false);
     	
+    	// TODO
+    	this.btnSetPwd.setEnabled(false);
+    	
+    	this.tblGroups.addMouseListener(this);
+
+    	ArrayList<WSISecurityGroup> memberGroups;
     	if(isNewUser)
     	{
         	this.setTitle("Create user");
         	btnDoIt.setText("Create");
-        	btnClose.setText("Cancel");
+        	btnClose.setText("Close");
         	btnSetPwd.setVisible(false);   		
+        	memberGroups = null;
     	}
     	else
     	{
@@ -257,7 +276,16 @@ public class UserUI extends javax.swing.JDialog implements ActionListener{
 	    	if(user.isSetId()) 		  txtId.setText(user.getId());
 	    	if(user.isSetUsername())  txtUsername.setText(user.getUsername());
 	    	if(user.isSetIsActive())  chkEnabled.setSelected(user.isIsActive());
+	    	memberGroups = ((ArrayList)this.user.getMemberOf().getSecurityGroups());
     	}
+    	
+        // Populate groups list
+        ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
+        groupsModel = new SecurityGroupTableModel(lstofGroups, memberGroups);
+        tblGroups.setModel(groupsModel);
+        groupsSorter = new TableRowSorter<SecurityGroupTableModel>(groupsModel);
+        tblGroups.setRowSorter(groupsSorter);
+        tblGroups.setEditingColumn(3);
     	
     	this.btnDoIt.addActionListener(this);
     	this.btnClose.addActionListener(this);
@@ -283,16 +311,26 @@ public class UserUI extends javax.swing.JDialog implements ActionListener{
 		user.setUsername(txtUsername.getText());
 		user.setIsActive(this.chkEnabled.isSelected());
 		
+		// Get groups
+		ArrayList<WSISecurityGroup> membershipList = this.groupsModel.getGroupMembership();
+		MemberOf memberOf = new MemberOf();
+		memberOf.setSecurityGroups(membershipList);
+		user.setMemberOf(memberOf);
+		
 		if(isNewUser)
 		{
 			// Creating new user
 	    	
 			// Check passwords match
-			if(!this.txtPassword.equals(this.txtPassword2))
+			String p1 = new String(this.txtPassword.getPassword());
+			String p2 = new String(this.txtPassword2.getPassword());
+			if(!p1.equals(p2))
 			{
 				JOptionPane.showMessageDialog(this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
+			p1 = null;
+			p2 = null;
 			
 	    	// Set password to hash
 	    	MessageDigest digest;
@@ -306,6 +344,7 @@ public class UserUI extends javax.swing.JDialog implements ActionListener{
 				e.printStackTrace();
 			}
 
+			
 						
 			// associate a resource
 	    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.CREATE, user);
@@ -346,6 +385,50 @@ public class UserUI extends javax.swing.JDialog implements ActionListener{
 		}
 		
 
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getClickCount()>1)
+		{
+			// Double clicked on groups table - change users membership accordingly
+			Boolean isMember = (Boolean) this.groupsModel.getValueAt(this.tblGroups.getSelectedRow(), 3);
+			
+			if(isMember)
+			{
+				groupsModel.setMembershipAt(this.tblGroups.getSelectedRow(), false);
+			}
+			else
+			{
+				groupsModel.setMembershipAt(this.tblGroups.getSelectedRow(), true);
+
+			}
+			this.tblGroups.repaint();
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
     
 }
