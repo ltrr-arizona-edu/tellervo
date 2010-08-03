@@ -156,18 +156,6 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnClose))
                     .add(layout.createSequentialGroup()
-                        .add(lblId)
-                        .add(64, 64, 64)
-                        .add(txtId, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(chkEnabled))
-                    .add(layout.createSequentialGroup()
-                        .add(lblName)
-                        .add(14, 14, 14)
-                        .add(txtFirstname, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 140, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(txtLastname, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
-                    .add(layout.createSequentialGroup()
                         .add(lblUser)
                         .add(12, 12, 12)
                         .add(txtUsername, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE))
@@ -178,7 +166,19 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
                         .add(19, 19, 19)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(txtPassword2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
-                            .add(txtPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE))))
+                            .add(txtPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)))
+                    .add(layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(lblName)
+                            .add(lblId))
+                        .add(14, 14, 14)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(txtId, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
+                            .add(chkEnabled)
+                            .add(layout.createSequentialGroup()
+                                .add(txtFirstname, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 140, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(txtLastname, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -187,8 +187,9 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblId)
-                    .add(chkEnabled)
                     .add(txtId, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(chkEnabled)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblName)
@@ -207,7 +208,7 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
                     .add(lblPassword2)
                     .add(txtPassword2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(scrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                .add(scrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnClose)
@@ -253,14 +254,14 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
     	
     	this.tblGroups.addMouseListener(this);
 
-    	ArrayList<WSISecurityGroup> memberGroups;
+    	ArrayList<WSISecurityGroup> memberGroups = new ArrayList<WSISecurityGroup>();
     	if(isNewUser)
     	{
         	this.setTitle("Create user");
         	btnDoIt.setText("Create");
         	btnClose.setText("Close");
-        	btnSetPwd.setVisible(false);   		
-        	memberGroups = null;
+        	btnSetPwd.setVisible(false);   	
+        	chkEnabled.setSelected(true);
     	}
     	else
     	{
