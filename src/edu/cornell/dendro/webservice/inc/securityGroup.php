@@ -59,8 +59,11 @@ class securityGroup
     function setParamsFromDB($theID)
     {
         // Set the current objects parameters from the database
-
+	
         global $dbconn;
+        global $firebug;
+        
+        $firebug->log($theID);
         
         $this->id=$theID;
         $sql = "select * from tblsecuritygroup where securitygroupid=$theID";
@@ -190,6 +193,7 @@ class securityGroup
 
     function asXML($mode="all")
     {
+    	global $firebug;
         $xml = NULL;
 
         // Return a string containing the current object in XML format
@@ -216,6 +220,7 @@ class securityGroup
         }
         else
         {
+        	$firebug->log($this->lastErrorMessage, "error in asXML");
             return FALSE;
         }
     }

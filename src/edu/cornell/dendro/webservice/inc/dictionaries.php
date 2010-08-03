@@ -17,6 +17,7 @@ require_once("inc/readingNote.php");
 require_once("inc/taxon.php");
 require_once("inc/region.php");
 require_once("inc/securityUser.php");
+require_once("inc/securityGroup.php");
 require_once("inc/box.php");
 
 class dictionaries
@@ -121,7 +122,7 @@ class dictionaries
 
         
         // More complex dictionary items
-        $dictItemsWithClasses = array('securityUser', 'readingNote', 'box');
+        $dictItemsWithClasses = array('securityUser', 'securityGroup', 'readingNote', 'box');
         
         global $firebug;
         
@@ -136,6 +137,10 @@ class dictionaries
             			$sql="select securityuserid as id from tblsecurityuser";
             			$myObj = new securityUser();
             			break;     
+            		case "securityGroup":            			
+            			$sql="select securitygroupid as id from tblsecuritygroup";
+            			$myObj = new securityGroup();
+            			break;               			
             		case "readingNote": 
             			$sql="select readingnoteid as id from tlkpreadingnote where vocabularyid>0";
             			$myObj = new readingNote();
@@ -158,21 +163,28 @@ class dictionaries
                 $result = pg_query($dbconn, $sql);
                 while ($row = pg_fetch_array($result))
                 {
+                	
                 	$success = $myObj->setParamsFromDB($row['id']);
                 	
                 	if ($item=="securityUser"){
                 		$myObj->setChildParamsFromDB();
                 		$xmldata.=$myObj->asXML("comprehensive");
                 	}
+  					else if ($item=='securityGroup')
+  					{
+  						$xmldata.=$myObj->asXML();
+  					}
                 	else
-                	{ 	                	
+                	{ 	   
+						//$firebug->log($myObj->asXML(), "XML for ".$item." with id ".$row['id']);
+                		
 	                	if($success)
 	                	{
 	                		$xmldata.=$myObj->asXML("minimal");
 	                	}
 	                	else
 	                	{
-	                		
+	                		//$firebug->log($myObj->getLastErrorMessage(), "Error getting XML");
 	                	}
                 	}
                 }
