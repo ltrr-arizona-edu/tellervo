@@ -345,6 +345,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 }
                 
                 // Set or unset member groups for this user
+                                
                 if(count($this->groupArray)>0)
                 {
                     $sql = "delete from tblsecurityusermembership where securityuserid=".$this->id;
@@ -352,7 +353,8 @@ class securityUser extends securityUserEntity implements IDBAccessor
 
                     foreach($this->groupArray as $item)
                     {
-                        $sql = "insert into tblsecurityusermembership (securityuserid, securitygroupid) values ('$this->id', '$item')"; 
+                        $sql = "insert into tblsecurityusermembership (securityuserid, securitygroupid) values ('$this->id', '$item')";
+                        $firebug->log($sql, "Group membership SQL"); 
                         $result = pg_query($dbconn, $sql);
                     }
                 } 

@@ -2458,7 +2458,7 @@ class securityUserEntity extends dbEntity
     protected $lastName = NULL;
     protected $password = NULL;
     protected $isActive = NULL;
-    protected $groupArray = array();
+    public    $groupArray = array();
     
     function __construct()
     {

@@ -1343,13 +1343,12 @@ class securityUserParameters extends securityUserEntity implements IParams
     	global $firebug;
 		global $corinaNS;
         global $tridasNS;
-		$firebug->log("blah");
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
-     
+     	
         foreach($children as $child)
         {
-
+			
 		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
         	
 		   $firebug->log($child->hasAttribute("id"), "has id?");
@@ -1363,7 +1362,36 @@ class securityUserParameters extends securityUserEntity implements IParams
 		   		if($child->hasAttribute("lastName")) $this->setLastname($child->getAttribute("lastName"));
 		   		if($child->hasAttribute("isActive")) $this->setIsActive(dbhelper::formatBool($child->getAttribute("isActive"),"php"));
 		   		if($child->hasAttribute("hashOfPassword")) $this->setPassword($child->getAttribute("hashOfPassword"), "hash");
+		  		 $members = $child->childNodes;
+
+			   // Set membership of groups but only if user is an admin
+			 	global $myAuth;
+			 	if($myAuth->isAdmin()==TRUE)
+			 	{
+			 		$firebug->log("I have admin rights");
+				   foreach($members as $member)
+				   {
+				   		if($member->nodeType != XML_ELEMENT_NODE) continue;
+				   		if($member->tagName=='memberOf')
+				   		{
+				   			$groups = $member->childNodes;
+				   			foreach($groups as $group)
+				   			{
+				   				if($group->nodeType != XML_ELEMENT_NODE) continue;
+				   				if($group->tagName=='securityGroup')
+				   				{		
+				   					if($group->hasAttribute("id"))
+				   					{
+				   						$this->groupArray[]= $group->getAttribute("id");
+				   					} 
+				   				}
+				   			}
+				   		}
+				   }
+		 	}
+		   
 		   } 
+		   		   
         }   
     }	
 }
