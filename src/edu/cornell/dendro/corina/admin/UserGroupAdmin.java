@@ -17,6 +17,8 @@ import javax.swing.table.TableRowSorter;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.gui.LoginDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.gui.dbbrowse.ElementListPopupMenu;
 import edu.cornell.dendro.corina.gui.dbbrowse.ElementListTableModel;
@@ -378,6 +380,18 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     public static void main() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+            	
+            	// Make sure the user has admin credentials
+            	LoginDialog dlg = new LoginDialog();
+            	try {
+            		dlg.setGuiForConfirmation();
+            		dlg.setUsername(App.currentUser.getUsername());
+            		dlg.doLogin(null, false);            		
+               	} catch (UserCancelledException uce) {
+            		return;
+            	}
+            	
+            	
                 UserGroupAdmin dialog = new UserGroupAdmin(new javax.swing.JFrame(), false);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {

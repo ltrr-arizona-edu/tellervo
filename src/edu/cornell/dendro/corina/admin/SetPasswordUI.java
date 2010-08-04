@@ -12,6 +12,8 @@ import java.util.Arrays;
 import javax.swing.JOptionPane;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.LoginDialog;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -37,8 +39,9 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, A
      */
     public SetPasswordUI(java.awt.Frame parent) {
         super(parent, true);
+        thisUser = App.currentUser;
         initComponents();
-        setupGui(App.isAdmin);   
+        setupGui(false);   
         internationalizeComponents();
         
     }
@@ -59,10 +62,9 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, A
      * another users password
      * 
      * @param parent
-     * @param adminAuth
      * @param otherUser
      */
-    public SetPasswordUI(java.awt.Frame parent, boolean adminAuth, WSISecurityUser otherUser) {
+    public SetPasswordUI(java.awt.Frame parent, WSISecurityUser otherUser) {
         super(parent, true);
         thisUser = otherUser;  
      
@@ -78,11 +80,21 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, A
      */
     private void setupGui(Boolean asAdmin)
     {
+   	    setLocationRelativeTo(null);
    	    
-    	// Hide user fields
-    	lblUser.setVisible(false);
-    	lblUserText.setVisible(false);
-    	
+    	if(asAdmin)
+    	{
+    		lblUser.setVisible(true);
+        	lblUserText.setVisible(true);
+        	this.lblOld.setText("Admin password");
+        	this.lblUserText.setText(this.thisUser.getUsername());
+    	}
+    	else
+    	{
+    		lblUser.setVisible(false);
+        	lblUserText.setVisible(false);
+    	}
+
     	// Add listeners
     	pwdOld.addKeyListener(this);
     	pwdNew.addKeyListener(this);
@@ -140,6 +152,17 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, A
      */
     private Boolean isPasswordCorrect(char[] pwd)
     {
+    	LoginDialog dlg = new LoginDialog(this);
+    	dlg.setGuiForConfirmation();
+    	dlg.setInstructionText("Confirm original credentials");
+    	dlg.setUsername(thisUser.getUsername());
+    	dlg.setPassword(new String(pwd));
+    	try {
+			dlg.doLogin(null, true);
+		} catch (UserCancelledException e) {
+			return false;
+		}
+    	
     	return true;
 		
     }
@@ -154,22 +177,21 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, A
      */
     private Boolean setPassword(WSISecurityUser thisUser, char[] pwd)
     {
-    	WSISecurityUser usr = App.currentUser;
-    	
+
     	// Set password to hash
     	MessageDigest digest;
 		try {
 			digest = MessageDigest.getInstance("MD5");
 			String pwd1 = new String(this.pwdNew.getPassword());
 			digest.update(pwd1.getBytes());
-	    	usr.setHashOfPassword(StringUtils.bytesToHex(digest.digest()));
+	    	thisUser.setHashOfPassword(StringUtils.bytesToHex(digest.digest()));
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		// associate a resource
-    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, usr);
+    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, thisUser);
     	
     	
 		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
@@ -178,7 +200,6 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, A
 		
 		if(accdialog.isSuccessful())
 		{
-			rsrc.getAssociatedResult();
 			JOptionPane.showMessageDialog(this, "Password changed successfully", "Success", JOptionPane.NO_OPTION);
 			return true;
 		}
@@ -201,8 +222,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, A
      */
     private Boolean setPassword(char[] pwd)
     {
-    	WSISecurityUser thisUser = App.currentUser;
-    	    	   	
+    	   	    	   	
     	return setPassword(thisUser, pwd);
     	
     }

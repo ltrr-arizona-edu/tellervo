@@ -49,7 +49,12 @@ public class LoginDialog extends JDialog {
 	private JLabel subtitle;	
 	private JButton loginButton;
 	private JButton cancelButton;
+	private JButton btnWorkOffline;
+	private JLabel lblLoginTo = new JLabel(I18n.getText("login.serverurl"));
+	private JLabel lockIcon;
+	private JLabel lblTitle;
 	private boolean cancelled = true;
+	private boolean ignoreSavedInfo = false;
 	
 	public LoginDialog(Frame frame) {
 		super(frame, true);
@@ -67,6 +72,49 @@ public class LoginDialog extends JDialog {
 		super((Frame)null, true);
 		
 		initialize();
+	}
+	
+	
+	/**
+	 * Make the GUI minimalistic for confirming credentials
+	 */
+	public void setGuiForConfirmation()
+	{
+		this.autoLogin.setVisible(false);
+		this.rememberPassword.setVisible(false);
+		this.rememberUsername.setVisible(false);
+		this.serverUrl.setVisible(false);
+		this.password.setText("");
+		this.lblLoginTo.setVisible(false);
+		this.loginButton.setText("Confirm");
+		this.btnWorkOffline.setVisible(false);
+		this.lblTitle.setText("Confirm credentials");
+		this.ignoreSavedInfo = true;
+	}
+	
+	public void setInstructionText(String instr)
+	{
+		this.lblTitle.setText(instr);
+	}
+	
+	/**
+	 * Programmayically set the username.  Useful for headless use.
+	 * 
+	 * @param usr
+	 */
+	public void setUsername(String usr)
+	{
+		username.setText(usr);
+	}
+	
+	/**
+	 * Programmatically set the password. Useful for headless use.
+	 * 
+	 * @param pwd
+	 */
+	public void setPassword(String pwd)
+	{
+		password.setText(pwd);
 	}
 	
 	/**
@@ -96,7 +144,7 @@ public class LoginDialog extends JDialog {
 		serverUrl.setEnabled(false);
 		
 		
-		JLabel lockIcon = new JLabel(Builder.getIcon("lock.png", 128));
+		lockIcon = new JLabel(Builder.getIcon("lock.png", 128));
 		//lockIcon.setBorder(BorderFactory.createEtchedBorder());
 	
 		
@@ -118,12 +166,12 @@ public class LoginDialog extends JDialog {
 		igbc.gridy = 0;
 		
 		// title for login
-		tmp = new JLabel(I18n.getText("login.requestLogin"));
+		lblTitle = new JLabel(I18n.getText("login.requestLogin"));
 		igbc.anchor = GridBagConstraints.WEST;
 		igbc.insets = new Insets(0, 10, 0, 80);
 		igbc.gridwidth = 2;
 		
-		insidePanel.add(tmp, igbc);
+		insidePanel.add(lblTitle, igbc);
 		
 		//igbc.gridy++;
 		//igbc.insets = new Insets(5, 0, 10, 0);
@@ -167,12 +215,12 @@ public class LoginDialog extends JDialog {
 		igbc.gridx = 0;
 		igbc.gridy++;	
 		
-		tmp = new JLabel(I18n.getText("login.serverurl"));
-		tmp.setLabelFor(serverUrl);
+		
+		lblLoginTo.setLabelFor(serverUrl);
 		
 		igbc.ipady = 0;
 		igbc.ipadx = 0;
-		insidePanel.add(tmp, igbc);		
+		insidePanel.add(lblLoginTo, igbc);		
 		
 		igbc.ipady = 0;
 		igbc.gridx++;
@@ -217,10 +265,10 @@ public class LoginDialog extends JDialog {
 		buttonPanel.add(cancelButton);
 		
 		// TODO: Implement offline mode
-		JButton button;
-		button = new JButton(I18n.getText("login.workOffline"));
-		button.setEnabled(false);
-		buttonPanel.add(button);
+		
+		btnWorkOffline = new JButton(I18n.getText("login.workOffline"));
+		btnWorkOffline.setEnabled(false);
+		buttonPanel.add(btnWorkOffline);
 
 		igbc.gridx = 0;
 		igbc.gridy++;
@@ -290,6 +338,15 @@ public class LoginDialog extends JDialog {
 	}
 	
 	private void loadSettings() {
+		
+		// Do not help the user if ignoreSavedInfo is true as we are
+		// forcing them to remember!
+		if(ignoreSavedInfo) 
+		{
+			password.setText("");
+			return;
+		}
+		
 		
 		// remember the username? load it.
 		if(App.prefs.getBooleanPref("corina.login.remember_username", true)) {

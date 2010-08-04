@@ -248,10 +248,7 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
     	this.setLocationRelativeTo(getRootPane());
     	this.lblId.setVisible(false);
     	this.txtId.setVisible(false);
-    	
-    	// TODO
-    	this.btnSetPwd.setEnabled(false);
-    	
+    	    	
     	this.tblGroups.addMouseListener(this);
 
     	ArrayList<WSISecurityGroup> memberGroups = new ArrayList<WSISecurityGroup>();
@@ -290,6 +287,7 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
     	
     	this.btnDoIt.addActionListener(this);
     	this.btnClose.addActionListener(this);
+    	this.btnSetPwd.addActionListener(this);
     	
     }
 
@@ -302,6 +300,14 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
 		else if (e.getSource()==this.btnDoIt)
 		{
 			saveChangesToUser();
+		}
+		else if (e.getSource()==this.btnSetPwd)
+		{
+			SetPasswordUI setPwdDialog = new SetPasswordUI(null, this.user);
+			setPwdDialog.setVisible(true);
+			setPwdDialog.setModal(true);
+			setPwdDialog.setLocationRelativeTo(null);
+			
 		}
 	}
 	
