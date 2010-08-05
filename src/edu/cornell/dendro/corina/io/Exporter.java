@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.cornell.dendro.corina.hardware;
+package edu.cornell.dendro.corina.io;
 
 import java.io.BufferedWriter;
 import java.io.File;

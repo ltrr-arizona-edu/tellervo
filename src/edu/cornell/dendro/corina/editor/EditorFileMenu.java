@@ -1,9 +1,9 @@
 package edu.cornell.dendro.corina.editor;
 
-import edu.cornell.dendro.corina.hardware.ExportDialog;
-import edu.cornell.dendro.corina.hardware.ExportDialogLegacy;
-import edu.cornell.dendro.corina.hardware.Exporter;
 import edu.cornell.dendro.corina.hardware.NativeSpawn;
+import edu.cornell.dendro.corina.io.ExportDialog;
+import edu.cornell.dendro.corina.io.ExportDialogLegacy;
+import edu.cornell.dendro.corina.io.Exporter;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.PrintableDocument;

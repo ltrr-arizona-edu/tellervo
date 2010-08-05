@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.hardware;
+package edu.cornell.dendro.corina.io;
 
 import edu.cornell.dendro.corina.formats.Filetype;
 import edu.cornell.dendro.corina.formats.WrongFiletypeException;

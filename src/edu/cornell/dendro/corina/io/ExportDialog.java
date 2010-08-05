@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.hardware;
+package edu.cornell.dendro.corina.io;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
