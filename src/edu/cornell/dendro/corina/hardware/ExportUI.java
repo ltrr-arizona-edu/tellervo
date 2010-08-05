@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.io;
+package edu.cornell.dendro.corina.hardware;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -133,9 +133,9 @@ public class ExportUI extends javax.swing.JPanel{
     	//cboHow.setVisible(false);
 
 		groupingModel.add("Single packed file if possible");
-		groupingModel.add("Separate files");
+		groupingModel.add("Separate files for each series");
 		cboGrouping.setModel(groupingModel);
-		cboGrouping.setSelectedIndex(0);
+		cboGrouping.setSelectedIndex(1);
 		
       	// setup combo boxes
       	cboWhat.setModel(whatModel);
@@ -434,7 +434,7 @@ public class ExportUI extends javax.swing.JPanel{
 	    		// We have a Corina lab code for each project so use this as the base filename
 	    		nc = new NumericalNamingConvention();
 	    		((NumericalNamingConvention)nc).setBaseFilename(
-	    				LabCodeFormatter.getSeriesPrefixFormatter().format(labCodeList.get(i)).toString());
+	    				LabCodeFormatter.getDefaultFormatter().format(labCodeList.get(i)).toString());
 	    	}
 	    	else
 	    	{

@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.io;
+package edu.cornell.dendro.corina.hardware;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;

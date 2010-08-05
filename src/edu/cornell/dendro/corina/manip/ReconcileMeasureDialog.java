@@ -22,9 +22,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.io.LegacyCorinaMeasuringDevice;
-import edu.cornell.dendro.corina.io.MeasurementReceiver;
-import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
+import edu.cornell.dendro.corina.hardware.LegacyCorinaMeasuringDevice;
+import edu.cornell.dendro.corina.hardware.LegacySerialSampleIO;
+import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
 import edu.cornell.dendro.corina.sample.Sample;
 
 /**

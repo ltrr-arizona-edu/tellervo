@@ -18,7 +18,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.io;
+package edu.cornell.dendro.corina.hardware;
 
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.layouts.DialogLayout;

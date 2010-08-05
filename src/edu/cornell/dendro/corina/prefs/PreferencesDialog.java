@@ -16,7 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
+import edu.cornell.dendro.corina.hardware.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;

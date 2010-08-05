@@ -46,7 +46,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.filechooser.FileFilter;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.io.LegacySerialSampleIO;
+import edu.cornell.dendro.corina.hardware.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.prefs.components.BoolPrefComponent;
 import edu.cornell.dendro.corina.prefs.components.FontPrefComponent;
 import edu.cornell.dendro.corina.util.DocumentListener2;

@@ -9,7 +9,9 @@ import javax.swing.JButton;
 import java.awt.FlowLayout;
 import javax.swing.AbstractAction;
 import java.awt.event.*;
-import edu.cornell.dendro.corina.io.*;
+
+import edu.cornell.dendro.corina.hardware.*;
+
 import java.applet.*;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.ui.Builder;

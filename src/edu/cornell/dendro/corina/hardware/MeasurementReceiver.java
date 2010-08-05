@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.io;
+package edu.cornell.dendro.corina.hardware;
 
 public interface MeasurementReceiver {
 	public void receiverUpdateStatus(String status); 

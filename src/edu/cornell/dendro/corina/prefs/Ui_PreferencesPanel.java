@@ -7,7 +7,7 @@
 package edu.cornell.dendro.corina.prefs;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.io.SerialMeasuringDeviceConstants;
+import edu.cornell.dendro.corina.hardware.SerialMeasuringDeviceConstants;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.ui.I18n;
 

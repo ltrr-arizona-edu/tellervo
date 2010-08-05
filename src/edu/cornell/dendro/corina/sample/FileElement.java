@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.io.Files;
+import edu.cornell.dendro.corina.hardware.Files;
 
 /**
 An Element, basically a reference to a Sample (stored on disk).

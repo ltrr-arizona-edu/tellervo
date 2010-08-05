@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.cornell.dendro.corina.io;
+package edu.cornell.dendro.corina.hardware;
 
 import java.io.IOException;
 
