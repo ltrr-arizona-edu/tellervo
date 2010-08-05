@@ -21,7 +21,7 @@
 package edu.cornell.dendro.corina.gui;
 
 import edu.cornell.dendro.corina.graph.GraphWindow;
-import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.io.WrongFiletypeException;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;

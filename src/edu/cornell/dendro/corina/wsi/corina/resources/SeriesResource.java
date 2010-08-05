@@ -17,9 +17,9 @@ import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 
-import edu.cornell.dendro.corina.formats.Metadata;
-import edu.cornell.dendro.corina.formats.TridasDoc;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.io.Metadata;
+import edu.cornell.dendro.corina.io.TridasDoc;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;

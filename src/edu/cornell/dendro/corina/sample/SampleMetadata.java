@@ -11,7 +11,7 @@ import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasSapwood;
 import org.tridas.schema.TridasWoodCompleteness;
 
-import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import org.tridas.util.TridasObjectEx;
 

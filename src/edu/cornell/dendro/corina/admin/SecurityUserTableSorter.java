@@ -7,13 +7,8 @@ import java.util.Comparator;
 
 import javax.swing.JTable;
 
-import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.SortedHeaderArrowRenderer;
-import edu.cornell.dendro.corina.gui.dbbrowse.ElementListTableModel;
-import edu.cornell.dendro.corina.sample.BaseSample;
-import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
-import edu.cornell.dendro.corina.tridasv2.LabCode;
 
 public class SecurityUserTableSorter extends MouseAdapter {
 	private SecurityUserTableModel model;

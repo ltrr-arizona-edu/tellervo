@@ -21,10 +21,10 @@ import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasIdentifier;
 
 import edu.cornell.dendro.corina.editor.Editor;
-import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.graph.GraphDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;

@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.formats;
+package edu.cornell.dendro.corina.io;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

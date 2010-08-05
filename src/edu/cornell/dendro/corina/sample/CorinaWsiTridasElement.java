@@ -10,7 +10,7 @@ import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasRadius;
 
-import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;

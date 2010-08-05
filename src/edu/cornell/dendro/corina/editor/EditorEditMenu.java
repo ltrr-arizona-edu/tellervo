@@ -31,12 +31,12 @@ import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.TextClipboard;
 import edu.cornell.dendro.corina.util.PureStringWriter;
-import edu.cornell.dendro.corina.formats.TwoColumn;
-import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.hardware.LegacySerialSampleIO;
+import edu.cornell.dendro.corina.io.TwoColumn;
+import edu.cornell.dendro.corina.io.WrongFiletypeException;
 import edu.cornell.dendro.corina.core.App;
 
 import java.io.File;
@@ -82,7 +82,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
  on addNotify()?
  </ul>
 
- @see edu.cornell.dendro.corina.formats.TwoColumn
+ @see edu.cornell.dendro.corina.io.TwoColumn
 
  @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
  @version $Id$

@@ -35,7 +35,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.io.WrongFiletypeException;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 
 // methods for loading and saving a bunch of Graphs

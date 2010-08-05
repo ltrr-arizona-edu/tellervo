@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.tridas.interfaces.ITridasSeries;
 
-import edu.cornell.dendro.corina.formats.TridasDoc;
+import edu.cornell.dendro.corina.io.TridasDoc;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;

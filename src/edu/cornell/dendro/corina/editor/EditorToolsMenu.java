@@ -16,9 +16,9 @@ import org.tridas.schema.TridasDerivedSeries;
 
 import edu.cornell.dendro.corina.CorinaPermission;
 import edu.cornell.dendro.corina.cross.CrossdateDialog;
-import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.index.IndexDialog;
+import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.manip.ReconcileWindow;
 import edu.cornell.dendro.corina.manip.RedateDialog;
 import edu.cornell.dendro.corina.manip.Reverse;

@@ -47,8 +47,8 @@ import com.l2fprod.common.swing.plaf.blue.BlueishButtonBarUI;
 import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;

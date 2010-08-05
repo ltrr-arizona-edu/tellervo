@@ -1,7 +1,5 @@
 package edu.cornell.dendro.corina.io;
 
-import edu.cornell.dendro.corina.formats.Filetype;
-import edu.cornell.dendro.corina.formats.WrongFiletypeException;
 import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.File;

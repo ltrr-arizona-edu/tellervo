@@ -17,7 +17,7 @@ import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasMeasurementSeries;
 
-import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;

@@ -9,7 +9,7 @@ import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.Certainty;
 import org.tridas.schema.TridasWoodCompleteness;
 
-import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 
 /**

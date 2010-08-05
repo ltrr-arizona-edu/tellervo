@@ -21,7 +21,7 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
-import edu.cornell.dendro.corina.formats.Metadata;
+import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;

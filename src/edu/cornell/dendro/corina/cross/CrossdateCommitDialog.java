@@ -26,8 +26,8 @@ import org.tridas.schema.TridasInterpretation;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.editor.Editor;
-import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 /*

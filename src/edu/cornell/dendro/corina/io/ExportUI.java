@@ -24,7 +24,6 @@ import org.tridas.io.formats.besancon.BesanconToTridasDefaults;
 import org.tridas.io.naming.AbstractNamingConvention;
 import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
-import org.tridas.io.naming.UUIDNamingConvention;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
@@ -32,11 +31,8 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
-import org.tridas.schema.TridasValues;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.formats.Filetype;
-import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.FileDialog.ExtensionFilter;
@@ -162,20 +158,10 @@ public class ExportUI extends javax.swing.JPanel{
 		btnBrowse.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				
-				// Are we exporting multiple files... 
-				if (exportMulti)
-				{
-					// ... if so choose directory not file
-					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);	
-					fc.setDialogTitle(I18n.getText("export.selectAFolder"));
-				}
-				else
-				{
-					// ... otherwise set the file filter 
-					Filetype ft =  (Filetype) formatModel.getSelectedItem();
-					ExtensionFilter filter = new FileDialog.ExtensionFilter(ft.getDefaultExtension().substring(1), ft.toString());
-					fc.setFileFilter(filter);
-				}
+				// Choose directory not file
+				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);	
+				fc.setDialogTitle(I18n.getText("export.selectAFolder"));
+			
 			
 				// Open at last used directory
 				if(exportDirectory!=null)

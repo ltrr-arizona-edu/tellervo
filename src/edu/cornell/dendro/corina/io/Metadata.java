@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.formats;
+package edu.cornell.dendro.corina.io;
 
 /**
  * This file contains two important things:

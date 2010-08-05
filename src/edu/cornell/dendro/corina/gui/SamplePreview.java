@@ -39,7 +39,7 @@ import javax.swing.JScrollPane;
 
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
-import edu.cornell.dendro.corina.formats.WrongFiletypeException;
+import edu.cornell.dendro.corina.io.WrongFiletypeException;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.ElementFactory;
