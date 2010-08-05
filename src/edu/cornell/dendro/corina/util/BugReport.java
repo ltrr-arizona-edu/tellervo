@@ -26,6 +26,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.jdom.Document;
 
 import edu.cornell.dendro.corina.Build;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.ui.Alert;
 
@@ -109,17 +110,26 @@ public class BugReport {
 	}
 	
 	public static String getUserInfo() {
+
+		String corinauser = "[Not logged in]";
+		if(App.currentUser!=null)
+		{
+			corinauser = App.currentUser.getUsername()+ " ("+App.currentUser.getFirstName() + " " + App.currentUser.getLastName()+")";
+		}
+				
 		StringBuffer buf = new StringBuffer();
 
 		// a nice header
 		buf.append("User Information:\n");
 		buf.append("\n");
 		
-		buf.append("   User: " + System.getProperty("user.name") + "\n");
+		buf.append("   System user: " + System.getProperty("user.name") + "\n");
+		buf.append("   Corina user: " + corinauser+"\n"); 
 		buf.append("   Home: " + System.getProperty("user.home") + "\n");
 		buf.append("   Language: " + System.getProperty("user.language") + "\n");
 		buf.append("   Region: " + System.getProperty("user.region") + "\n");
 		buf.append("   TZ: " + System.getProperty("user.timezone") + "\n");
+
 		
 		return buf.toString();
 	}
@@ -244,6 +254,9 @@ public class BugReport {
 			HttpPost post = new HttpPost("https://dendro.cornell.edu/bug/submit.php");
 			MultipartEntity postEntity = new MultipartEntity();
 			
+
+
+			
 			// add our required parts
 			postEntity.addPart("username", new StringBody(getUserName()));
 			postEntity.addPart("version", new StringBody(Build.VERSION));
@@ -252,6 +265,7 @@ public class BugReport {
 			postEntity.addPart("sysinfo", new StringBody(getSystemInfo()));
 			postEntity.addPart("stacktrace", new StringBody(getStackTrace(bug)));
 			postEntity.addPart("userinfo", new StringBody(getUserInfo()));
+
 
 			if(fromEmail != null)
 				postEntity.addPart("replyto", new StringBody(fromEmail));

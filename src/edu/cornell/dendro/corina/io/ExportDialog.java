@@ -73,7 +73,6 @@ public class ExportDialog extends JDialog {
 	{
 		mainPanel = new ExportUI(this, elements);
 		this.setContentPane(mainPanel);
-		mainPanel.panelPreview.setVisible(false);
 		
 		this.setTitle(I18n.getText("export.dataFromDatabase"));
 		

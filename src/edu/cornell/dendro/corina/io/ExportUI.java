@@ -1,41 +1,54 @@
 package edu.cornell.dendro.corina.io;
 
-import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.WordUtils;
-
-import com.l2fprod.common.swing.ComponentFactory;
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.AbstractDendroCollectionWriter;
+import org.tridas.io.IDendroFile;
+import org.tridas.io.TridasIO;
+import org.tridas.io.exceptions.ConversionWarning;
+import org.tridas.io.exceptions.ConversionWarningException;
+import org.tridas.io.exceptions.IncompleteTridasDataException;
+import org.tridas.io.formats.besancon.BesanconToTridasDefaults;
+import org.tridas.io.naming.AbstractNamingConvention;
+import org.tridas.io.naming.HierarchicalNamingConvention;
+import org.tridas.io.naming.NumericalNamingConvention;
+import org.tridas.io.naming.UUIDNamingConvention;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
+import org.tridas.schema.TridasValues;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.formats.Filetype;
-import edu.cornell.dendro.corina.formats.PackedFileType;
-import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.formats.Metadata;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.gui.FileDialog.ExtensionFilter;
-import edu.cornell.dendro.corina.io.Exporter.EncodingType;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.tridasv2.LabCode;
+import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ArrayListModel;
-import edu.cornell.dendro.corina.util.PureStringWriter;
-import edu.cornell.dendro.corina.util.TextClipboard;
 import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
 import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 
@@ -51,33 +64,22 @@ import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
  */
 public class ExportUI extends javax.swing.JPanel{
     	
-	private static final String EXPORTERS[] = new String[] {
-		"edu.cornell.dendro.corina.formats.Corina", 
-		"edu.cornell.dendro.corina.formats.Heidelberg",
-		"edu.cornell.dendro.corina.formats.Hohenheim",
-		"edu.cornell.dendro.corina.formats.RangesOnly",
-		"edu.cornell.dendro.corina.formats.Sheffield",
-		"edu.cornell.dendro.corina.formats.Spreadsheet",
-		"edu.cornell.dendro.corina.formats.Tucson", 
-		"edu.cornell.dendro.corina.formats.PackedTucson", 
-		"edu.cornell.dendro.corina.formats.TucsonSimple",
-		"edu.cornell.dendro.corina.formats.TSAPMatrix"
-		 };
-	
-	private StringWriter writer = new PureStringWriter(10240); // 10K	
 	private ElementList elements;
 	private String exportDirectory;
 	private boolean rememberExportDirectory;
 	private Boolean exportMulti = true;
 	protected DefaultComboBoxModel howModel = new DefaultComboBoxModel();
 	protected DefaultComboBoxModel whatModel = new DefaultComboBoxModel();
-	protected ArrayListModel<Filetype> formatModel = new ArrayListModel<Filetype>();
-	protected ArrayListModel<EncodingType> encodingModel = new ArrayListModel<EncodingType>();
+	protected ArrayListModel<String> formatModel = new ArrayListModel<String>();
+	protected ArrayListModel<String> encodingModel = new ArrayListModel<String>();
+	protected ArrayListModel<String> groupingModel = new ArrayListModel<String>();
 	protected ExportDialog parent;
 	final JFileChooser fc = new JFileChooser();
 	
     /** Creates new form ExportUI */
     public ExportUI(ExportDialog p, ElementList els) {
+    	
+
     	parent = p;
     	elements = els;
     	
@@ -107,7 +109,7 @@ public class ExportUI extends javax.swing.JPanel{
     private void internationalizeComponents()    
     {
     	lblWhat.setText(I18n.getText("export.what")+":");
-    	lblHow.setText(I18n.getText("export.format")+":");
+    	lblGrouping.setText(I18n.getText("export.grouping")+":");
     	lblEncoding.setText(I18n.getText("export.encoding")+":");
     	lblOutput.setText(I18n.getText("export.outputFolder")+":");
     	btnHelp.setText(I18n.getText("menus.help"));
@@ -117,10 +119,7 @@ public class ExportUI extends javax.swing.JPanel{
     }
     
     private void setupGui()
-    {
-    	// Hide preview button - not sure we want it any more
-    	btnPreview.setVisible(false);
-    	
+    {    	
         // Set icon        
         lblIcon.setIcon(Builder.getIcon("fileexport.png", 128));
     	
@@ -130,9 +129,14 @@ public class ExportUI extends javax.swing.JPanel{
 		Help.assignHelpPageToButton(btnHelp, "File_formats");
     	
     	// Hide how form items
-    	lblHow.setVisible(false);
-    	cboHow.setVisible(false);
+    	//lblHow.setVisible(false);
+    	//cboHow.setVisible(false);
 
+		groupingModel.add("Single packed file if possible");
+		groupingModel.add("Separate files");
+		cboGrouping.setModel(groupingModel);
+		cboGrouping.setSelectedIndex(0);
+		
       	// setup combo boxes
       	cboWhat.setModel(whatModel);
       	setWhatModel();
@@ -154,17 +158,7 @@ public class ExportUI extends javax.swing.JPanel{
 				parent.dispose();
 			}
 		});
-		btnPreview.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				// Hide/Show preview panel
-				if(panelPreview.isVisible())
-					panelPreview.setVisible(false);
-				else
-					panelPreview.setVisible(true);
-				parent.pack();
-				updatePreview();
-			}
-		});
+
 		btnBrowse.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -232,31 +226,13 @@ public class ExportUI extends javax.swing.JPanel{
 		cboExportFormat.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				
-				Filetype ft =  (Filetype) formatModel.getSelectedItem();	
-				if(ft.isPackedFileCapable()){				
-					exportMulti=false;
-				 	setGuiForPacked(true);
-				} else {
-					exportMulti=true;
-					setGuiForPacked(false);
-				}
-				updatePreview();
+
 			}
 		});
         
-		// Set up preview pane
-        Font oldFont = txtPreview.getFont();
-		txtPreview.setFont(new Font("monospaced", oldFont.getStyle(), oldFont
-				.getSize()));
-		txtPreview.setEditable(false);
-		btnCopy.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				TextClipboard.copy(txtPreview.getText());
-			}
-		});
 
-		// initial view
-		updatePreview();
+
+
     }
 
     /**
@@ -318,10 +294,17 @@ public class ExportUI extends javax.swing.JPanel{
     
     public void setupEncodingList()
     {  	
-    	for (EncodingType enc : EncodingType.values())
-    	{
-    		encodingModel.add(enc);
-    	}
+		// put default one on top, so the user will see
+		// "automatic" right underneath
+		encodingModel.add(Charset.defaultCharset().displayName());
+		for (String s : Charsets.getWritingCharsets()) {
+			if (s.equals(Charset.defaultCharset().displayName())) {
+				continue;
+			}
+			encodingModel.add(s);
+		}
+		
+		
     }
     
     /**
@@ -329,21 +312,19 @@ public class ExportUI extends javax.swing.JPanel{
      */
     public void setupFormatList()
     {
-    	
-    	if (formatModel.size()>0) formatModel.clear();
-    	int n = EXPORTERS.length;
-    	for (int i = 0; i < n; i++)
-    	{
-    		try {
-				Filetype f = (Filetype) Class.forName(EXPORTERS[i])
-						.newInstance();
-				formatModel.add(f);
-			} catch (Exception e) {
-				Bug.bug(e);
-			}
-    	}
+    	String[] outputFormats = TridasIO.getSupportedWritingFormats();
+    	ArrayList<String> blah = new ArrayList<String>(Arrays.asList(outputFormats));
+    	formatModel.addAll(blah);
 
-		cboExportFormat.setSelectedIndex(0);
+    	// Set the previously used format or default to TRiDaS
+		if(App.prefs.getPref("corina.export.format")!=null)
+		{
+			cboExportFormat.setSelectedItem(App.prefs.getPref("corina.export.format"));
+		}
+		else
+		{   	
+			cboExportFormat.setSelectedItem("TRiDaS");
+		}
 		
 
     }
@@ -354,145 +335,211 @@ public class ExportUI extends javax.swing.JPanel{
      */
     private void doExport(){
 		
-    	Filetype ft =  (Filetype) formatModel.getSelectedItem();
-    	String message = null;
-    	Integer wraplength = 65;
-    	
-    	// Caution user if using a lossy file format
-    	if(!(ft.isLossless()))
-    	{
-       		message = WordUtils.wrap("Caution: " + ft.getDeficiencyDescription(), wraplength);
-    		message+= "\n\n";
-    		
-    	}
-    	
-		// Warn about inferior character encodings if applicable
-		EncodingType selEnc = (EncodingType) cboEncoding.getSelectedItem();
-		if(!selEnc.equals(EncodingType.UTF8) && (!selEnc.equals(EncodingType.UTF16)))
-		{
-			String also = " ";
-			if (message!=null) also = " also ";
-			message+= WordUtils.wrap("The character encoding that you have chosen is"+also+"incapable of " +
-					"representing all the international characters that the Corina database is capable " +
-					"of using.  The resulting output file may therefore contain incorrect glyphs.", wraplength);
-			message+= "\n\n";
+    	// Set the export format for future use
+    	App.prefs.setPref("corina.export.format", this.cboExportFormat.getSelectedItem().toString());
+    	    	
+    	// Get defaults for creating project
+    	BesanconToTridasDefaults defaults = new BesanconToTridasDefaults();
+		
+    	// Create sample list from elements
+		List<Sample> samples = new ArrayList<Sample>();
+		for(Element e : elements) {		
+			// load it
+			Sample s;
+			try {
+				s = e.load();
+				
+			} catch (IOException ioe) {
+				Alert.error("Error Loading Sample",
+						"Can't open this file: " + ioe.getMessage());
+				continue;
+			}
+			
+			samples.add(s);
+
+			OpenRecent.sampleOpened(new SeriesDescriptor(s));
 		}
 		
-		// Do we need to show the user the warnings?
-		if (message!=null)
-		{
-    		message+= WordUtils.wrap("Please be aware that the exported files will therefore " +
-    				"not be a complete representation of the data currently " +
-    				"stored in the Corina database.", wraplength);
-    		message+= "\n\n";
-    		message+= WordUtils.wrap("Would you like to continue with the export?", wraplength); 
-    				
-    		Object[] options = {"Yes", "No"};
-    		int n = JOptionPane.showOptionDialog(parent, 
-    				message, "File format caution", 
-    				JOptionPane.YES_OPTION,
-    				JOptionPane.QUESTION_MESSAGE, 
-    				null, 
-    				options, 
-    				options[0]);
-    		if (n==JOptionPane.YES_OPTION){ } else { return; }
+		// no samples => don't bother doing anything
+		if (samples.isEmpty()) {
+			return;
 		}
     	
-    	
-    	// Actually do export
-    	try {
-			Boolean success;
-								
-			File outfile = new File(txtOutput.getText());
-			Exporter exp = new Exporter();
-			exp.setEncodingType((EncodingType) cboEncoding.getSelectedItem());
-			
-			if(ft.isPackedFileCapable() && elements.size()>1)
+		// Create a list of projects 
+		ArrayList<TridasProject> projList = new ArrayList<TridasProject>();
+		ArrayList<LabCode> labCodeList = new ArrayList<LabCode>();
+		TridasProject project = defaults.getDefaultTridasProject();
+		for (Sample s : samples)
+		{
+			if(this.cboGrouping.getSelectedIndex()==1)
 			{
-				// Do 'packed' save
-				exp.savePackedSample2(elements, ft, outfile);				
+				// User wants separate files so create a new project for each sample
+				project = defaults.getDefaultTridasProject();
+			}
+			
+			TridasObject tobj = s.getMeta(Metadata.OBJECT, TridasObject.class);
+			TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
+			TridasSample tsamp = s.getMeta(Metadata.SAMPLE, TridasSample.class);
+			TridasRadius trad = s.getMeta(Metadata.RADIUS, TridasRadius.class);
+			ITridasSeries tseries = s.getSeries();
+			
+			if(tseries instanceof TridasMeasurementSeries)
+			{
+				// Set all the standard mSeries entities
+				trad.getMeasurementSeries().add((TridasMeasurementSeries) tseries);
+				tsamp.getRadiuses().add(trad);
+				telem.getSamples().add(tsamp);
+				tobj.getElements().add(telem);
+				project.getObjects().add(tobj);
 			}
 			else
 			{
-				// Do standard save	
-				exp.saveMultiSample2(elements, ft, outfile);
+				// Derived series so no other entities
+				project.getDerivedSeries().add((TridasDerivedSeries) tseries);
 			}
 			
-			if(success=false)
-				Alert.message("Export failed", "Something went wrong with the export");
-			
-			// close dialog
-			parent.dispose();
-
-		} catch (Exception ex) {
-			Bug.bug(ex);
+			if(this.cboGrouping.getSelectedIndex()==1)
+			{
+				// Add project to list
+				projList.add(project);
+				LabCode code = s.getMeta(Metadata.LABCODE, LabCode.class);
+				labCodeList.add(code);
+			}		
 		}
+		if(this.cboGrouping.getSelectedIndex()==0)
+		{
+			// Add project to list as there is just one project
+			projList.add(project);
+			
+			if (samples.size()==1)
+			{
+				LabCode code = samples.get(0).getMeta(Metadata.LABCODE, LabCode.class);
+				labCodeList.add(code);
+			}
+		}
+		
+		// Loop through projects writing them out as we go
+		String messages = "";
+		int i=-1;
+		for(TridasProject p : projList)
+		{
+			i++;
+			// Create the writer based on the requested format
+	    	AbstractDendroCollectionWriter writer = TridasIO.getFileWriter(this.cboExportFormat.getSelectedItem().toString());
+	    	
+	    	// Create and set the naming convention
+	    	AbstractNamingConvention nc;
+	    	if(labCodeList.size()==projList.size())
+	    	{
+	    		// We have a Corina lab code for each project so use this as the base filename
+	    		nc = new NumericalNamingConvention();
+	    		((NumericalNamingConvention)nc).setBaseFilename(
+	    				LabCodeFormatter.getSeriesPrefixFormatter().format(labCodeList.get(i)).toString());
+	    	}
+	    	else
+	    	{
+	    		// We don't have labcodes for the project(s) so use the hierarchical naming convention instead
+	    		nc = new HierarchicalNamingConvention();
+	    	}
+	    	writer.setNamingConvention(nc);
+	    	
+	    	// Get the writer to load the project
+			try {
+				writer.loadProject(p);
+			} catch (IncompleteTridasDataException e1) {
+				e1.printStackTrace();
+			} catch (ConversionWarningException e1) {
+				e1.printStackTrace();
+	
+			}
+			
+			// Add any warnings to our warning message cache
+			if(writer.getWarnings().length>0)
+			{
+				messages += "Warning for file blah\n";
+			}
+			for(ConversionWarning warning : writer.getWarnings())
+			{
+				messages += "- "+warning.getMessage()+"\n";
+			}
+				
+			// Get output folder
+			String outputFolder = this.txtOutput.getText();			
+			if (!outputFolder.endsWith(File.separator) && !outputFolder.equals("")) {
+				outputFolder += File.separator;
+			}
+			
+			int currFile = 0;
+			Response response= null;
+			IDendroFile[] files = writer.getFiles();
+			for (int j=0; j<files.length; j++) {
+				IDendroFile dof = files[j];
+	
+				currFile++;
+				String filename = writer.getNamingConvention().getFilename(dof);
+				
+				//model.setSavingFilename(filename + "." + dof.getExtension());
+				
+				// check to see if it exists:
+				File file = new File(outputFolder+File.separator+filename + "." + dof.getExtension());
+				/*if(file.exists()){
+					if(response == null){
+						OverwriteModel om = new OverwriteModel();
+						om.setAll(false);
+						om.setMessage(I18n.getText("control.convert.overwrite", filename, filename+"(1)"));
+						popup[0] = new OverwritePopup(om, ModelLocator.getInstance().getMainWindow());
+						// this should hang until the window is closed
+						popup[0].setVisible(true);
+						popup[0] = null; // so the saving dialog knows it's ok to show itself
+						
+						response = om.getResponse();
+						all = om.isAll();
+						if(response == null){
+							log.error("response is null");
+							j--;
+							currFile--;
+							continue;
+						}
+					}
+					
+					switch(response){
+						case IGNORE:
+							response = null;
+							continue;
+						case OVERWRITE:
+							p.writer.saveFileToDisk(outputFolder, dof);
+							break;
+						case RENAME:
+							p.writer.getNamingConvention().setFilename(dof, filename+"(1)");
+							j--;
+							currFile--;
+							response = null;
+							continue;
+					}
+					if(!all){
+						response = null;
+					}
+				}*/
+				writer.saveFileToDisk(outputFolder, dof);
+				//model.setSavingPercent(currFile * 100 / totalFiles);
+			}
+    	}
+	
+		
+
+		if(messages.length()>0)
+		{
+			Alert.message("Warnings", "There were issues with the export:\n"+WordUtils.wrap(messages, 50));
+		}
+		
+		// close dialog
+		parent.dispose();
+
+
     }
     
     
-	// FIXME: sometimes the preview takes a while to create.  for example,
-	// a spreadsheet view of a 100-element master needs to load all 100
-	// elements.  yeowch.  i'll need to run this in a separate thread for that!
-	private void updatePreview() {
-		
-		// Don't run if the preview panel is hidden
-		if(panelPreview.isVisible()!=true)	return;
-		
-		// Kludge to intercept when the combo and exporters list is out of sync
-		if (cboExportFormat.getModel().getSize()!=EXPORTERS.length) return;
-		
-		int i = cboExportFormat.getSelectedIndex();
 
-		// Don't run if an export format hasn't been selected
-		if(i<0) return;
-	
-		/*
-		try {
-			// save to buffer
-			setCursor(new Cursor(Cursor.WAIT_CURSOR)); // this could take a second...
-			
-			// If exporters list is smaller than the combo box - quit.
-			if(EXPORTERS.length<i) return;
-			
-			Filetype f =  (Filetype) formatModel.getSelectedItem();	
-			StringBuffer buf = writer.getBuffer();
-			buf.delete(0, buf.length()); // clear it
-			BufferedWriter b = new BufferedWriter(writer);
-			
-			// if the sample list has multi samples in it and the file type is 
-			// capable of writing multiple files we want a packed file. 
-			if (f.isMultiFileCapable() && elements.size()>1)
-			{
-				System.out.println("Saving packed samples as " + f.toString() + "format");
-				((PackedFileType)f).saveSamples(sampleList, b);
-				lblPreview.setText("Preview:");
-			}
-			else if (elements != null)
-			{	
-				f.save(sampleList.get(0), b);
-				lblPreview.setText("Previewing file 1 of "+ Integer.toString(sampleList.size()) ); 
-			}
-			else
-			{
-				return;
-			}
-			b.close();
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); // ok, done with the slow part
-
-			// update views
-			txtPreview.setText(buf.toString());
-
-			// move cursor to start -- this scrolls to the top, as well
-			txtPreview.setCaretPosition(0);
-		} catch (IOException ioe) {
-			// problem saving it -- bug
-			Bug.bug(ioe);
-		} catch (Exception e) {
-			// problem creating the filetype -- bug
-			Bug.bug(e);
-		}
-		*/
-	}
     
     /** This method is called from within the constructor to
      * initialize the form.
@@ -510,18 +557,12 @@ public class ExportUI extends javax.swing.JPanel{
         lblOutput = new javax.swing.JLabel();
         cboWhat = new javax.swing.JComboBox();
         lblWhat = new javax.swing.JLabel();
-        cboHow = new javax.swing.JComboBox();
-        lblHow = new javax.swing.JLabel();
+        cboGrouping = new javax.swing.JComboBox();
+        lblGrouping = new javax.swing.JLabel();
         panelSpacer = new javax.swing.JPanel();
         lblEncoding = new javax.swing.JLabel();
         cboEncoding = new javax.swing.JComboBox();
-        panelPreview = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtPreview = new javax.swing.JTextPane();
-        lblPreview = new javax.swing.JLabel();
-        btnCopy = new javax.swing.JButton();
         panelBottom = new javax.swing.JPanel();
-        btnPreview = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
         btnOK = new javax.swing.JButton();
         btnHelp = new javax.swing.JButton();
@@ -540,7 +581,7 @@ public class ExportUI extends javax.swing.JPanel{
 
         lblWhat.setText("What to export:");
 
-        lblHow.setText("Grouping:");
+        lblGrouping.setText("Grouping:");
 
         panelSpacer.setPreferredSize(new java.awt.Dimension(100, 0));
 
@@ -572,7 +613,7 @@ public class ExportUI extends javax.swing.JPanel{
                             .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                                 .add(lblOutput, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .add(lblExportFormat, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .add(lblHow, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .add(lblGrouping, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .add(lblWhat, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .add(lblEncoding))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -582,7 +623,7 @@ public class ExportUI extends javax.swing.JPanel{
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(btnBrowse))
                             .add(cboExportFormat, 0, 215, Short.MAX_VALUE)
-                            .add(cboHow, 0, 215, Short.MAX_VALUE)
+                            .add(cboGrouping, 0, 215, Short.MAX_VALUE)
                             .add(cboWhat, 0, 215, Short.MAX_VALUE)
                             .add(cboEncoding, 0, 215, Short.MAX_VALUE)))))
         );
@@ -595,8 +636,8 @@ public class ExportUI extends javax.swing.JPanel{
                     .add(cboWhat, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblHow)
-                    .add(cboHow, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(lblGrouping)
+                    .add(cboGrouping, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblExportFormat)
@@ -614,40 +655,6 @@ public class ExportUI extends javax.swing.JPanel{
                 .add(panelSpacer, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
-
-        jScrollPane1.setViewportView(txtPreview);
-
-        lblPreview.setText("Preview:");
-
-        btnCopy.setText("Copy");
-
-        org.jdesktop.layout.GroupLayout panelPreviewLayout = new org.jdesktop.layout.GroupLayout(panelPreview);
-        panelPreview.setLayout(panelPreviewLayout);
-        panelPreviewLayout.setHorizontalGroup(
-            panelPreviewLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelPreviewLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelPreviewLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelPreviewLayout.createSequentialGroup()
-                        .add(lblPreview)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 343, Short.MAX_VALUE)
-                        .add(btnCopy)))
-                .addContainerGap())
-        );
-        panelPreviewLayout.setVerticalGroup(
-            panelPreviewLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelPreviewLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelPreviewLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblPreview)
-                    .add(btnCopy))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 29, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        btnPreview.setText("Preview");
 
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
@@ -667,9 +674,7 @@ public class ExportUI extends javax.swing.JPanel{
             .add(panelBottomLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(btnHelp)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnPreview)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 143, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 240, Short.MAX_VALUE)
                 .add(btnCancel)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnOK)
@@ -682,8 +687,7 @@ public class ExportUI extends javax.swing.JPanel{
                 .add(panelBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnOK)
                     .add(btnCancel)
-                    .add(btnHelp)
-                    .add(btnPreview))
+                    .add(btnHelp))
                 .addContainerGap())
         );
 
@@ -715,7 +719,7 @@ public class ExportUI extends javax.swing.JPanel{
         );
         panelPaddingLayout.setVerticalGroup(
             panelPaddingLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 13, Short.MAX_VALUE)
+            .add(0, 0, Short.MAX_VALUE)
         );
 
         separator.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -727,18 +731,17 @@ public class ExportUI extends javax.swing.JPanel{
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelBottom, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelPadding, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
                         .add(panelIcon, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .add(18, 18, 18)
                         .add(panelOptions, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .add(panelPreview, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(panelPadding, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(separator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, separator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE))
                 .addContainerGap())
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelBottom, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -748,10 +751,8 @@ public class ExportUI extends javax.swing.JPanel{
                         .add(6, 6, 6)
                         .add(panelIcon, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(panelOptions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 168, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelPreview, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelPadding, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(panelPadding, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(separator, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(12, 12, 12)
@@ -769,31 +770,52 @@ public class ExportUI extends javax.swing.JPanel{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JButton btnBrowse;
     protected javax.swing.JButton btnCancel;
-    protected javax.swing.JButton btnCopy;
     protected javax.swing.JButton btnHelp;
     protected javax.swing.JButton btnOK;
-    protected javax.swing.JButton btnPreview;
     protected javax.swing.JComboBox cboEncoding;
     protected javax.swing.JComboBox cboExportFormat;
-    protected javax.swing.JComboBox cboHow;
+    protected javax.swing.JComboBox cboGrouping;
     protected javax.swing.JComboBox cboWhat;
-    protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JLabel lblEncoding;
     protected javax.swing.JLabel lblExportFormat;
-    protected javax.swing.JLabel lblHow;
+    protected javax.swing.JLabel lblGrouping;
     protected javax.swing.JLabel lblIcon;
     protected javax.swing.JLabel lblOutput;
-    protected javax.swing.JLabel lblPreview;
     protected javax.swing.JLabel lblWhat;
     protected javax.swing.JPanel panelBottom;
     protected javax.swing.JPanel panelIcon;
     protected javax.swing.JPanel panelOptions;
     protected javax.swing.JPanel panelPadding;
-    protected javax.swing.JPanel panelPreview;
     protected javax.swing.JPanel panelSpacer;
     protected javax.swing.JSeparator separator;
     protected javax.swing.JTextField txtOutput;
-    protected javax.swing.JTextPane txtPreview;
     // End of variables declaration//GEN-END:variables
-    
+
+    public static class Charsets {
+    	public static final String AUTO = "Automatic";
+    	public static final String DEFAULT = "System Default"; // djm TODO locale
+    	
+    	public static final String[] getReadingCharsets() {
+    		ArrayList<String> charsets = new ArrayList<String>();
+    		charsets.add(AUTO);
+    		for (String cs : Charset.availableCharsets().keySet()) {
+    			charsets.add(cs);
+    		}
+    		return charsets.toArray(new String[0]);
+    	}
+    	
+    	public static final String[] getWritingCharsets() {
+    		ArrayList<String> charsets = new ArrayList<String>();
+    		for (String key : Charset.availableCharsets().keySet()) {
+    			Charset cs = Charset.availableCharsets().get(key);
+    			if (cs.canEncode()) {
+    				charsets.add(key);
+    			}
+    		}
+    		return charsets.toArray(new String[0]);
+    	}
+    }
+
+    public enum Response {OVERWRITE , IGNORE, RENAME}
 }
+

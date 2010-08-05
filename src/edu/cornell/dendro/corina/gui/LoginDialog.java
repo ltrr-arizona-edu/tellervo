@@ -90,6 +90,7 @@ public class LoginDialog extends JDialog {
 		this.btnWorkOffline.setVisible(false);
 		this.lblTitle.setText("Confirm credentials");
 		this.ignoreSavedInfo = true;
+		pack();
 	}
 	
 	public void setInstructionText(String instr)
