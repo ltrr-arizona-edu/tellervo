@@ -84,7 +84,7 @@ public class EditorFactory {
 		 * Populate the given Corina sample from the information we acquired
 		 * @param s
 		 */
-		public void popupateCorinaSample(Sample s) {
+		public void populateCorinaSample(Sample s) {
 			LabCode labcode = new LabCode();
 			
 			if(object != null) {
@@ -339,7 +339,7 @@ public class EditorFactory {
 		sample.setMeta(Metadata.TITLE, I18n.getText("general.newEntry")+": " + title);
 
 		// attach anything we loaded in the above dialog
-		result.popupateCorinaSample(sample);
+		result.populateCorinaSample(sample);
 		
 		// setup our loader and series identifier
 		CorinaWsiTridasElement.attachNewSample(sample);

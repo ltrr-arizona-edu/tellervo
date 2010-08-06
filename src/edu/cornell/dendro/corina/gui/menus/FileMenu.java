@@ -16,11 +16,22 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
+import org.tridas.io.AbstractDendroFileReader;
+import org.tridas.io.TridasIO;
+import org.tridas.io.exceptions.InvalidDendroFileException;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasProject;
+import org.tridas.io.util.TridasUtils;
+
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.editor.ScanBarcodeUI;
@@ -34,9 +45,12 @@ import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.io.AbstractDendroReaderFileFilter;
+import edu.cornell.dendro.corina.io.DendroReaderFileFilter;
 import edu.cornell.dendro.corina.io.ExportDialog;
 import edu.cornell.dendro.corina.io.WrongFiletypeException;
 import edu.cornell.dendro.corina.manip.Sum;
+import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
@@ -288,6 +302,115 @@ public class FileMenu extends JMenu {
 	}
 	
 	public static void importdbwithbarcode(){
+			
+		// Set up file chooser and filters
+		JFileChooser fc = new JFileChooser();
+		for (String readername : TridasIO.getSupportedReadingFormats())
+		{
+			AbstractDendroReaderFileFilter filter = new DendroReaderFileFilter(readername);
+			fc.addChoosableFileFilter(filter);
+		}
+		int returnVal = fc.showOpenDialog(null);
+			
+		// Get details from user
+		String fullFilename = null;
+		String filename = null;
+		String type = null;
+	    if (returnVal == JFileChooser.APPROVE_OPTION) {
+	        File file = fc.getSelectedFile();
+	        type = fc.getFileFilter().getDescription();
+	        
+	        fullFilename = file.getPath();
+	        filename = file.getName();
+	    } else {
+	    	return;
+	    }
+
+		// Set up reader
+	    AbstractDendroFileReader reader;
+		reader = TridasIO.getFileReader(type);
+		if(reader==null)
+		{
+			reader = TridasIO.getFileReaderFromExtension(fullFilename
+					.substring(fullFilename.lastIndexOf(".") + 1));
+		}
+		
+		// Load file
+		try {
+			reader.loadFile(fullFilename);
+		} catch (IOException e1) {
+			System.out.println(e1.toString());
+			e1.printStackTrace();
+			Alert.error("Error", e1.getLocalizedMessage());
+			return;
+		} catch (InvalidDendroFileException e) {
+			System.out.println(e.toString());
+			e.printStackTrace();
+			Alert.error("Error", e.getLocalizedMessage());
+			return;
+		}
+		
+		// Extract project
+		TridasProject project = reader.getProject();	
+		ArrayList<TridasMeasurementSeries> seriesList = TridasUtils.getMeasurementSeriesFromTridasProject(project);
+		
+		if(seriesList.size()==0) 
+		{
+			Alert.error("Error", "No series in file");
+			return;
+		}
+		
+		TridasMeasurementSeries series = seriesList.get(0);
+		
+		// make dataset ref, based on our series
+		Sample sample = new Sample(series);
+		
+		// Set range from series
+		Range rng = new Range(new Year(1001), new Year(1050));
+		sample.setRange(rng);
+		
+		// Set filename
+		sample.setMeta("filename", fullFilename);
+		
+		// setup our loader and series identifier
+		CorinaWsiTridasElement.attachNewSample(sample);
+		
+
+		final JDialog dialog = new JDialog();
+		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
+		
+		dialog.setContentPane(barcodeUI);
+		dialog.setResizable(false);
+		dialog.pack();
+		dialog.setModal(true);
+		Center.center(dialog);
+		dialog.setVisible(true);
+		BarcodeDialogResult result = barcodeUI.getResult();
+
+		if(!result.barcodeScanSuccessful())
+		{
+			// start the import dialog with no barcode info   
+		    ImportFrame importdialog = new ImportFrame(sample);
+		    importdialog.setVisible(true);
+		
+			//Editor ed = new Editor(sample);
+			//ed.setVisible(true);
+			
+			
+			
+			
+		}
+		else{
+			// start the import dialog with barcode info 
+		    ImportFrame importdialog = new ImportFrame(sample, result);
+		    importdialog.setVisible(true);
+		}
+		
+		
+		
+	}
+	
+	public static void importdbwithbarcodeold(){
 		String filename = "";
 		
 		try {

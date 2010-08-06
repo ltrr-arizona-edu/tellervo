@@ -49,8 +49,8 @@ public class LegacySampleExtractor {
 	private Sample s;
 	
 	public LegacySampleExtractor(Sample s) {
-		if(!(s.getLoader() instanceof FileElement))
-			throw new UnsupportedOperationException("Legacy samples must be file-based samples");
+		//if(!(s.getLoader() instanceof FileElement))
+			//throw new UnsupportedOperationException("Legacy samples must be file-based samples");
 		
 		this.s = s;
 		this.barcodeSupplied = false;
@@ -63,12 +63,12 @@ public class LegacySampleExtractor {
 	 * @param result
 	 */
 	public LegacySampleExtractor(Sample s, BarcodeDialogResult result){
-		if(!(s.getLoader() instanceof FileElement))
-			throw new UnsupportedOperationException("Legacy samples must be file-based samples");
+	//	if(!(s.getLoader() instanceof FileElement))
+		//	throw new UnsupportedOperationException("Legacy samples must be file-based samples");
 		
 		
 		this.barcodeSupplied = true;
-		result.popupateCorinaSample(s);
+		result.populateCorinaSample(s);
 		this.s = s;
 		extractFromFilename();		
 		
