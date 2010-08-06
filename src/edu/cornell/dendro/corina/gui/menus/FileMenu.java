@@ -28,6 +28,7 @@ import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasProject;
+import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.TridasUtils;
 
 import edu.cornell.dendro.corina.Range;
@@ -366,7 +367,16 @@ public class FileMenu extends JMenu {
 		Sample sample = new Sample(series);
 		
 		// Set range from series
-		Range rng = new Range(new Year(1001), new Year(1050));
+		SafeIntYear startYear = new SafeIntYear(1001);
+		if(series.isSetInterpretation())
+		{
+			if (series.getInterpretation().isSetFirstYear())
+			{
+				 startYear = new SafeIntYear(series.getInterpretation().getFirstYear());
+			}
+		}
+		SafeIntYear endYear = startYear.add(series.getValues().get(0).getValues().size());
+		Range rng = new Range(new Year(startYear.toString()), new Year(endYear.toString()));
 		sample.setRange(rng);
 		
 		// Set filename
@@ -391,14 +401,7 @@ public class FileMenu extends JMenu {
 		{
 			// start the import dialog with no barcode info   
 		    ImportFrame importdialog = new ImportFrame(sample);
-		    importdialog.setVisible(true);
-		
-			//Editor ed = new Editor(sample);
-			//ed.setVisible(true);
-			
-			
-			
-			
+		    importdialog.setVisible(true);			
 		}
 		else{
 			// start the import dialog with barcode info 
