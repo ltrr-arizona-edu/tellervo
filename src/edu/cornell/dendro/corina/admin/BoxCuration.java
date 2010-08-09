@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import javax.swing.JDialog;
@@ -100,6 +101,7 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
 		
 		box = resource.getAssociatedResult();
 		updateBoxGui();
+		btnApply.setEnabled(false);
 		return true;
     }
     
@@ -271,14 +273,17 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     private void setFieldsForCheckout()
     {
 		this.txtTrackingLocation.setText("Checked out");
-		addComment("Checked out by "+App.currentUser.getFirstName()+" "+App.currentUser.getLastName()+ " on ");
+		Calendar c = Calendar.getInstance();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("d mmm yyyy");
+		addComment("Checked out by "+App.currentUser.getFirstName()+" "+App.currentUser.getLastName()+ " on " + dateFormat.format(c.getTime()) +".");
     }
     
     private void setFieldsForCheckin()
     {
 		this.txtTrackingLocation.setText(" ");
-		addComment("Checked in by "+App.currentUser.getFirstName()+" "+App.currentUser.getLastName()+ " on ");
-    }
+		Calendar c = Calendar.getInstance();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("d mmm yyyy");
+		addComment("Checked in by "+App.currentUser.getFirstName()+" "+App.currentUser.getLastName()+ " on " + dateFormat.format(c.getTime()) +".");    }
     
     
     private void addComment(String comment)
@@ -338,8 +343,6 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
         panelBoxDetails = new javax.swing.JPanel();
         txtLastUpdated = new javax.swing.JTextField();
         lblLastUpdated = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtComments = new javax.swing.JTextArea();
         txtCurationLocation = new javax.swing.JTextField();
         txtTrackingLocation = new javax.swing.JTextField();
         lblCurationLocation = new javax.swing.JLabel();
@@ -347,6 +350,8 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
         lblComments = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
         lblName = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtComments = new javax.swing.JTextPane();
         panelContents = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblBoxContents = new javax.swing.JTable();
@@ -368,10 +373,6 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
 
         lblLastUpdated.setText("Last updated:");
 
-        txtComments.setColumns(20);
-        txtComments.setRows(5);
-        jScrollPane1.setViewportView(txtComments);
-
         lblCurationLocation.setText("Permanent location:");
 
         lblTrackingLocation.setText("Current location:");
@@ -379,6 +380,8 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
         lblComments.setText("Comments:");
 
         lblName.setText("Name:");
+
+        jScrollPane3.setViewportView(txtComments);
 
         org.jdesktop.layout.GroupLayout panelBoxDetailsLayout = new org.jdesktop.layout.GroupLayout(panelBoxDetails);
         panelBoxDetails.setLayout(panelBoxDetailsLayout);
@@ -394,11 +397,11 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
                     .add(lblName))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
                     .add(txtName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
                     .add(txtTrackingLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
                     .add(txtLastUpdated, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
-                    .add(txtCurationLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
+                    .add(txtCurationLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelBoxDetailsLayout.setVerticalGroup(
@@ -423,7 +426,7 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(lblComments)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
+                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -574,8 +577,8 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     protected javax.swing.JButton btnOk;
     protected javax.swing.JButton btnSearch;
     protected javax.swing.JComboBox cboBox;
-    protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JScrollPane jScrollPane2;
+    protected javax.swing.JScrollPane jScrollPane3;
     protected javax.swing.JLabel lblComments;
     protected javax.swing.JLabel lblCurationLocation;
     protected javax.swing.JLabel lblLastUpdated;
@@ -586,7 +589,7 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     protected javax.swing.JPanel panelContents;
     protected javax.swing.JTabbedPane tabbedPaneBox;
     protected javax.swing.JTable tblBoxContents;
-    protected javax.swing.JTextArea txtComments;
+    protected javax.swing.JTextPane txtComments;
     protected javax.swing.JTextField txtCurationLocation;
     protected javax.swing.JTextField txtLastUpdated;
     protected javax.swing.JTextField txtName;
