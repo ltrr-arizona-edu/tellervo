@@ -14,6 +14,7 @@ import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 import edu.cornell.dendro.corina.command.bulkImport.AddRowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.HideColumnWindowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.ShowColumnWindowCommand;
+import edu.cornell.dendro.corina.command.bulkImport.ImportSelectedObjectsCommand;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
@@ -37,6 +38,7 @@ public class BulkImportController extends FrontController {
 	
 	public BulkImportController(){
 		registerCommand(DISPLAY_COLUMN_CHOOSER, ShowColumnWindowCommand.class);
+		registerCommand(IMPORT_SELECTED_OBJECTS, ImportSelectedObjectsCommand.class);
 		registerCommand(HIDE_COLUMN_CHOOSER, HideColumnWindowCommand.class);
 		registerCommand(ADD_ROW, AddRowCommand.class);
 		registerCommand(DISPLAY_BULK_IMPORT, "display");
