@@ -31,6 +31,7 @@ import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.control.bulkImport.AddRowEvent;
 import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
+import edu.cornell.dendro.corina.control.bulkImport.*;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
@@ -126,7 +127,8 @@ public class ObjectView extends JPanel{
 		importSelected.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent argE) {
-				
+				ImportSelectedEvent event = new ImportSelectedEvent(BulkImportController.IMPORT_SELECTED_OBJECTS);
+				event.dispatch();
 			}
 		});
 		
