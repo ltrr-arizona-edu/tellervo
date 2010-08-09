@@ -238,7 +238,11 @@ if($myMetaHeader->status != "Error")
                 }
                 else
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                	$myAuth->logout();
+					$seq = $myAuth->sequence();
+				    $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq, 'OK');
+		    
+                    //trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
         }
