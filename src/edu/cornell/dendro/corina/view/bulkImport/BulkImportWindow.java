@@ -56,31 +56,4 @@ public class BulkImportWindow extends JFrame {
 	public void populateLocale() {
 
 	}
-	
-	public static void main() {
-		JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(new AnalyticsConfigData("UA-17109202-7"), GoogleAnalyticsVersion.V_4_7_2);
-		MVC.setTracker(tracker);
-		CorinaModelLocator.getInstance();
-		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
-		SingleObjectModel smodel = new SingleObjectModel();
-		smodel.setProperty(SingleObjectModel.TITLE, "Test title");
-		smodel.setProperty(SingleObjectModel.COMMENTS, "Some comments right here");
-		smodel.setProperty(SingleObjectModel.DESCRIPTION, "My description");
-		smodel.setProperty(SingleObjectModel.OBJECT_CODE, "OBJECT CODE 2");
-		smodel.setProperty(SingleObjectModel.OBJECT_CODE, "OBJECT CODE");
-		smodel.setProperty(SingleObjectModel.TYPE, "my type");
-		
-		ColumnChooserModel cmodel = (ColumnChooserModel) model.getProperty(ObjectModel.COLUMN_MODEL);
-		cmodel.add(SingleObjectModel.OBJECT_CODE);
-		cmodel.add(SingleObjectModel.IMPORTED);
-
-		MVCArrayList<SingleObjectModel> objects = (MVCArrayList<SingleObjectModel>) model.getProperty(ObjectModel.ROWS);
-		objects.add(smodel);
-		
-		BulkImportWindow frame = new BulkImportWindow();
-		BulkImportModel.getInstance().setMainView(frame);
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(3);
-	}
 }

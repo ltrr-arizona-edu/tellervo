@@ -123,6 +123,13 @@ public class ObjectView extends JPanel{
 			}
 		});
 		
+		importSelected.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent argE) {
+				
+			}
+		});
+		
 		selectAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent argE) {
 				// skip controller
