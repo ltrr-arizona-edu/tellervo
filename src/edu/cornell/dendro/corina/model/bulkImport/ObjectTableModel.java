@@ -173,6 +173,9 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		}
 		argColumnIndex--;
 		String column = columns.get(argColumnIndex);
+		if(argAValue.toString().equals("")){
+			argAValue = null;
+		}
 		SingleObjectModel som = models.get(argRowIndex);
 		som.setProperty(column, argAValue);
 	}
