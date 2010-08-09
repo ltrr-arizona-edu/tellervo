@@ -83,6 +83,7 @@ public class LoginDialog extends JDialog {
 		this.autoLogin.setVisible(false);
 		this.rememberPassword.setVisible(false);
 		this.rememberUsername.setVisible(false);
+		this.autoLogin.setSelected(true);
 		this.serverUrl.setVisible(false);
 		this.password.setText("");
 		this.lblLoginTo.setVisible(false);
@@ -344,7 +345,6 @@ public class LoginDialog extends JDialog {
 		// forcing them to remember!
 		if(ignoreSavedInfo) 
 		{
-			password.setText("");
 			return;
 		}
 		
@@ -409,6 +409,10 @@ public class LoginDialog extends JDialog {
 	}
 	
 	private void saveSettings() {
+		
+		// Don't make any changes if we're ignoring saved info
+		if (this.ignoreSavedInfo) return;
+		
 		if(rememberUsername.isSelected()) {
 			App.prefs.setPref("corina.login.remember_username", "true");
 			App.prefs.setPref("corina.login.username", username.getText());
@@ -544,13 +548,26 @@ public class LoginDialog extends JDialog {
 							performAuthentication(recursionLevel + 1);
 							return;
 						}
-						
-						// failure. what type?
-						JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
-								"Error: " + e.toString(),
-							    "Could not authenticate",
-							    JOptionPane.ERROR_MESSAGE);
-						enableDialogButtons(true);
+						// Standard authentication error
+						else if(e instanceof WebInterfaceException && 
+								((WebInterfaceException)e).getMessageCode() == 
+									WebInterfaceCode.AUTHENTICATION_FAILED) {
+							JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
+									"Incorrect username or password.\n"
+									+"Please check and try again.",
+									"Invalid credentials",
+									JOptionPane.ERROR_MESSAGE);
+							enableDialogButtons(true);
+						}
+						else
+						{
+							// failure. what type?
+							JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
+									"Error: " + e.toString(),
+								    "Could not authenticate",
+								    JOptionPane.ERROR_MESSAGE);
+							enableDialogButtons(true);
+						}
 						
 						if(authenticationNotifier != null) {
 							authenticationNotifier.setSuccess(false);

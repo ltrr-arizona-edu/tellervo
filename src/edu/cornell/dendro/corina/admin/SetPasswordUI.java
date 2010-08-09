@@ -106,10 +106,10 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, A
         });
         btnOk.addActionListener(new java.awt.event.ActionListener() {
     		public void actionPerformed(java.awt.event.ActionEvent evt) {
-    			if(isPasswordCorrect(pwdNew.getPassword()))
+    			if(isPasswordCorrect(pwdOld.getPassword()))
     			{
     				
-    				Boolean success = setPassword(pwdNew.getPassword());
+    				Boolean success = setPassword(pwdOld.getPassword());
     				
     				if(success) dispose();
     			}
@@ -157,8 +157,9 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, A
     	dlg.setInstructionText("Confirm original credentials");
     	dlg.setUsername(thisUser.getUsername());
     	dlg.setPassword(new String(pwd));
+    	dlg.setVisible(false);
     	try {
-			dlg.doLogin(null, true);
+			dlg.doLogin(null, false);
 		} catch (UserCancelledException e) {
 			return false;
 		}

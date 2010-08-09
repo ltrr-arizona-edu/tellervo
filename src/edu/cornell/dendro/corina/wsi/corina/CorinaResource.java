@@ -194,7 +194,7 @@ public abstract class CorinaResource extends
 				// no nonce? can't continue
 				if (nonce == null)
 					throw new WebInterfaceException(msgCode,
-							"Authentication problem, but server provided invalid authenitcation request");
+							"Authentication problem, but server provided invalid authentication request");
 
 				// generate an exception that we might throw...
 				WebPermissionsException wpe = new WebPermissionsException(msgCode, 
