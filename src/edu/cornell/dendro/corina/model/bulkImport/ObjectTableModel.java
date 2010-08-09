@@ -57,6 +57,13 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		}
 	}
 	
+	public void setSelected(SingleObjectModel argSOM, boolean argSelected){
+		if(!models.contains(argSOM)){
+			throw new IllegalArgumentException("The provided model is not in this list.");
+		}
+		selected.put(argSOM, argSelected);
+	}
+	
 	public void selectAll(){
 		selected.clear();
 		for(SingleObjectModel som : models){
