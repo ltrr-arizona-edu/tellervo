@@ -63,6 +63,7 @@ import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
 import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
+import edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow;
 
 // TODO:
 // -- refactor so Editor can use it (export)
@@ -679,4 +680,5 @@ public class FileMenu extends JMenu {
 			add(Builder.makeMenuItem("menus.file.quit", "edu.cornell.dendro.corina.gui.XCorina.quit()", "exit.png"));
 		}
 	}
+	
 }

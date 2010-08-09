@@ -8,11 +8,13 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import com.dmurph.mvc.MVC;
+import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.tracking.AnalyticsConfigData;
 import com.dmurph.tracking.JGoogleAnalyticsTracker;
 import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 
+import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
@@ -55,5 +57,12 @@ public class BulkImportWindow extends JFrame {
 	
 	public void populateLocale() {
 
+	}
+	
+	public static void main()	
+	{
+		CorinaModelLocator.getInstance();
+		MVCEvent event = new MVCEvent(BulkImportController.DISPLAY_BULK_IMPORT);
+		event.dispatch();
 	}
 }

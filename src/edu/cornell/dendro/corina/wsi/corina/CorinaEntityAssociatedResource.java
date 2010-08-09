@@ -17,6 +17,7 @@ import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
+import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.schema.WSIRequest;
 
@@ -190,6 +191,8 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 			request.getMeasurementSeries().add((TridasMeasurementSeries) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof TridasDerivedSeries)
 			request.getDerivedSeries().add((TridasDerivedSeries) createOrUpdateEntity);
+		else if(createOrUpdateEntity instanceof WSIBox)
+			request.getBoxes().add((WSIBox) createOrUpdateEntity);
 		else 
 			throw new IllegalArgumentException("Unknown/invalid entity type for update/create: " + 
 					createOrUpdateEntity.toString());

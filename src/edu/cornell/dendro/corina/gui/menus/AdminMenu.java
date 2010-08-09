@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.gui.menus;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -32,6 +33,7 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow;
 
 // TODO: move all menus to corina.gui.menus or even corina.menus (i'm tending towards the latter)
 // TODO: error-log should be a singleton-window, and centered
@@ -180,6 +182,17 @@ private JFrame frame;
 	            "edu.cornell.dendro.corina.admin.SampleCuration.showDialog()", "findsample.png");
 	    curationmenu.add(findsample); 
 	    
+	    JMenuItem boxdetails = Builder.makeMenuItem("menus.admin.boxdetails",
+	            "edu.cornell.dendro.corina.admin.BoxCuration.showDialog()", "box.png");
+	    curationmenu.add(boxdetails); 
+	    
+	    JMenuItem checkinbox = Builder.makeMenuItem("menus.admin.checkinbox",
+	            "edu.cornell.dendro.corina.admin.BoxCuration.checkinBox()", "box.png");
+	    curationmenu.add(checkinbox); 
+	 
+	    JMenuItem checkoutbox = Builder.makeMenuItem("menus.admin.checkoutbox",
+	            "edu.cornell.dendro.corina.admin.BoxCuration.checkoutBox()", "box.png");
+	    curationmenu.add(checkoutbox); 
 	    
 	    JMenuItem inventory = Builder.makeMenuItem("menus.admin.inventory",
 	            "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.proSheetPrintingDialog()");

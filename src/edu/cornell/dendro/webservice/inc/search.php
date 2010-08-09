@@ -478,6 +478,9 @@ class search Implements IDBAccessor
         case "vmeasurementderivedcache":
             return "vwcomprehensivevm";
             break;
+        case "box":
+        	return "vwtblbox"
+        	break;
         default:
         	echo "unable to determine table name.  Fatal error.";
             die();
