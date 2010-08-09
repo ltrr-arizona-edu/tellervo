@@ -82,4 +82,10 @@ public class BulkImportController extends FrontController {
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(3);
 	}
+	
+	public static void main(String[] args) {
+		CorinaModelLocator.getInstance();
+		MVCEvent event = new MVCEvent(DISPLAY_BULK_IMPORT);
+		event.dispatch();
+	}
 }
