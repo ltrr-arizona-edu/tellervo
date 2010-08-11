@@ -12,6 +12,11 @@ public interface IBulkImportSectionModel {
 	public static final String ROWS = "rows";
 	
 	/**
+	 * goes to the table model, which handles the selected rows
+	 */
+	public void removeSelected();
+	
+	/**
 	 * Gets an instance of a row object for this model;
 	 * @return
 	 */

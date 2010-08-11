@@ -3,14 +3,15 @@
  */
 package edu.cornell.dendro.corina.command.bulkImport;
 
+import java.awt.Window;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
+import org.tridas.schema.TridasObject;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
@@ -18,6 +19,10 @@ import com.dmurph.mvc.control.ICommand;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 
 /**
  * @author daniel
@@ -54,7 +59,17 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			if(!definedProps.contains(SingleObjectModel.OBJECT_CODE)){
 				requiredMessages.add("Cannot import without an object code.");
 				incomplete = true;
-			}// else if 
+			} else{
+				if(som.getProperty(SingleObjectModel.OBJECT_CODE).toString().length() < 3){
+					requiredMessages.add("Object code must be at least 3 characters");
+					incomplete = true;
+				}
+				if(som.getProperty(SingleObjectModel.OBJECT_CODE).toString().contains(" ")){
+					requiredMessages.add("Object code cannot contain whitespace.");
+					incomplete = true;
+				}
+			}
+			
 			
 			if(incomplete){
 				incompleteModels.add(som);
@@ -69,6 +84,24 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			return;
 		}
 		
-		// now import somehow... all objects to save are in the "selected" arraylist.
+		for(SingleObjectModel som : selected){
+			TridasObject object = new TridasObject();
+			
+			som.populateTridasObject(object);
+			
+			EntityResource<TridasObject> resource = new EntityResource<TridasObject>(object, CorinaRequestType.CREATE, TridasObject.class);
+			
+			// set up a dialog...
+			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
+			CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
+			
+			resource.query();
+			dialog.setVisible(true);
+			
+			if(!dialog.isSuccessful()) { 
+				Alert.message("Error", "Error creating object");
+			}
+			som.populateFromTridasObject(resource.getAssociatedResult());
+		}
 	}
 }

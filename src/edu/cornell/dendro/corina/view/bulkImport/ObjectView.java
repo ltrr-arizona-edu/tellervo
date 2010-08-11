@@ -147,6 +147,13 @@ public class ObjectView extends JPanel{
 				tmodel.selectNone();
 			}
 		});
+		
+		removeSelected.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent argE) {
+				
+			}
+		});
 	}
 
 	private void populateLocale() {

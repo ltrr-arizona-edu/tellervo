@@ -35,6 +35,14 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 	}
 	
 	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#removeSelected()
+	 */
+	@Override
+	public void removeSelected() {
+		getTableModel().removeSelected();
+	}
+	
+	/**
 	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#createRowInstance()
 	 */
 	@Override

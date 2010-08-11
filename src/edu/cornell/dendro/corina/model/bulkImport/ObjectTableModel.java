@@ -64,6 +64,13 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		selected.put(argSOM, argSelected);
 	}
 	
+	public void removeSelected() {
+		for(SingleObjectModel som : selected.keySet()){
+			models.remove(som);
+			selected.remove(som);
+		}
+	}
+	
 	public void selectAll(){
 		selected.clear();
 		for(SingleObjectModel som : models){

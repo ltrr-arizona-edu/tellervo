@@ -13,6 +13,7 @@ import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 
 import edu.cornell.dendro.corina.command.bulkImport.AddRowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.HideColumnWindowCommand;
+import edu.cornell.dendro.corina.command.bulkImport.RemoveSelectedCommand;
 import edu.cornell.dendro.corina.command.bulkImport.ShowColumnWindowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.ImportSelectedObjectsCommand;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
@@ -31,6 +32,7 @@ public class BulkImportController extends FrontController {
 	public static final String HIDE_COLUMN_CHOOSER = "BULK_IMPORT_HIDE_COLUMN_CHOOSER";
 	public static final String ADD_ROW = "BULK_IMPORT_ADD_ROW";
 	public static final String DISPLAY_BULK_IMPORT = "BULK_IMPORT_DISPLAY_BULK_IMPORT";
+	public static final String REMOVE_SELECTED = "BULK_IMPORT_REMOVE_SELECTED";
 	
 	public static final String IMPORT_SELECTED_OBJECTS = "BULK_IMPORT_SELECTED_OBJECTS";
 	public static final String IMPORT_SELECTED_ELEMENTS = "BULK_IMPORT_SELECTED_ELEMENTS";
@@ -41,6 +43,7 @@ public class BulkImportController extends FrontController {
 		registerCommand(IMPORT_SELECTED_OBJECTS, ImportSelectedObjectsCommand.class);
 		registerCommand(HIDE_COLUMN_CHOOSER, HideColumnWindowCommand.class);
 		registerCommand(ADD_ROW, AddRowCommand.class);
+		registerCommand(REMOVE_SELECTED, RemoveSelectedCommand.class);
 		registerCommand(DISPLAY_BULK_IMPORT, "display");
 	}
 	
@@ -53,14 +56,16 @@ public class BulkImportController extends FrontController {
 		}
 		
 		if(BulkImportModel.getInstance().getMainView() != null){
-			BulkImportModel.getInstance().getMainView().setVisible(true);
+			BulkImportWindow window = BulkImportModel.getInstance().getMainView();
+			window.setVisible(true);
+			window.toFront();
 			return;
 		}
 		
-		CorinaModelLocator.getInstance();
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
 		SingleObjectModel smodel = new SingleObjectModel();
 		
+		// test model
 		smodel.setProperty(SingleObjectModel.TITLE, "Test title");
 		smodel.setProperty(SingleObjectModel.COMMENTS, "Some comments right here");
 		smodel.setProperty(SingleObjectModel.DESCRIPTION, "My description");
@@ -83,8 +88,9 @@ public class BulkImportController extends FrontController {
 		frame.setDefaultCloseOperation(3);
 	}
 	
-	public static void main(String[] args) {
+	public static void main() {
 		CorinaModelLocator.getInstance();
+		MVC.showEventMonitor();
 		MVCEvent event = new MVCEvent(DISPLAY_BULK_IMPORT);
 		event.dispatch();
 	}
