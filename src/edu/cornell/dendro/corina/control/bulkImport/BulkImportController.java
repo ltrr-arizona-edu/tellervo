@@ -85,7 +85,7 @@ public class BulkImportController extends FrontController {
 		BulkImportModel.getInstance().setMainView(frame);
 		frame.pack();
 		frame.setVisible(true);
-		frame.setDefaultCloseOperation(3);
+		//frame.setDefaultCloseOperation(3);
 	}
 	
 	public static void main() {
