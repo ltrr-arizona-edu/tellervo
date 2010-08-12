@@ -4,12 +4,10 @@
 package edu.cornell.dendro.corina.view.bulkImport;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -17,7 +15,6 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
@@ -27,7 +24,6 @@ import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
 import edu.cornell.dendro.corina.control.bulkImport.ColumnsModifiedEvent;
 import edu.cornell.dendro.corina.control.bulkImport.HideColumnChooserEvent;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
-import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 
 /**
  * @author daniel
@@ -47,6 +43,12 @@ public class ColumnChooserView extends JDialog{
 		model = argModel;
 		columns = argModel.possibleColumns;
 		tableModel = new TableModel();
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				unlinkModel();
+			}
+		});
 		initComponents();
 		linkModel();
 		addListeners();
@@ -103,7 +105,6 @@ public class ColumnChooserView extends JDialog{
 	}
 	
 	class TableModel extends AbstractTableModel{
-		
 		
 		/**
 		 * @see javax.swing.table.AbstractTableModel#getColumnName(int)
