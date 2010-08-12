@@ -25,23 +25,28 @@ public class TridasListCellRenderer extends DefaultListCellRenderer {
             value = ((WSIBox) value).getTitle();
         }
         
-        if(value instanceof TridasSample){
+        else if(value instanceof TridasSample){
         	TridasSample s = (TridasSample) value;
         	TridasGenericField f = GenericFieldUtils.findField(s, "corina.internal.labcodeText");
                 	
         	value = (f != null) ? f.getValue() : s.getTitle();
         }
         
-        if(value instanceof TridasElement){
+        else if(value instanceof TridasElement){
         	TridasElement e = (TridasElement) value;
         	TridasGenericField f = GenericFieldUtils.findField(e, "corina.internal.labcodeText");
                 	
         	value = (f != null) ? f.getValue() : e.getTitle();
         } 
         
+        else if (value instanceof String){
+        	
+        }
+        
         else
         {
-        	System.out.println("unsupported object type in TridasListCellRenderer");
+        	System.out.println("unsupported object type ("+value.getClass().toString()+") in TridasListCellRenderer");
+        	return null;
         }
 
 

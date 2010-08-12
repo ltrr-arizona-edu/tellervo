@@ -5,6 +5,7 @@ package edu.cornell.dendro.corina.admin;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JTable;
@@ -26,11 +27,13 @@ public class SampleListTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	
 	private List<TridasSample> samples;
+	private ArrayList<Boolean> checkedList;
     private final String[] columnNames = {
             "Name", 
             "Box", 
             "Box Curation Location", 
-            "Box Tracking Location"
+            "Box Tracking Location",
+            "Temporary Checklist"
         };
     
     /**
@@ -48,6 +51,7 @@ public class SampleListTableModel extends AbstractTableModel {
 		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("2009-9999"));
 		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("Box Curation Location"));
 		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Box Tracking Location"));
+		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Temporary Checklist"));
     }
     
 	/**
@@ -55,7 +59,7 @@ public class SampleListTableModel extends AbstractTableModel {
 	 */
 	public SampleListTableModel() {
 		
-		this.samples = null;
+		setSamples(null);
 		
 		
 	}
@@ -65,12 +69,34 @@ public class SampleListTableModel extends AbstractTableModel {
 	 * @param elements
 	 */
 	public SampleListTableModel(List<TridasSample> samples) {
-		this.samples = samples;
+		setSamples(samples);
 	}    	
 	
 	public void setSamples(List<TridasSample> samples) {
 		this.samples = samples;
+		if(samples!=null)
+		{
+			checkedList = new ArrayList<Boolean>();
+			for(int i=0; i<samples.size(); i++)
+			{
+				checkedList.add(false);
+			}
+		}
+		
 		fireTableDataChanged();
+	}
+	
+	public void setIsChecked(Boolean isChecked, int rowIndex)
+	{
+		if(rowIndex>checkedList.size())
+		{
+			return;
+		}
+		else
+		{
+			checkedList.set(rowIndex, isChecked);
+		}
+		
 	}
 	
 	public List<TridasSample> getSamples() {
@@ -85,7 +111,7 @@ public class SampleListTableModel extends AbstractTableModel {
 		if(samples!=null) return samples.size();
 		return 0;
 	}
-	
+		
 	public Object getColumnValueForSample(TridasSample s, int columnIndex) {
 	
 		List<TridasGenericField> gflist = s.getGenericFields();
@@ -95,6 +121,7 @@ public class SampleListTableModel extends AbstractTableModel {
 		String boxTrackingLocation = null;
 		String objectCode = null;
 		String elementCode = null;
+			
 		
 		for(TridasGenericField gf : gflist)
 		{
@@ -132,24 +159,35 @@ public class SampleListTableModel extends AbstractTableModel {
 		case 2:
 			return boxCurationLocation;
 
-		// taxon
 		case 3: {
 			return boxTrackingLocation;
 		}
 		
+		case 4: {
+			int rowIndex = samples.indexOf(s);
+			return checkedList.get(rowIndex);
+		}
 		default:
 			return null;
 		}
 	}
 	
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		TridasSample s = samples.get(rowIndex);
+		TridasSample s = samples.get(rowIndex); 
 		
-		return getColumnValueForSample(s, columnIndex);
+		if(columnIndex==4)
+		{
+			return checkedList.get(rowIndex);
+		}
+		else
+		{
+			return getColumnValueForSample(s, columnIndex);
+		}
 	}
 	
     public Class<?> getColumnClass(int c) {
-
+    	if (c==4) return Boolean.class;
+    	
     	return String.class;
     }
     

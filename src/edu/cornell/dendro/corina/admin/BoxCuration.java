@@ -6,25 +6,31 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.schema.WSIBox;
+import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
+import edu.cornell.dendro.corina.util.labels.ui.TridasListCellRenderer;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
@@ -35,6 +41,11 @@ import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
  */
 public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public enum BoxCurationType{
 		BROWSE,
 		CHECKOUT,
@@ -42,15 +53,17 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
 	
 	}
 	
-	private WSIBox box;
-	private WSIBox boxChanged;
+	private WSIBox box = null;
 	private BoxCurationType type = BoxCurationType.BROWSE;
+	private ArrayListModel<WSIBox> boxModel;
+	protected SampleListTableModel sampleTableModel = new SampleListTableModel();
 	
     /** Creates new form BoxLookup */
     public BoxCuration(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setupGui();
+
     }
     
     public void setCurationType(BoxCurationType type)
@@ -81,7 +94,7 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
 		box.setCurationLocation(txtCurationLocation.getText());
 		box.setTrackingLocation(txtTrackingLocation.getText());
 		box.setComments(txtComments.getText());
-		box.setSamples(null);
+		//box.setSamples(null);
 		
     	// we want a box returned here
 		EntityResource<WSIBox> resource = new EntityResource<WSIBox>(box, CorinaRequestType.UPDATE, WSIBox.class);
@@ -108,12 +121,28 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     /**
      * Setup the GUI
      */
-    public void setupGui()
+    @SuppressWarnings("unchecked")
+	public void setupGui()
     {
+    	//this.cboBox.setVisible(false);
     	this.btnApply.setEnabled(false);
-    	this.cboBox.setSelectedIndex(-1);
     	this.setTitle("Box details");
-    	this.tblBoxContents.setEnabled(false);
+    	
+    	// Set up box list model etc
+    	ArrayList<WSIBox> boxList = (ArrayList<WSIBox>) Dictionary.getDictionaryAsArrayList("boxDictionary");
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(boxList, numSorter);
+    	boxModel = new ArrayListModel<WSIBox>(boxList);
+    	TridasListCellRenderer tlcr = new TridasListCellRenderer();
+    	cboBox.setEditable(true);
+    	cboBox.setRenderer(tlcr);
+    	cboBox.setModel(boxModel);
+    	//cboBox.setEditor(new WSIBoxComboBoxEditor());
+    	
+    	// Set up sample table model etc
+    	//this.tblBoxContents.setModel(sampleTableModel);
     	
     	
     	// Apply changes to box details
@@ -121,14 +150,12 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     	{
 			@Override
 			public void actionPerformed(ActionEvent e) {
-					
 				saveChanges();
 			}
     	});
     	
     	// Close dialog
     	this.btnOk.addActionListener(new ActionListener(){
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(btnApply.isEnabled())
@@ -154,37 +181,17 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     	this.txtCurationLocation.addKeyListener(this);
     	this.txtTrackingLocation.addKeyListener(this);
     	this.txtComments.addKeyListener(this);
+    	this.txtBarcode.addKeyListener(this);
     	
     	this.cboBox.addActionListener(new ActionListener(){
     		@Override
 			public void actionPerformed(ActionEvent e) {
-				String newSelection = (String)cboBox.getSelectedItem();
-				
-				
-	       		if(newSelection.length()==24)
-        		{
-		
-        			// A barcode was probably just scanned	
-    				try {
-    					LabBarcode.DecodedBarcode barcode = LabBarcode.decode(newSelection);
-    					
-    					cboBox.setSelectedIndex(-1);
-    					
-    					if (!(barcode.uuidType == LabBarcode.Type.BOX))
-    					{
-        					Alert.message("Barcode error", "This was not a valid box barcode.");
-        					return;
-    					}
-    					    					
-    					doBarcodeSearch(barcode);
-    					
-    				} catch (IllegalArgumentException iae) {
-    					Alert.message("Barcode error", "There was a problem with the barcode you scanned:\n"+iae.getMessage());
-    				}	
-        		}
+    			box = (WSIBox) cboBox.getSelectedItem();
+    			updateBoxGui();
 			}
     	});
     	
+    	updateBoxGui();
     }
     
     /**
@@ -205,8 +212,7 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     	{
     		this.btnApply.setEnabled(false);
     	}
-    	
-    	
+
     }
     
     /**
@@ -265,10 +271,9 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
 				dispose();
 			}
 			
-		}
-			
-		
+		}	
     }
+
     
     private void setFieldsForCheckout()
     {
@@ -298,6 +303,27 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     	}
     }
     
+    private void updateSampleTable()
+    {
+    	if(box.isSetSamples())
+    	{
+    		ArrayList<TridasSample> samplelist = (ArrayList<TridasSample>) box.getSamples();
+    		
+    		sampleTableModel = new SampleListTableModel(samplelist);
+        	this.tblBoxContents.setModel(sampleTableModel);
+        	tblBoxContents.removeColumn(tblBoxContents.getColumn("Box"));
+        	tblBoxContents.removeColumn(tblBoxContents.getColumn("Box Curation Location"));
+        	tblBoxContents.removeColumn(tblBoxContents.getColumn("Box Tracking Location"));
+        	
+        	tblBoxContents.repaint();
+    	}
+    	else
+    	{
+    		System.out.println("no samples");
+    	}
+
+    }
+    
     /**
      * Update the box details in the GUI 
      */
@@ -311,18 +337,16 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     		this.txtTrackingLocation.setText("");
     		this.txtComments.setText("");
     		this.btnApply.setEnabled(false);
-    		boxChanged = null;
     		return;
     	}
-    	    	
-    	String val = box.getTitle();
-    	
+    	    	   	
     	this.txtName.setText(box.getTitle());
     	this.txtLastUpdated.setText(BoxCuration.formatXMLGregorianCalendar(box.getLastModifiedTimestamp().getValue()));
     	this.txtCurationLocation.setText(box.getCurationLocation());
     	this.txtTrackingLocation.setText(box.getTrackingLocation());
     	this.txtComments.setText(box.getComments());
-    	boxChanged = box;
+        updateSampleTable();
+        
     	haveDetailsChanged();
     }
     
@@ -338,7 +362,6 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
         lblScanOrSelect = new javax.swing.JLabel();
         btnOk = new javax.swing.JButton();
         btnApply = new javax.swing.JButton();
-        btnSearch = new javax.swing.JButton();
         tabbedPaneBox = new javax.swing.JTabbedPane();
         panelBoxDetails = new javax.swing.JPanel();
         txtLastUpdated = new javax.swing.JTextField();
@@ -355,10 +378,10 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
         panelContents = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblBoxContents = new javax.swing.JTable();
+        txtBarcode = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        cboBox.setEditable(true);
         cboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "abbb", "cbbbb", "ghhh", "jjjjj" }));
 
         lblScanOrSelect.setText("Scan barcode or select box:");
@@ -366,8 +389,6 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
         btnOk.setText("OK");
 
         btnApply.setText("Apply");
-
-        btnSearch.setText("Search");
 
         txtLastUpdated.setEditable(false);
 
@@ -426,13 +447,11 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(lblComments)
-                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
+                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         tabbedPaneBox.addTab("Details", panelBoxDetails);
-
-        panelContents.setEnabled(false);
 
         tblBoxContents.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -472,7 +491,7 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
             panelContentsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelContentsLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -482,23 +501,23 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, tabbedPaneBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 459, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(tabbedPaneBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 459, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(btnApply)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnOk)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                    .add(layout.createSequentialGroup()
                         .add(6, 6, 6)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblScanOrSelect, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, txtBarcode, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
                             .add(layout.createSequentialGroup()
-                                .add(cboBox, 0, 362, Short.MAX_VALUE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(btnSearch)))))
+                                .add(lblScanOrSelect, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .add(280, 280, 280))
+                            .add(cboBox, 0, 453, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -507,11 +526,11 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
                 .addContainerGap()
                 .add(lblScanOrSelect)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnSearch)
-                    .add(cboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(18, 18, 18)
-                .add(tabbedPaneBox, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
+                .add(txtBarcode, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(cboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(tabbedPaneBox, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnApply)
@@ -526,32 +545,21 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
      * Show the actual dialog
      */
     public static void showDialog() {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                BoxCuration dialog = new BoxCuration(new javax.swing.JFrame(), true);
+        BoxCuration dialog = new BoxCuration(new javax.swing.JFrame(), true);
 
-                dialog.setLocationRelativeTo(null);
-                dialog.setVisible(true);
-                
-            }
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
 
-        });
     }
     
     /**
      * Show the actual dialog
      */
     public static void showDialog(final BoxCurationType type) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                BoxCuration dialog = new BoxCuration(new javax.swing.JFrame(), true);
-                dialog.setCurationType(type);
-                dialog.setLocationRelativeTo(null);
-                dialog.setVisible(true);
-                
-            }
-
-        });
+        BoxCuration dialog = new BoxCuration(new javax.swing.JFrame(), true);
+        dialog.setCurationType(type);
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
     }
     
     /**
@@ -575,7 +583,6 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JButton btnApply;
     protected javax.swing.JButton btnOk;
-    protected javax.swing.JButton btnSearch;
     protected javax.swing.JComboBox cboBox;
     protected javax.swing.JScrollPane jScrollPane2;
     protected javax.swing.JScrollPane jScrollPane3;
@@ -589,6 +596,7 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
     protected javax.swing.JPanel panelContents;
     protected javax.swing.JTabbedPane tabbedPaneBox;
     protected javax.swing.JTable tblBoxContents;
+    protected javax.swing.JTextField txtBarcode;
     protected javax.swing.JTextPane txtComments;
     protected javax.swing.JTextField txtCurationLocation;
     protected javax.swing.JTextField txtLastUpdated;
@@ -604,14 +612,46 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener{
 	
 	@Override
 	public void keyReleased(KeyEvent e) {
-		haveDetailsChanged();
+		
+		if(e.getSource().equals(txtBarcode))
+		{
+			String newSelection = txtBarcode.getText();
+			
+			
+       		if(newSelection.length()==24)
+    		{
+	
+    			// A barcode was probably just scanned	
+				try {
+					LabBarcode.DecodedBarcode barcode = LabBarcode.decode(newSelection);
+					
+					cboBox.setSelectedIndex(-1);
+					txtBarcode.setText("");
+					
+					if (!(barcode.uuidType == LabBarcode.Type.BOX))
+					{
+    					Alert.message("Barcode error", "This was not a valid box barcode.");
+    					return;
+					}
+					    					
+					doBarcodeSearch(barcode);
+					
+				} catch (IllegalArgumentException iae) {
+					Alert.message("Barcode error", "There was a problem with the barcode you scanned:\n"+iae.getMessage());
+				}	
+    		}	
+		}
+		else
+		{
+			haveDetailsChanged();
+		}
 	}
  
 	public static String formatXMLGregorianCalendar(XMLGregorianCalendar xmlcal)
 	{
 		 GregorianCalendar c = xmlcal.toGregorianCalendar();
 		
-		    String DATE_FORMAT = "dd MMM yyyy, kk:mm";
+		    String DATE_FORMAT = "dd/MMMMM/yyyy, kk:mm";
 		    SimpleDateFormat sdf =
 		          new SimpleDateFormat(DATE_FORMAT);
 

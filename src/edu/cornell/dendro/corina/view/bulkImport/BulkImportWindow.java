@@ -36,6 +36,7 @@ public class BulkImportWindow extends JFrame {
 		addListeners();
 		populateLocale();
 		pack();
+		this.setLocationRelativeTo(null);
 	}
 	
 	public void initComponents() {

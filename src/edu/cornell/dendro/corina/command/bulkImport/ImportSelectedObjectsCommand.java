@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.util.TridasObjectEx;
+import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
@@ -154,6 +155,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			
 			if(!dialog.isSuccessful()) { 
 				Alert.message("Error", "Error creating object, check logs.");
+				return;
 				return;
 			}
 			som.populateFromTridasObject(resource.getAssociatedResult());
