@@ -181,11 +181,11 @@ class box extends boxEntity implements IDBAccessor
     function setParamsFromParamsClass($paramsClass)
     {    	
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if ($paramsClass->getTitle()!=NULL)       			$this->setTitle($paramsClass->getTitle());
-        if ($paramsClass->getID()!=NULL)		 			$this->setID($paramsClass->getID());
-        if ($paramsClass->getComments()!=NULL)				$this->setComments($paramsClass->getComments());
-        if ($paramsClass->getCurationLocation()!=NULL)		$this->setCurationLocation($paramsClass->getCurationLocation());
-        if ($paramsClass->getTrackingLocation()!=NULL)		$this->setTrackingLocation($paramsClass->getTrackingLocation());		
+        $this->setTitle($paramsClass->getTitle());
+        $this->setID($paramsClass->getID());
+        $this->setComments($paramsClass->getComments());
+        $this->setCurationLocation($paramsClass->getCurationLocation());
+        $this->setTrackingLocation($paramsClass->getTrackingLocation());		
 		
         return true;  
     }
@@ -216,8 +216,7 @@ class box extends boxEntity implements IDBAccessor
                     trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
-                if(($paramsObj->getSampleID()==NULL) 
-                    && ($paramsObj->getCode()==NULL)
+                if(    ($paramsObj->getCode()==NULL)
                     && ($paramsObj->hasChild!=True))
                 {
                     trigger_error("902"."Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
@@ -334,7 +333,7 @@ class box extends boxEntity implements IDBAccessor
 
                         if($success)
                         {
-                            $xml.=$mysample->asXML($format, "all");
+                            $xml.=$mysample->asXML("summary", "all");
                         }
                         else
                         {
@@ -366,6 +365,7 @@ class box extends boxEntity implements IDBAccessor
 
         global $dbconn;
         global $domain;
+        global $firebug;
         $sql = NULL;
         $sql2 = NULL;
         
@@ -407,13 +407,14 @@ class box extends boxEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="UPDATE tblbox SET ";
-                        if($this->getTitle()!=NULL)                   				$sql.="code='".pg_escape_string($this->getCode())."', ";
-                        if($this->getComments()!=NULL)                   			$sql.="comments='".pg_escape_string($this->getComments())."', ";
-						if($this->getCurationLocation()!=NULL)						$sql.="curationlocation='".pg_escape_string($this->getCurationLocation())."', ";
-						if($this->getTrackingLocation()!=NULL)						$sql.="trackinglocation='".pg_escape_string($this->getCurationLocation()).", ";
+                        $sql.="title='".pg_escape_string($this->getCode())."', ";
+                        $sql.="comments='".pg_escape_string($this->getComments())."', ";
+						$sql.="curationlocation='".pg_escape_string($this->getCurationLocation())."', ";
+						$sql.="trackinglocation='".pg_escape_string($this->getTrackingLocation())."', ";
 						
                     $sql = substr($sql, 0, -2);
                     $sql.= " WHERE boxid='".pg_escape_string($this->getID())."'";
+                    $firebug->log($sql, "Box update SQL");
                 }
  
                 // Run SQL command

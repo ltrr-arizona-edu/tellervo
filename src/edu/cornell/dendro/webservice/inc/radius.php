@@ -184,10 +184,14 @@ class radius extends radiusEntity implements IDBAccessor
         if ($paramsClass->getMissingHeartwoodRingsToPith()!=NULL)			$this->setMissingHeartwoodRingsToPith($paramsClass->getMissingHeartwoodRingsToPith());
         if ($paramsClass->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$this->setMissingHeartwoodRingsToPithFoundation($paramsClass->getMissingHeartwoodRingsToPithFoundation());
         if ($paramsClass->getSapwood()!=NULL)								$this->setSapwood($paramsClass->getSapwood(true), $paramsClass->getSapwood(false));
+        
         if (dbHelper::formatBool($paramsClass->getBarkPresent(), 'presentabsent')!=NULL)						
         																	$this->setBarkPresent(dbHelper::formatBool($paramsClass->getBarkPresent(), 'php'));
         if ($paramsClass->getNumberOfSapwoodRings()!=NULL)					$this->setNumberOfSapwoodRings($paramsClass->getNumberOfSapwoodRings());
-        if ($paramsClass->getLastRingUnderBark()!=NULL)						$this->setLastRingUnderBark($paramsClass->getLastRingUnderBark(), $paramsClass->getLastRingUnderBarkPresence());
+        if (($paramsClass->getLastRingUnderBark()!=NULL) || 
+        	(dbHelper::formatBool($paramsClass->getLastRingUnderBarkPresence(), 'presentabsent')!=NULL)
+        	)						
+        																	$this->setLastRingUnderBark($paramsClass->getLastRingUnderBark(), $paramsClass->getLastRingUnderBarkPresence());
         if ($paramsClass->getMissingSapwoodRingsToBark()!=NULL)				$this->setMissingSapwoodRingsToBark($paramsClass->getMissingSapwoodRingsToBark());
         if ($paramsClass->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$this->setMissingSapwoodRingsToBarkFoundation($paramsClass->getMissingSapwoodRingsToBarkFoundation());
         if ($paramsClass->getNrOfUnmeasuredInnerRings()!=NULL)				$this->setNrOfUnmeasuredInnerRings($paramsClass->getNrOfUnmeasuredInnerRings());
@@ -390,7 +394,8 @@ class radius extends radiusEntity implements IDBAccessor
 					{
 																						$xml.= "<tridas:sapwood presence=\"".dbhelper::escapeXMLChars($this->getSapwood())."\">";
 	                    if($this->getNumberOfSapwoodRings()!=NULL)						$xml.= "<tridas:nrOfSapwoodRings>".dbhelper::escapeXMLChars($this->getNumberOfSapwoodRings())."</tridas:nrOfSapwoodRings>\n";
-	                    if($this->getLastRingUnderBark()!=NULL)							$xml.= "<tridas:lastRingUnderBark presence=\"".dbHelper::formatBool($this->getLastRingUnderBarkPresence(), "presentabsent")."\">".dbhelper::escapeXMLChars($this->getLastRingUnderBark())."</tridas:lastRingUnderBark>\n";
+	                    if(($this->getLastRingUnderBark()!=NULL)||(dbHelper::formatBool($this->getLastRingUnderBarkPresence(), 'presentabsent')!=NULL))
+	                    																$xml.= "<tridas:lastRingUnderBark presence=\"".dbHelper::formatBool($this->getLastRingUnderBarkPresence(), "presentabsent")."\">".dbhelper::escapeXMLChars($this->getLastRingUnderBark())."</tridas:lastRingUnderBark>\n";
 	                    if($this->getMissingSapwoodRingsToBark()!=NULL)					$xml.= "<tridas:missingSapwoodRingsToBark>".dbhelper::escapeXMLChars($this->getMissingSapwoodRingsToBark())."</tridas:missingSapwoodRingsToBark>\n";
 	                    if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)		$xml.= "<tridas:missingSapwoodRingsToBarkFoundation>".dbhelper::escapeXMLChars($this->getMissingSapwoodRingsToBarkFoundation())."</tridas:missingSapwoodRingsToBarkFoundation>\n";	
 	                    																$xml.= "</tridas:sapwood>\n";

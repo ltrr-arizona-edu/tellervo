@@ -68,6 +68,7 @@ class searchParameters implements IParams
     {
     	global $corinaNS;
         global $tridasNS;
+        global $firebug;
 	
         // Get main attributes
     	$searchParamsTag = $this->xmlRequestDom->getElementsByTagName("searchParams")->item(0); 	
@@ -102,6 +103,9 @@ class searchParameters implements IParams
 									'countOfChildSeriesOfObject' =>			array('tbl' => 'vwtblobject', 'field' => 'countofchildvmeasurements'),
 									'anyparentobjectid' =>					array('tbl' => 'vwtblobject', 'field' => 'anyparentobjectid'),
 									'anyparentobjectcode' =>				array('tbl' => 'vwtblobject', 'field' => 'anyparentobjectcode'),
+		
+									'boxid' => 								array('tbl' => 'vwtblbox', 'field' => 'boxid'),
+		
 		
 									'elementid' => 							array ('tbl' => 'vwtblelement', 	'field'  => 'elementid'),
 									//'elementdbid' => 						array('tbl' => 'vwtblelement', 'field' => 'elementid'),
@@ -213,6 +217,8 @@ class searchParameters implements IParams
 				break;
 			}
 	
+			$firebug->log($param->getAttribute("name"), "param name");
+			
 			// Use translation array to get the correct table and field names
 			if(isset($translationArray[$param->getAttribute("name")]))
 			{
@@ -923,10 +929,21 @@ class radiusParameters extends radiusEntity implements IParams
 					   		foreach($sapwoodtags as $sapwoodtag)
 					   		{
 					   			if($sapwoodtag->nodeType != XML_ELEMENT_NODE) continue;
+					   			
 					   			switch ($sapwoodtag->tagName)
 					   			{
+					   				
 					   				case "nrOfSapwoodRings": 						$this->setNumberOfSapwoodRings($sapwoodtag->nodeValue); break;
-					   				case "lastRingUnderBark": 						$this->setLastRingUnderBark($sapwoodtag->nodeValue, $sapwoodtag->getAttribute("presence"));	break;
+					   				case "lastRingUnderBark": 						
+					   					if($sapwoodtag->nodeValue=="")
+					   					{
+					   						$this->setLastRingUnderBark("", $sapwoodtag->getAttribute("presence"));
+					   					}
+					   					else
+					   					{
+					   						$this->setLastRingUnderBark($sapwoodtag->nodeValue, $sapwoodtag->getAttribute("presence"));
+					   					}
+					   					break;
 					   				case "missingSapwoodRingsToBark":				$this->setMissingSapwoodRingsToBark($sapwoodtag->nodeValue); break;
 					   				case "missingSapwoodRingsToBarkFoundation": 	$this->setMissingSapwoodRingsToBarkFoundation($sapwoodtag->nodeValue); break;
 					   				default:
@@ -1303,6 +1320,7 @@ class boxParameters extends boxEntity implements IParams
 		   	case "comments":			$this->setComments($child->nodeValue); break;
 		   	case "createdTimestamp":	break;
 		   	case "lastModifiedTimestamp": break;
+		   	case "sampleCount"			: break;
 
 		   		
 		   	default:
