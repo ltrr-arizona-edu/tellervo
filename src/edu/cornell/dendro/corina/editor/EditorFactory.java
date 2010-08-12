@@ -159,7 +159,7 @@ public class EditorFactory {
 		 * @param sample
 		 * @return a WSIBox, or null if it doesn't exist
 		 */
-		private WSIBox loadBoxFromSample(TridasSample sample) {
+		public WSIBox loadBoxFromSample(TridasSample sample) {
 			TridasGenericField field = GenericFieldUtils.findField(sample, "corina.boxID");
 			
 			if(field == null)

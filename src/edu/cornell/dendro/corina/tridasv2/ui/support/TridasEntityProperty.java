@@ -72,7 +72,7 @@ public class TridasEntityProperty extends AbstractProperty {
 		this.lname = property.lname;
 		
 		this.clazz = property.clazz;
-		this.isList = property.isList;
+		this.isList = property.isList;		
 		this.required = property.required;
 		this.isRootNode = property.isRootNode;
 		this.readOnly = property.readOnly;
@@ -89,6 +89,11 @@ public class TridasEntityProperty extends AbstractProperty {
 		
 		if(!isRootNode)
 			property.parentProperty = this;
+		
+		if(property.isRequired()==true)
+		{
+			this.required = true;
+		}
 	}
 
 	/**

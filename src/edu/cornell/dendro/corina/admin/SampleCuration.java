@@ -190,7 +190,9 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         // Temporary bodge so only populate combo (not free text) search works
         cboElement.setEditable(false);
         cboSample.setEditable(false);
-              
+            
+        // Rmove the checklist column
+        tblResults.removeColumn(tblResults.getColumn("Temporary Checklist"));
         
     }
     

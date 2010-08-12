@@ -97,9 +97,9 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 			throw new IllegalArgumentException("Invalid request type: must be one of CREATE, UPDATE or DELETE for this method");
 		}
 		
-		// derived series don't have a parent entity ID. Neither does object.
+		// derived series, objects and box don't have a parent entity ID
 		if (queryType == CorinaRequestType.CREATE && parentEntityID == null) {
-			if (!(entity instanceof ITridasDerivedSeries || entity instanceof TridasObject))
+			if (!(entity instanceof ITridasDerivedSeries || entity instanceof TridasObject || entity instanceof WSIBox))
 				throw new IllegalArgumentException("CREATE called with ParentObjectID == null!");
 		}
 	}

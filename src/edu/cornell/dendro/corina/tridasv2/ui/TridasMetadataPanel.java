@@ -1098,8 +1098,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		SAMPLE(TridasSample.class, I18n.getText("tridas.sample"), "sample.png", Metadata.SAMPLE),
 		RADIUS(TridasRadius.class, I18n.getText("tridas.radius"), "radius.png", Metadata.RADIUS),
 		MEASUREMENT_SERIES(TridasMeasurementSeries.class, I18n.getText("tridas.measurementSeries"), "measurementseries.png", null),
-		DERIVED_SERIES(TridasDerivedSeries.class, I18n.getText("tridas.derivedSeries"), "derivedseries.png", null),
-		BOX(WSIBox.class, I18n.getText("general.box"), "box.png", Metadata.BOX);
+		DERIVED_SERIES(TridasDerivedSeries.class, I18n.getText("tridas.derivedSeries"), "derivedseries.png", null);
+		//BOX(WSIBox.class, I18n.getText("general.box"), "box.png", Metadata.BOX);
 		
 		
 		private Class<? extends ITridas> type;
@@ -1226,9 +1226,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 					labcode.setRadiusCode((entity == null) ? null : entity.getTitle());
 					break;
 					
-				case BOX:
+				//case BOX:
 					// ignore this...
-					return;
+					//return;
 				}
 			}
 			
@@ -1257,7 +1257,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		 * @param enabled
 		 */
 		public void enableAssociatedButton(boolean enabled) {
-			if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES || this == BOX)
+			//if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES || this == BOX)
+			if(this == DERIVED_SERIES || this == MEASUREMENT_SERIES)
 				return;
 			
 			if(associatedButton != null) {

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 
 import org.tridas.schema.TridasGenericField;
@@ -49,8 +50,8 @@ public class SampleListTableModel extends AbstractTableModel {
 		
 		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX"));
 		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("2009-9999"));
-		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("Box Curation Location"));
-		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Box Tracking Location"));
+		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("Perm. Location"));
+		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Curr. Location"));
 		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Temporary Checklist"));
     }
     
@@ -198,4 +199,35 @@ public class SampleListTableModel extends AbstractTableModel {
 	public TridasSample getElementAt(int rowIndex) {
 		return samples.get(rowIndex);
 	}	
+	
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        if(columnIndex==4) return true;
+        return false;
+    }
+    
+    /*
+     * Don't need to implement this method unless your table's
+     * data can change.
+     */
+    public void setValueAt(Object value, int row, int col) {
+
+        System.out.println("Setting value at " + row + "," + col
+                           + " to " + value
+                           + " (an instance of "
+                           + value.getClass() + ")");
+        
+
+        if(col==4)
+        {
+        	checkedList.set(row, (Boolean) value);
+
+        }
+
+        fireTableCellUpdated(row, col);
+
+
+    }
+
+    
+    
 }

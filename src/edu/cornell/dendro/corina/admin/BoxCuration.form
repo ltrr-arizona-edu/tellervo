@@ -21,25 +21,33 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="tabbedPaneBox" alignment="0" min="-2" pref="459" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="tabbedPaneBox" alignment="0" min="-2" pref="506" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="6" pref="6" max="6" attributes="0"/>
+                      <Component id="btnCreateNewBox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="197" max="32767" attributes="0"/>
                       <Component id="btnApply" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnOk" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="6" pref="6" max="6" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="txtBarcode" alignment="1" pref="453" max="32767" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="lblScanOrSelect" max="32767" attributes="0"/>
-                              <EmptySpace min="-2" pref="280" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="lblSelectBox" max="32767" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="cboBox" alignment="0" pref="453" max="32767" attributes="1"/>
+                          <Group type="102" attributes="0">
+                              <Component id="lblScanOrSelect" pref="93" max="32767" attributes="0"/>
+                              <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="txtBarcode" alignment="1" pref="390" max="32767" attributes="0"/>
+                          <Component id="cboBox" alignment="1" pref="390" max="32767" attributes="1"/>
                       </Group>
                   </Group>
               </Group>
@@ -51,17 +59,22 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="lblScanOrSelect" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblScanOrSelect" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtBarcode" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="txtBarcode" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="cboBox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="tabbedPaneBox" pref="304" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblSelectBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="tabbedPaneBox" pref="349" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnApply" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnOk" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnCreateNewBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnApply" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -83,7 +96,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lblScanOrSelect">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Scan barcode or select box:"/>
+        <Property name="text" type="java.lang.String" value="Scan barcode:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="btnOk">
@@ -113,21 +126,25 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblCurationLocation" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblLastUpdated" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblTrackingLocation" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jScrollPane3" alignment="1" pref="473" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lblCurationLocation" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblLastUpdated" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblTrackingLocation" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblName" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="txtName" alignment="0" pref="342" max="32767" attributes="0"/>
+                                  <Component id="txtTrackingLocation" alignment="0" pref="342" max="32767" attributes="0"/>
+                                  <Component id="txtLastUpdated" alignment="0" pref="342" max="32767" attributes="0"/>
+                                  <Component id="txtCurationLocation" alignment="0" pref="342" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
                           <Component id="lblComments" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblName" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane3" pref="295" max="32767" attributes="0"/>
-                          <Component id="txtName" alignment="0" pref="295" max="32767" attributes="0"/>
-                          <Component id="txtTrackingLocation" alignment="0" pref="295" max="32767" attributes="0"/>
-                          <Component id="txtLastUpdated" alignment="0" pref="295" max="32767" attributes="0"/>
-                          <Component id="txtCurationLocation" alignment="0" pref="295" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -156,11 +173,10 @@
                           <Component id="lblTrackingLocation" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="txtTrackingLocation" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="lblComments" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblComments" min="-2" max="-2" attributes="0"/>
-                          <Component id="jScrollPane3" pref="110" max="32767" attributes="0"/>
-                      </Group>
+                      <Component id="jScrollPane3" pref="121" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -228,18 +244,30 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="426" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jScrollPane2" alignment="0" pref="473" max="32767" attributes="0"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="lblSampleCount" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="202" max="32767" attributes="0"/>
+                              <Component id="btnAddSampleToBox" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="246" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="256" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="btnAddSampleToBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblSampleCount" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -256,10 +284,8 @@
                 <Component class="javax.swing.JTable" name="tblBoxContents">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="2" rowCount="1">
-                        <Column editable="false" title="Sample" type="java.lang.Object">
-                          <Data value="C-XYZ-1-A"/>
-                        </Column>
+                      <Table columnCount="2" rowCount="0">
+                        <Column editable="false" title="Sample" type="java.lang.Object"/>
                         <Column editable="true" title="Check Presence" type="java.lang.Boolean"/>
                       </Table>
                     </Property>
@@ -284,11 +310,31 @@
                 </Component>
               </SubComponents>
             </Container>
+            <Component class="javax.swing.JButton" name="btnAddSampleToBox">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Add sample to box"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblSampleCount">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="0 samples in box"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
       </SubComponents>
     </Container>
     <Component class="javax.swing.JTextField" name="txtBarcode">
+    </Component>
+    <Component class="javax.swing.JButton" name="btnCreateNewBox">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Create New Box"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblSelectBox">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="...or select box:"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
