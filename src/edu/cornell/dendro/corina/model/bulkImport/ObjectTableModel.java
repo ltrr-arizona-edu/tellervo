@@ -14,6 +14,8 @@ import javax.swing.table.AbstractTableModel;
 import com.dmurph.mvc.model.HashModel.PropertyType;
 import com.dmurph.mvc.model.MVCArrayList;
 
+import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
+
 /**
  * @author Daniel Murphy
  *
@@ -74,7 +76,9 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	public void selectAll(){
 		selected.clear();
 		for(SingleObjectModel som : models){
-			selected.put(som, true);
+			if(!som.isImported()){
+				selected.put(som, true);
+			}
 		}
 		fireTableDataChanged();
 	}
@@ -133,6 +137,12 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 			return String.class;
 		}else{
 			String column = columns.get(columnIndex);
+			
+			// for combo box stuff
+			if(column.equals(SingleObjectModel.TYPE)){
+				return WSIObjectTypeDictionary.class;
+			}
+			
 			SingleObjectModel som = models.get(0);
 			if(som == null){
 				return Object.class;
@@ -196,9 +206,13 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 			return true;
 		}
 		columnIndex--;
+		
 		String column = columns.get(columnIndex);
 		SingleObjectModel som = models.get(rowIndex);
 		if(som.getPropertyType(column) == PropertyType.READ_WRITE){
+			if((Boolean)som.getProperty(SingleObjectModel.IMPORTED) == Boolean.TRUE){
+				return false;
+			}
 			return true;
 		}
 		return false;

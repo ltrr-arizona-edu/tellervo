@@ -11,11 +11,13 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
-import org.tridas.schema.TridasObject;
+import org.tridas.schema.ControlledVoc;
+import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
@@ -41,13 +43,13 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		ArrayList<SingleObjectModel> selected = new ArrayList<SingleObjectModel>();
 		tmodel.getSelected(selected);
 		
-		// verify they contain required info
-		//what is  the required info?
+		// here is where we verify they contain required info
 		HashSet<String> requiredMessages = new HashSet<String>();
 		ArrayList<SingleObjectModel> incompleteModels = new ArrayList<SingleObjectModel>();
 		
 		HashSet<String> definedProps = new HashSet<String>();
 		for(SingleObjectModel som : selected){
+			
 			definedProps.clear();
 			for(String s : SingleObjectModel.PROPERTIES){
 				if(som.getProperty(s) != null){
@@ -55,7 +57,8 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				}
 			}
 			boolean incomplete = false;
-			// here is where we check for properties
+			
+			// object code
 			if(!definedProps.contains(SingleObjectModel.OBJECT_CODE)){
 				requiredMessages.add("Cannot import without an object code.");
 				incomplete = true;
@@ -67,6 +70,56 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				if(som.getProperty(SingleObjectModel.OBJECT_CODE).toString().contains(" ")){
 					requiredMessages.add("Object code cannot contain whitespace.");
 					incomplete = true;
+				}
+			}
+			
+			// type
+			if(!definedProps.contains(SingleObjectModel.TYPE)){
+				requiredMessages.add("Object must contain type.");
+				incomplete = true;
+			}else{
+				boolean found = false;
+				String type = som.getProperty(SingleObjectModel.TYPE).toString();
+				for(ControlledVoc voc: Dictionary.getDictionaryAsArrayList("objectTypeDictionary").toArray(new ControlledVoc[0])){
+					if(type.equals(voc.getNormal())){
+						som.setProperty(SingleObjectModel.TYPE, voc);
+						found = true;
+						break;
+					}
+				}
+				if(!found){
+					System.err.println("Couldn't find object '"+type+"' in object type dictionary.");
+					requiredMessages.add("Error with finding object type '"+type+"', please report bug.");
+					incomplete = true;
+				}
+			}
+			
+			// title
+			if(!definedProps.contains(SingleObjectModel.TITLE)){
+				requiredMessages.add("Object must have a title");
+				incomplete = true;
+			}
+			
+			// lat/long
+			if(definedProps.contains(SingleObjectModel.LATITUDE) || definedProps.contains(SingleObjectModel.LONGTITUDE)){
+				if(!definedProps.contains(SingleObjectModel.LATITUDE) || !definedProps.contains(SingleObjectModel.LONGTITUDE)){
+					requiredMessages.add("Object cannot have either a latitude or a longtitude.  Both or none must be provided");
+					incomplete = true;
+				}else{
+					String attempt = som.getProperty(SingleObjectModel.LATITUDE).toString().trim();
+					try{
+						Double.parseDouble(attempt);
+					}catch(NumberFormatException e){
+						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
+						incomplete = true;
+					}
+					attempt = som.getProperty(SingleObjectModel.LONGTITUDE).toString().trim();
+					try{
+						Double.parseDouble(attempt);
+					}catch(NumberFormatException e){
+						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
+						incomplete = true;
+					}
 				}
 			}
 			
@@ -84,12 +137,13 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			return;
 		}
 		
+		// now we actually create the models
 		for(SingleObjectModel som : selected){
-			TridasObject object = new TridasObject();
+			TridasObjectEx object = new TridasObjectEx();
 			
 			som.populateTridasObject(object);
 			
-			EntityResource<TridasObject> resource = new EntityResource<TridasObject>(object, CorinaRequestType.CREATE, TridasObject.class);
+			EntityResource<TridasObjectEx> resource = new EntityResource<TridasObjectEx>(object, CorinaRequestType.CREATE, TridasObjectEx.class);
 			
 			// set up a dialog...
 			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
@@ -99,9 +153,12 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			dialog.setVisible(true);
 			
 			if(!dialog.isSuccessful()) { 
-				Alert.message("Error", "Error creating object");
+				Alert.message("Error", "Error creating object, check logs.");
+				return;
 			}
 			som.populateFromTridasObject(resource.getAssociatedResult());
+			som.setImported(true);
+			tmodel.setSelected(som, false);
 		}
 	}
 }

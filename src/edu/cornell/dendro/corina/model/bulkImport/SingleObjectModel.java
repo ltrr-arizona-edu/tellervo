@@ -3,7 +3,6 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.opengis.gml.schema.PointType;
@@ -22,7 +21,7 @@ import com.dmurph.mvc.model.HashModel;
  *
  */
 public class SingleObjectModel extends HashModel implements ISingleRowModel{
-	private static final long serialVersionUID = 4267926250106915154L;
+	private static final long serialVersionUID = 1L;
 	
 	public static final String OBJECT_CODE = "Object Code";
 	public static final String TITLE = "Title";
@@ -47,40 +46,50 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
 	}
 	
+	public boolean isImported(){
+		return (Boolean)getProperty(IMPORTED);
+	}
+	
 	public void populateFromTridasObject(TridasObject argObject){
 		List<TridasGenericField> fields = argObject.getGenericFields();
 		
+		boolean found = false;
 		for(TridasGenericField field : fields){
-			if(field.getName().equals("corina.objectCode")){
+			if(field.getName().equals("corina.objectLabCode")){
 				setProperty(OBJECT_CODE, field.getValue());
+				found = true;
 			}
+		}
+		if(!found){
+			setProperty(OBJECT_CODE, null);
 		}
 		
 		setProperty(TITLE, argObject.getTitle());
 		setProperty(COMMENTS, argObject.getComments());
 		if(argObject.getType() != null){
-			setProperty(TYPE, argObject.getType().getValue());			
+			setProperty(TYPE, argObject.getType().getNormal());			
+		}else{
+			setProperty(TYPE, null);
 		}
 		setProperty(DESCRIPTION, argObject.getDescription());
 		
 		// stupid location
-		if(argObject.getLocation() != null){
-			if(argObject.getLocation().getLocationGeometry() != null){
-				if(argObject.getLocation().getLocationGeometry().getPoint() != null){
-					if(argObject.getLocation().getLocationGeometry().getPoint().getPos() != null){
-						if(argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().size() == 2){
-							setProperty(LATITUDE, argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(0));
-							setProperty(LONGTITUDE, argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(1));
-						}
-					}
-				}
-			}
+		if(argObject.getLocation() != null &&
+				argObject.getLocation().getLocationGeometry() != null&&
+				argObject.getLocation().getLocationGeometry().getPoint() != null &&
+				argObject.getLocation().getLocationGeometry().getPoint().getPos() != null &&
+				argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().size() == 2){
+			setProperty(LATITUDE, argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(0));
+			setProperty(LONGTITUDE, argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(1));
+		}else{
+			setProperty(LATITUDE, null);
+			setProperty(LONGTITUDE, null);
 		}
 	}
 	
 	public void populateTridasObject(TridasObject argObject){
 		TridasGenericField codeField = new TridasGenericField();
-		codeField.setName("corina.objectCode");
+		codeField.setName("corina.objectLabCode");
 		codeField.setValue(getProperty(OBJECT_CODE)+"");
 		argObject.getGenericFields().add(codeField);
 		
@@ -100,8 +109,7 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 		}
 		
 		if(type != null){
-			ControlledVoc voc = new ControlledVoc();
-			voc.setValue(type.toString());
+			argObject.setType((ControlledVoc) type);
 		}
 		
 		if(description != null){
@@ -110,8 +118,8 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 		
 		if(latitude != null && longtitude != null){
 			try{
-				double lat = Double.parseDouble(latitude.toString());
-				double lon = Double.parseDouble(longtitude.toString());
+				double lat = Double.parseDouble(latitude.toString().trim());
+				double lon = Double.parseDouble(longtitude.toString().trim());
 				Pos p = new Pos();
 				p.getValues().add(lat);
 				p.getValues().add(lon);

@@ -62,35 +62,25 @@ public class BulkImportController extends FrontController {
 			return;
 		}
 		
-		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
-		SingleObjectModel smodel = new SingleObjectModel();
-		
-		// test model
-		smodel.setProperty(SingleObjectModel.TITLE, "Test title");
-		smodel.setProperty(SingleObjectModel.COMMENTS, "Some comments right here");
-		smodel.setProperty(SingleObjectModel.DESCRIPTION, "My description");
-		smodel.setProperty(SingleObjectModel.OBJECT_CODE, "OBJECT CODE 2");
-		smodel.setProperty(SingleObjectModel.OBJECT_CODE, "OBJECT CODE");
-		smodel.setProperty(SingleObjectModel.TYPE, "my type");
-		
-		// load some defaults
-		ColumnChooserModel cmodel = model.getColumnModel();
-		cmodel.add(SingleObjectModel.OBJECT_CODE);
-		cmodel.add(SingleObjectModel.IMPORTED);
-
-		MVCArrayList<SingleObjectModel> objects = model.getRows();
-		objects.add(smodel);
+		ObjectModel objectModel = BulkImportModel.getInstance().getObjectModel();
+		populateObjectDefaults(objectModel.getColumnModel());
 		
 		BulkImportWindow frame = new BulkImportWindow();
 		BulkImportModel.getInstance().setMainView(frame);
 		frame.pack();
 		frame.setVisible(true);
-		//frame.setDefaultCloseOperation(3);
+		MVC.showEventMonitor();
+	}
+	
+	private void populateObjectDefaults(ColumnChooserModel ccmodel){
+		ccmodel.add(SingleObjectModel.TITLE);
+		ccmodel.add(SingleObjectModel.OBJECT_CODE);
+		ccmodel.add(SingleObjectModel.TYPE);
+		ccmodel.add(SingleObjectModel.IMPORTED);
 	}
 	
 	public static void main() {
 		CorinaModelLocator.getInstance();
-		MVC.showEventMonitor();
 		MVCEvent event = new MVCEvent(DISPLAY_BULK_IMPORT);
 		event.dispatch();
 	}

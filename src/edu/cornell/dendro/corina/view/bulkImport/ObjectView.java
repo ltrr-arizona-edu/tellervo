@@ -16,6 +16,7 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -27,15 +28,17 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import org.tridas.schema.ControlledVoc;
+
 import com.dmurph.mvc.model.MVCArrayList;
 
-import edu.cornell.dendro.corina.control.bulkImport.AddRowEvent;
-import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.control.bulkImport.*;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
+import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
 
 /**
  * @author Daniel Murphy
@@ -81,7 +84,17 @@ public class ObjectView extends JPanel{
 		JScrollPane panel = new JScrollPane(table);
 		panel.setPreferredSize(new Dimension(500, 400));
 		table.setAutoCreateRowSorter(true);
-		table.setFillsViewportHeight(true);
+		table.setFillsViewportHeight(true); 
+		
+		// editors for combo box stuff
+		ControlledVoc[] vocs = Dictionary.getDictionaryAsArrayList("objectTypeDictionary").toArray(new ControlledVoc[0]);
+		String[] names = new String[vocs.length];
+		for(int i=0; i<vocs.length; i++){
+			names[i] = vocs[i].getNormal();
+		}
+		JComboBox typeBox = new JComboBox(names);
+		table.setDefaultEditor(WSIObjectTypeDictionary.class, new DefaultCellEditor(typeBox));
+		
 		add(panel, "Center");
 		
 		box = Box.createHorizontalBox();
@@ -151,7 +164,8 @@ public class ObjectView extends JPanel{
 		removeSelected.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent argE) {
-				
+				RemoveSelectedEvent event = new RemoveSelectedEvent(model);
+				event.dispatch();
 			}
 		});
 	}
