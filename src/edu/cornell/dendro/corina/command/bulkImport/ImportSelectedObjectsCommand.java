@@ -156,7 +156,6 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			if(!dialog.isSuccessful()) { 
 				Alert.message("Error", "Error creating object, check logs.");
 				return;
-				return;
 			}
 			som.populateFromTridasObject(resource.getAssociatedResult());
 			som.setImported(true);
