@@ -817,9 +817,12 @@ class sampleParameters extends sampleEntity implements IParams
 		   		$name = $child->getAttribute("name");
 		   		$value = $child->nodeValue;		   		
 		   		switch($name)
-		   		{	   			
+		   		{	  
+		   			case "corina.boxID":
+		   				$this->setBoxID($value);
+		   				break; 			
 		   			default:
-		   			trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'sample' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   			//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'sample' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
 	
 		   		}
 		   		break;
@@ -1321,8 +1324,7 @@ class boxParameters extends boxEntity implements IParams
 		   	case "createdTimestamp":	break;
 		   	case "lastModifiedTimestamp": break;
 		   	case "sampleCount"			: break;
-
-		   		
+		   	case "sample":				break;	   				   		
 		   	default:
 		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'box' entity of the XML request", E_USER_NOTICE);
 		   }

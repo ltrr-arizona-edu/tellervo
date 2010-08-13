@@ -216,12 +216,6 @@ class box extends boxEntity implements IDBAccessor
                     trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
-                if(    ($paramsObj->getCode()==NULL)
-                    && ($paramsObj->hasChild!=True))
-                {
-                    trigger_error("902"."Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
-                    return false;
-                }
                 return true;
 
             case "delete":
@@ -492,7 +486,7 @@ class box extends boxEntity implements IDBAccessor
                         {
                         case 23503:
                                 // Foreign key violation
-                                $this->setErrorMessage("907", "Foreign key violation.  You must delete all associated samples before deleting this box.");
+                                $this->setErrorMessage("907", "Foreign key violation.  You must delete or reassign all associated samples before deleting this box.");
                                 break;
                         default:
                                 // Any other error
