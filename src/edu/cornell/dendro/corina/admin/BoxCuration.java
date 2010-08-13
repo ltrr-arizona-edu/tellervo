@@ -16,6 +16,9 @@ import java.util.GregorianCalendar;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -49,27 +52,23 @@ import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
  *
  * @author  peterbrewer
  */
-public class BoxCuration extends javax.swing.JDialog implements KeyListener, ActionListener, MouseListener{
+public class BoxCuration extends javax.swing.JDialog 
+		implements KeyListener, ActionListener, TableModelListener{
     
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private boolean isNewRecord = false;
-	
-	public enum BoxCurationType{
-		BROWSE,
-		CHECKOUT,
-		CHECKIN;
-	
-	}
-	
 	private WSIBox box = null;
 	private BoxCurationType type = BoxCurationType.BROWSE;
 	private ArrayListModel<WSIBox> boxModel;
 	protected SampleListTableModel sampleTableModel = new SampleListTableModel();
 	private TableRowSorter<SampleListTableModel> sampleTableSorter;
 
+	public enum BoxCurationType{
+		BROWSE,
+		CHECKOUT,
+		CHECKIN;
+	}
+	
     /**
      * Standard constructor creates a GUI ready for user to pick a box
      * 
@@ -102,7 +101,8 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     }
     
     /**
-     * Set the purpose 
+     * Set the purpose of this GUI
+     * 
      * @param type
      */
     public void setCurationType(BoxCurationType type)
@@ -113,22 +113,30 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     	{
     		this.tabbedPaneBox.setVisible(false);
     		this.btnApply.setVisible(false);
+    		this.btnCreateNewBox.setVisible(false);
+    		this.btnOk.setText("Cancel");
     		this.pack();
+    		
     	}
     	
     	if(type==BoxCurationType.CHECKIN)
     	{
-    		this.setTitle("Check in box");
+    		this.setTitle(I18n.getText("menus.admin.checkinbox"));
     	}
     	
     	if(type==BoxCurationType.CHECKOUT)
     	{
-    		this.setTitle("Check out box");
+    		this.setTitle(I18n.getText("menus.admin.checkoutbox"));
     	}
     }
     
+    /**
+     * Update the sample count label
+     */
     private void updateSampleCount()
     {
+    	btnMarkMissing.setEnabled(false);
+    	
     	if(box.getSamples().size()==1)
     	{
     		lblSampleCount.setText(box.getSamples().size()+" sample in box");
@@ -138,8 +146,22 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     		lblSampleCount.setText(box.getSamples().size()+" samples in box");
     	}
     	
+    	if(this.sampleTableModel.getCheckedCount()!=null)
+    	{
+    		if(sampleTableModel.getCheckedCount()>0)
+    		{
+    			btnMarkMissing.setEnabled(true);
+    		}
+    		lblSampleCount.setText(lblSampleCount.getText()+" ("+sampleTableModel.getCheckedCount()+" checked)");		
+    	}
     }
     
+    /**
+     * Save changes to the box info for a sample 
+     * 
+     * @param s
+     * @return
+     */
     private boolean saveBoxDetailsForSample(TridasSample s)
     {
     	// Update boxid in sample genericField
@@ -258,12 +280,9 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     @SuppressWarnings("unchecked")
 	public void setupGui()
     {
-    	
-    	
     	// Hide main gui components until populated
     	this.setComponentsEnabled(false);
     	
-    	//this.cboBox.setVisible(false);
     	this.btnApply.setEnabled(false);
     	this.setTitle("Box details");
     	
@@ -292,7 +311,8 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     	this.btnApply.addActionListener(this);
     	this.btnOk.addActionListener(this);
     	this.cboBox.addActionListener(this);
-    	
+    	this.btnMarkMissing.addActionListener(this);
+    	   	
     	// Update the GUI
     	updateBoxGui();
     }
@@ -361,6 +381,12 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
 
     }
     
+    /**
+     * Get the comprehensive details for a box from the webservice given
+     * the box id
+     * 
+     * @param idstr
+     */
     private void getComprehensiveWSIBox(String idstr)
     {
 		// Set return type to box
@@ -387,21 +413,10 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
 		}
 		
 		box = resource.getAssociatedResult();
-    }
-    
-    /**
-     * Get box details from WS using barcode
-     * 
-     * @param barcode
-     */
-    private void doBarcodeSearch(LabBarcode.DecodedBarcode barcode)
-    {
-		if (barcode.uuidType == LabBarcode.Type.BOX){	
-			this.getComprehensiveWSIBox(barcode.uuid.toString());
-		}
-   	
+		
 		updateBoxGui();
-
+		
+		// If Checking in or out then set fields and close
 		if (type.equals(BoxCurationType.CHECKOUT))
 		{
 			setFieldsForCheckout();
@@ -417,28 +432,60 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
 			if(saveChanges())
 			{
 				dispose();
-			}
-			
-		}	
+			}	
+		}
     }
     
+    /**
+     * Get box details from WS using barcode
+     * 
+     * @param barcode
+     */
+    private void doBarcodeSearch(LabBarcode.DecodedBarcode barcode)
+    {
+		if (barcode.uuidType == LabBarcode.Type.BOX){	
+			this.getComprehensiveWSIBox(barcode.uuid.toString());
+		}
+   	
+
+
+    }
     
+    /**
+     * Update the box fields automatically for checking out
+     */
     private void setFieldsForCheckout()
     {
 		this.txtTrackingLocation.setText("Checked out");
-		Calendar c = Calendar.getInstance();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("d mmm yyyy");
-		addComment("Checked out by "+App.currentUser.getFirstName()+" "+App.currentUser.getLastName()+ " on " + dateFormat.format(c.getTime()) +".");
+		addComment("Checked out by "+App.currentUser.getFirstName()+" "+App.currentUser.getLastName()+ " on " + getTodaysDate() +".");
     }
     
+    /**
+     * Update the box fields automatically for checking in
+     */
     private void setFieldsForCheckin()
     {
 		this.txtTrackingLocation.setText(" ");
+		addComment("Checked in by "+App.currentUser.getFirstName()+" "+App.currentUser.getLastName()+ " on " + getTodaysDate() +".");    
+	}
+    
+    /**
+     * Get todays date as a formatted string
+     * 
+     * @return
+     */
+    private String getTodaysDate()
+    {
 		Calendar c = Calendar.getInstance();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("d mmm yyyy");
-		addComment("Checked in by "+App.currentUser.getFirstName()+" "+App.currentUser.getLastName()+ " on " + dateFormat.format(c.getTime()) +".");    }
+		SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMMM yyyy");
+		return dateFormat.format(c.getTime());
+    }
     
-    
+    /**
+     * Add a comment to the box comment field
+     * 
+     * @param comment
+     */
     private void addComment(String comment)
     {
     	if(this.txtComments.getText().length()>0)
@@ -451,6 +498,9 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     	}
     }
     
+    /**
+     * Update the sample table GUI
+     */
     private void updateSampleTable()
     {        
     	if(box.isSetSamples())
@@ -463,7 +513,10 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     		sampleTableModel = new SampleListTableModel(new ArrayList<TridasSample>());
     	}
     	
-    	this.tblBoxContents.setModel(sampleTableModel);
+    	
+    	tblBoxContents.setModel(sampleTableModel);
+    	tblBoxContents.getModel().addTableModelListener(this);
+    	
     	tblBoxContents.removeColumn(tblBoxContents.getColumn("Box"));
     	tblBoxContents.removeColumn(tblBoxContents.getColumn("Box Curation Location"));
     	tblBoxContents.removeColumn(tblBoxContents.getColumn("Box Tracking Location"));
@@ -499,17 +552,17 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     private void updateBoxGui()
     {
     	// First clear components
-		this.txtName.setText("");
-		this.txtLastUpdated.setText("");
-		this.txtCurationLocation.setText("");
-		this.txtTrackingLocation.setText("");
-		this.txtComments.setText("");
+		txtName.setText("");
+		txtLastUpdated.setText("");
+		txtCurationLocation.setText("");
+		txtTrackingLocation.setText("");
+		txtComments.setText("");
 		
     	if(box==null)
     	{
     		// Box is null so hide and disable components
     		setComponentsEnabled(false);
-			this.btnAddSampleToBox.setEnabled(false);
+			btnAddSampleToBox.setEnabled(false);
     		return;
     	}
     	 
@@ -518,11 +571,11 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     	setComponentsEnabled(true);
     	
     	// Set components values
-    	if(box.isSetTitle()) 				 this.txtName.setText(box.getTitle());
-    	if(box.isSetLastModifiedTimestamp()) this.txtLastUpdated.setText(BoxCuration.formatXMLGregorianCalendar(box.getLastModifiedTimestamp().getValue()));
-    	if(box.isSetCurationLocation()) 	 this.txtCurationLocation.setText(box.getCurationLocation());
-    	if(box.isSetTrackingLocation()) 	 this.txtTrackingLocation.setText(box.getTrackingLocation());
-    	if(box.isSetComments()) 			 this.txtComments.setText(box.getComments());
+    	if(box.isSetTitle()) 				 txtName.setText(box.getTitle());
+    	if(box.isSetLastModifiedTimestamp()) txtLastUpdated.setText(BoxCuration.formatXMLGregorianCalendar(box.getLastModifiedTimestamp().getValue()));
+    	if(box.isSetCurationLocation()) 	 txtCurationLocation.setText(box.getCurationLocation());
+    	if(box.isSetTrackingLocation()) 	 txtTrackingLocation.setText(box.getTrackingLocation());
+    	if(box.isSetComments()) 			 txtComments.setText(box.getComments());
         
     	// Update table 
     	updateSampleTable();
@@ -552,13 +605,14 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
         lblComments = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
         lblName = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        txtComments = new javax.swing.JTextPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtComments = new javax.swing.JTextArea();
         panelContents = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblBoxContents = new javax.swing.JTable();
         btnAddSampleToBox = new javax.swing.JButton();
         lblSampleCount = new javax.swing.JLabel();
+        btnMarkMissing = new javax.swing.JButton();
         txtBarcode = new javax.swing.JTextField();
         btnCreateNewBox = new javax.swing.JButton();
         lblSelectBox = new javax.swing.JLabel();
@@ -585,7 +639,10 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
 
         lblName.setText("Name:");
 
-        jScrollPane3.setViewportView(txtComments);
+        txtComments.setColumns(20);
+        txtComments.setLineWrap(true);
+        txtComments.setRows(5);
+        jScrollPane1.setViewportView(txtComments);
 
         org.jdesktop.layout.GroupLayout panelBoxDetailsLayout = new org.jdesktop.layout.GroupLayout(panelBoxDetails);
         panelBoxDetails.setLayout(panelBoxDetailsLayout);
@@ -594,7 +651,7 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
             .add(panelBoxDetailsLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
                     .add(panelBoxDetailsLayout.createSequentialGroup()
                         .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(lblCurationLocation)
@@ -632,7 +689,7 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
                 .add(18, 18, 18)
                 .add(lblComments)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -667,6 +724,9 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
 
         lblSampleCount.setText("0 samples in box");
 
+        btnMarkMissing.setText("Mark unchecked as missing from box");
+        btnMarkMissing.setEnabled(false);
+
         org.jdesktop.layout.GroupLayout panelContentsLayout = new org.jdesktop.layout.GroupLayout(panelContents);
         panelContents.setLayout(panelContentsLayout);
         panelContentsLayout.setHorizontalGroup(
@@ -675,21 +735,23 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
                 .addContainerGap()
                 .add(panelContentsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, panelContentsLayout.createSequentialGroup()
-                        .add(lblSampleCount)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 202, Short.MAX_VALUE)
-                        .add(btnAddSampleToBox)))
+                    .add(lblSampleCount)
+                    .add(panelContentsLayout.createSequentialGroup()
+                        .add(btnAddSampleToBox)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 29, Short.MAX_VALUE)
+                        .add(btnMarkMissing)))
                 .addContainerGap())
         );
         panelContentsLayout.setVerticalGroup(
             panelContentsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelContentsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelContentsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnAddSampleToBox)
-                    .add(lblSampleCount))
+                    .add(btnMarkMissing))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(lblSampleCount)
                 .addContainerGap())
         );
 
@@ -708,9 +770,6 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, tabbedPaneBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 506, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
-                        .add(6, 6, 6)
-                        .add(btnCreateNewBox)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 197, Short.MAX_VALUE)
                         .add(btnApply)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnOk)
@@ -725,7 +784,10 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
                                 .add(23, 23, 23)))
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, txtBarcode, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, cboBox, 0, 390, Short.MAX_VALUE))))
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                                .add(cboBox, 0, 242, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(btnCreateNewBox)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -738,13 +800,13 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblSelectBox)
-                    .add(cboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(cboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(btnCreateNewBox))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(tabbedPaneBox, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .add(tabbedPaneBox, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnOk)
-                    .add(btnCreateNewBox)
                     .add(btnApply))
                 .addContainerGap())
         );
@@ -793,10 +855,11 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     protected javax.swing.JButton btnAddSampleToBox;
     protected javax.swing.JButton btnApply;
     protected javax.swing.JButton btnCreateNewBox;
+    protected javax.swing.JButton btnMarkMissing;
     protected javax.swing.JButton btnOk;
     protected javax.swing.JComboBox cboBox;
+    protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JScrollPane jScrollPane2;
-    protected javax.swing.JScrollPane jScrollPane3;
     protected javax.swing.JLabel lblComments;
     protected javax.swing.JLabel lblCurationLocation;
     protected javax.swing.JLabel lblLastUpdated;
@@ -810,7 +873,7 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
     protected javax.swing.JTabbedPane tabbedPaneBox;
     protected javax.swing.JTable tblBoxContents;
     protected javax.swing.JTextField txtBarcode;
-    protected javax.swing.JTextPane txtComments;
+    protected javax.swing.JTextArea txtComments;
     protected javax.swing.JTextField txtCurationLocation;
     protected javax.swing.JTextField txtLastUpdated;
     protected javax.swing.JTextField txtName;
@@ -925,7 +988,32 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
 						
 			this.getComprehensiveWSIBox(box.getIdentifier().getValue());
 			updateBoxGui();
-		
+		}
+		else if (e.getSource().equals(btnMarkMissing))
+		{
+			String comment = "";
+			if(this.sampleTableModel.getCheckedCount()==null) return;
+			if(this.sampleTableModel.getCheckedCount()<1) return;
+				
+			if(this.sampleTableModel.getCheckedCount()>1)
+			{
+				comment += "The following samples were";
+			}
+			else
+			{
+				comment += "The following sample was"; 
+			}
+			comment+=" found to be missing on "+ getTodaysDate() +": ";
+				
+			for (String s : this.sampleTableModel.getUncheckedSampleNames())
+			{
+				comment+= s+"; ";
+			}
+			
+			comment = comment.substring(0, comment.length()-2)+".";
+			addComment(comment);
+			sampleTableModel.clearChecks();
+			this.saveChanges();
 		}
 	}
 	
@@ -971,36 +1059,10 @@ public class BoxCuration extends javax.swing.JDialog implements KeyListener, Act
 			haveDetailsChanged();
 		}
 	}
- 
+	
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void tableChanged(TableModelEvent e) {
+		updateSampleCount();
 	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
+	
 }

@@ -182,22 +182,24 @@ private JFrame frame;
 	            "edu.cornell.dendro.corina.admin.SampleCuration.showDialog()", "findsample.png");
 	    curationmenu.add(findsample); 
 	    
+	    curationmenu.addSeparator();
+	    
 	    JMenuItem boxdetails = Builder.makeMenuItem("menus.admin.boxdetails",
 	            "edu.cornell.dendro.corina.admin.BoxCuration.showDialog()", "box.png");
 	    curationmenu.add(boxdetails); 
 	    
-	    JMenuItem checkinbox = Builder.makeMenuItem("menus.admin.checkinbox",
-	            "edu.cornell.dendro.corina.admin.BoxCuration.checkinBox()", "box.png");
-	    curationmenu.add(checkinbox); 
-	 
 	    JMenuItem checkoutbox = Builder.makeMenuItem("menus.admin.checkoutbox",
-	            "edu.cornell.dendro.corina.admin.BoxCuration.checkoutBox()", "box.png");
+	            "edu.cornell.dendro.corina.admin.BoxCuration.checkoutBox()", "checkout.png");
 	    curationmenu.add(checkoutbox); 
+	    
+	    JMenuItem checkinbox = Builder.makeMenuItem("menus.admin.checkinbox",
+	            "edu.cornell.dendro.corina.admin.BoxCuration.checkinBox()", "checkin.png");
+	    curationmenu.add(checkinbox); 
 	    
 	    JMenuItem inventory = Builder.makeMenuItem("menus.admin.inventory",
 	            "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.proSheetPrintingDialog()");
 	    inventory.setEnabled(false);
-	    curationmenu.add(inventory); 
+	    //curationmenu.add(inventory); 
 	    
 	 	add(curationmenu);
 	}

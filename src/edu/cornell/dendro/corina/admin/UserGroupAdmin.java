@@ -75,6 +75,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         tblUsers.setRowSorter(usersSorter);
 
         tblUsers.addMouseListener(this);
+        tblUsers.removeColumn(tblUsers.getColumn( I18n.getText("dbbrowser.hash")));
         
         // Populate groups list
         /*ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  

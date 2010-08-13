@@ -26,9 +26,6 @@
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="tabbedPaneBox" alignment="0" min="-2" pref="506" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="6" pref="6" max="6" attributes="0"/>
-                      <Component id="btnCreateNewBox" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="197" max="32767" attributes="0"/>
                       <Component id="btnApply" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnOk" min="-2" max="-2" attributes="0"/>
@@ -47,7 +44,11 @@
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="txtBarcode" alignment="1" pref="390" max="32767" attributes="0"/>
-                          <Component id="cboBox" alignment="1" pref="390" max="32767" attributes="1"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="cboBox" pref="242" max="32767" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnCreateNewBox" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
               </Group>
@@ -67,13 +68,13 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="lblSelectBox" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnCreateNewBox" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="tabbedPaneBox" pref="349" max="32767" attributes="0"/>
+              <Component id="tabbedPaneBox" pref="347" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btnOk" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnCreateNewBox" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnApply" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -125,10 +126,10 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane3" alignment="1" pref="473" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" alignment="0" pref="473" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="lblCurationLocation" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -176,7 +177,7 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="lblComments" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane3" pref="121" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="119" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -219,14 +220,19 @@
                 <Property name="text" type="java.lang.String" value="Name:"/>
               </Properties>
             </Component>
-            <Container class="javax.swing.JScrollPane" name="jScrollPane3">
+            <Container class="javax.swing.JScrollPane" name="jScrollPane1">
               <AuxValues>
                 <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
               </AuxValues>
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JTextPane" name="txtComments">
+                <Component class="javax.swing.JTextArea" name="txtComments">
+                  <Properties>
+                    <Property name="columns" type="int" value="20"/>
+                    <Property name="lineWrap" type="boolean" value="true"/>
+                    <Property name="rows" type="int" value="5"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>
@@ -248,10 +254,11 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jScrollPane2" alignment="0" pref="473" max="32767" attributes="0"/>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="lblSampleCount" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="202" max="32767" attributes="0"/>
+                          <Component id="lblSampleCount" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
                               <Component id="btnAddSampleToBox" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="29" max="32767" attributes="0"/>
+                              <Component id="btnMarkMissing" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -261,13 +268,14 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="256" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="btnAddSampleToBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblSampleCount" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnMarkMissing" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jScrollPane2" pref="238" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="lblSampleCount" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -318,6 +326,12 @@
             <Component class="javax.swing.JLabel" name="lblSampleCount">
               <Properties>
                 <Property name="text" type="java.lang.String" value="0 samples in box"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnMarkMissing">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Mark unchecked as missing from box"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
           </SubComponents>

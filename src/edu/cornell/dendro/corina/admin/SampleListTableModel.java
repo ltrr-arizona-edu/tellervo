@@ -228,6 +228,62 @@ public class SampleListTableModel extends AbstractTableModel {
 
     }
 
+    /**
+     * Get the number of samples that have been checked
+     * 
+     * @return
+     */
+    public Integer getCheckedCount()
+    {
+    	Integer count = 0;
+    	if(checkedList!=null)
+    	{
+    		for(Boolean chk : checkedList)
+    		{
+    			if(chk) count++;
+    		}
+    	}
+    	else
+    	{
+    		return null;
+    	}
+    	
+    	return count;
+    }
     
+    /**
+     * Get Array of TridasSamples that have not been checked
+     * 
+     * @return
+     */
+    public ArrayList<String> getUncheckedSampleNames()
+    {
+    	ArrayList<String> uncheckedSamples = new ArrayList<String>();
+    	
+    	for (TridasSample sample : samples)
+    	{
+    		Boolean isSampleChecked = (Boolean) getColumnValueForSample(sample, 4);
+    		if(isSampleChecked==false) 
+    		{
+    			uncheckedSamples.add((String) getColumnValueForSample(sample,0));
+    		}
+    	}
+    	
+    	return uncheckedSamples;
+    }
     
+    /**
+     * Clear all checks against samples
+     */
+    public void clearChecks()
+    {
+    	checkedList = new ArrayList<Boolean>();
+		if(samples!=null)
+		{
+			for(int i=0; i<samples.size(); i++)
+			{
+				checkedList.add(false);
+			}
+		}
+    }
 }
