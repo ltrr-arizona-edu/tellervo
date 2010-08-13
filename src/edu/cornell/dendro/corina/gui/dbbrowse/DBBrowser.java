@@ -34,6 +34,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
@@ -41,10 +42,15 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeSelectionModel;
 
+import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
@@ -78,7 +84,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 	private ElementListTableSorter availableSorter;
 	private ElementListTableSorter chosenSorter;
 	private TableRowSorter<ElementListTableModel> rowFilter;
-
+	private JTree treeView;
+	private JScrollPane treeScrollPane;
 	
 	private ElementList selectedElements;
     private boolean isMultiDialog;
@@ -143,6 +150,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         
         setupSearch();
         setupTableArea();
+        setupTree();
         populateComponents(); 
         
         // repack :)
@@ -716,6 +724,16 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 			}
 		});
     }
+    
+    private void setupTree(){
+    	
+    	TridasTreeViewPanel treepanel = new TridasTreeViewPanel();
+    	
+    	this.browseSearchPane.addTab("Tree", treepanel);
+        
+    }
+    
+
       
 	private void populateComponents() {
     	// single selection on site list

@@ -123,6 +123,9 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         lstSites = new javax.swing.JList();
         txtFilterInput = new javax.swing.JTextField();
         searchPanel = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
         workArea = new javax.swing.JPanel();
         extraButtonPanel = new javax.swing.JPanel();
         btnSelectAll = new javax.swing.JButton();
@@ -146,7 +149,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
             panelBottomButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelBottomButtonsLayout.createSequentialGroup()
                 .add(btnOptions)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 499, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 434, Short.MAX_VALUE)
                 .add(btnCancel)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnOk, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 75, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -190,7 +193,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         panelRibbonLayout.setHorizontalGroup(
             panelRibbonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, panelRibbonLayout.createSequentialGroup()
-                .addContainerGap(511, Short.MAX_VALUE)
+                .addContainerGap(446, Short.MAX_VALUE)
                 .add(panelRibbonLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(lblSeriesType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 71, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(btnTogMostRecent))
@@ -243,7 +246,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(cboBrowseBy, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtFilterInput, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -259,10 +262,18 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         );
         searchPanelLayout.setVerticalGroup(
             searchPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 333, Short.MAX_VALUE)
+            .add(0, 432, Short.MAX_VALUE)
         );
 
         browseSearchPane.addTab("Search", searchPanel);
+
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
+        jScrollPane2.setViewportView(jTree1);
+
+        jPanel1.add(jScrollPane2, java.awt.BorderLayout.CENTER);
+
+        browseSearchPane.addTab("tab3", jPanel1);
 
         listTableSplit.setLeftComponent(browseSearchPane);
 
@@ -270,11 +281,11 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         workArea.setLayout(workAreaLayout);
         workAreaLayout.setHorizontalGroup(
             workAreaLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 408, Short.MAX_VALUE)
+            .add(0, 343, Short.MAX_VALUE)
         );
         workAreaLayout.setVerticalGroup(
             workAreaLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 379, Short.MAX_VALUE)
+            .add(0, 478, Short.MAX_VALUE)
         );
 
         listTableSplit.setRightComponent(workArea);
@@ -311,7 +322,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
                 .add(btnInvertSelect)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnPreview)
-                .addContainerGap(245, Short.MAX_VALUE))
+                .addContainerGap(344, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout mainPanelLayout = new org.jdesktop.layout.GroupLayout(mainPanel);
@@ -320,7 +331,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
             mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(listTableSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 719, Short.MAX_VALUE)
+                .add(listTableSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(extraButtonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 48, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -330,8 +341,8 @@ public class DBBrowser_UI extends javax.swing.JDialog {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, listTableSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, extraButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, listTableSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, extraButtonPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -346,7 +357,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
                 .addContainerGap()
                 .add(mainPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .add(panelRibbon, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 807, Short.MAX_VALUE)
+            .add(panelRibbon, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 742, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -403,7 +414,10 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     protected javax.swing.JComboBox cboSeriesType;
     protected javax.swing.JPanel extraButtonPanel;
     protected javax.swing.JButton jButton7;
+    protected javax.swing.JPanel jPanel1;
     protected javax.swing.JScrollPane jScrollPane1;
+    protected javax.swing.JScrollPane jScrollPane2;
+    protected javax.swing.JTree jTree1;
     protected javax.swing.JLabel lblSeriesType;
     protected javax.swing.JSplitPane listTableSplit;
     protected javax.swing.JList lstSites;
