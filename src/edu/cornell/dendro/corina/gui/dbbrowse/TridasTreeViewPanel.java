@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina.gui.dbbrowse;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
@@ -12,8 +11,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 import javax.swing.event.EventListenerList;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -48,29 +45,53 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	
 	public TridasTreeViewPanel()
 	{
+		setupTree(null);
+	}
+	
+	/**
+	 * Set the base nodes of the tree to the specified objects
+	 * 
+	 * @param objList
+	 */
+	public void setObjectList(List<TridasObjectEx> objList)
+	{
+		setupTree(objList);
+	}
+	
+	/**
+	 * Set up the tree.  If objectList is passed then this is used
+	 * as the base nodes of the tree, otherwise all objects is 
+	 * dictionary are shown.
+	 * 
+	 * @param objList
+	 */
+	private void setupTree(List<TridasObjectEx> objList)
+	{
+		// Set up tree
     	DefaultMutableTreeNode top = new DefaultMutableTreeNode("Corina Database");
-    	createNodes(top);
+    	if(objList!=null)
+    	{
+    		addObjectsToTree(top, objList);
+    	}
+    	else
+    	{
+    		addObjectsToTree(top);
+    	}
     	tree = new TridasTree(top);
     	tree.setCellRenderer(new TridasTreeCellRenderer());
-    	ToolTipManager.sharedInstance().registerComponent(tree);
-
-    	//treeModel = new DefaultTreeModel(top);
-    	//treeModel.addTreeModelListener(new TridasTreeModelListener());
-
-    	//Listen for when the selection changes.
-        tree.addMouseListener(this);
-
-
-        treeScrollPane.setViewportView(tree);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);        
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
+        tree.addMouseListener(this);
+        ToolTipManager.sharedInstance().registerComponent(tree);
+    	treeScrollPane.setViewportView(tree);
 	}
+	
 	
 	/**
 	 * Set up the popup menu 
 	 */
-	public void initPopupMenu(boolean expandEnabled)
+	private void initPopupMenu(boolean expandEnabled)
 	{
         // define the popup
         popup = new JPopupMenu();
@@ -100,24 +121,33 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	}
 	
 	/**
-	 * Populate the tree with object nodes
+	 * Populate the tree with specified objects
 	 * 
 	 * @param top
 	 */
     @SuppressWarnings("unchecked")
-	private void createNodes(DefaultMutableTreeNode top)
+	private void addObjectsToTree(DefaultMutableTreeNode top, List<TridasObjectEx> objectList)
     {
     	DefaultMutableTreeNode objectNode = null;
 
-        List<TridasObjectEx> objectList = App.tridasObjects.getObjectList();
+        
         for(TridasObjectEx object : objectList)
         {
             objectNode = new DefaultMutableTreeNode(object);   
             //top.add(objectNode);
             addTridasNodeInOrder(tree, top, objectNode);
         }
-        
-
+    }
+    
+    /**
+     * Populate the tree with all objects in dictionary
+     * 
+     * @param top
+     */
+    private void addObjectsToTree(DefaultMutableTreeNode top)
+    {
+    	List<TridasObjectEx> objectList = App.tridasObjects.getTopLevelObjectList();
+    	addObjectsToTree(top, objectList);
     }
     
     private void addTridasNodeInOrder(TridasTree theTree, DefaultMutableTreeNode parent, DefaultMutableTreeNode nodeToAdd)
@@ -273,7 +303,12 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
     	
     }
     
-	private void doSearch(DefaultMutableTreeNode node)
+    /**
+     * Select and entity notifying listeners
+     * 
+     * @param node
+     */
+	private void doSelectEntity(DefaultMutableTreeNode node)
 	{
    	
     	if(node.getUserObject() instanceof ITridas)
@@ -282,7 +317,62 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
     		this.fireTridasSelectListener(event);
     	}
 	}
+	
+	/**
+	 * Display a popup menu with the expand button enabled or disabled
+	 * 
+	 * @param source
+	 * @param x
+	 * @param y
+	 * @param expandEnabled
+	 */
+	private void showPopupMenu(JComponent source, int x, int y, boolean expandEnabled)
+	{
+		this.initPopupMenu(expandEnabled);
+		popup.show(source, x, y);
+	}
     
+	/**
+	 * Add a listener 
+	 * 
+	 * @param listener
+	 */
+	public void addTridasSelectListener(TridasSelectListener listener)
+	{
+		tridasListeners.add(TridasSelectListener.class, listener);
+	}
+	
+	/**
+	 * Remove a listener
+	 * @param listener
+	 */
+	public void removeTridasSelectListener(TridasSelectListener listener)
+	{
+		tridasListeners.remove(TridasSelectListener.class, listener);
+	}
+	
+	/**
+	 * Fire a selected entity event
+	 * 
+	 * @param event
+	 */
+	protected void fireTridasSelectListener(TridasSelectEvent event)
+	{
+	     Object[] listeners = tridasListeners.getListenerList();
+	     // loop through each listener and pass on the event if needed
+	     Integer numListeners = listeners.length;
+	     for (int i = 0; i<numListeners; i+=2) 
+	     {
+	          if (listeners[i]==TridasSelectListener.class) 
+	          {
+	               // pass the event to the listeners event dispatch method
+	                ((TridasSelectListener)listeners[i+1]).entitySelected(event);
+	          }            
+	     }
+
+	}
+	
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("expand"))
@@ -292,7 +382,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 		}
 		else if (e.getActionCommand().equals("select"))
 		{
-			doSearch((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+			doSelectEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
 		}
 		else if (e.getActionCommand().equals("refresh"))
 		{
@@ -306,13 +396,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 			expandEntity(node);
 		}
 	}
-	
-	private void showPopupMenu(JComponent source, int x, int y, boolean expandEnabled)
-	{
-		this.initPopupMenu(expandEnabled);
-		popup.show(source, x, y);
-	}
-	
+		
 	@Override
 	public void mouseClicked(MouseEvent e) {
         if ( e.getButton()== MouseEvent.BUTTON3 || e.getButton()== MouseEvent.BUTTON2) 
@@ -360,29 +444,4 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	@Override
 	public void mouseReleased(MouseEvent e) { }
 	
-	public void addTridasSelectListener(TridasSelectListener listener)
-	{
-		tridasListeners.add(TridasSelectListener.class, listener);
-	}
-	
-	public void removeTridasSelectListener(TridasSelectListener listener)
-	{
-		tridasListeners.remove(TridasSelectListener.class, listener);
-	}
-	
-	protected void fireTridasSelectListener(TridasSelectEvent event)
-	{
-	     Object[] listeners = tridasListeners.getListenerList();
-	     // loop through each listener and pass on the event if needed
-	     Integer numListeners = listeners.length;
-	     for (int i = 0; i<numListeners; i+=2) 
-	     {
-	          if (listeners[i]==TridasSelectListener.class) 
-	          {
-	               // pass the event to the listeners event dispatch method
-	                ((TridasSelectListener)listeners[i+1]).entitySelected(event);
-	          }            
-	     }
-
-	}
 }

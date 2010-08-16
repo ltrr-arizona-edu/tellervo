@@ -176,7 +176,7 @@ public class TridasComparator implements Comparator<ITridas> {
 
 	private Integer getEntityLevel(ITridas entity)
 	{
-		if(entity instanceof TridasObjectEx)
+		if(entity instanceof TridasObjectEx || entity instanceof TridasObject)
 		{
 			return 1;
 		}

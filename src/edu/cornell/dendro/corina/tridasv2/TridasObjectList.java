@@ -214,6 +214,24 @@ public class TridasObjectList extends CorinaResource {
 		}
 	}
 	
+	public List<TridasObjectEx> getTopLevelObjectList(){
+		synchronized(data) {
+			ArrayList<TridasObjectEx> topLevelList = new ArrayList<TridasObjectEx>(data.allObjects.size());
+			
+			for(TridasObjectEx obj : data.allObjects) {
+				
+				if(obj.isTopLevelObject())
+				{
+					topLevelList.add(obj);
+				}
+
+			}
+			
+			// don't care if the user modifies this list, because we generated it
+			return topLevelList;
+		}
+	}
+	
 	/**
 	 * Retrieve a list of all populated Tridas objects
 	 * @return a list
