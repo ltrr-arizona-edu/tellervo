@@ -6,6 +6,10 @@ package edu.cornell.dendro.corina.tridasv2;
 import java.util.Comparator;
 
 import org.tridas.interfaces.ITridas;
+import org.tridas.schema.BaseSeries;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
@@ -24,7 +28,8 @@ public class TridasComparator implements Comparator<ITridas> {
 	public enum Type {
 		SITE_CODES_THEN_TITLES,
 		TITLES, 
-		LAB_CODE_THEN_TITLES
+		LAB_CODE_THEN_TITLES,
+		SENIOR_ENTITIES_THEN_LAB_CODE_THEN_TITLES
 	}
 
 	public enum CompareBehavior {
@@ -39,7 +44,7 @@ public class TridasComparator implements Comparator<ITridas> {
 	}
 	
 	/** The type of comparator, specified on construction */
-	private final Type comparatorType;
+	private Type comparatorType;
 	/** The behavior when we encounter nulls */
 	private final NullBehavior nullBehavior;
 	/** How we compare strings */
@@ -71,6 +76,20 @@ public class TridasComparator implements Comparator<ITridas> {
 		String v1, v2;
 		
 		switch(comparatorType) {
+		
+		case SENIOR_ENTITIES_THEN_LAB_CODE_THEN_TITLES:
+		{
+			if(!o1.getClass().equals(o2.getClass()))
+			{
+				Integer o1level = this.getEntityLevel(o1);
+				Integer o2level = this.getEntityLevel(o2);
+				return o1level.compareTo(o2level);
+			}
+			
+			// Set to LAB_CODE_THEN_TITLES from now on
+			comparatorType = Type.LAB_CODE_THEN_TITLES;
+		}
+		
 		case SITE_CODES_THEN_TITLES: {
 			if(o1 instanceof TridasObjectEx) {
 				TridasObjectEx t1 = (TridasObjectEx) o1;
@@ -155,4 +174,29 @@ public class TridasComparator implements Comparator<ITridas> {
 		return (compareBehavior != CompareBehavior.CASE_SENSITIVE) ? v1.compareToIgnoreCase(v2) : v1.compareTo(v2);
 	}
 
+	private Integer getEntityLevel(ITridas entity)
+	{
+		if(entity instanceof TridasObjectEx)
+		{
+			return 1;
+		}
+		else if (entity instanceof TridasElement)
+		{
+			return 2;
+		}
+		else if (entity instanceof TridasSample)
+		{
+			return 3;	
+		}
+		else if (entity instanceof TridasRadius)
+		{
+			return 4;	
+		}
+		else if (entity instanceof BaseSeries)
+		{
+			return 5;	
+		}
+		
+		return null;
+	}
 }

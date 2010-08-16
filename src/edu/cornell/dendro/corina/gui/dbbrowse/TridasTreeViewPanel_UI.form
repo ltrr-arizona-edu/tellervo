@@ -15,11 +15,11 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="txtFilterInput" alignment="0" pref="388" max="32767" attributes="0"/>
                   <Component id="treeScrollPane" alignment="0" pref="388" max="32767" attributes="0"/>
-                  <Component id="btnCollapse" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -31,8 +31,8 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="treeScrollPane" pref="387" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="btnCollapse" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Component id="txtFilterInput" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -42,10 +42,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
     </Container>
-    <Component class="javax.swing.JButton" name="btnCollapse">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Collapse All"/>
-      </Properties>
+    <Component class="javax.swing.JTextField" name="txtFilterInput">
     </Component>
   </SubComponents>
 </Form>

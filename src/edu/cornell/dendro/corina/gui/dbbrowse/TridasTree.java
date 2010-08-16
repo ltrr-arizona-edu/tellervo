@@ -1,5 +1,13 @@
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -9,15 +17,24 @@ import org.tridas.util.TridasObjectEx;
 
 public class TridasTree extends JTree {
 
-	  /**
-	 * 
-	 */
 	private static final long serialVersionUID = 5358870985497921555L;
 
+	
 	public TridasTree(DefaultMutableTreeNode top) {
 		super(top);
 	}
-
+ 
+	
+	public String getToolTipString(Object value, boolean selected,
+			boolean expanded, boolean leaf, int row,
+			boolean hasFocus) {
+	
+		return "blah";
+	
+		
+	}
+	
+	
 	@Override
 	public String convertValueToText(Object value, boolean selected,
 		boolean expanded, boolean leaf, int row,
@@ -50,5 +67,7 @@ public class TridasTree extends JTree {
 		    
 
 	}
-	
+
+
+
 }

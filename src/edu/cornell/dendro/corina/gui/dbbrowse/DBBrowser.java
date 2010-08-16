@@ -46,7 +46,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
@@ -56,6 +60,7 @@ import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
@@ -70,7 +75,9 @@ import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.wsi.ResourceEvent;
 import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 /**
@@ -78,7 +85,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
  * @author peterbrewer
  *
  */
-public class DBBrowser extends DBBrowser_UI implements ElementListManager {
+public class DBBrowser extends DBBrowser_UI implements ElementListManager, TridasSelectListener {
 	private static final long serialVersionUID = 1L;
 	
 	private ElementListTableSorter availableSorter;
@@ -197,6 +204,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         	}
         });
         
+        
+        
         // Whenever the site list changes, make sure we repopulate our site list
         App.tridasObjects.addResourceEventListener(new ResourceEventListener() {
         	public void resourceChanged(ResourceEvent re) {	
@@ -286,6 +295,70 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
         });
      
         txtFilterInput.requestFocusInWindow();
+    }
+    
+    /**
+     * Search for series associated with an entity
+     * 
+     * @param entity
+     * @return
+     */
+    private Boolean doSearchForAssociatedSeries(ITridas entity)
+    {
+    	SearchParameters param;
+    	param = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
+    	
+    	if((entity instanceof TridasObjectEx) || (entity instanceof TridasObject) )
+    	{
+    		param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
+    	}
+    	else if(entity instanceof TridasElement )
+    	{
+    		param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
+    	}
+    	else if(entity instanceof TridasSample )
+    	{
+    		param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
+    	}    	
+    	else if(entity instanceof TridasRadius )
+    	{
+    		param.addSearchConstraint(SearchParameterName.RADIUSID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
+    	}  
+    	else
+    	{
+    		return false;
+    	}
+
+		// Do the search 
+    	final DBBrowser glue = this;
+		SeriesSearchResource searchResource = new SeriesSearchResource(param);
+		CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(glue, searchResource);
+		searchResource.query();
+		dlg.setVisible(true);
+	
+		if(!dlg.isSuccessful()) {
+			// Search failed
+			new Bug(dlg.getFailException());
+			return false;
+		} else {
+			// Search successful
+			
+			ElementList elements = searchResource.getAssociatedResult();
+			
+			if(elements.size()==0)
+			{
+				Alert.message(I18n.getText("error"), I18n.getText("error.noRecordsFound"));
+				return false;
+			}
+			else
+			{	
+				// Several found so show results in table
+				((ElementListTableModel)tblAvailMeas.getModel()).setElements(elements);
+				availableSorter.reSort();
+			}
+			return true;
+		}
+    	
     }
     
     /**
@@ -730,6 +803,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
     	TridasTreeViewPanel treepanel = new TridasTreeViewPanel();
     	
     	this.browseSearchPane.addTab("Tree", treepanel);
+    	
+    	treepanel.addTridasSelectListener(this);
         
     }
     
@@ -1236,6 +1311,13 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager {
 				showSearchLabel(false);
 			}
 		}
+	}
+
+
+	@Override
+	public void entitySelected(TridasSelectEvent event) {
+		ITridas entity = event.getEntity();
+		this.doSearchForAssociatedSeries(entity);
 	}
 	
 

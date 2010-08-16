@@ -11,6 +11,7 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.tridas.interfaces.ITridas;
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasRadius;
@@ -21,7 +22,7 @@ import edu.cornell.dendro.corina.ui.Builder;
 
 import sun.swing.DefaultLookup;
 
-public class TridasTreeCellRenderer extends DefaultTreeCellRenderer {
+public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 
 	private static final long serialVersionUID = -3507013809012231633L;
 
@@ -33,6 +34,7 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer {
 	Icon radiusIcon;
 	Icon seriesIcon;
 	Boolean isDropCell = false;
+
 	
 	public TridasTreeCellRenderer()
 	{
@@ -44,18 +46,33 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer {
 		seriesIcon   = ((ImageIcon) Builder.getIcon("series.png",   Builder.ICONS, 16));
 	}
 		
+	protected String getToolTipString(Object value)
+	{
+		if(value instanceof DefaultMutableTreeNode)
+		{
+			if(((DefaultMutableTreeNode)value).getUserObject() instanceof ITridas)
+			{
+			//TODO Return labcode as tooltip text	
+			}
+		}
+		return null;
+
+	}
+	
     public Component getTreeCellRendererComponent(JTree tree, Object value,
 					  boolean sel,
 					  boolean expanded,
 					  boolean leaf, int row,
 					  boolean hasFocus) 
     {
-		String stringValue = tree.convertValueToText(value, sel, expanded, leaf, row, hasFocus);
+		String stringValue = tree.convertValueToText(value, sel, expanded, leaf, row, hasFocus);		
 		
-		this.tree = tree;
+		this.tree = (JTree) tree;
 		this.hasFocus = hasFocus;
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 		setText(stringValue);
+		setToolTipText(this.getToolTipString(value));		
+
 		
 		Color fg = null;
 		isDropCell = false;

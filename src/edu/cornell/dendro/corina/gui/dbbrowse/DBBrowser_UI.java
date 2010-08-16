@@ -123,9 +123,6 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         lstSites = new javax.swing.JList();
         txtFilterInput = new javax.swing.JTextField();
         searchPanel = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTree1 = new javax.swing.JTree();
         workArea = new javax.swing.JPanel();
         extraButtonPanel = new javax.swing.JPanel();
         btnSelectAll = new javax.swing.JButton();
@@ -267,14 +264,6 @@ public class DBBrowser_UI extends javax.swing.JDialog {
 
         browseSearchPane.addTab("Search", searchPanel);
 
-        jPanel1.setLayout(new java.awt.BorderLayout());
-
-        jScrollPane2.setViewportView(jTree1);
-
-        jPanel1.add(jScrollPane2, java.awt.BorderLayout.CENTER);
-
-        browseSearchPane.addTab("tab3", jPanel1);
-
         listTableSplit.setLeftComponent(browseSearchPane);
 
         org.jdesktop.layout.GroupLayout workAreaLayout = new org.jdesktop.layout.GroupLayout(workArea);
@@ -414,10 +403,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     protected javax.swing.JComboBox cboSeriesType;
     protected javax.swing.JPanel extraButtonPanel;
     protected javax.swing.JButton jButton7;
-    protected javax.swing.JPanel jPanel1;
     protected javax.swing.JScrollPane jScrollPane1;
-    protected javax.swing.JScrollPane jScrollPane2;
-    protected javax.swing.JTree jTree1;
     protected javax.swing.JLabel lblSeriesType;
     protected javax.swing.JSplitPane listTableSplit;
     protected javax.swing.JList lstSites;
