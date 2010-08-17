@@ -1316,8 +1316,15 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 
 	@Override
 	public void entitySelected(TridasSelectEvent event) {
-		ITridas entity = event.getEntity();
-		this.doSearchForAssociatedSeries(entity);
+		ITridas entity;
+		
+		try {
+			entity = event.getEntity();
+			this.doSearchForAssociatedSeries(entity);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 

@@ -1,9 +1,11 @@
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -11,6 +13,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 import javax.swing.event.EventListenerList;
+import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -18,6 +21,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
@@ -28,13 +32,14 @@ import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
+import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 
-public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements MouseListener, ActionListener {
+public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements MouseListener, ActionListener, TridasSelectListener {
 
 	private static final long serialVersionUID = 1185669228536105855L;
 	TridasTree tree;
@@ -46,6 +51,10 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	public TridasTreeViewPanel()
 	{
 		setupTree(null);
+		CorinaCodePanel panel = new CorinaCodePanel();
+		panel.addTridasSelectListener(this);
+		containerPanel.setLayout(new BorderLayout());
+		this.containerPanel.add(panel, BorderLayout.CENTER);
 	}
 	
 	/**
@@ -152,7 +161,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
     
     private void addTridasNodeInOrder(TridasTree theTree, DefaultMutableTreeNode parent, DefaultMutableTreeNode nodeToAdd)
     {
-    	int insertPos = 0;
+    	Integer insertPos = null;
     	
     	ITridas entityToAdd = (ITridas)nodeToAdd.getUserObject();
     	
@@ -160,16 +169,16 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 				TridasComparator.NullBehavior.NULLS_LAST, 
 				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
    
-    	
     	for(int i=0; i<parent.getChildCount(); i++)
     	{	
-    		insertPos = i;
+    		
     		if(((DefaultMutableTreeNode)parent.getChildAt(i)).getUserObject() instanceof ITridas)
     		{
 	    		ITridas child = (ITridas) ((DefaultMutableTreeNode)parent.getChildAt(i)).getUserObject();
 	    		
 	    		if(comparator.compare(child, entityToAdd)>=0)
 	    		{
+	    			insertPos = i;
 	    			break;
 	    		}
 
@@ -177,12 +186,19 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
     	}
     	
     	// Add node to Tree
-    	if(tree==null)
+    	if(tree==null || parent.getChildCount()==0)
     	{
+    		// First node to be added to parent
+    		parent.add(nodeToAdd);
+    	}
+    	else if (insertPos==null)
+    	{
+    		// No later nodes found under parent so add to end
     		parent.add(nodeToAdd);
     	}
     	else
     	{
+    		// Insert before specified node
 	    	DefaultTreeModel model = (DefaultTreeModel) theTree.getModel();  
 	    	model.insertNodeInto(nodeToAdd, parent, insertPos);
     	}
@@ -443,5 +459,41 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 
 	@Override
 	public void mouseReleased(MouseEvent e) { }
+
+	@Override
+	public void entitySelected(TridasSelectEvent event) {
+		List<? extends ITridas> entities = event.getEntityList();
+		
+		if(entities==null)
+		{
+			return;
+		}
+		else if (entities.size()!=1)
+		{
+			return;
+		}
+		
+		ITridas entity = entities.get(0);
+		if(entity instanceof TridasObject)
+		{
+			TridasObjectEx object = (TridasObjectEx) entity;
+			
+			TreePath path = tree.getNextMatch(GenericFieldUtils.findField(object, "corina.objectLabCode").getValue().toString(), 0, Position.Bias.Forward);
+			tree.setSelectionPath(path);
+			tree.scrollPathToVisible(path);
+		}
+		else if (entity instanceof TridasElement)
+		{
+		}
+	}
 	
+	private TreePath getPathTo(ITridas entity)
+	{
+		if(entity instanceof TridasObject)
+		{
+
+		}
+		
+		return null;
+	}
 }
