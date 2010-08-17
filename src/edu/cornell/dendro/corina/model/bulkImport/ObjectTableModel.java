@@ -76,9 +76,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	public void selectAll(){
 		selected.clear();
 		for(SingleObjectModel som : models){
-			if(!som.isImported()){
-				selected.put(som, true);
-			}
+			selected.put(som, true);
 		}
 		fireTableDataChanged();
 	}
@@ -141,6 +139,8 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 			// for combo box stuff
 			if(column.equals(SingleObjectModel.TYPE)){
 				return WSIObjectTypeDictionary.class;
+			}else if(column.equals(SingleObjectModel.IMPORTED)){
+				return Boolean.class;
 			}
 			
 			SingleObjectModel som = models.get(0);
@@ -175,6 +175,11 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		columnIndex--;
 		String column = columns.get(columnIndex);
 		SingleObjectModel som = models.get(rowIndex);
+		
+		// make imported t/f
+		if(column.equals(SingleObjectModel.IMPORTED)){
+			return som.getProperty(column) != null;
+		}
 		return som.getProperty(column);
 	}
 	
@@ -210,9 +215,6 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		String column = columns.get(columnIndex);
 		SingleObjectModel som = models.get(rowIndex);
 		if(som.getPropertyType(column) == PropertyType.READ_WRITE){
-			if((Boolean)som.getProperty(SingleObjectModel.IMPORTED) == Boolean.TRUE){
-				return false;
-			}
 			return true;
 		}
 		return false;

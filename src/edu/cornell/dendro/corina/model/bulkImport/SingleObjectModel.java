@@ -10,6 +10,7 @@ import net.opengis.gml.schema.Pos;
 
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasGenericField;
+import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasObject;
@@ -38,20 +39,22 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 	
 	public SingleObjectModel(){
 		registerProperty(PROPERTIES, PropertyType.READ_WRITE);
-		registerProperty(IMPORTED, PropertyType.READ_ONLY, false);
+		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
 	}
 	
 	
-	public void setImported(boolean argImported){
+	public void setImported(TridasIdentifier argImported){
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
 	}
 	
-	public boolean isImported(){
-		return (Boolean)getProperty(IMPORTED);
+	public TridasIdentifier getImported(){
+		return (TridasIdentifier)getProperty(IMPORTED);
 	}
 	
 	public void populateFromTridasObject(TridasObject argObject){
 		List<TridasGenericField> fields = argObject.getGenericFields();
+		
+		setImported(argObject.getIdentifier());
 		
 		boolean found = false;
 		for(TridasGenericField field : fields){
@@ -94,6 +97,7 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 		argObject.getGenericFields().add(codeField);
 		
 		Object title = getProperty(TITLE);
+		Object identifier = getProperty(IMPORTED);
 		Object comments = getProperty(COMMENTS);
 		Object type = getProperty(TYPE);
 		Object description = getProperty(DESCRIPTION);
@@ -102,6 +106,10 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 		
 		if(title != null){
 			argObject.setTitle(title.toString());
+		}
+		
+		if(identifier != null){
+			argObject.setIdentifier((TridasIdentifier) identifier);
 		}
 		
 		if(comments != null){

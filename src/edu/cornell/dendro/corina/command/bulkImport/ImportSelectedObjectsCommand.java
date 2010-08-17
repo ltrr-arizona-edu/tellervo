@@ -13,7 +13,6 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.util.TridasObjectEx;
-import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
@@ -49,6 +48,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		ArrayList<SingleObjectModel> incompleteModels = new ArrayList<SingleObjectModel>();
 		
 		HashSet<String> definedProps = new HashSet<String>();
+		HashSet<String> objectCodeSet = new HashSet<String>();
 		for(SingleObjectModel som : selected){
 			
 			definedProps.clear();
@@ -64,13 +64,20 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				requiredMessages.add("Cannot import without an object code.");
 				incomplete = true;
 			} else{
-				if(som.getProperty(SingleObjectModel.OBJECT_CODE).toString().length() < 3){
+				String code = som.getProperty(SingleObjectModel.OBJECT_CODE).toString();
+				if(code.length() < 3){
 					requiredMessages.add("Object code must be at least 3 characters");
 					incomplete = true;
 				}
-				if(som.getProperty(SingleObjectModel.OBJECT_CODE).toString().contains(" ")){
+				if(code.contains(" ")){
 					requiredMessages.add("Object code cannot contain whitespace.");
 					incomplete = true;
+				}
+				if(objectCodeSet.contains(code)){
+					requiredMessages.add("There cannot be duplicate object codes.");
+					incomplete = true;
+				}else{
+					objectCodeSet.add(code);
 				}
 			}
 			
@@ -142,9 +149,17 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		for(SingleObjectModel som : selected){
 			TridasObjectEx object = new TridasObjectEx();
 			
-			som.populateTridasObject(object);
+			if(!som.isDirty()){
+				System.out.println("Object isn't dirty, not saving/updating: "+som.getProperty(SingleObjectModel.OBJECT_CODE).toString());
+			}
 			
-			EntityResource<TridasObjectEx> resource = new EntityResource<TridasObjectEx>(object, CorinaRequestType.CREATE, TridasObjectEx.class);
+			som.populateTridasObject(object);
+			EntityResource<TridasObjectEx> resource;
+			if(object.getIdentifier() != null){
+				resource = new EntityResource<TridasObjectEx>(object, CorinaRequestType.UPDATE, TridasObjectEx.class);
+			}else{
+				resource = new EntityResource<TridasObjectEx>(object, CorinaRequestType.CREATE, TridasObjectEx.class);
+			}
 			
 			// set up a dialog...
 			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
@@ -158,7 +173,8 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				return;
 			}
 			som.populateFromTridasObject(resource.getAssociatedResult());
-			som.setImported(true);
+			som.setImported(resource.getAssociatedResult().getIdentifier());
+			som.setDirty(false);
 			tmodel.setSelected(som, false);
 		}
 	}
