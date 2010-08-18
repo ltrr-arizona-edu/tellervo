@@ -51,6 +51,8 @@ public class DBBrowser_UI extends javax.swing.JDialog {
 	    // Standard components
     	initComponents();
     	
+    	
+    	
     	// Hide ribbon 
 	    panelRibbon.setVisible(false);
 	    
@@ -75,7 +77,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     	this.setTitle(I18n.getText("dbbrowser"));
     	btnCancel.setText(I18n.getText("general.cancel"));
     	btnOk.setText(I18n.getText("general.ok"));    
-    	browsePanel.setName(I18n.getText("dbbrowser.browse"));
+    	//oldBrowsePanel.setName(I18n.getText("dbbrowser.browse"));
     	searchPanel.setName(I18n.getText("dbbrowser.search"));
     	btnOptions.setText(I18n.getText("dbbrowser.showOptions"));
     	lblSeriesType.setText(I18n.getText("dbbrowser.seriesType"));
@@ -84,8 +86,8 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     	btnInvertSelect.setToolTipText(I18n.getText("dbbrowser.selectInvert"));
     	btnAdd.setToolTipText(I18n.getText("dbbrowser.addToSelected"));
     	btnRemove.setToolTipText(I18n.getText("dbbrowser.removeFromSelected"));
-    	browseSearchPane.setTitleAt(0, I18n.getText("general.browse"));
-    	browseSearchPane.setTitleAt(1, I18n.getText("general.search"));
+    	tabbedPane.setTitleAt(0, I18n.getText("general.browse"));
+    	tabbedPane.setTitleAt(1, I18n.getText("general.search"));
     	cboSeriesType.setModel(new javax.swing.DefaultComboBoxModel(
     			new String[]
     			           { I18n.getText("dbbrowser.all"), 
@@ -116,12 +118,8 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         btnTogMostRecent = new javax.swing.JToggleButton();
         mainPanel = new javax.swing.JPanel();
         listTableSplit = new javax.swing.JSplitPane();
-        browseSearchPane = new javax.swing.JTabbedPane();
+        tabbedPane = new javax.swing.JTabbedPane();
         browsePanel = new javax.swing.JPanel();
-        cboBrowseBy = new javax.swing.JComboBox();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        lstSites = new javax.swing.JList();
-        txtFilterInput = new javax.swing.JTextField();
         searchPanel = new javax.swing.JPanel();
         workArea = new javax.swing.JPanel();
         extraButtonPanel = new javax.swing.JPanel();
@@ -221,35 +219,18 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         listTableSplit.setDividerSize(11);
         listTableSplit.setOneTouchExpandable(true);
 
-        cboBrowseBy.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jScrollPane1.setViewportView(lstSites);
-
         org.jdesktop.layout.GroupLayout browsePanelLayout = new org.jdesktop.layout.GroupLayout(browsePanel);
         browsePanel.setLayout(browsePanelLayout);
         browsePanelLayout.setHorizontalGroup(
             browsePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, browsePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(browsePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, cboBrowseBy, 0, 267, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, txtFilterInput, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE))
-                .addContainerGap())
+            .add(0, 279, Short.MAX_VALUE)
         );
         browsePanelLayout.setVerticalGroup(
             browsePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(browsePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(cboBrowseBy, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(txtFilterInput, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+            .add(0, 432, Short.MAX_VALUE)
         );
 
-        browseSearchPane.addTab("Browse", browsePanel);
+        tabbedPane.addTab("Browse", browsePanel);
 
         org.jdesktop.layout.GroupLayout searchPanelLayout = new org.jdesktop.layout.GroupLayout(searchPanel);
         searchPanel.setLayout(searchPanelLayout);
@@ -262,9 +243,9 @@ public class DBBrowser_UI extends javax.swing.JDialog {
             .add(0, 432, Short.MAX_VALUE)
         );
 
-        browseSearchPane.addTab("Search", searchPanel);
+        tabbedPane.addTab("Search", searchPanel);
 
-        listTableSplit.setLeftComponent(browseSearchPane);
+        listTableSplit.setLeftComponent(tabbedPane);
 
         org.jdesktop.layout.GroupLayout workAreaLayout = new org.jdesktop.layout.GroupLayout(workArea);
         workArea.setLayout(workAreaLayout);
@@ -389,7 +370,6 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JPanel browsePanel;
-    protected javax.swing.JTabbedPane browseSearchPane;
     protected javax.swing.JButton btnCancel;
     protected javax.swing.JButton btnInvertSelect;
     protected javax.swing.JButton btnOk;
@@ -399,19 +379,16 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     protected javax.swing.JButton btnSelectNone;
     protected javax.swing.JToggleButton btnTogByMe;
     protected javax.swing.JToggleButton btnTogMostRecent;
-    protected javax.swing.JComboBox cboBrowseBy;
     protected javax.swing.JComboBox cboSeriesType;
     protected javax.swing.JPanel extraButtonPanel;
     protected javax.swing.JButton jButton7;
-    protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JLabel lblSeriesType;
     protected javax.swing.JSplitPane listTableSplit;
-    protected javax.swing.JList lstSites;
     protected javax.swing.JPanel mainPanel;
     protected javax.swing.JPanel panelBottomButtons;
     protected javax.swing.JPanel panelRibbon;
     protected javax.swing.JPanel searchPanel;
-    protected javax.swing.JTextField txtFilterInput;
+    protected javax.swing.JTabbedPane tabbedPane;
     protected javax.swing.JPanel workArea;
     // End of variables declaration//GEN-END:variables
     

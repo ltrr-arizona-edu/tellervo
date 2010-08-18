@@ -13,6 +13,7 @@ import edu.cornell.dendro.corina.io.InvalidDataException;
 
 public class TridasSelectEvent extends AWTEvent {
 
+	public static final int ENTITY_SELECTED		= 1001;
 
 	private static final long serialVersionUID = 1026781147608262652L;
 	@SuppressWarnings("unchecked")

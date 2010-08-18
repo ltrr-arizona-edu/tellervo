@@ -317,7 +317,8 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 			
 			TridasIdentifier id = new TridasIdentifier();
 			id.setValue(barcode.uuid.toString());
-			//this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, scannedEntity));
+			scannedEntity.setIdentifier(id);
+			this.fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, scannedEntity));
 			return;
 		}
 		else {

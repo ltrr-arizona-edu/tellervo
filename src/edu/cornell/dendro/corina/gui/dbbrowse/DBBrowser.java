@@ -91,8 +91,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 	private ElementListTableSorter availableSorter;
 	private ElementListTableSorter chosenSorter;
 	private TableRowSorter<ElementListTableModel> rowFilter;
-	private JTree treeView;
-	private JScrollPane treeScrollPane;
+	private TridasTreeViewPanel treepanel;
 	
 	private ElementList selectedElements;
     private boolean isMultiDialog;
@@ -149,7 +148,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
      * @param openMulti - are we allowing picking of multiple files?
      */
     private void initialize(boolean openMulti) {
-        selectedElements = new ElementList();
+    	
+    	
+    	selectedElements = new ElementList();
         
         isMultiDialog = openMulti;
 
@@ -160,9 +161,11 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
         setupTree();
         populateComponents(); 
         
+       
         // repack :)
         pack();
 
+        
         // don't let it grow to distort our dialog!
         extraButtonPanel.setPreferredSize(new Dimension(btnOk.getWidth(), 1));
         extraButtonPanel.setMaximumSize(new Dimension(btnOk.getWidth(), Integer.MAX_VALUE));
@@ -207,13 +210,13 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
         
         
         // Whenever the site list changes, make sure we repopulate our site list
-        App.tridasObjects.addResourceEventListener(new ResourceEventListener() {
+ /*       App.tridasObjects.addResourceEventListener(new ResourceEventListener() {
         	public void resourceChanged(ResourceEvent re) {	
         		if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE)
         			populateSiteList();
         	}
         });
-        
+   */     
         btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				// only dispose if finish succeeded (for overriding)
@@ -241,7 +244,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			}
         });        
         
-        txtFilterInput.addKeyListener(new KeyListener() {
+       /* txtFilterInput.addKeyListener(new KeyListener() {
         	public void keyPressed(KeyEvent txt){
         		
      
@@ -295,6 +298,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
         });
      
         txtFilterInput.requestFocusInWindow();
+        */
     }
     
     /**
@@ -367,7 +371,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
      * @param text - complete or incomplete lab code
      * @return - found successfully?
      */
-	private Boolean doLabCodeSearch(String text) {
+	/*private Boolean doLabCodeSearch(String text) {
 		
 		  String [] strarray = null;
 		  String objcode = null;
@@ -454,7 +458,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		  
 		
 	}
-
+*/
     
     /**
      * Play a beep.  Useful for when a barcode has been scanned.
@@ -537,8 +541,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     	}
     	
     	// Save the browse list type
-		App.prefs.setPref("corina.dbbrowser.listmode", 
-				((BrowseListMode) cboBrowseBy.getSelectedItem()).name());
+//		App.prefs.setPref("corina.dbbrowser.listmode", 
+//				((BrowseListMode) cboBrowseBy.getSelectedItem()).name());
     	
     	returnStatus = RET_OK;
     	return true;
@@ -550,7 +554,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
      */
     private void setupSearch() {
     	searchPanel = new SearchPanel(new SearchSupport());
-    	this.browseSearchPane.setComponentAt(1, searchPanel);
+    	this.tabbedPane.setComponentAt(1, searchPanel);
     }
     
     /** 
@@ -800,11 +804,16 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     
     private void setupTree(){
     	
-    	TridasTreeViewPanel treepanel = new TridasTreeViewPanel();
-    	
-    	this.browseSearchPane.addTab("Tree", treepanel);
-    	
+    	treepanel = new TridasTreeViewPanel();
     	treepanel.addTridasSelectListener(this);
+    	browsePanel.setLayout(new BorderLayout());
+    	this.browsePanel.add(treepanel, BorderLayout.CENTER);
+    	//tabbedPane.add(treepanel, "Browse", 0);
+ 
+    	treepanel.requestFocus();
+    	//this.tabbedPane.insertTab("Browse", null, treepanel, null, 0);
+    	
+    	
         
     }
     
@@ -812,7 +821,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
       
 	private void populateComponents() {
     	// single selection on site list
-    	lstSites.setModel(new ArrayListModel<TridasObjectEx>());
+/*    	lstSites.setModel(new ArrayListModel<TridasObjectEx>());
 		lstSites.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		// make it nicely render cells
         lstSites.setCellRenderer(new SiteRenderer());
@@ -935,10 +944,11 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 				}
 			}
 		});
+		*/
 	}
     
 	@SuppressWarnings("unchecked")
-	private void populateSiteList(){
+/*	private void populateSiteList(){
 		populateSiteList(txtFilterInput.getText());
 	}
 	
@@ -1002,7 +1012,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     	if (lstSites.getModel().getSize()==1) lstSites.setSelectedIndex(0);
 
     }
-    
+    */
     /**
      * adds an element to the list
      * @param e
@@ -1077,10 +1087,11 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
      */
     public void selectSiteByCode(String code) {
     	TridasObjectEx site = App.tridasObjects.findObjectBySiteCode(code);
-    	
+
     	if(site != null)
-    		lstSites.setSelectedValue(site, true);
+    		this.treepanel.entitySelected(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, site));
     }
+  
     
     /** @return an ElementList of selected elements!
      */
@@ -1224,7 +1235,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			searchInfoLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 			searchInfoLabel.setAlignmentY(JLabel.TOP_ALIGNMENT);
 			
-			DBBrowser.this.browseSearchPane.addChangeListener(this);
+			DBBrowser.this.tabbedPane.addChangeListener(this);
 		}
 
 		private void showProgressbar(boolean shouldShow) {
@@ -1303,7 +1314,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		}
 
 		public void stateChanged(ChangeEvent e) {
-			int index = DBBrowser.this.browseSearchPane.getSelectedIndex();
+			int index = DBBrowser.this.tabbedPane.getSelectedIndex();
 			
 			if(index == 0) {
 				DBBrowser.this.searchPanel.cancelSearch();

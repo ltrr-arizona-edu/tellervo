@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 import javax.swing.event.EventListenerList;
@@ -29,15 +30,20 @@ import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
+import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
+import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
 
 public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements MouseListener, ActionListener, TridasSelectListener {
 
@@ -47,6 +53,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	JMenuItem menuItem;
 	DefaultMutableTreeNode currentSearchedNode = null;
 	EventListenerList tridasListeners = new EventListenerList();
+	String textForSelectPopup = "Search for associated series";
 	
 	public TridasTreeViewPanel()
 	{
@@ -65,6 +72,17 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	public void setObjectList(List<TridasObjectEx> objList)
 	{
 		setupTree(objList);
+	}
+	
+	/**
+	 * Set the text that will appear in the popup menu for selecting
+	 * an entity.
+	 * 
+	 * @param text
+	 */
+	public void setTextForSelectPopup(String text)
+	{
+		textForSelectPopup = text;
 	}
 	
 	/**
@@ -100,23 +118,41 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	/**
 	 * Set up the popup menu 
 	 */
-	private void initPopupMenu(boolean expandEnabled)
+	private void initPopupMenu(boolean expandEnabled, Class<?> clazz)
 	{
+		String className = this.getFriendlyClassName(clazz);
+		Boolean isTridas = false;
+		if(clazz.getSimpleName().startsWith("Tridas"))
+		{
+			isTridas = true;
+		}
+		
         // define the popup
         popup = new JPopupMenu();
         
-        // Expand 
-        menuItem = new JMenuItem("Expand branch");
-        menuItem.addActionListener(this);
-        menuItem.setActionCommand("expand");
-       	menuItem.setEnabled(expandEnabled);
-        popup.add(menuItem);
-        
-        // Select
-        menuItem = new JMenuItem("Select this entity");
-        menuItem.addActionListener(this);
-        menuItem.setActionCommand("select");
-        popup.add(menuItem);
+        if(isTridas)
+        {
+	        // Expand 
+	        menuItem = new JMenuItem("Expand branch");
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("expand");
+	       	menuItem.setEnabled(expandEnabled);
+	        popup.add(menuItem);
+	        
+	        // Select
+	        menuItem = new JMenuItem(this.textForSelectPopup);
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("select");
+	        popup.add(menuItem);
+	        popup.addSeparator();
+	        
+	        // Delete
+	        menuItem = new JMenuItem("Delete this "+className.toLowerCase());
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("delete");
+	        popup.add(menuItem);
+	        popup.addSeparator();
+        }
         
         // Refresh
         menuItem = new JMenuItem("Refresh");
@@ -312,15 +348,15 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
             //Integer childCount = node.getChildCount();
             //((DefaultTreeModel) tree.getModel()).insertNodeInto(objectNode, node, childCount);
             addTridasNodeInOrder(tree, node, newChildNode);
-		}
-
+		} 	
+		
 		// Expand tree
 		tree.expandPath(path);
     	
     }
     
     /**
-     * Select and entity notifying listeners
+     * Select an entity and notify listeners
      * 
      * @param node
      */
@@ -329,11 +365,11 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
    	
     	if(node.getUserObject() instanceof ITridas)
     	{
-    		TridasSelectEvent event = new TridasSelectEvent(tree, 1001, ((ITridas)node.getUserObject()));
+    		TridasSelectEvent event = new TridasSelectEvent(tree, TridasSelectEvent.ENTITY_SELECTED, ((ITridas)node.getUserObject()));
     		this.fireTridasSelectListener(event);
     	}
 	}
-	
+		
 	/**
 	 * Display a popup menu with the expand button enabled or disabled
 	 * 
@@ -342,9 +378,9 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	 * @param y
 	 * @param expandEnabled
 	 */
-	private void showPopupMenu(JComponent source, int x, int y, boolean expandEnabled)
+	private void showPopupMenu(JComponent source, int x, int y, Class<?> clazz, boolean expandEnabled)
 	{
-		this.initPopupMenu(expandEnabled);
+		this.initPopupMenu(expandEnabled, clazz);
 		popup.show(source, x, y);
 	}
     
@@ -411,41 +447,86 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 			((DefaultTreeModel)tree.getModel()).reload();
 			expandEntity(node);
 		}
+		else if (e.getActionCommand().equals("delete"))
+		{
+			// Delete this entity
+			Object[] options = {"OK",
+            "Cancel"};
+			int ret = JOptionPane.showOptionDialog(getParent(), 
+					"Are you sure you want to permanently delete this entity?", 
+					"Confirm delete", 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+			
+			if(ret == JOptionPane.YES_OPTION)
+			{
+				deleteEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+			}			
+		}
 	}
+	
+	private void deleteEntity(DefaultMutableTreeNode node)
+	{
+		ITridas entity = null;
+		EntityResource rsrc = null;
+		String entityType = "";
 		
+		
+		
+		
+		if(node.getUserObject() instanceof TridasObject)
+		{
+			entityType = "Object";
+			entity = (TridasObject) node.getUserObject();
+			rsrc = new EntityResource<TridasObject>(entity, CorinaRequestType.DELETE, TridasObject.class);
+		}
+		else if(node.getUserObject() instanceof TridasElement)
+		{
+			entityType = "Element";
+			entity = (TridasElement) node.getUserObject();
+			rsrc = new EntityResource<TridasElement>(entity, CorinaRequestType.DELETE, TridasElement.class);
+		}
+		else if(node.getUserObject() instanceof TridasSample)
+		{
+			entityType = "Sample";
+			entity = (TridasSample) node.getUserObject();
+			rsrc = new EntityResource<TridasSample>(entity, CorinaRequestType.DELETE, TridasSample.class);
+		}
+		else if(node.getUserObject() instanceof TridasRadius)
+		{
+			entityType = "Radius";
+			entity = (TridasRadius) node.getUserObject();
+			rsrc = new EntityResource<TridasRadius>(entity, CorinaRequestType.DELETE, TridasRadius.class);
+		}
+		else
+		{
+			return;
+		}
+			    			
+		// Do query
+		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(rsrc);
+		rsrc.query();
+		accdialog.setVisible(true);
+		
+		if(accdialog.isSuccessful())
+		{
+			rsrc.getAssociatedResult();
+			JOptionPane.showMessageDialog(this, entityType+" deleted", "Success", JOptionPane.NO_OPTION);
+			((DefaultTreeModel)tree.getModel()).removeNodeFromParent(node);
+			return;
+		}
+		
+		JOptionPane.showMessageDialog(this, "Unable to delete this "+ entityType.toLowerCase() +" as it is referenced by other entries in the database.", 
+				"Error", JOptionPane.ERROR_MESSAGE);
+		
+		return;
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-        if ( e.getButton()== MouseEvent.BUTTON3 || e.getButton()== MouseEvent.BUTTON2) 
-        {
-    		// Right click event so show menu
- 
-        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
-        	if(node.getUserObject() instanceof TridasRadius)
-        	{
-        		// Don't allow the user to expand this branch
-        		showPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), false);
-        	}
-        	else
-        	{
-        		showPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), true);
-        	}
-        }
-        else if ( e.getButton()== MouseEvent.BUTTON1)
-        {
-       /* 	if(e.getClickCount()>1)
-            {
-            	// Double left click so expand branch
-            	this.expandEntity((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent());
-            }
-        	else
-        	{
-	        	// Single left click event so select current entity
-	        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
-	        	doSearch(node);
-        	}
-        */
+
         	
-        }
+        
 	}
 
 	@Override
@@ -455,7 +536,46 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	public void mouseExited(MouseEvent e) {	}
 
 	@Override
-	public void mousePressed(MouseEvent e) { }
+	public void mousePressed(MouseEvent e) {
+		
+		int selRow = tree.getRowForLocation(e.getX(), e.getY());
+		TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+
+		if(selRow==-1) return;
+		
+        if ( e.getButton()== MouseEvent.BUTTON3 || e.getButton()== MouseEvent.BUTTON2) 
+        {
+    		// Right click event so show menu
+ 
+        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath.getLastPathComponent();
+        	if(node.getUserObject() instanceof TridasRadius)
+        	{
+        		// Don't allow the user to expand this branch
+        		showPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), node.getUserObject().getClass(), false);
+        	}
+        	else
+        	{
+        		showPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), node.getUserObject().getClass(), true);
+        	}
+        }
+        else if ( e.getButton()== MouseEvent.BUTTON1)
+        {
+        	if(e.getClickCount()>1)
+            {
+	        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
+	        	doSelectEntity(node);
+            	
+            	
+            }
+        	else
+        	{
+	        	// Single left click event so select current entity
+        		//this.expandEntity((DefaultMutableTreeNode) selPath.getLastPathComponent());
+        	}
+        
+        }
+		
+	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) { }
@@ -477,23 +597,45 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 		if(entity instanceof TridasObject)
 		{
 			TridasObjectEx object = (TridasObjectEx) entity;
+					
 			
 			TreePath path = tree.getNextMatch(GenericFieldUtils.findField(object, "corina.objectLabCode").getValue().toString(), 0, Position.Bias.Forward);
 			tree.setSelectionPath(path);
 			tree.scrollPathToVisible(path);
+			
+			this.fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, entity));
 		}
-		else if (entity instanceof TridasElement)
+		else if (entity instanceof ITridas)
 		{
-		}
-	}
-	
-	private TreePath getPathTo(ITridas entity)
-	{
-		if(entity instanceof TridasObject)
-		{
-
+			this.fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, entity));
 		}
 		
-		return null;
+		
+	}
+	
+	
+	/**
+	 * Get a human friendly name for a class
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	private String getFriendlyClassName(Class<?> clazz)
+	{
+		String className = null;
+		if(clazz.getSimpleName().equals("TridasObjectEx"))
+		{
+			className = "Object";
+		}
+		else if(clazz.getSimpleName().startsWith("Tridas"))
+		{
+			className = clazz.getSimpleName().substring(6);
+		}
+		else
+		{
+			className = clazz.getSimpleName();
+		}
+		
+		return className;
 	}
 }
