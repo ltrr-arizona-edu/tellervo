@@ -46,6 +46,7 @@ import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
 import edu.cornell.dendro.corina.io.AbstractDendroReaderFileFilter;
 import edu.cornell.dendro.corina.io.DendroReaderFileFilter;
 import edu.cornell.dendro.corina.io.ExportDialog;
@@ -165,7 +166,8 @@ public class FileMenu extends JMenu {
 	}
 	
 	public void addDataEntryMenus(){
-		add(Builder.makeMenuItem("menus.file.bulkimport", "edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow.main()", "database.png"));		
+		add(Builder.makeMenuItem("menus.file.bulkimport", "edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow.main()", "database.png"));
+
 	}
 
 	// ask the user for a file to open, and open it
@@ -226,6 +228,9 @@ public class FileMenu extends JMenu {
 	public static void opendbmulti() {
 		opendb(true);
 	}
+	
+	
+
 	
 	public static void opendb() {
 		opendb(false);

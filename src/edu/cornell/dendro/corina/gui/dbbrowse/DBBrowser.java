@@ -64,6 +64,7 @@ import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
+import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -299,6 +300,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
      
         txtFilterInput.requestFocusInWindow();
         */
+        this.treepanel.setFocus();
     }
     
     /**
@@ -1329,8 +1331,16 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 	public void entitySelected(TridasSelectEvent event) {
 		ITridas entity;
 		
+
+		
 		try {
 			entity = event.getEntity();
+			if(entity instanceof WSIBox)
+			{
+				Alert.message("Unsupported", "Box barcodes are not supported in this context");
+				return;
+			}
+			
 			this.doSearchForAssociatedSeries(entity);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -4,6 +4,7 @@ import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FocusTraversalPolicy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -73,8 +74,13 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	    textField.addKeyListener(this);    
 	    this.setLayout(new BorderLayout());
 	    add(textField, java.awt.BorderLayout.CENTER);
+	    textField.requestDefaultFocus();
 	}
 
+	public void setFocus()
+	{
+		this.textField.requestFocus();
+	}
 
 	/**
 	 * Add a listener 

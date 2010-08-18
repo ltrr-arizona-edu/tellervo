@@ -51,6 +51,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	TridasTree tree;
 	JPopupMenu popup;
 	JMenuItem menuItem;
+	CorinaCodePanel panel;
 	DefaultMutableTreeNode currentSearchedNode = null;
 	EventListenerList tridasListeners = new EventListenerList();
 	String textForSelectPopup = "Search for associated series";
@@ -58,10 +59,16 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	public TridasTreeViewPanel()
 	{
 		setupTree(null);
-		CorinaCodePanel panel = new CorinaCodePanel();
+		panel = new CorinaCodePanel();
 		panel.addTridasSelectListener(this);
 		containerPanel.setLayout(new BorderLayout());
 		this.containerPanel.add(panel, BorderLayout.CENTER);
+		
+	}
+	
+	public void setFocus()
+	{
+		panel.setFocus();
 	}
 	
 	/**

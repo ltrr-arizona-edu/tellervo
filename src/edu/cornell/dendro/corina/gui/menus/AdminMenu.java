@@ -30,6 +30,7 @@ import javax.swing.JMenuItem;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -202,7 +203,13 @@ private JFrame frame;
 	    //curationmenu.add(inventory); 
 	    
 	 	add(curationmenu);
+	 	addSeparator();
+		add(Builder.makeMenuItem("menus.file.metadatabrowser", "edu.cornell.dendro.corina.gui.menus.AdminMenu.metadataBrowser()", "database.png"));		
+
 	}
     
-
+	public static void metadataBrowser(){
+		MetadataBrowser dialog = new MetadataBrowser(null, false);
+		dialog.setVisible(true);
+	}
 }

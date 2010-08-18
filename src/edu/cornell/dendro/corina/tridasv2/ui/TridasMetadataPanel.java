@@ -1092,7 +1092,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @author Lucas Madar
 	 */
 
-	protected static enum EditType {
+	public static enum EditType {
 		OBJECT(TridasObject.class, I18n.getText("tridas.object"), "object.png", Metadata.OBJECT),
 		ELEMENT(TridasElement.class, I18n.getText("tridas.element"), "element.png", Metadata.ELEMENT),
 		SAMPLE(TridasSample.class, I18n.getText("tridas.sample"), "sample.png", Metadata.SAMPLE),
