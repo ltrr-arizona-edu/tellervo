@@ -865,9 +865,6 @@ class measurement extends measurementEntity implements IDBAccessor
 		$dom = new DomDocument();
 		$dom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\"></root>");
 		$this->outputDerivationTree($dom, $dom->documentElement, $objectTree, $elementTree, $objectToElementMap, $all, $format);
-
-		$firebug->log($derived, "Derived");
-		$firebug->log($direct, "Direct");		
 		
 		// now, just print out the derivedSeries in order. $this is going to be last.
 		foreach($derived as $d)
@@ -918,9 +915,7 @@ class measurement extends measurementEntity implements IDBAccessor
 					echo "error";
 					die();
 				}
-
 			case "summary":
-				return $this->_asXML($format, $parts);
 			case "minimal":
 				return $this->_asXML($format, $parts);
 			default:
@@ -1028,9 +1023,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	
 
 	private function _asXML($format, $parts, $recurseLevel=2)
-	{
-
-		 
+	{	 
 		// Return a string containing the current object in XML format
 
 		// $recurseLevel = the number of levels of references tags you would like
@@ -1041,6 +1034,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		//      summary = only metadata
 
 		global $domain;
+		global $firebug;
 		$xml = "";
 
 		// Check whether we are at the requested level of recursion or not
@@ -1057,6 +1051,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		// Proceed if there are no errors already
 		if ($this->getLastErrorCode()==NULL)
 		{
+			
 			// Only return XML when there are no errors.
 			if($this->getTridasSeriesType()=='measurementSeries')
 			{
@@ -1209,23 +1204,24 @@ class measurement extends measurementEntity implements IDBAccessor
 			if($this->measurementCount!=NULL) $xml.="<measurement count=\"".$this->measurementCount."\"/>";
 			$xml.="</summary>";
 			}*/
-
-			// Using 'summary' format so just give minimal XML for all references and nothing else
-			if($format=="summary")
-			{
-				$xml.= $this->getSummaryXMLTags()."\n";
-				$xml.= "</tridas:".$this->getTridasSeriesType().">";
-				return $xml;
-			}
-
-			// Standard or Comprehensive format so give the whole lot
-			else
-			{
-				$xml.=$this->getValuesXML();
-				$xml.= "</tridas:".$this->getTridasSeriesType().">";
-				return $xml;
-			}
 		}
+
+		// Using 'summary' format so just give minimal XML for all references and nothing else
+		if($format=="summary" || $format=="minimal")
+		{
+			$xml.= $this->getSummaryXMLTags()."\n";
+			$xml.= "</tridas:".$this->getTridasSeriesType().">";
+			return $xml;
+		}
+
+		// Standard or Comprehensive format so give the whole lot
+		else
+		{
+			$xml.=$this->getValuesXML();
+			$xml.= "</tridas:".$this->getTridasSeriesType().">";
+			return $xml;
+		}
+
 
 	}
 	
