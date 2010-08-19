@@ -33,14 +33,12 @@ import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel.ObjectListMode;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel.TreeDepth;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyRendererFactory;
-import edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel.EditType;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -97,7 +95,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
     public void setupGui()
     {
     	// Set up tree panel
-    	treepanel = new TridasTreeViewPanel(TreeDepth.SERIES, true, "View metadata");
+    	treepanel = new TridasTreeViewPanel(TreeDepth.RADIUS, true, "View metadata");
     	treepanel.addTridasSelectListener(this);
     	leftPane.add(treepanel, BorderLayout.CENTER);
     	
@@ -121,7 +119,13 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		// Set up listeners
     	this.btnOk.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+				
+				// Only close if they don't mind loosing changes (if any)
+				if(warnLosingChanges())
+				{
+					dispose();	
+				}
+				
 			}
 		}); 	
     }
@@ -178,11 +182,8 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 				
 			}
 		}
-		else
-		{
-			hasChanged = false;
-		}
-		
+
+		hasChanged = false;
 		
 		currentEntityType = type;
 		currentEntity = entity;
@@ -202,10 +203,12 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		{
 			propertiesPanel.readFromObject(entity);
 			propertiesPanel.setEnabled(true);
+			editEntity.setVisible(true);
 		}
 		else
 		{
 			propertiesPanel.setEnabled(false);
+			editEntity.setVisible(false);
 		}
 		
 		

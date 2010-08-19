@@ -258,7 +258,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
     	tree = new TridasTree(top);
     	tree.setCellRenderer(new TridasTreeCellRenderer());
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);        
-        tree.setRootVisible(false);
+        tree.setRootVisible(true);
         tree.setShowsRootHandles(true);
         tree.addMouseListener(this);
         ToolTipManager.sharedInstance().registerComponent(tree);
