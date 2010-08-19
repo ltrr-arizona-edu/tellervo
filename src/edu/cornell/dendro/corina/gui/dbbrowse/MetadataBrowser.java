@@ -8,21 +8,16 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.tridas.interfaces.ITridas;
-import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
-import org.tridas.util.TridasObjectEx;
 
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
-import com.l2fprod.common.propertysheet.PropertySheetTableModel;
 
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel.ObjectListMode;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel.TreeDepth;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;
@@ -33,6 +28,7 @@ import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
 
 
 /**
+ * Dialog for browsing the metadata for all entities in the database.
  *
  * @author  peterbrewer
  */
@@ -44,6 +40,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 	private PropertySheetPanel propertiesPanel;
 	/** Our properties table */
 	private CorinaPropertySheetTable propertiesTable;
+	
 	
     public MetadataBrowser(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
