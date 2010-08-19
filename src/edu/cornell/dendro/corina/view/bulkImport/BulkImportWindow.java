@@ -29,6 +29,7 @@ public class BulkImportWindow extends JFrame {
 	
 	private JTabbedPane tabs;
 	private ObjectView objects;
+	private ElementView elements;
 	
 	public BulkImportWindow() {
 		initComponents();
@@ -43,9 +44,10 @@ public class BulkImportWindow extends JFrame {
 		tabs = new JTabbedPane();
 		
 		objects = new ObjectView(BulkImportModel.getInstance().getObjectModel());
-		
+		elements = new ElementView(BulkImportModel.getInstance().getElementModel());
 		add(tabs,"Center");
 		tabs.add("Objects", objects);
+		tabs.add("Elements", elements);
 	}
 	
 	public void linkModel() {

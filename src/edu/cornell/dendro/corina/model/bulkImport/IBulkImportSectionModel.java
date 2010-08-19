@@ -10,6 +10,8 @@ package edu.cornell.dendro.corina.model.bulkImport;
 public interface IBulkImportSectionModel {
 	public static final String COLUMN_MODEL = "columnModel";
 	public static final String ROWS = "rows";
+	public static final String TABLE_MODEL = "tableModel";
+	public static final String IMPORTED_LIST = "importedList";
 	
 	/**
 	 * goes to the table model, which handles the selected rows

@@ -33,12 +33,12 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 	public static final String LONGTITUDE = "Longtitude";
 	
 	
-	public static final String[] PROPERTIES = {
+	public static final String[] TABLE_PROPERTIES = {
 		OBJECT_CODE, TITLE, COMMENTS, TYPE, DESCRIPTION, LATITUDE, LONGTITUDE
 	};
 	
 	public SingleObjectModel(){
-		registerProperty(PROPERTIES, PropertyType.READ_WRITE);
+		registerProperty(TABLE_PROPERTIES, PropertyType.READ_WRITE);
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
 	}
 	

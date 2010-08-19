@@ -32,7 +32,7 @@
 	<classpathentry kind="lib" path="Libraries/jaxb/jaxb-api.jar"/>
 	<classpathentry kind="lib" path="Libraries/jaxb/jsr173_1.0_api.jar"/>
 	<classpathentry kind="lib" path="Libraries/jaxb/jaxb-impl.jar"/>
-	<classpathentry kind="lib" path="Libraries/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="Libraries/commons-lang-2.4.jar" sourcepath="C:/Users/Daniel/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/coll-prop.0.1-1.5.jar"/>
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/jaxb2-basics-runtime-0.5.1.jar"/>
 	<classpathentry kind="lib" path="Libraries/PDFRenderer.jar"/>

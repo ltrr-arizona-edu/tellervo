@@ -12,8 +12,7 @@ import com.dmurph.mvc.model.HashModel;
 public class SingleElementModel extends HashModel implements ISingleRowModel{
 	private static final long serialVersionUID = 1L;	
 	
-	public static final String OBJECT_CODE = null;
-	public static final String ELEMENT_CODE = "Element Code";
+	public static final String OBJECT = "Object";
 	public static final String TITLE = "Title";
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
@@ -32,15 +31,15 @@ public class SingleElementModel extends HashModel implements ISingleRowModel{
 	public static final String SOIL_DEPTH = "Soil Depth";
 	public static final String BEDROCK_DESCRIPTION = "Bedrock Description";
 
-	public static final String[] PROPERTIES = {
-		ELEMENT_CODE, TITLE, COMMENTS, TYPE, DESCRIPTION, TAXON,
+	public static final String[] TABLE_PROPERTIES = {
+		TITLE, OBJECT, COMMENTS, TYPE, DESCRIPTION, TAXON,
 		SHAPE, HEIGHT, WIDTH, DEPTH, UNIT, LATITUDE, LONGTITUDE,
 		SLOPE_ANGLE, SLOPE_AZIMUTH, SOIL_DESCRIPTION, SOIL_DEPTH,
 		BEDROCK_DESCRIPTION
 	};
 	
 	public SingleElementModel(){
-		registerProperty(PROPERTIES, PropertyType.READ_WRITE);
+		registerProperty(TABLE_PROPERTIES, PropertyType.READ_WRITE);
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, false);
 	}
 	

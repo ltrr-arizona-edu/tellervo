@@ -14,15 +14,21 @@ public class BulkImportModel {
 	private static BulkImportModel model = null;
 	
 	private final ObjectModel objectModel;
+	private final ElementModel elementModel;
 	private volatile ColumnChooserView currColumnChooser = null;
 	private BulkImportWindow mainView;
 	
 	private BulkImportModel(){
 		objectModel = new ObjectModel();
+		elementModel = new ElementModel();
 	}
 	
 	public ObjectModel getObjectModel(){
 		return objectModel;
+	}
+	
+	public ElementModel getElementModel(){
+		return elementModel;
 	}
 
 	public void setCurrColumnChooser(ColumnChooserView currColumnChooser) {

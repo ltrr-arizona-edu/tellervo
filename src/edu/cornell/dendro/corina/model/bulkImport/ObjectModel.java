@@ -3,6 +3,9 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
+import org.tridas.schema.TridasObject;
+import org.tridas.util.TridasObjectEx;
+
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 
@@ -14,12 +17,11 @@ import com.dmurph.mvc.model.MVCArrayList;
 public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 	private static final long serialVersionUID = 1L;
 	
-	public static final String TABLE_MODEL = "tableModel";
-	
 	public ObjectModel(){
 		registerProperty(ROWS, PropertyType.FINAL, new MVCArrayList<SingleObjectModel>());
-		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel(SingleObjectModel.PROPERTIES));
+		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel(SingleObjectModel.TABLE_PROPERTIES));
 		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ObjectTableModel(this));
+		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasObjectEx>());
 	}
 	
 	public MVCArrayList<SingleObjectModel> getRows(){
@@ -32,6 +34,10 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 	
 	public ObjectTableModel getTableModel(){
 		return (ObjectTableModel) getProperty(TABLE_MODEL);
+	}
+	
+	public MVCArrayList<TridasObjectEx> getImportedList(){
+		return (MVCArrayList<TridasObjectEx>) getProperty(IMPORTED_LIST);
 	}
 	
 	/**

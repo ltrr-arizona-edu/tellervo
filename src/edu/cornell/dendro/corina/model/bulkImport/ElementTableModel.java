@@ -1,5 +1,5 @@
 /**
- * Created on Jul 17, 2010, 1:35:12 AM
+ * Created on Aug 18, 2010, 1:12:40 PM
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
@@ -11,25 +11,28 @@ import java.util.HashMap;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.dmurph.mvc.model.HashModel.PropertyType;
-import com.dmurph.mvc.model.MVCArrayList;
+import org.tridas.schema.TridasObject;
 
+import com.dmurph.mvc.model.MVCArrayList;
+import com.dmurph.mvc.model.HashModel.PropertyType;
+
+import edu.cornell.dendro.corina.schema.WSIElementTypeDictionary;
 import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
 
 /**
  * @author Daniel Murphy
  *
  */
-public class ObjectTableModel extends AbstractTableModel implements PropertyChangeListener {
+public class ElementTableModel extends AbstractTableModel implements PropertyChangeListener {
 	private static final long serialVersionUID = 1L;
 	
-	private ObjectModel model;
-	private MVCArrayList<SingleObjectModel> models;
+	private ElementModel model;
+	private MVCArrayList<SingleElementModel> models;
 	
 	private  MVCArrayList<String> columns;
-	private final HashMap<SingleObjectModel, Boolean> selected = new HashMap<SingleObjectModel, Boolean>();
+	private final HashMap<SingleElementModel, Boolean> selected = new HashMap<SingleElementModel, Boolean>();
 	
-	public ObjectTableModel(ObjectModel argModel){
+	public ElementTableModel(ElementModel argModel){
 		setModel(argModel);
 	}
 	
@@ -38,28 +41,28 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void setModel(ObjectModel model) {
+	public void setModel(ElementModel model) {
 		if(this.model != null){
 			models.removePropertyChangeListener(this);
 			columns.removePropertyChangeListener(this);
 		}
 		this.model = model;
-		this.models = (MVCArrayList<SingleObjectModel>) this.model.getProperty(ObjectModel.ROWS);
-		this.columns = (MVCArrayList<String>) this.model.getProperty(ObjectModel.COLUMN_MODEL);
+		this.models = (MVCArrayList<SingleElementModel>) this.model.getProperty(ElementModel.ROWS);
+		this.columns = (MVCArrayList<String>) this.model.getProperty(ElementModel.COLUMN_MODEL);
 		models.addPropertyChangeListener(this);
 		columns.addPropertyChangeListener(this);
 		recreateSelected();
 	}
 	
-	public void getSelected(ArrayList<SingleObjectModel> argModels){
-		for(SingleObjectModel key : selected.keySet()){
+	public void getSelected(ArrayList<SingleElementModel> argModels){
+		for(SingleElementModel key : selected.keySet()){
 			if(selected.get(key)){
 				argModels.add(key);
 			}
 		}
 	}
 	
-	public void setSelected(SingleObjectModel argSOM, boolean argSelected){
+	public void setSelected(SingleElementModel argSOM, boolean argSelected){
 		if(!models.contains(argSOM)){
 			throw new IllegalArgumentException("The provided model is not in this list.");
 		}
@@ -67,7 +70,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	}
 	
 	public void removeSelected() {
-		for(SingleObjectModel som : selected.keySet()){
+		for(SingleElementModel som : selected.keySet()){
 			models.remove(som);
 			selected.remove(som);
 		}
@@ -75,7 +78,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	
 	public void selectAll(){
 		selected.clear();
-		for(SingleObjectModel som : models){
+		for(SingleElementModel som : models){
 			selected.put(som, true);
 		}
 		fireTableDataChanged();
@@ -87,8 +90,8 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	}
 	
 	private void recreateSelected() {
-		HashMap<SingleObjectModel, Boolean> newMap = new HashMap<SingleObjectModel, Boolean>();
-		for(SingleObjectModel som : models){
+		HashMap<SingleElementModel, Boolean> newMap = new HashMap<SingleElementModel, Boolean>();
+		for(SingleElementModel som : models){
 			if(selected.containsKey(som)){
 				newMap.put(som, selected.get(som));
 			}else{
@@ -99,7 +102,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		selected.putAll(newMap);
 	}
 	
-	public ObjectModel getModel() {
+	public ElementModel getModel() {
 		return model;
 	}
 	
@@ -137,13 +140,15 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 			String column = columns.get(columnIndex);
 			
 			// for combo box stuff
-			if(column.equals(SingleObjectModel.TYPE)){
-				return WSIObjectTypeDictionary.class;
-			}else if(column.equals(SingleObjectModel.IMPORTED)){
+			if(column.equals(SingleElementModel.TYPE)){
+				return WSIElementTypeDictionary.class;
+			}else if(column.equals(SingleElementModel.IMPORTED)){
 				return Boolean.class;
+			}else if(column.equals(SingleElementModel.OBJECT)){
+				return TridasObject.class;
 			}
 			
-			SingleObjectModel som = models.get(0);
+			SingleElementModel som = models.get(0);
 			if(som == null){
 				return Object.class;
 			}
@@ -169,15 +174,15 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if(columnIndex == 0){
-			SingleObjectModel som = models.get(rowIndex);
+			SingleElementModel som = models.get(rowIndex);
 			return selected.get(som);
 		}
 		columnIndex--;
 		String column = columns.get(columnIndex);
-		SingleObjectModel som = models.get(rowIndex);
+		SingleElementModel som = models.get(rowIndex);
 		
 		// make imported t/f
-		if(column.equals(SingleObjectModel.IMPORTED)){
+		if(column.equals(SingleElementModel.IMPORTED)){
 			return som.getProperty(column) != null;
 		}
 		return som.getProperty(column);
@@ -189,7 +194,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	@Override
 	public void setValueAt(Object argAValue, int argRowIndex, int argColumnIndex) {
 		if(argColumnIndex == 0){
-			SingleObjectModel som = models.get(argRowIndex);
+			SingleElementModel som = models.get(argRowIndex);
 			selected.put(som, (Boolean) argAValue);
 			return;
 		}
@@ -198,7 +203,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		if(argAValue != null && argAValue.toString().equals("")){
 			argAValue = null;
 		}
-		SingleObjectModel som = models.get(argRowIndex);
+		SingleElementModel som = models.get(argRowIndex);
 		som.setProperty(column, argAValue);
 	}
 	
@@ -213,7 +218,7 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		columnIndex--;
 		
 		String column = columns.get(columnIndex);
-		SingleObjectModel som = models.get(rowIndex);
+		SingleElementModel som = models.get(rowIndex);
 		if(som.getPropertyType(column) == PropertyType.READ_WRITE){
 			return true;
 		}

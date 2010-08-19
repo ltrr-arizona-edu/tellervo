@@ -53,6 +53,7 @@ public class ColumnChooserView extends JDialog{
 		linkModel();
 		addListeners();
 		populateLocale();
+		setLocationRelativeTo(argParent);
 	}
 	
 	public void initComponents() {

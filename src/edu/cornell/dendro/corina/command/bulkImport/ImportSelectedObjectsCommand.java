@@ -52,7 +52,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		for(SingleObjectModel som : selected){
 			
 			definedProps.clear();
-			for(String s : SingleObjectModel.PROPERTIES){
+			for(String s : SingleObjectModel.TABLE_PROPERTIES){
 				if(som.getProperty(s) != null){
 					definedProps.add(s);
 				}
@@ -169,13 +169,14 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			dialog.setVisible(true);
 			
 			if(!dialog.isSuccessful()) { 
-				Alert.message("Error", "Error creating object, check logs.");
+				Alert.message("Error", "Error creating/updating object, check logs.");
 				return;
 			}
 			som.populateFromTridasObject(resource.getAssociatedResult());
 			som.setImported(resource.getAssociatedResult().getIdentifier());
 			som.setDirty(false);
 			tmodel.setSelected(som, false);
+			model.getObjectModel().getImportedList().add(resource.getAssociatedResult());
 		}
 	}
 }
