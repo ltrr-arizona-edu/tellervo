@@ -18,6 +18,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -263,7 +264,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
         ToolTipManager.sharedInstance().registerComponent(tree);
     	treeScrollPane.setViewportView(tree);
 	}
-	
+		
 	
 	/**
 	 * Set up the popup menu 
@@ -604,7 +605,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
    	
     	if(node.getUserObject() instanceof ITridas)
     	{
-    		TridasSelectEvent event = new TridasSelectEvent(tree, TridasSelectEvent.ENTITY_SELECTED, ((ITridas)node.getUserObject()));
+    		TridasSelectEvent event = new TridasSelectEvent(tree, TridasSelectEvent.ENTITY_SELECTED, ((ITridas)node.getUserObject()), node);
     		this.fireTridasSelectListener(event);
     	}
 	}
@@ -629,7 +630,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	 * @param clazz
 	 * @return
 	 */
-	private String getFriendlyClassName(Class<?> clazz)
+	public static String getFriendlyClassName(Class<?> clazz)
 	{
 		String className = null;
 		if(clazz.getSimpleName().equals("TridasObjectEx"))
@@ -848,14 +849,8 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 		}
 		else if (e.getActionCommand().equals("refresh"))
 		{
-			// Remove all children then add again
 			DefaultMutableTreeNode node = ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
-			Integer children = node.getChildCount();
-			node.removeAllChildren();
-			children = node.getChildCount();
-			node.removeAllChildren();
-			((DefaultTreeModel)tree.getModel()).reload();
-			expandEntity(node);
+			this.refreshNode(node);
 		}
 		else if (e.getActionCommand().equals("delete"))
 		{
@@ -873,6 +868,18 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 				deleteEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
 			}			
 		}
+	}
+	
+	public void refreshNode(DefaultMutableTreeNode node)
+	{
+		// Remove all children then add again
+		Integer children = node.getChildCount();
+		node.removeAllChildren();
+		children = node.getChildCount();
+		node.removeAllChildren();
+		//((DefaultTreeModel)tree.getModel()).reload();
+		expandEntity(node);
+		((DefaultTreeModel)tree.getModel()).nodeStructureChanged(node);
 	}
 	
 	@Override
@@ -898,11 +905,13 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 			tree.setSelectionPath(path);
 			tree.scrollPathToVisible(path);
 			
-			this.fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, entity));
+			//this.fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, entity));
+			this.fireTridasSelectListener(event);
 		}
 		else if (entity instanceof ITridas)
 		{
-			this.fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, entity));
+			//this.fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, entity));
+			this.fireTridasSelectListener(event);
 		}
 		
 		

@@ -65,7 +65,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 	private void setupGui(){
     	// Set up basic dialog 
         setLocationRelativeTo(null);
-        
+        setIconImage(Builder.getApplicationIcon());
                 
         // Populate user list
         ArrayList<WSISecurityUser> lstofUsers = (ArrayList<WSISecurityUser>) Dictionary.getDictionaryAsArrayList("securityUserDictionary");  

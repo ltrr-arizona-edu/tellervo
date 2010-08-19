@@ -1,13 +1,26 @@
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
 import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
@@ -17,14 +30,23 @@ import org.tridas.schema.TridasSample;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
+import com.lowagie.text.Font;
 
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel.ObjectListMode;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel.TreeDepth;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.tridasv2.TridasCloner;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyRendererFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel.EditType;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 
 
 /**
@@ -35,23 +57,43 @@ import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
 public class MetadataBrowser extends javax.swing.JDialog implements PropertyChangeListener, TridasSelectListener {
     
 	private static final long serialVersionUID = 8940640945613031936L;
+	/** Panel containing the tree view of the entities in the database	 */
 	private TridasTreeViewPanel treepanel;
 	/** Our property sheet panel (contains table and description) */
 	private PropertySheetPanel propertiesPanel;
 	/** Our properties table */
 	private CorinaPropertySheetTable propertiesTable;
+	/** Panel containing the edit/save changes/cancel buttons for the current entity */
+	private JPanel bottombar;
+	/** The lock/unlock button for making changes to the currently selected entity */
+	private JToggleButton editEntity;
+	/** Text associated with lock/unlock button */
+	private JLabel editEntityText;
+	/** The save button when unlocked */
+	private JButton editEntitySave;
+	/** The cancel button when unlocked */
+	private JButton editEntityCancel;
+	/** A copy of the entity that we're currently editing */
+	private ITridas temporaryEditingEntity;
+	/** Whether the current entity has been changed */
+	private Boolean hasChanged = false;
+	/** The current entity */
+	private ITridas currentEntity;
+	/** Class of the current entity */
+	private Class<? extends ITridas> currentEntityType;
+	DefaultMutableTreeNode nodeSelected;
 	
 	
     public MetadataBrowser(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setupGui();
-       
- 
         pack();
-        
     }
     
+    /**
+     * Set up the GUI components
+     */
     public void setupGui()
     {
     	// Set up tree panel
@@ -60,55 +102,403 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
     	leftPane.add(treepanel, BorderLayout.CENTER);
     	
     	// Set up metadata panel
-    	initPropertiesPanel();
-    	rightPane.add(propertiesTable, BorderLayout.CENTER);
-    	
+		JPanel mainPanel = new JPanel();  
+		mainPanel.setLayout(new BorderLayout());
+		initPropertiesPanel();
+		mainPanel.add(propertiesPanel, BorderLayout.CENTER);
+		mainPanel.add(bottombar, BorderLayout.SOUTH);
+		rightPane.add(mainPanel, BorderLayout.CENTER);  	
+		
     	// Set up dialog
     	setTitle("Metadata Browser");
+    	setLocationRelativeTo(null);
+    	setIconImage(Builder.getApplicationIcon());
+    	
+    	// Disable editing to start with and populate page with empty object
+    	setEntity(null, TridasObject.class);
+		enableEditing(false);
+		
+		// Set up listeners
     	this.btnOk.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
-		});
-    	
-    	setLocationRelativeTo(null);
-    	
-    	
+		}); 	
     }
     
+    /**
+     * Set up the properties panel
+     */
 	private void initPropertiesPanel() {
-		propertiesTable = new CorinaPropertySheetTable();
 		
+		// Create table and panel to hold it
+		propertiesTable = new CorinaPropertySheetTable();
 		propertiesPanel = new PropertySheetPanel(propertiesTable);
 
-		// keep property collapse/expand states
+		// Set various properties of the properties panel!
 		propertiesPanel.setRestoreToggleStates(true);
-		
 		propertiesPanel.setToolBarVisible(false);
 		propertiesPanel.setDescriptionVisible(true);
-		
 		propertiesPanel.setMode(PropertySheet.VIEW_AS_CATEGORIES);
-		
 		propertiesPanel.getTable().setRowHeight(24);
 		propertiesPanel.getTable().setRendererFactory(new TridasPropertyRendererFactory());
 		propertiesPanel.getTable().setEditorFactory(new TridasPropertyEditorFactory());
+		propertiesPanel.getTable().addPropertyChangeListener(this);
+		
+		// Set up button bar 
+		setupButtonBar();
 		
 	}
 	
-	public void setEntity(ITridas entity, EditType type)
+	/**
+	 * Set the current entity that we are browsing 
+	 * 
+	 * @param entity
+	 * @param type
+	 */
+	public void setEntity(ITridas entity, Class<? extends ITridas> type)
 	{
+		setEntity(entity, type, false);
+	}
+	
+	/**
+	 * Set the current entity that we are browsing and whether the user should be
+	 * warned or not
+	 * 
+	 * @param entity
+	 * @param type
+	 * @param silent
+	 */
+	private void setEntity(ITridas entity, Class<? extends ITridas> type, Boolean silent)
+	{	
+		if(!silent)
+		{
+			if(!warnLosingChanges())
+			{
+				
+			}
+		}
+		else
+		{
+			hasChanged = false;
+		}
+		
+		
+		currentEntityType = type;
+		currentEntity = entity;
+		
+		// Swapping entities so disable editing
+		this.enableEditing(false);	
 		
 		// derive a property list
-        List<TridasEntityProperty> properties = TridasEntityDeriver.buildDerivationList(type.getType());
+        List<TridasEntityProperty> properties = TridasEntityDeriver.buildDerivationList(type);
         Property[] propArray = properties.toArray(new Property[properties.size()]);
         
         // set properties and load from entity
 		propertiesPanel.setProperties(propArray);
 		
-		propertiesPanel.readFromObject(entity);
+		// Add data to table from entity
+		if(entity!=null)
+		{
+			propertiesPanel.readFromObject(entity);
+			propertiesPanel.setEnabled(true);
+		}
+		else
+		{
+			propertiesPanel.setEnabled(false);
+		}
+		
+		
+	}
+	
+	/**
+	 * Set up the button bar
+	 */
+	private void setupButtonBar() {
+		bottombar = new JPanel();
+		bottombar.setLayout(new BoxLayout(bottombar, BoxLayout.X_AXIS));
+
+		editEntity = new JToggleButton();
+		editEntity.setIcon(Builder.getIcon("lock.png", Builder.ICONS, 22));
+		editEntity.setSelectedIcon(Builder.getIcon("unlock.png", Builder.ICONS, 22));
+		editEntity.setBorderPainted(false);
+		editEntity.setContentAreaFilled(false);
+		editEntity.setFocusable(false);
+		
+		editEntity.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!editEntity.isSelected() && hasChanged) {
+					if(!warnLosingChanges()) {
+						editEntity.setSelected(true);
+						return;
+					}
+					else {
+						editEntity.setSelected(false);
+						hasChanged = false;
+					}
+				}
+				enableEditing(editEntity.isSelected());
+			}			
+		});
+		
+		bottombar.add(editEntity);
+		
+		editEntityText = new JLabel(I18n.getText("general.initializing").toLowerCase());
+		editEntityText.setLabelFor(editEntity);
+		bottombar.add(editEntityText);
+	
+		editEntitySave = new JButton(I18n.getText("general.saveChanges"));
+		editEntityCancel = new JButton(I18n.getText("general.cancel"));
+		
+		// don't let an errant enter key fire these buttons!
+		editEntitySave.setDefaultCapable(false);
+		editEntityCancel.setDefaultCapable(false);
+		
+		editEntitySave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				doSave();
+			}
+		});
+
+		editEntityCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				hasChanged = false;
+				editEntity.setSelected(false);
+				enableEditing(false);				
+			}
+		});
+
+		bottombar.add(Box.createHorizontalGlue());
+		bottombar.add(editEntitySave);
+		bottombar.add(Box.createHorizontalStrut(6));
+		bottombar.add(editEntityCancel);
+		bottombar.add(Box.createHorizontalStrut(6));
+	}
+	
+	/**
+	 * Save changes to the current entity
+	 */
+	private void doSave() {
+		Class<? extends ITridas> type;
+		
+		if(temporaryEditingEntity == null)
+			throw new IllegalStateException();
+		
+		// if nothing actually changed, just ignore it like a cancel
+		if(!hasChanged) {			
+			editEntityCancel.doClick();
+			return;
+		}
+		
+		propertiesPanel.writeToObject(temporaryEditingEntity);
+		
+		// the resource we'll use
+		EntityResource<? extends ITridas> resource;
+		
+		if(temporaryEditingEntity instanceof TridasObject)
+		{
+			resource = new EntityResource<TridasObject>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasObject.class);
+			type = TridasObject.class;
+		}
+		else if (temporaryEditingEntity instanceof TridasElement)
+		{
+			resource = new EntityResource<TridasElement>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasElement.class);
+			type = TridasElement.class;
+		}
+		else 
+		{
+			return;
+		}
+		
+		// set up a dialog...
+		Window parentWindow = SwingUtilities.getWindowAncestor(this);
+		CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
+
+		// query the resource
+		resource.query();
+		dialog.setVisible(true);
+		
+		// on failure, just return
+		if(!dialog.isSuccessful()) {
+			JOptionPane.showMessageDialog(this, I18n.getText("error.savingChanges") + "\r\n" +
+					I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
+					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		// replace the saved result
+		temporaryEditingEntity = resource.getAssociatedResult();
+		
+		// sanity check the result
+		if(temporaryEditingEntity == null) {
+			new Bug(new IllegalStateException("CREATE or UPDATE entity returned null"));
+			return;
+		}
+		
+		setEntity(temporaryEditingEntity, type, true);
+		
+		// Inform the tree to update itself
+		if(nodeSelected!=null)
+		{
+			if(nodeSelected.getParent().equals(nodeSelected.getRoot()))
+			{
+				this.treepanel.refreshNode(nodeSelected);
+			}
+			else
+			{
+				this.treepanel.refreshNode((DefaultMutableTreeNode)nodeSelected.getParent());
+			}
+		}
+	}
+
+	
+	/**
+	 * @return true if the user wants to lose changes, false otherwise
+	 */
+	private boolean warnLosingChanges() {
+		if(!hasChanged)
+			return true;
+		
+		if(this.currentEntity==null)
+			return true;
+		
+		int ret = JOptionPane.showConfirmDialog(this, 
+				I18n.getText("question.confirmChangeForm"), 
+				I18n.getText("question.continue"), 
+				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		
+		if(ret== JOptionPane.YES_OPTION)
+		{
+			hasChanged=false;
+		}
+		
+		return (ret == JOptionPane.YES_OPTION);
+	}
+	
+	/**
+	 * Called to enable editing
+	 * Responsible for loading the duplicate copy into the editor
+	 * 
+	 * @param enable
+	 */
+	protected void enableEditing(boolean enable) {
+		
+		propertiesTable.setEditable(enable);
+		
+		// show/hide our buttons
+		editEntitySave.setEnabled(true);
+		editEntityCancel.setEnabled(true);
+		editEntitySave.setVisible(enable);
+		editEntityCancel.setVisible(enable);
+		
+		if(currentEntity==null)
+		{
+			editEntityText.setText(null);
+		}
+		else
+		{
+			editEntityText.setFont(editEntityText.getFont().deriveFont(Font.BOLD));
+			editEntityText.setText(enable ? I18n.getText("metadata.currentlyEditingThis") + " " + TridasTreeViewPanel.getFriendlyClassName(currentEntityType).toLowerCase()   
+					: I18n.getText("metadata.clickLockToEdit")  + " " + TridasTreeViewPanel.getFriendlyClassName(currentEntityType).toLowerCase());
+		}		
+		editEntity.setSelected(enable);
+		
+		if(enable) {
+			if(currentEntity==null) return;
+			
+			if(currentEntity instanceof ITridasSeries)
+				temporaryEditingEntity = TridasCloner.cloneSeriesRefValues((ITridasSeries) currentEntity);
+			else
+				temporaryEditingEntity = TridasCloner.clone(currentEntity);
+
+			if(temporaryEditingEntity != null)
+				propertiesPanel.readFromObject(temporaryEditingEntity);
+		}
+		else {
+			temporaryEditingEntity = null;
+
+			
+			// don't display anything if we have nothingk!
+			if(currentEntity != null)
+			{
+				propertiesPanel.readFromObject(currentEntity);
+			}
+			else
+			{
+				return;
+			}
+		}
+
+		
+
 	}
 	
 	
+	@Override
+	public void entitySelected(TridasSelectEvent event) {
+		
+		nodeSelected = event.getTreeNode();
+		
+		try {
+			ITridas entity = event.getEntity();
+			
+			if(entity instanceof TridasObject)
+			{
+				this.setEntity(entity, TridasObject.class);
+			}
+			else if (entity instanceof TridasElement)
+			{
+				this.setEntity(entity, TridasElement.class);
+			}
+			else if (entity instanceof TridasSample)
+			{
+				this.setEntity(entity, TridasSample.class);
+			}
+			else if (entity instanceof TridasRadius)
+			{
+				this.setEntity(entity, TridasRadius.class);
+			}
+			else if (entity instanceof TridasMeasurementSeries)
+			{
+				this.setEntity(entity, TridasMeasurementSeries.class);
+			}
+			else if (entity instanceof TridasDerivedSeries)
+			{
+				this.setEntity(entity, TridasDerivedSeries.class);
+			}
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		
+		if(!(evt.getPropertyName().equals("Frame.active")))
+		{
+			System.out.println("Property changed");
+		}
+		else
+		{
+			return;
+		}
+		
+		Object n;
+		
+		if(evt.getOldValue() == null && (n = evt.getNewValue()) != null && n.toString().equals(""))
+		{
+			return;
+		}
+		
+		hasChanged = true;
+					
+		
+	}
 	
     /** This method is called from within the constructor to
      * initialize the form.
@@ -169,46 +559,8 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
     protected javax.swing.JSplitPane splitPane;
     // End of variables declaration//GEN-END:variables
 
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void entitySelected(TridasSelectEvent event) {
-		
-		try {
-			ITridas entity = event.getEntity();
-			
-			if(entity instanceof TridasObject)
-			{
-				this.setEntity(entity, EditType.OBJECT);
-			}
-			else if (entity instanceof TridasElement)
-			{
-				this.setEntity(entity, EditType.ELEMENT);
-			}
-			else if (entity instanceof TridasSample)
-			{
-				this.setEntity(entity, EditType.SAMPLE);
-			}
-			else if (entity instanceof TridasRadius)
-			{
-				this.setEntity(entity, EditType.RADIUS);
-			}
-			else if (entity instanceof TridasMeasurementSeries)
-			{
-				this.setEntity(entity, EditType.MEASUREMENT_SERIES);
-			}
-			
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-	}
+	
+
     
 }

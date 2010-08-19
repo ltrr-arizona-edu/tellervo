@@ -285,6 +285,7 @@ public class BoxCuration extends javax.swing.JDialog
     	
     	this.btnApply.setEnabled(false);
     	this.setTitle("Box details");
+    	setIconImage(Builder.getApplicationIcon());
     	
     	// Set up box list model etc
     	ArrayList<WSIBox> boxList = (ArrayList<WSIBox>) Dictionary.getDictionaryAsArrayList("boxDictionary");

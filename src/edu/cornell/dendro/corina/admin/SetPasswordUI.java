@@ -81,6 +81,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener, A
     private void setupGui(Boolean asAdmin)
     {
    	    setLocationRelativeTo(null);
+   	    setIconImage(Builder.getApplicationIcon());
    	    
     	if(asAdmin)
     	{

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.mozilla.dom.UnsupportedException;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
@@ -19,6 +21,7 @@ public class TridasSelectEvent extends AWTEvent {
 	@SuppressWarnings("unchecked")
 	ArrayList entityList;
 	Boolean multiSelector = false;
+	DefaultMutableTreeNode node;
 	
 	/**
 	 * Standard constructor which is used to show that the specified
@@ -33,6 +36,23 @@ public class TridasSelectEvent extends AWTEvent {
 		super(source, id);
 		entityList = new ArrayList<TridasObject>();
 		entityList.add(entity);
+
+	}
+	
+	/**
+	 * Standard constructor which is used to show that the specified
+	 * entity was selected.
+	 * 
+	 * @param source
+	 * @param id
+	 * @param entity
+	 */
+	@SuppressWarnings("unchecked")
+	public TridasSelectEvent(Object source, int id, ITridas entity, DefaultMutableTreeNode node) {
+		super(source, id);
+		entityList = new ArrayList<ITridas>();
+		entityList.add(entity);
+		this.node = node;
 
 	}
 	
@@ -101,6 +121,11 @@ public class TridasSelectEvent extends AWTEvent {
 		{
 			return (ITridas) entityList.get(0);
 		}
+	}
+	
+	public DefaultMutableTreeNode getTreeNode()
+	{
+		return node;
 	}
 
 	@SuppressWarnings("unchecked")
