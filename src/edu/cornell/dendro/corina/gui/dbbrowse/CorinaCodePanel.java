@@ -350,7 +350,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	public void keyPressed(KeyEvent e) { }
 	
 	
-	private enum ObjectListMode {
+	public enum ObjectListMode {
 		ALL(I18n.getText("dbbrowser.showAllObjects")),
 		POPULATED(I18n.getText("dbbrowser.showPopulatedObjects")),
 		POPULATED_FIRST(I18n.getText("dbbrowser.showPopulatedObjectsFirst")),

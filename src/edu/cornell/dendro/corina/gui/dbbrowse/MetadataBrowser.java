@@ -8,7 +8,9 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.tridas.interfaces.ITridas;
+import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
@@ -20,6 +22,8 @@ import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.l2fprod.common.propertysheet.PropertySheetTableModel;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel.ObjectListMode;
+import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel.TreeDepth;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyRendererFactory;
@@ -45,6 +49,8 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
         super(parent, modal);
         initComponents();
         setupGui();
+       
+ 
         pack();
         
     }
@@ -52,9 +58,8 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
     public void setupGui()
     {
     	// Set up tree panel
-    	treepanel = new TridasTreeViewPanel();
+    	treepanel = new TridasTreeViewPanel(TreeDepth.SERIES, true, "View metadata");
     	treepanel.addTridasSelectListener(this);
-    	treepanel.setTextForSelectPopup("View metadata");
     	leftPane.add(treepanel, BorderLayout.CENTER);
     	
     	// Set up metadata panel
@@ -68,6 +73,9 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 				dispose();
 			}
 		});
+    	
+    	setLocationRelativeTo(null);
+    	
     	
     }
     
@@ -191,6 +199,10 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 			else if (entity instanceof TridasRadius)
 			{
 				this.setEntity(entity, EditType.RADIUS);
+			}
+			else if (entity instanceof TridasMeasurementSeries)
+			{
+				this.setEntity(entity, EditType.MEASUREMENT_SERIES);
 			}
 			
 			

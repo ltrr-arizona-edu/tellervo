@@ -13,7 +13,9 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.BaseSeries;
+import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
@@ -32,7 +34,8 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 	Icon elementIcon;
 	Icon sampleIcon;
 	Icon radiusIcon;
-	Icon seriesIcon;
+	Icon mseriesIcon;
+	Icon dseriesIcon;
 	Boolean isDropCell = false;
 
 	
@@ -43,7 +46,9 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 		elementIcon  = ((ImageIcon) Builder.getIcon("element.png",  Builder.ICONS, 16));
 		sampleIcon   = ((ImageIcon) Builder.getIcon("sample.png",   Builder.ICONS, 16));
 		radiusIcon   = ((ImageIcon) Builder.getIcon("radius.png",   Builder.ICONS, 16));
-		seriesIcon   = ((ImageIcon) Builder.getIcon("series.png",   Builder.ICONS, 16));
+		mseriesIcon  = ((ImageIcon) Builder.getIcon("measurementseries.png",   Builder.ICONS, 16));
+		dseriesIcon  = ((ImageIcon) Builder.getIcon("derivedseries.png",   Builder.ICONS, 16));
+
 	}
 		
 	protected String getToolTipString(Object value)
@@ -123,9 +128,13 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 		{
 			icon = radiusIcon;
 		}
-		else if (node.getUserObject() instanceof BaseSeries)
+		else if (node.getUserObject() instanceof TridasMeasurementSeries)
 		{
-			icon = seriesIcon;
+			icon = mseriesIcon;
+		}
+		else if (node.getUserObject() instanceof TridasDerivedSeries)
+		{
+			icon = dseriesIcon;
 		}
 		else
 		{
