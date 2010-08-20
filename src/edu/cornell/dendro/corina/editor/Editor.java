@@ -66,6 +66,7 @@ import javax.swing.undo.UndoableEditSupport;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gis.MapPanel;
 import edu.cornell.dendro.corina.graph.BargraphFrame.BargraphPanel;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.FileDialog;
@@ -191,6 +192,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	// mozilla panel for maps
 	private EditorMozillaMapPanel mozillaMapPanel;
+	
+	private MapPanel wwMapPanel;
 	
 	private JTabbedPane rolodex;
 	
@@ -449,7 +452,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		
 	private void initMozillaMapPanel() {
-		MapLink link = new MapLink(sample.getSeries());
+		/*MapLink link = new MapLink(sample.getSeries());
 	
 		// no link? no panel!
 		if(link == null)
@@ -477,7 +480,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			mozillaMapPanel = new EditorMozillaMapPanel(link);
 		} catch (Throwable e) {
 			// no mapping? no problem. don't fail violently!
-		}
+		}*/
 	}
 
 	private void addCards() {
@@ -488,7 +491,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		dataView = new SampleDataView(sample);
 		rolodex.add(dataView, I18n.getText("editor.tab_data"));
 		rolodex.add(metaView, I18n.getText("editor.tab_metadata"));
-		
+		rolodex.add(this.wwMapPanel, I18n.getText("editor.tab_map"));
 
 		// wj and elements, if it's summed
 		if (sample.hasWeiserjahre())
@@ -506,8 +509,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			});
 		}
 				
-		if(mozillaMapPanel != null)
-			rolodex.add(mozillaMapPanel, I18n.getText("editor.tab_map"));
+		//if(mozillaMapPanel != null)
+	    //		rolodex.add(mozillaMapPanel, I18n.getText("editor.tab_map"));
 	}
 
 	private void initRolodex() {
@@ -553,7 +556,13 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// pass
 		setup();
 	}
-
+	
+	private void initWWMapPanel()
+	{
+		this.wwMapPanel = new MapPanel(new Dimension(300,300),true);
+		
+	}
+	
 	// setup common to both constructors
 	private void setup() {
 		
@@ -571,6 +580,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		initComponentsPanel();
 		//initElemPanel();
 		initMozillaMapPanel();
+		initWWMapPanel();
 
 		// i'll watch the data
 		sample.addSampleListener(this);
