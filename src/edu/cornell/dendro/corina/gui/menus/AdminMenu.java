@@ -35,6 +35,8 @@ import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow;
+import gov.nasa.worldwind.examples.ApplicationTemplate;
+import gov.nasa.worldwind.examples.ApplicationTemplate.AppFrame;
 
 // TODO: move all menus to corina.gui.menus or even corina.menus (i'm tending towards the latter)
 // TODO: error-log should be a singleton-window, and centered
@@ -204,12 +206,18 @@ private JFrame frame;
 	    
 	 	add(curationmenu);
 	 	addSeparator();
-		add(Builder.makeMenuItem("menus.file.metadatabrowser", "edu.cornell.dendro.corina.gui.menus.AdminMenu.metadataBrowser()", "database.png"));		
+		add(Builder.makeMenuItem("menus.file.metadatabrowser", "edu.cornell.dendro.corina.gui.menus.AdminMenu.metadataBrowser()", "database.png"));
+		add(Builder.makeMenuItem("general.map", "edu.cornell.dendro.corina.gui.menus.AdminMenu.showMap()", "database.png"));
+
 
 	}
     
 	public static void metadataBrowser(){
 		MetadataBrowser dialog = new MetadataBrowser(null, false);
 		dialog.setVisible(true);
+	}
+	
+	public static void showMap(){
+		ApplicationTemplate.start("Corina", AppFrame.class);
 	}
 }
