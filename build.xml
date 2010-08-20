@@ -173,6 +173,13 @@
     <property name="coll-prop.jar" value="(set this in build.properties!)"/>
     <property name="jaxb2-basics-runtime.jar" value="(set this in build.properties!)"/>
     <property name="PDFRenderer.jar" value="(set this in build.properties!)"/>
+    <property name="worldwind-0.6.570.13645.jar" value="(set this in build.properties!)"/>
+    <property name="jogl.jar" value="(set this in build.properties!)"/>
+    <property name="gluegen-rt.jar" value="(set this in build.properties!)"/>
+    <property name="JGoogleAnalyticsTracker-1.1.0.jar" value="(set this in build.properties!)"/>
+    <property name="java-simple-mvc-1.3.3-SNAPSHOT.jar" value="(set this in build.properties!)"/>
+    <property name="TridasJLib-0.0.1-SNAPSHOT.jar" value="(set this in build.properties!)"/>
+    <property name="DendroFileIO-0.0.1-SNAPSHOT.jar" value="(set this in build.properties!)"/>
 	
 <!-- ==================== Compilation Classpath =========================== -->
 
@@ -222,6 +229,13 @@
     <pathelement location="${coll-prop.jar}"/>
     <pathelement location="${jaxb2-basics-runtime.jar}"/>
     <pathelement location="${PDFRenderer.jar}"/>
+    <pathelement location="${worldwind-0.6.570.13645.jar}"/>
+    <pathelement location="${jogl.jar}"/> 
+    <pathelement location="${gluegen-rt.jar}"/>
+    <pathelement location="${JGoogleAnalyticsTracker-1.1.0.jar}"/>
+    <pathelement location="${java-simple-mvc-1.3.3-SNAPSHOT.jar}"/>
+    <pathelement location="${TridasJLib-0.0.1-SNAPSHOT.jar}"/>
+    <pathelement location="${DendroFileIO-0.0.1-SNAPSHOT.jar}"/>
   </path>
 
   <path id="xjc.classpath">
