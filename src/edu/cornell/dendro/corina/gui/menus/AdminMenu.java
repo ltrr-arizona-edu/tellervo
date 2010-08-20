@@ -20,14 +20,23 @@
 
 package edu.cornell.dendro.corina.gui.menus;
 
+import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasLocationGeometry;
+import org.tridas.util.TridasObjectEx;
+
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gis.MapPanel;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
@@ -37,6 +46,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow;
 import gov.nasa.worldwind.examples.ApplicationTemplate;
 import gov.nasa.worldwind.examples.ApplicationTemplate.AppFrame;
+import gov.nasa.worldwind.geom.Position;
 
 // TODO: move all menus to corina.gui.menus or even corina.menus (i'm tending towards the latter)
 // TODO: error-log should be a singleton-window, and centered
@@ -207,7 +217,7 @@ private JFrame frame;
 	 	add(curationmenu);
 	 	addSeparator();
 		add(Builder.makeMenuItem("menus.file.metadatabrowser", "edu.cornell.dendro.corina.gui.menus.AdminMenu.metadataBrowser()", "database.png"));
-		add(Builder.makeMenuItem("general.map", "edu.cornell.dendro.corina.gui.menus.AdminMenu.showMap()", "database.png"));
+		add(Builder.makeMenuItem("general.sitemap", "edu.cornell.dendro.corina.gui.menus.AdminMenu.showMap()", "globe.png"));
 
 
 	}
@@ -218,6 +228,41 @@ private JFrame frame;
 	}
 	
 	public static void showMap(){
-		ApplicationTemplate.start("Corina", AppFrame.class);
+		
+		ArrayList<Position> positions = new ArrayList<Position>();
+		
+		for(TridasObjectEx obj : App.tridasObjects.getTopLevelObjectList())
+		{
+			if(obj.isSetLocation())
+			{
+				if(obj.getLocation().isSetLocationGeometry())
+				{
+					TridasLocationGeometry geom = obj.getLocation().getLocationGeometry();
+					if(geom.isSetPoint())
+					{
+						List<Double> coords = geom.getPoint().getPos().getValues();
+						if(coords.size()==2)
+						{
+							positions.add(Position.fromDegrees(coords.get(1), coords.get(0)));
+						}
+					}
+					
+				}
+			}
+		}
+		
+		MapPanel wwMapPanel = new MapPanel(new Dimension(300,300),true, positions);
+		JFrame frame = new JFrame();
+		frame.add(wwMapPanel);
+		frame.pack();
+		int state = frame.getExtendedState(); 
+		// Set the maximized bits 
+		state |= JFrame.MAXIMIZED_BOTH; 
+		
+		// Maximize the frame 
+		frame.setExtendedState(state); 
+		frame.setVisible(true);
+		frame.setTitle("Site map");
+		frame.setIconImage(Builder.getApplicationIcon());
 	}
 }

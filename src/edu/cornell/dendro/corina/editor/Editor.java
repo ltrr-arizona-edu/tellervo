@@ -33,7 +33,9 @@ import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -62,6 +64,11 @@ import javax.swing.text.Document;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
+
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasLocationGeometry;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Year;
@@ -103,6 +110,7 @@ import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.DocumentListener2;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
+import gov.nasa.worldwind.geom.Position;
 
 /*
  left to do:
@@ -452,7 +460,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		
 	private void initMozillaMapPanel() {
-		/*MapLink link = new MapLink(sample.getSeries());
+		MapLink link = new MapLink(sample.getSeries());
+		
+		
 	
 		// no link? no panel!
 		if(link == null)
@@ -480,7 +490,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			mozillaMapPanel = new EditorMozillaMapPanel(link);
 		} catch (Throwable e) {
 			// no mapping? no problem. don't fail violently!
-		}*/
+		}
 	}
 
 	private void addCards() {
@@ -559,7 +569,32 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	
 	private void initWWMapPanel()
 	{
-		this.wwMapPanel = new MapPanel(new Dimension(300,300),true);
+		//Position pos = Position.fromDegrees(50, 50);
+		//this.wwMapPanel = new MapPanel(new Dimension(300,300),true, pos);
+		
+		ArrayList<Position> positions = new ArrayList<Position>();
+		
+		for(TridasObjectEx obj : App.tridasObjects.getTopLevelObjectList())
+		{
+			if(obj.isSetLocation())
+			{
+				if(obj.getLocation().isSetLocationGeometry())
+				{
+					TridasLocationGeometry geom = obj.getLocation().getLocationGeometry();
+					if(geom.isSetPoint())
+					{
+						List<Double> coords = geom.getPoint().getPos().getValues();
+						if(coords.size()==2)
+						{
+							positions.add(Position.fromDegrees(coords.get(1), coords.get(0)));
+						}
+					}
+					
+				}
+			}
+		}
+		
+		this.wwMapPanel = new MapPanel(new Dimension(300,300),true, positions);
 		
 	}
 	
