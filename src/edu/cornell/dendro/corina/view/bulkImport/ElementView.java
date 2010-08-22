@@ -7,14 +7,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,20 +19,28 @@ import javax.swing.table.TableModel;
 
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasObject;
-import org.tridas.util.TridasObjectEx;
+import org.tridas.schema.TridasShape;
+import org.tridas.schema.TridasUnit;
 
+import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
+import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
+import edu.cornell.dendro.corina.components.table.TridasElementTypeEditor;
+import edu.cornell.dendro.corina.components.table.TridasShapeEditor;
+import edu.cornell.dendro.corina.components.table.TridasShapeRenderer;
+import edu.cornell.dendro.corina.components.table.TridasUnitEditor;
+import edu.cornell.dendro.corina.components.table.TridasUnitRenderer;
 import edu.cornell.dendro.corina.control.bulkImport.AddRowEvent;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.control.bulkImport.ImportSelectedEvent;
 import edu.cornell.dendro.corina.control.bulkImport.RemoveSelectedEvent;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
-import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.schema.WSIElementTypeDictionary;
-import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
+import edu.cornell.dendro.corina.schema.WSITaxonDictionary;
+import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer;
+import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer.Behavior;
 
 /**
  * @author Daniel Murphy
@@ -54,7 +58,6 @@ public class ElementView extends JPanel{
 	private JButton selectAll;
 	private JButton selectNone;
 	private JButton importSelected;
-	private JComboBox objectChooseBox;
 	
 	public ElementView(ElementModel argModel){
 		model = argModel;
@@ -87,22 +90,17 @@ public class ElementView extends JPanel{
 		table.setFillsViewportHeight(true); 
 		
 		// editors for combo box stuff
-		ControlledVoc[] vocs = Dictionary.getDictionaryAsArrayList("elementTypeDictionary").toArray(new ControlledVoc[0]);
-		String[] names = new String[vocs.length];
-		for(int i=0; i<vocs.length; i++){
-			names[i] = vocs[i].getNormal();
-		}
-		JComboBox typeBox = new JComboBox(names);
-		table.setDefaultEditor(WSIElementTypeDictionary.class, new DefaultCellEditor(typeBox));
+		table.setDefaultEditor(WSIElementTypeDictionary.class, new ControlledVocDictionaryEditor("elementTypeDictionary"));
+		table.setDefaultRenderer(WSIElementTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
+		table.setDefaultEditor(TridasShape.class, new TridasShapeEditor());
+		table.setDefaultRenderer(TridasShape.class, new TridasShapeRenderer());
+		table.setDefaultEditor(TridasUnit.class, new TridasUnitEditor());
+		table.setDefaultRenderer(TridasUnit.class, new TridasUnitRenderer());
+		table.setDefaultEditor(WSITaxonDictionary.class, new ControlledVocDictionaryEditor("taxonDictionary"));
+		table.setDefaultRenderer(WSITaxonDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
-		TridasObjectEx[] objects = BulkImportModel.getInstance().getObjectModel().getImportedList().toArray(new TridasObjectEx[0]);
-		String[] codes = new String[objects.length];
-		for(int i=0; i<objects.length; i++){
-			codes[i] = objects[i].getLabCode();
-		}
-		objectChooseBox = new JComboBox();
-		objectChooseBox.setModel(new DefaultComboBoxModel(codes));
-		table.setDefaultEditor(TridasObject.class, new DefaultCellEditor(objectChooseBox));
+		// this combo box should update from mvc events
+		table.setDefaultEditor(TridasObject.class, new DefaultCellEditor(new DynamicJComboBox(BulkImportController.SET_DYNAMIC_COMBO_BOX, false)));
 		add(panel, "Center");
 		
 		box = Box.createHorizontalBox();
@@ -118,34 +116,6 @@ public class ElementView extends JPanel{
 	
 	private void linkModel() {
 		table.setModel((TableModel) model.getProperty(ElementModel.TABLE_MODEL));
-		
-		BulkImportModel.getInstance().getObjectModel().addPropertyChangeListener(new PropertyChangeListener() {
-			
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				String prop = evt.getPropertyName();
-				if(prop.equals(ObjectModel.IMPORTED_LIST)){
-					TridasObjectEx[] objects = BulkImportModel.getInstance().getObjectModel().getImportedList().toArray(new TridasObjectEx[0]);
-					DefaultComboBoxModel cbmodel = (DefaultComboBoxModel)objectChooseBox.getModel();
-					cbmodel.removeAllElements();
-
-					for(int i=0; i<objects.length; i++){
-						cbmodel.addElement(objects[i].getLabCode());
-					}
-					table.setDefaultEditor(TridasObject.class, new DefaultCellEditor(objectChooseBox));
-				}
-			}
-		});
-//		ColumnChooserModel ccmodel = (ColumnChooserModel)model.getProperty(ElementModel.COLUMN_MODEL);
-//		ccmodel.addPropertyChangeListener(new PropertyChangeListener() {
-//			@Override
-//			public void propertyChange(PropertyChangeEvent argEvt) {
-//				TableColumn column = table.getColumnModel().getColumn(0);
-//				column.setWidth(10);
-//				column.setPreferredWidth(10);
-//				column.setResizable(false);
-//			}
-//		});
 	}
 	
 	private void addListeners() {
@@ -166,7 +136,7 @@ public class ElementView extends JPanel{
 		importSelected.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent argE) {
-				ImportSelectedEvent event = new ImportSelectedEvent(BulkImportController.IMPORT_SELECTED_OBJECTS);
+				ImportSelectedEvent event = new ImportSelectedEvent(BulkImportController.IMPORT_SELECTED_ELEMENTS);
 				event.dispatch();
 			}
 		});

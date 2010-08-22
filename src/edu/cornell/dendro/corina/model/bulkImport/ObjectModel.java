@@ -3,7 +3,6 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
-import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.HashModel;

@@ -32,6 +32,8 @@ import org.tridas.schema.ControlledVoc;
 
 import com.dmurph.mvc.model.MVCArrayList;
 
+import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
+import edu.cornell.dendro.corina.components.table.TridasObjectTypeEditor;
 import edu.cornell.dendro.corina.control.bulkImport.*;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
@@ -39,6 +41,7 @@ import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
 import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
+import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer;
 
 /**
  * @author Daniel Murphy
@@ -87,21 +90,15 @@ public class ObjectView extends JPanel{
 		table.setFillsViewportHeight(true); 
 		
 		// editors for combo box stuff
-		ControlledVoc[] vocs = Dictionary.getDictionaryAsArrayList("objectTypeDictionary").toArray(new ControlledVoc[0]);
-		String[] names = new String[vocs.length];
-		for(int i=0; i<vocs.length; i++){
-			names[i] = vocs[i].getNormal();
-		}
-		JComboBox typeBox = new JComboBox(names);
-		table.setDefaultEditor(WSIObjectTypeDictionary.class, new DefaultCellEditor(typeBox));
-		
+		table.setDefaultEditor(WSIObjectTypeDictionary.class, new ControlledVocDictionaryEditor("objectTypeDictionary"));
+		table.setDefaultRenderer(WSIObjectTypeDictionary.class, new ControlledVocRenderer());
 		add(panel, "Center");
 		
 		box = Box.createHorizontalBox();
-		box.add(Box.createHorizontalGlue());
+		box.add(Box.createRigidArea(new Dimension(30, 1)));
 		box.add(selectAll);
 		box.add(selectNone);
-		box.add(Box.createRigidArea(new Dimension(30, 1)));
+		box.add(Box.createHorizontalGlue());
 		box.add(removeSelected);
 		box.add(Box.createHorizontalGlue());
 		box.add(importSelected);
@@ -109,17 +106,7 @@ public class ObjectView extends JPanel{
 	}
 	
 	private void linkModel() {
-		table.setModel((TableModel) model.getProperty(ObjectModel.TABLE_MODEL));
-//		ColumnChooserModel ccmodel = (ColumnChooserModel)model.getProperty(ObjectModel.COLUMN_MODEL);
-//		ccmodel.addPropertyChangeListener(new PropertyChangeListener() {
-//			@Override
-//			public void propertyChange(PropertyChangeEvent argEvt) {
-//				TableColumn column = table.getColumnModel().getColumn(0);
-//				column.setWidth(10);
-//				column.setPreferredWidth(10);
-//				column.setResizable(false);
-//			}
-//		});
+		table.setModel(model.getTableModel());
 	}
 	
 	private void addListeners() {

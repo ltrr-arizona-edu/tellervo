@@ -141,6 +141,10 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 				return WSIObjectTypeDictionary.class;
 			}else if(column.equals(SingleObjectModel.IMPORTED)){
 				return Boolean.class;
+			}else if(column.equals(SingleObjectModel.LATITUDE)){
+				return Double.class;
+			}else if(column.equals(SingleObjectModel.LONGTITUDE)){
+				return Double.class;
 			}
 			
 			SingleObjectModel som = models.get(0);

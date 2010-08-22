@@ -49,6 +49,10 @@ public class ControlledVocRenderer extends DefaultCellRenderer {
 	protected String convertToString(Object value) {
 		ControlledVoc voc = (ControlledVoc) value;
 		
+		if(value == null){
+			return "";
+		}
+		
 		switch(behavior) {
 		case DEFAULT: {
 			if(voc.isSetNormal()) {

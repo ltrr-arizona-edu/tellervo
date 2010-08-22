@@ -70,7 +70,7 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 		setProperty(TITLE, argObject.getTitle());
 		setProperty(COMMENTS, argObject.getComments());
 		if(argObject.getType() != null){
-			setProperty(TYPE, argObject.getType().getNormal());			
+			setProperty(TYPE, argObject.getType());			
 		}else{
 			setProperty(TYPE, null);
 		}

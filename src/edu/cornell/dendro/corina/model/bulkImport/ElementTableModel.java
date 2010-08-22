@@ -6,18 +6,21 @@ package edu.cornell.dendro.corina.model.bulkImport;
 import java.beans.IndexedPropertyChangeEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasShape;
+import org.tridas.schema.TridasUnit;
 
 import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.model.HashModel.PropertyType;
 
 import edu.cornell.dendro.corina.schema.WSIElementTypeDictionary;
-import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
+import edu.cornell.dendro.corina.schema.WSITaxonDictionary;
 
 /**
  * @author Daniel Murphy
@@ -140,12 +143,9 @@ public class ElementTableModel extends AbstractTableModel implements PropertyCha
 			String column = columns.get(columnIndex);
 			
 			// for combo box stuff
-			if(column.equals(SingleElementModel.TYPE)){
-				return WSIElementTypeDictionary.class;
-			}else if(column.equals(SingleElementModel.IMPORTED)){
-				return Boolean.class;
-			}else if(column.equals(SingleElementModel.OBJECT)){
-				return TridasObject.class;
+			Class<?> c = getClassFromColumn(column);
+			if(c != null){
+				return c;
 			}
 			
 			SingleElementModel som = models.get(0);
@@ -158,6 +158,41 @@ public class ElementTableModel extends AbstractTableModel implements PropertyCha
 			}
 			return o.getClass();
 		}
+	}
+	
+	private Class<?> getClassFromColumn(String argColumn){
+		if(argColumn.equals(SingleElementModel.TYPE)){
+			return WSIElementTypeDictionary.class;
+		}else if(argColumn.equals(SingleElementModel.IMPORTED)){
+			return Boolean.class;
+		}else if(argColumn.equals(SingleElementModel.OBJECT)){
+			return TridasObject.class;
+		}else if(argColumn.equals(SingleElementModel.DEPTH)){
+			return BigDecimal.class;
+		}else if(argColumn.equals(SingleElementModel.WIDTH)){
+			return BigDecimal.class;
+		}else if(argColumn.equals(SingleElementModel.DIAMETER)){
+			return BigDecimal.class;
+		}else if(argColumn.equals(SingleElementModel.HEIGHT)){
+			return BigDecimal.class;
+		}else if(argColumn.equals(SingleElementModel.LATITUDE)){
+			return Double.class;
+		}else if(argColumn.equals(SingleElementModel.LONGTITUDE)){
+			return Double.class;
+		}else if(argColumn.equals(SingleElementModel.SLOPE_ANGLE)){
+			return Integer.class;
+		}else if(argColumn.equals(SingleElementModel.SLOPE_AZIMUTH)){
+			return Integer.class;
+		}else if(argColumn.equals(SingleElementModel.SOIL_DEPTH)){
+			return Double.class;
+		}else if(argColumn.equals(SingleElementModel.SHAPE)){
+			return TridasShape.class;
+		}else if(argColumn.equals(SingleElementModel.TAXON)){
+			return WSITaxonDictionary.class;
+		}else if(argColumn.equals(SingleElementModel.UNIT)){
+			return TridasUnit.class;
+		}
+		return null;
 	}
 	
 	/**
@@ -182,10 +217,13 @@ public class ElementTableModel extends AbstractTableModel implements PropertyCha
 		SingleElementModel som = models.get(rowIndex);
 		
 		// make imported t/f
+		Object o = som.getProperty(column);
 		if(column.equals(SingleElementModel.IMPORTED)){
-			return som.getProperty(column) != null;
+			return o != null;
 		}
-		return som.getProperty(column);
+		
+		return o;
+		
 	}
 	
 	/**

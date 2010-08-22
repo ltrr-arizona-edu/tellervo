@@ -17,6 +17,8 @@ import org.tridas.util.TridasObjectEx;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
+import edu.cornell.dendro.corina.components.table.DynamicJComboBoxEvent;
+import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
@@ -85,21 +87,6 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			if(!definedProps.contains(SingleObjectModel.TYPE)){
 				requiredMessages.add("Object must contain type.");
 				incomplete = true;
-			}else{
-				boolean found = false;
-				String type = som.getProperty(SingleObjectModel.TYPE).toString();
-				for(ControlledVoc voc: Dictionary.getDictionaryAsArrayList("objectTypeDictionary").toArray(new ControlledVoc[0])){
-					if(type.equals(voc.getNormal())){
-						som.setProperty(SingleObjectModel.TYPE, voc);
-						found = true;
-						break;
-					}
-				}
-				if(!found){
-					System.err.println("Couldn't find object '"+type+"' in object type dictionary.");
-					requiredMessages.add("Error with finding object type '"+type+"', please report bug.");
-					incomplete = true;
-				}
 			}
 			
 			// title
@@ -113,21 +100,6 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				if(!definedProps.contains(SingleObjectModel.LATITUDE) || !definedProps.contains(SingleObjectModel.LONGTITUDE)){
 					requiredMessages.add("Object cannot have either a latitude or a longtitude.  Both or none must be provided");
 					incomplete = true;
-				}else{
-					String attempt = som.getProperty(SingleObjectModel.LATITUDE).toString().trim();
-					try{
-						Double.parseDouble(attempt);
-					}catch(NumberFormatException e){
-						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
-						incomplete = true;
-					}
-					attempt = som.getProperty(SingleObjectModel.LONGTITUDE).toString().trim();
-					try{
-						Double.parseDouble(attempt);
-					}catch(NumberFormatException e){
-						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
-						incomplete = true;
-					}
 				}
 			}
 			
@@ -147,18 +119,18 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		
 		// now we actually create the models
 		for(SingleObjectModel som : selected){
-			TridasObjectEx object = new TridasObjectEx();
+			TridasObjectEx origObject = new TridasObjectEx();
 			
 			if(!som.isDirty()){
 				System.out.println("Object isn't dirty, not saving/updating: "+som.getProperty(SingleObjectModel.OBJECT_CODE).toString());
 			}
 			
-			som.populateTridasObject(object);
+			som.populateTridasObject(origObject);
 			EntityResource<TridasObjectEx> resource;
-			if(object.getIdentifier() != null){
-				resource = new EntityResource<TridasObjectEx>(object, CorinaRequestType.UPDATE, TridasObjectEx.class);
+			if(origObject.getIdentifier() != null){
+				resource = new EntityResource<TridasObjectEx>(origObject, CorinaRequestType.UPDATE, TridasObjectEx.class);
 			}else{
-				resource = new EntityResource<TridasObjectEx>(object, CorinaRequestType.CREATE, TridasObjectEx.class);
+				resource = new EntityResource<TridasObjectEx>(origObject, CorinaRequestType.CREATE, TridasObjectEx.class);
 			}
 			
 			// set up a dialog...
@@ -176,7 +148,33 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			som.setImported(resource.getAssociatedResult().getIdentifier());
 			som.setDirty(false);
 			tmodel.setSelected(som, false);
-			model.getObjectModel().getImportedList().add(resource.getAssociatedResult());
+			
+			// add to imported list or update existing
+			if(origObject.getIdentifier() != null){
+				TridasObjectEx found = null;
+				for(TridasObjectEx tox : model.getObjectModel().getImportedList()){
+					if(tox.getIdentifier().getValue().equals(origObject.getIdentifier().getValue())){
+						found = tox;
+						break;
+					}
+				}
+				if(found == null){
+					Alert.error("Error updating model", "Couldn't find the object in the model to update, please report bug.");
+				}else{
+					resource.getAssociatedResult().copyTo(found);
+				}
+			}
+			else{
+				model.getObjectModel().getImportedList().add(resource.getAssociatedResult());
+			}
 		}
+		
+		// finally, update the combo boxes in the table to the new options
+		String[] items = new String[model.getObjectModel().getImportedList().size()];
+		for(int i=0; i<items.length; i++){
+			items[i] = model.getObjectModel().getImportedList().get(i).getLabCode();
+		}
+		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(BulkImportController.SET_DYNAMIC_COMBO_BOX, items);
+		event.dispatch();
 	}
 }

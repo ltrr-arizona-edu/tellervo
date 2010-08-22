@@ -20,6 +20,7 @@ import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
+import edu.cornell.dendro.corina.model.bulkImport.SingleElementModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
 import edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow;
 
@@ -37,6 +38,8 @@ public class BulkImportController extends FrontController {
 	public static final String IMPORT_SELECTED_OBJECTS = "BULK_IMPORT_SELECTED_OBJECTS";
 	public static final String IMPORT_SELECTED_ELEMENTS = "BULK_IMPORT_SELECTED_ELEMENTS";
 	public static final String IMPORT_SELECTED_SAMPLES = "BULK_IMPORT_SELECTED_SAMPLES";
+	
+	public static final String SET_DYNAMIC_COMBO_BOX = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX";
 	
 	public BulkImportController(){
 		registerCommand(DISPLAY_COLUMN_CHOOSER, ShowColumnWindowCommand.class);
@@ -64,7 +67,7 @@ public class BulkImportController extends FrontController {
 		
 		ObjectModel objectModel = BulkImportModel.getInstance().getObjectModel();
 		populateObjectDefaults(objectModel.getColumnModel());
-		
+		populateElementDefaults(BulkImportModel.getInstance().getElementModel().getColumnModel());
 		BulkImportWindow frame = new BulkImportWindow();
 		BulkImportModel.getInstance().setMainView(frame);
 		frame.pack();
@@ -77,6 +80,13 @@ public class BulkImportController extends FrontController {
 		ccmodel.add(SingleObjectModel.OBJECT_CODE);
 		ccmodel.add(SingleObjectModel.TYPE);
 		ccmodel.add(SingleObjectModel.IMPORTED);
+	}
+	
+	private void populateElementDefaults(ColumnChooserModel ccmodel){
+		ccmodel.add(SingleElementModel.TITLE);
+		ccmodel.add(SingleElementModel.OBJECT);
+		ccmodel.add(SingleElementModel.TYPE);
+		ccmodel.add(SingleElementModel.IMPORTED);
 	}
 	
 	public static void main() {
