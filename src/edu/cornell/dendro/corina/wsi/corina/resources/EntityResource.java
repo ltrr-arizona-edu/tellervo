@@ -45,7 +45,6 @@ public class EntityResource<T extends ITridas> extends
 	 * Update/delete constructor
 	 * 
 	 * @param entity
-	 * @param parentEntityID
 	 * @param queryType
 	 * @param entityType
 	 *            Class of the entity to update/delete
