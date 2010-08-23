@@ -198,9 +198,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		if(enabled) {
 			ITridas currentEntity = currentMode.getEntity(s);
 			if(currentEntity instanceof ITridasSeries)
-				temporaryEditingEntity = TridasCloner.cloneSeriesRefValues((ITridasSeries) currentEntity);
+				temporaryEditingEntity = TridasCloner.cloneSeriesRefValues((ITridasSeries) currentEntity, (Class<? extends ITridasSeries>) currentEntity.getClass());
 			else
-				temporaryEditingEntity = TridasCloner.clone(currentEntity);
+				temporaryEditingEntity = TridasCloner.clone(currentEntity, currentEntity.getClass());
 
 			// user chose to edit without choosing 'new', so be nice and make a new one for them
 			if(temporaryEditingEntity == null && topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {

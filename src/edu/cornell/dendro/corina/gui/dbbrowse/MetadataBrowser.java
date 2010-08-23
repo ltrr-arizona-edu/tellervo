@@ -410,9 +410,9 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 			if(currentEntity==null) return;
 			
 			if(currentEntity instanceof ITridasSeries)
-				temporaryEditingEntity = TridasCloner.cloneSeriesRefValues((ITridasSeries) currentEntity);
+				temporaryEditingEntity = TridasCloner.cloneSeriesRefValues((ITridasSeries) currentEntity, (Class<? extends ITridasSeries>) currentEntity.getClass());
 			else
-				temporaryEditingEntity = TridasCloner.clone(currentEntity);
+				temporaryEditingEntity = TridasCloner.clone(currentEntity, currentEntity.getClass());
 
 			if(temporaryEditingEntity != null)
 				propertiesPanel.readFromObject(temporaryEditingEntity);

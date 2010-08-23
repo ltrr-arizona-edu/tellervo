@@ -14,8 +14,14 @@ import org.tridas.schema.TridasValues;
 
 public class TridasCloner {
 	@SuppressWarnings("unchecked")
-	public static <T extends Copyable> T clone(T o) {
-		Object copy = o.createCopy();
+	public static <T extends Copyable> T clone(T o, Class<? extends T> argClass) {
+		Object copy;
+		try {
+			copy = argClass.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		//Object copy = o.createCopy();
 		o.copyTo(copy);
 		
 		return (T) copy;
@@ -26,7 +32,7 @@ public class TridasCloner {
 	 * @param series
 	 * @return A copy of the series with values as reference
 	 */
-	public static ITridasSeries cloneSeriesRefValues(ITridasSeries series) {
+	public static ITridasSeries cloneSeriesRefValues(ITridasSeries series, Class<? extends ITridasSeries> seriesClass) {
 		// safety check
 		if(series == null)
 			return null;
@@ -37,7 +43,14 @@ public class TridasCloner {
 		series.unsetValues();
 	
 		// copy the series
-		ITridasSeries copy = (ITridasSeries)(((Copyable) series).createCopy());
+		ITridasSeries copy;
+		try {
+			copy = seriesClass.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		//ITridasSeries copy = (ITridasSeries)(((Copyable) series).createCopy());
+		
 		((Copyable)series).copyTo(copy);
 		
 		// re-set the values (and reference them, too)
