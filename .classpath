@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="edu/cornell/dendro/corina/cross/legacy/|edu/cornell/dendro/corina/db/|edu/cornell/dendro/corina/gui/datawizard/|edu/cornell/dendro/corina/search/|edu/cornell/dendro/corina/browser/|edu/cornell/dendro/corina/gui/newui/" including="edu/cornell/dendro/corina/**|edu/cornell/dendro/corina_indexing/**|edu/cornell/dendro/corina_resources/**|edu/cornell/dendro/cpgdb/**|edu/cornell/dendro/webservice/schemas/*|log4j.xml|net/opengis/gml/schema/**|org/tridas/**" kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="Libraries/batik.jar"/>
 	<classpathentry kind="lib" path="Libraries/junit.jar"/>
 	<classpathentry kind="lib" path="Libraries"/>
@@ -34,12 +33,13 @@
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/coll-prop.0.1-1.5.jar"/>
 	<classpathentry kind="lib" path="Libraries/PDFRenderer.jar"/>
 	<classpathentry kind="lib" path="Libraries/mozswing-complete.jar"/>
-	<classpathentry kind="lib" path="Libraries/DendroFileIO-0.0.1-SNAPSHOT.jar" sourcepath="Libraries/src/DendroFileIO-0.0.1-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="Libraries/DendroFileIO-0.0.1-SNAPSHOT.jar" sourcepath="LibraryDocsAndSources/DendroFileIO-0.0.1-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/TridasJLib-0.0.1-SNAPSHOT.jar" sourcepath="Libraries/src/TridasJLib-0.0.1-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/java-simple-mvc-1.3.3-SNAPSHOT.jar" sourcepath="LibraryDocsAndSources/java-simple-mvc-1.3.3-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/JGoogleAnalyticsTracker-1.1.0.jar" sourcepath="LibraryDocsAndSources/JGoogleAnalyticsTracker-1.1.0-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="Libraries/jogl.jar"/>
 	<classpathentry kind="lib" path="Libraries/worldwind-0.6.570.13645.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
