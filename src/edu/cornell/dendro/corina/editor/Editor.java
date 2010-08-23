@@ -197,9 +197,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	
 	// gui -- new
 	private SampleDataView dataView; // (a jpanel)
-
-	// mozilla panel for maps
-	private EditorMozillaMapPanel mozillaMapPanel;
 	
 	private MapPanel wwMapPanel;
 	
@@ -486,11 +483,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			return;
 		}
 		
-		try {
-			mozillaMapPanel = new EditorMozillaMapPanel(link);
-		} catch (Throwable e) {
-			// no mapping? no problem. don't fail violently!
-		}
 	}
 
 	private void addCards() {
@@ -645,9 +637,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			menubar.add(new WindowMenu(this));
 		menubar.add(new HelpMenu());
 		setJMenuBar(menubar);
-
-		if(mozillaMapPanel != null)
-			makeMenusHeavyweight();
 		
 		// init undo/redo
 		initUndoRedo();

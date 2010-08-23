@@ -123,7 +123,7 @@ public class Help {
 
 	button.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-			HelpWiki.showHelp("http://dendro.cornell.edu/corina-manual/" + page);
+		//	HelpWiki.showHelp("http://dendro.cornell.edu/corina-manual/" + page);
 		}
 	    });
     }

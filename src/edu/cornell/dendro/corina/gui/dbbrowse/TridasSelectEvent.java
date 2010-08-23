@@ -2,16 +2,12 @@ package edu.cornell.dendro.corina.gui.dbbrowse;
 
 import java.awt.AWTEvent;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.mozilla.dom.UnsupportedException;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
-
-import edu.cornell.dendro.corina.io.InvalidDataException;
 
 public class TridasSelectEvent extends AWTEvent {
 
