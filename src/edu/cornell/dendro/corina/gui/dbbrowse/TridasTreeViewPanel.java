@@ -93,7 +93,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	{
 		setupGui();
 		setupTree(null);
-		
+			
 	}
 	
 	/**

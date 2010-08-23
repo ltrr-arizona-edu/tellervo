@@ -7,6 +7,7 @@ import java.util.Map;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.SeriesLink;
+import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasRadius;
 
@@ -174,7 +175,8 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 		// if we're creating a derived series, we have to be careful here and copy it
 		// this is because we don't want to send along any values!
 		if(series instanceof ITridasDerivedSeries) {
-			ITridasDerivedSeries derived = (ITridasDerivedSeries) series.createCopy();
+			// TODO Check this refactor is ok - PWB 2010-08-23
+			ITridasDerivedSeries derived = (ITridasDerivedSeries) ((TridasDerivedSeries) series).createCopy();
 			series.copyTo(derived);
 			
 			derived.unsetValues();

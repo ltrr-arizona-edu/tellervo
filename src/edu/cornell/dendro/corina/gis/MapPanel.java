@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gis;
 
+import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.xml.parsers.ParserConfigurationException;
@@ -56,6 +58,13 @@ public class MapPanel extends JPanel {
 
         }
 
+        private void failedReq()
+        {
+        	JLabel failed = new JLabel();
+        	failed.setText("This computer does not meet minimum graphics requirements");
+        	this.add(failed, BorderLayout.NORTH);
+        }
+        
         private void setupGui(Dimension canvasSize, boolean includeStatusBar, ArrayList<Position> positions)
         {
             this.wwd = this.createWorldWindow();
@@ -80,14 +89,14 @@ public class MapPanel extends JPanel {
                 {
                     if (t instanceof WWAbsentRequirementException)
                     {
-                        String message = "Uhoh... Computer does not meet minimum graphics requirements.\n";
+                        String message = "Computer does not meet minimum graphics requirements.\n";
                         message += "Please install up-to-date graphics driver and try again.\n";
-                        message += "Reason: " + t.getMessage() + "\n";
-                        message += "This program will end when you press OK.";
+                        message += "Reason: " + t.getMessage();
 
                         JOptionPane.showMessageDialog(null, message, "Unable to Start Program",
                             JOptionPane.ERROR_MESSAGE);
-                        failedRequirements = true;
+                        failedReq();
+                        return;
                     }
                 }
             });
@@ -100,6 +109,8 @@ public class MapPanel extends JPanel {
                 this.add(statusBar, BorderLayout.PAGE_END);
                 this.statusBar.setEventSource(wwd);
             }
+            
+
         }
         
         private void initMarkerLayer(ArrayList<Position> positions)

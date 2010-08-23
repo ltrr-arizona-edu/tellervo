@@ -61,7 +61,7 @@ public class Build {
 	    new edu.cornell.dendro.corina.gui.Bug(ioe);
 	}
 
-	return "(time/date unknown)";
+	return "";
     }
 
     /** Version string. */
