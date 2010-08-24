@@ -542,4 +542,55 @@
 	    </javadoc>-->
 	</target>
 	
+    <target name="create_run_jar">
+        <jar destfile="/Users/peterbrewer/Desktop/Corina.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="edu.cornell.dendro.corina.gui.Startup"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ batik.jar junit.jar RXTXcomm.jar jdom.jar forms-1.1.0.jar swing-layout-1.0.3.jar log4j-1.2.15.jar jna.jar commons-logging-1.1.1.jar apache-mime4j-0.5.jar commons-codec-1.3.jar httpclient-4.0-beta2.jar httpcore-4.0-beta3.jar httpmime-4.0-beta2.jar jh.jar jsyntaxpane-0.9.5-b17.jar activation.jar l2fprod-common-shared.jar l2fprod-common-sheet.jar jaxen-1.1.1.jar l2fprod-common-buttonbar.jar iText-2.1.6.jar jsr173_1.0_api.jar commons-lang-2.4.jar coll-prop.0.1-1.5.jar PDFRenderer.jar DendroFileIO-0.0.1-SNAPSHOT.jar TridasJLib-0.0.1-SNAPSHOT.jar java-simple-mvc-1.3.3-SNAPSHOT.jar JGoogleAnalyticsTracker-1.1.0.jar gluegen-rt.jar jogl.jar worldwind-0.6.570.13645.jar JFontChooser.jar jfontchooser-1.0.5.jar pljava.jar postgresql-8.2-506.jdbc3.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="/Users/peterbrewer/dev/java/Corina-Dev/build"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="batik.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="junit.jar"/>
+            <fileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="RXTXcomm.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="jdom.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="forms-1.1.0.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="swing-layout-1.0.3.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="log4j-1.2.15.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="jna.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="commons-logging-1.1.1.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="apache-mime4j-0.5.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="commons-codec-1.3.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="httpclient-4.0-beta2.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="httpcore-4.0-beta3.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="httpmime-4.0-beta2.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="jh.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="jsyntaxpane-0.9.5-b17.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="activation.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="l2fprod-common-shared.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="l2fprod-common-sheet.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="jaxen-1.1.1.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="l2fprod-common-buttonbar.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="iText-2.1.6.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries/jaxb" includes="jsr173_1.0_api.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="commons-lang-2.4.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries/jaxb/plugin" includes="coll-prop.0.1-1.5.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="PDFRenderer.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="DendroFileIO-0.0.1-SNAPSHOT.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="TridasJLib-0.0.1-SNAPSHOT.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="java-simple-mvc-1.3.3-SNAPSHOT.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="JGoogleAnalyticsTracker-1.1.0.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="gluegen-rt.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="jogl.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="worldwind-0.6.570.13645.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="JFontChooser.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="jfontchooser-1.0.5.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="pljava.jar"/>
+            <zipfileset dir="/Users/peterbrewer/dev/java/Corina-Dev/Libraries" includes="postgresql-8.2-506.jdbc3.jar"/>
+        </jar>
+    </target>
+	
 </project>
