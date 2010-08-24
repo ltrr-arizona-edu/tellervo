@@ -79,10 +79,18 @@ public class UnitAwareDecadalModel extends DecadalModel {
 	
 	public void setValueAt(Object value, int row, int col) {
 	
-		if (col==0 || col==11)
+		if (value==null)
 		{
+			// Ignore null values
+			return;
+		}
+		
+		else if (col==0 || col==11)
+		{
+			// First and last columns don't need to be unit handled
 			super.setValueAt(value, row, col);
 		}
+		
 		else
 		{
 			Number val = (((Number) (value)).intValue());
