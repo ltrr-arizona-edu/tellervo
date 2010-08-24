@@ -543,7 +543,7 @@
 	</target>
 	
     <target name="create_run_jar">
-        <jar destfile="/Users/peterbrewer/Desktop/Corina.jar">
+        <jar destfile="corina.jar">
             <manifest>
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
                 <attribute name="Rsrc-Main-Class" value="edu.cornell.dendro.corina.gui.Startup"/>
