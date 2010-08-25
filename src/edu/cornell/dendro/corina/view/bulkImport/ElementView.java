@@ -3,18 +3,8 @@
  */
 package edu.cornell.dendro.corina.view.bulkImport;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.TableModel;
 
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasShape;
@@ -26,13 +16,9 @@ import edu.cornell.dendro.corina.components.table.TridasShapeEditor;
 import edu.cornell.dendro.corina.components.table.TridasShapeRenderer;
 import edu.cornell.dendro.corina.components.table.TridasUnitEditor;
 import edu.cornell.dendro.corina.components.table.TridasUnitRenderer;
-import edu.cornell.dendro.corina.control.bulkImport.AddRowEvent;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
-import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.control.bulkImport.ImportSelectedEvent;
-import edu.cornell.dendro.corina.control.bulkImport.RemoveSelectedEvent;
 import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
-import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.schema.WSIElementTypeDictionary;
 import edu.cornell.dendro.corina.schema.WSITaxonDictionary;
 import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer;

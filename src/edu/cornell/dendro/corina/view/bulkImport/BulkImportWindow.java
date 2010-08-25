@@ -4,22 +4,14 @@
 package edu.cornell.dendro.corina.view.bulkImport;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
-import com.dmurph.mvc.model.MVCArrayList;
-import com.dmurph.tracking.AnalyticsConfigData;
-import com.dmurph.tracking.JGoogleAnalyticsTracker;
-import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
-import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
-import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
-import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
  * @author Daniel Murphy
@@ -49,9 +41,9 @@ public class BulkImportWindow extends JFrame {
 		elements = new ElementView(BulkImportModel.getInstance().getElementModel());
 		samples = new SampleView(BulkImportModel.getInstance().getSampleModel());
 		add(tabs,"Center");
-		tabs.add("Objects", objects);
-		tabs.add("Elements", elements);
-		tabs.add("Samples", samples);
+		tabs.addTab("Objects", Builder.getIcon("object.png", 22), objects);
+		tabs.addTab("Elements", Builder.getIcon("element.png", 22), elements);
+		tabs.addTab("Samples", Builder.getIcon("sample.png", 22), samples);
 	}
 	
 	public void linkModel() {

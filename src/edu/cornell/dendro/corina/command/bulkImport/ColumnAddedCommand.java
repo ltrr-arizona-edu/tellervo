@@ -32,6 +32,5 @@ public class ColumnAddedCommand implements ICommand{
 			}
 		}
 		System.out.println("not added: "+event.getValue());
-		
 	}
 }
