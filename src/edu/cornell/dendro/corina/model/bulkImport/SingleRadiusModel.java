@@ -3,6 +3,11 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
+import java.math.BigDecimal;
+
+import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasRadius;
+
 import com.dmurph.mvc.model.HashModel;
 
 /**
@@ -12,27 +17,33 @@ import com.dmurph.mvc.model.HashModel;
 public class SingleRadiusModel extends HashModel implements ISingleRowModel{
 	private static final long serialVersionUID = 1L;
 	
-	public static final String SAMPLE_CODE = "Sample Code";
-	public static final String RADIUS_CODE = "Radius Code";
 	public static final String TITLE = "Radius Title";
 	public static final String COMMENTS = "Radius Comments";
-	public static final String AZIMUTH = "Azimuth";
+	public static final String AZIMUTH = "Radius Azimuth";
 	
 	public static final String[] PROPERTIES = {
-		SAMPLE_CODE, RADIUS_CODE, TITLE, COMMENTS, AZIMUTH
+		TITLE, COMMENTS, AZIMUTH
 	};
 	
 	public SingleRadiusModel(){
 		registerProperty(PROPERTIES, PropertyType.READ_WRITE);
-		registerProperty(RADIUS_CODE, PropertyType.READ_ONLY);
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, false);
 	}
 	
-	public void setRadiusCode(String argCode){
-		registerProperty(RADIUS_CODE, PropertyType.READ_ONLY, argCode);
+	public void setImported(TridasIdentifier argImported){
+		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
 	}
 	
-	public void setImported(boolean argImported){
-		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
+	public void populateToTridasRadius(TridasRadius argTridasRadius){
+		argTridasRadius.setTitle((String) getProperty(TITLE));
+		argTridasRadius.setAzimuth((BigDecimal) getProperty(AZIMUTH));
+		argTridasRadius.setComments((String) getProperty(COMMENTS));
+		argTridasRadius.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
+	}
+	
+	public void populateFromTridasRadius(TridasRadius argTridasRadius){
+		setProperty(TITLE, argTridasRadius.getTitle());
+		setProperty(COMMENTS, argTridasRadius.getComments());
+		setProperty(AZIMUTH, argTridasRadius.getAzimuth());
 	}
 }

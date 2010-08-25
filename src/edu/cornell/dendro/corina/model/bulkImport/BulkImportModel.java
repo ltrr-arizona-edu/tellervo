@@ -15,12 +15,14 @@ public class BulkImportModel {
 	
 	private final ObjectModel objectModel;
 	private final ElementModel elementModel;
+	private final SampleModel sampleModel;
 	private volatile ColumnChooserView currColumnChooser = null;
 	private BulkImportWindow mainView;
 	
 	private BulkImportModel(){
 		objectModel = new ObjectModel();
 		elementModel = new ElementModel();
+		sampleModel = new SampleModel(); 
 	}
 	
 	public ObjectModel getObjectModel(){
@@ -29,6 +31,10 @@ public class BulkImportModel {
 	
 	public ElementModel getElementModel(){
 		return elementModel;
+	}
+	
+	public SampleModel getSampleModel(){
+		return sampleModel;
 	}
 
 	public void setCurrColumnChooser(ColumnChooserView currColumnChooser) {

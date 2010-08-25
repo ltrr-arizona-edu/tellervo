@@ -30,19 +30,30 @@ import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
  *
  */
 public class ColumnChooserView extends JDialog{
-
+	private static final long serialVersionUID = 1L;
+	
 	private JTable checkboxList;
 	private JButton okButton;
 	private final TableModel tableModel;
 	
 	private final ColumnChooserModel model;
-	private final String[] columns;
+	private final MVCArrayList<String> columns;
 	
 	public ColumnChooserView(ColumnChooserModel argModel, JFrame argParent){
 		super(argParent, true);
 		model = argModel;
-		columns = argModel.possibleColumns;
 		tableModel = new TableModel();
+		columns = argModel.getPossibleColumns();
+		columns.addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent argEvt) {
+				String name = argEvt.getPropertyName();
+				if(!name.equals(MVCArrayList.DIRTY)){
+					tableModel.fireTableStructureChanged();
+				}
+			}
+		});
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -105,8 +116,9 @@ public class ColumnChooserView extends JDialog{
 		okButton.setText("Ok");
 	}
 	
-	class TableModel extends AbstractTableModel{
-		
+	private class TableModel extends AbstractTableModel{
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * @see javax.swing.table.AbstractTableModel#getColumnName(int)
 		 */
@@ -131,7 +143,7 @@ public class ColumnChooserView extends JDialog{
 		 */
 		@Override
 		public int getRowCount() {
-			return columns.length;
+			return columns.size();
 		}
 		
 		/**
@@ -160,9 +172,9 @@ public class ColumnChooserView extends JDialog{
 		@Override
 		public Object getValueAt(int argRowIndex, int argColumnIndex) {
 			if(argColumnIndex == 0){
-				return model.contains(columns[argRowIndex]);
+				return model.contains(columns.get(argRowIndex));
 			}
-			return columns[argRowIndex];
+			return columns.get(argRowIndex);
 		}
 		
 		/**
@@ -174,13 +186,13 @@ public class ColumnChooserView extends JDialog{
 			if(val == Boolean.TRUE){
 				System.out.println("true");
 				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED,
-																	  columns[argRowIndex],
-																	  model);
+						columns.get(argRowIndex),
+									model);
 				event.dispatch();
 			}else{
 				System.out.println("false");
 				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_REMOVED,
-						  columns[argRowIndex],
+						columns.get(argRowIndex),
 						  model);
 				event.dispatch();
 			}

@@ -23,7 +23,7 @@ public class AddRowCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		AddRowEvent event = (AddRowEvent) argEvent;
-		MVCArrayList<Object> rows =  (MVCArrayList<Object>) ((HashModel)event.model).getProperty(IBulkImportSectionModel.ROWS);
+		MVCArrayList<Object> rows = (MVCArrayList<Object>) event.model.getRows();
 		rows.add(event.model.createRowInstance());
 	}
 	

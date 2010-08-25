@@ -142,10 +142,9 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			
 			if(!dialog.isSuccessful()) { 
 				Alert.message("Error", "Error creating/updating object, check logs.");
-				return;
+				continue;
 			}
 			som.populateFromTridasObject(resource.getAssociatedResult());
-			som.setImported(resource.getAssociatedResult().getIdentifier());
 			som.setDirty(false);
 			tmodel.setSelected(som, false);
 			
@@ -174,7 +173,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		for(int i=0; i<items.length; i++){
 			items[i] = model.getObjectModel().getImportedList().get(i).getLabCode();
 		}
-		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(BulkImportController.SET_DYNAMIC_COMBO_BOX, items);
+		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(BulkImportController.SET_DYNAMIC_COMBO_BOX_OBJECTS, items);
 		event.dispatch();
 	}
 }

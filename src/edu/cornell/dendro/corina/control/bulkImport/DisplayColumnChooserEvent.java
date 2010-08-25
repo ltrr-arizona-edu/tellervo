@@ -7,14 +7,17 @@ import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.tracking.ITrackable;
 
+import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
+
 /**
  * @author daniel
  *
  */
 public class DisplayColumnChooserEvent extends MVCEvent implements ITrackable{
 	
-	public final HashModel model;
-	public DisplayColumnChooserEvent(HashModel argModel) {
+	public final IBulkImportSectionModel model;
+	
+	public DisplayColumnChooserEvent(IBulkImportSectionModel argModel) {
 		super(BulkImportController.DISPLAY_COLUMN_CHOOSER);
 		model = argModel;
 	}

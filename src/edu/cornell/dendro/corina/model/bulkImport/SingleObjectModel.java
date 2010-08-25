@@ -88,6 +88,8 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 			setProperty(LATITUDE, null);
 			setProperty(LONGTITUDE, null);
 		}
+		
+		setProperty(IMPORTED, argObject.getIdentifier());
 	}
 	
 	public void populateTridasObject(TridasObject argObject){
@@ -125,26 +127,23 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 		}
 		
 		if(latitude != null && longtitude != null){
-			try{
-				double lat = Double.parseDouble(latitude.toString().trim());
-				double lon = Double.parseDouble(longtitude.toString().trim());
-				Pos p = new Pos();
-				p.getValues().add(lat);
-				p.getValues().add(lon);
-				
-				PointType pt = new PointType();
-				pt.setPos(p);
-				
-				TridasLocationGeometry locgeo = new TridasLocationGeometry();
-				locgeo.setPoint(pt);
-				
-				TridasLocation loc = new TridasLocation();
-				loc.setLocationGeometry(locgeo);
-				argObject.setLocation(loc);
-			}catch(NumberFormatException e){
-				// don't do anything for now
-				e.printStackTrace();
-			}
+			double lat = (Double)getProperty(LATITUDE);
+			double lon = (Double)getProperty(LONGTITUDE);
+			Pos p = new Pos();
+			p.getValues().add(lat);
+			p.getValues().add(lon);
+			
+			PointType pt = new PointType();
+			pt.setPos(p);
+			
+			TridasLocationGeometry locgeo = new TridasLocationGeometry();
+			locgeo.setPoint(pt);
+			
+			TridasLocation loc = new TridasLocation();
+			loc.setLocationGeometry(locgeo);
+			argObject.setLocation(loc);
+		}else{
+			argObject.setLocation(null);
 		}
 	}
 }

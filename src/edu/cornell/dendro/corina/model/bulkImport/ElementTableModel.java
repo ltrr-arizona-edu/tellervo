@@ -26,7 +26,7 @@ import edu.cornell.dendro.corina.schema.WSITaxonDictionary;
  * @author Daniel Murphy
  *
  */
-public class ElementTableModel extends AbstractTableModel implements PropertyChangeListener {
+public class ElementTableModel extends AbstractTableModel implements PropertyChangeListener, IBulkImportTableModel {
 	private static final long serialVersionUID = 1L;
 	
 	private ElementModel model;

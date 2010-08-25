@@ -11,19 +11,18 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
-import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasElement;
+import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.components.table.DynamicJComboBoxEvent;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
-import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementTableModel;
-import edu.cornell.dendro.corina.model.bulkImport.SingleElementModel;
+import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleElementModel;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -54,6 +53,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 		HashSet<String> requiredMessages = new HashSet<String>();
 		ArrayList<SingleElementModel> incompleteModels = new ArrayList<SingleElementModel>();
 		
+		HashSet<String> titles = new HashSet<String>();
 		HashSet<String> definedProps = new HashSet<String>();
 		for(SingleElementModel som : selected){
 			
@@ -73,29 +73,28 @@ public class ImportSelectedElementsCommand implements ICommand {
 			
 			// type
 			if(!definedProps.contains(SingleElementModel.TYPE)){
-				requiredMessages.add("Element must contain type.");
+				requiredMessages.add("Element must contain a type.");
 				incomplete = true;
-			}else{
-				boolean found = false;
-				String type = som.getProperty(SingleElementModel.TYPE).toString();
-				for(ControlledVoc voc: Dictionary.getDictionaryAsArrayList("elementTypeDictionary").toArray(new ControlledVoc[0])){
-					if(type.equals(voc.getNormal())){
-						som.setProperty(SingleElementModel.TYPE, voc);
-						found = true;
-						break;
-					}
-				}
-				if(!found){
-					System.err.println("Couldn't find element type '"+type+"' in element type dictionary.");
-					requiredMessages.add("Error with finding element type '"+type+"', please report bug.");
-					incomplete = true;
-				}
+			}
+			
+			// taxon
+			if(!definedProps.contains(SingleElementModel.TAXON)){
+				requiredMessages.add("Element must contain a taxon.");
+				incomplete = true;
 			}
 			
 			// title
 			if(!definedProps.contains(SingleElementModel.TITLE)){
 				requiredMessages.add("Element must have a title");
 				incomplete = true;
+			}else{
+				String title = (String) som.getProperty(SingleElementModel.TITLE);
+				if(titles.contains(title)){
+					requiredMessages.add("Elements cannot have duplicate titles '"+title+"'.");
+					incomplete = true;
+				}else{
+					titles.add(title);
+				}
 			}
 			
 			// lat/long
@@ -131,7 +130,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 			StringBuilder message = new StringBuilder();
 			message.append("Please correct the following errors:\n");
 			message.append(StringUtils.join(requiredMessages, "\n"));
-			JOptionPane.showConfirmDialog(model.getMainView(), message.toString());
+			JOptionPane.showConfirmDialog(model.getMainView(), message.toString(), "Importing Errors", JOptionPane.OK_OPTION);
 			return;
 		}
 		
@@ -143,56 +142,71 @@ public class ImportSelectedElementsCommand implements ICommand {
 				System.out.println("Object isn't dirty, not saving/updating: "+som.getProperty(SingleElementModel.TITLE).toString());
 			}
 			
-			som.populateFromTridasElement(origElement);
+			som.populateToTridasElement(origElement);
+			
+			TridasObjectEx parentObject = null;
+			ObjectModel omodel = BulkImportModel.getInstance().getObjectModel();
+			for(TridasObjectEx o : omodel.getImportedList()){
+				if(o.getLabCode().equals(som.getProperty(SingleElementModel.OBJECT))){
+					parentObject = o;
+				}
+			}
+			if(parentObject == null){
+				String s = "Could not find parent object locally with code: "+som.getProperty(SingleElementModel.OBJECT);
+				System.err.println(s);
+				Alert.error("Saving Error", s);
+				continue;
+			}
+			
 			EntityResource<TridasElement> resource;
-//			if(origObject.getIdentifier() != null){
-//				resource = new EntityResource<TridasElementEx>(origObject, CorinaRequestType.UPDATE, TridasElementEx.class);
-//			}else{
-//				resource = new EntityResource<TridasElementEx>(origObject, CorinaRequestType.CREATE, TridasElementEx.class);
-//			}
-//			
-//			// set up a dialog...
-//			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
-//			CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
-//			
-//			resource.query();
-//			dialog.setVisible(true);
-//			
-//			if(!dialog.isSuccessful()) { 
-//				Alert.message("Error", "Error creating/updating object, check logs.");
-//				return;
-//			}
-//			som.populateFromTridasElement(resource.getAssociatedResult());
-//			som.setImported(resource.getAssociatedResult().getIdentifier());
-//			som.setDirty(false);
-//			tmodel.setSelected(som, false);
+			
+			if(origElement.getIdentifier() != null){
+				resource = new EntityResource<TridasElement>(origElement, CorinaRequestType.UPDATE, TridasElement.class);
+			}else{
+				resource = new EntityResource<TridasElement>(origElement, parentObject, TridasElement.class);
+			}
+			
+			// set up a dialog...
+			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
+			CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
+			
+			resource.query();
+			dialog.setVisible(true);
+			
+			if(!dialog.isSuccessful()) { 
+				Alert.message("Error", "Error creating/updating element, check logs.");
+				continue;
+			}
+			som.populateFromTridasElement(resource.getAssociatedResult());
+			som.setDirty(false);
+			tmodel.setSelected(som, false);
 			
 			// add to imported list or update existing
-//			if(origObject.getIdentifier() != null){
-//				TridasElementEx found = null;
-//				for(TridasElementEx tox : model.getObjectModel().getImportedList()){
-//					if(tox.getIdentifier().getValue().equals(origObject.getIdentifier().getValue())){
-//						found = tox;
-//						break;
-//					}
-//				}
-//				if(found == null){
-//					Alert.error("Error updating model", "Couldn't find the object in the model to update, please report bug.");
-//				}else{
-//					resource.getAssociatedResult().copyTo(found);
-//				}
-//			}
-//			else{
-//				model.getObjectModel().getImportedList().add(resource.getAssociatedResult());
-//			}
+			if(origElement.getIdentifier() != null){
+				TridasElement found = null;
+				for(TridasElement tox : model.getElementModel().getImportedList()){
+					if(tox.getIdentifier().getValue().equals(origElement.getIdentifier().getValue())){
+						found = tox;
+						break;
+					}
+				}
+				if(found == null){
+					Alert.error("Error updating model", "Couldn't find the object in the model to update, please report bug.");
+				}else{
+					resource.getAssociatedResult().copyTo(found);
+				}
+			}
+			else{
+				model.getElementModel().getImportedList().add(resource.getAssociatedResult());
+			}
 		}
 		
 		// finally, update the combo boxes in the table to the new options
-		String[] items = new String[model.getObjectModel().getImportedList().size()];
+		String[] items = new String[emodel.getImportedList().size()];
 		for(int i=0; i<items.length; i++){
-			items[i] = model.getObjectModel().getImportedList().get(i).getLabCode();
+			items[i] = emodel.getImportedList().get(i).getTitle();
 		}
-		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(BulkImportController.SET_DYNAMIC_COMBO_BOX, items);
+		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(BulkImportController.SET_DYNAMIC_COMBO_BOX_ELEMENTS, items);
 		event.dispatch();
 	}
 }

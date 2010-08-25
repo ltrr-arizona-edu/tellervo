@@ -12,9 +12,21 @@ import com.dmurph.mvc.model.MVCArrayList;
 public class ColumnChooserModel extends MVCArrayList<String> {	
 	private static final long serialVersionUID = 1L;
 	
-	public final String[] possibleColumns;
+	private final MVCArrayList<String> possibleColumns;
 	
-	public ColumnChooserModel(String[] argPossibleProperties){
-		possibleColumns = argPossibleProperties;
+	public ColumnChooserModel(){
+		possibleColumns = new MVCArrayList<String>();
+//		for(String s: argPossibleProperties){
+//			possibleColumns.add(s);
+//		}
+	}
+	
+	/**
+	 * Note that this property doesn't get affected by any mvc operations on the {@link ColumnChooserModel} 
+	 * object.
+	 * @return
+	 */
+	public MVCArrayList<String> getPossibleColumns(){
+		return possibleColumns;
 	}
 }

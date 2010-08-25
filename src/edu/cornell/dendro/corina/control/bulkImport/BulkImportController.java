@@ -6,22 +6,24 @@ package edu.cornell.dendro.corina.control.bulkImport;
 import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.FrontController;
-import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.tracking.AnalyticsConfigData;
 import com.dmurph.tracking.JGoogleAnalyticsTracker;
 import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 
 import edu.cornell.dendro.corina.command.bulkImport.AddRowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.HideColumnWindowCommand;
+import edu.cornell.dendro.corina.command.bulkImport.ImportSelectedElementsCommand;
+import edu.cornell.dendro.corina.command.bulkImport.ImportSelectedSamplesCommand;
 import edu.cornell.dendro.corina.command.bulkImport.RemoveSelectedCommand;
 import edu.cornell.dendro.corina.command.bulkImport.ShowColumnWindowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.ImportSelectedObjectsCommand;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
-import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleElementModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
+import edu.cornell.dendro.corina.model.bulkImport.SingleRadiusModel;
+import edu.cornell.dendro.corina.model.bulkImport.SingleSampleModel;
 import edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow;
 
 /**
@@ -39,7 +41,10 @@ public class BulkImportController extends FrontController {
 	public static final String IMPORT_SELECTED_ELEMENTS = "BULK_IMPORT_SELECTED_ELEMENTS";
 	public static final String IMPORT_SELECTED_SAMPLES = "BULK_IMPORT_SELECTED_SAMPLES";
 	
-	public static final String SET_DYNAMIC_COMBO_BOX = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX";
+	public static final String SET_DYNAMIC_COMBO_BOX_OBJECTS = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX_OBJECTS";
+	public static final String SET_DYNAMIC_COMBO_BOX_ELEMENTS = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX_ELEMENTS";
+	public static final String SET_DYNAMIC_COMBO_BOX_SAMPLES = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX_SAMPLES";
+
 	
 	public BulkImportController(){
 		registerCommand(DISPLAY_COLUMN_CHOOSER, ShowColumnWindowCommand.class);
@@ -48,6 +53,8 @@ public class BulkImportController extends FrontController {
 		registerCommand(ADD_ROW, AddRowCommand.class);
 		registerCommand(REMOVE_SELECTED, RemoveSelectedCommand.class);
 		registerCommand(DISPLAY_BULK_IMPORT, "display");
+		registerCommand(IMPORT_SELECTED_ELEMENTS, ImportSelectedElementsCommand.class);
+		registerCommand(IMPORT_SELECTED_SAMPLES, ImportSelectedSamplesCommand.class);
 	}
 	
 	public void display(MVCEvent argEvent){
@@ -65,9 +72,14 @@ public class BulkImportController extends FrontController {
 			return;
 		}
 		
-		ObjectModel objectModel = BulkImportModel.getInstance().getObjectModel();
-		populateObjectDefaults(objectModel.getColumnModel());
-		populateElementDefaults(BulkImportModel.getInstance().getElementModel().getColumnModel());
+		BulkImportModel model = BulkImportModel.getInstance();
+		populateObjectDefaults(model.getObjectModel().getColumnModel());
+		populateElementDefaults(model.getElementModel().getColumnModel());
+		populateSampleDefaults(model.getSampleModel().getColumnModel());
+		
+		// just put inot the sample model for now, change if we want to add extra radius functionality
+		populateRadiusDefaults(model.getSampleModel().getColumnModel());
+		
 		BulkImportWindow frame = new BulkImportWindow();
 		BulkImportModel.getInstance().setMainView(frame);
 		frame.pack();
@@ -85,8 +97,19 @@ public class BulkImportController extends FrontController {
 	private void populateElementDefaults(ColumnChooserModel ccmodel){
 		ccmodel.add(SingleElementModel.TITLE);
 		ccmodel.add(SingleElementModel.OBJECT);
+		ccmodel.add(SingleElementModel.TAXON);
 		ccmodel.add(SingleElementModel.TYPE);
 		ccmodel.add(SingleElementModel.IMPORTED);
+	}
+	
+	private void populateSampleDefaults(ColumnChooserModel ccmodel){
+		ccmodel.add(SingleSampleModel.TITLE);
+		ccmodel.add(SingleSampleModel.ELEMENT);
+		ccmodel.add(SingleSampleModel.TYPE);
+	}
+	
+	private void populateRadiusDefaults(ColumnChooserModel ccmodel){
+		ccmodel.add(SingleRadiusModel.TITLE);
 	}
 	
 	public static void main() {

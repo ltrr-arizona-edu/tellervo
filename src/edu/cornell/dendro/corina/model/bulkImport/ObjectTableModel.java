@@ -20,7 +20,7 @@ import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
  * @author Daniel Murphy
  *
  */
-public class ObjectTableModel extends AbstractTableModel implements PropertyChangeListener {
+public class ObjectTableModel extends AbstractTableModel implements PropertyChangeListener, IBulkImportTableModel {
 	private static final long serialVersionUID = 1L;
 	
 	private ObjectModel model;

@@ -26,10 +26,12 @@ import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
  *
  */
 public class BulkImportWindow extends JFrame {
+	private static final long serialVersionUID = 1L;
 	
 	private JTabbedPane tabs;
 	private ObjectView objects;
 	private ElementView elements;
+	private SampleView samples;
 	
 	public BulkImportWindow() {
 		initComponents();
@@ -45,9 +47,11 @@ public class BulkImportWindow extends JFrame {
 		
 		objects = new ObjectView(BulkImportModel.getInstance().getObjectModel());
 		elements = new ElementView(BulkImportModel.getInstance().getElementModel());
+		samples = new SampleView(BulkImportModel.getInstance().getSampleModel());
 		add(tabs,"Center");
 		tabs.add("Objects", objects);
 		tabs.add("Elements", elements);
+		tabs.add("Samples", samples);
 	}
 	
 	public void linkModel() {

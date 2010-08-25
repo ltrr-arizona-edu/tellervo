@@ -13,8 +13,7 @@ import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
 import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
-import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
-import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
+import edu.cornell.dendro.corina.model.bulkImport.ISingleRowModel;
 import edu.cornell.dendro.corina.view.bulkImport.ColumnChooserView;
 
 /**
@@ -36,7 +35,18 @@ public class ShowColumnWindowCommand implements ICommand {
 			return;
 		}
 	
-		ColumnChooserModel model = (ColumnChooserModel) event.model.getProperty(IBulkImportSectionModel.COLUMN_MODEL);
+		ColumnChooserModel model = event.model.getColumnModel();
+		for(String s : event.model.getModelTableProperties()){
+			model.getPossibleColumns().add(s);
+		}
+		for(String s : model){
+			if(!model.getPossibleColumns().contains(s)){
+				if(!s.equals(ISingleRowModel.IMPORTED)){
+					model.remove(s);	
+				}
+			}
+		}
+		
 		ColumnChooserView view = new ColumnChooserView(model, biModel.getMainView());
 		biModel.setCurrColumnChooser(view);
 		

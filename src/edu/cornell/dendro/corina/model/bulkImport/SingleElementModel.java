@@ -29,7 +29,7 @@ import com.dmurph.mvc.model.HashModel;
 public class SingleElementModel extends HashModel implements ISingleRowModel{
 	private static final long serialVersionUID = 1L;	
 	
-	public static final String OBJECT = "Object";
+	public static final String OBJECT = "Parent Object";
 	public static final String TITLE = "Title";
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
@@ -83,7 +83,12 @@ public class SingleElementModel extends HashModel implements ISingleRowModel{
 		d.setDiameter((BigDecimal)getProperty(DIAMETER));
 		d.setDepth((BigDecimal)getProperty(DEPTH));
 		d.setUnit((TridasUnit) getProperty(UNIT));
-		argElement.setDimensions(d);
+		if(d.getWidth() != null || d.getHeight() != null || d.getDepth() != null || d.getDiameter() != null
+				|| d.getUnit() != null){
+			argElement.setDimensions(d);
+		}else{
+			argElement.setDimensions(null);
+		}
 		
 		if(getProperty(LATITUDE) != null && getProperty(LONGTITUDE) != null){
 			double lat = (Double)getProperty(LATITUDE);
@@ -101,28 +106,35 @@ public class SingleElementModel extends HashModel implements ISingleRowModel{
 			TridasLocation loc = new TridasLocation();
 			loc.setLocationGeometry(locgeo);
 			argElement.setLocation(loc);
+		}else{
+			argElement.setLocation(null);
 		}
 		
 		TridasSlope slope = new TridasSlope();
-		if(getProperty(SLOPE_ANGLE) != null){
-			slope.setAngle(Integer.parseInt(getProperty(SLOPE_ANGLE).toString().trim()));
+		slope.setAngle((Integer)getProperty(SLOPE_ANGLE));
+		slope.setAzimuth((Integer) getProperty(SLOPE_AZIMUTH));
+		if(slope.getAngle() != null || slope.getAzimuth() != null){
+			argElement.setSlope(slope);
+		}else{
+			argElement.setSlope(null);
 		}
-		
-		if(getProperty(SLOPE_AZIMUTH) != null){
-			slope.setAzimuth(Integer.parseInt(getProperty(SLOPE_AZIMUTH).toString().trim()));
-		}
-		argElement.setSlope(slope);
 		
 		TridasSoil soil = new TridasSoil();
-		if(getProperty(SOIL_DEPTH) != null){
-			soil.setDepth(Double.parseDouble(getProperty(SOIL_DEPTH).toString().trim()));
-		}
+		soil.setDepth((Double) getProperty(SOIL_DEPTH));
 		soil.setDescription((String) getProperty(DESCRIPTION));
-		argElement.setSoil(soil);
+		if(soil.getDepth() != null || soil.getDescription() != null){
+			argElement.setSoil(soil);
+		}else{
+			argElement.setSoil(null);
+		}
 		
 		TridasBedrock bedrock = new TridasBedrock();
 		bedrock.setDescription((String) getProperty(BEDROCK_DESCRIPTION));
-		argElement.setBedrock(bedrock);
+		if(bedrock.getDescription() != null){
+			argElement.setBedrock(bedrock);
+		}else{
+			argElement.setBedrock(null);
+		}
 	}
 	
 	public void populateFromTridasElement(TridasElement argElement){

@@ -3,6 +3,10 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
+import org.tridas.interfaces.ITridas;
+
+import com.dmurph.mvc.model.MVCArrayList;
+
 /**
  * @author daniel
  *
@@ -23,4 +27,34 @@ public interface IBulkImportSectionModel {
 	 * @return
 	 */
 	public ISingleRowModel createRowInstance();
+	
+	/**
+	 * Gets the table properties
+	 * @return
+	 */
+	public String[] getModelTableProperties();
+	
+	/**
+	 * Gets the column model
+	 * @return
+	 */
+	public ColumnChooserModel getColumnModel();
+	
+	/**
+	 * Gets the table model.
+	 * @return
+	 */
+	public IBulkImportTableModel getTableModel();
+	
+	/**
+	 * Gets the list of imported objects
+	 * @return
+	 */
+	public MVCArrayList<? extends ITridas> getImportedList();
+	
+	/**
+	 * Gets the rows
+	 * @return
+	 */
+	public MVCArrayList<? extends Object> getRows();
 }

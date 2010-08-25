@@ -50,6 +50,10 @@ public class DynamicJComboBox extends JComboBox implements IEventListener{
 		if(argEvent instanceof DynamicJComboBoxEvent){
 			DynamicJComboBoxEvent event = (DynamicJComboBoxEvent) argEvent;
 			model.removeAllElements();
+			if(event.comboBoxItems == null){
+				MVC.removeEventListener(key, this);
+				return;
+			}
 			for(String s : event.comboBoxItems){
 				model.addElement(s);
 			}

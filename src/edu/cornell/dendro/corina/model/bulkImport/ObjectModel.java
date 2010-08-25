@@ -18,7 +18,7 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 	
 	public ObjectModel(){
 		registerProperty(ROWS, PropertyType.FINAL, new MVCArrayList<SingleObjectModel>());
-		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel(SingleObjectModel.TABLE_PROPERTIES));
+		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel());
 		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ObjectTableModel(this));
 		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasObjectEx>());
 	}
@@ -53,5 +53,13 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 	@Override
 	public ISingleRowModel createRowInstance() {
 		return new SingleObjectModel();
+	}
+
+	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#getModelTableProperties()
+	 */
+	@Override
+	public String[] getModelTableProperties() {
+		return SingleObjectModel.TABLE_PROPERTIES;
 	}
 }

@@ -22,12 +22,12 @@ public class ColumnAddedCommand implements ICommand{
 		ColumnsModifiedEvent event = (ColumnsModifiedEvent) argEvent;
 		ColumnChooserModel model = event.model;
 		int i=0;
-		for(int j=0; j<model.possibleColumns.length; j++){
-			if(model.possibleColumns[j].equals(event.getValue())){
+		for(String s: model.getPossibleColumns()){
+			if(s.equals(event.getValue())){
 				model.add(i, event.getValue());
  				return;
 			}
-			if(model.contains(model.possibleColumns[j])){
+			if(model.contains(s)){
 				i++;
 			}
 		}
