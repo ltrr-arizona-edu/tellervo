@@ -65,6 +65,10 @@ public class SingleElementModel extends HashModel implements ISingleRowModel{
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
 	}
 	
+	public TridasIdentifier getImported(){
+		return (TridasIdentifier) getProperty(IMPORTED);
+	}
+	
 	public void populateToTridasElement(TridasElement argElement){
 
 		argElement.setIdentifier((TridasIdentifier) getProperty(IMPORTED));

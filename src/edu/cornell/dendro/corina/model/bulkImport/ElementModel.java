@@ -3,10 +3,15 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.tridas.schema.TridasElement;
 
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
+
+import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 
 /**
  * @author Daniel Murphy
@@ -40,11 +45,54 @@ public class ElementModel extends HashModel implements IBulkImportSectionModel{
 	}
 	
 	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#getImportedListStrings()
+	 */
+	@Override
+	public String[] getImportedListStrings() {
+		MVCArrayList<TridasElement> imported = getImportedList();
+		String[] s = new String[imported.size()];
+		for(int i=0; i<s.length; i++){
+			s[i] = imported.get(i).getTitle();
+		}
+		return s;
+	}
+	
+	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#getImportedDynamicComboBoxKey()
+	 */
+	@Override
+	public String getImportedDynamicComboBoxKey() {
+		return BulkImportController.SET_DYNAMIC_COMBO_BOX_ELEMENTS;
+	}
+	
+	/**
 	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#removeSelected()
 	 */
 	@Override
 	public void removeSelected() {
-		getTableModel().removeSelected();
+		ArrayList<SingleElementModel> removed = new ArrayList<SingleElementModel>();
+		getTableModel().removeSelected(removed);
+		
+		Iterator<SingleElementModel> it = removed.iterator();
+		
+		while(it.hasNext()){
+			if(it.next().getImported() == null){
+				it.remove();
+			}
+		}
+		if(removed.size() == 0){
+			return;
+		}
+		MVCArrayList<TridasElement> imported = getImportedList();
+		for(int i=0; i< imported.size(); i++){
+			TridasElement o = imported.get(i);
+			for(SingleElementModel som : removed){
+				if(o.getIdentifier().equals(som.getImported())){
+					imported.remove(i);
+					i--;
+				}
+			}
+		}
 	}
 	
 	/**

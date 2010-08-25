@@ -6,7 +6,6 @@ package edu.cornell.dendro.corina.components.table;
 import java.util.HashMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasUnitless;

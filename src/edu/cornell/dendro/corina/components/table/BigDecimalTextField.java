@@ -35,10 +35,10 @@ public class BigDecimalTextField extends JFormattedTextField {
 		}
 		@Override
 		public boolean verify(JComponent argInput) {
-			String text = ((DoubleTextField) argInput).getText();
+			String text = ((BigDecimalTextField) argInput).getText();
 			BigDecimal num;
 			try {
-				num = new BigDecimal(((DoubleTextField) argInput).getNumberFormat().parse( text).toString());
+				num = new BigDecimal(((BigDecimalTextField) argInput).getNumberFormat().parse( text).toString());
 			} catch( Exception ex) {
 				return false;
 			}

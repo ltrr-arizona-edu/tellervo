@@ -12,7 +12,6 @@ import com.dmurph.mvc.control.ICommand;
 import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
-import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
 import edu.cornell.dendro.corina.model.bulkImport.ISingleRowModel;
 import edu.cornell.dendro.corina.view.bulkImport.ColumnChooserView;
 

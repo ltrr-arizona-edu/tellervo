@@ -4,7 +4,6 @@
 package edu.cornell.dendro.corina.control.bulkImport;
 
 import com.dmurph.mvc.MVCEvent;
-import com.dmurph.mvc.ObjectEvent;
 import com.dmurph.mvc.tracking.ITrackable;
 
 /**
@@ -12,7 +11,8 @@ import com.dmurph.mvc.tracking.ITrackable;
  *
  */
 public class HideColumnChooserEvent extends MVCEvent implements ITrackable{
-	
+	private static final long serialVersionUID = 1L;
+
 	public HideColumnChooserEvent(){
 		super(BulkImportController.HIDE_COLUMN_CHOOSER);
 	}

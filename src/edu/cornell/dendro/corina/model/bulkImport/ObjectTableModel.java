@@ -8,7 +8,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
 import com.dmurph.mvc.model.HashModel.PropertyType;
@@ -66,10 +68,27 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		selected.put(argSOM, argSelected);
 	}
 	
-	public void removeSelected() {
-		for(SingleObjectModel som : selected.keySet()){
+	public void removeSelected( ArrayList<SingleObjectModel> argRemovedObjects) {
+		Iterator<SingleObjectModel> it = selected.keySet().iterator();
+		while(it.hasNext()){
+			SingleObjectModel som = it.next();
+			if(! selected.get(som)){
+				continue; // if it's not selected
+			}
+			if(som.getImported() != null){
+				int response = JOptionPane.showConfirmDialog(BulkImportModel.getInstance().getMainView(),
+						"The object you are removing has been imported.  If any elements reference this object" +
+						" as a parent, then they will no longer be able to be imported.  Still remove?", "Warning",
+						JOptionPane.OK_CANCEL_OPTION);
+				if( response != JOptionPane.OK_OPTION){
+					continue;
+				}
+			}
+			// careful, as changing the models list causes recreateSelected to be called, so we want to make sure
+			// that we remove from the selected list first.
+			it.remove();
 			models.remove(som);
-			selected.remove(som);
+			argRemovedObjects.add(som);
 		}
 	}
 	
@@ -94,6 +113,9 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 			}else{
 				newMap.put(som, false);
 			}
+		}
+		if(selected.equals(newMap)){
+			return;
 		}
 		selected.clear();
 		selected.putAll(newMap);

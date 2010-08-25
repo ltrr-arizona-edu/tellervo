@@ -9,7 +9,9 @@ import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
 import org.tridas.schema.TridasObject;
@@ -72,10 +74,27 @@ public class ElementTableModel extends AbstractTableModel implements PropertyCha
 		selected.put(argSOM, argSelected);
 	}
 	
-	public void removeSelected() {
-		for(SingleElementModel som : selected.keySet()){
+	public void removeSelected(ArrayList<SingleElementModel> argRemoved) {
+		Iterator<SingleElementModel> it = selected.keySet().iterator();
+		while(it.hasNext()){
+			SingleElementModel som = it.next();
+			if(! selected.get(som)){
+				continue; // if it's not selected
+			}
+			if(som.getImported() != null){
+				int response = JOptionPane.showConfirmDialog(BulkImportModel.getInstance().getMainView(),
+						"The element you are removing has been imported.  If any samples reference this object" +
+						" as a parent, then they will no longer be able to be imported.  Still remove?", "Warning",
+						JOptionPane.OK_CANCEL_OPTION);
+				if( response != JOptionPane.OK_OPTION){
+					continue;
+				}
+			}
+			// careful, as changing the models list causes recreateSelected to be called, so we want to make sure
+			// that we remove from the selected list first.
+			it.remove();
 			models.remove(som);
-			selected.remove(som);
+			argRemoved.add(som);
 		}
 	}
 	
@@ -100,6 +119,9 @@ public class ElementTableModel extends AbstractTableModel implements PropertyCha
 			}else{
 				newMap.put(som, false);
 			}
+		}
+		if(selected.equals(newMap)){
+			return;
 		}
 		selected.clear();
 		selected.putAll(newMap);

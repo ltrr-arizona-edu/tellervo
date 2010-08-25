@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
-import org.tridas.schema.ControlledVoc;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVCEvent;
@@ -19,7 +18,6 @@ import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.components.table.DynamicJComboBoxEvent;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
-import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;

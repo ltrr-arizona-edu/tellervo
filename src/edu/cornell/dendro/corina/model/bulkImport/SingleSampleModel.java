@@ -84,6 +84,10 @@ public class SingleSampleModel extends HashModel implements ISingleRowModel {
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
 	}
 	
+	public TridasIdentifier getImported(){
+		return (TridasIdentifier)getProperty(IMPORTED);
+	}
+	
 	public SingleRadiusModel getRadiusModel(){
 		return (SingleRadiusModel) getProperty(RADIUS_MODEL);
 	}

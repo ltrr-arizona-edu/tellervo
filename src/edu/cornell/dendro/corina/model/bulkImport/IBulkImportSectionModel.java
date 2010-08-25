@@ -53,6 +53,18 @@ public interface IBulkImportSectionModel {
 	public MVCArrayList<? extends ITridas> getImportedList();
 	
 	/**
+	 * Gets the string representations of the imported list
+	 * @return
+	 */
+	public String[] getImportedListStrings();
+	
+	/**
+	 * Convenience method so commands can just use the interface
+	 * @return
+	 */
+	public String getImportedDynamicComboBoxKey();
+	
+	/**
 	 * Gets the rows
 	 * @return
 	 */

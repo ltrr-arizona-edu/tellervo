@@ -5,16 +5,15 @@ package edu.cornell.dendro.corina.command.bulkImport;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
-import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.control.bulkImport.AddRowEvent;
-import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
 
 /**
  * @author daniel
  *
  */
+@SuppressWarnings("unchecked")
 public class AddRowCommand implements ICommand {
 	
 	/**

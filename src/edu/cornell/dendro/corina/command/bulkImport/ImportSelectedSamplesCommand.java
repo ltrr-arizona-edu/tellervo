@@ -11,24 +11,17 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
-import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasSample;
-import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-import edu.cornell.dendro.corina.components.table.DynamicJComboBoxEvent;
-import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
-import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
 import edu.cornell.dendro.corina.model.bulkImport.SampleModel;
 import edu.cornell.dendro.corina.model.bulkImport.SampleTableModel;
-import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleRadiusModel;
-import edu.cornell.dendro.corina.model.bulkImport.SingleSampleModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleSampleModel;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -182,13 +175,5 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				model.getSampleModel().getImportedList().add(resource.getAssociatedResult());
 			}
 		}
-		
-		// finally, update the combo boxes in the table to the new options
-		String[] items = new String[model.getObjectModel().getImportedList().size()];
-		for(int i=0; i<items.length; i++){
-			items[i] = model.getObjectModel().getImportedList().get(i).getLabCode();
-		}
-		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(BulkImportController.SET_DYNAMIC_COMBO_BOX_OBJECTS, items);
-		event.dispatch();
 	}
 }

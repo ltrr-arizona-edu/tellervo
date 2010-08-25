@@ -1,5 +1,5 @@
 /**
- * Created at Aug 23, 2010, 3:35:03 AM
+s * Created at Aug 23, 2010, 3:35:03 AM
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
@@ -9,6 +9,7 @@ import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -70,10 +71,28 @@ public class SampleTableModel extends AbstractTableModel implements PropertyChan
 		selected.put(argSOM, argSelected);
 	}
 	
-	public void removeSelected() {
-		for(SingleSampleModel som : selected.keySet()){
+	public void removeSelected(ArrayList<SingleSampleModel> argRemoved) {
+		Iterator<SingleSampleModel> it = selected.keySet().iterator();
+		while(it.hasNext()){
+			SingleSampleModel som = it.next();
+			if(! selected.get(som)){
+				continue; // if it's not selected
+			}
+			// we don't need this, because we don't have a radius table.
+//			if(som.getImported() != null){
+//				int response = JOptionPane.showConfirmDialog(BulkImportModel.getInstance().getMainView(),
+//						"The object you are removing has been imported.  If any elements reference this object" +
+//						" as a parent, then they will no longer be able to be imported.  Still remove?", "Warning",
+//						JOptionPane.OK_CANCEL_OPTION);
+//				if( response != JOptionPane.OK_OPTION){
+//					continue;
+//				}
+//			}
+			// careful, as changing the models list causes recreateSelected to be called, so we want to make sure
+			// that we remove from the selected list first.
+			it.remove();
 			models.remove(som);
-			selected.remove(som);
+			argRemoved.add(som);
 		}
 	}
 	
@@ -98,6 +117,9 @@ public class SampleTableModel extends AbstractTableModel implements PropertyChan
 			}else{
 				newMap.put(som, false);
 			}
+		}
+		if(selected.equals(newMap)){
+			return;
 		}
 		selected.clear();
 		selected.putAll(newMap);

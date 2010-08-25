@@ -3,10 +3,15 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
+
+import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 
 /**
  * @author Daniel
@@ -46,6 +51,27 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 		return (MVCArrayList<TridasSample>) getProperty(IMPORTED_LIST);
 	}
 	
+	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#getImportedListStrings()
+	 */
+	@Override
+	public String[] getImportedListStrings() {
+		MVCArrayList<TridasSample> imported = getImportedList();
+		String[] s = new String[imported.size()];
+		for(int i=0; i<s.length; i++){
+			s[i] = imported.get(i).getTitle();
+		}
+		return s;
+	}
+	
+	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#getImportedDynamicComboBoxKey()
+	 */
+	@Override
+	public String getImportedDynamicComboBoxKey() {
+		return BulkImportController.SET_DYNAMIC_COMBO_BOX_SAMPLES;
+	}
+	
 	public boolean isRadiusWithSample(){
 		return (Boolean) getProperty(RADIUS_WITH_SAMPLE);
 	}
@@ -59,7 +85,29 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 	 */
 	@Override
 	public void removeSelected() {
-		getTableModel().removeSelected();
+		ArrayList<SingleSampleModel> removed = new ArrayList<SingleSampleModel>();
+		getTableModel().removeSelected(removed);
+		
+		Iterator<SingleSampleModel> it = removed.iterator();
+		
+		while(it.hasNext()){
+			if(it.next().getImported() == null){
+				it.remove();
+			}
+		}
+		if(removed.size() == 0){
+			return;
+		}
+		MVCArrayList<TridasSample> imported = getImportedList();
+		for(int i=0; i< imported.size(); i++){
+			TridasSample o = imported.get(i);
+			for(SingleSampleModel som : removed){
+				if(o.getIdentifier().equals(som.getImported())){
+					imported.remove(i);
+					i--;
+				}
+			}
+		}
 	}
 	
 	/**

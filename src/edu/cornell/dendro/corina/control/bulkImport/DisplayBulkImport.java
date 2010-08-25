@@ -11,6 +11,7 @@ import com.dmurph.mvc.tracking.ITrackable;
  *
  */
 public class DisplayBulkImport extends MVCEvent implements ITrackable {
+	private static final long serialVersionUID = 1L;
 
 	public DisplayBulkImport() {
 		super(BulkImportController.DISPLAY_BULK_IMPORT);

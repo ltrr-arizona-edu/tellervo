@@ -4,7 +4,6 @@
 package edu.cornell.dendro.corina.control.bulkImport;
 
 import com.dmurph.mvc.MVCEvent;
-import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.tracking.ITrackable;
 
 import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
@@ -14,7 +13,8 @@ import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
  *
  */
 public class DisplayColumnChooserEvent extends MVCEvent implements ITrackable{
-	
+	private static final long serialVersionUID = 1L;
+
 	public final IBulkImportSectionModel model;
 	
 	public DisplayColumnChooserEvent(IBulkImportSectionModel argModel) {

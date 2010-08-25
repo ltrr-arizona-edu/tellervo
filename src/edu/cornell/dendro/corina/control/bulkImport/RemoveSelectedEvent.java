@@ -13,7 +13,8 @@ import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
  *
  */
 public class RemoveSelectedEvent extends MVCEvent implements ITrackable {
-	
+	private static final long serialVersionUID = 1L;
+
 	public final IBulkImportSectionModel model;
 	
 	public RemoveSelectedEvent(IBulkImportSectionModel argModel) {
