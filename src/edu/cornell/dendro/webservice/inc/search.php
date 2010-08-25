@@ -479,7 +479,7 @@ class search Implements IDBAccessor
             return "vwcomprehensivevm";
             break;
         case "box":
-        	return "vwtblbox"
+        	return "vwtblbox";
         	break;
         default:
         	echo "unable to determine table name.  Fatal error.";
