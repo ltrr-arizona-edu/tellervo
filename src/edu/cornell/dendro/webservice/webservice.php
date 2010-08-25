@@ -134,7 +134,7 @@ if($myMetaHeader->status != "Error")
             {
                 case "element":
                     $myID = $paramObj->parentID;
-                    $objectType="subSite";
+                    $objectType="object";
                     break;
                 case "sample":
                     $myID = $paramObj->parentID;

@@ -418,13 +418,9 @@ class auth
             $sql = "select tblradius.radiusid, tblspecimen.treeid as parentid from tblradius, tblspecimen where tblradius.radiusid=$theObjectID and tblradius.specimenid=tblspecimen.specimenid";
             $theObjectType="tree";
             break;
-        case "specimen":
-            $sql = "select tblspecimen.specimenid, tblspecimen.treeid as parentid from tblspecimen where tblspecimen.specimenid=$theObjectID ";
+        case "sample":
+            $sql = "select tblsample.sampleid, tblsample.elementid as parentid from tblsample where tblsample.sampleid=$theObjectID ";
             $theObjectType="tree";
-            break;
-        case "subSite":
-            $sql = "select tblsubsite.subsiteid, tblsubsite.siteid as parentid from tblsubsite where tblsubsite.subsiteid=$theObjectID ";
-            $theObjectType="site";
             break;
         default:
             $sql = NULL;
