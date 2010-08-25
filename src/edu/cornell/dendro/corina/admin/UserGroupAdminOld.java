@@ -10,7 +10,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.dictionary.User;
+import edu.cornell.dendro.corina.dictionary.SecurityUser;
 
 /**
  * @deprecated
@@ -74,7 +74,7 @@ public class UserGroupAdminOld extends javax.swing.JDialog {
         });
         */
         
-        List<User> lstofUsers = (List<User>) App.dictionary.getDictionary("securityUserDictionary");
+        List<SecurityUser> lstofUsers = (List<SecurityUser>) App.dictionary.getDictionary("securityUserDictionary");
         
         utm = new UserTableModel(lstofUsers);
         
@@ -261,7 +261,7 @@ public class UserGroupAdminOld extends javax.swing.JDialog {
     
     public class UserTableModel extends AbstractTableModel {
         	
-    	private List<User> userList;
+    	private List<SecurityUser> userList;
     	    	
         private final String[] columnNames = {
                 "#",
@@ -272,11 +272,11 @@ public class UserGroupAdminOld extends javax.swing.JDialog {
                 "Enabled",
             };
     	
-    	public UserTableModel(List<User> usrLst){
+    	public UserTableModel(List<SecurityUser> usrLst){
     		userList = usrLst;
     	}
         
-        public void setUsers(List<User> usrList){
+        public void setUsers(List<SecurityUser> usrList){
         	userList = usrList;        	
         }
         
@@ -300,12 +300,12 @@ public class UserGroupAdminOld extends javax.swing.JDialog {
 			return columnNames[index];
 		}
 		
-		public User getUserAt(int rowIndex) {
+		public SecurityUser getUserAt(int rowIndex) {
 			return userList.get(rowIndex);						
 		}		
 		
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			User usr = getUserAt(rowIndex);
+			SecurityUser usr = getUserAt(rowIndex);
 
 			switch (columnIndex) {
 				case 0: return usr.getId();

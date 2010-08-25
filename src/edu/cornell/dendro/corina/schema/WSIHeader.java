@@ -38,18 +38,7 @@ import org.jvnet.jaxb2_commons.lang.builder.JAXBToStringBuilder;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="securityUser" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="username" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="firstname" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="lastname" type="{http://www.w3.org/2001/XMLSchema}string" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
+ *         &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}securityUser" minOccurs="0"/>
  *         &lt;element name="wsVersion" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="clientVersion" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="requestDate" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
@@ -110,7 +99,7 @@ public class WSIHeader
 {
 
     private final static long serialVersionUID = 1001L;
-    protected WSIHeader.SecurityUser securityUser;
+    protected WSISecurityUser securityUser;
     @XmlElement(required = true)
     protected String wsVersion;
     @XmlElement(required = true)
@@ -137,10 +126,10 @@ public class WSIHeader
      * 
      * @return
      *     possible object is
-     *     {@link WSIHeader.SecurityUser }
+     *     {@link WSISecurityUser }
      *     
      */
-    public WSIHeader.SecurityUser getSecurityUser() {
+    public WSISecurityUser getSecurityUser() {
         return securityUser;
     }
 
@@ -149,10 +138,10 @@ public class WSIHeader
      * 
      * @param value
      *     allowed object is
-     *     {@link WSIHeader.SecurityUser }
+     *     {@link WSISecurityUser }
      *     
      */
-    public void setSecurityUser(WSIHeader.SecurityUser value) {
+    public void setSecurityUser(WSISecurityUser value) {
         this.securityUser = value;
     }
 
@@ -538,7 +527,7 @@ public class WSIHeader
 
     public void toString(ToStringBuilder toStringBuilder) {
         {
-            WSIHeader.SecurityUser theSecurityUser;
+            WSISecurityUser theSecurityUser;
             theSecurityUser = this.getSecurityUser();
             toStringBuilder.append("securityUser", theSecurityUser);
         }
@@ -603,9 +592,9 @@ public class WSIHeader
     public Object copyTo(Object target, CopyBuilder copyBuilder) {
         final WSIHeader copy = ((target == null)?((WSIHeader) createCopy()):((WSIHeader) target));
         if (this.isSetSecurityUser()) {
-            WSIHeader.SecurityUser sourceSecurityUser;
+            WSISecurityUser sourceSecurityUser;
             sourceSecurityUser = this.getSecurityUser();
-            WSIHeader.SecurityUser copySecurityUser = ((WSIHeader.SecurityUser) copyBuilder.copy(sourceSecurityUser));
+            WSISecurityUser copySecurityUser = ((WSISecurityUser) copyBuilder.copy(sourceSecurityUser));
             copy.setSecurityUser(copySecurityUser);
         } else {
             copy.securityUser = null;
@@ -872,272 +861,6 @@ public class WSIHeader
 
         public Object createCopy() {
             return new WSIHeader.QueryTime();
-        }
-
-    }
-
-
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="username" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="firstname" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="lastname" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
-    public static class SecurityUser
-        implements Serializable, CopyTo, Copyable, Equals, HashCode, ToString
-    {
-
-        private final static long serialVersionUID = 1001L;
-        @XmlAttribute(name = "id")
-        protected String id;
-        @XmlAttribute(name = "username")
-        protected String username;
-        @XmlAttribute(name = "firstname")
-        protected String firstname;
-        @XmlAttribute(name = "lastname")
-        protected String lastname;
-
-        /**
-         * Gets the value of the id property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getId() {
-            return id;
-        }
-
-        /**
-         * Sets the value of the id property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setId(String value) {
-            this.id = value;
-        }
-
-        public boolean isSetId() {
-            return (this.id!= null);
-        }
-
-        /**
-         * Gets the value of the username property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getUsername() {
-            return username;
-        }
-
-        /**
-         * Sets the value of the username property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setUsername(String value) {
-            this.username = value;
-        }
-
-        public boolean isSetUsername() {
-            return (this.username!= null);
-        }
-
-        /**
-         * Gets the value of the firstname property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getFirstname() {
-            return firstname;
-        }
-
-        /**
-         * Sets the value of the firstname property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setFirstname(String value) {
-            this.firstname = value;
-        }
-
-        public boolean isSetFirstname() {
-            return (this.firstname!= null);
-        }
-
-        /**
-         * Gets the value of the lastname property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getLastname() {
-            return lastname;
-        }
-
-        /**
-         * Sets the value of the lastname property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setLastname(String value) {
-            this.lastname = value;
-        }
-
-        public boolean isSetLastname() {
-            return (this.lastname!= null);
-        }
-
-        public void equals(Object object, EqualsBuilder equalsBuilder) {
-            if (!(object instanceof WSIHeader.SecurityUser)) {
-                equalsBuilder.appendSuper(false);
-                return ;
-            }
-            if (this == object) {
-                return ;
-            }
-            final WSIHeader.SecurityUser that = ((WSIHeader.SecurityUser) object);
-            equalsBuilder.append(this.getId(), that.getId());
-            equalsBuilder.append(this.getUsername(), that.getUsername());
-            equalsBuilder.append(this.getFirstname(), that.getFirstname());
-            equalsBuilder.append(this.getLastname(), that.getLastname());
-        }
-
-        public boolean equals(Object object) {
-            if (!(object instanceof WSIHeader.SecurityUser)) {
-                return false;
-            }
-            if (this == object) {
-                return true;
-            }
-            final EqualsBuilder equalsBuilder = new JAXBEqualsBuilder();
-            equals(object, equalsBuilder);
-            return equalsBuilder.isEquals();
-        }
-
-        public void hashCode(HashCodeBuilder hashCodeBuilder) {
-            hashCodeBuilder.append(this.getId());
-            hashCodeBuilder.append(this.getUsername());
-            hashCodeBuilder.append(this.getFirstname());
-            hashCodeBuilder.append(this.getLastname());
-        }
-
-        public int hashCode() {
-            final HashCodeBuilder hashCodeBuilder = new JAXBHashCodeBuilder();
-            hashCode(hashCodeBuilder);
-            return hashCodeBuilder.toHashCode();
-        }
-
-        public void toString(ToStringBuilder toStringBuilder) {
-            {
-                String theId;
-                theId = this.getId();
-                toStringBuilder.append("id", theId);
-            }
-            {
-                String theUsername;
-                theUsername = this.getUsername();
-                toStringBuilder.append("username", theUsername);
-            }
-            {
-                String theFirstname;
-                theFirstname = this.getFirstname();
-                toStringBuilder.append("firstname", theFirstname);
-            }
-            {
-                String theLastname;
-                theLastname = this.getLastname();
-                toStringBuilder.append("lastname", theLastname);
-            }
-        }
-
-        public String toString() {
-            final ToStringBuilder toStringBuilder = new JAXBToStringBuilder(this);
-            toString(toStringBuilder);
-            return toStringBuilder.toString();
-        }
-
-        public Object copyTo(Object target, CopyBuilder copyBuilder) {
-            final WSIHeader.SecurityUser copy = ((target == null)?((WSIHeader.SecurityUser) createCopy()):((WSIHeader.SecurityUser) target));
-            if (this.isSetId()) {
-                String sourceId;
-                sourceId = this.getId();
-                String copyId = ((String) copyBuilder.copy(sourceId));
-                copy.setId(copyId);
-            } else {
-                copy.id = null;
-            }
-            if (this.isSetUsername()) {
-                String sourceUsername;
-                sourceUsername = this.getUsername();
-                String copyUsername = ((String) copyBuilder.copy(sourceUsername));
-                copy.setUsername(copyUsername);
-            } else {
-                copy.username = null;
-            }
-            if (this.isSetFirstname()) {
-                String sourceFirstname;
-                sourceFirstname = this.getFirstname();
-                String copyFirstname = ((String) copyBuilder.copy(sourceFirstname));
-                copy.setFirstname(copyFirstname);
-            } else {
-                copy.firstname = null;
-            }
-            if (this.isSetLastname()) {
-                String sourceLastname;
-                sourceLastname = this.getLastname();
-                String copyLastname = ((String) copyBuilder.copy(sourceLastname));
-                copy.setLastname(copyLastname);
-            } else {
-                copy.lastname = null;
-            }
-            return copy;
-        }
-
-        public Object copyTo(Object target) {
-            final CopyBuilder copyBuilder = new JAXBCopyBuilder();
-            return copyTo(target, copyBuilder);
-        }
-
-        public Object createCopy() {
-            return new WSIHeader.SecurityUser();
         }
 
     }

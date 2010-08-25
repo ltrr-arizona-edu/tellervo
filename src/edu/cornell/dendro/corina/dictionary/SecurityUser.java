@@ -2,9 +2,9 @@ package edu.cornell.dendro.corina.dictionary;
 
 import org.jdom.Element;
 
-public class User extends DictionaryElement {
-	public User(Element e) {
-		super(DictionaryElement.Type.User, e);
+public class SecurityUser extends DictionaryElement {
+	public SecurityUser(Element e) {
+		super(DictionaryElement.Type.SECURITYUSER, e);
 		
 		fullname = e.getAttributeValue("lastName") + ", " + e.getAttributeValue("firstName");
 		firstname = e.getAttributeValue("firstName");
@@ -29,7 +29,7 @@ public class User extends DictionaryElement {
 	 * Only for creating a user when we don't have one in the dictionary
 	 * @param name
 	 */
-	public User(String name) {
+	public SecurityUser(String name) {
 		super("invalid", name);
 		fullname = name;
 	}

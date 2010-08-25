@@ -7,7 +7,7 @@ public abstract class DictionaryElement {
 	// what kind of dictionary element is this?
 	public enum Type {
 		Standardized,
-		User
+		SECURITYUSER
 	}
 	
 	/** The id, given by the server */
@@ -20,7 +20,7 @@ public abstract class DictionaryElement {
 			id = e.getAttributeValue("normalId");
 			value = e.getAttributeValue("normal");
 		}
-		else if(type == Type.User) {
+		else if(type == Type.SECURITYUSER) {
 			id = e.getAttributeValue("id");
 			value = e.getAttributeValue("username");
 		}
