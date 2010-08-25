@@ -25,6 +25,7 @@ import edu.cornell.dendro.corina.model.bulkImport.SingleRadiusModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleSampleModel;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 
@@ -149,7 +150,9 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			dialog.setVisible(true);
 			
 			if(!dialog.isSuccessful()) { 
-				Alert.message("Error", "Error creating/updating element, check logs.");
+				JOptionPane.showMessageDialog(BulkImportModel.getInstance().getMainView(), I18n.getText("error.savingChanges") + "\r\n" +
+						I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
+						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 				continue;
 			}
 			som.populateFromTridasSample(resource.getAssociatedResult());
