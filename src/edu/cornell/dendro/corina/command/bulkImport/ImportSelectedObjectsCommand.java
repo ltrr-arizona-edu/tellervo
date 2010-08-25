@@ -17,7 +17,7 @@ import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.components.table.DynamicJComboBoxEvent;
-import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
@@ -170,11 +170,8 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		}
 		
 		// finally, update the combo boxes in the table to the new options
-		String[] items = new String[model.getObjectModel().getImportedList().size()];
-		for(int i=0; i<items.length; i++){
-			items[i] = model.getObjectModel().getImportedList().get(i).getLabCode();
-		}
-		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(BulkImportController.SET_DYNAMIC_COMBO_BOX_OBJECTS, items);
+		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(model.getObjectModel().getImportedDynamicComboBoxKey(), model.getObjectModel().getImportedListStrings());
 		event.dispatch();
+		App.dictionary.query();
 	}
 }
