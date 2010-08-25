@@ -174,6 +174,8 @@ if($myMetaHeader->status != "Error")
                 case "box":
                 	$myID = null;
                 	break;
+                default:
+                	$firebug->log($objectType, "Unknown object type");
              
                   
             }

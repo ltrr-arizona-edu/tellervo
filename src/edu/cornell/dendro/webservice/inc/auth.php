@@ -363,12 +363,12 @@ class auth
             return true;
         }
   	
-        // $theObjectType should be one of site,tree, vmeasurement, default, securityUser, securityGroup
+        // $theObjectType should be one of object, element, sample, radius, vmeasurement, default, securityUser, securityGroup
 
         global $dbconn;
 		global $firebug;
         
-        // Always allow access to dictionaries
+        // Always allow access to dictionaries and authentication requests
         if ( ($theObjectType=='dictionaries') || ($theObjectType=='authentication') )
         {
             return true;
@@ -415,12 +415,12 @@ class auth
         switch($theObjectType)
         {
         case "radius":
-            $sql = "select tblradius.radiusid, tblspecimen.treeid as parentid from tblradius, tblspecimen where tblradius.radiusid=$theObjectID and tblradius.specimenid=tblspecimen.specimenid";
-            $theObjectType="tree";
+            $sql = "select tblradius.radiusid, tblsample.elementid as parentid from tblradius, tblsample where tblradius.radiusid='$theObjectID' and tblradius.sampleid=tblsample.sampleid";
+            $theObjectType="element";
             break;
         case "sample":
-            $sql = "select tblsample.sampleid, tblsample.elementid as parentid from tblsample where tblsample.sampleid=$theObjectID ";
-            $theObjectType="tree";
+            $sql = "select tblsample.sampleid, tblsample.elementid as parentid from tblsample where tblsample.sampleid='$theObjectID' ";
+            $theObjectType="element";
             break;
         default:
             $sql = NULL;
