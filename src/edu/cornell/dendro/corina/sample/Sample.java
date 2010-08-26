@@ -233,7 +233,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	
 	/**
 	 * Create a default set of TridasValues
-	 * - 1/100th mm
+	 * - microns
 	 * - Ring widths
 	 * 
 	 * @return a representative TridasValues object

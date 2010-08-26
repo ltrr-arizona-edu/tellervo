@@ -662,10 +662,8 @@ public class SampleDataView extends JPanel implements SampleListener,
 		
 		if (myModel instanceof UnitAwareDecadalModel)
 		{
-			String pref = App.prefs.getPref("corina.displayunits");
-			String value = NormalTridasUnit.HUNDREDTH_MM.value();
-			String str = NormalTridasUnit.HUNDREDTH_MM.toString();
-			String name = NormalTridasUnit.HUNDREDTH_MM.name();
+			String pref = App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString());
+
 			
 			((UnitAwareDecadalModel) myModel).setDisplayUnits(NormalTridasUnit.valueOf(pref));
 		}
