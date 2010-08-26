@@ -25,6 +25,7 @@ import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectEvent.TridasSelectType;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
@@ -228,11 +229,11 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 			
 			if(foundEntities.size()==0)
 			{
-				this.fireTridasSelectListener(new TridasSelectEvent(this, 1001));
+				this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, TridasSelectType.FORCED));
 			}
 			else
 			{	
-				this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, foundEntities));
+				this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, foundEntities, TridasSelectType.FORCED));
 			}
 			
 		}		

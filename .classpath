@@ -34,7 +34,7 @@
 	<classpathentry kind="lib" path="Libraries/JGoogleAnalyticsTracker-1.1.0.jar" sourcepath="LibraryDocsAndSources/JGoogleAnalyticsTracker-1.1.0-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="Libraries/jogl.jar"/>
-	<classpathentry kind="lib" path="Libraries/worldwind-0.6.570.13645.jar"/>
+	<classpathentry kind="lib" path="Libraries/worldwind-0.6.570.13645.jar" sourcepath="/worldwind-0.6.570.13645/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="Libraries/JFontChooser.jar"/>
 	<classpathentry kind="lib" path="Libraries/jfontchooser-1.0.5.jar"/>

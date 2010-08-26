@@ -243,7 +243,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		
 		// set default units
 		TridasUnit units = new TridasUnit();		
-		units.setNormalTridas(NormalTridasUnit.HUNDREDTH_MM);
+		units.setNormalTridas(NormalTridasUnit.MICROMETRES);
 		values.setUnit(units);
 		
 		// set as ring widths

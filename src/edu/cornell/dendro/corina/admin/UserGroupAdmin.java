@@ -427,9 +427,11 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     protected javax.swing.JPanel userPanel;
     // End of variables declaration//GEN-END:variables
 
-	public void actionPerformed(ActionEvent e) {
+ 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==this.btnOk) 
 		{
+			App.dictionary.query();
+			App.dictionary.debugDumpListeners();
 			this.dispose();
 		}
 		else if (e.getSource()==this.btnDeleteUser)

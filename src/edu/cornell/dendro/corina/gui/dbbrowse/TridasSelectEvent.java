@@ -18,6 +18,13 @@ public class TridasSelectEvent extends AWTEvent {
 	ArrayList entityList;
 	Boolean multiSelector = false;
 	DefaultMutableTreeNode node;
+	TridasSelectType type = TridasSelectType.NORMAL;
+	
+	
+	public enum TridasSelectType{
+		NORMAL,
+		FORCED;
+	}
 	
 	/**
 	 * Standard constructor which is used to show that the specified
@@ -69,6 +76,23 @@ public class TridasSelectEvent extends AWTEvent {
 	}
 	
 	/**
+	 * Standard constructor which is used to show that the specified
+	 * entity was selected.
+	 * 
+	 * @param source
+	 * @param id
+	 * @param entity
+	 */
+	@SuppressWarnings("unchecked")
+	public TridasSelectEvent(Object source, int id, ITridas entity, TridasSelectType typ) {
+		super(source, id);
+		entityList = new ArrayList<ITridas>();
+		entityList.add(entity);
+		setSelectType(typ);
+
+	}
+	
+	/**
 	 * Constructor used when multiple entities were selected
 	 * 
 	 * @param source
@@ -83,6 +107,23 @@ public class TridasSelectEvent extends AWTEvent {
 		multiSelector = true;
 	}
 	
+	/**
+	 * Constructor used when multiple entities were selected
+	 * 
+	 * @param source
+	 * @param id
+	 * @param entityList
+	 */
+	@SuppressWarnings("unchecked")
+	public TridasSelectEvent(Object source, int id, List<TridasObject> entityList, TridasSelectType typ) {
+		super(source, id);
+		this.entityList = new ArrayList<TridasObject>();
+		this.entityList.addAll(entityList);
+		setSelectType(typ);
+		multiSelector = true;
+	}
+	
+	
 	
 	/**
 	 * Constructor for a null entity event.  This is used when you want
@@ -93,6 +134,19 @@ public class TridasSelectEvent extends AWTEvent {
 	 */
 	public TridasSelectEvent(Object source, int id) {
 		super(source, id);
+		entityList = null;
+	}
+	
+	/**
+	 * Constructor for a null entity event.  This is used when you want
+	 * to specify that no entity was selected.
+	 * 
+	 * @param source
+	 * @param id
+	 */
+	public TridasSelectEvent(Object source, int id, TridasSelectType typ) {
+		super(source, id);
+		setSelectType(typ);
 		entityList = null;
 	}
 	
@@ -138,5 +192,14 @@ public class TridasSelectEvent extends AWTEvent {
 	public Boolean isMultiSelection()
 	{
 		return this.multiSelector;
+	}
+	
+	public void setSelectType(TridasSelectType typ){
+		type = typ;
+	}
+	
+	public TridasSelectType getSelectType()
+	{
+		return type;
 	}
 }

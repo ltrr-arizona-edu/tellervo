@@ -35,6 +35,12 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+/**
+ * Map panel containing a WorldWind Java canvas
+ * 
+ * @author peterbrewer
+ *
+ */
 public class MapPanel extends JPanel {
 
 	private static final long serialVersionUID = 6769486491009238118L;
@@ -126,8 +132,9 @@ public class MapPanel extends JPanel {
             {
             	markers.add(new BasicMarker(pos, attrs));
             }
-
+            
             layer = new MarkerLayer(markers);
+            
             layer.setOverrideMarkerElevation(true);
             layer.setElevation(0);
             layer.setEnablePickSizeReturn(true);        

@@ -139,7 +139,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			resource.query();
 			dialog.setVisible(true);
 			
-			if(!dialog.isSuccessful()) { 
+			if(!dialog.isSuccessful()) {
 				JOptionPane.showMessageDialog(BulkImportModel.getInstance().getMainView(), I18n.getText("error.savingChanges") + "\r\n" +
 						I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
 						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);

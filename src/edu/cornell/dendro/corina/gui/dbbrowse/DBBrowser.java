@@ -10,20 +10,14 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -34,7 +28,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
@@ -42,11 +35,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeSelectionModel;
 
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -54,31 +45,23 @@ import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.schema.WSIBox;
-import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.PopupListener;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
-import edu.cornell.dendro.corina.wsi.ResourceEvent;
-import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
-import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
-import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 /**
@@ -313,28 +296,49 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     {
     	SearchParameters param;
     	param = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
-    	
+    	TridasObjectEx obj = null;
+    	TridasElement elem = null;
+    	TridasSample samp = null;
+    	TridasRadius rad = null;
+    	   	
     	if((entity instanceof TridasObjectEx) || (entity instanceof TridasObject) )
     	{
     		param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
+    		obj = (TridasObjectEx) entity;
+    		
+        	if(obj.isSetElements())
+        	{
+        		param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, obj.getElements().get(0).getIdentifier().getValue());
+        		elem = (TridasElement) obj.getElements().get(0);
+        		
+        	   	if(elem.isSetSamples() )
+            	{
+            		param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, elem.getSamples().get(0).getIdentifier().getValue());
+            		samp = (TridasSample) elem.getSamples().get(0);
+            		
+                	if(samp.isSetRadiuses() )
+                	{
+                		param.addSearchConstraint(SearchParameterName.RADIUSID, SearchOperator.EQUALS, samp.getRadiuses().get(0).getIdentifier().getValue());
+                		rad = (TridasRadius) samp.getRadiuses().get(0);
+                		
+                		if(rad.isSetMeasurementSeries())
+                		{
+                    		param.addSearchConstraint(SearchParameterName.SERIESID, SearchOperator.EQUALS, rad.getMeasurementSeries().get(0).getIdentifier().getValue());
+                		}
+                	} 
+            	}    	
+
+        	}
     	}
-    	else if(entity instanceof TridasElement )
-    	{
-    		param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
-    	}
-    	else if(entity instanceof TridasSample )
+    	else if (entity instanceof TridasSample)
     	{
     		param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
-    	}    	
-    	else if(entity instanceof TridasRadius )
-    	{
-    		param.addSearchConstraint(SearchParameterName.RADIUSID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
-    	}  
+    	}
     	else
     	{
     		return false;
     	}
-
+    	
 		// Do the search 
     	final DBBrowser glue = this;
 		SeriesSearchResource searchResource = new SeriesSearchResource(param);
@@ -1334,7 +1338,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 
 		
 		try {
-			entity = event.getEntity();
+			entity = event.getEntityList().get(0);
 			if(entity instanceof WSIBox)
 			{
 				Alert.message("Unsupported", "Box barcodes are not supported in this context");

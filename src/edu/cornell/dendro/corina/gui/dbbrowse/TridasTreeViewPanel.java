@@ -905,12 +905,10 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 			tree.setSelectionPath(path);
 			tree.scrollPathToVisible(path);
 			
-			//this.fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, entity));
 			this.fireTridasSelectListener(event);
 		}
 		else if (entity instanceof ITridas)
 		{
-			//this.fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, entity));
 			this.fireTridasSelectListener(event);
 		}
 		
