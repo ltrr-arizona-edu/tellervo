@@ -484,7 +484,7 @@ class radius extends radiusEntity implements IDBAccessor
                         if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="'".pg_escape_string($this->getNumberOfSapwoodRings())."', ";
                         if($this->getLastRingUnderBark()!=NULL)						$sql.="'".pg_escape_string($this->getLastRingUnderBark())."', ";
                         if(dbHelper::formatBool($this->getLastRingUnderBarkPresence(), 'presentabsent')!=NULL)	
-                        															$sql.="'".dbHelper::formatBool($this->lastRingUnderBarkPresence(),"pg"). "', ";
+                        															$sql.="'".dbHelper::formatBool($this->getLastRingUnderBarkPresence(),"pg"). "', ";
                         if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="'".pg_escape_string($this->getMissingSapwoodRingsToBark())."', ";
                         if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="'".pg_escape_string($this->getMissingSapwoodRingsToBarkFoundation())."', ";
                         if($this->getNrOfUnmeasuredInnerRings()!=NULL)				$sql.="'".pg_escape_string($this->getNrOfUnmeasuredInnerRings())."', ";
