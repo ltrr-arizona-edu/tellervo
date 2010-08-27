@@ -66,14 +66,17 @@ import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.MapPanel;
+import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
 import edu.cornell.dendro.corina.graph.BargraphFrame.BargraphPanel;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.FileDialog;
@@ -493,7 +496,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		dataView = new SampleDataView(sample);
 		rolodex.add(dataView, I18n.getText("editor.tab_data"));
 		rolodex.add(metaView, I18n.getText("editor.tab_metadata"));
-		rolodex.add(this.wwMapPanel, I18n.getText("editor.tab_map"));
+		
+		if(wwMapPanel!=null)
+		{
+			rolodex.add(wwMapPanel, I18n.getText("editor.tab_map"));
+		}
 
 		// wj and elements, if it's summed
 		if (sample.hasWeiserjahre())
@@ -564,29 +571,24 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		//Position pos = Position.fromDegrees(50, 50);
 		//this.wwMapPanel = new MapPanel(new Dimension(300,300),true, pos);
 		
-		ArrayList<Position> positions = new ArrayList<Position>();
+		TridasElement elem = sample.getMeta(Metadata.ELEMENT, TridasElement.class);
+		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
 		
-		for(TridasObjectEx obj : App.tridasObjects.getTopLevelObjectList())
+
+		builder.addMarkerForTridasElement(elem);			
+		if(builder.containsMarkers())
 		{
-			if(obj.isSetLocation())
-			{
-				if(obj.getLocation().isSetLocationGeometry())
-				{
-					TridasLocationGeometry geom = obj.getLocation().getLocationGeometry();
-					if(geom.isSetPoint())
-					{
-						List<Double> coords = geom.getPoint().getPos().getValues();
-						if(coords.size()==2)
-						{
-							positions.add(Position.fromDegrees(coords.get(1), coords.get(0)));
-						}
-					}
-					
-				}
-			}
+			wwMapPanel = new MapPanel(new Dimension(300,300),true, builder.getMarkerLayer());
+
+			wwMapPanel.addLayer(TridasMarkerLayerBuilder.getMarkerLayerForAllSites());
+			
+			return;
+		}
+		else
+		{
+			wwMapPanel = null;
 		}
 		
-		this.wwMapPanel = new MapPanel(new Dimension(300,300),true, positions);
 		
 	}
 	
@@ -905,22 +907,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	protected void finalize() throws Throwable {
 		super.finalize();
 		App.prefs.removePrefsListener(this);
-	}
-
-	public static void main(String args[]) throws Exception {
-		try {
-			Sample s = new FileElement(args[0]).load();
-
-			boolean x[] = askWhichPages(s, 3);
-			System.out.print("x[] = { ");
-			for (int i = 0; i < x.length; i++) {
-				System.out.print(x[i] ? "#t" : "#f");
-				System.out.print(", ");
-			}
-			System.out.println("}");
-		} catch (UserCancelledException uce) {
-			System.out.println("user cancelled");
-		}
 	}
 
 	@Override

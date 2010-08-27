@@ -37,6 +37,7 @@ import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.MapPanel;
+import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
@@ -228,30 +229,10 @@ private JFrame frame;
 	}
 	
 	public static void showMap(){
+				
+		MapPanel wwMapPanel = new MapPanel(new Dimension(300,300),true, 
+				TridasMarkerLayerBuilder.getMarkerLayerForAllSites());
 		
-		ArrayList<Position> positions = new ArrayList<Position>();
-		
-		for(TridasObjectEx obj : App.tridasObjects.getTopLevelObjectList())
-		{
-			if(obj.isSetLocation())
-			{
-				if(obj.getLocation().isSetLocationGeometry())
-				{
-					TridasLocationGeometry geom = obj.getLocation().getLocationGeometry();
-					if(geom.isSetPoint())
-					{
-						List<Double> coords = geom.getPoint().getPos().getValues();
-						if(coords.size()==2)
-						{
-							positions.add(Position.fromDegrees(coords.get(1), coords.get(0)));
-						}
-					}
-					
-				}
-			}
-		}
-		
-		MapPanel wwMapPanel = new MapPanel(new Dimension(300,300),true, positions);
 		JFrame frame = new JFrame();
 		frame.add(wwMapPanel);
 		frame.pack();

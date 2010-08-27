@@ -21,11 +21,18 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.tridas.schema.NormalTridasUnit;
+
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.LegacyCorinaMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
+import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  *
@@ -33,14 +40,14 @@ import edu.cornell.dendro.corina.sample.Sample;
  */
 public class ReconcileMeasureDialog extends javax.swing.JDialog implements MeasurementReceiver {   
 	private static final long serialVersionUID = 1L;
-
+	private NormalTridasUnit displayUnits;
 	private Sample src, ref;
 	//private Year year;
 	private int yearIndex;
 
 	private Integer finalValue;
 
-	private LegacyCorinaMeasuringDevice dev;
+	private AbstractSerialMeasuringDevice dev;
 	private ArrayList<AMeasurement> measurements;
 
 	/* audioclips to play... */
@@ -52,6 +59,10 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 		super(parent, modal);
 		initComponents();
 
+		// Set preferred display units
+		displayUnits = NormalTridasUnit.valueOf(
+				App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+		
 		this.src = src;
 		this.ref = ref;
 
@@ -63,6 +74,20 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 		initialize();
 	}
 
+	private void initMeasuringDevice()
+	{
+		try {
+			dev = new SerialDeviceSelector ().getDevice();
+			dev.initialize();
+		}
+		catch (Exception ioe) {
+			Alert.error(I18n.getText("error"), 
+					I18n.getText("error.initExtComms") + ": " +
+					ioe.toString());
+			devStatus.setText("Error communicating with platform");
+			return;
+		} 
+	}
 	public Integer getFinalValue() {
 		return finalValue;
 	}
@@ -160,13 +185,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 		});
 
 		// initialize our measuring device
-		try {
-			LegacySerialSampleIO dataPort = LegacyCorinaMeasuringDevice.initialize();
-
-			dev = new LegacyCorinaMeasuringDevice(dataPort, this);
-		} catch (IOException ioe) {
-			devStatus.setText("Initialization failed");
-		}
+		initMeasuringDevice();
 	}
 
 	private void calculateFinal() {

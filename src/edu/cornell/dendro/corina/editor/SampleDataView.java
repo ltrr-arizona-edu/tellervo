@@ -83,6 +83,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	
 	private Sample mySample;
 
+	private StatusBar statusBar;
 	public JTable myTable;
 
 	protected TableModel myModel;
@@ -93,6 +94,11 @@ public class SampleDataView extends JPanel implements SampleListener,
 	@Override
 	public void requestFocus() {
 		myTable.requestFocus();
+	}
+	
+	public void setStatusBarVisible(Boolean b)
+	{
+		if(statusBar!=null)	statusBar.setVisible(b);
 	}
 	
 	// (for Editor)
@@ -237,7 +243,8 @@ public class SampleDataView extends JPanel implements SampleListener,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		add(sp, BorderLayout.CENTER);
-		add(new StatusBar(myTable, mySample), BorderLayout.SOUTH);
+		statusBar = new StatusBar(myTable, mySample);
+		add(statusBar, BorderLayout.SOUTH);
 		
 		initPrefs();
 		App.prefs.addPrefsListener(this);

@@ -358,7 +358,9 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		
 		p.setBorder(BorderFactory.createTitledBorder(titlePrefix + s.toSimpleString()));
 		
+		dv.setStatusBarVisible(false);
 		p.add(dv);	
+		
 		return p;
 	}
 
