@@ -33,9 +33,7 @@ import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -51,26 +49,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
-import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasLocationGeometry;
-import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasSample;
-import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Year;
@@ -89,8 +78,6 @@ import edu.cornell.dendro.corina.gui.menus.AdminMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
-import edu.cornell.dendro.corina.hardware.LegacyCorinaMeasuringDevice;
-import edu.cornell.dendro.corina.hardware.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.logging.CorinaLog;
@@ -110,10 +97,8 @@ import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
-import edu.cornell.dendro.corina.util.DocumentListener2;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
-import gov.nasa.worldwind.geom.Position;
 
 /*
  left to do:

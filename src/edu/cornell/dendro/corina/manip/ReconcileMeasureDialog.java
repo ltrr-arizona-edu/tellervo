@@ -10,7 +10,6 @@ import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JDialog;
@@ -25,9 +24,8 @@ import org.tridas.schema.NormalTridasUnit;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.UnitAwareDecadalModel;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
-import edu.cornell.dendro.corina.hardware.LegacyCorinaMeasuringDevice;
-import edu.cornell.dendro.corina.hardware.LegacySerialSampleIO;
 import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
 import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -57,12 +55,13 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 	/** Creates new form ReconcileMeasureDialog */
 	public ReconcileMeasureDialog(java.awt.Frame parent, boolean modal, Sample src, Sample ref, Year year) {
 		super(parent, modal);
+	
+		displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+
+		
 		initComponents();
 
-		// Set preferred display units
-		displayUnits = NormalTridasUnit.valueOf(
-				App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
-		
+
 		this.src = src;
 		this.ref = ref;
 
@@ -70,7 +69,6 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 		this.yearIndex = year.diff(src.getStart());
 
 		setTitle("Remeasuring for " + year + " (index " + yearIndex + ")");
-
 		initialize();
 	}
 
@@ -79,6 +77,8 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 		try {
 			dev = new SerialDeviceSelector ().getDevice();
 			dev.initialize();
+			dev.setMeasurementReceiver(this);
+		
 		}
 		catch (Exception ioe) {
 			Alert.error(I18n.getText("error"), 
@@ -216,8 +216,29 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 	// lame holder for a measurement to be listed in our table...
 	private class AMeasurement {	
 		public AMeasurement(boolean enabled, Integer value, String source) {
+		
+			if(!source.equals("manual"))
+			{
+				if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
+				{
+					this.value = value;
+				}
+				else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				{
+					this.value = value/10;
+				}
+				else
+				{
+					this.value = null;
+				}
+			}
+			else
+			{
+				this.value = value;
+			}
+			
+
 			this.enabled = enabled;
-			this.value = value;
 			this.source = source;
 		}
 

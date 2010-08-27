@@ -4,6 +4,8 @@ import java.util.EventObject;
 
 public class SerialSampleIOEvent extends EventObject {
 	
+	private static final long serialVersionUID = -6055117055932450549L;
+
 	// sent when a new sample exists
 	// value is an Integer with a new sample value 
 	public final static int NEW_SAMPLE_EVENT = 1;

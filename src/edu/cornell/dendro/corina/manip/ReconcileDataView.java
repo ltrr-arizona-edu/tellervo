@@ -22,7 +22,10 @@ import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.tridas.schema.NormalTridasUnit;
+
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.editor.SampleDataView;
 import edu.cornell.dendro.corina.editor.support.AbstractTableCellModifier;
@@ -126,6 +129,9 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 		
 	    if(showInfo) 
 	    	add(this.getReconcileInfoPanel(), BorderLayout.WEST);
+	    
+	   newSample.fireDisplayUnitsChanged();
+	   reference.fireDisplayUnitsChanged();
 	}
 	
 	
@@ -183,9 +189,26 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				selectionInfo.append("<br><b><u>Details for year " + y.toString() + "</u></b><br><br>");
 			
 				// just some info
-				selectionInfo.append("Primary value : " + newSample.getData().get(idx) + "<br>");
+				
+				
+				NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+
+				Number value = newSample.getData().get(idx);
+				if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				{
+					value = value.intValue()/10;
+				}
+				
+				selectionInfo.append("Primary value : " + value + "<br>");
+				
+				value = reference.getData().get(idx);
+				if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				{
+					value = value.intValue()/10;
+				}
+				
 				selectionInfo.append("Reference value : " + 
-						((reference.getData().size() > idx) ? reference.getData().get(idx) : "<n/a>") + 
+						((reference.getData().size() > idx) ? value : "<n/a>") + 
 						"<br><br>");
 			
 				// now, each of the failures
