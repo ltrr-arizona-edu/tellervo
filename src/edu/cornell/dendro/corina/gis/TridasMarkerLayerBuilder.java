@@ -141,7 +141,7 @@ public class TridasMarkerLayerBuilder {
 		}
 		else if(clazz == TridasElement.class)
 		{
-			return new BasicMarkerAttributes(Material.BLUE, BasicMarkerShape.CONE, opacity);
+			return new BasicMarkerAttributes(Material.ORANGE, BasicMarkerShape.CONE, opacity);
 		}
 		else if (clazz == TridasDerivedSeries.class)
 		{
@@ -156,7 +156,7 @@ public class TridasMarkerLayerBuilder {
 	{
 		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
 		builder.loadAllSiteObjectMarkers();
-		builder.setName("Corina objects layer");
+		builder.setName("All objects in database");
 		
         return builder.getMarkerLayer();
 	}

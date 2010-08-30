@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.gis;
 
 import edu.cornell.dendro.corina.admin.BoxCuration;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel;
+import edu.cornell.dendro.corina.ui.Builder;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.examples.util.ButtonAnnotation;
 import gov.nasa.worldwind.examples.util.ImageAnnotation;
@@ -25,6 +26,7 @@ import javax.media.opengl.GL;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
@@ -38,7 +40,7 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
 	private ButtonAnnotation searchForSeries;
 	
     protected static final String CLOSE_IMAGE_PATH = "images/16x16-button-cancel.png";
-    protected static final String SEARCHFORSERIES_IMAGE_PATH = "images/16x16-button-cancel.png";
+    protected static final String SEARCHFORSERIES_IMAGE_PATH = "edu/cornell/dendro/corina_resources/Icons/measurementseries.png";
     protected static final String PIXEL22_MASK_PATH = "images/16x16-button-cancel.png";
 
     protected static final String BUSY_IMAGE_PATH = "images/indicator-16.gif";
@@ -141,7 +143,7 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
         this.closeButton.addActionListener(this);
         this.closeButton.setToolTipText(CLOSE_TOOLTIP_TEXT);
         
-        this.searchForSeries = new ButtonAnnotation(CLOSE_IMAGE_PATH, PIXEL16_MASK_PATH);
+        this.searchForSeries = new ButtonAnnotation(Builder.getIconURL("measurementseries.png", Builder.ICONS, 32), null);
         this.searchForSeries.setActionCommand("searchForSeries");
         this.searchForSeries.addActionListener(this);
         this.searchForSeries.setToolTipText(SEARCHFORSERIES_TOOLTIP_TEXT);
@@ -208,11 +210,29 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
     	}
     	else if (entity instanceof TridasElement)
     	{
-    		this.setBusy(true);
+
     		TridasElement elem = (TridasElement) entity;
+    		String objectCode = "??";
+    		for(TridasGenericField gf : elem.getGenericFields())
+    		{
+    			if (gf.getName().equals("corina.objectLabCode")){
+    				objectCode = gf.getValue().toString();
+    			}
+    		}
     		
+    		content += "<b>"+objectCode+"-"+elem.getTitle()+"</b><br/>";
+    		   		
+    		if(elem.isSetTaxon())
+    		{
+    			content += "<font size=\"2\"><i>"+elem.getTaxon().getNormal()+"</i></font><hr/><br/><br>";
+    		}
     		
-    		content += "<b>"+elem.getTitle()+"</b><br/>";
+    		if(elem.isSetType())
+    		{
+    			content += "<br><font size=\"2\">Element type : "+elem.getTaxon().getNormal()+"</font><hr/><br/><br>";
+
+    		}
+    		
     	}
     	
     	return content;

@@ -128,7 +128,7 @@ public class CorinaGazetteerPanel extends JPanel {
                     {
                         JComboBox cb = (JComboBox)actionEvent.getSource();
                         PointOfInterest selectedPoi = (PointOfInterest)cb.getSelectedItem();
-                        moveToLocation(selectedPoi);
+                        CorinaGazetteerPanel.moveToLocation(wwd, selectedPoi);
                     }
                 });
             }
@@ -174,7 +174,7 @@ public class CorinaGazetteerPanel extends JPanel {
         {
             if (poi.size() == 1)
             {
-                this.moveToLocation(poi.get(0));
+            	CorinaGazetteerPanel.moveToLocation(wwd, poi.get(0));
             }
             else
             {
@@ -278,29 +278,34 @@ public class CorinaGazetteerPanel extends JPanel {
         return true;
     }
 
-    public void moveToLocation(PointOfInterest location)
+    public static void moveToLocation(WorldWindow wwd, Position location)
+    {
+    	wwd.getView().goTo(location, 25e3);
+    }
+    
+    public static void moveToLocation(WorldWindow wwd, PointOfInterest location)
     {
             // Use a PanToIterator to iterate view to target position
-        this.wwd.getView().goTo(new Position(location.getLatlon(), 0), 25e3);
+        wwd.getView().goTo(new Position(location.getLatlon(), 0), 25e3);
     }
 
-    public void moveToLocation(Sector sector, Double altitude)
+    public static void moveToLocation(WorldWindow wwd, Sector sector, Double altitude)
     {
-        OrbitView view = (OrbitView) this.wwd.getView();
+        OrbitView view = (OrbitView) wwd.getView();
 
-        Globe globe = this.wwd.getModel().getGlobe();
+        Globe globe = wwd.getModel().getGlobe();
 
         if (altitude == null || altitude == 0)
         {
         	double t = sector.getDeltaLonRadians() > sector.getDeltaLonRadians()
         		? sector.getDeltaLonRadians() : sector.getDeltaLonRadians();
         	double w = 0.5 * t * 6378137.0;
-        	altitude = w / this.wwd.getView().getFieldOfView().tanHalfAngle();
+        	altitude = w / wwd.getView().getFieldOfView().tanHalfAngle();
         }
 
         if (globe != null && view != null)
         {
-            this.wwd.getView().goTo(new Position(sector.getCentroid(), 0), altitude);
+            wwd.getView().goTo(new Position(sector.getCentroid(), 0), altitude);
         }
     }
 }

@@ -292,7 +292,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
      * @param entity
      * @return
      */
-    private Boolean doSearchForAssociatedSeries(ITridas entity)
+    public Boolean doSearchForAssociatedSeries(ITridas entity)
     {
     	SearchParameters param;
     	param = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);

@@ -34,6 +34,7 @@ import java.awt.print.PageFormat;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -60,11 +61,14 @@ import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasObject;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gis.MapPanel;
+import edu.cornell.dendro.corina.gis.GISPanel;
 import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
 import edu.cornell.dendro.corina.graph.BargraphFrame.BargraphPanel;
 import edu.cornell.dendro.corina.gui.Bug;
@@ -90,6 +94,12 @@ import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.EntityType;
+import edu.cornell.dendro.corina.schema.SearchOperator;
+import edu.cornell.dendro.corina.schema.SearchParameterName;
+import edu.cornell.dendro.corina.schema.SearchReturnObject;
+import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.MapLink;
 import edu.cornell.dendro.corina.tridasv2.ui.ComponentViewer;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel;
@@ -99,6 +109,10 @@ import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 import gov.nasa.worldwind.layers.MarkerLayer;
 
 /*
@@ -187,7 +201,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	// gui -- new
 	private SampleDataView dataView; // (a jpanel)
 	
-	private MapPanel wwMapPanel;
+	private GISPanel wwMapPanel;
 	
 	private JTabbedPane rolodex;
 	
@@ -554,29 +568,69 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	
 	private void initWWMapPanel()
 	{
-		//Position pos = Position.fromDegrees(50, 50);
-		//this.wwMapPanel = new MapPanel(new Dimension(300,300),true, pos);
 		
 		TridasElement elem = sample.getMeta(Metadata.ELEMENT, TridasElement.class);
-		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
 		
-
+		// Create layer of all sites
+		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
+		MarkerLayer allSites = TridasMarkerLayerBuilder.getMarkerLayerForAllSites();
+		allSites.setEnabled(false);
+		wwMapPanel = new GISPanel(new Dimension(300,300),true, allSites);
+				
+		
 		builder.addMarkerForTridasElement(elem);			
-		if(builder.containsMarkers())
-		{
-			builder.setName("Corina elements layer");
-			wwMapPanel = new MapPanel(new Dimension(300,300),true, builder.getMarkerLayer());
-
-			MarkerLayer allSites = TridasMarkerLayerBuilder.getMarkerLayerForAllSites();
-			allSites.setEnabled(false);
-			wwMapPanel.addLayer(allSites);
-			
-			return;
-		}
-		else
+		if(!builder.containsMarkers())
 		{
 			wwMapPanel = null;
+			return;
 		}
+			
+		// Create layer of current element
+		builder.setName("Elements of this series");
+		wwMapPanel.addLayer(builder.getMarkerLayer());
+		
+		
+		if(sample.getSeries() instanceof TridasMeasurementSeries)
+		{
+			TridasObject obj = sample.getMeta(Metadata.OBJECT, TridasObject.class);
+
+			// Set return type to element
+	    	SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
+	    	param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue());
+
+	    	// we want elements returned here
+	    	EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param);
+
+			// Query db 
+			CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+			resource.query();	
+			dialog.setVisible(true);
+			
+			if(!dialog.isSuccessful()) 
+			{ 
+				System.out.println("Error getting boxes");
+				return;
+			}
+			
+			List<TridasElement> elems = resource.getAssociatedResult();
+			
+			builder = new TridasMarkerLayerBuilder();
+			builder.setName("Other elements from the same object");
+			for(TridasElement el : elems)
+			{
+				builder.addMarkerForTridasElement(el);
+			}
+			
+			MarkerLayer otherElements = builder.getMarkerLayer();
+			otherElements.setEnabled(false);
+			wwMapPanel.addLayer(builder.getMarkerLayer());
+			
+		}
+		
+		
+		
+		return;
+
 		
 		
 	}

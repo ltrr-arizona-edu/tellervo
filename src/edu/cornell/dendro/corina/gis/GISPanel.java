@@ -25,6 +25,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,7 +39,7 @@ import org.tridas.interfaces.ITridas;
  * @author peterbrewer
  *
  */
-public class MapPanel extends JPanel implements SelectListener{
+public class GISPanel extends JPanel implements SelectListener{
 
 	private static final long serialVersionUID = 6769486491009238118L;
 		protected WorldWindowGLCanvas wwd;
@@ -46,7 +47,8 @@ public class MapPanel extends JPanel implements SelectListener{
         protected TridasMarker selectedMarker;
         protected RenderableLayer annotationLayer;
         protected TridasAnnotation annotation;
-        public MapPanel(Dimension canvasSize, boolean includeStatusBar, MarkerLayer ly)
+        private ArrayList<String> visibleLayers = new ArrayList<String>();
+        public GISPanel(Dimension canvasSize, boolean includeStatusBar, MarkerLayer ly)
         {
             super(new BorderLayout());
         	setupGui(canvasSize, includeStatusBar);
@@ -66,6 +68,7 @@ public class MapPanel extends JPanel implements SelectListener{
         public void addLayer(MarkerLayer layer)
         {
         	ApplicationTemplate.insertBeforeCompass(this.getWwd(), layer);
+        	visibleLayers.add(layer.getName());
         }
         
         private void failedReq()
@@ -120,23 +123,13 @@ public class MapPanel extends JPanel implements SelectListener{
             }
             
             // Add the layer manager layer to the model layer list
-            getWwd().getModel().getLayers().add(new CorinaLayerManagerLayer(getWwd()));
+            
+            CorinaLayerManagerLayer layermanager = new CorinaLayerManagerLayer(getWwd(), visibleLayers);
+            layermanager.setName("Show/hide layer list");
+            layermanager.setMinimized(true);
+            getWwd().getModel().getLayers().add(layermanager);
+            
 
-            try {
-            	CorinaGazetteerPanel gazPanel = new CorinaGazetteerPanel(this.getWwd(), null);
-            	
-				this.add(gazPanel,   //use default yahoo service
-				        BorderLayout.NORTH);
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
             
         }
         
@@ -163,7 +156,7 @@ public class MapPanel extends JPanel implements SelectListener{
 
             PickedObject topPickedObject = e.getTopPickedObject();
 
-            if (e.getEventAction() == SelectEvent.LEFT_PRESS)
+           /* if (e.getEventAction() == SelectEvent.LEFT_PRESS)
             {
                 if (topPickedObject != null && topPickedObject.getObject() instanceof TridasMarker)
                 {
@@ -174,8 +167,8 @@ public class MapPanel extends JPanel implements SelectListener{
                 {
                     this.highlight(null);
                 }
-            }
-            else if (e.getEventAction() == SelectEvent.LEFT_DOUBLE_CLICK)
+            }*/
+            if (e.getEventAction() == SelectEvent.LEFT_PRESS)
             {
                 if (topPickedObject != null && topPickedObject.getObject() instanceof TridasMarker)
                 {
@@ -233,7 +226,7 @@ public class MapPanel extends JPanel implements SelectListener{
             return createContentAnnotation(this, position, entity);
         }
         
-        public static ContentAnnotation createContentAnnotation(MapPanel mapPanel, Position position, ITridas entity)
+        public static ContentAnnotation createContentAnnotation(GISPanel mapPanel, Position position, ITridas entity)
         {
             if (mapPanel == null)
             {
@@ -255,7 +248,7 @@ public class MapPanel extends JPanel implements SelectListener{
            
         }
         
-        public static ContentAnnotation createTridasAnnotation(MapPanel mapPanel, Position position, String title,
+        public static ContentAnnotation createTridasAnnotation(GISPanel mapPanel, Position position, String title,
                 ITridas entity)
             {
                 if (mapPanel == null)
@@ -305,11 +298,11 @@ public class MapPanel extends JPanel implements SelectListener{
 	
 	    public static class ContentAnnotation implements ActionListener
 	    {
-	        protected MapPanel mapPanel;
+	        protected GISPanel mapPanel;
 	        protected TridasAnnotation annotation;
 	        protected TridasAnnotationController controller;
 
-	        public ContentAnnotation(MapPanel mapPanel, TridasAnnotation annotation, TridasAnnotationController controller)
+	        public ContentAnnotation(GISPanel mapPanel, TridasAnnotation annotation, TridasAnnotationController controller)
 	        {
 	            this.mapPanel = mapPanel;
 	            this.annotation = annotation;
@@ -317,7 +310,7 @@ public class MapPanel extends JPanel implements SelectListener{
 	            this.controller = controller;
 	        }
 
-	        public MapPanel getMapPanel()
+	        public GISPanel getMapPanel()
 	        {
 	            return this.mapPanel;
 	        }
@@ -366,7 +359,7 @@ public class MapPanel extends JPanel implements SelectListener{
 
 	    	ITridas entity;
 	    	
-			public TridasContentAnnotation(MapPanel mapPanel,
+			public TridasContentAnnotation(GISPanel mapPanel,
 					TridasAnnotation annotation,
 					TridasAnnotationController controller,
 					ITridas entity) {

@@ -9,8 +9,10 @@ import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
+import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.manip.ReconcileWindow;
+import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -59,24 +61,39 @@ public class TridasAnnotationController extends AbstractTridasAnnotationControll
 
         if (e.getActionCommand() == "searchForSeries")
         {
-        	TridasObjectEx obj = null;
-        	if(entity instanceof TridasObjectEx)
-        	{
-        		obj = (TridasObjectEx) entity;
-        	}
-        	else
-        	{
-        		Alert.message("Error", "Error opening database browser");
-        	}
+
         	
 			DBBrowser browser = new DBBrowser(new Frame(), true);
-
-			// select the site we're in
-			browser.selectSiteByCode(obj.getLabCode());
-						
+			Boolean success = browser.doSearchForAssociatedSeries(entity);
 			browser.setVisible(true);
-			
 
+			if(success==false) {
+				browser.dispose();
+				return;
+			}
+			
+			if(browser.getReturnStatus() == DBBrowser.RET_OK) {
+				ElementList toOpen = browser.getSelectedElements();
+				
+				for(Element e1 : toOpen) {
+					// load it
+					Sample s;
+					try {
+						s = e1.load();
+					} catch (IOException ioe) {
+						Alert.error(I18n.getText("error.loadingSample"),
+								I18n.getText("error.cantOpenFile") +":" + ioe.getMessage());
+						continue;
+					}
+
+					OpenRecent.sampleOpened(new SeriesDescriptor(s));
+					
+					// open it
+					new Editor(s);
+				}
+			}
+			
+			
         }
 
         //super.onActionPerformed(e);
