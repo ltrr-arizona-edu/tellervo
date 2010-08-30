@@ -29,13 +29,14 @@ import org.tridas.util.TridasObjectEx;
 public class TridasMarkerLayerBuilder {
 
 	/** Marker attributes */
-	BasicMarkerAttributes defaultAttributes = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
-	ArrayList<Marker> markers = new ArrayList<Marker>();
+	private BasicMarkerAttributes defaultAttributes = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
+	private ArrayList<Marker> markers = new ArrayList<Marker>();
+	private String layerName = "Marker layer";
+	
 	
 	public TridasMarkerLayerBuilder(){
 			
 	}
-
 	
 	public void addMarkerForTridasObject(TridasObject obj)
 	{
@@ -91,10 +92,21 @@ public class TridasMarkerLayerBuilder {
 		}
 	}
 	
+	public void setName(String name)
+	{
+		this.layerName = name;
+	}
+	
+	public String getName()
+	{
+		return this.layerName;
+	}
+	
 	public MarkerLayer getMarkerLayer()
 	{
 
 		MarkerLayer layer = new MarkerLayer(markers);
+		layer.setName(this.getName());
 		
         layer.setOverrideMarkerElevation(true);
         layer.setElevation(0);
@@ -144,6 +156,7 @@ public class TridasMarkerLayerBuilder {
 	{
 		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
 		builder.loadAllSiteObjectMarkers();
+		builder.setName("Corina objects layer");
 		
         return builder.getMarkerLayer();
 	}

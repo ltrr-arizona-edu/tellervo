@@ -18,6 +18,7 @@ public class TridasMarker implements Marker {
 	
     private Position position; // may be null
     private Angle heading; // may be null
+    private Boolean highlighted;
 
     // To avoid the memory overhead of creating an attibutes object for every new marker, attributes are
     // required to be specified at construction.
@@ -76,6 +77,11 @@ public class TridasMarker implements Marker {
         this.attributes = attrs;
     }
 
+    public void setHighlighted(Boolean b)
+    {
+    	highlighted = b;
+    }
+    
     public Position getPosition()
     {
         return position;

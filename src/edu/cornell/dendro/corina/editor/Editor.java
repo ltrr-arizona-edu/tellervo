@@ -99,6 +99,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
+import gov.nasa.worldwind.layers.MarkerLayer;
 
 /*
  left to do:
@@ -563,9 +564,12 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		builder.addMarkerForTridasElement(elem);			
 		if(builder.containsMarkers())
 		{
+			builder.setName("Corina elements layer");
 			wwMapPanel = new MapPanel(new Dimension(300,300),true, builder.getMarkerLayer());
 
-			wwMapPanel.addLayer(TridasMarkerLayerBuilder.getMarkerLayerForAllSites());
+			MarkerLayer allSites = TridasMarkerLayerBuilder.getMarkerLayerForAllSites();
+			allSites.setEnabled(false);
+			wwMapPanel.addLayer(allSites);
 			
 			return;
 		}

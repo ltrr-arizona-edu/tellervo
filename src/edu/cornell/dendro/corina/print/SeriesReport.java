@@ -75,7 +75,7 @@ public class SeriesReport extends ReportBase {
 	
 	/** The list of icons to draw */
 	private List<Icon> icons;
-
+	NormalTridasUnit displayUnits;
 	
 	private Sample s = new Sample();
 
@@ -88,7 +88,8 @@ public class SeriesReport extends ReportBase {
 		
 	private void generateSeriesReport(OutputStream output) {
 	
-		
+		displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+
 		try {
 		
 			PdfWriter writer = PdfWriter.getInstance(document, output);
@@ -409,10 +410,21 @@ public class SeriesReport extends ReportBase {
 		{
 			// Normal tridas units
 			try{ 
-				if(this.s.getTridasUnits().getNormalTridas().equals(NormalTridasUnit.MICROMETRES))
+				/*if(this.s.getTridasUnits().getNormalTridas().equals(NormalTridasUnit.MICROMETRES))
+				{
+					colHeadCell.setPhrase(new Phrase("microns", tableHeaderFont));
+				}*/
+				
+				// Use the current default display units
+				if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
 				{
 					colHeadCell.setPhrase(new Phrase("microns", tableHeaderFont));
 				}
+				else if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				{
+					colHeadCell.setPhrase(new Phrase("1/100th mm", tableHeaderFont));
+				}
+				
 			} catch (Exception e){
 				colHeadCell.setPhrase(new Phrase(" ", tableHeaderFont));
 			}
@@ -450,14 +462,28 @@ public class SeriesReport extends ReportBase {
 				remarksMiniTable.setWidthPercentage(100);			
 				
 				// Get ring value or year number for first column
-				Phrase cellValuePhrase;
+				Phrase cellValuePhrase = null;
 				Object value = model.getValueAt(row, col);
 				if(value==null){
 					cellValuePhrase = new Phrase("");
 				}
 				else
 				{
-					cellValuePhrase = new Phrase(value.toString(), getTableFont(col));
+					if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+					{
+						try{
+						Integer val = (Integer) value;
+						val =val/10;
+						cellValuePhrase = new Phrase(String.valueOf(val), getTableFont(col));
+						} catch (Exception e){
+							cellValuePhrase = new Phrase(value.toString(), getTableFont(col));
+
+						}
+					}
+					else if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
+					{
+						cellValuePhrase = new Phrase(value.toString(), getTableFont(col));
+					}
 				}	
 				
 				

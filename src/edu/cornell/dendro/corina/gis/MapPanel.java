@@ -9,19 +9,28 @@ import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.examples.ApplicationTemplate;
 import gov.nasa.worldwind.examples.ClickAndGoSelectListener;
+import gov.nasa.worldwind.examples.GazetteerPanel;
+import gov.nasa.worldwind.examples.util.LayerManagerLayer;
 import gov.nasa.worldwind.exception.WWAbsentRequirementException;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.MarkerLayer;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.pick.PickedObject;
 import gov.nasa.worldwind.render.WWIcon;
+import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.StatusBar;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import org.tridas.interfaces.ITridas;
 
 /**
  * Map panel containing a WorldWind Java canvas
@@ -34,13 +43,22 @@ public class MapPanel extends JPanel implements SelectListener{
 	private static final long serialVersionUID = 6769486491009238118L;
 		protected WorldWindowGLCanvas wwd;
         protected StatusBar statusBar;
-        
+        protected TridasMarker selectedMarker;
+        protected RenderableLayer annotationLayer;
+        protected TridasAnnotation annotation;
         public MapPanel(Dimension canvasSize, boolean includeStatusBar, MarkerLayer ly)
         {
             super(new BorderLayout());
         	setupGui(canvasSize, includeStatusBar);
         	addLayer(ly);
+            this.annotationLayer = new RenderableLayer();
+            annotationLayer.setName("Popup information");
+            ApplicationTemplate.insertBeforePlacenames(this.getWwd(), this.annotationLayer);
+
+        	
         	this.getWwd().addSelectListener(this);
+        	
+        	
         	
 
         }
@@ -101,7 +119,25 @@ public class MapPanel extends JPanel implements SelectListener{
                 this.statusBar.setEventSource(wwd);
             }
             
+            // Add the layer manager layer to the model layer list
+            getWwd().getModel().getLayers().add(new CorinaLayerManagerLayer(getWwd()));
 
+            try {
+            	CorinaGazetteerPanel gazPanel = new CorinaGazetteerPanel(this.getWwd(), null);
+            	
+				this.add(gazPanel,   //use default yahoo service
+				        BorderLayout.NORTH);
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            
         }
         
         protected WorldWindowGLCanvas createWorldWindow()
@@ -119,27 +155,225 @@ public class MapPanel extends JPanel implements SelectListener{
             return statusBar;
         }
 
-		@Override
-		public void selected(SelectEvent e) {
-           
-			if (e == null)
+
+        public void selected(SelectEvent e)
+        {
+            if (e == null)
                 return;
 
             PickedObject topPickedObject = e.getTopPickedObject();
-			
 
-            if (e.getEventAction() == SelectEvent.LEFT_DOUBLE_CLICK)
+            if (e.getEventAction() == SelectEvent.LEFT_PRESS)
             {
-                if (topPickedObject != null && topPickedObject.getObject() instanceof WWIcon)
+                if (topPickedObject != null && topPickedObject.getObject() instanceof TridasMarker)
                 {
-
+                	TridasMarker selected = (TridasMarker) topPickedObject.getObject();
+                    this.highlight(selected);
                 }
                 else
                 {
-
+                    this.highlight(null);
                 }
             }
-		}
-    
+            else if (e.getEventAction() == SelectEvent.LEFT_DOUBLE_CLICK)
+            {
+                if (topPickedObject != null && topPickedObject.getObject() instanceof TridasMarker)
+                {
+                	TridasMarker selected = (TridasMarker) topPickedObject.getObject();
+                    this.highlight(selected);
+                    this.openResource(selected);
+                }
+            }
+
+        }
+        
+        public void highlight(TridasMarker marker)
+        {
+            if (this.selectedMarker == marker)
+                return;
+
+            if (this.selectedMarker != null)
+            {
+                this.selectedMarker.setHighlighted(false);
+                this.selectedMarker = null;
+            }
+
+            if (marker != null)
+            {
+                this.selectedMarker = marker;
+                this.selectedMarker.setHighlighted(true);
+            }
+
+            this.getWwd().redraw();            
+        }
+
+        protected void closeResource(ContentAnnotation content)
+        {
+            if (content == null)
+                return;
+
+            content.detach();
+        }
+        
+        protected void openResource(TridasMarker marker)
+        {
+            if (marker == null)
+                return;
+
+            ContentAnnotation content = this.createContent(marker.getPosition(), marker.getEntity());
+
+            if (content != null)
+            {
+                content.attach();
+            }
+        }
+        
+        protected ContentAnnotation createContent(Position position, ITridas entity)
+        {
+            return createContentAnnotation(this, position, entity);
+        }
+        
+        public static ContentAnnotation createContentAnnotation(MapPanel mapPanel, Position position, ITridas entity)
+        {
+            if (mapPanel == null)
+            {
+                String message = "AppFrameIsNull";
+                Logging.logger().severe(message);
+                throw new IllegalArgumentException(message);
+            }
+
+            if (position == null)
+            {
+                String message = Logging.getMessage("nullValue.PositionIsNull");
+                Logging.logger().severe(message);
+                throw new IllegalArgumentException(message);
+            }
+
+
+            return createTridasAnnotation(mapPanel, position, "blah", entity);
+
+           
+        }
+        
+        public static ContentAnnotation createTridasAnnotation(MapPanel mapPanel, Position position, String title,
+                ITridas entity)
+            {
+                if (mapPanel == null)
+                {
+                    String message = "AppFrameIsNull";
+                    Logging.logger().severe(message);
+                    throw new IllegalArgumentException(message);
+                }
+
+                if (position == null)
+                {
+                    String message = Logging.getMessage("nullValue.PositionIsNull");
+                    Logging.logger().severe(message);
+                    throw new IllegalArgumentException(message);
+                }
+
+                if (title == null)
+                {
+                    String message = Logging.getMessage("nullValue.StringIsNull");
+                    Logging.logger().severe(message);
+                    throw new IllegalArgumentException(message);
+                }
+
+                if (entity == null)
+                {
+                    String message = Logging.getMessage("nullValue.SourceIsNull");
+                    Logging.logger().severe(message);
+                    throw new IllegalArgumentException(message);
+                }
+
+                TridasAnnotation annotation = new TridasAnnotation(position, entity);
+                annotation.setAlwaysOnTop(true);
+                
+
+                TridasAnnotationController controller = new TridasAnnotationController(mapPanel.getWwd(), annotation, entity);
+
+                
+                return new TridasContentAnnotation(mapPanel, annotation, controller, entity);
+            }
+        
+
+        protected RenderableLayer getAnnotationLayer()
+        {
+        	return this.annotationLayer;
+        }
+		
 	
+	    public static class ContentAnnotation implements ActionListener
+	    {
+	        protected MapPanel mapPanel;
+	        protected TridasAnnotation annotation;
+	        protected TridasAnnotationController controller;
+
+	        public ContentAnnotation(MapPanel mapPanel, TridasAnnotation annotation, TridasAnnotationController controller)
+	        {
+	            this.mapPanel = mapPanel;
+	            this.annotation = annotation;
+	            this.annotation.addActionListener(this);
+	            this.controller = controller;
+	        }
+
+	        public MapPanel getMapPanel()
+	        {
+	            return this.mapPanel;
+	        }
+
+	        public TridasAnnotation getAnnotation()
+	        {
+	            return this.annotation;
+	        }
+
+	        public TridasAnnotationController getController()
+	        {
+	            return this.controller;
+	        }
+
+	        public void actionPerformed(ActionEvent e)
+	        {
+	            if (e == null)
+	                return;
+
+	            if (e.getActionCommand() == AVKey.CLOSE)
+	            {
+	                this.getMapPanel().closeResource(this);
+	            }
+	        }
+
+	        public void detach()
+	        {
+	            this.getController().setEnabled(false);
+
+	            RenderableLayer layer = this.getMapPanel().getAnnotationLayer();
+	            layer.removeRenderable(this.getAnnotation());
+	        }
+
+	        public void attach()
+	        {
+	            this.getController().setEnabled(true);
+
+	            RenderableLayer layer = this.mapPanel.getAnnotationLayer();
+	            layer.removeRenderable(this.getAnnotation());
+	            layer.addRenderable(this.getAnnotation());
+	        }
+	    }
+		
+	    public static class TridasContentAnnotation extends ContentAnnotation
+	    {
+
+	    	ITridas entity;
+	    	
+			public TridasContentAnnotation(MapPanel mapPanel,
+					TridasAnnotation annotation,
+					TridasAnnotationController controller,
+					ITridas entity) {
+				super(mapPanel, annotation, controller);
+				this.entity=entity;
+			}
+	    	
+	    }
+		
 }
