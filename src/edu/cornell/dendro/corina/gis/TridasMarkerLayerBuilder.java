@@ -1,6 +1,7 @@
 package edu.cornell.dendro.corina.gis;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.render.Material;
@@ -75,9 +76,6 @@ public class TridasMarkerLayerBuilder {
 						getMarkerAttributesForEntity(entity.getClass()), entity));
 			}
 		}
-		
-
-		
 	}
 	
 	public Boolean containsMarkers()

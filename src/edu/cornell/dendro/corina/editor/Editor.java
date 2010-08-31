@@ -590,17 +590,33 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		wwMapPanel.addLayer(builder.getMarkerLayer());
 		
 		
+
 		if(sample.getSeries() instanceof TridasMeasurementSeries)
 		{
-			TridasObject obj = sample.getMeta(Metadata.OBJECT, TridasObject.class);
+		//	addOtherElementsToMap();
+		}
+		
+		return;
+	}
 
+		
+		
+	
+	
+	private void addOtherElementsToMap()
+	{
+		if(sample.getSeries() instanceof TridasMeasurementSeries)
+		{
+			TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
+			TridasObject obj = sample.getMeta(Metadata.OBJECT, TridasObject.class);
+	
 			// Set return type to element
 	    	SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
 	    	param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue());
-
+	
 	    	// we want elements returned here
 	    	EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param);
-
+	
 			// Query db 
 			CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
 			resource.query();	
@@ -624,16 +640,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			MarkerLayer otherElements = builder.getMarkerLayer();
 			otherElements.setEnabled(false);
 			wwMapPanel.addLayer(builder.getMarkerLayer());
-			
 		}
 		
-		
-		
-		return;
-
-		
-		
 	}
+	
 	
 	// setup common to both constructors
 	private void setup() {
