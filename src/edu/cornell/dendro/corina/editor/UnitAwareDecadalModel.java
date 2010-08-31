@@ -93,7 +93,14 @@ public class UnitAwareDecadalModel extends DecadalModel {
 		
 		else
 		{
-			Number val = (((Number) (value)).intValue());
+			Number val = null;
+			try{
+				val = (((Number) (value)).intValue());
+			} catch (Exception e)
+			{
+				// Not a number so forget about units and just use the super class
+				super.setValueAt(value, row, col);
+			}
 			
 			if(val!=null) 
 			{

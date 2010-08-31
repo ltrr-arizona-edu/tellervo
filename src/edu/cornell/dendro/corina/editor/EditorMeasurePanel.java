@@ -14,6 +14,7 @@ import edu.cornell.dendro.corina.hardware.*;
 
 import java.applet.*;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 
 /**
@@ -23,7 +24,7 @@ import edu.cornell.dendro.corina.ui.Builder;
 public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 	private JLabel lastMeasurement;
 	private Editor editor;
-//	private LegacyCorinaMeasuringDevice dev;
+
 	private AbstractSerialMeasuringDevice dev;
 	
 	/* audioclips to play... */
@@ -32,7 +33,6 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 	private AudioClip measure_error;
 	
 	public EditorMeasurePanel(Editor myeditor, AbstractSerialMeasuringDevice device) {
-//	public EditorMeasurePanel(Editor myeditor, LegacySerialSampleIO ioport) {
 		super(new FlowLayout(FlowLayout.RIGHT));
 		
 		editor = myeditor;
@@ -66,32 +66,43 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 			System.out.println("Failed to play sound");
 			System.out.println(ae.getMessage());
 			
-		/* ignore this... */ }
+		}
 		
 		// now, watch for info!
-//		dev = new LegacyCorinaMeasuringDevice(ioport, this);
 		dev = device;
 		dev.setMeasurementReceiver(this);
 	}
-	
-//	public EditorMeasurePanel(Editor myEditor){
-//		new EditorMeasurePanel(myEditor, new SerialDeviceSelector().getDevice());
-//	}
-	
+		
 	public void receiverUpdateStatus(String status) {
 		lastMeasurement.setText(status);
 	}
 	
 	public void receiverNewMeasurement(Integer value) {
-		// this is an error; don't allow the measurement and play a bad noise.
-		if(value.intValue() == 0 || value.intValue() > 9900) {
+		
+		if(value.intValue() == 0) 
+		{
+			// Value was zero so must be an error
 			if(measure_error != null)
 				measure_error.play();
 			
-			lastMeasurement.setText("[Last measurement (error): " + value + "]");
+			lastMeasurement.setText("Error: measurement was zero");
 
 			return;
 		}
+		else if (value.intValue() >= 50000)
+		{
+			// Value was over 5cm so warn user
+			if(measure_error != null)
+				measure_error.play();
+			
+			Alert.message("Warning", "This measurement was over 5cm so it will be disregarded!");
+			
+			lastMeasurement.setText("Error: measurement was too big: " + value +"\ucebc"+"m");
+
+			return;
+			
+		}
+		
 		
 		Year y = editor.measured(value.intValue());
 		
@@ -103,7 +114,7 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 				measure_one.play();				
 		}
 		
-		lastMeasurement.setText("[Last measurement: " + value + " in " + y.toString() + "]");		
+		lastMeasurement.setText("Last measurement was " + value +"\u03bc"+"m in year " + y.toString() + "]");		
 	}
 	
 	public void cleanup() {
