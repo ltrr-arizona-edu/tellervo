@@ -189,9 +189,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				selectionInfo.append("<br><b><u>Details for year " + y.toString() + "</u></b><br><br>");
 			
 				// just some info
-				
-				
-				NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+				NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.name()));
 
 				Number value = newSample.getData().get(idx);
 				if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
