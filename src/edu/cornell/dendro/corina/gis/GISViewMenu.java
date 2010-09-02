@@ -18,7 +18,6 @@ import javax.swing.JMenuItem;
 public class GISViewMenu extends JMenu implements ItemListener {
 
 	private static final long serialVersionUID = -6739232540394701181L;
-	private JFrame parent;
 	private JMenuItem overview, compass, scalebar, layerslist, stars, atmosphere, blueMarble, blueMarbleWMS2004, landsat, 
 	usda, msAerial, boundaries, placenames;
 	private  ItemListener iListener;
@@ -43,11 +42,10 @@ public class GISViewMenu extends JMenu implements ItemListener {
 	};
 	
 	
-	public GISViewMenu(JFrame parent, WorldWindow wwd, ArrayList<String> visibleLayers)
+	public GISViewMenu(WorldWindow wwd, ArrayList<String> visibleLayers)
 	{
         super(I18n.getText("menus.view"));
         
-        this.parent = parent;
         this.wwd = wwd;
         this.visibleLayers = visibleLayers;
         
@@ -104,7 +102,7 @@ public class GISViewMenu extends JMenu implements ItemListener {
 		compass = Builder.makeCheckBoxMenuItem("menus.view.compass", "compass.png");
 		scalebar = Builder.makeCheckBoxMenuItem("menus.view.scalebar", "scale.png");
 		layerslist = Builder.makeCheckBoxMenuItem("menus.view.layerslist", "list.png");
-		LayerList blah = wwd.getModel().getLayers();
+
 		setupLayerMenuButtons();
 
 		layerslist.addItemListener(this);

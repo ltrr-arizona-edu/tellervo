@@ -29,6 +29,7 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 	private Boolean completed = false;
 	private Exception failException = null;
 	private JProgressBar progressBar;
+	private Boolean runInBackground = false;
 	
 	/**
 	 * Construct an access dialog with no owner parent (not preferable)
@@ -203,6 +204,24 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 		}
 	}
 
+	public void setRunInBackground(Boolean b)
+	{
+		this.runInBackground = b;
+		if(runInBackground) {
+			synchronized(completed) {
+				if(completed)
+					return;
+			}
+		}
+		
+		super.setVisible(false);
+	}
+	
+	public Boolean getRunInBackground()
+	{
+		return runInBackground;
+	}
+	
 	@Override
 	public void setVisible(boolean visible) {
 		if(visible) {

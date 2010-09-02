@@ -23,11 +23,14 @@ package edu.cornell.dendro.corina.editor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
@@ -69,6 +72,7 @@ import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.GISPanel;
+import edu.cornell.dendro.corina.gis.GISViewMenu;
 import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
 import edu.cornell.dendro.corina.graph.BargraphFrame.BargraphPanel;
 import edu.cornell.dendro.corina.gui.Bug;
@@ -179,7 +183,7 @@ import gov.nasa.worldwind.layers.MarkerLayer;
 */
 
 public class Editor extends XFrame implements SaveableDocument, PrefsListener,
-		SampleListener, PrintableDocument {
+		SampleListener, PrintableDocument, FocusListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -203,12 +207,14 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	
 	private GISPanel wwMapPanel;
 	
-	private JTabbedPane rolodex;
+	private JTabbedPane tabbedPanel;
 	
 	// for menus we have to notify...
 	private EditorFileMenu editorFileMenu;
 	private EditorEditMenu editorEditMenu;
-
+	private GISViewMenu editorViewMenu;
+	private Boolean otherElementsLoaded = false;
+	
 	// undo
 	private UndoManager undoManager = new UndoManager();
 
@@ -271,9 +277,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// get rid of wj, elements tabs
 		if (e != null) { // only for real events, not menu setup -- HACK!
 			if (!sample.hasWeiserjahre())
-				rolodex.remove(wjPanel);
-			else if (rolodex.indexOfComponent(wjPanel) == -1)
-				rolodex.add(wjPanel, I18n.getText("editor.tab_weiserjahre"));
+				tabbedPanel.remove(wjPanel);
+			else if (tabbedPanel.indexOfComponent(wjPanel) == -1)
+				tabbedPanel.add(wjPanel, I18n.getText("editor.tab_weiserjahre"));
 		}
 	}
 
@@ -351,7 +357,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 						new String[] { I18n.getText("question.saveAnyway"), I18n.getText("general.cancel") }, null); // default
 				if (x == 1) {
 					// show metadata tab, and abort.
-					rolodex.setSelectedIndex(1);
+					tabbedPanel.setSelectedIndex(1);
 					return; // user cancelled!
 				}
 			}
@@ -379,7 +385,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			JOptionPane.showMessageDialog(this,
 					I18n.getText("error.metadataIncompleteRadiusRequired"),
 					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
-			rolodex.setSelectedIndex(1);
+			tabbedPanel.setSelectedIndex(1);
 			return;
 		}
 		
@@ -490,48 +496,52 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	private void addCards() {
 		// start fresh
-		rolodex.removeAll();
+		tabbedPanel.removeAll();
 
 		// all samples get data, meta
 		dataView = new SampleDataView(sample);
-		rolodex.add(dataView, I18n.getText("editor.tab_data"));
-		rolodex.add(metaView, I18n.getText("editor.tab_metadata"));
+		tabbedPanel.add(dataView, I18n.getText("editor.tab_data"));
+		tabbedPanel.add(metaView, I18n.getText("editor.tab_metadata"));
 		
 		if(wwMapPanel!=null)
 		{
-			rolodex.add(wwMapPanel, I18n.getText("editor.tab_map"));
+			tabbedPanel.add(wwMapPanel, I18n.getText("editor.tab_map"));
 		}
 
 		// wj and elements, if it's summed
 		if (sample.hasWeiserjahre())
-			rolodex.add(wjPanel, I18n.getText("editor.tab_weiserjahre"));
+			tabbedPanel.add(wjPanel, I18n.getText("editor.tab_weiserjahre"));
 		
 		if(componentsPanel != null) {
-			rolodex.add(componentsPanel, I18n.getText("editor.tab_components"));			
+			tabbedPanel.add(componentsPanel, I18n.getText("editor.tab_components"));			
 			
 			// let the components panel know it's being set as visible...
-			rolodex.addChangeListener(new ChangeListener() {
+			tabbedPanel.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
-					if(rolodex.getSelectedComponent() == componentsPanel)
+					if(tabbedPanel.getSelectedComponent() == componentsPanel)
 						componentsPanel.notifyPanelVisible();
 				}
 			});
 		}
 				
 		//if(mozillaMapPanel != null)
-	    //		rolodex.add(mozillaMapPanel, I18n.getText("editor.tab_map"));
+	    //		tabbedPanel.add(mozillaMapPanel, I18n.getText("editor.tab_map"));
 	}
 
-	private void initRolodex() {
+	private void initTabbedPanel() {
 		// try also: BOTTOM, but that's worse, by Fitt's Law, isn't it?
 		// (excel, for example, does that.)
-		rolodex = new JTabbedPane(SwingConstants.TOP);
-		// rolodex.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0)); -- but the old frame is still there!  hmm...
+		tabbedPanel = new JTabbedPane(SwingConstants.TOP);
+		// tabbedPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0)); -- but the old frame is still there!  hmm...
 		addCards();
-		getContentPane().add(rolodex, BorderLayout.CENTER);
+		getContentPane().add(tabbedPanel, BorderLayout.CENTER);
 		
 		// Fire of display units changed to make sure they are shown correctly to start with
 		sample.fireDisplayUnitsChanged();
+		
+		
+		
+		
 	}
 
 	public Sample getSample() {
@@ -571,12 +581,13 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		
 		TridasElement elem = sample.getMeta(Metadata.ELEMENT, TridasElement.class);
 		
+		
 		// Create layer of all sites
 		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
 		MarkerLayer allSites = TridasMarkerLayerBuilder.getMarkerLayerForAllSites();
 		allSites.setEnabled(false);
 		wwMapPanel = new GISPanel(new Dimension(300,300),true, allSites);
-				
+		editorViewMenu = new GISViewMenu(wwMapPanel.getWwd(), wwMapPanel.getVisibleLayers());	
 		
 		builder.addMarkerForTridasElement(elem);			
 		if(!builder.containsMarkers())
@@ -585,6 +596,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			return;
 		}
 			
+		wwMapPanel.addFocusListener(this);
+		
 		// Create layer of current element
 		builder.setName("Elements of this series");
 		wwMapPanel.addLayer(builder.getMarkerLayer());
@@ -605,8 +618,19 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	
 	private void addOtherElementsToMap()
 	{
+		
+		if(otherElementsLoaded)
+		{
+			return;
+		}
+		
 		if(sample.getSeries() instanceof TridasMeasurementSeries)
 		{
+			Cursor busyCursor = new Cursor(Cursor.WAIT_CURSOR);
+			Cursor normalCursor = Cursor.getDefaultCursor();
+			
+			setCursor(busyCursor);
+			
 			TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
 			TridasObject obj = sample.getMeta(Metadata.OBJECT, TridasObject.class);
 	
@@ -624,7 +648,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			
 			if(!dialog.isSuccessful()) 
 			{ 
-				System.out.println("Error getting boxes");
+				setCursor(normalCursor);
+				System.out.println("Error getting elements");
 				return;
 			}
 			
@@ -640,6 +665,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			MarkerLayer otherElements = builder.getMarkerLayer();
 			otherElements.setEnabled(false);
 			wwMapPanel.addLayer(builder.getMarkerLayer());
+			otherElementsLoaded = true;
+			setCursor(normalCursor);
 		}
 		
 	}
@@ -670,8 +697,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// title (must be before menubar)
 		updateTitle();
 
-		// put views into notecard-rolodex
-		initRolodex();
+		// put views into notecard-tabbedPanel
+		initTabbedPanel();
 
 		// set preferences
 		setUIFromPrefs();
@@ -685,6 +712,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		editorEditMenu = new EditorEditMenu(sample, dataView, this);
 		menubar.add(editorEditMenu);
 		menubar.add(new AdminMenu(this));
+		menubar.add(this.editorViewMenu);
 		menubar.add(new EditorToolsMenu(sample, this));
 		menubar.add(new EditorGraphMenu(sample));
 		//menubar.add(new EditorSiteMenu(sample));
@@ -964,6 +992,23 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	@Override
 	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		if(e.getSource().equals(this.wwMapPanel))
+		{
+			
+			addOtherElementsToMap();
+			
+		}
+		
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
 		// TODO Auto-generated method stub
 		
 	}

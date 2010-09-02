@@ -9,6 +9,7 @@ package edu.cornell.dendro.corina.prefs;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.hardware.SerialMeasuringDeviceConstants;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**
@@ -35,6 +36,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
 
         // First tab
     	this.propertiesTabs.setTitleAt(0, I18n.getText("preferences.network"));
+    	this.propertiesTabs.setIconAt(0, Builder.getIcon("networksettings.png", 22));
     	this.panelWebservice.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.webservice")));
         this.panelNetworkConnections.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.networkConnection")));
         this.panelEmail.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.email")));   	
@@ -53,6 +55,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         this.panelHardware.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.measuringPlatform")));
         this.panelTestComms.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.checkConnection")));        
     	this.propertiesTabs.setTitleAt(1, I18n.getText("preferences.hardware"));
+    	this.propertiesTabs.setIconAt(1, Builder.getIcon("hardware.png", 22));
         this.lblPlatformType.setText(I18n.getText("general.type")+":");
         this.lblPort.setText(I18n.getText("general.port")+":");
         this.lblPlatformUnits.setText(I18n.getText("preferences.units")+":");
@@ -64,6 +67,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         
         // Third tab
     	this.propertiesTabs.setTitleAt(2, I18n.getText("preferences.statistics"));
+    	this.propertiesTabs.setIconAt(2, Builder.getIcon("chart.png", 22));
     	this.panelCOFECHA.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.cofechaIntegration")));
         this.panelNumberFormats.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.numberFormats")));
         this.panelSigScores.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.sigScores")));
@@ -82,6 +86,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                 
     	// Fourth tab
     	this.propertiesTabs.setTitleAt(3, I18n.getText("preferences.appearance"));
+    	this.propertiesTabs.setIconAt(3, Builder.getIcon("appearance.png", 22));
         this.panelEditor.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.sampleEditor")));
         this.panelCharts.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.charts")));
         this.panelUI.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.ui")));

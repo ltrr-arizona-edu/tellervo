@@ -245,7 +245,7 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
     		
     		if(elem.isSetType())
     		{
-    			content += "<br><font size=\"2\">Element type : "+elem.getTaxon().getNormal()+"</font><hr/><br/><br>";
+    			content += "<br><font size=\"2\">Element type : "+elem.getType().getNormal()+"</font><hr/><br/><br>";
 
     		}
     		
