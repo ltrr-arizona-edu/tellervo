@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.dictionary;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSIRequest;
@@ -85,16 +88,26 @@ public class Dictionary extends CorinaResource {
 				continue;				
 			}
 			
+			
 			registerDictionary(dict.name(), dictionaryList);
 		}
 		
 		return true;
 	}
 	
-	private static final Map<String, List<?>> dictionaries = new HashMap<String, List<?>>();
+	private static final Map<String, MVCArrayList<?>> dictionaries = new HashMap<String, MVCArrayList<?>>();
 	
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static void registerDictionary(String dictionaryName, List<?> dictionary) {
-		dictionaries.put(dictionaryName, dictionary);
+		MVCArrayList list;
+		if(dictionaries.containsKey(dictionaryName)){
+			list = dictionaries.get(dictionaryName);
+		}else{
+			list = new MVCArrayList();
+			dictionaries.put(dictionaryName, list);
+		}
+		list.clear();
+		list.addAll(dictionary);
 		
 		System.out.println("Registering dictionary: " + dictionaryName);
 	}
@@ -105,11 +118,20 @@ public class Dictionary extends CorinaResource {
 	 * @param dictionaryName
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	public static List<?> getDictionary(String dictionaryName) {
-		List<?> dictionary = dictionaries.get(dictionaryName);
+		MVCArrayList<?> dictionary = dictionaries.get(dictionaryName);
 
-		return (dictionary == null) ? Collections.emptyList() : Collections.unmodifiableList(dictionary);
+		return (dictionary == null) ? Collections.unmodifiableList(new MVCArrayList()) : Collections.unmodifiableList(dictionary);
 	}
+	
+	public static MVCArrayList getMutableDictionary(String dictionaryName){
+		MVCArrayList<?> dictionary = dictionaries.get(dictionaryName);
+
+		return (dictionary == null) ? new MVCArrayList() : dictionary;
+	}
+	
+	
 	
 	/**
 	 * Retrieve a dictionary
