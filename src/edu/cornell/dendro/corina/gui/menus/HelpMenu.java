@@ -28,6 +28,7 @@ import javax.swing.JMenuItem;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -59,7 +60,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 public class HelpMenu extends JMenu {
   public static final CorinaAction ABOUT_ACTION = new CorinaAction("menus.about") {
     public void actionPerformed(ActionEvent ae) {
-      AboutBox.getInstance().show();
+      AboutBox.getInstance().setVisible(true);
    
     }
   };
@@ -78,7 +79,7 @@ public class HelpMenu extends JMenu {
         addSystemInfoMenu();
         addErrorLogMenu();
         
-	if (!App.platform.isMac()) {
+	if (!Platform.isMac()) {
 	    addSeparator();
 	    addAboutMenu();
 	}

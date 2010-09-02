@@ -65,6 +65,11 @@ public class GISPanel extends JPanel implements SelectListener{
 
         }
 
+        public ArrayList<String> getVisibleLayers()
+        {
+        	return visibleLayers;
+        }
+        
         public void addLayer(MarkerLayer layer)
         {
         	ApplicationTemplate.insertBeforeCompass(this.getWwd(), layer);

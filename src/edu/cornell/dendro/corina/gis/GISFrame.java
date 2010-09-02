@@ -73,6 +73,7 @@ public class GISFrame extends JFrame {
 
 		menuBar.add(new EditMenu(this));
 		menuBar.add(new AdminMenu(this));
+		menuBar.add(new GISViewMenu(this, wwMapPanel.getWwd(), wwMapPanel.getVisibleLayers()));
 		
 		if (Platform.isMac())
 			menuBar.add(new WindowMenu(this));
