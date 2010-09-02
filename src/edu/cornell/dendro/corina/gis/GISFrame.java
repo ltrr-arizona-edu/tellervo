@@ -2,9 +2,23 @@ package edu.cornell.dendro.corina.gis;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSlider;
+import javax.swing.SwingConstants;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import edu.cornell.dendro.corina.gui.menus.AdminMenu;
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
@@ -12,18 +26,20 @@ import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
+import gov.nasa.worldwind.AnaglyphSceneController;
+import gov.nasa.worldwind.geom.Angle;
 
 public class GISFrame extends JFrame {
 
 	private static final long serialVersionUID = -451333846688316647L;
 	protected GISPanel wwMapPanel;
 	
+	
 	public GISFrame()
 	{
 		setupGui();
 		setupMenus();
 	}
-	
 	
 	private void setupGui()
 	{
@@ -41,9 +57,7 @@ public class GISFrame extends JFrame {
 		setVisible(true);
 		setTitle("Site map");
 		setIconImage(Builder.getApplicationIcon());
-		
-		
-        
+ 
         // Add the Gazetteer
         try {
         	CorinaGazetteerPanel gazPanel = new CorinaGazetteerPanel(wwMapPanel.getWwd(), null);
@@ -59,9 +73,8 @@ public class GISFrame extends JFrame {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
-
+		}	
+		
 	}
 	
 	private void setupMenus()

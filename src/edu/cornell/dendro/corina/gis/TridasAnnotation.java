@@ -38,9 +38,11 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
     protected ButtonAnnotation closeButton;
     protected ImageAnnotation busyImage;
 	private ButtonAnnotation searchForSeries;
+	private ButtonAnnotation viewMetadata;
 	
     protected static final String CLOSE_IMAGE_PATH = "images/16x16-button-cancel.png";
-    protected static final String SEARCHFORSERIES_IMAGE_PATH = "edu/cornell/dendro/corina_resources/Icons/measurementseries.png";
+    protected static final String SEARCHFORSERIES_IMAGE_PATH = "edu/cornell/dendro/corina_resources/Icons/searchforseries.png";
+    protected static final String VIEWMETADATA_IMAGE_PATH = "edu/cornell/dendro/corina_resources/Icons/viewmetadata.png";
     protected static final String PIXEL22_MASK_PATH = "images/16x16-button-cancel.png";
 
     protected static final String BUSY_IMAGE_PATH = "images/indicator-16.gif";
@@ -48,7 +50,9 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
 
     protected static final String CLOSE_TOOLTIP_TEXT = "Close window";
     protected static final String SEARCHFORSERIES_TOOLTIP_TEXT = "Search for associated series";
+    protected static final String VIEWMETADATA_TOOLTIP_TEXT = "View metadata";
 
+    
     protected boolean busy;
 
     protected javax.swing.event.EventListenerList listenerList = new javax.swing.event.EventListenerList();
@@ -143,11 +147,16 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
         this.closeButton.addActionListener(this);
         this.closeButton.setToolTipText(CLOSE_TOOLTIP_TEXT);
         
-        this.searchForSeries = new ButtonAnnotation(Builder.getIconURL("measurementseries.png", Builder.ICONS, 32), null);
+        this.searchForSeries = new ButtonAnnotation(Builder.getIconURL("searchforseries.png", Builder.ICONS, 32), null);
         this.searchForSeries.setActionCommand("searchForSeries");
         this.searchForSeries.addActionListener(this);
         this.searchForSeries.setToolTipText(SEARCHFORSERIES_TOOLTIP_TEXT);
        
+        this.viewMetadata = new ButtonAnnotation(Builder.getIconURL("viewmetadata.png", Builder.ICONS, 32), null);
+        this.viewMetadata.setActionCommand("viewMetadata");
+        this.viewMetadata.addActionListener(this);
+        this.viewMetadata.setToolTipText(VIEWMETADATA_TOOLTIP_TEXT);
+        
         this.busyImage = new BusyImage(BUSY_IMAGE_PATH);   
     }
 
@@ -173,10 +182,17 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
         Annotation contentContainer = new ScreenAnnotation("", new java.awt.Point());
         {
             this.setupContainer(contentContainer);
-            contentContainer.setLayout(new AnnotationFlowLayout(AVKey.VERTICAL, AVKey.LEFT, 15, 30)); // hgap, vgap
+            contentContainer.setLayout(new AnnotationFlowLayout(AVKey.VERTICAL, AVKey.LEFT, 15, 30	)); // hgap, vgap
             
             contentContainer.addChild(this.titleLabel);
-            contentContainer.addChild(this.searchForSeries);
+            
+            Annotation buttonContainer = new ScreenAnnotation("", new java.awt.Point());
+            setupLabel(buttonContainer);
+            buttonContainer.setLayout(new AnnotationFlowLayout(AVKey.HORIZONTAL, AVKey.CENTER, 30, 5)); // hgap, vgap
+            buttonContainer.addChild(this.searchForSeries);
+            buttonContainer.addChild(this.viewMetadata);
+            
+            contentContainer.addChild(buttonContainer);
             contentContainer.addChild(this.timestampLabel);
             
         }

@@ -33,6 +33,7 @@ import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel.ObjectListMode;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel.TreeDepth;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
@@ -96,6 +97,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
     {
     	// Set up tree panel
     	treepanel = new TridasTreeViewPanel(TreeDepth.RADIUS, true, "View metadata");
+    	treepanel.setObjectList(ObjectListMode.ALL);
     	treepanel.addTridasSelectListener(this);
     	leftPane.add(treepanel, BorderLayout.CENTER);
     	
@@ -163,6 +165,11 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 	public void setEntity(ITridas entity, Class<? extends ITridas> type)
 	{
 		setEntity(entity, type, false);
+	}
+	
+	public void hideTree()
+	{
+		this.splitPane.setDividerLocation(0);
 	}
 	
 	/**

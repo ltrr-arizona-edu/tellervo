@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gis;
 
+import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -12,6 +13,7 @@ import gov.nasa.worldwind.examples.ClickAndGoSelectListener;
 import gov.nasa.worldwind.examples.GazetteerPanel;
 import gov.nasa.worldwind.examples.util.LayerManagerLayer;
 import gov.nasa.worldwind.exception.WWAbsentRequirementException;
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -23,13 +25,23 @@ import gov.nasa.worldwind.util.StatusBar;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSlider;
+import javax.swing.SwingConstants;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.tridas.interfaces.ITridas;
 
@@ -48,19 +60,22 @@ public class GISPanel extends JPanel implements SelectListener{
         protected RenderableLayer annotationLayer;
         protected TridasAnnotation annotation;
         private ArrayList<String> visibleLayers = new ArrayList<String>();
+
+        
+        
         public GISPanel(Dimension canvasSize, boolean includeStatusBar, MarkerLayer ly)
         {
             super(new BorderLayout());
         	setupGui(canvasSize, includeStatusBar);
         	addLayer(ly);
+        	
             this.annotationLayer = new RenderableLayer();
             annotationLayer.setName("Popup information");
             ApplicationTemplate.insertBeforePlacenames(this.getWwd(), this.annotationLayer);
 
         	
         	this.getWwd().addSelectListener(this);
-        	
-        	
+
         	
 
         }
@@ -70,6 +85,7 @@ public class GISPanel extends JPanel implements SelectListener{
         	return visibleLayers;
         }
         
+ 
         public void addLayer(MarkerLayer layer)
         {
         	ApplicationTemplate.insertBeforeCompass(this.getWwd(), layer);
@@ -88,12 +104,10 @@ public class GISPanel extends JPanel implements SelectListener{
         	
             this.wwd = this.createWorldWindow();
             this.wwd.setPreferredSize(canvasSize);
-            
+                
             // Create the default model as described in the current worldwind properties.
             Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
             this.wwd.setModel(m);
-
-            
             
             // Setup a select listener for the worldmap click-and-go feature
             this.wwd.addSelectListener(new ClickAndGoSelectListener(this.getWwd(), WorldMapLayer.class));
@@ -373,5 +387,7 @@ public class GISPanel extends JPanel implements SelectListener{
 			}
 	    	
 	    }
+	    
+
 		
 }

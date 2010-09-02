@@ -25,6 +25,23 @@ public class GISViewMenu extends JMenu implements ItemListener {
 	private WorldWindow wwd;
 	private ArrayList<String> visibleLayers;
 	
+	public enum GISLayers{
+		OVERVIEW("World Map"), 
+		COMPASS("Compass"), SCALEBAR("Scale bar"), LAYERSLIST("Layer List"), STARS("Stars"), ATMOSPHERE("Atmosphere"), BLUEMARBLE("NASA Blue Marble Image"), 
+		BLUEMARBLEWMS2004("Blue Marble (WMS) 2004"), LANDSAT("i-cubed Landsat"), USDA("USDA NAIP"), MSAERIAL("MS Virtual Earth Aerial"), BOUNDARIES("Political Boundaries"), 
+		PLACENAMES("Place Names");
+		private String name;
+		
+		private GISLayers(String n)
+		{
+			name = n; 
+		}
+		public String getName()
+		{
+			return name;
+		}
+	};
+	
 	
 	public GISViewMenu(JFrame parent, WorldWindow wwd, ArrayList<String> visibleLayers)
 	{
@@ -35,6 +52,7 @@ public class GISViewMenu extends JMenu implements ItemListener {
         this.visibleLayers = visibleLayers;
         
 		addLayersMenu();
+		addSeparator();
 		addControlMenuItems();
 
 		
@@ -42,9 +60,8 @@ public class GISViewMenu extends JMenu implements ItemListener {
 	
 	private void addLayersMenu()
 	{
-		JMenu layersmenu = Builder.makeMenu("menus.view.layers", "prosheet.png");
+		JMenu layersmenu = Builder.makeMenu("menus.view.layers", "layers.png");
 		
-		layerslist = Builder.makeCheckBoxMenuItem("menus.view.layerslist");
 		stars = Builder.makeCheckBoxMenuItem("menus.view.layers.stars");
 		atmosphere = Builder.makeCheckBoxMenuItem("menus.view.layers.atmosphere");
 		blueMarble = Builder.makeCheckBoxMenuItem("menus.view.layers.blueMarble");
@@ -55,70 +72,115 @@ public class GISViewMenu extends JMenu implements ItemListener {
 		boundaries = Builder.makeCheckBoxMenuItem("menus.view.layers.boundaries");
 		placenames = Builder.makeCheckBoxMenuItem("menus.view.layers.placenames");
 
+		stars.addItemListener(this);
+		atmosphere.addItemListener(this);
+		blueMarble.addItemListener(this);
+		blueMarbleWMS2004.addItemListener(this);
+		landsat.addItemListener(this);
+		usda.addItemListener(this);
+		msAerial.addItemListener(this);
+		boundaries.addItemListener(this);
+		placenames.addItemListener(this);
+
 		
-		layerslist.addItemListener(this);
-		
-		layersmenu.add(layerslist);
+		layersmenu.add(blueMarble);
+		layersmenu.add(blueMarbleWMS2004);
+		layersmenu.add(landsat);
+		layersmenu.add(msAerial);
+		//layersmenu.add(usda);
 		layersmenu.addSeparator();
-		
+		layersmenu.add(stars);
+		layersmenu.add(atmosphere);
+		layersmenu.addSeparator();
+		layersmenu.add(boundaries);
+		layersmenu.add(placenames);
 		
 		this.add(layersmenu);
 	}
 	
 	private void addControlMenuItems()
 	{
-		overview = Builder.makeCheckBoxMenuItem("menus.view.overview");
-		compass = Builder.makeCheckBoxMenuItem("menus.view.compass");
-		scalebar = Builder.makeCheckBoxMenuItem("menus.view.scalebar");
-	
-		LayerList layers = wwd.getModel().getLayers();
-		
-		setupOverview();
-		setupCompass();
-		setupScaleBar();
-		
+		overview = Builder.makeCheckBoxMenuItem("menus.view.overview", "map.png");
+		compass = Builder.makeCheckBoxMenuItem("menus.view.compass", "compass.png");
+		scalebar = Builder.makeCheckBoxMenuItem("menus.view.scalebar", "scale.png");
+		layerslist = Builder.makeCheckBoxMenuItem("menus.view.layerslist", "list.png");
+		LayerList blah = wwd.getModel().getLayers();
+		setupLayerMenuButtons();
+
+		layerslist.addItemListener(this);
 		overview.addItemListener(this);
 		compass.addItemListener(this);
 		scalebar.addItemListener(this);
 		
+		add(layerslist);
 		add(overview);
 		add(compass);
 		add(scalebar);
+		
 	}
 
-	private void setupOverview()
+	private void setupLayerMenuButtons()
 	{
-		setOverviewSelected(wwd.getModel().getLayers().getLayerByName("World Map").isEnabled());
+		for (GISLayers layer : GISLayers.values())
+		{
+			setupMenuButton(layer);
+		}
 	}
 	
-	private void setOverviewSelected(Boolean b)
+	private void setupMenuButton(GISLayers layer)
 	{
-		wwd.getModel().getLayers().getLayerByName("World Map").setEnabled(b);		
-		overview.setSelected(b);
+		try{
+			Layer layers = wwd.getModel().getLayers().getLayerByName(layer.getName());
+
+			setMenuButtonSelected(wwd.getModel().getLayers().getLayerByName(layer.getName()).isEnabled(), layer);
+		} catch (Exception e)
+		{
+			if(getMenuItemFromLayer(layer)!=null)
+			{
+				getMenuItemFromLayer(layer).setSelected(false);
+				getMenuItemFromLayer(layer).setEnabled(false);
+			}
+		}
 	}
 	
-	private void setupCompass()
+	private void setMenuButtonSelected(Boolean b, GISLayers layer)
 	{
-		setCompassSelected(wwd.getModel().getLayers().getLayerByName("Compass").isEnabled());
+		try{
+			wwd.getModel().getLayers().getLayerByName(layer.getName()).setEnabled(b);
+		} catch (Exception e)
+		{
+			if(getMenuItemFromLayer(layer)!=null)
+			{
+				getMenuItemFromLayer(layer).setSelected(false);
+				getMenuItemFromLayer(layer).setEnabled(false);
+			}
+		}
+		
+		getMenuItemFromLayer(layer).setSelected(b);
+		
 	}
 	
-	private void setCompassSelected(Boolean b)
+	private JMenuItem getMenuItemFromLayer(GISLayers layer)
 	{
-		wwd.getModel().getLayers().getLayerByName("Compass").setEnabled(b);		
-		compass.setSelected(b);
+		switch(layer)
+		{
+			case ATMOSPHERE: 		return atmosphere;
+			case OVERVIEW:			return overview;
+			case COMPASS:			return compass;
+			case SCALEBAR:			return scalebar;
+			case LAYERSLIST:		return layerslist;
+			case STARS:				return stars;
+			case BLUEMARBLE:		return blueMarble;
+			case BLUEMARBLEWMS2004:	return blueMarbleWMS2004;
+			case LANDSAT:			return landsat;
+			case USDA:				return usda;
+			case MSAERIAL:			return msAerial;
+			case BOUNDARIES:		return boundaries;
+			case PLACENAMES:		return placenames;
+			default: return null;
+		}
 	}
-	
-	private void setupScaleBar()
-	{
-		setScaleBarSelected(wwd.getModel().getLayers().getLayerByName("Scale bar").isEnabled());
-	}
-	
-	private void setScaleBarSelected(Boolean b)
-	{
-		wwd.getModel().getLayers().getLayerByName("Scale bar").setEnabled(b);		
-		scalebar.setSelected(b);
-	}
-	
+
 	@Override
 	public void itemStateChanged(ItemEvent event) {
 
@@ -126,18 +188,57 @@ public class GISViewMenu extends JMenu implements ItemListener {
         
         if(event.getSource()==overview)
         {
-        	setOverviewSelected(selected);
+        	setMenuButtonSelected(selected, GISLayers.OVERVIEW);
         }
         else if(event.getSource()==compass)
         {
-        	setCompassSelected(selected);
+        	setMenuButtonSelected(selected, GISLayers.COMPASS);
         }
         else if(event.getSource()==scalebar)
         {
-        	setScaleBarSelected(selected);
+        	setMenuButtonSelected(selected, GISLayers.SCALEBAR);
         }
-	
-	    }
+        else if(event.getSource()==atmosphere)
+        {
+        	setMenuButtonSelected(selected, GISLayers.ATMOSPHERE);
+        }
+        else if(event.getSource()==stars)
+        {
+        	setMenuButtonSelected(selected, GISLayers.STARS);
+        }
+        else if(event.getSource()==blueMarble)
+        {
+        	setMenuButtonSelected(selected, GISLayers.BLUEMARBLE);
+        }
+        else if(event.getSource()==blueMarbleWMS2004)
+        {
+        	setMenuButtonSelected(selected, GISLayers.BLUEMARBLEWMS2004);
+        }
+        else if(event.getSource()==landsat)
+        {
+        	setMenuButtonSelected(selected, GISLayers.LANDSAT);
+        }
+        else if(event.getSource()==usda)
+        {
+        	setMenuButtonSelected(selected, GISLayers.USDA);
+        }
+        else if(event.getSource()==msAerial)
+        {
+        	setMenuButtonSelected(selected, GISLayers.MSAERIAL);
+        }
+        else if(event.getSource()==boundaries)
+        {
+        	setMenuButtonSelected(selected, GISLayers.BOUNDARIES);
+        }
+        else if(event.getSource()==placenames)
+        {
+        	setMenuButtonSelected(selected, GISLayers.PLACENAMES);
+        }
+        else if(event.getSource()==layerslist)
+        {
+        	setMenuButtonSelected(selected, GISLayers.LAYERSLIST);
+        }
+    }
     
     
 	

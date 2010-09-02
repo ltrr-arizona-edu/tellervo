@@ -11,6 +11,7 @@ import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
 import edu.cornell.dendro.corina.manip.ReconcileWindow;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
@@ -25,7 +26,8 @@ import gov.nasa.worldwind.avlist.AVKey;
 
 public class TridasAnnotationController extends AbstractTridasAnnotationController {
 
-
+	private Cursor busyCursor = new Cursor(Cursor.WAIT_CURSOR);
+	private Cursor normalCursor = Cursor.getDefaultCursor();
     private ITridas entity;
 
     public TridasAnnotationController(WorldWindow worldWindow, TridasAnnotation annotation, ITridas entity)
@@ -62,11 +64,12 @@ public class TridasAnnotationController extends AbstractTridasAnnotationControll
         if (e.getActionCommand() == "searchForSeries")
         {
 
-        	
+        	this.setCursor(busyCursor);
 			DBBrowser browser = new DBBrowser(new Frame(), true);
 			Boolean success = browser.doSearchForAssociatedSeries(entity);
 			browser.setVisible(true);
-
+			this.setCursor(normalCursor);
+			
 			if(success==false) {
 				browser.dispose();
 				return;
@@ -95,8 +98,17 @@ public class TridasAnnotationController extends AbstractTridasAnnotationControll
 			
 			
         }
+        else if (e.getActionCommand() == "viewMetadata")
+        {
 
-        //super.onActionPerformed(e);
+        	this.setCursor(busyCursor);
+    		MetadataBrowser dialog = new MetadataBrowser(null, false);
+    		dialog.setEntity(entity, entity.getClass());
+    		dialog.hideTree();
+    		dialog.setVisible(true);
+    		this.setCursor(normalCursor);
+        }
+        
         
     }
 
