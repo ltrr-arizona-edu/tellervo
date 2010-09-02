@@ -12,6 +12,8 @@ import java.util.TreeMap;
 
 import org.tridas.util.TridasObjectEx;
 
+import com.dmurph.mvc.model.MVCArrayList;
+
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
@@ -38,7 +40,7 @@ public class TridasObjectList extends CorinaResource {
 		super("tridas.objects", CorinaRequestType.READ);
 		
 		// ensure our data is all set up
-		data = new ListViews(0);
+		data = new ListViews();
 		
 		// load my cache and unload on a successful remote load
 		new CorinaResourceCacher(this, true).load();
@@ -69,7 +71,7 @@ public class TridasObjectList extends CorinaResource {
 		List<TridasObjectEx> objects = ListUtil.subListOfType(
 				object.getContent().getSqlsAndObjectsAndElements(), TridasObjectEx.class);
 		
-		ListViews newData = new ListViews(objects.size());
+		ListViews newData = new ListViews();
 		
 		// create our lists
 		for(TridasObjectEx obj : objects) {
@@ -80,7 +82,10 @@ public class TridasObjectList extends CorinaResource {
 		
 		// move our data over
 		synchronized(data) {
-			data = newData;
+			data.allObjects.clear();
+			data.allObjects.addAll(newData.allObjects);
+			data.bySiteCode.clear();
+			data.bySiteCode.putAll(newData.bySiteCode);
 		}
 		
 		return true;
@@ -196,7 +201,16 @@ public class TridasObjectList extends CorinaResource {
 			return Collections.unmodifiableList(data.allObjects);
 		}
 	}
-
+	
+	/**
+	 * Retrieves the mutable object list used to populate all other requests.
+	 * Modifying this list will change results for other method calls in this class.
+	 * @return
+	 */
+	public MVCArrayList<TridasObjectEx> getMutableObjectList(){
+		return data.allObjects;
+	}
+	
 	/**
 	 * Retrieve a list of all tridas objects, populated first
 	 * 
@@ -252,14 +266,14 @@ public class TridasObjectList extends CorinaResource {
 		}
 	}
 	
-	private ListViews data;
+	private final ListViews data;
 	private static class ListViews {
-		public ListViews(int initSize) {	
-			allObjects = new ArrayList<TridasObjectEx>();
+		public ListViews() {	
+			allObjects = new MVCArrayList<TridasObjectEx>();
 			bySiteCode = new TreeMap<String, TridasObjectEx>();
 		}
 		
-		public List<TridasObjectEx> allObjects;
+		public MVCArrayList<TridasObjectEx> allObjects;
 		public Map<String, TridasObjectEx> bySiteCode;
 	}
 }
