@@ -47,6 +47,22 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         ((JSpinner.NumberEditor) spnDDLat.getEditor()).getFormat().setMaximumFractionDigits(6);
         ((JSpinner.NumberEditor) spnDDLong.getEditor()).getFormat().setMinimumFractionDigits(4);
         ((JSpinner.NumberEditor) spnDDLong.getEditor()).getFormat().setMaximumFractionDigits(6);
+        
+        
+        ((JSpinner.NumberEditor) spnDMSLatMin.getEditor()).getFormat().setMinimumFractionDigits(0);
+        ((JSpinner.NumberEditor) spnDMSLatMin.getEditor()).getFormat().setMaximumFractionDigits(2);
+        ((JSpinner.NumberEditor) spnDMSLatSec.getEditor()).getFormat().setMinimumFractionDigits(4);
+        ((JSpinner.NumberEditor) spnDMSLatSec.getEditor()).getFormat().setMaximumFractionDigits(6);
+        ((JSpinner.NumberEditor) spnDMSLongMin.getEditor()).getFormat().setMinimumFractionDigits(0);
+        ((JSpinner.NumberEditor) spnDMSLongMin.getEditor()).getFormat().setMaximumFractionDigits(2);
+        ((JSpinner.NumberEditor) spnDMSLongSec.getEditor()).getFormat().setMinimumFractionDigits(4);
+        ((JSpinner.NumberEditor) spnDMSLongSec.getEditor()).getFormat().setMaximumFractionDigits(6);
+       
+        spnDMSLatMin.setModel(new SpinnerNumberModel(0.0d, 0.0d, 59.99d, 0.1));
+        spnDMSLatSec.setModel(new SpinnerNumberModel(0.0d, 0.0d, 59.99d, 0.1));
+        spnDMSLongMin.setModel(new SpinnerNumberModel(0.0d, 0.0d, 59.99d, 0.1));
+        spnDMSLongSec.setModel(new SpinnerNumberModel(0.0d, 0.0d, 59.99d, 0.1));
+
     }
     
     /** This method is called from within the constructor to

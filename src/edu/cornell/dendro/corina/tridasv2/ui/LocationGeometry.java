@@ -1,11 +1,15 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.Dialog.ModalExclusionType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
@@ -22,8 +26,15 @@ import net.opengis.gml.schema.Pos;
 import org.tridas.schema.TridasLocationGeometry;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gis.GISFrame;
+import edu.cornell.dendro.corina.gis.GISPanel;
+import edu.cornell.dendro.corina.gis.GPXParser;
+import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
+import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
+import gov.nasa.worldwind.layers.MarkerLayer;
 
 public class LocationGeometry extends LocationGeometryUI implements
 		ActionListener, ChangeListener {
@@ -31,6 +42,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 
 	private JDialog dialog;
 	private boolean hasResults = false;
+	private GISFrame map;
 	final JFileChooser fc = new JFileChooser();
 	final GPXFileFilter filter = new GPXFileFilter();
 
@@ -114,15 +126,18 @@ public class LocationGeometry extends LocationGeometryUI implements
 		radgroup.add(radGPS);
 		radgroup.add(radManual);
 		radManual.setSelected(true);
-
+		txtGPSFilename.setEditable(false);
+		
 		cboLatLongStyle.setEnabled(true);
-		radGPS.setEnabled(false);
-		btnViewMap.setEnabled(false);
+		radGPS.setEnabled(true);
+		btnViewMap.setEnabled(true);
 
 		// Poke the radio buttons and lat long style to set fields
 		radManualActionPerformed(null);
 		latLongStyleActionPerformed(null);
 
+		cboWaypoint.addActionListener(this);
+		
 		radGPS.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				radGPSActionPerformed(evt);
@@ -180,7 +195,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 		this.lblWaypoint.setEnabled(true);
 		this.btnGPSBrowse.setEnabled(true);
 		this.cboWaypoint.setEnabled(true);
-
+		this.cboDatum.setEnabled(false);
 	}
 
 	private void radManualActionPerformed(java.awt.event.ActionEvent evt) {
@@ -191,10 +206,12 @@ public class LocationGeometry extends LocationGeometryUI implements
 		this.btnGPSBrowse.setEnabled(false);
 		this.lblWaypoint.setEnabled(false);
 		this.cboWaypoint.setEnabled(false);
+		this.cboDatum.setEnabled(false);
 
 	}
 
 	private void setLatLongEnabled(Boolean b) {
+		
 		this.spnDDLat.setEnabled(b);
 		this.spnDDLong.setEnabled(b);
 		this.spnDMSLatDeg.setEnabled(b);
@@ -225,29 +242,29 @@ public class LocationGeometry extends LocationGeometryUI implements
 		double dms_lat_min = Math.floor((dd_lat - dms_lat_deg) * 60d);
 		double dms_lat_sec = Math.round((((dd_lat - dms_lat_deg) * 60d) - dms_lat_min) * 60d);
 		
-		spnDMSLatDeg.setValue((int) dms_lat_deg * latMultiplier);
-		spnDMSLatMin.setValue((int) dms_lat_min);
-		spnDMSLatSec.setValue((int) dms_lat_sec);
+		spnDMSLatDeg.setValue((Double) dms_lat_deg * latMultiplier);
+		spnDMSLatMin.setValue((Double) dms_lat_min);
+		spnDMSLatSec.setValue((Double) dms_lat_sec);
 		
 		// long, same idea
 		double dms_long_deg = Math.floor(dd_long);
 		double dms_long_min = Math.floor((dd_long - dms_long_deg) * 60d);
 		double dms_long_sec = Math.round((((dd_long - dms_long_deg) * 60d) - dms_long_min) * 60d);
 		
-		spnDMSLongDeg.setValue((int) dms_long_deg * longMultiplier);
-		spnDMSLongMin.setValue((int) dms_long_min);
-		spnDMSLongSec.setValue((int) dms_long_sec);
+		spnDMSLongDeg.setValue((Double) dms_long_deg * longMultiplier);
+		spnDMSLongMin.setValue((Double) dms_long_min);
+		spnDMSLongSec.setValue((Double) dms_long_sec);
 
 	}
 
 	private void setDDFromDMS() {
 		// ok, these should all be integers!
-		int dms_lat_deg = Integer.parseInt(spnDMSLatDeg.getValue().toString());
-		int dms_lat_min = Integer.parseInt(spnDMSLatMin.getValue().toString());
-		int dms_lat_sec = Integer.parseInt(spnDMSLatSec.getValue().toString());
-		int dms_long_deg = Integer.parseInt(spnDMSLongDeg.getValue().toString());
-		int dms_long_min = Integer.parseInt(spnDMSLongMin.getValue().toString());
-		int dms_long_sec = Integer.parseInt(spnDMSLongSec.getValue().toString());
+		Double dms_lat_deg = Double.parseDouble(spnDMSLatDeg.getValue().toString());
+		Double dms_lat_min = Double.parseDouble(spnDMSLatMin.getValue().toString());
+		Double dms_lat_sec = Double.parseDouble(spnDMSLatSec.getValue().toString());
+		Double dms_long_deg = Double.parseDouble(spnDMSLongDeg.getValue().toString());
+		Double dms_long_min = Double.parseDouble(spnDMSLongMin.getValue().toString());
+		Double dms_long_sec = Double.parseDouble(spnDMSLongSec.getValue().toString());
 
 		// remember the signs...
 		double latMultiplier = (dms_lat_deg < 0) ? -1 : 1;
@@ -288,12 +305,35 @@ public class LocationGeometry extends LocationGeometryUI implements
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				txtGPSFilename.setText(fc.getSelectedFile().toString());
-
+				
+				GPXParser parser = null;
+				try {
+					parser = new GPXParser(fc.getSelectedFile().toString());
+				} catch (FileNotFoundException e) {
+					Alert.error("File not found", "File not found");
+				} catch (IOException e) {
+					Alert.error("Error", "Error reading file");
+				}
+								
+				for(GPXWaypoint wpt : parser.getWaypoints())
+				{
+					cboWaypoint.addItem(wpt);
+				}
+				
 			}
 		}
 
 		if (evt.getSource() == btnViewMap) {
 			// Open map window for current location
+		
+			if(map!=null) map.dispose();
+			
+			map = new GISFrame(TridasMarkerLayerBuilder.getMarkerLayerForLatLong(
+							(Double)this.spnDDLat.getValue(),
+							(Double)this.spnDDLong.getValue()));
+			
+			map.setVisible(true);
+
 		}
 
 		if (evt.getSource() == btnCancel) {			
@@ -326,6 +366,13 @@ public class LocationGeometry extends LocationGeometryUI implements
 			
 			dialog.dispose();
 			dialog = null;
+		}
+		
+		if( evt.getSource() == this.cboWaypoint)
+		{
+			GPXWaypoint wpt = (GPXWaypoint) cboWaypoint.getSelectedItem();
+			this.spnDDLat.setValue(wpt.getLatitude());
+			this.spnDDLong.setValue(wpt.getLongitude());
 		}
 
 	}

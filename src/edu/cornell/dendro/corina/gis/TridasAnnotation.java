@@ -39,6 +39,7 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
     protected ImageAnnotation busyImage;
 	private ButtonAnnotation searchForSeries;
 	private ButtonAnnotation viewMetadata;
+	private Boolean overrideToEmpty = false;
 	
     protected static final String CLOSE_IMAGE_PATH = "images/16x16-button-cancel.png";
     protected static final String SEARCHFORSERIES_IMAGE_PATH = "edu/cornell/dendro/corina_resources/Icons/searchforseries.png";
@@ -208,7 +209,7 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
     {
     	String content = "";
     	
-    	if (entity instanceof TridasObject)
+    	if (entity instanceof TridasObjectEx)
     	{
     		TridasObjectEx obj = (TridasObjectEx) entity;   		
     		if(obj.getLabCode()!=null)
@@ -250,6 +251,10 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
     		}
     		
     	}
+    	else
+    	{
+    		overrideToEmpty = true;
+    	}
     	
     	return content;
     }
@@ -257,8 +262,10 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
     private String getTimestampContent()
     {
     	String content = "";
+    	try{
 		content+= "<br><font color=\"#CCCCCC\">Created: " + BoxCuration.formatXMLGregorianCalendar(entity.getCreatedTimestamp().getValue()) +"";
 		content+= "<br>Last Updated: " + BoxCuration.formatXMLGregorianCalendar(entity.getLastModifiedTimestamp().getValue()) +"";
+    	} catch (Exception e){}
 		return content;
     }
     

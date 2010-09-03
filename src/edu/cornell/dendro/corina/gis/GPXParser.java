@@ -6,12 +6,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Date;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.tridas.schema.DateTime;
+import org.tridas.schema.ObjectFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -45,7 +48,7 @@ public class GPXParser {
 	
 	public static void main(String args[]) 
 	{
-		String filename = "/Users/peterbrewer/Desktop/instance1.xml";
+		String filename = "/Users/peterbrewer/Desktop/gpx.gpx";
 		GPXParser gpx = null;
 		
 		try {
@@ -105,7 +108,7 @@ public class GPXParser {
 		private Double latitude;
 		private Double longitude;
 		private Double elevation;
-		private DateTime time;
+		private Date date;
 		private String name;
 		
 		
@@ -147,7 +150,7 @@ public class GPXParser {
 				}
 				else if(tag.getNodeName().equals("time"))
 				{
-
+					date = DatatypeConverter.parseDateTime(tag.getFirstChild().getNodeValue()).getTime();
 				}
 			}
 		
@@ -174,11 +177,15 @@ public class GPXParser {
 			return name;
 		}
 		
-		public DateTime getTime()
+		public Date getDate()
 		{
-			return time;
+			return date;
 		}
 		
+		public String toString()
+		{
+			return name;
+		}
 	}
 	
 	

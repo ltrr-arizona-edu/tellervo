@@ -28,23 +28,37 @@ import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.MarkerLayer;
 
 public class GISFrame extends JFrame {
 
 	private static final long serialVersionUID = -451333846688316647L;
 	protected GISPanel wwMapPanel;
 	
-	
+	/**
+	 * Simple constructor with all sites shown on map
+	 */
 	public GISFrame()
 	{
-		setupGui();
+		setupGui(TridasMarkerLayerBuilder.getMarkerLayerForAllSites());
 		setupMenus();
 	}
 	
-	private void setupGui()
+	/**
+	 * Simple constructor which shows given layer on map
+	 * 
+	 * @param layer
+	 */
+	public GISFrame(MarkerLayer layer)
 	{
-		wwMapPanel = new GISPanel(new Dimension(300,300),true, 
-				TridasMarkerLayerBuilder.getMarkerLayerForAllSites());
+		setupGui(layer);
+		setupMenus();
+	}
+	
+	private void setupGui(MarkerLayer layer)
+	{
+		wwMapPanel = new GISPanel(new Dimension(300,300),true, layer);
 		
 		add(wwMapPanel, BorderLayout.CENTER);
 		pack();

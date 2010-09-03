@@ -78,6 +78,11 @@ public class TridasMarkerLayerBuilder {
 		}
 	}
 	
+	public void addLatLongMarker(Double lat, Double lon)
+	{
+		markers.add(new TridasMarker(Position.fromDegrees(lat, lon), getMarkerAttributesForEntity(TridasObject.class), new TridasObject()));
+	}
+	
 	public Boolean containsMarkers()
 	{
 		if(markers.isEmpty())
@@ -159,4 +164,12 @@ public class TridasMarkerLayerBuilder {
         return builder.getMarkerLayer();
 	}
 	
+	public static MarkerLayer getMarkerLayerForLatLong(Double lat, Double lon)
+	{
+		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
+		builder.addLatLongMarker(lat, lon);
+		builder.setName("Coordinate marker");
+		
+        return builder.getMarkerLayer();
+	}
 }

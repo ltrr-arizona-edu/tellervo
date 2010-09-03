@@ -326,12 +326,12 @@ public class SeriesReport extends ReportBase {
 				remarkStr = remark.getNormalTridas().toString().toLowerCase();
 				remarkStr = remarkStr.replace("_", " ");
 				icon = getTridasIcon(remark.getNormalTridas());	
-				if(icon==null) icon = Image.getInstance(missingIconURL);
+				if(icon==null) icon = Builder.getITextImageMissingIcon();
 			}
 			else if(CORINA.equals(remark.getNormalStd())) {
 				remarkStr = remark.getNormal();
 				icon = getCorinaIcon(remark.getNormal());	
-				if(icon==null) icon = Image.getInstance(missingIconURL);
+				if(icon==null) icon = Builder.getITextImageMissingIcon();
 			}
 			
 			
@@ -527,12 +527,12 @@ public class SeriesReport extends ReportBase {
 						if(remark.isSetNormalTridas()) {
 							remstr = remark.getNormalTridas().toString();
 							icon = getTridasIcon(remark.getNormalTridas());	
-							if(icon==null) icon = Image.getInstance(missingIconURL);
+							if(icon==null) icon = Builder.getITextImageMissingIcon();
 						}
 						else if(CORINA.equals(remark.getNormalStd())) {
 							remstr = remark.getNormal();
 							icon = getCorinaIcon(remark.getNormal());	
-							if(icon==null) icon = Image.getInstance(missingIconURL);
+							if(icon==null) icon = Builder.getITextImageMissingIcon();
 						}
 
 						// Print debug info for this remark
