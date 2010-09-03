@@ -6,7 +6,6 @@ package edu.cornell.dendro.corina.command.bulkImport;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-import edu.cornell.dendro.corina.components.table.DynamicJComboBoxEvent;
 import edu.cornell.dendro.corina.control.bulkImport.RemoveSelectedEvent;
 
 /**
@@ -25,8 +24,8 @@ public class RemoveSelectedCommand implements ICommand {
 		event.model.removeSelected();
 		
 		// reset loaded combo box
-		DynamicJComboBoxEvent devent = new DynamicJComboBoxEvent(event.model.getImportedDynamicComboBoxKey(), event.model.getImportedListStrings());
-		devent.dispatch();
+//		DynamicJComboBoxEvent devent = new DynamicJComboBoxEvent(event.model.getImportedDynamicComboBoxKey(), event.model.getImportedListStrings());
+//		devent.dispatch();
 	}
 	
 }

@@ -6,6 +6,7 @@ package edu.cornell.dendro.corina.command.bulkImport;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -17,7 +18,7 @@ import org.tridas.util.TridasObjectEx;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-import edu.cornell.dendro.corina.components.table.DynamicJComboBoxEvent;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementTableModel;
@@ -149,13 +150,25 @@ public class ImportSelectedElementsCommand implements ICommand {
 			for(TridasObjectEx o : omodel.getImportedList()){
 				if(o.getLabCode().equals(som.getProperty(SingleElementModel.OBJECT))){
 					parentObject = o;
+					break;
 				}
 			}
 			if(parentObject == null){
-				String s = "Could not find parent object locally with code: "+som.getProperty(SingleElementModel.OBJECT);
-				System.err.println(s);
-				Alert.error("Saving Error", s);
-				continue;
+				System.out.println("Could not find parent object locally with code: "+som.getProperty(SingleElementModel.OBJECT));
+
+				// we'll try to find the lab code in the huge list
+				List<TridasObjectEx> objects = App.tridasObjects.getTopLevelObjectList();
+				for(TridasObjectEx o : objects){
+					if(o.getLabCode().equals(som.getProperty(SingleElementModel.OBJECT))){
+						parentObject = o;
+						break;
+					}
+				}
+			
+				if(parentObject == null){
+					Alert.error("Saving Error", "Could not find object with code: "+ som.getProperty(SingleElementModel.OBJECT));
+					continue;
+				}
 			}
 			
 			EntityResource<TridasElement> resource;
@@ -202,9 +215,9 @@ public class ImportSelectedElementsCommand implements ICommand {
 				model.getElementModel().getImportedList().add(resource.getAssociatedResult());
 			}
 		}
-		
-		// finally, update the combo boxes in the table to the new options
-		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(emodel.getImportedDynamicComboBoxKey(), emodel.getImportedListStrings());
-		event.dispatch();
+//		
+//		// finally, update the combo boxes in the table to the new options
+//		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(emodel.getImportedDynamicComboBoxKey(), emodel.getImportedListStrings());
+//		event.dispatch();
 	}
 }

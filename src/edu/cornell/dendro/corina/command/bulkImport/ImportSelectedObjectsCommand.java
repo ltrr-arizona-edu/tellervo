@@ -16,7 +16,6 @@ import org.tridas.util.TridasObjectEx;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-import edu.cornell.dendro.corina.components.table.DynamicJComboBoxEvent;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
@@ -162,16 +161,20 @@ public class ImportSelectedObjectsCommand implements ICommand {
 					Alert.error("Error updating model", "Couldn't find the object in the model to update, please report bug.");
 				}else{
 					resource.getAssociatedResult().copyTo(found);
+					App.tridasObjects.updateTridasObject(found);
 				}
 			}
 			else{
 				model.getObjectModel().getImportedList().add(resource.getAssociatedResult());
+				App.tridasObjects.addTridasObject(resource.getAssociatedResult());
 			}
 		}
 		
 		// finally, update the combo boxes in the table to the new options
-		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(model.getObjectModel().getImportedDynamicComboBoxKey(), model.getObjectModel().getImportedListStrings());
-		event.dispatch();
+//		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(model.getObjectModel().getImportedDynamicComboBoxKey(), model.getObjectModel().getImportedListStrings());
+//		event.dispatch();
+		
+		// FIXME this should be removed once other lists listen for changes in the object list
 		App.dictionary.query();
 	}
 }

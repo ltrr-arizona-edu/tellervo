@@ -9,15 +9,18 @@ import javax.swing.JTable;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasUnit;
+import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
+import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpretter;
 import edu.cornell.dendro.corina.components.table.TridasShapeEditor;
 import edu.cornell.dendro.corina.components.table.TridasShapeRenderer;
 import edu.cornell.dendro.corina.components.table.TridasUnitEditor;
 import edu.cornell.dendro.corina.components.table.TridasUnitRenderer;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.control.bulkImport.ImportSelectedEvent;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
 import edu.cornell.dendro.corina.schema.WSIElementTypeDictionary;
 import edu.cornell.dendro.corina.schema.WSITaxonDictionary;
@@ -50,7 +53,21 @@ public class ElementView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSITaxonDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 		// this combo box should update from mvc events
-		argTable.setDefaultEditor(TridasObject.class, new DefaultCellEditor(new DynamicJComboBox(BulkImportController.SET_DYNAMIC_COMBO_BOX_OBJECTS, false)));
+		DynamicJComboBox box = new DynamicJComboBox(App.tridasObjects.getMutableObjectList(), new IDynamicJComboBoxInterpretter() {
+			@Override
+			public String getStringValue(Object argComponent) {
+				if(argComponent == null){
+					return "";
+				}
+				TridasObjectEx o = (TridasObjectEx) argComponent;
+				if(!o.isTopLevelObject()){
+					return null;
+				}
+				return o.getLabCode();
+			}
+		});
+		
+		argTable.setDefaultEditor(TridasObject.class, new DefaultCellEditor(box));
 	}
 	
 	/**

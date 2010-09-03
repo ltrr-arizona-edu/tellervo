@@ -110,19 +110,11 @@ public class SampleTableModel extends AbstractTableModel implements PropertyChan
 	}
 	
 	private void recreateSelected() {
-		HashMap<SingleSampleModel, Boolean> newMap = new HashMap<SingleSampleModel, Boolean>();
 		for(SingleSampleModel som : models){
-			if(selected.containsKey(som)){
-				newMap.put(som, selected.get(som));
-			}else{
-				newMap.put(som, false);
+			if(!selected.containsKey(som)){
+				selected.put(som, true);
 			}
 		}
-		if(selected.equals(newMap)){
-			return;
-		}
-		selected.clear();
-		selected.putAll(newMap);
 	}
 	
 	public SampleModel getModel() {

@@ -112,19 +112,11 @@ public class ElementTableModel extends AbstractTableModel implements PropertyCha
 	}
 	
 	private void recreateSelected() {
-		HashMap<SingleElementModel, Boolean> newMap = new HashMap<SingleElementModel, Boolean>();
 		for(SingleElementModel som : models){
-			if(selected.containsKey(som)){
-				newMap.put(som, selected.get(som));
-			}else{
-				newMap.put(som, false);
+			if(!selected.containsKey(som)){
+				selected.put(som, true);
 			}
 		}
-		if(selected.equals(newMap)){
-			return;
-		}
-		selected.clear();
-		selected.putAll(newMap);
 	}
 	
 	public ElementModel getModel() {

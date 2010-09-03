@@ -3,60 +3,65 @@
  */
 package edu.cornell.dendro.corina.components.table;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
-import com.dmurph.mvc.IEventListener;
-import com.dmurph.mvc.MVC;
-import com.dmurph.mvc.MVCEvent;
+import com.dmurph.mvc.model.MVCArrayList;
 
 /**
  * This class is for use inside of JTables, where data might have to be loaded or modified dynamically
  * @author Daniel
  *
  */
-public class DynamicJComboBox extends JComboBox implements IEventListener{
+public class DynamicJComboBox extends JComboBox implements PropertyChangeListener{
 	private static final long serialVersionUID = 1L;
 	
-	private final String key;
-	private final boolean once;
 	private final DefaultComboBoxModel model;
+	private final MVCArrayList<?> data;
+	private final IDynamicJComboBoxInterpretter interpretter;
 	
-	public DynamicJComboBox(String argSetItemsKey, boolean argOnce){
-		model = new DefaultComboBoxModel();
-		setModel(model);
-		key = argSetItemsKey;
-		once = argOnce;
-		MVC.addEventListener(argSetItemsKey, this);
+	public DynamicJComboBox(MVCArrayList<String> argData){
+		this(argData, new IDynamicJComboBoxInterpretter() {
+			@Override
+			public String getStringValue(Object argComponent) {
+				return (String) argComponent;
+			}
+		});
 	}
 	
-	/**
-	 * @see java.lang.Object#finalize()
-	 */
-	@Override
-	protected void finalize() throws Throwable {
-		MVC.removeEventListener(key, this);
-		super.finalize();
+	public DynamicJComboBox(MVCArrayList<?> argData, IDynamicJComboBoxInterpretter argInterpretter){
+		data = argData;
+		interpretter = argInterpretter;
+		model = new DefaultComboBoxModel();
+		setModel(model);
+		
+		argData.addPropertyChangeListener(this);
+		resetData();
+	}
+	
+	public void resetData(){
+		// remove and re-add all the elements
+		model.removeAllElements();
+		for(Object o : data){
+			String s = interpretter.getStringValue(o);
+			if(s == null){
+				continue;
+			}
+			model.addElement(s);
+		}
 	}
 
 	/**
-	 * @see com.dmurph.mvc.IEventListener#eventReceived(com.dmurph.mvc.MVCEvent)
+	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 	 */
 	@Override
-	public void eventReceived(MVCEvent argEvent) {
-		if(once){
-			MVC.removeEventListener(key, this);
-		}
-		if(argEvent instanceof DynamicJComboBoxEvent){
-			DynamicJComboBoxEvent event = (DynamicJComboBoxEvent) argEvent;
-			model.removeAllElements();
-			if(event.comboBoxItems == null){
-				MVC.removeEventListener(key, this);
-				return;
-			}
-			for(String s : event.comboBoxItems){
-				model.addElement(s);
-			}
+	public void propertyChange(PropertyChangeEvent argEvt) {
+		String prop = argEvt.getPropertyName();
+		if(prop.equals(MVCArrayList.SIZE) || prop.equals(MVCArrayList.CHANGED)){
+			resetData();
 		}
 	}
 }

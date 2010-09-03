@@ -3,6 +3,7 @@
  */
 package edu.cornell.dendro.corina.tridasv2;
 
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -203,8 +204,54 @@ public class TridasObjectList extends CorinaResource {
 	}
 	
 	/**
+	 * updates the tridas object with the same lab code currently in the list to
+	 * this tridas object.
+	 * @param argObject
+	 * @return if an object was found and updated
+	 */
+	public boolean updateTridasObject(TridasObjectEx argObject){
+		synchronized (data) {
+			for(TridasObjectEx o : data.allObjects){
+				if(o.getLabCode().equals(argObject.getLabCode())){
+					argObject.copyTo(o);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * adds an object to the list, which will notify listeners
+	 * @param argObject
+	 */
+	public void addTridasObject(TridasObjectEx argObject){
+		synchronized (data) {
+			data.allObjects.add(argObject);
+			data.bySiteCode.put(argObject.getLabCode(), argObject);
+		}
+	}
+	
+	/**
+	 * Adds a property change listener to the object list
+	 * @param argListener
+	 */
+	public void addPropertyChangeListener(PropertyChangeListener argListener){
+		data.allObjects.addPropertyChangeListener(argListener);
+	}
+	
+	/**
+	 * removes a property change listener from the object list
+	 * @param argListener
+	 */
+	public void removePropertyChangeListener(PropertyChangeListener argListener){
+		data.allObjects.removePropertyChangeListener(argListener);
+	}
+	
+	/**
 	 * Retrieves the mutable object list used to populate all other requests.
 	 * Modifying this list will change results for other method calls in this class.
+	 * One should not add/remove objects from this list, instead us {@link #addTridasObject(TridasObjectEx)}
 	 * @return
 	 */
 	public MVCArrayList<TridasObjectEx> getMutableObjectList(){

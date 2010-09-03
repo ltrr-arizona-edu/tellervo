@@ -10,8 +10,11 @@ import org.tridas.schema.TridasElement;
 
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
+import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpretter;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.control.bulkImport.ImportSelectedEvent;
+import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
+import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
 import edu.cornell.dendro.corina.model.bulkImport.SampleModel;
 import edu.cornell.dendro.corina.schema.WSISampleTypeDictionary;
 import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer;
@@ -37,7 +40,20 @@ public class SampleView  extends AbstractBulkImportView{
 	protected void setupTableCells(JTable argTable) {
 		argTable.setDefaultEditor(WSISampleTypeDictionary.class, new ControlledVocDictionaryEditor("sampleTypeDictionary"));
 		argTable.setDefaultRenderer(WSISampleTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
-		argTable.setDefaultEditor(TridasElement.class, new DefaultCellEditor(new DynamicJComboBox(BulkImportController.SET_DYNAMIC_COMBO_BOX_ELEMENTS, false)));
+		
+
+		ElementModel m = BulkImportModel.getInstance().getElementModel();
+		DynamicJComboBox box = new DynamicJComboBox(m.getImportedList(), new IDynamicJComboBoxInterpretter() {
+			@Override
+			public String getStringValue(Object argComponent) {
+				if(argComponent == null){
+					return null;
+				}
+				TridasElement o = (TridasElement) argComponent;
+				return o.getTitle();
+			}
+		});
+		argTable.setDefaultEditor(TridasElement.class, new DefaultCellEditor(box));
 	}
 
 	/**
