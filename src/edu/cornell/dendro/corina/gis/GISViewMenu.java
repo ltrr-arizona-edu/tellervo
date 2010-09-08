@@ -3,9 +3,12 @@ package edu.cornell.dendro.corina.gis;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -15,14 +18,15 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-public class GISViewMenu extends JMenu implements ItemListener {
+public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 
 	private static final long serialVersionUID = -6739232540394701181L;
 	private JMenuItem overview, compass, scalebar, layerslist, stars, atmosphere, blueMarble, blueMarbleWMS2004, landsat, 
-	usda, msAerial, boundaries, placenames;
+	usda, msAerial, boundaries, placenames, wmslayermanager;
 	private  ItemListener iListener;
-	private WorldWindow wwd;
+	private WorldWindowGLCanvas wwd;
 	private ArrayList<String> visibleLayers;
+	private WMSManager layermanager;
 	
 	public enum GISLayers{
 		OVERVIEW("World Map"), 
@@ -42,7 +46,7 @@ public class GISViewMenu extends JMenu implements ItemListener {
 	};
 	
 	
-	public GISViewMenu(WorldWindow wwd, ArrayList<String> visibleLayers)
+	public GISViewMenu(WorldWindowGLCanvas wwd, ArrayList<String> visibleLayers)
 	{
         super(I18n.getText("menus.view"));
         
@@ -56,10 +60,26 @@ public class GISViewMenu extends JMenu implements ItemListener {
 		
 	}
 	
+	protected void launchWMSLayerManager()
+	{
+		if(layermanager==null)
+		{
+			layermanager = new WMSManager(wwd);
+		}
+		layermanager.setVisible(true);
+		
+	}
+	
 	private void addLayersMenu()
 	{
 		JMenu layersmenu = Builder.makeMenu("menus.view.layers", "layers.png");
+
+        //JMenuItem wmslayermanager = Builder.makeMenuItem("menus.view.wmslayermanager", "edu.cornell.dendro.corina.gis.GISViewMenu.launchWMSLayerManager()");
+		wmslayermanager = new JMenuItem();
+		wmslayermanager.setText(I18n.getText("menus.view.wmslayermanager"));
+		wmslayermanager.addActionListener(this);
 		
+
 		stars = Builder.makeCheckBoxMenuItem("menus.view.layers.stars");
 		atmosphere = Builder.makeCheckBoxMenuItem("menus.view.layers.atmosphere");
 		blueMarble = Builder.makeCheckBoxMenuItem("menus.view.layers.blueMarble");
@@ -92,6 +112,8 @@ public class GISViewMenu extends JMenu implements ItemListener {
 		layersmenu.addSeparator();
 		layersmenu.add(boundaries);
 		layersmenu.add(placenames);
+		layersmenu.addSeparator();
+		layersmenu.add(wmslayermanager);
 		
 		this.add(layersmenu);
 	}
@@ -237,6 +259,15 @@ public class GISViewMenu extends JMenu implements ItemListener {
         	setMenuButtonSelected(selected, GISLayers.LAYERSLIST);
         }
     }
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==wmslayermanager)
+		{
+			launchWMSLayerManager();
+		}
+		
+	}
     
     
 	

@@ -466,7 +466,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		
 	private void initMozillaMapPanel() {
-		MapLink link = new MapLink(sample.getSeries());
+		/*MapLink link = new MapLink(sample.getSeries());
 		
 		
 	
@@ -490,7 +490,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			System.out.println("No mozilla - no map");
 			System.out.println(e.getMessage());
 			return;
-		}
+		}*/
 		
 	}
 
@@ -688,7 +688,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		initMetaView();
 		initComponentsPanel();
 		//initElemPanel();
-		initMozillaMapPanel();
+		//initMozillaMapPanel();
 		initWWMapPanel();
 
 		// i'll watch the data

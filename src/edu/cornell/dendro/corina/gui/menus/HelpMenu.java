@@ -72,7 +72,7 @@ public class HelpMenu extends JMenu {
     public HelpMenu() {
 	super(I18n.getText("menus.help"));
 
-	addHelpMenu();
+	//addHelpMenu();
 
         addSeparator();
 
@@ -89,7 +89,7 @@ public class HelpMenu extends JMenu {
        Add the "Corina Help" menuitem.
     */
     protected void addHelpMenu() {
-    	
+/*    	
 	// See if we have access to mozilla libs
 	try {
 		// this loads the DLL...
@@ -111,7 +111,9 @@ public class HelpMenu extends JMenu {
 	// Mozilla present so add help menu
 	add(Builder.makeMenuItem("menus.help.corina_help",
 				 "edu.cornell.dendro.corina.gui.HelpWiki.showHelp()", "help.png"));
+				 */
     }
+    
 
     /**
        Add the "System Properties..." menuitem.
