@@ -228,7 +228,7 @@ public class TridasObjectList extends CorinaResource {
 	 */
 	public void addTridasObject(TridasObjectEx argObject){
 		synchronized (data) {
-			data.allObjects.add(0, argObject);
+			data.allObjects.add(argObject);
 			data.bySiteCode.put(argObject.getLabCode(), argObject);
 		}
 	}
