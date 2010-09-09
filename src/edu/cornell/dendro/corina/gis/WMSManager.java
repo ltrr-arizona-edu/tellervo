@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.gis;
 
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
+import edu.cornell.dendro.corina.ui.Alert;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 
 import java.awt.BorderLayout;
@@ -49,8 +50,14 @@ public class WMSManager extends JFrame {
     @SuppressWarnings("unchecked")
 	public void setupGUI()
     {
-    	serverDetails = Dictionary.getMutableDictionary("wmsServer");
+    	serverDetails = Dictionary.getMutableDictionary("wmsServerDictionary");
 
+    	if(serverDetails==null || serverDetails.size()==0)
+    	{
+    		Alert.error("Error", "No WMS servers configured");
+    		this.dispose();
+    	}
+    	
         this.tabbedPane = new JTabbedPane();
 
         this.tabbedPane.add(new JPanel());
