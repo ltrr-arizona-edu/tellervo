@@ -6,27 +6,58 @@
 
 package edu.cornell.dendro.corina.prefs;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import javax.swing.JFileChooser;
+import javax.swing.SpinnerNumberModel;
+
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gis.GPXParser;
+import edu.cornell.dendro.corina.gis.WWJUtil;
+import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.hardware.SerialMeasuringDeviceConstants;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
+import edu.cornell.dendro.corina.tridasv2.ui.LocationGeometry;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import gov.nasa.worldwind.cache.BasicDataFileStore;
 
 /**
  *
  * @author  lucasm
  */
-public class Ui_PreferencesPanel extends javax.swing.JPanel {
+public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionListener{
 
+	final JFileChooser fc = new JFileChooser();
+	
     /** Creates new form Ui_PreferencesPanel */
     public Ui_PreferencesPanel() {
-        initComponents();
+        
+        setupGUI();
         panelTestComms.setEnabled(false);
         this.btnStartMeasuring.setEnabled(false);
         this.txtComCheckLog.setEnabled(false);
-        internationalizeComponents();
+        
     }
 
+    private void setupGUI()   
+    {
+    	initComponents();
+    	internationalizeComponents();
+    	
+    	this.spnMapCacheSize.setModel(new SpinnerNumberModel(2000, 250, 10000, 100));
+    	this.txtGrfxWarning.setContentType("text/html");
+    	this.txtGrfxWarning.setEditable(false);
+    	setMappingEnabled(true);
+    	this.panelMapCache.setVisible(false);
+    	this.btnMapCacheBrowse.addActionListener(this);
+    	
+    }
+    
     private void internationalizeComponents()
     {
     	// main buttons
@@ -68,12 +99,8 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         // Third tab
     	this.propertiesTabs.setTitleAt(2, I18n.getText("preferences.statistics"));
     	this.propertiesTabs.setIconAt(2, Builder.getIcon("chart.png", 22));
-    	this.panelCOFECHA.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.cofechaIntegration")));
         this.panelNumberFormats.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.numberFormats")));
         this.panelSigScores.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.sigScores")));
-        this.chkEnableCOFECHA.setText(I18n.getText("preferences.enableCOFECHA"));
-        this.lblCOFECHAPath.setText(I18n.getText("preferences.pathToExecutable")+":");
-        this.btnBrowseCOFECHA.setText(I18n.getText("general.browse"));
         this.lblTScore.setText(I18n.getText("statistics.tscore")+":");
         this.lblRValue.setText(I18n.getText("statistics.rvalue")+":");
         this.lblTrend.setText(I18n.getText("statistics.trend")+":");
@@ -100,9 +127,34 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         this.lblGridColor.setText(I18n.getText("preferences.gridColor")+":");
         this.chkShowChartGrid.setText(I18n.getText("preferences.gridlines"));
 
-        
+        // Fifth tab
+        this.propertiesTabs.setTitleAt(4, I18n.getText("preferences.mapping"));
+    	this.propertiesTabs.setIconAt(4, Builder.getIcon("map.png", 22));
+    	this.txtGrfxWarning.setText(I18n.getText("preferences.mapping.grfxwarning"));
     	
     }
+    
+    public void setMappingEnabled(Boolean b)
+    {
+    	this.panelGrfxWarning.setVisible(!b);
+    	
+    	this.panelMapCache.setVisible(b);
+    	this.panelMapCache.setEnabled(b);
+    	this.lblMapCacheLoc.setEnabled(b);
+    	this.lblMapCacheSize.setEnabled(b);
+    	this.txtMapCacheLoc.setEnabled(b);
+    	this.btnMapCacheBrowse.setEnabled(b);
+    	this.spnMapCacheSize.setEnabled(b);
+    	
+    	this.panelWMS.setVisible(b);
+    	this.panelWMS.setEnabled(b);
+    	this.btnWMSAdd.setEnabled(b);
+    	this.btnWMSRemove.setEnabled(b);
+    	this.tblWMS.setEnabled(b);
+    	    	
+    	
+    }
+    
     
     /** This method is called from within the constructor to
      * initialize the form.
@@ -156,11 +208,6 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtComCheckLog = new javax.swing.JTextArea();
         panelStatistics = new javax.swing.JPanel();
-        panelCOFECHA = new javax.swing.JPanel();
-        chkEnableCOFECHA = new javax.swing.JCheckBox();
-        lblCOFECHAPath = new javax.swing.JLabel();
-        txtCOFECHAPath = new javax.swing.JTextField();
-        btnBrowseCOFECHA = new javax.swing.JButton();
         panelNumberFormats = new javax.swing.JPanel();
         cboTScore = new javax.swing.JComboBox();
         lblTScore = new javax.swing.JLabel();
@@ -203,19 +250,35 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         chkShowChartGrid = new javax.swing.JCheckBox();
         panelUI = new javax.swing.JPanel();
         scrollPaneUIDefaults = new javax.swing.JScrollPane();
+        panelMapping = new javax.swing.JPanel();
+        panelMapCache = new javax.swing.JPanel();
+        lblMapCacheLoc = new javax.swing.JLabel();
+        lblMapCacheSize = new javax.swing.JLabel();
+        txtMapCacheLoc = new javax.swing.JTextField();
+        spnMapCacheSize = new javax.swing.JSpinner();
+        btnMapCacheBrowse = new javax.swing.JButton();
+        panelWMS = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblWMS = new javax.swing.JTable();
+        btnWMSAdd = new javax.swing.JButton();
+        btnWMSRemove = new javax.swing.JButton();
+        panelGrfxWarning = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtGrfxWarning = new javax.swing.JTextPane();
         panelButtons = new javax.swing.JPanel();
         btnOk = new javax.swing.JButton();
         btnResetAll = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
         seperatorButtons = new javax.swing.JSeparator();
 
-        propertiesTabs.setMinimumSize(new java.awt.Dimension(659, 576));
+        propertiesTabs.setMinimumSize(new java.awt.Dimension(500, 400));
 
         panelWebservice.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Web service"));
 
         lblWSURL.setText("URL:");
 
         txtWSURL.setText("https://dendro.cornell.edu");
+        txtWSURL.setMinimumSize(new java.awt.Dimension(5, 28));
         txtWSURL.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtWSURLActionPerformed(evt);
@@ -234,7 +297,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(panelWebserviceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(btnReloadDictionary)
-                    .add(txtWSURL, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE))
+                    .add(txtWSURL, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelWebserviceLayout.setVerticalGroup(
@@ -253,6 +316,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         lblSMTPServer.setText("SMTP Server:");
 
         txtSMTPServer.setText("appsmtp.mail.cornell.edu");
+        txtSMTPServer.setMinimumSize(new java.awt.Dimension(5, 28));
 
         org.jdesktop.layout.GroupLayout panelEmailLayout = new org.jdesktop.layout.GroupLayout(panelEmail);
         panelEmail.setLayout(panelEmailLayout);
@@ -280,6 +344,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         lblProxyServer.setEnabled(false);
 
         txtProxyURL.setEnabled(false);
+        txtProxyURL.setMinimumSize(new java.awt.Dimension(5, 28));
 
         lblProxyPort.setText("Port:");
         lblProxyPort.setEnabled(false);
@@ -290,6 +355,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         lblProxyServer1.setEnabled(false);
 
         txtProxyURL1.setEnabled(false);
+        txtProxyURL1.setMinimumSize(new java.awt.Dimension(5, 28));
 
         lblProxyPort1.setText("Port:");
         lblProxyPort1.setEnabled(false);
@@ -330,8 +396,8 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                             .add(lblProxyServer1))
                         .add(18, 18, 18)
                         .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(txtProxyURL, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
-                            .add(txtProxyURL1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE))
+                            .add(txtProxyURL, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
+                            .add(txtProxyURL1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, lblProxyPort)
@@ -340,7 +406,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                         .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                             .add(spnProxyPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 72, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(spnProxyPort1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 72, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .add(23, 23, 23))
+                .add(85, 85, 85))
         );
         panelProxyLayout.setVerticalGroup(
             panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -386,15 +452,14 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                 .add(panelProxy, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(panelEmail, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(134, Short.MAX_VALUE))
+                .addContainerGap(137, Short.MAX_VALUE))
         );
 
         propertiesTabs.addTab("Network", panelNetworkConnections);
 
         panelPlatform.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measuring Platform"));
 
-        
-        new FormatWrapper(cboPlatformType, Prefs.SERIAL_DEVICE, App.prefs.getPref(Prefs.SERIAL_DEVICE, SerialMeasuringDeviceConstants.NONE), SerialMeasuringDeviceConstants.ALL_DEVICES);
+        cboPlatformType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "EveIO", "Velmex TA UniSlide with QC10 Encoder", "Lintab", "Generic serial platform" }));
 
         lblPlatformType.setText("Type:");
 
@@ -434,29 +499,29 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
             .add(panelPlatformLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(lblPlatformType)
-                    .add(lblPort)
-                    .add(lblPlatformUnits)
-                    .add(lblBaud)
-                    .add(lblDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(29, 29, 29)
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(cboPlatformType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 313, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(cboPlatformUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(panelPlatformLayout.createSequentialGroup()
                         .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .add(53, 53, 53)
+                            .add(lblPlatformType)
+                            .add(lblPort)
+                            .add(lblPlatformUnits))
+                        .add(59, 59, 59)
+                        .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(cboPlatformType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 313, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(cboPlatformUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                    .add(panelPlatformLayout.createSequentialGroup()
                         .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(lblStopbits)
-                            .add(lblParity))
+                            .add(lblParity)
+                            .add(lblBaud)
+                            .add(lblDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 91, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(cboParity, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboStopbits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(171, Short.MAX_VALUE))
+                            .add(cboStopbits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(134, Short.MAX_VALUE))
         );
         panelPlatformLayout.setVerticalGroup(
             panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -465,33 +530,36 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblPlatformType)
                     .add(cboPlatformType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblPort))
+                    .add(lblPort)
+                    .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblPlatformUnits)
                     .add(cboPlatformUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(18, 18, 18)
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblBaud)
+                    .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblDatabits))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblStopbits)
                     .add(cboStopbits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblDatabits)
-                    .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblParity)
                     .add(cboParity, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panelTestComms.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Check Connection"));
-        panelTestComms.setEnabled(false);
+        panelTestComms.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Test Connection"));
 
-        btnStartMeasuring.setText("Start Measuring");
+        btnStartMeasuring.setText("Test measuring");
 
         txtComCheckLog.setColumns(20);
         txtComCheckLog.setRows(5);
@@ -504,17 +572,16 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
             .add(panelTestCommsLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelTestCommsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
                     .add(btnStartMeasuring))
                 .addContainerGap())
         );
         panelTestCommsLayout.setVerticalGroup(
             panelTestCommsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelTestCommsLayout.createSequentialGroup()
-                .addContainerGap()
                 .add(btnStartMeasuring)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -522,11 +589,11 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         panelHardware.setLayout(panelHardwareLayout);
         panelHardwareLayout.setHorizontalGroup(
             panelHardwareLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelHardwareLayout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelHardwareLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(panelHardwareLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelTestComms, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(panelPlatform, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(panelHardwareLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelTestComms, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelPlatform, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelHardwareLayout.setVerticalGroup(
@@ -534,58 +601,12 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
             .add(panelHardwareLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(panelPlatform, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(18, 18, 18)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(panelTestComms, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         propertiesTabs.addTab("Hardware", panelHardware);
-
-        panelCOFECHA.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "COFECHA Integration"));
-
-        chkEnableCOFECHA.setText("Enable COFECHA integration (requires restart)");
-        chkEnableCOFECHA.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkEnableCOFECHAActionPerformed(evt);
-            }
-        });
-
-        lblCOFECHAPath.setText("Path to executable:");
-        lblCOFECHAPath.setEnabled(false);
-
-        txtCOFECHAPath.setEnabled(false);
-
-        btnBrowseCOFECHA.setText("Browse");
-        btnBrowseCOFECHA.setEnabled(false);
-
-        org.jdesktop.layout.GroupLayout panelCOFECHALayout = new org.jdesktop.layout.GroupLayout(panelCOFECHA);
-        panelCOFECHA.setLayout(panelCOFECHALayout);
-        panelCOFECHALayout.setHorizontalGroup(
-            panelCOFECHALayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelCOFECHALayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelCOFECHALayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelCOFECHALayout.createSequentialGroup()
-                        .add(lblCOFECHAPath)
-                        .add(18, 18, 18)
-                        .add(txtCOFECHAPath, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnBrowseCOFECHA))
-                    .add(chkEnableCOFECHA))
-                .addContainerGap())
-        );
-        panelCOFECHALayout.setVerticalGroup(
-            panelCOFECHALayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelCOFECHALayout.createSequentialGroup()
-                .addContainerGap()
-                .add(chkEnableCOFECHA)
-                .add(8, 8, 8)
-                .add(panelCOFECHALayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblCOFECHAPath)
-                    .add(btnBrowseCOFECHA)
-                    .add(txtCOFECHAPath, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(44, Short.MAX_VALUE))
-        );
 
         panelNumberFormats.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Number Formats"));
 
@@ -658,7 +679,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                 .add(panelNumberFormatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblWJ)
                     .add(cboWJ, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         panelSigScores.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Significant Scores"));
@@ -686,13 +707,13 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, lblMinOverlap, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelSigScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(spnMinOverlapDScore, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
-                            .add(spnMinOverlap, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)))
+                            .add(spnMinOverlapDScore, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
+                            .add(spnMinOverlap, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)))
                     .add(chkHighlightSig)
                     .add(panelSigScoresLayout.createSequentialGroup()
                         .add(lblHighlightColor)
                         .add(18, 18, 18)
-                        .add(cboHighlightColor, 0, 174, Short.MAX_VALUE)))
+                        .add(cboHighlightColor, 0, 181, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelSigScoresLayout.setVerticalGroup(
@@ -712,7 +733,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                 .add(panelSigScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblHighlightColor)
                     .add(cboHighlightColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout panelStatisticsLayout = new org.jdesktop.layout.GroupLayout(panelStatistics);
@@ -721,24 +742,19 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
             panelStatisticsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelStatisticsLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(panelStatisticsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelStatisticsLayout.createSequentialGroup()
-                        .add(panelNumberFormats, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(panelSigScores, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .add(panelCOFECHA, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(panelNumberFormats, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelSigScores, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelStatisticsLayout.setVerticalGroup(
             panelStatisticsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelStatisticsLayout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelStatisticsLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(panelCOFECHA, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(panelStatisticsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(panelSigScores, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(panelNumberFormats, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(116, Short.MAX_VALUE))
+                .add(panelStatisticsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelSigScores, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelNumberFormats, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(294, 294, 294))
         );
 
         propertiesTabs.addTab("Statistics", panelStatistics);
@@ -785,10 +801,10 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(chkShowEditorGrid)
-                    .add(btnFont, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboTextColor, 0, 404, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboEditorBGColor, 0, 404, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboDisplayUnits, 0, 404, Short.MAX_VALUE))
+                    .add(btnFont, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboTextColor, 0, 395, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboEditorBGColor, 0, 395, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboDisplayUnits, 0, 395, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelEditorLayout.setVerticalGroup(
@@ -853,11 +869,11 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelChartsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(chkShowChartGrid)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboChartBGColor, 0, 405, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, cboChartBGColor, 0, 392, Short.MAX_VALUE)
                     .add(panelChartsLayout.createSequentialGroup()
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(cboGridColor, 0, 405, Short.MAX_VALUE))
-                    .add(cboAxisCursorColor, 0, 405, Short.MAX_VALUE))
+                        .add(cboGridColor, 0, 392, Short.MAX_VALUE))
+                    .add(cboAxisCursorColor, 0, 392, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelChartsLayout.setVerticalGroup(
@@ -889,13 +905,13 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
             panelUILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelUILayout.createSequentialGroup()
                 .addContainerGap()
-                .add(scrollPaneUIDefaults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE)
+                .add(scrollPaneUIDefaults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelUILayout.setVerticalGroup(
             panelUILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelUILayout.createSequentialGroup()
-                .add(scrollPaneUIDefaults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
+                .add(scrollPaneUIDefaults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -925,6 +941,143 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
 
         propertiesTabs.addTab("Appearance", panelAppearance);
 
+        panelMapCache.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Local map cache"));
+
+        lblMapCacheLoc.setText("Location:");
+
+        lblMapCacheSize.setText("Size (Mb):");
+
+        btnMapCacheBrowse.setText("Browse");
+
+        org.jdesktop.layout.GroupLayout panelMapCacheLayout = new org.jdesktop.layout.GroupLayout(panelMapCache);
+        panelMapCache.setLayout(panelMapCacheLayout);
+        panelMapCacheLayout.setHorizontalGroup(
+            panelMapCacheLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelMapCacheLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelMapCacheLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(lblMapCacheLoc)
+                    .add(lblMapCacheSize))
+                .add(34, 34, 34)
+                .add(panelMapCacheLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(panelMapCacheLayout.createSequentialGroup()
+                        .add(txtMapCacheLoc, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
+                        .add(18, 18, 18)
+                        .add(btnMapCacheBrowse))
+                    .add(spnMapCacheSize, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 86, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+        panelMapCacheLayout.setVerticalGroup(
+            panelMapCacheLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelMapCacheLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelMapCacheLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(lblMapCacheLoc)
+                    .add(panelMapCacheLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                        .add(btnMapCacheBrowse)
+                        .add(txtMapCacheLoc, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelMapCacheLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(spnMapCacheSize, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(lblMapCacheSize))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        panelWMS.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Web Map Services (WMS)"));
+
+        tblWMS.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {"NASA Earth Observations", "http://neowms.sci.gsfc.nasa.gov/wms/wms"}
+            },
+            new String [] {
+                "Name", "URL"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(tblWMS);
+
+        btnWMSAdd.setText("Add");
+
+        btnWMSRemove.setText("Remove");
+
+        org.jdesktop.layout.GroupLayout panelWMSLayout = new org.jdesktop.layout.GroupLayout(panelWMS);
+        panelWMS.setLayout(panelWMSLayout);
+        panelWMSLayout.setHorizontalGroup(
+            panelWMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelWMSLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelWMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
+                    .add(panelWMSLayout.createSequentialGroup()
+                        .add(btnWMSRemove)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(btnWMSAdd)))
+                .addContainerGap())
+        );
+        panelWMSLayout.setVerticalGroup(
+            panelWMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelWMSLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelWMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(btnWMSAdd)
+                    .add(btnWMSRemove))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jScrollPane3.setViewportView(txtGrfxWarning);
+
+        org.jdesktop.layout.GroupLayout panelGrfxWarningLayout = new org.jdesktop.layout.GroupLayout(panelGrfxWarning);
+        panelGrfxWarning.setLayout(panelGrfxWarningLayout);
+        panelGrfxWarningLayout.setHorizontalGroup(
+            panelGrfxWarningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelGrfxWarningLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        panelGrfxWarningLayout.setVerticalGroup(
+            panelGrfxWarningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelGrfxWarningLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        org.jdesktop.layout.GroupLayout panelMappingLayout = new org.jdesktop.layout.GroupLayout(panelMapping);
+        panelMapping.setLayout(panelMappingLayout);
+        panelMappingLayout.setHorizontalGroup(
+            panelMappingLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelMappingLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelMappingLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelWMS, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelGrfxWarning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelMapCache, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        panelMappingLayout.setVerticalGroup(
+            panelMappingLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelMappingLayout.createSequentialGroup()
+                .add(7, 7, 7)
+                .add(panelGrfxWarning, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelMapCache, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(panelWMS, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        propertiesTabs.addTab("Mapping", panelMapping);
+
         btnOk.setText("OK");
 
         btnResetAll.setText("Reset all to default");
@@ -941,12 +1094,12 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
             .add(panelButtonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(btnResetAll)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 357, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 273, Short.MAX_VALUE)
                 .add(btnOk, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 67, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnCancel)
                 .addContainerGap())
-            .add(seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE)
+            .add(seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
         );
         panelButtonsLayout.setVerticalGroup(
             panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -964,17 +1117,17 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(propertiesTabs, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE)
-                .addContainerGap())
             .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .add(layout.createSequentialGroup()
+                .add(6, 6, 6)
+                .add(propertiesTabs, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .add(propertiesTabs, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
+                .add(propertiesTabs, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 63, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
@@ -992,111 +1145,138 @@ private void txtWSURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 // TODO add your handling code here:
 }//GEN-LAST:event_txtWSURLActionPerformed
 
-private void chkEnableCOFECHAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkEnableCOFECHAActionPerformed
-// TODO add your handling code here:
-}//GEN-LAST:event_chkEnableCOFECHAActionPerformed
-
 private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDefaultProxyActionPerformed
 // TODO add your handling code here:
 }//GEN-LAST:event_btnDefaultProxyActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-   protected javax.swing.JButton btnBrowseCOFECHA;
-   protected javax.swing.JButton btnCancel;
-   protected javax.swing.JRadioButton btnDefaultProxy;
-   protected javax.swing.JButton btnFont;
-   protected javax.swing.JRadioButton btnManualProxy;
-   protected javax.swing.JRadioButton btnNoProxy;
-   protected javax.swing.JButton btnOk;
-   protected javax.swing.JButton btnReloadDictionary;
-   protected javax.swing.JButton btnResetAll;
-   protected javax.swing.JButton btnStartMeasuring;
-   protected javax.swing.JComboBox cboAxisCursorColor;
-   protected javax.swing.JComboBox cboBaud;
-   protected javax.swing.JComboBox cboChartBGColor;
-   protected javax.swing.JComboBox cboDScore;
-   protected javax.swing.JComboBox cboDatabits;
-   protected javax.swing.JComboBox cboDisplayUnits;
-   protected javax.swing.JComboBox cboEditorBGColor;
-   protected javax.swing.JComboBox cboGridColor;
-   protected javax.swing.JComboBox cboHighlightColor;
-   protected javax.swing.JComboBox cboParity;
-   protected javax.swing.JComboBox cboPlatformType;
-   protected javax.swing.JComboBox cboPlatformUnits;
-   protected javax.swing.JComboBox cboPort;
-   protected javax.swing.JComboBox cboRValue;
-   protected javax.swing.JComboBox cboStopbits;
-   protected javax.swing.JComboBox cboTScore;
-   protected javax.swing.JComboBox cboTextColor;
-   protected javax.swing.JComboBox cboTrend;
-   protected javax.swing.JComboBox cboWJ;
-   protected javax.swing.JCheckBox chkEnableCOFECHA;
-   protected javax.swing.JCheckBox chkHighlightSig;
-   protected javax.swing.JCheckBox chkShowChartGrid;
-   protected javax.swing.JCheckBox chkShowEditorGrid;
-   protected javax.swing.JScrollPane jScrollPane1;
-   protected javax.swing.JLabel lblAxisCursorColor;
-   protected javax.swing.JLabel lblBaud;
-   protected javax.swing.JLabel lblCOFECHAPath;
-   protected javax.swing.JLabel lblChartBGColor;
-   protected javax.swing.JLabel lblDScore;
-   protected javax.swing.JLabel lblDatabits;
-   protected javax.swing.JLabel lblDisplayUnits;
-   protected javax.swing.JLabel lblEditorBGColor;
-   protected javax.swing.JLabel lblFont;
-   protected javax.swing.JLabel lblGridColor;
-   protected javax.swing.JLabel lblHighlightColor;
-   protected javax.swing.JLabel lblMinOverlap;
-   protected javax.swing.JLabel lblMinOverlapDScore;
-   protected javax.swing.JLabel lblParity;
-   protected javax.swing.JLabel lblPlatformType;
-   protected javax.swing.JLabel lblPlatformUnits;
-   protected javax.swing.JLabel lblPort;
-   protected javax.swing.JLabel lblProxyPort;
-   protected javax.swing.JLabel lblProxyPort1;
-   protected javax.swing.JLabel lblProxyServer;
-   protected javax.swing.JLabel lblProxyServer1;
-   protected javax.swing.JLabel lblRValue;
-   protected javax.swing.JLabel lblSMTPServer;
-   protected javax.swing.JLabel lblShowChartGrid;
-   protected javax.swing.JLabel lblShowEditorGrid;
-   protected javax.swing.JLabel lblStopbits;
-   protected javax.swing.JLabel lblTScore;
-   protected javax.swing.JLabel lblTextColor;
-   protected javax.swing.JLabel lblTrend;
-   protected javax.swing.JLabel lblWJ;
-   protected javax.swing.JLabel lblWSURL;
-   protected javax.swing.JPanel panelAppearance;
-   protected javax.swing.JPanel panelButtons;
-   protected javax.swing.JPanel panelCOFECHA;
-   protected javax.swing.JPanel panelCharts;
-   protected javax.swing.JPanel panelEditor;
-   protected javax.swing.JPanel panelEmail;
-   protected javax.swing.JPanel panelHardware;
-   protected javax.swing.JPanel panelNetworkConnections;
-   protected javax.swing.JPanel panelNumberFormats;
-   protected javax.swing.JPanel panelPlatform;
-   protected javax.swing.JPanel panelProxy;
-   protected javax.swing.JPanel panelSigScores;
-   protected javax.swing.JPanel panelStatistics;
-   protected javax.swing.JPanel panelTestComms;
-   protected javax.swing.JPanel panelUI;
-   protected javax.swing.JPanel panelWebservice;
-   protected javax.swing.JTabbedPane propertiesTabs;
-   protected javax.swing.ButtonGroup proxyButtonGroup;
-   protected javax.swing.JScrollPane scrollPaneUIDefaults;
-   protected javax.swing.JSeparator seperatorButtons;
-   protected javax.swing.JSpinner spnMinOverlap;
-   protected javax.swing.JSpinner spnMinOverlapDScore;
-   protected javax.swing.JSpinner spnProxyPort;
-   protected javax.swing.JSpinner spnProxyPort1;
-   protected javax.swing.JTextField txtCOFECHAPath;
-   protected javax.swing.JTextArea txtComCheckLog;
-   protected javax.swing.JTextField txtProxyURL;
-   protected javax.swing.JTextField txtProxyURL1;
-   protected javax.swing.JTextField txtSMTPServer;
-   protected javax.swing.JTextField txtWSURL;
+    protected javax.swing.JButton btnCancel;
+    protected javax.swing.JRadioButton btnDefaultProxy;
+    protected javax.swing.JButton btnFont;
+    protected javax.swing.JRadioButton btnManualProxy;
+    protected javax.swing.JButton btnMapCacheBrowse;
+    protected javax.swing.JRadioButton btnNoProxy;
+    protected javax.swing.JButton btnOk;
+    protected javax.swing.JButton btnReloadDictionary;
+    protected javax.swing.JButton btnResetAll;
+    protected javax.swing.JButton btnStartMeasuring;
+    protected javax.swing.JButton btnWMSAdd;
+    protected javax.swing.JButton btnWMSRemove;
+    protected javax.swing.JComboBox cboAxisCursorColor;
+    protected javax.swing.JComboBox cboBaud;
+    protected javax.swing.JComboBox cboChartBGColor;
+    protected javax.swing.JComboBox cboDScore;
+    protected javax.swing.JComboBox cboDatabits;
+    protected javax.swing.JComboBox cboDisplayUnits;
+    protected javax.swing.JComboBox cboEditorBGColor;
+    protected javax.swing.JComboBox cboGridColor;
+    protected javax.swing.JComboBox cboHighlightColor;
+    protected javax.swing.JComboBox cboParity;
+    protected javax.swing.JComboBox cboPlatformType;
+    protected javax.swing.JComboBox cboPlatformUnits;
+    protected javax.swing.JComboBox cboPort;
+    protected javax.swing.JComboBox cboRValue;
+    protected javax.swing.JComboBox cboStopbits;
+    protected javax.swing.JComboBox cboTScore;
+    protected javax.swing.JComboBox cboTextColor;
+    protected javax.swing.JComboBox cboTrend;
+    protected javax.swing.JComboBox cboWJ;
+    protected javax.swing.JCheckBox chkHighlightSig;
+    protected javax.swing.JCheckBox chkShowChartGrid;
+    protected javax.swing.JCheckBox chkShowEditorGrid;
+    protected javax.swing.JScrollPane jScrollPane1;
+    protected javax.swing.JScrollPane jScrollPane2;
+    protected javax.swing.JScrollPane jScrollPane3;
+    protected javax.swing.JLabel lblAxisCursorColor;
+    protected javax.swing.JLabel lblBaud;
+    protected javax.swing.JLabel lblChartBGColor;
+    protected javax.swing.JLabel lblDScore;
+    protected javax.swing.JLabel lblDatabits;
+    protected javax.swing.JLabel lblDisplayUnits;
+    protected javax.swing.JLabel lblEditorBGColor;
+    protected javax.swing.JLabel lblFont;
+    protected javax.swing.JLabel lblGridColor;
+    protected javax.swing.JLabel lblHighlightColor;
+    protected javax.swing.JLabel lblMapCacheLoc;
+    protected javax.swing.JLabel lblMapCacheSize;
+    protected javax.swing.JLabel lblMinOverlap;
+    protected javax.swing.JLabel lblMinOverlapDScore;
+    protected javax.swing.JLabel lblParity;
+    protected javax.swing.JLabel lblPlatformType;
+    protected javax.swing.JLabel lblPlatformUnits;
+    protected javax.swing.JLabel lblPort;
+    protected javax.swing.JLabel lblProxyPort;
+    protected javax.swing.JLabel lblProxyPort1;
+    protected javax.swing.JLabel lblProxyServer;
+    protected javax.swing.JLabel lblProxyServer1;
+    protected javax.swing.JLabel lblRValue;
+    protected javax.swing.JLabel lblSMTPServer;
+    protected javax.swing.JLabel lblShowChartGrid;
+    protected javax.swing.JLabel lblShowEditorGrid;
+    protected javax.swing.JLabel lblStopbits;
+    protected javax.swing.JLabel lblTScore;
+    protected javax.swing.JLabel lblTextColor;
+    protected javax.swing.JLabel lblTrend;
+    protected javax.swing.JLabel lblWJ;
+    protected javax.swing.JLabel lblWSURL;
+    protected javax.swing.JPanel panelAppearance;
+    protected javax.swing.JPanel panelButtons;
+    protected javax.swing.JPanel panelCharts;
+    protected javax.swing.JPanel panelEditor;
+    protected javax.swing.JPanel panelEmail;
+    protected javax.swing.JPanel panelGrfxWarning;
+    protected javax.swing.JPanel panelHardware;
+    protected javax.swing.JPanel panelMapCache;
+    protected javax.swing.JPanel panelMapping;
+    protected javax.swing.JPanel panelNetworkConnections;
+    protected javax.swing.JPanel panelNumberFormats;
+    protected javax.swing.JPanel panelPlatform;
+    protected javax.swing.JPanel panelProxy;
+    protected javax.swing.JPanel panelSigScores;
+    protected javax.swing.JPanel panelStatistics;
+    protected javax.swing.JPanel panelTestComms;
+    protected javax.swing.JPanel panelUI;
+    protected javax.swing.JPanel panelWMS;
+    protected javax.swing.JPanel panelWebservice;
+    protected javax.swing.JTabbedPane propertiesTabs;
+    protected javax.swing.ButtonGroup proxyButtonGroup;
+    protected javax.swing.JScrollPane scrollPaneUIDefaults;
+    protected javax.swing.JSeparator seperatorButtons;
+    protected javax.swing.JSpinner spnMapCacheSize;
+    protected javax.swing.JSpinner spnMinOverlap;
+    protected javax.swing.JSpinner spnMinOverlapDScore;
+    protected javax.swing.JSpinner spnProxyPort;
+    protected javax.swing.JSpinner spnProxyPort1;
+    protected javax.swing.JTable tblWMS;
+    protected javax.swing.JTextArea txtComCheckLog;
+    protected javax.swing.JTextPane txtGrfxWarning;
+    protected javax.swing.JTextField txtMapCacheLoc;
+    protected javax.swing.JTextField txtProxyURL;
+    protected javax.swing.JTextField txtProxyURL1;
+    protected javax.swing.JTextField txtSMTPServer;
+    protected javax.swing.JTextField txtWSURL;
     // End of variables declaration//GEN-END:variables
+	
+    
+    @Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==this.btnMapCacheBrowse)
+		{
+		    fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		    fc.setAcceptAllFileFilterUsed(false);
+
+			int returnVal = fc.showOpenDialog(Ui_PreferencesPanel.this);
+
+			
+			
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				this.txtMapCacheLoc.setText(fc.getSelectedFile().toString());
+				WWJUtil.setCacheLocation(fc.getSelectedFile().toString());
+				
+			}
+		}
+		
+	}
 
 }

@@ -69,6 +69,7 @@ import org.tridas.util.TridasObjectEx;
  *         &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}securityUserDictionary" minOccurs="0"/>
  *         &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}securityGroupDictionary" minOccurs="0"/>
  *         &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}boxDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}wmsServerDictionary" minOccurs="0"/>
  *       &lt;/choice>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -88,33 +89,34 @@ public class WSIContent
 
     private final static long serialVersionUID = 1001L;
     @XmlElements({
+        @XmlElement(name = "securityUser", type = WSISecurityUser.class),
+        @XmlElement(name = "coverageTemporalFoundationDictionary", type = WSICoverageTemporalFoundationDictionary.class),
+        @XmlElement(name = "measurementSeries", namespace = "http://www.tridas.org/1.2.1", type = TridasMeasurementSeries.class),
+        @XmlElement(name = "radius", namespace = "http://www.tridas.org/1.2.1", type = TridasRadius.class),
+        @XmlElement(name = "securityUserDictionary", type = WSISecurityUserDictionary.class),
+        @XmlElement(name = "wmsServerDictionary", type = WSIWmsServerDictionary.class),
+        @XmlElement(name = "sampleTypeDictionary", type = WSISampleTypeDictionary.class),
+        @XmlElement(name = "datingTypeDictionary", type = WSIDatingTypeDictionary.class),
         @XmlElement(name = "derivedSeries", namespace = "http://www.tridas.org/1.2.1", type = TridasDerivedSeries.class),
-        @XmlElement(name = "elementAuthenticityDictionary", type = WSIElementAuthenticityDictionary.class),
-        @XmlElement(name = "box", type = WSIBox.class),
+        @XmlElement(name = "readingNoteDictionary", type = WSIReadingNoteDictionary.class),
+        @XmlElement(name = "locationTypeDictionary", type = WSILocationTypeDictionary.class),
+        @XmlElement(name = "coverageTemporalDictionary", type = WSICoverageTemporalDictionary.class),
         @XmlElement(name = "sql"),
+        @XmlElement(name = "securityGroupDictionary", type = WSISecurityGroupDictionary.class),
+        @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.2.1", type = TridasSample.class),
+        @XmlElement(name = "sapwoodDictionary", type = WSISapwoodDictionary.class),
+        @XmlElement(name = "objectTypeDictionary", type = WSIObjectTypeDictionary.class),
+        @XmlElement(name = "elementTypeDictionary", type = WSIElementTypeDictionary.class),
         @XmlElement(name = "element", namespace = "http://www.tridas.org/1.2.1", type = TridasElement.class),
         @XmlElement(name = "object", namespace = "http://www.tridas.org/1.2.1", type = TridasObjectEx.class),
-        @XmlElement(name = "radius", namespace = "http://www.tridas.org/1.2.1", type = TridasRadius.class),
-        @XmlElement(name = "regionDictionary", type = WSIRegionDictionary.class),
         @XmlElement(name = "measurementVariableDictionary", type = WSIMeasurementVariableDictionary.class),
-        @XmlElement(name = "securityGroupDictionary", type = WSISecurityGroupDictionary.class),
-        @XmlElement(name = "securityUser", type = WSISecurityUser.class),
-        @XmlElement(name = "measurementSeries", namespace = "http://www.tridas.org/1.2.1", type = TridasMeasurementSeries.class),
-        @XmlElement(name = "heartwoodDictionary", type = WSIHeartwoodDictionary.class),
-        @XmlElement(name = "coverageTemporalFoundationDictionary", type = WSICoverageTemporalFoundationDictionary.class),
+        @XmlElement(name = "box", type = WSIBox.class),
         @XmlElement(name = "boxDictionary", type = WSIBoxDictionary.class),
-        @XmlElement(name = "securityUserDictionary", type = WSISecurityUserDictionary.class),
+        @XmlElement(name = "regionDictionary", type = WSIRegionDictionary.class),
+        @XmlElement(name = "elementAuthenticityDictionary", type = WSIElementAuthenticityDictionary.class),
+        @XmlElement(name = "heartwoodDictionary", type = WSIHeartwoodDictionary.class),
         @XmlElement(name = "elementShapeDictionary", type = WSIElementShapeDictionary.class),
-        @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.2.1", type = TridasSample.class),
-        @XmlElement(name = "objectTypeDictionary", type = WSIObjectTypeDictionary.class),
-        @XmlElement(name = "sapwoodDictionary", type = WSISapwoodDictionary.class),
-        @XmlElement(name = "sampleTypeDictionary", type = WSISampleTypeDictionary.class),
-        @XmlElement(name = "locationTypeDictionary", type = WSILocationTypeDictionary.class),
-        @XmlElement(name = "datingTypeDictionary", type = WSIDatingTypeDictionary.class),
-        @XmlElement(name = "coverageTemporalDictionary", type = WSICoverageTemporalDictionary.class),
-        @XmlElement(name = "taxonDictionary", type = WSITaxonDictionary.class),
-        @XmlElement(name = "readingNoteDictionary", type = WSIReadingNoteDictionary.class),
-        @XmlElement(name = "elementTypeDictionary", type = WSIElementTypeDictionary.class)
+        @XmlElement(name = "taxonDictionary", type = WSITaxonDictionary.class)
     })
     protected List<Object> sqlsAndObjectsAndElements;
 
@@ -136,33 +138,34 @@ public class WSIContent
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link WSISecurityUser }
+     * {@link WSICoverageTemporalFoundationDictionary }
+     * {@link TridasMeasurementSeries }
+     * {@link TridasRadius }
+     * {@link WSISecurityUserDictionary }
+     * {@link WSIWmsServerDictionary }
+     * {@link WSISampleTypeDictionary }
+     * {@link WSIDatingTypeDictionary }
      * {@link TridasDerivedSeries }
-     * {@link WSIElementAuthenticityDictionary }
-     * {@link WSIBox }
+     * {@link WSIReadingNoteDictionary }
+     * {@link WSILocationTypeDictionary }
+     * {@link WSICoverageTemporalDictionary }
      * {@link Object }
+     * {@link WSISecurityGroupDictionary }
+     * {@link TridasSample }
+     * {@link WSISapwoodDictionary }
+     * {@link WSIObjectTypeDictionary }
+     * {@link WSIElementTypeDictionary }
      * {@link TridasElement }
      * {@link TridasObject }
-     * {@link TridasRadius }
-     * {@link WSIRegionDictionary }
      * {@link WSIMeasurementVariableDictionary }
-     * {@link WSISecurityGroupDictionary }
-     * {@link WSISecurityUser }
-     * {@link TridasMeasurementSeries }
-     * {@link WSIHeartwoodDictionary }
-     * {@link WSICoverageTemporalFoundationDictionary }
+     * {@link WSIBox }
      * {@link WSIBoxDictionary }
-     * {@link WSISecurityUserDictionary }
+     * {@link WSIRegionDictionary }
+     * {@link WSIElementAuthenticityDictionary }
+     * {@link WSIHeartwoodDictionary }
      * {@link WSIElementShapeDictionary }
-     * {@link TridasSample }
-     * {@link WSIObjectTypeDictionary }
-     * {@link WSISapwoodDictionary }
-     * {@link WSISampleTypeDictionary }
-     * {@link WSILocationTypeDictionary }
-     * {@link WSIDatingTypeDictionary }
-     * {@link WSICoverageTemporalDictionary }
      * {@link WSITaxonDictionary }
-     * {@link WSIReadingNoteDictionary }
-     * {@link WSIElementTypeDictionary }
      * 
      * 
      */
@@ -186,33 +189,34 @@ public class WSIContent
      * 
      * @param sqlsAndObjectsAndElements
      *     allowed object is
+     *     {@link WSISecurityUser }
+     *     {@link WSICoverageTemporalFoundationDictionary }
+     *     {@link TridasMeasurementSeries }
+     *     {@link TridasRadius }
+     *     {@link WSISecurityUserDictionary }
+     *     {@link WSIWmsServerDictionary }
+     *     {@link WSISampleTypeDictionary }
+     *     {@link WSIDatingTypeDictionary }
      *     {@link TridasDerivedSeries }
-     *     {@link WSIElementAuthenticityDictionary }
-     *     {@link WSIBox }
+     *     {@link WSIReadingNoteDictionary }
+     *     {@link WSILocationTypeDictionary }
+     *     {@link WSICoverageTemporalDictionary }
      *     {@link Object }
+     *     {@link WSISecurityGroupDictionary }
+     *     {@link TridasSample }
+     *     {@link WSISapwoodDictionary }
+     *     {@link WSIObjectTypeDictionary }
+     *     {@link WSIElementTypeDictionary }
      *     {@link TridasElement }
      *     {@link TridasObject }
-     *     {@link TridasRadius }
-     *     {@link WSIRegionDictionary }
      *     {@link WSIMeasurementVariableDictionary }
-     *     {@link WSISecurityGroupDictionary }
-     *     {@link WSISecurityUser }
-     *     {@link TridasMeasurementSeries }
-     *     {@link WSIHeartwoodDictionary }
-     *     {@link WSICoverageTemporalFoundationDictionary }
+     *     {@link WSIBox }
      *     {@link WSIBoxDictionary }
-     *     {@link WSISecurityUserDictionary }
+     *     {@link WSIRegionDictionary }
+     *     {@link WSIElementAuthenticityDictionary }
+     *     {@link WSIHeartwoodDictionary }
      *     {@link WSIElementShapeDictionary }
-     *     {@link TridasSample }
-     *     {@link WSIObjectTypeDictionary }
-     *     {@link WSISapwoodDictionary }
-     *     {@link WSISampleTypeDictionary }
-     *     {@link WSILocationTypeDictionary }
-     *     {@link WSIDatingTypeDictionary }
-     *     {@link WSICoverageTemporalDictionary }
      *     {@link WSITaxonDictionary }
-     *     {@link WSIReadingNoteDictionary }
-     *     {@link WSIElementTypeDictionary }
      *     
      */
     public void setSqlsAndObjectsAndElements(List<Object> sqlsAndObjectsAndElements) {

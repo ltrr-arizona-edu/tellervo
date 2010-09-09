@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.gis;
 
+import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 
 import java.awt.BorderLayout;
@@ -7,6 +9,7 @@ import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,7 +37,7 @@ public class WMSManager extends JFrame {
 	       // "http://nasa.network.com/wms"
 	};*/
     
-    HashMap<String, String> serverDetails = new HashMap<String, String>();
+    ArrayList<WSIWmsServer> serverDetails = new ArrayList<WSIWmsServer>();
     
     
     public WMSManager(WorldWindowGLCanvas wwd)
@@ -43,13 +46,11 @@ public class WMSManager extends JFrame {
     	setupGUI();
     }
     
-    public void setupGUI()
+    @SuppressWarnings("unchecked")
+	public void setupGUI()
     {
-    	
-    	serverDetails.put("NASA", "http://neowms.sci.gsfc.nasa.gov/wms/wms");
-    	
-    	
-    	
+    	serverDetails = Dictionary.getMutableDictionary("wmsServer");
+
         this.tabbedPane = new JTabbedPane();
 
         this.tabbedPane.add(new JPanel());
@@ -72,22 +73,22 @@ public class WMSManager extends JFrame {
                 }
 
                 // Respond by adding a new WMSLayerPanel to the tabbed pane.
-                if (addTab(tabbedPane.getTabCount(), server.trim(), "New tab") != null)
+                WSIWmsServer newserver = new WSIWmsServer();
+                newserver.setName("New server");
+                newserver.setUrl(server.trim());
+                if (addTab(tabbedPane.getTabCount(), newserver) != null)
                     tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
             }
         });
 
         // Create a tab for each server and add it to the tabbed panel.
-        Set set = serverDetails.entrySet();
-        Iterator it = set.iterator();
-        int i = 0;
-        while(it.hasNext())
-        {
-        	Map.Entry me = (Map.Entry)it.next(); 
-        	i++;
-        	this.addTab(i, (String)me.getKey(), (String)me.getValue());
-        	
-        }
+        int i = 1;
+    	for(WSIWmsServer server : serverDetails)    	
+    	{
+    		this.addTab(i, server);
+    		i++;
+    	}
+
 
         // Display the first server pane by default.
         this.tabbedPane.setSelectedIndex(this.tabbedPane.getTabCount() > 0 ? 1 : 0);
@@ -102,15 +103,15 @@ public class WMSManager extends JFrame {
         this.setTitle("WMS Layer Manager");
     }
 
-    private WMSLayersPanel addTab(int position, String serverName, String serverURI)
+    private WMSLayersPanel addTab(int position, WSIWmsServer server)
     {
         // Add a server to the tabbed dialog.
         try
         {
-            WMSLayersPanel layersPanel = new WMSLayersPanel(wwd, serverURI, serverName, wmsPanelSize);
+            WMSLayersPanel layersPanel = new WMSLayersPanel(wwd, server.getUrl(), server.getName(), wmsPanelSize);
             this.tabbedPane.add(layersPanel, BorderLayout.CENTER);
             String title = layersPanel.getServerDisplayString();
-            this.tabbedPane.setTitleAt(position, title != null && title.length() > 0 ? title : serverName);
+            this.tabbedPane.setTitleAt(position, title != null && title.length() > 0 ? title : server.getName());
 
             // Add a listener to notice wms layer selections and tell the layer panel to reflect the new state.
             layersPanel.addPropertyChangeListener("LayersPanelUpdated", new PropertyChangeListener()

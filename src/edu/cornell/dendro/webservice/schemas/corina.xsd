@@ -407,6 +407,7 @@
                 <xs:element ref="securityUserDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="securityGroupDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="boxDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="wmsServerDictionary" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:choice>
 		</xs:complexType>
@@ -576,6 +577,14 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<xs:element name="wmsServerDictionary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="wmsServer" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
 	
 <!--
 	%%%%%%%%%%%%%%
@@ -698,6 +707,19 @@
 			<xs:attribute name="name" type="xs:string" use="optional"/>
 			<xs:attribute name="description" type="xs:string" use="optional"/>
 			<xs:attribute name="isActive" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+		
+		
+	<!--
+		%%%%%%%%%%%%%%
+		% WMS Server
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="wmsServer" >
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="optional"/>
+			<xs:attribute name="url" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 		
