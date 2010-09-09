@@ -218,6 +218,7 @@ public class TridasObjectList extends CorinaResource {
 				}
 			}
 		}
+		System.err.println("Could not find object to update: "+argObject.getLabCode());
 		return false;
 	}
 	
