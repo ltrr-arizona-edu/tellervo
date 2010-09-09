@@ -188,9 +188,21 @@ class dictionaries
 	                	}
                 	}
                 }
+                
+
                 $xmldata.= "</".$item."Dictionary>\n";
                 unset($myObj);
             }
+            
+            // Finally add wmsServer entries
+            $xmldata.= "<wmsServerDictionary>\n";
+            $sql="select name, url from tlkpwmsserver order by name"; 
+            $result = pg_query($dbconn, $sql);
+            while ($row = pg_fetch_array($result))
+            {	
+             	$xmldata.= "<wmsServer name=\"".$row['name']."\" url=\"".$row['url']."\"/>\n";
+            }
+            $xmldata.= "</wmsServerDictionary>\n";
         }
         else
         {
@@ -198,6 +210,8 @@ class dictionaries
             trigger_error("001"."Error connecting to database");
         }       
        
+        
+        
         // Put xmldata into class variable
         if($xmldata!=NULL)
         {

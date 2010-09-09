@@ -1108,6 +1108,8 @@ class elementEntity extends dbEntity
 	 */
 	protected $bedrockDescription = NULL;
 	
+	protected $summaryObjectCode = NULL;
+	
 	
     function __construct()
     {  
@@ -1122,6 +1124,11 @@ class elementEntity extends dbEntity
     /* SETTERS */
     /***********/ 	
 		
+	function setSummaryObjectCode($code)
+	{
+		$this->summaryObjectCode=$code;
+	}
+	
 	function setAltitude($altitude)
 	{
 		$this->altitude = (int) $altitude;
@@ -1394,6 +1401,11 @@ class elementEntity extends dbEntity
 	/***********/
     /* GETTERS */
     /***********/ 	
+	
+	function getSummaryObjectCode()
+	{
+		return $this->summaryObjectCode;
+	}
 	
 	function getAltitude()
 	{

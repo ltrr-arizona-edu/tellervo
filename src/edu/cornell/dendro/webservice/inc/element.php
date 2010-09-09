@@ -129,7 +129,7 @@ class element extends elementEntity implements IDBAccessor
         $this->setBedrockDescription($row['bedrockdescription']);                      
         $this->setCode($row['code']);
         $this->setObjectID($row['objectid']);
-        
+        $this->setSummaryObjectCode($row['objectcode']);
         $this->taxon->setParamsFromDBRow($row);
 
 
@@ -557,8 +557,8 @@ class element extends elementEntity implements IDBAccessor
 	                
 	                if($format!="minimal") $xml.= $this->taxon->getHigherTaxonomyXML();
         
-                    if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
-
+            		$xml.="<tridas:genericField name=\"corina.objectLabCode\" type=\"xs:string\">".$this->getSummaryObjectCode()."</tridas:genericField>\n";           
+                    
                     if($format=="summary")
                     {
                     	
