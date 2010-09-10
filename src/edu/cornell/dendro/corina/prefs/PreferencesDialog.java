@@ -96,10 +96,10 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 			boolean addedPort = false;
 	
 			// first, enumerate all the ports.
-			Vector comportlist = LegacySerialSampleIO.enumeratePorts();
+			Vector<String> comportlist = LegacySerialSampleIO.enumeratePorts();
 	
 			// do we have a COM port selected that's not in the list? (ugh!)
-			String curport = App.prefs.getPref("corina.serialsampleio.port");
+			String curport = App.prefs.getPref("corina.serialsampleio.port", null);
 			if (curport != null && !comportlist.contains(curport)) {
 				comportlist.add(curport);
 				addedPort = true;

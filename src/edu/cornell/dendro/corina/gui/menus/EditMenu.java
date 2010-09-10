@@ -25,8 +25,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.prefs.PreferencesDialog;
-import edu.cornell.dendro.corina.prefs.Ui_PreferencesDialog;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 

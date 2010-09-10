@@ -12,13 +12,13 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
-import javax.swing.SpinnerNumberModel;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gis.GrfxWarning;
 import edu.cornell.dendro.corina.gis.WMSTableModel;
-import edu.cornell.dendro.corina.gis.WWJUtil;
+import edu.cornell.dendro.corina.hardware.SerialMeasuringDeviceConstants;
+import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -29,6 +29,7 @@ import edu.cornell.dendro.corina.ui.I18n;
  */
 public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionListener{
 
+	private static final long serialVersionUID = -4791515457924840453L;
 	final JFileChooser fc = new JFileChooser();
 	WMSTableModel wmsModel = new WMSTableModel();
 	GrfxWarning warn = new GrfxWarning();
@@ -48,16 +49,25 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	initComponents();
     	internationalizeComponents();
     
+    	// Enable/Disable mapping 
     	setMappingEnabled(!App.prefs.getBooleanPref("opengl.failed", false));
     	
+    	// Set up WMS stuff
     	this.tblWMS.setModel(wmsModel);
     	populateWMSTable();
-    	
     	this.btnWMSAdd.setEnabled(false);
     	this.btnWMSRemove.setEnabled(false);
+    	
+    	// Set up platform types
+    	new FormatWrapper(cboPlatformType, 
+    			Prefs.SERIAL_DEVICE, 
+    			App.prefs.getPref(Prefs.SERIAL_DEVICE, SerialMeasuringDeviceConstants.NONE), 
+    			SerialMeasuringDeviceConstants.ALL_DEVICES);
+
     }
     
-    private void populateWMSTable()
+    @SuppressWarnings("unchecked")
+	private void populateWMSTable()
     {
     	ArrayList<WSIWmsServer> serverDetails = Dictionary.getMutableDictionary("wmsServerDictionary");
 

@@ -3,8 +3,6 @@ package edu.cornell.dendro.corina.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import edu.cornell.dendro.corina.prefs.PrefsDialog;
-
 
 /**
  *

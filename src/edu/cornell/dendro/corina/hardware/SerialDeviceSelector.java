@@ -12,7 +12,7 @@ public class SerialDeviceSelector {
 
 	public SerialDeviceSelector(){
 		//prefs.
-		String selectedDevice = App.prefs.getPref(Prefs.SERIAL_DEVICE, SerialMeasuringDeviceConstants.EVE);
+		String selectedDevice = App.prefs.getPref(Prefs.SERIAL_DEVICE, null);
 		String portName = App.prefs.getPref("corina.serialsampleio.port", "COM1");
 
 		try{

@@ -30,7 +30,6 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.XCorina;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.prefs.PreferencesDialog;
-import edu.cornell.dendro.corina.prefs.PrefsDialog;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 
 // TODO: refactor.  lots of duplicate code in here.
