@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gis;
 
+import edu.cornell.dendro.corina.core.App;
 import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
@@ -65,7 +66,15 @@ public class GISPanel extends JPanel implements SelectListener{
         
         public GISPanel(Dimension canvasSize, boolean includeStatusBar, MarkerLayer ly)
         {
-            super(new BorderLayout());
+        	super(new BorderLayout());
+        	
+        	if(App.prefs.getBooleanPref("opengl.failed", false))
+        	{
+        		wwd=null;
+        		failedReq();
+        		return;
+        	}
+        	            
         	setupGui(canvasSize, includeStatusBar);
         	addLayer(ly);
         	
@@ -73,11 +82,7 @@ public class GISPanel extends JPanel implements SelectListener{
             annotationLayer.setName("Popup information");
             ApplicationTemplate.insertBeforePlacenames(this.getWwd(), this.annotationLayer);
 
-        	
         	this.getWwd().addSelectListener(this);
-
-        	
-
         }
 
         public ArrayList<String> getVisibleLayers()
@@ -94,11 +99,10 @@ public class GISPanel extends JPanel implements SelectListener{
         
         private void failedReq()
         {
-        	JLabel failed = new JLabel();
-        	failed.setText("This computer does not meet minimum graphics requirements");
-        	this.add(failed, BorderLayout.NORTH);
+        	App.prefs.setBooleanPref("opengl.failed", true);
+        	this.add(new GrfxWarning(), BorderLayout.CENTER);
         }
-        
+                
         private void setupGui(Dimension canvasSize, boolean includeStatusBar)
         {
         	
@@ -120,11 +124,11 @@ public class GISPanel extends JPanel implements SelectListener{
                     {
                         String message = "Computer does not meet minimum graphics requirements.\n";
                         message += "Please install up-to-date graphics driver and try again.\n";
-                        message += "Reason: " + t.getMessage();
 
-                        JOptionPane.showMessageDialog(null, message, "Unable to Start Program",
+                        JOptionPane.showMessageDialog(null, message, "Error",
                             JOptionPane.ERROR_MESSAGE);
                         failedReq();
+                     
                         return;
                     }
                 }

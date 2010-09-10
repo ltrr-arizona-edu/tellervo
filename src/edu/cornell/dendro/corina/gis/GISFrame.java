@@ -74,10 +74,13 @@ public class GISFrame extends JFrame {
  
         // Add the Gazetteer
         try {
-        	CorinaGazetteerPanel gazPanel = new CorinaGazetteerPanel(wwMapPanel.getWwd(), null);
-        	
-			this.add(gazPanel,   //use default yahoo service
-			        BorderLayout.SOUTH);
+        	if(wwMapPanel.getWwd()!=null)
+        	{      	
+	        	CorinaGazetteerPanel gazPanel = new CorinaGazetteerPanel(wwMapPanel.getWwd(), null);
+	        	
+				this.add(gazPanel,   //use default yahoo service
+				        BorderLayout.SOUTH);
+        	}
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

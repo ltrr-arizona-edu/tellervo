@@ -6,20 +6,29 @@
 
 package edu.cornell.dendro.corina.prefs;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.table.TableModel;
+
+import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gis.GPXParser;
+import edu.cornell.dendro.corina.gis.GrfxWarning;
+import edu.cornell.dendro.corina.gis.WMSTableModel;
 import edu.cornell.dendro.corina.gis.WWJUtil;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.hardware.SerialMeasuringDeviceConstants;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
+import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import edu.cornell.dendro.corina.tridasv2.ui.LocationGeometry;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -33,6 +42,8 @@ import gov.nasa.worldwind.cache.BasicDataFileStore;
 public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionListener{
 
 	final JFileChooser fc = new JFileChooser();
+	WMSTableModel wmsModel = new WMSTableModel();
+	
 	
     /** Creates new form Ui_PreferencesPanel */
     public Ui_PreferencesPanel() {
@@ -50,11 +61,30 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	internationalizeComponents();
     	
     	this.spnMapCacheSize.setModel(new SpinnerNumberModel(2000, 250, 10000, 100));
-    	this.txtGrfxWarning.setContentType("text/html");
-    	this.txtGrfxWarning.setEditable(false);
-    	setMappingEnabled(true);
+
+    	
+    	
+    	setMappingEnabled(false);
+    	//setMappingEnabled(!App.prefs.getBooleanPref("opengl.failed", false));
     	this.panelMapCache.setVisible(false);
     	this.btnMapCacheBrowse.addActionListener(this);
+    	
+    	this.tblWMS.setModel(wmsModel);
+    	populateWMSTable();
+    	
+    	this.btnWMSAdd.setEnabled(false);
+    	this.btnWMSRemove.setEnabled(false);
+    }
+    
+    private void populateWMSTable()
+    {
+    	ArrayList<WSIWmsServer> serverDetails = Dictionary.getMutableDictionary("wmsServerDictionary");
+
+    	if(serverDetails==null || serverDetails.size()==0)
+    	{
+    		return;
+    	}
+
     	
     }
     
@@ -130,7 +160,8 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         // Fifth tab
         this.propertiesTabs.setTitleAt(4, I18n.getText("preferences.mapping"));
     	this.propertiesTabs.setIconAt(4, Builder.getIcon("map.png", 22));
-    	this.txtGrfxWarning.setText(I18n.getText("preferences.mapping.grfxwarning"));
+    	this.panelGrfxWarning.setLayout(new BorderLayout());
+    	this.panelGrfxWarning.add(new GrfxWarning(), BorderLayout.CENTER);
     	
     }
     
@@ -263,8 +294,6 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         btnWMSAdd = new javax.swing.JButton();
         btnWMSRemove = new javax.swing.JButton();
         panelGrfxWarning = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        txtGrfxWarning = new javax.swing.JTextPane();
         panelButtons = new javax.swing.JPanel();
         btnOk = new javax.swing.JButton();
         btnResetAll = new javax.swing.JButton();
@@ -1033,23 +1062,15 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
                 .addContainerGap())
         );
 
-        jScrollPane3.setViewportView(txtGrfxWarning);
-
         org.jdesktop.layout.GroupLayout panelGrfxWarningLayout = new org.jdesktop.layout.GroupLayout(panelGrfxWarning);
         panelGrfxWarning.setLayout(panelGrfxWarningLayout);
         panelGrfxWarningLayout.setHorizontalGroup(
             panelGrfxWarningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelGrfxWarningLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
-                .addContainerGap())
+            .add(0, 561, Short.MAX_VALUE)
         );
         panelGrfxWarningLayout.setVerticalGroup(
             panelGrfxWarningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelGrfxWarningLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
-                .addContainerGap())
+            .add(0, 125, Short.MAX_VALUE)
         );
 
         org.jdesktop.layout.GroupLayout panelMappingLayout = new org.jdesktop.layout.GroupLayout(panelMapping);
@@ -1068,7 +1089,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
             panelMappingLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(panelMappingLayout.createSequentialGroup()
                 .add(7, 7, 7)
-                .add(panelGrfxWarning, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(panelGrfxWarning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelMapCache, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -1187,7 +1208,6 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JCheckBox chkShowEditorGrid;
     protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JScrollPane jScrollPane2;
-    protected javax.swing.JScrollPane jScrollPane3;
     protected javax.swing.JLabel lblAxisCursorColor;
     protected javax.swing.JLabel lblBaud;
     protected javax.swing.JLabel lblChartBGColor;
@@ -1250,7 +1270,6 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JSpinner spnProxyPort1;
     protected javax.swing.JTable tblWMS;
     protected javax.swing.JTextArea txtComCheckLog;
-    protected javax.swing.JTextPane txtGrfxWarning;
     protected javax.swing.JTextField txtMapCacheLoc;
     protected javax.swing.JTextField txtProxyURL;
     protected javax.swing.JTextField txtProxyURL1;
