@@ -19,12 +19,12 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="panelButtons" alignment="0" max="32767" attributes="0"/>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="6" pref="6" max="6" attributes="0"/>
               <Component id="propertiesTabs" pref="594" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
+          <Component id="panelButtons" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -33,7 +33,8 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="propertiesTabs" pref="555" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="panelButtons" min="-2" pref="63" max="-2" attributes="0"/>
+              <Component id="panelButtons" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -1371,7 +1372,6 @@
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="panelWMS" alignment="0" max="32767" attributes="0"/>
                           <Component id="panelGrfxWarning" alignment="0" max="32767" attributes="0"/>
-                          <Component id="panelMapCache" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -1380,96 +1380,16 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
                       <Component id="panelGrfxWarning" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="panelMapCache" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="panelWMS" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="panelMapCache">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Local map cache">
-                      <Border PropertyName="innerBorder" info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-                        <EtchetBorder/>
-                      </Border>
-                    </TitledBorder>
-                  </Border>
-                </Property>
-              </Properties>
-
-              <Layout>
-                <DimensionLayout dim="0">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="lblMapCacheLoc" min="-2" max="-2" attributes="0"/>
-                              <Component id="lblMapCacheSize" alignment="0" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <Component id="txtMapCacheLoc" pref="337" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                                  <Component id="btnMapCacheBrowse" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="spnMapCacheSize" min="-2" pref="86" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-                </DimensionLayout>
-                <DimensionLayout dim="1">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="lblMapCacheLoc" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                                  <Component id="btnMapCacheBrowse" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="txtMapCacheLoc" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="spnMapCacheSize" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="lblMapCacheSize" alignment="0" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="32767" attributes="0"/>
-                      </Group>
-                  </Group>
-                </DimensionLayout>
-              </Layout>
-              <SubComponents>
-                <Component class="javax.swing.JLabel" name="lblMapCacheLoc">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Location:"/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JLabel" name="lblMapCacheSize">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Size (Mb):"/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JTextField" name="txtMapCacheLoc">
-                </Component>
-                <Component class="javax.swing.JSpinner" name="spnMapCacheSize">
-                </Component>
-                <Component class="javax.swing.JButton" name="btnMapCacheBrowse">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Browse"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
             <Container class="javax.swing.JPanel" name="panelWMS">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
@@ -1503,13 +1423,12 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="btnWMSAdd" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="btnWMSRemove" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" pref="180" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" pref="290" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>

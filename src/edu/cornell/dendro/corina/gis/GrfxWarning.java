@@ -99,6 +99,7 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
 	            {
 	                public void exceptionThrown(Throwable t)
 	                {
+	                	GrfxWarning.this.fireActionEvent(new ActionEvent(btnRetry, 1001, "fail"));
 	                	map.dispose();
 	                	Alert.message(I18n.getText("preferences.testFailed"), I18n.getText("preferences.grfxTestFailed"));
 	                	return;
@@ -132,7 +133,7 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
     	
     	Object[] listeners = listenerList.getListenerList();
     	for (int i = listeners.length-2; i>=0; i-=2) {
-    	    if (listeners[i]==TableModelListener.class) {
+    	    if (listeners[i]==ActionListener.class) {
     		((ActionListener)listeners[i+1]).actionPerformed(e);
     	    }
     	}
