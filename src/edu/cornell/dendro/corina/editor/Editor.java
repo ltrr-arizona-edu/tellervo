@@ -587,26 +587,32 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		MarkerLayer allSites = TridasMarkerLayerBuilder.getMarkerLayerForAllSites();
 		allSites.setEnabled(false);
 		wwMapPanel = new GISPanel(new Dimension(300,300),true, allSites);
-		editorViewMenu = new GISViewMenu(wwMapPanel.getWwd(), wwMapPanel.getVisibleLayers());	
 		
-		builder.addMarkerForTridasElement(elem);			
-		if(!builder.containsMarkers())
-		{
-			wwMapPanel = null;
-			return;
-		}
+		try{
+			editorViewMenu = new GISViewMenu(wwMapPanel.getWwd(), wwMapPanel.getVisibleLayers());	
 			
-		wwMapPanel.addFocusListener(this);
-		
-		// Create layer of current element
-		builder.setName("Elements of this series");
-		wwMapPanel.addLayer(builder.getMarkerLayer());
-		
-		
-
-		if(sample.getSeries() instanceof TridasMeasurementSeries)
+			builder.addMarkerForTridasElement(elem);			
+			if(!builder.containsMarkers())
+			{
+				wwMapPanel = null;
+				return;
+			}
+				
+			wwMapPanel.addFocusListener(this);
+			
+			// Create layer of current element
+			builder.setName("Elements of this series");
+			wwMapPanel.addLayer(builder.getMarkerLayer());
+			
+			
+	
+			if(sample.getSeries() instanceof TridasMeasurementSeries)
+			{
+			//	addOtherElementsToMap();
+			}
+		} catch (Exception e)
 		{
-		//	addOtherElementsToMap();
+			
 		}
 		
 		return;

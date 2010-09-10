@@ -1,15 +1,21 @@
 package edu.cornell.dendro.corina.gis;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.event.EventListenerList;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
+import gov.nasa.worldwind.event.RenderingExceptionListener;
 
 /**
  *
@@ -18,6 +24,8 @@ import edu.cornell.dendro.corina.ui.I18n;
 public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
     
 	JPanel mapPanel;
+	protected EventListenerList listenerList = new EventListenerList();
+	
 	
     /** Creates new form GrfxWarning */
     public GrfxWarning() {
@@ -84,17 +92,51 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
 			App.prefs.setBooleanPref("opengl.failed", false);
 			if(mapPanel==null)
 			{
-				GISFrame map = new GISFrame();
+				final GISFrame map = new GISFrame();
 				map.setVisible(true);
+				
+	            map.wwMapPanel.getWwd().addRenderingExceptionListener(new RenderingExceptionListener()
+	            {
+	                public void exceptionThrown(Throwable t)
+	                {
+	                	map.dispose();
+	                	Alert.message(I18n.getText("preferences.testFailed"), I18n.getText("preferences.grfxTestFailed"));
+	                	return;
+	                }
+	                
+	            });
+	            
+	            this.fireActionEvent(new ActionEvent(btnRetry, 1001, "pass"));
+				
+			}
+			else
+			{
+				GISPanel wwMapPanel = new GISPanel(new Dimension(300,300), false, TridasMarkerLayerBuilder.getMarkerLayerForAllSites());
+				mapPanel.setLayout(new BorderLayout());
+				mapPanel.add(wwMapPanel, BorderLayout.CENTER);
 			}
 		}
-		else
-		{
-			GISPanel wwMapPanel = new GISPanel(new Dimension(300,300), false, null);
-			mapPanel.setLayout(new BorderLayout());
-			mapPanel.add(wwMapPanel, BorderLayout.CENTER);
-		}
+
 		
 	}
+    
+	public void addActionListener(ActionListener l) {
+		listenerList.add(ActionListener.class, l);
+	}
+    
+    public void removeTableModelListener(ActionListener l) {
+    	listenerList.remove(ActionListener.class, l);
+    }
+    
+    public void fireActionEvent(ActionEvent e) {
+    	
+    	Object[] listeners = listenerList.getListenerList();
+    	for (int i = listeners.length-2; i>=0; i-=2) {
+    	    if (listeners[i]==TableModelListener.class) {
+    		((ActionListener)listeners[i+1]).actionPerformed(e);
+    	    }
+    	}
+    }
+    
     
 }

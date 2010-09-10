@@ -9,31 +9,18 @@ package edu.cornell.dendro.corina.prefs;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.table.TableModel;
 
-import com.dmurph.mvc.model.MVCArrayList;
-
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.gis.GPXParser;
 import edu.cornell.dendro.corina.gis.GrfxWarning;
 import edu.cornell.dendro.corina.gis.WMSTableModel;
 import edu.cornell.dendro.corina.gis.WWJUtil;
-import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
-import edu.cornell.dendro.corina.hardware.SerialMeasuringDeviceConstants;
-import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
-import edu.cornell.dendro.corina.tridasv2.ui.LocationGeometry;
-import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import gov.nasa.worldwind.cache.BasicDataFileStore;
 
 /**
  *
@@ -43,7 +30,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 
 	final JFileChooser fc = new JFileChooser();
 	WMSTableModel wmsModel = new WMSTableModel();
-	
+	GrfxWarning warn = new GrfxWarning();
 	
     /** Creates new form Ui_PreferencesPanel */
     public Ui_PreferencesPanel() {
@@ -161,7 +148,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         this.propertiesTabs.setTitleAt(4, I18n.getText("preferences.mapping"));
     	this.propertiesTabs.setIconAt(4, Builder.getIcon("map.png", 22));
     	this.panelGrfxWarning.setLayout(new BorderLayout());
-    	this.panelGrfxWarning.add(new GrfxWarning(), BorderLayout.CENTER);
+    	this.panelGrfxWarning.add(warn, BorderLayout.CENTER);
     	
     }
     
@@ -182,7 +169,11 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	this.btnWMSAdd.setEnabled(b);
     	this.btnWMSRemove.setEnabled(b);
     	this.tblWMS.setEnabled(b);
-    	    	
+    	
+    	if(!b)
+    	{
+    		this.warn.addActionListener(this);
+    	}
     	
     }
     
@@ -1295,7 +1286,10 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
 				
 			}
 		}
-		
+		else if (e.getActionCommand().equals("pass"))
+		{
+			this.setMappingEnabled(true);
+		}
 	}
 
 }

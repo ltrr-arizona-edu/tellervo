@@ -1,6 +1,7 @@
 package edu.cornell.dendro.corina.gis;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.Alert;
 import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
@@ -25,6 +26,7 @@ import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.StatusBar;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -60,6 +62,8 @@ public class GISPanel extends JPanel implements SelectListener{
         protected TridasMarker selectedMarker;
         protected RenderableLayer annotationLayer;
         protected TridasAnnotation annotation;
+        protected Boolean isGrfxRetest= false;
+        protected Boolean failedRetest;
         private ArrayList<String> visibleLayers = new ArrayList<String>();
 
         
@@ -85,6 +89,21 @@ public class GISPanel extends JPanel implements SelectListener{
         	this.getWwd().addSelectListener(this);
         }
 
+        public Boolean isGrfxRetest()
+        {
+        	return this.isGrfxRetest;
+        }
+        
+        public Boolean getFailedRetest()
+        {
+        	return this.failedRetest;
+        }
+        
+        public void setIsGrfxRetest(Boolean b)
+        {
+        	this.isGrfxRetest = b;
+        }
+        
         public ArrayList<String> getVisibleLayers()
         {
         	return visibleLayers;
@@ -99,8 +118,11 @@ public class GISPanel extends JPanel implements SelectListener{
         
         private void failedReq()
         {
+        	this.failedRetest = true;
         	App.prefs.setBooleanPref("opengl.failed", true);
-        	this.add(new GrfxWarning(), BorderLayout.CENTER);
+        	GrfxWarning warn = new GrfxWarning(this);
+        	warn.btnRetry.setVisible(false);
+        	this.add(warn, BorderLayout.CENTER);
         }
                 
         private void setupGui(Dimension canvasSize, boolean includeStatusBar)
@@ -120,17 +142,10 @@ public class GISPanel extends JPanel implements SelectListener{
             {
                 public void exceptionThrown(Throwable t)
                 {
-                    if (t instanceof WWAbsentRequirementException)
-                    {
-                        String message = "Computer does not meet minimum graphics requirements.\n";
-                        message += "Please install up-to-date graphics driver and try again.\n";
-
-                        JOptionPane.showMessageDialog(null, message, "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                        failedReq();
-                     
-                        return;
-                    }
+                	GISPanel.this.remove((Component) wwd);
+                	GISPanel.this.failedReq();
+                    return;
+                        
                 }
             });
             
