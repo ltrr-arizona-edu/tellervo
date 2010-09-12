@@ -321,7 +321,7 @@ public class TridasObjectList extends CorinaResource {
 			bySiteCode = new TreeMap<String, TridasObjectEx>();
 		}
 		
-		public MVCArrayList<TridasObjectEx> allObjects;
-		public Map<String, TridasObjectEx> bySiteCode;
+		public final MVCArrayList<TridasObjectEx> allObjects;
+		public final Map<String, TridasObjectEx> bySiteCode;
 	}
 }

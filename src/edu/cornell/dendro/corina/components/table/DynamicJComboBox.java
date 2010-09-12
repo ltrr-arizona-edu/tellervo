@@ -14,7 +14,7 @@ import com.dmurph.mvc.model.MVCArrayList;
  * This class is for use inside of JTables, where data might have to be loaded or modified
  * dynamically
  * 
- * @author Daniel
+ * @author Daniel Murphy
  */
 public class DynamicJComboBox extends JComboBox implements PropertyChangeListener {
 	private static final long serialVersionUID = 1L;
