@@ -16,6 +16,7 @@ import javax.swing.table.AbstractTableModel;
 import com.dmurph.mvc.model.HashModel.PropertyType;
 import com.dmurph.mvc.model.MVCArrayList;
 
+import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
 
 /**
@@ -159,7 +160,10 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 				return Double.class;
 			}else if(column.equals(SingleObjectModel.LONGTITUDE)){
 				return Double.class;
+			}else if(column.equals(SingleObjectModel.WAYPOINT)){
+				return GPXWaypoint.class;
 			}
+			
 			
 			SingleObjectModel som = models.get(0);
 			if(som == null){
@@ -216,7 +220,17 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 		if(argAValue != null && argAValue.toString().equals("")){
 			argAValue = null;
 		}
+		
 		SingleObjectModel som = models.get(argRowIndex);
+		
+		// If it's a waypoint set the lat and long
+		if(column.equals(SingleObjectModel.WAYPOINT))
+		{
+			GPXWaypoint wp = (GPXWaypoint) argAValue;
+			som.setProperty(SingleObjectModel.LATITUDE, wp.getLatitude());
+			som.setProperty(SingleObjectModel.LONGTITUDE, wp.getLongitude());
+		}
+				
 		som.setProperty(column, argAValue);
 	}
 	

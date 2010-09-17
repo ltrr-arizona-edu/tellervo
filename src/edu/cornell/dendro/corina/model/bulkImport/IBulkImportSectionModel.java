@@ -16,6 +16,7 @@ public interface IBulkImportSectionModel {
 	public static final String ROWS = "rows";
 	public static final String TABLE_MODEL = "tableModel";
 	public static final String IMPORTED_LIST = "importedList";
+	public static final String WAYPOINT_LIST = "waypointList";
 	
 	/**
 	 * goes to the table model, which handles the selected rows

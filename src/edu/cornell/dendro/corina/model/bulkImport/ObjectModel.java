@@ -12,6 +12,7 @@ import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
+import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 
 /**
  * @author Daniel Murphy
@@ -26,6 +27,8 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel());
 		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ObjectTableModel(this));
 		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasObjectEx>());
+		registerProperty(WAYPOINT_LIST, PropertyType.FINAL, new MVCArrayList<GPXWaypoint>());
+
 	}
 	
 	public MVCArrayList<SingleObjectModel> getRows(){
@@ -42,6 +45,10 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 	
 	public MVCArrayList<TridasObjectEx> getImportedList(){
 		return (MVCArrayList<TridasObjectEx>) getProperty(IMPORTED_LIST);
+	}
+	
+	public MVCArrayList<GPXWaypoint> getWaypointList(){
+		return (MVCArrayList<GPXWaypoint>) getProperty(WAYPOINT_LIST);
 	}
 	
 	/**

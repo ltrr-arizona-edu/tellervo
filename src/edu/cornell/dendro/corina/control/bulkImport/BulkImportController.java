@@ -11,6 +11,7 @@ import com.dmurph.tracking.JGoogleAnalyticsTracker;
 import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 
 import edu.cornell.dendro.corina.command.bulkImport.AddRowCommand;
+import edu.cornell.dendro.corina.command.bulkImport.GPXBrowseCommand;
 import edu.cornell.dendro.corina.command.bulkImport.HideColumnWindowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.ImportSelectedElementsCommand;
 import edu.cornell.dendro.corina.command.bulkImport.ImportSelectedSamplesCommand;
@@ -44,6 +45,8 @@ public class BulkImportController extends FrontController {
 	public static final String SET_DYNAMIC_COMBO_BOX_OBJECTS = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX_OBJECTS";
 	public static final String SET_DYNAMIC_COMBO_BOX_ELEMENTS = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX_ELEMENTS";
 	public static final String SET_DYNAMIC_COMBO_BOX_SAMPLES = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX_SAMPLES";
+	
+	public static final String BROWSE_GPX_FILE = "BULK_IMPORT_BROWSE_GPX_FILE";
 
 	
 	public BulkImportController(){
@@ -55,6 +58,7 @@ public class BulkImportController extends FrontController {
 		registerCommand(DISPLAY_BULK_IMPORT, "display");
 		registerCommand(IMPORT_SELECTED_ELEMENTS, ImportSelectedElementsCommand.class);
 		registerCommand(IMPORT_SELECTED_SAMPLES, ImportSelectedSamplesCommand.class);
+		registerCommand(BROWSE_GPX_FILE, GPXBrowseCommand.class);
 	}
 	
 	public void display(MVCEvent argEvent){

@@ -19,6 +19,7 @@ import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.control.bulkImport.RemoveSelectedEvent;
 import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
 import edu.cornell.dendro.corina.model.bulkImport.IBulkImportTableModel;
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
  * @author Daniel Murphy
@@ -30,7 +31,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	protected IBulkImportSectionModel model;
 	protected JTable table;
 	private JButton addRow;
-	private JButton showHideColumns;
+	protected JButton showHideColumns;
 	private JButton removeSelected;
 	private JButton selectAll;
 	private JButton selectNone;
@@ -57,7 +58,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 		setLayout(new BorderLayout());
 		
 	
-		add(setupHeaderElements(addRow, showHideColumns), "North");
+		add(setupHeaderElements(addRow, removeSelected, showHideColumns, selectAll, selectNone), "North");
+		//add(setupToolbar(showHideColumns, selectAll, selectNone), "West");
 
 		JScrollPane panel = new JScrollPane(table);
 		panel.setPreferredSize(new Dimension(500, 400));
@@ -69,12 +71,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		add(panel, "Center");
 		
 		Box box = Box.createHorizontalBox();
-		box.add(Box.createRigidArea(new Dimension(10, 1)));
-		box.add(selectAll);
-		box.add(selectNone);
 		box.add(Box.createHorizontalGlue());
-		box.add(removeSelected);
-		box.add(Box.createRigidArea(new Dimension(20, 1)));
 		box.add(importSelected);
 		add(box, "South");
 	}
@@ -83,7 +80,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		table.setModel(model.getTableModel());
 	}
 	
-	private void addListeners() {
+	protected void addListeners() {
 		showHideColumns.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showHideColumnsPressed();
@@ -122,15 +119,29 @@ public abstract class AbstractBulkImportView extends JPanel{
 		});
 	}
 	
-	protected Box setupHeaderElements(JButton argAddRowButton, JButton argShowHideColumnButton){
+	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, JButton argShowHideColumnButton,
+			JButton argSelectAll, JButton argSelectNone){
 		Box box = Box.createHorizontalBox();
 		box.add(argAddRowButton);
+		box.add(argDeleteRowButton);
 		box.add( Box.createHorizontalGlue());
 		box.add(argShowHideColumnButton);
+		box.add(argSelectAll);
+		box.add(argSelectNone);
 		return box;
 	}
 	
+	/*protected Box setupToolbar(JButton argShowHideColumnButton, JButton selectAll, JButton selectNone)
+	{
+		Box box = Box.createVerticalBox();
+		box.add(argShowHideColumnButton);
+		box.add(selectAll);
+		box.add(selectNone);
+		return box;
+	}*/
+	
 	protected abstract void setupTableCells(JTable argTable);
+	
 	
 	
 	protected void removeSelectedPressed(){
@@ -162,10 +173,20 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 	private void populateLocale() {
 		addRow.setText("Add Row");
-		showHideColumns.setText("Show/Hide Columns");
-		removeSelected.setText("Remove Selected");
-		selectAll.setText("Select All");
-		selectNone.setText("Select None");
+		addRow.setIcon(Builder.getIcon("insertrow.png", 22));
+		
+		showHideColumns.setToolTipText("Show/Hide Columns");
+		showHideColumns.setIcon(Builder.getIcon("showcolumns.png", 22));
+		
+		removeSelected.setText("Delete Row(s)");
+		removeSelected.setIcon(Builder.getIcon("deleterow.png", 22));
+		
+		selectAll.setToolTipText("Select All");
+		selectAll.setIcon(Builder.getIcon("selectall.png", 22));
+		
+		selectNone.setToolTipText("Select None");
+		selectNone.setIcon(Builder.getIcon("selectnone.png", 22));
+
 		importSelected.setText("Import Selected");
 	}
 }

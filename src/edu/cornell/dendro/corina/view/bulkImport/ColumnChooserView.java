@@ -4,6 +4,7 @@
 package edu.cornell.dendro.corina.view.bulkImport;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog.ModalExclusionType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -16,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTable;
+import javax.swing.JWindow;
 import javax.swing.table.AbstractTableModel;
 
 import com.dmurph.mvc.model.MVCArrayList;
@@ -29,7 +31,7 @@ import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
  * @author daniel
  *
  */
-public class ColumnChooserView extends JDialog{
+public class ColumnChooserView extends JWindow{
 	private static final long serialVersionUID = 1L;
 	
 	private JTable checkboxList;
@@ -40,7 +42,8 @@ public class ColumnChooserView extends JDialog{
 	private final MVCArrayList<String> columns;
 	
 	public ColumnChooserView(ColumnChooserModel argModel, JFrame argParent){
-		super(argParent, true);
+		super(argParent);
+
 		model = argModel;
 		tableModel = new TableModel();
 		columns = argModel.getPossibleColumns();

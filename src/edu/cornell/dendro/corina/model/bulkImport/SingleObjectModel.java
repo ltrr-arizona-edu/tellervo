@@ -17,6 +17,8 @@ import org.tridas.schema.TridasObject;
 
 import com.dmurph.mvc.model.HashModel;
 
+import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
+
 /**
  * @author Daniel Murphy
  *
@@ -31,10 +33,11 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 	public static final String DESCRIPTION = "Description";
 	public static final String LATITUDE = "Latitude";
 	public static final String LONGTITUDE = "Longtitude";
+	public static final String WAYPOINT = "Waypoint";
 	
 	
 	public static final String[] TABLE_PROPERTIES = {
-		OBJECT_CODE, TITLE, COMMENTS, TYPE, DESCRIPTION, LATITUDE, LONGTITUDE
+		OBJECT_CODE, TITLE, COMMENTS, TYPE, DESCRIPTION, LATITUDE, LONGTITUDE, WAYPOINT
 	};
 	
 	public SingleObjectModel(){
@@ -45,6 +48,11 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 	
 	public void setImported(TridasIdentifier argImported){
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
+	}
+	
+	public void setWaypoint(GPXWaypoint wp)
+	{
+		registerProperty(WAYPOINT, PropertyType.READ_WRITE, null);
 	}
 	
 	public TridasIdentifier getImported(){
@@ -104,7 +112,8 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 		Object type = getProperty(TYPE);
 		Object description = getProperty(DESCRIPTION);
 		Object latitude = getProperty(LATITUDE);
-		Object longtitude = getProperty(LONGTITUDE);
+		Object longitude = getProperty(LONGTITUDE);
+		Object waypoint = getProperty(WAYPOINT);
 		
 		if(title != null){
 			argObject.setTitle(title.toString());
@@ -126,7 +135,8 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 			argObject.setDescription(description.toString());
 		}
 		
-		if(latitude != null && longtitude != null){
+		if(latitude != null && longitude != null){
+			// Lat/Long is set so use these
 			double lat = (Double)getProperty(LATITUDE);
 			double lon = (Double)getProperty(LONGTITUDE);
 			Pos p = new Pos();
@@ -141,7 +151,7 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 			
 			TridasLocation loc = new TridasLocation();
 			loc.setLocationGeometry(locgeo);
-			argObject.setLocation(loc);
+			argObject.setLocation(loc);		
 		}else{
 			argObject.setLocation(null);
 		}

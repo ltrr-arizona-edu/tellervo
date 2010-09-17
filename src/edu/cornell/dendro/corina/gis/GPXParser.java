@@ -1,6 +1,7 @@
 package edu.cornell.dendro.corina.gis;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,6 +39,13 @@ public class GPXParser {
 		 BufferedReader in
 		   = new BufferedReader(new FileReader(filename));
 
+		parse(in);
+	}
+	
+	public GPXParser(File infile) throws FileNotFoundException, IOException
+	{
+		lstWaypoints = new ArrayList<GPXWaypoint>();
+		BufferedReader in = new BufferedReader(new FileReader(infile));
 		parse(in);
 	}
 	
