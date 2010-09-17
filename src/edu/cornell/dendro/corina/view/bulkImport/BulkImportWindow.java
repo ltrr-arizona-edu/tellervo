@@ -12,6 +12,7 @@ import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  * @author Daniel Murphy
@@ -41,9 +42,9 @@ public class BulkImportWindow extends JFrame {
 		elements = new ElementView(BulkImportModel.getInstance().getElementModel());
 		samples = new SampleView(BulkImportModel.getInstance().getSampleModel());
 		add(tabs,"Center");
-		tabs.addTab("Objects", Builder.getIcon("object.png", 22), objects);
-		tabs.addTab("Elements", Builder.getIcon("element.png", 22), elements);
-		tabs.addTab("Samples", Builder.getIcon("sample.png", 22), samples);
+		tabs.addTab(I18n.getText("tridas.object")+"s", Builder.getIcon("object.png", 22), objects);
+		tabs.addTab(I18n.getText("tridas.element")+"s", Builder.getIcon("element.png", 22), elements);
+		tabs.addTab(I18n.getText("tridas.sample")+"s", Builder.getIcon("sample.png", 22), samples);
 	}
 	
 	public void linkModel() {
@@ -55,7 +56,7 @@ public class BulkImportWindow extends JFrame {
 	}
 	
 	public void populateLocale() {
-
+		this.setTitle(I18n.getText("menus.file.bulkimport"));
 	}
 	
 	public static void main()	
