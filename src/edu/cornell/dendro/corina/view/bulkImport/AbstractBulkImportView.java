@@ -54,11 +54,12 @@ public abstract class AbstractBulkImportView extends JPanel{
 		selectAll = new JButton();
 		selectNone = new JButton();
 		importSelected = new JButton();
+		importSelected.putClientProperty("JButton.buttonType", "bevel");
 		
 		setLayout(new BorderLayout());
 		
 	
-		add(setupHeaderElements(addRow, removeSelected, showHideColumns, selectAll, selectNone), "North");
+		add(setupHeaderElements(addRow, removeSelected, showHideColumns), "North");
 		//add(setupToolbar(showHideColumns, selectAll, selectNone), "West");
 
 		JScrollPane panel = new JScrollPane(table);
@@ -70,10 +71,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		
 		add(panel, "Center");
 		
-		Box box = Box.createHorizontalBox();
-		box.add(Box.createHorizontalGlue());
-		box.add(importSelected);
-		add(box, "South");
+		add(setupFooterElements(selectAll, selectNone, importSelected), "South");
 	}
 	
 	private void linkModel() {
@@ -119,15 +117,22 @@ public abstract class AbstractBulkImportView extends JPanel{
 		});
 	}
 	
-	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, JButton argShowHideColumnButton,
-			JButton argSelectAll, JButton argSelectNone){
+	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, JButton argShowHideColumnButton){
 		Box box = Box.createHorizontalBox();
 		box.add(argAddRowButton);
 		box.add(argDeleteRowButton);
 		box.add( Box.createHorizontalGlue());
 		box.add(argShowHideColumnButton);
+		
+		return box;
+	}
+	
+	protected Box setupFooterElements(JButton argSelectAll, JButton argSelectNone, JButton argImport){
+		Box box = Box.createHorizontalBox();
 		box.add(argSelectAll);
 		box.add(argSelectNone);
+		box.add(Box.createHorizontalGlue());
+		box.add(argImport);
 		return box;
 	}
 	
@@ -167,7 +172,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	}
 	
 	protected void showHideColumnsPressed(){
-		DisplayColumnChooserEvent event = new DisplayColumnChooserEvent(model);
+		DisplayColumnChooserEvent event = new DisplayColumnChooserEvent(model, showHideColumns);
 		event.dispatch();
 	}
 

@@ -35,6 +35,7 @@ public class ShowColumnWindowCommand implements ICommand {
 		}
 	
 		ColumnChooserModel model = event.model.getColumnModel();
+		model.getPossibleColumns().clear();
 		for(String s : event.model.getModelTableProperties()){
 			model.getPossibleColumns().add(s);
 		}
@@ -46,7 +47,7 @@ public class ShowColumnWindowCommand implements ICommand {
 			}
 		}
 		
-		ColumnChooserView view = new ColumnChooserView(model, biModel.getMainView());
+		ColumnChooserView view = new ColumnChooserView(model, biModel.getMainView(), event.locationComponent);
 		biModel.setCurrColumnChooser(view);
 		
 		try {

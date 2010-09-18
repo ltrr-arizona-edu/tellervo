@@ -3,7 +3,12 @@
  */
 package edu.cornell.dendro.corina.view.bulkImport;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
 import javax.swing.JTable;
 
 import org.tridas.schema.TridasObject;
@@ -19,13 +24,17 @@ import edu.cornell.dendro.corina.components.table.TridasShapeRenderer;
 import edu.cornell.dendro.corina.components.table.TridasUnitEditor;
 import edu.cornell.dendro.corina.components.table.TridasUnitRenderer;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
+import edu.cornell.dendro.corina.control.bulkImport.GPXBrowse;
 import edu.cornell.dendro.corina.control.bulkImport.ImportSelectedEvent;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
+import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
 import edu.cornell.dendro.corina.schema.WSIElementTypeDictionary;
 import edu.cornell.dendro.corina.schema.WSITaxonDictionary;
 import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer;
 import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer.Behavior;
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
  * @author Daniel Murphy
@@ -34,6 +43,8 @@ import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer.Behavior;
 @SuppressWarnings("serial")
 public class ElementView extends AbstractBulkImportView{
 	
+	private JButton browseGPX;
+
 	public ElementView(ElementModel argModel){
 		super(argModel);
 	}
@@ -53,21 +64,53 @@ public class ElementView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSITaxonDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 		// this combo box should update from mvc events
-		DynamicJComboBox box = new DynamicJComboBox(App.tridasObjects.getMutableObjectList(), new IDynamicJComboBoxInterpretter() {
+		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(), new IDynamicJComboBoxInterpretter<TridasObjectEx>() {
 			@Override
-			public String getStringValue(Object argComponent) {
+			public String getStringValue(TridasObjectEx argComponent) {
 				if(argComponent == null){
 					return "";
 				}
-				TridasObjectEx o = (TridasObjectEx) argComponent;
-				if(!o.isTopLevelObject()){
+				if(!argComponent.isTopLevelObject()){
 					return null;
 				}
-				return o.getLabCode();
+				return argComponent.getLabCode();
 			}
 		});
-		
 		argTable.setDefaultEditor(TridasObject.class, new DefaultCellEditor(box));
+		
+		ElementModel model = BulkImportModel.getInstance().getElementModel();
+		DynamicJComboBox<GPXWaypoint> waypointBox = new DynamicJComboBox<GPXWaypoint>(model.getWaypointList());
+		argTable.setDefaultEditor(GPXWaypoint.class, new DefaultCellEditor(waypointBox));
+	}
+	
+	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, JButton argShowHideColumnButton){
+		Box box = Box.createHorizontalBox();
+		box.add(argAddRowButton);
+		box.add(argDeleteRowButton);
+		box.add( Box.createHorizontalGlue());
+		browseGPX = new JButton();
+		browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
+		browseGPX.setToolTipText("Provide GPS data");
+		box.add(browseGPX);
+		box.add(argShowHideColumnButton);
+		
+		return box;
+	}
+	
+	@Override
+	protected void addListeners() {
+		super.addListeners();
+		
+		browseGPX.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ElementModel model = BulkImportModel.getInstance().getElementModel();
+				GPXBrowse event = new GPXBrowse(model);
+				event.dispatch();
+				
+			}
+		});
 	}
 	
 	/**

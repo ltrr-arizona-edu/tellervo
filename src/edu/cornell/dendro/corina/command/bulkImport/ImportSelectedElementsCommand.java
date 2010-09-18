@@ -6,7 +6,6 @@ package edu.cornell.dendro.corina.command.bulkImport;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -18,11 +17,9 @@ import org.tridas.util.TridasObjectEx;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementTableModel;
-import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleElementModel;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -145,31 +142,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 			
 			som.populateToTridasElement(origElement);
 			
-			TridasObjectEx parentObject = null;
-			ObjectModel omodel = BulkImportModel.getInstance().getObjectModel();
-			for(TridasObjectEx o : omodel.getImportedList()){
-				if(o.getLabCode().equals(som.getProperty(SingleElementModel.OBJECT))){
-					parentObject = o;
-					break;
-				}
-			}
-			if(parentObject == null){
-				System.out.println("Could not find parent object locally with code: "+som.getProperty(SingleElementModel.OBJECT));
-
-				// we'll try to find the lab code in the huge list
-				List<TridasObjectEx> objects = App.tridasObjects.getTopLevelObjectList();
-				for(TridasObjectEx o : objects){
-					if(o.getLabCode().equals(som.getProperty(SingleElementModel.OBJECT))){
-						parentObject = o;
-						break;
-					}
-				}
-			
-				if(parentObject == null){
-					Alert.error("Saving Error", "Could not find object with code: "+ som.getProperty(SingleElementModel.OBJECT));
-					continue;
-				}
-			}
+			TridasObjectEx parentObject = (TridasObjectEx) som.getProperty(SingleElementModel.OBJECT);
 			
 			EntityResource<TridasElement> resource;
 			

@@ -7,11 +7,11 @@ package edu.cornell.dendro.corina.components.table;
  * @author Daniel
  *
  */
-public interface IDynamicJComboBoxInterpretter {
+public interface IDynamicJComboBoxInterpretter<E> {
 	
 	/**
 	 * @param argComponent can be null
 	 * @return the string value displayed in the combo box.  If null, the entry is ommited.
 	 */
-	public String getStringValue(Object argComponent);
+	public String getStringValue(E argComponent);
 }

@@ -31,7 +31,8 @@ import edu.cornell.dendro.corina.ui.Builder;
  */
 public class ObjectView extends AbstractBulkImportView{
 	private static final long serialVersionUID = 1L;
-	protected JButton browseGPX;
+	
+	private JButton browseGPX;
 	
 	public ObjectView(ObjectModel argModel){
 		super(argModel);
@@ -46,16 +47,12 @@ public class ObjectView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSIObjectTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
-		argTable.setDefaultEditor(GPXWaypoint.class, new DefaultCellEditor(new DynamicJComboBox(model.getWaypointList(), new IDynamicJComboBoxInterpretter() {
-			
+		argTable.setDefaultEditor(GPXWaypoint.class, new DefaultCellEditor(new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(), new IDynamicJComboBoxInterpretter<GPXWaypoint>() {
 			@Override
-			public String getStringValue(Object argComponent) {
-	
+			public String getStringValue(GPXWaypoint argComponent) {
 				return argComponent.toString();
 			}
 		})));
-		
-		
 	}
 	
 	/**
@@ -82,9 +79,7 @@ public class ObjectView extends AbstractBulkImportView{
 		return box;
 	}*/
 	
-	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, JButton argShowHideColumnButton, 
-			JButton argSelectAll, JButton argSelectNone) {
-	
+	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, JButton argShowHideColumnButton){
 		Box box = Box.createHorizontalBox();
 		box.add(argAddRowButton);
 		box.add(argDeleteRowButton);
@@ -94,11 +89,9 @@ public class ObjectView extends AbstractBulkImportView{
 		browseGPX.setToolTipText("Provide GPS data");
 		box.add(browseGPX);
 		box.add(argShowHideColumnButton);
-		box.add(argSelectAll);
-		box.add(argSelectNone);
-		return box;
 		
-	};
+		return box;
+	}
 	
 	@Override
 	protected void addListeners() {
@@ -108,7 +101,8 @@ public class ObjectView extends AbstractBulkImportView{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				GPXBrowse event = new GPXBrowse(BulkImportModel.getInstance().getObjectModel());
+				ObjectModel model = BulkImportModel.getInstance().getObjectModel();
+				GPXBrowse event = new GPXBrowse(model);
 				event.dispatch();
 				
 			}

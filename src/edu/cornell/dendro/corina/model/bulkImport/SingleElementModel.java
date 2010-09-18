@@ -48,12 +48,13 @@ public class SingleElementModel extends HashModel implements ISingleRowModel{
 	public static final String SOIL_DESCRIPTION = "Soil Description";
 	public static final String SOIL_DEPTH = "Soil Depth";
 	public static final String BEDROCK_DESCRIPTION = "Bedrock Description";
+	public static final String WAYPOINT = "Waypoint";
 
 	public static final String[] TABLE_PROPERTIES = {
 		TITLE, OBJECT, COMMENTS, TYPE, DESCRIPTION, TAXON,
 		SHAPE, HEIGHT, WIDTH, DEPTH, UNIT, LATITUDE, LONGTITUDE,
 		SLOPE_ANGLE, SLOPE_AZIMUTH, SOIL_DESCRIPTION, SOIL_DEPTH,
-		BEDROCK_DESCRIPTION
+		BEDROCK_DESCRIPTION, WAYPOINT
 	};
 	
 	public SingleElementModel(){

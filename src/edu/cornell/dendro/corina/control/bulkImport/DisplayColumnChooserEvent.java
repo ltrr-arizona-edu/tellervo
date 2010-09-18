@@ -3,6 +3,8 @@
  */
 package edu.cornell.dendro.corina.control.bulkImport;
 
+import java.awt.Component;
+
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.tracking.ITrackable;
 
@@ -16,10 +18,12 @@ public class DisplayColumnChooserEvent extends MVCEvent implements ITrackable{
 	private static final long serialVersionUID = 1L;
 
 	public final IBulkImportSectionModel model;
+	public final Component locationComponent;
 	
-	public DisplayColumnChooserEvent(IBulkImportSectionModel argModel) {
+	public DisplayColumnChooserEvent(IBulkImportSectionModel argModel, Component argLocationComponenet) {
 		super(BulkImportController.DISPLAY_COLUMN_CHOOSER);
 		model = argModel;
+		locationComponent = argLocationComponenet;
 	}
 	/**
 	 * @see com.dmurph.mvc.tracking.ITrackable#getTrackingAction()

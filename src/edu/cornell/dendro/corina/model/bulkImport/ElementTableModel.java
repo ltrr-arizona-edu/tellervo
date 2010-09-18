@@ -21,6 +21,7 @@ import org.tridas.schema.TridasUnit;
 import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.model.HashModel.PropertyType;
 
+import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.schema.WSIElementTypeDictionary;
 import edu.cornell.dendro.corina.schema.WSITaxonDictionary;
 
@@ -205,6 +206,8 @@ public class ElementTableModel extends AbstractTableModel implements PropertyCha
 			return WSITaxonDictionary.class;
 		}else if(argColumn.equals(SingleElementModel.UNIT)){
 			return TridasUnit.class;
+		}else if(argColumn.equals(SingleElementModel.WAYPOINT)){
+			return GPXWaypoint.class;
 		}
 		return null;
 	}
@@ -251,11 +254,27 @@ public class ElementTableModel extends AbstractTableModel implements PropertyCha
 			return;
 		}
 		argColumnIndex--;
+		
+		// TODO: this all should go to a command, as it's modifying the model.
 		String column = columns.get(argColumnIndex);
 		if(argAValue != null && argAValue.toString().equals("")){
 			argAValue = null;
 		}
+		
 		SingleElementModel som = models.get(argRowIndex);
+		
+		// If it's a waypoint set the lat and long
+		if(column.equals(SingleElementModel.WAYPOINT))
+		{
+			GPXWaypoint wp = (GPXWaypoint) argAValue;
+			som.setProperty(SingleElementModel.LATITUDE, wp.getLatitude());
+			som.setProperty(SingleElementModel.LONGTITUDE, wp.getLongitude());
+		}
+		// If it's lat/long data, remove the waypoint
+		if(column.equals(SingleElementModel.LATITUDE) || column.equals(SingleElementModel.LONGTITUDE)){
+			som.setProperty(SingleElementModel.WAYPOINT, null);
+		}
+		
 		som.setProperty(column, argAValue);
 	}
 	

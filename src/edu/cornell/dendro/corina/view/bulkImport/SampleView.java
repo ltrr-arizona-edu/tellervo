@@ -43,14 +43,13 @@ public class SampleView  extends AbstractBulkImportView{
 		
 
 		ElementModel m = BulkImportModel.getInstance().getElementModel();
-		DynamicJComboBox box = new DynamicJComboBox(m.getImportedList(), new IDynamicJComboBoxInterpretter() {
+		DynamicJComboBox<TridasElement> box = new DynamicJComboBox<TridasElement>(m.getImportedList(), new IDynamicJComboBoxInterpretter<TridasElement>() {
 			@Override
-			public String getStringValue(Object argComponent) {
+			public String getStringValue(TridasElement argComponent) {
 				if(argComponent == null){
 					return null;
 				}
-				TridasElement o = (TridasElement) argComponent;
-				return o.getTitle();
+				return argComponent.getTitle();
 			}
 		});
 		argTable.setDefaultEditor(TridasElement.class, new DefaultCellEditor(box));

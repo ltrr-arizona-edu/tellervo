@@ -120,7 +120,8 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			
 			som.populateToTridasSample(origSample);
 			
-			TridasElement parentObject = null;
+			TridasElement parentObject = (TridasElement) som.getProperty(SingleSampleModel.ELEMENT);
+			
 			ElementModel emodel = BulkImportModel.getInstance().getElementModel();
 			for(TridasElement o : emodel.getImportedList()){
 				if(o.getTitle().equals(som.getProperty(SingleSampleModel.ELEMENT))){

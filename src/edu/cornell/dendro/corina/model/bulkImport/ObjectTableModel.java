@@ -216,6 +216,8 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 			return;
 		}
 		argColumnIndex--;
+		
+		// TODO: this all should go to a command, as it's modifying the model.
 		String column = columns.get(argColumnIndex);
 		if(argAValue != null && argAValue.toString().equals("")){
 			argAValue = null;
@@ -229,6 +231,10 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 			GPXWaypoint wp = (GPXWaypoint) argAValue;
 			som.setProperty(SingleObjectModel.LATITUDE, wp.getLatitude());
 			som.setProperty(SingleObjectModel.LONGTITUDE, wp.getLongitude());
+		}
+		// If it's lat/long data, remove the waypoint
+		if(column.equals(SingleObjectModel.LATITUDE) || column.equals(SingleObjectModel.LONGTITUDE)){
+			som.setProperty(SingleObjectModel.WAYPOINT, null);
 		}
 				
 		som.setProperty(column, argAValue);

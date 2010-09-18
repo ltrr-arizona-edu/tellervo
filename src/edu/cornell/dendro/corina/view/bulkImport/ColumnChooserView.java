@@ -4,7 +4,7 @@
 package edu.cornell.dendro.corina.view.bulkImport;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog.ModalExclusionType;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -14,7 +14,6 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.JWindow;
@@ -41,7 +40,7 @@ public class ColumnChooserView extends JWindow{
 	private final ColumnChooserModel model;
 	private final MVCArrayList<String> columns;
 	
-	public ColumnChooserView(ColumnChooserModel argModel, JFrame argParent){
+	public ColumnChooserView(ColumnChooserModel argModel, JFrame argParent, Component argLocationComponenet){
 		super(argParent);
 
 		model = argModel;
@@ -67,7 +66,7 @@ public class ColumnChooserView extends JWindow{
 		linkModel();
 		addListeners();
 		populateLocale();
-		setLocationRelativeTo(argParent);
+		setLocationRelativeTo(argLocationComponenet);
 	}
 	
 	public void initComponents() {

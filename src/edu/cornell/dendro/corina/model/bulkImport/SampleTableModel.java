@@ -1,5 +1,5 @@
 /**
-s * Created at Aug 23, 2010, 3:35:03 AM
+ss * Created at Aug 23, 2010, 3:35:03 AM
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
@@ -207,6 +207,8 @@ public class SampleTableModel extends AbstractTableModel implements PropertyChan
 			return selected.get(som);
 		}
 		columnIndex--;
+		
+		// TODO: this all should go to a command, as it's modifying the model.
 		String column = columns.get(columnIndex);
 		SingleSampleModel som = models.get(rowIndex);
 		
