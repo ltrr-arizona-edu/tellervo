@@ -79,10 +79,12 @@ public class ObjectView extends AbstractBulkImportView{
 		return box;
 	}*/
 	
-	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, JButton argShowHideColumnButton){
+	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
+				JButton argCopyRow, JButton argShowHideColumnButton){
 		Box box = Box.createHorizontalBox();
 		box.add(argAddRowButton);
 		box.add(argDeleteRowButton);
+		box.add(argCopyRow);
 		box.add( Box.createHorizontalGlue());
 		browseGPX = new JButton();
 		browseGPX.setIcon(Builder.getIcon("satellite.png", 22));

@@ -83,10 +83,13 @@ public class ElementView extends AbstractBulkImportView{
 		argTable.setDefaultEditor(GPXWaypoint.class, new DefaultCellEditor(waypointBox));
 	}
 	
-	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, JButton argShowHideColumnButton){
+	@Override
+	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
+			JButton argCopyRowButton, JButton argShowHideColumnButton){
 		Box box = Box.createHorizontalBox();
 		box.add(argAddRowButton);
 		box.add(argDeleteRowButton);
+		box.add(argCopyRowButton);
 		box.add( Box.createHorizontalGlue());
 		browseGPX = new JButton();
 		browseGPX.setIcon(Builder.getIcon("satellite.png", 22));

@@ -45,6 +45,8 @@ public class BulkImportWindow extends JFrame {
 		tabs.addTab(I18n.getText("tridas.object")+"s", Builder.getIcon("object.png", 22), objects);
 		tabs.addTab(I18n.getText("tridas.element")+"s", Builder.getIcon("element.png", 22), elements);
 		tabs.addTab(I18n.getText("tridas.sample")+"s", Builder.getIcon("sample.png", 22), samples);
+		
+		setIconImage(Builder.getApplicationIcon());
 	}
 	
 	public void linkModel() {
