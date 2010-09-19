@@ -25,6 +25,7 @@ import edu.cornell.dendro.corina.control.bulkImport.RemoveSelectedEvent;
 import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
 import edu.cornell.dendro.corina.model.bulkImport.IBulkImportTableModel;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  * @author Daniel Murphy
@@ -177,7 +178,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		tablePopupMenu = new JPopupMenu(); 
 		
 		// Add row 
-		JMenuItem addrow = new JMenuItem("Add row"); 
+		JMenuItem addrow = new JMenuItem(I18n.getText("bulkimport.addrow")); 
 		addrow.addActionListener(new ActionListener(){
 
 			@Override
@@ -189,7 +190,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		tablePopupMenu.add(addrow); 
 		
 		// Copy row 
-		JMenuItem copyrow = new JMenuItem("Copy row"); 
+		JMenuItem copyrow = new JMenuItem(I18n.getText("bulkimport.copyrow")); 
 		copyrow.addActionListener(new ActionListener(){
 
 			@Override
@@ -201,7 +202,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		tablePopupMenu.add(copyrow); 
 		
 		// Delete row 
-		JMenuItem deleterow = new JMenuItem("Delete row"); 
+		JMenuItem deleterow = new JMenuItem(I18n.getText("bulkimport.deleterow")); 
 		deleterow.addActionListener(new ActionListener(){
 
 			@Override
@@ -233,19 +234,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 		box.add(argImport);
 		return box;
 	}
-	
-	/*protected Box setupToolbar(JButton argShowHideColumnButton, JButton selectAll, JButton selectNone)
-	{
-		Box box = Box.createVerticalBox();
-		box.add(argShowHideColumnButton);
-		box.add(selectAll);
-		box.add(selectNone);
-		return box;
-	}*/
-	
+		
 	protected abstract void setupTableCells(JTable argTable);
-	
-	
 	
 	protected void removeSelectedPressed(){
 		RemoveSelectedEvent event = new RemoveSelectedEvent(model);
@@ -280,24 +270,24 @@ public abstract class AbstractBulkImportView extends JPanel{
 	}
 
 	private void populateLocale() {
-		addRow.setText("Add Row");
+		addRow.setText(I18n.getText("bulkimport.addrow"));
 		addRow.setIcon(Builder.getIcon("insertrow.png", 22));
 		
-		copyRow.setText("Copy Row");
+		copyRow.setText(I18n.getText("bulkimport.copyrow"));
 		copyRow.setIcon(Builder.getIcon("copyrow.png", 22));
 		
-		showHideColumns.setToolTipText("Show/Hide Columns");
+		showHideColumns.setToolTipText(I18n.getText("bulkimport.showHideCols"));
 		showHideColumns.setIcon(Builder.getIcon("showcolumns.png", 22));
 		
-		removeSelected.setText("Delete Row(s)");
+		removeSelected.setText(I18n.getText("bulkimport.deleteroworrows"));
 		removeSelected.setIcon(Builder.getIcon("deleterow.png", 22));
 		
-		selectAll.setToolTipText("Select All");
+		selectAll.setToolTipText(I18n.getText("dbbrowser.selectAll"));
 		selectAll.setIcon(Builder.getIcon("selectall.png", 22));
 		
-		selectNone.setToolTipText("Select None");
+		selectNone.setToolTipText(I18n.getText("dbbrowser.selectNone"));
 		selectNone.setIcon(Builder.getIcon("selectnone.png", 22));
 
-		importSelected.setText("Import Selected");
+		importSelected.setText(I18n.getText("bulkimport.importselected"));
 	}
 }

@@ -17,9 +17,11 @@ import edu.cornell.dendro.corina.gis.GPXParser;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.I18n;
 
 public class GPXBrowseCommand implements ICommand {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(MVCEvent argEvent) {
 		GPXBrowse event = (GPXBrowse) argEvent;
@@ -37,9 +39,9 @@ public class GPXBrowseCommand implements ICommand {
 				MVCArrayList<GPXWaypoint> list = (MVCArrayList<GPXWaypoint>) model.getProperty(IBulkImportSectionModel.WAYPOINT_LIST);
 				list.addAll(parser.getWaypoints());
 			} catch (FileNotFoundException e) {
-				Alert.error("Error", "File not found");
+				Alert.error(I18n.getText("error"), I18n.getText("error.fileNotFound"));
 			} catch (IOException e) {
-				Alert.error("Error", "Error reading GPX file");
+				Alert.error(I18n.getText("error"), I18n.getText("gis.invalidgpx"));
 			}
 		}
 		

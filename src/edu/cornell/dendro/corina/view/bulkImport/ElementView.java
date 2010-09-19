@@ -35,6 +35,7 @@ import edu.cornell.dendro.corina.schema.WSITaxonDictionary;
 import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer;
 import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer.Behavior;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  * @author Daniel Murphy
@@ -93,7 +94,7 @@ public class ElementView extends AbstractBulkImportView{
 		box.add( Box.createHorizontalGlue());
 		browseGPX = new JButton();
 		browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
-		browseGPX.setToolTipText("Provide GPS data");
+		browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
 		box.add(browseGPX);
 		box.add(argShowHideColumnButton);
 		
