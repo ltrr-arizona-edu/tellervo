@@ -7,10 +7,14 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -38,6 +42,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	private JButton selectNone;
 	private JButton importSelected;
 	protected JButton copyRow;
+	protected JPopupMenu tablePopupMenu;
 	
 	public AbstractBulkImportView(IBulkImportSectionModel argModel){
 		model = argModel;
@@ -124,6 +129,88 @@ public abstract class AbstractBulkImportView extends JPanel{
 				copyRowPressed();
 			}
 		});
+		
+		table.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent evt) {
+				if(evt.getButton()==MouseEvent.BUTTON1)
+				{
+					// Left click
+					if (evt.getClickCount()>1)
+					{
+						addRowPressed();
+					}
+				}
+				else if (evt.getButton()==MouseEvent.BUTTON3)
+				{
+					// Right click
+					initPopupMenu();
+					
+					if(tablePopupMenu!=null)
+					{
+						tablePopupMenu.show(evt.getComponent(), evt.getX(), evt.getY()); 
+					}
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {}
+			@Override
+			public void mouseExited(MouseEvent arg0) {}
+			@Override
+			public void mousePressed(MouseEvent arg0) {}
+			@Override
+			public void mouseReleased(MouseEvent arg0) {}
+			
+		});
+	}
+	
+	protected void initPopupMenu()
+	{
+		if(table.getRowCount()==0 || table.getSelectedRows().length==0)
+		{
+			tablePopupMenu = null;
+			return;
+		}
+		
+		tablePopupMenu = new JPopupMenu(); 
+		
+		// Add row 
+		JMenuItem addrow = new JMenuItem("Add row"); 
+		addrow.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				addRowPressed();	
+			}
+			
+		}); 
+		tablePopupMenu.add(addrow); 
+		
+		// Copy row 
+		JMenuItem copyrow = new JMenuItem("Copy row"); 
+		copyrow.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				copyRowPressed();	
+			}
+			
+		}); 
+		tablePopupMenu.add(copyrow); 
+		
+		// Delete row 
+		JMenuItem deleterow = new JMenuItem("Delete row"); 
+		deleterow.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				removeSelectedPressed();	
+			}
+			
+		}); 
+		tablePopupMenu.add(deleterow); 
 	}
 	
 	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
