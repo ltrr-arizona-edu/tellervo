@@ -18,6 +18,7 @@ public interface IBulkImportSectionModel {
 	public static final String IMPORTED_LIST = "importedList";
 	public static final String WAYPOINT_LIST = "waypointList";
 	
+	
 	/**
 	 * goes to the table model, which handles the selected rows
 	 */
@@ -28,6 +29,8 @@ public interface IBulkImportSectionModel {
 	 * @return
 	 */
 	public ISingleRowModel createRowInstance();
+	
+	public ISingleRowModel createClonedRowInstance(ISingleRowModel source);
 	
 	/**
 	 * Gets the table properties

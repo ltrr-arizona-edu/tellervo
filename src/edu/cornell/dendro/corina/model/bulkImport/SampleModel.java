@@ -6,6 +6,7 @@ package edu.cornell.dendro.corina.model.bulkImport;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.model.HashModel;
@@ -135,5 +136,15 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 			return ret;
 		}
 		return SingleSampleModel.TABLE_PROPERTIES;
+	}
+	
+	@Override
+	public ISingleRowModel createClonedRowInstance(ISingleRowModel source) {
+		SingleSampleModel som = (SingleSampleModel) createRowInstance();
+		TridasSample samp = new TridasSample();
+		((SingleSampleModel)source).populateToTridasSample(samp);
+		
+		som.populateFromTridasSample(samp);
+		return som;
 	}
 }

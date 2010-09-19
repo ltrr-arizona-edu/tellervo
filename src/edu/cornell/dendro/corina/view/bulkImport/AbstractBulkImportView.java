@@ -13,6 +13,7 @@ import java.awt.event.MouseListener;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -20,6 +21,7 @@ import javax.swing.JTable;
 
 import edu.cornell.dendro.corina.control.bulkImport.AddRowEvent;
 import edu.cornell.dendro.corina.control.bulkImport.CopyRowEvent;
+import edu.cornell.dendro.corina.control.bulkImport.DeleteRowEvent;
 import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.control.bulkImport.RemoveSelectedEvent;
 import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel;
@@ -207,10 +209,11 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				removeSelectedPressed();	
+				deleteRowPressed();	
 			}
 			
 		}); 
+		tablePopupMenu.addSeparator();
 		tablePopupMenu.add(deleterow); 
 	}
 	
@@ -238,8 +241,32 @@ public abstract class AbstractBulkImportView extends JPanel{
 	protected abstract void setupTableCells(JTable argTable);
 	
 	protected void removeSelectedPressed(){
-		RemoveSelectedEvent event = new RemoveSelectedEvent(model);
-		event.dispatch();
+		
+		// Confirm user is happy to continue
+		int response;
+		
+		
+		
+		if(model.getTableModel().getSelectedCount()==0)
+		{
+			return;
+		}
+		else if (model.getTableModel().getSelectedCount()==1)
+		{
+			response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the selected row?");
+		}
+		else
+		{
+			response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the "
+					+ model.getTableModel().getSelectedCount()
+					+ " selected rows?");
+		}
+			
+		if(response==JOptionPane.YES_OPTION)
+		{
+			RemoveSelectedEvent event = new RemoveSelectedEvent(model);
+			event.dispatch();
+		}
 	}
 	
 	protected void selectAllPressed(){
@@ -256,6 +283,11 @@ public abstract class AbstractBulkImportView extends JPanel{
 	
 	protected void addRowPressed(){
 		AddRowEvent event = new AddRowEvent(model);
+		event.dispatch();
+	}
+	
+	protected void deleteRowPressed(){
+		DeleteRowEvent event = new DeleteRowEvent(model, table.getSelectedRow());
 		event.dispatch();
 	}
 	

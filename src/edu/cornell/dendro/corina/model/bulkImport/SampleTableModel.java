@@ -290,4 +290,25 @@ public class SampleTableModel extends AbstractTableModel implements PropertyChan
 			}
 		}
 	}
+	
+	/**
+	 * Return the count of rows that are selected
+	 * 
+	 * @return
+	 */
+	public Integer getSelectedCount()
+	{
+	
+		Integer count = 0;
+		
+		Iterator<SingleSampleModel> it = selected.keySet().iterator();
+		while(it.hasNext()){
+			SingleSampleModel som = it.next();
+			if(selected.get(som)){
+				count++;
+			}
+		}
+		
+		return count;
+	}
 }

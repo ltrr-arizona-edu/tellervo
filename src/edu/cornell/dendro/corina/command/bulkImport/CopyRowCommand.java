@@ -6,6 +6,7 @@ import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.tracking.ITrackable;
 
 import edu.cornell.dendro.corina.control.bulkImport.CopyRowEvent;
+import edu.cornell.dendro.corina.model.bulkImport.ISingleRowModel;
 
 public class CopyRowCommand implements ICommand, ITrackable {
 
@@ -15,9 +16,9 @@ public class CopyRowCommand implements ICommand, ITrackable {
 
 		CopyRowEvent event = (CopyRowEvent) argEvent;
 		MVCArrayList<Object> rows = (MVCArrayList<Object>) event.model.getRows();
-		Object selRow = rows.get(event.getSelectedRowIndex());
-		
-		rows.add(selRow);
+		ISingleRowModel selRow = (ISingleRowModel) rows.get(event.getSelectedRowIndex());
+	
+		rows.add(event.model.createClonedRowInstance(selRow));
 		
 		
 	}

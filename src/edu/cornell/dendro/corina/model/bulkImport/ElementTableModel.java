@@ -327,4 +327,25 @@ public class ElementTableModel extends AbstractTableModel implements PropertyCha
 			}
 		}
 	}
+	
+	/**
+	 * Return the count of rows that are selected
+	 * 
+	 * @return
+	 */
+	public Integer getSelectedCount()
+	{
+	
+		Integer count = 0;
+		
+		Iterator<SingleElementModel> it = selected.keySet().iterator();
+		while(it.hasNext()){
+			SingleElementModel som = it.next();
+			if(selected.get(som)){
+				count++;
+			}
+		}
+		
+		return count;
+	}
 }

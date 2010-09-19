@@ -14,4 +14,6 @@ public interface IBulkImportTableModel extends TableModel {
 	public void selectAll();
 	
 	public void selectNone();
+	
+	public Integer getSelectedCount();
 }

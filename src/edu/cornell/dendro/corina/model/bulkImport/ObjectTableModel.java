@@ -289,4 +289,25 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 			}
 		}
 	}
+	
+	/**
+	 * Return the count of rows that are selected
+	 * 
+	 * @return
+	 */
+	public Integer getSelectedCount()
+	{
+	
+		Integer count = 0;
+		
+		Iterator<SingleObjectModel> it = selected.keySet().iterator();
+		while(it.hasNext()){
+			SingleObjectModel som = it.next();
+			if(selected.get(som)){
+				count++;
+			}
+		}
+		
+		return count;
+	}
 }

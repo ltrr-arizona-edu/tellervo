@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasObject;
 
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
@@ -115,5 +116,15 @@ public class ElementModel extends HashModel implements IBulkImportSectionModel{
 	@Override
 	public String[] getModelTableProperties() {
 		return SingleElementModel.TABLE_PROPERTIES;
+	}
+	
+	@Override
+	public ISingleRowModel createClonedRowInstance(ISingleRowModel source) {
+		SingleElementModel som = (SingleElementModel) createRowInstance();
+		TridasElement elm = new TridasElement();
+		((SingleElementModel)source).populateToTridasElement(elm);
+		
+		som.populateFromTridasElement(elm);
+		return som;
 	}
 }
