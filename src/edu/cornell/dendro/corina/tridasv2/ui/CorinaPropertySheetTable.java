@@ -15,6 +15,9 @@ import java.awt.font.LineMetrics;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import javax.swing.JTable;
+import javax.swing.table.TableColumn;
+
 import com.l2fprod.common.propertysheet.PropertySheetTable;
 
 public class CorinaPropertySheetTable extends PropertySheetTable {
@@ -31,6 +34,8 @@ public class CorinaPropertySheetTable extends PropertySheetTable {
 	public CorinaPropertySheetTable() {
 		isEditable = true;
 		isPreviewing = false;
+		setColumnWidths();
+		
 	}
 	
 	public void setEditable(boolean isEditable) {
@@ -118,5 +123,24 @@ public class CorinaPropertySheetTable extends PropertySheetTable {
 			// clean up and be nice
 			g2.setComposite(oldComposite);
 		}
+	}
+	
+	private void setColumnWidths()
+	{
+		TableColumn column = null;
+		for (int i = 0; i < this.getColumnCount(); i++) {
+		    column = this.getColumnModel().getColumn(i);
+		    if (i == 0) {
+		        column.setMinWidth(170);
+		        column.setMaxWidth(270);
+		        column.setPreferredWidth(170);
+		    } 
+		    else
+		    {
+		    	column.setMinWidth(200);
+		    	column.setMaxWidth(99999);
+		    }
+		}
+
 	}
 }

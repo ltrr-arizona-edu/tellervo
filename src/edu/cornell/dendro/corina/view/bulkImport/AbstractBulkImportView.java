@@ -4,6 +4,7 @@
 package edu.cornell.dendro.corina.view.bulkImport;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -137,15 +138,16 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 			@Override
 			public void mouseClicked(MouseEvent evt) {
-				if(evt.getButton()==MouseEvent.BUTTON1)
+				/*if(evt.getButton()==MouseEvent.BUTTON1)
 				{
 					// Left click
 					if (evt.getClickCount()>1)
 					{
+						Component blah = evt.getComponent();
 						addRowPressed();
 					}
-				}
-				else if (evt.getButton()==MouseEvent.BUTTON3)
+				}*/
+			    if (evt.getButton()==MouseEvent.BUTTON3)
 				{
 					// Right click
 					initPopupMenu();

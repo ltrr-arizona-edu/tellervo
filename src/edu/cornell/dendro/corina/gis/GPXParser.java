@@ -53,29 +53,7 @@ public class GPXParser {
 	{
 		return lstWaypoints;
 	}
-	
-	public static void main(String args[]) 
-	{
-		String filename = "/Users/peterbrewer/Desktop/gpx.gpx";
-		GPXParser gpx = null;
 		
-		try {
-			gpx = new GPXParser(filename);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		for(GPXWaypoint wpt : gpx.getWaypoints())
-		{
-			System.out.println("Waypoint '"+wpt.getName()+"'"+
-					" Lat: "+wpt.getLatitude()+
-					" Lon: "+wpt.getLongitude()+
-					" at elevation "+wpt.getElevation());
-		}
-		
-	}
-	
 	private void parse(Reader reader) throws IOException
 	{
 		// Parse into document
@@ -111,7 +89,7 @@ public class GPXParser {
 	
 
 	
-	public class GPXWaypoint{
+	public class GPXWaypoint implements Comparable<GPXWaypoint>{
 		
 		private Double latitude;
 		private Double longitude;
@@ -193,6 +171,13 @@ public class GPXParser {
 		public String toString()
 		{
 			return name;
+		}
+
+		@Override
+		public int compareTo(GPXWaypoint o) {
+			
+			return o.toString().compareTo(this.toString());
+
 		}
 	}
 	

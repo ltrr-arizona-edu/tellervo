@@ -125,6 +125,7 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 		((SingleObjectModel)source).populateTridasObject(obj);
 		
 		som.populateFromTridasObject(obj);
+		som.setImported(null);
 		return som;
 	}
 

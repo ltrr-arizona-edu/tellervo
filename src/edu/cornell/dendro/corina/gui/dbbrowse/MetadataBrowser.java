@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -88,6 +89,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
         initComponents();
         setupGui();
         pack();
+        
     }
     
     /**
@@ -97,7 +99,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
     {
     	// Set up tree panel
     	treepanel = new TridasTreeViewPanel(TreeDepth.RADIUS, true, "View metadata");
-    	treepanel.setObjectList(ObjectListMode.ALL);
+    	//treepanel.setObjectList(ObjectListMode.TOP_LEVEL_ONLY);
     	treepanel.addTridasSelectListener(this);
     	leftPane.add(treepanel, BorderLayout.CENTER);
     	
@@ -153,6 +155,8 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		
 		// Set up button bar 
 		setupButtonBar();
+		
+		
 		
 	}
 	

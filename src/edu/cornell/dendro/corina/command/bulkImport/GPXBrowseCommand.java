@@ -4,6 +4,8 @@ import java.awt.FileDialog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.JFrame;
 
@@ -28,6 +30,7 @@ public class GPXBrowseCommand implements ICommand {
 		HashModel model = event.model;
 		
 		FileDialog dialog  = new FileDialog(new JFrame());
+		dialog.setTitle("Choose GPX File");
 		dialog.setFile("*.gpx");
 		dialog.setVisible(true);
 		String curFile;
@@ -37,7 +40,9 @@ public class GPXBrowseCommand implements ICommand {
 			 try {
 				GPXParser parser = new GPXParser(dialog.getDirectory() + curFile);
 				MVCArrayList<GPXWaypoint> list = (MVCArrayList<GPXWaypoint>) model.getProperty(IBulkImportSectionModel.WAYPOINT_LIST);
-				list.addAll(parser.getWaypoints());
+				ArrayList<GPXWaypoint> wplist = parser.getWaypoints();
+				Collections.sort(wplist);
+				list.addAll(wplist);
 			} catch (FileNotFoundException e) {
 				Alert.error(I18n.getText("error"), I18n.getText("error.fileNotFound"));
 			} catch (IOException e) {

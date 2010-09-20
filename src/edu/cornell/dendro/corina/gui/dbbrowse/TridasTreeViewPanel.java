@@ -321,7 +321,6 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	 * 
 	 * @param top
 	 */
-    @SuppressWarnings("unchecked")
 	private void addObjectsToTree(DefaultMutableTreeNode top, List<TridasObjectEx> objectList)
     {
     	DefaultMutableTreeNode objectNode = null;
@@ -330,7 +329,6 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
         for(TridasObjectEx object : objectList)
         {
             objectNode = new DefaultMutableTreeNode(object);   
-            //top.add(objectNode);
             addTridasNodeInOrder(tree, top, objectNode);
         }
     }
