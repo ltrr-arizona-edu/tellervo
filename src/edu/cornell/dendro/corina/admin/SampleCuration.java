@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.ButtonGroup;
 
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 
@@ -41,6 +42,8 @@ import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
  */
 public class SampleCuration extends javax.swing.JDialog implements ActionListener{
     
+
+	private static final long serialVersionUID = 7814293298626840188L;
 	ButtonGroup group = new ButtonGroup();
 	protected ArrayListModel<TridasObject> objModel = new ArrayListModel<TridasObject>();
 	protected ArrayListModel<TridasElement> elModel = new ArrayListModel<TridasElement>();
@@ -479,7 +482,17 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	if(cboObject.getSelectedItem()!=null)
 		{
 			obj = (TridasObject) cboObject.getSelectedItem();
-			objcode = obj.getTitle().toString();
+			
+			if(obj.isSetGenericFields())
+			{
+				for(TridasGenericField gf : obj.getGenericFields())
+				{
+					if(gf.getName().equals("corina.objectLabCode"))
+					{
+						objcode = gf.getValue();
+					}
+				}
+			}
 		}
 		else
 		{
@@ -522,9 +535,9 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
     	
     	// Set parameters
-    	if(obj!=null) param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, objcode);
-    	if(el!=null) param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, elcode);
-    	if(samp!=null) param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, sampcode);
+    	if(obj!=null) param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTCODE, SearchOperator.EQUALS, objcode);
+    	if(el!=null) param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, elcode);
+    	if(samp!=null) param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, sampcode);
 
     	// we want a sample returned here
 		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
