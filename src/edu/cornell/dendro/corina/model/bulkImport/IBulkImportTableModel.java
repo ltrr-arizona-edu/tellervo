@@ -5,6 +5,8 @@ package edu.cornell.dendro.corina.model.bulkImport;
 
 import javax.swing.table.TableModel;
 
+import com.dmurph.mvc.model.HashModel;
+
 /**
  * @author Daniel
  *
@@ -16,4 +18,6 @@ public interface IBulkImportTableModel extends TableModel {
 	public void selectNone();
 	
 	public Integer getSelectedCount();
+	
+	public HashModel[] getSelectedRows();
 }

@@ -1,5 +1,5 @@
 /**
- * Created at Jul 24, 2010, 3:48:12 PM
+s * Created at Jul 24, 2010, 3:48:12 PM
  */
 package edu.cornell.dendro.corina.command.bulkImport;
 
@@ -40,15 +40,15 @@ public class ShowColumnWindowCommand implements ICommand {
 			else
 			{
 				biModel.setCurrColumnChooser(null);
-
 			}
 		}
 	
+		// give it the possible columns
 		ColumnChooserModel model = event.model.getColumnModel();
-		model.getPossibleColumns().clear();
-		for(String s : event.model.getModelTableProperties()){
-			model.getPossibleColumns().add(s);
-		}
+		model.poplutePossibleColumns(event.model.getModelTableProperties());
+		
+		
+		// remove any columns in the model that aren't possible columns
 		for(String s : model){
 			if(!model.getPossibleColumns().contains(s)){
 				if(!s.equals(ISingleRowModel.IMPORTED)){

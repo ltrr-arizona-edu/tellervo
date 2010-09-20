@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
 import com.dmurph.mvc.model.HashModel.PropertyType;
+import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
@@ -104,6 +105,20 @@ public class ObjectTableModel extends AbstractTableModel implements PropertyChan
 	public void selectNone(){
 		selected.clear();
 		fireTableDataChanged();
+	}
+	
+	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportTableModel#getSelectedRows()
+	 */
+	@Override
+	public HashModel[] getSelectedRows() {
+		ArrayList<HashModel> sel = new ArrayList<HashModel>();
+		for(HashModel s : selected.keySet()){
+			if(selected.get(s)){
+				sel.add(s);
+			}
+		}
+		return sel.toArray(new HashModel[0]);
 	}
 	
 	private void recreateSelected() {

@@ -16,6 +16,7 @@ import javax.swing.table.AbstractTableModel;
 import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
 
+import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.model.HashModel.PropertyType;
 
@@ -107,6 +108,20 @@ public class SampleTableModel extends AbstractTableModel implements PropertyChan
 	public void selectNone(){
 		selected.clear();
 		fireTableDataChanged();
+	}
+	
+	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportTableModel#getSelectedRows()
+	 */
+	@Override
+	public HashModel[] getSelectedRows() {
+		ArrayList<HashModel> sel = new ArrayList<HashModel>();
+		for(HashModel s : selected.keySet()){
+			if(selected.get(s)){
+				sel.add(s);
+			}
+		}
+		return sel.toArray(new HashModel[0]);
 	}
 	
 	private void recreateSelected() {

@@ -18,6 +18,7 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasUnit;
 
+import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.model.HashModel.PropertyType;
 
@@ -118,6 +119,20 @@ public class ElementTableModel extends AbstractTableModel implements PropertyCha
 				selected.put(som, true);
 			}
 		}
+	}
+	
+	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportTableModel#getSelectedRows()
+	 */
+	@Override
+	public HashModel[] getSelectedRows() {
+		ArrayList<HashModel> sel = new ArrayList<HashModel>();
+		for(HashModel s : selected.keySet()){
+			if(selected.get(s)){
+				sel.add(s);
+			}
+		}
+		return sel.toArray(new HashModel[0]);
 	}
 	
 	public ElementModel getModel() {

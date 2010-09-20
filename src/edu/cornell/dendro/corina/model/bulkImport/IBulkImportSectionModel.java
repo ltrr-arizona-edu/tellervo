@@ -29,9 +29,7 @@ public interface IBulkImportSectionModel {
 	 * @return
 	 */
 	public ISingleRowModel createRowInstance();
-	
-	public ISingleRowModel createClonedRowInstance(ISingleRowModel source);
-	
+		
 	/**
 	 * Gets the table properties
 	 * @return
@@ -72,5 +70,5 @@ public interface IBulkImportSectionModel {
 	 * Gets the rows
 	 * @return
 	 */
-	public MVCArrayList<? extends Object> getRows();
+	public MVCArrayList getRows();
 }

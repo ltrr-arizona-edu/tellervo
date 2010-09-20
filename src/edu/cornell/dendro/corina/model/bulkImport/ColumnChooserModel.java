@@ -21,6 +21,13 @@ public class ColumnChooserModel extends MVCArrayList<String> {
 //		}
 	}
 	
+	public void poplutePossibleColumns(String[] argTableColumns){
+		possibleColumns.clear();
+		for(String s : argTableColumns){
+			possibleColumns.add(s);
+		}
+	}
+	
 	/**
 	 * Note that this property doesn't get affected by any mvc operations on the {@link ColumnChooserModel} 
 	 * object.

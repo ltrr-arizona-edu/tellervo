@@ -12,6 +12,7 @@ import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 
 import edu.cornell.dendro.corina.command.bulkImport.AddRowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.CopyRowCommand;
+import edu.cornell.dendro.corina.command.bulkImport.CopySelectedRowsCommand;
 import edu.cornell.dendro.corina.command.bulkImport.DeleteRowCommand;
 import edu.cornell.dendro.corina.command.bulkImport.GPXBrowseCommand;
 import edu.cornell.dendro.corina.command.bulkImport.HideColumnWindowCommand;
@@ -40,7 +41,8 @@ public class BulkImportController extends FrontController {
 	public static final String COPY_ROW = "BULK_IMPORT_COPY_ROW";
 	public static final String DELETE_ROW = "BULK_IMPORT_DELETE_ROW";
 	public static final String DISPLAY_BULK_IMPORT = "BULK_IMPORT_DISPLAY_BULK_IMPORT";
-	public static final String REMOVE_SELECTED = "BULK_IMPORT_REMOVE_SELECTED";
+	public static final String REMOVE_SELECTED = "BULK_IMPORT_REMOVE_SELECTED_ROW";
+	public static final String COPY_SELECTED_ROWS = "BULK_IMPORT_COPY_ALL_SELECTED_ROWS";
 	
 	public static final String IMPORT_SELECTED_OBJECTS = "BULK_IMPORT_SELECTED_OBJECTS";
 	public static final String IMPORT_SELECTED_ELEMENTS = "BULK_IMPORT_SELECTED_ELEMENTS";
@@ -59,6 +61,7 @@ public class BulkImportController extends FrontController {
 		registerCommand(HIDE_COLUMN_CHOOSER, HideColumnWindowCommand.class);
 		registerCommand(ADD_ROW, AddRowCommand.class);
 		registerCommand(COPY_ROW, CopyRowCommand.class);
+		registerCommand(COPY_SELECTED_ROWS, CopySelectedRowsCommand.class);
 		registerCommand(DELETE_ROW, DeleteRowCommand.class);
 		registerCommand(REMOVE_SELECTED, RemoveSelectedCommand.class);
 		registerCommand(DISPLAY_BULK_IMPORT, "display");

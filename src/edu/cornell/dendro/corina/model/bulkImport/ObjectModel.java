@@ -6,7 +6,6 @@ package edu.cornell.dendro.corina.model.bulkImport;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.HashModel;
@@ -117,17 +116,4 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 	public String[] getModelTableProperties() {
 		return SingleObjectModel.TABLE_PROPERTIES;
 	}
-
-	@Override
-	public ISingleRowModel createClonedRowInstance(ISingleRowModel source) {
-		SingleObjectModel som = (SingleObjectModel) createRowInstance();
-		TridasObject obj = new TridasObject();
-		((SingleObjectModel)source).populateTridasObject(obj);
-		
-		som.populateFromTridasObject(obj);
-		som.setImported(null);
-		return som;
-	}
-
-
 }

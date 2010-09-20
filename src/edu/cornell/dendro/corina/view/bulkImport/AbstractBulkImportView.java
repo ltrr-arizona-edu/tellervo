@@ -4,7 +4,6 @@
 package edu.cornell.dendro.corina.view.bulkImport;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +21,7 @@ import javax.swing.JTable;
 
 import edu.cornell.dendro.corina.control.bulkImport.AddRowEvent;
 import edu.cornell.dendro.corina.control.bulkImport.CopyRowEvent;
+import edu.cornell.dendro.corina.control.bulkImport.CopySelectedRowsEvent;
 import edu.cornell.dendro.corina.control.bulkImport.DeleteRowEvent;
 import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.control.bulkImport.RemoveSelectedEvent;
@@ -130,7 +130,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		
 		copyRow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent argE) {
-				copyRowPressed();
+				copySelectedPressed();
 			}
 		});
 		
@@ -295,6 +295,11 @@ public abstract class AbstractBulkImportView extends JPanel{
 	
 	protected void showHideColumnsPressed(){
 		DisplayColumnChooserEvent event = new DisplayColumnChooserEvent(model, showHideColumns);
+		event.dispatch();
+	}
+	
+	protected void copySelectedPressed(){
+		CopySelectedRowsEvent event = new CopySelectedRowsEvent(model);
 		event.dispatch();
 	}
 	
