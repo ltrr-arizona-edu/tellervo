@@ -7,6 +7,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -47,17 +49,24 @@ public abstract class AbstractBulkImportView extends JPanel{
 	private JButton importSelected;
 	protected JButton copyRow;
 	protected JPopupMenu tablePopupMenu;
+	private JMenuItem addrow;
+	private JMenuItem copyrow;
+	private JMenuItem deleterow;
+
 	
 	public AbstractBulkImportView(IBulkImportSectionModel argModel){
 		model = argModel;
 		initComponents();
+		initPopupMenu();
 		linkModel();
 		addListeners();
 		populateLocale();
+		addRowPressed();
 	}
 
 	private void initComponents(){
 		table = new JTable();
+		table.setCellSelectionEnabled(true);
 		
 		addRow = new JButton();
 		copyRow = new JButton();
@@ -138,24 +147,16 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 			@Override
 			public void mouseClicked(MouseEvent evt) {
-				/*if(evt.getButton()==MouseEvent.BUTTON1)
-				{
-					// Left click
-					if (evt.getClickCount()>1)
-					{
-						Component blah = evt.getComponent();
-						addRowPressed();
-					}
-				}*/
+				
+				// Right click
 			    if (evt.getButton()==MouseEvent.BUTTON3)
-				{
-					// Right click
-					initPopupMenu();
-					
-					if(tablePopupMenu!=null)
-					{
-						tablePopupMenu.show(evt.getComponent(), evt.getX(), evt.getY()); 
-					}
+				{		    	
+			    	// Select the whole row
+			    	table.setRowSelectionInterval(table.rowAtPoint(evt.getPoint()), table.rowAtPoint(evt.getPoint()));
+			    	table.setColumnSelectionInterval(0, table.getColumnCount()-1);
+
+			    	// Show popup
+					tablePopupMenu.show(evt.getComponent(), evt.getX(), evt.getY()); 
 				}
 			}
 
@@ -169,20 +170,50 @@ public abstract class AbstractBulkImportView extends JPanel{
 			public void mouseReleased(MouseEvent arg0) {}
 			
 		});
+		
+		table.addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				if(table.getSelectedColumn()==table.getColumnCount()-1 && 
+				   table.getSelectedRow()==table.getRowCount()-1)
+				{
+					// In last column of last row and tab or enter have been pressed
+					if(e.getKeyCode()==KeyEvent.VK_TAB || e.getKeyCode()==KeyEvent.VK_ENTER)
+					{
+						// Add a new row
+						addRowPressed();
+						
+						// Move selection to the first cell of new row
+						table.changeSelection(table.getRowCount()-1, 0, false, false);
+						table.requestFocus();
+					}
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {}
+
+			@Override
+			public void keyTyped(KeyEvent e) {}
+			
+		});
+		
 	}
 	
-	protected void initPopupMenu()
+	private void initPopupMenu()
 	{
-		if(table.getRowCount()==0 || table.getSelectedRows().length==0)
+		/*if(table.getRowCount()==0 || table.getSelectedRows().length==0)
 		{
 			tablePopupMenu = null;
 			return;
-		}
+		}*/
 		
 		tablePopupMenu = new JPopupMenu(); 
 		
 		// Add row 
-		JMenuItem addrow = new JMenuItem(I18n.getText("bulkimport.addrow")); 
+		addrow = new JMenuItem(I18n.getText("bulkimport.addrow")); 
 		addrow.addActionListener(new ActionListener(){
 
 			@Override
@@ -194,7 +225,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		tablePopupMenu.add(addrow); 
 		
 		// Copy row 
-		JMenuItem copyrow = new JMenuItem(I18n.getText("bulkimport.copyrow")); 
+		copyrow = new JMenuItem(I18n.getText("bulkimport.copyrow")); 
 		copyrow.addActionListener(new ActionListener(){
 
 			@Override
@@ -206,7 +237,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		tablePopupMenu.add(copyrow); 
 		
 		// Delete row 
-		JMenuItem deleterow = new JMenuItem(I18n.getText("bulkimport.deleterow")); 
+		deleterow = new JMenuItem(I18n.getText("bulkimport.deleterow")); 
 		deleterow.addActionListener(new ActionListener(){
 
 			@Override
