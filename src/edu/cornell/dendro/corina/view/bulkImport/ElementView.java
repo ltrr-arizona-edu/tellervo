@@ -10,6 +10,7 @@ import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasShape;
@@ -73,13 +74,24 @@ public class ElementView extends AbstractBulkImportView{
 				if(argComponent == null){
 					return "";
 				}
-				if(!argComponent.isTopLevelObject()){
-					return null;
-				}
 				return argComponent.getLabCode();
 			}
 		});
 		argTable.setDefaultEditor(TridasObject.class, new DefaultCellEditor(box));
+		argTable.setDefaultRenderer(TridasObject.class, new DefaultTableCellRenderer(){
+			/**
+			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
+			 */
+			@Override
+			protected void setValue(Object argValue) {
+				if(argValue == null){
+					super.setValue(argValue);
+					return;
+				}
+				TridasObjectEx object = (TridasObjectEx) argValue;
+				super.setValue(object.getLabCode());
+			}
+		});
 		
 		ElementModel model = BulkImportModel.getInstance().getElementModel();
 		DynamicJComboBox<GPXWaypoint> waypointBox = new DynamicJComboBox<GPXWaypoint>(model.getWaypointList());
