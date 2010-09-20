@@ -34,6 +34,17 @@ public class SingleRadiusModel extends HashModel implements ISingleRowModel{
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
 	}
 	
+	/**
+	 * @see com.dmurph.mvc.support.AbstractMVCSupport#cloneImpl(java.lang.String, java.lang.Object)
+	 */
+	@Override
+	protected Object cloneImpl(String argProperty, Object argO) {
+		if(argProperty.equals(IMPORTED)){
+			return null;
+		}
+		return super.cloneImpl(argProperty, argO);
+	}
+	
 	public void populateToTridasRadius(TridasRadius argTridasRadius){
 		argTridasRadius.setTitle((String) getProperty(TITLE));
 		argTridasRadius.setAzimuth((BigDecimal) getProperty(AZIMUTH));

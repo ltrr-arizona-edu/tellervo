@@ -59,6 +59,17 @@ public class SingleObjectModel extends HashModel implements ISingleRowModel{
 		return (TridasIdentifier)getProperty(IMPORTED);
 	}
 	
+	/**
+	 * @see com.dmurph.mvc.support.AbstractMVCSupport#cloneImpl(java.lang.String, java.lang.Object)
+	 */
+	@Override
+	protected Object cloneImpl(String argProperty, Object argO) {
+		if(argProperty.equals(IMPORTED)){
+			return null;
+		}
+		return super.cloneImpl(argProperty, argO);
+	}
+	
 	public void populateFromTridasObject(TridasObject argObject){
 		List<TridasGenericField> fields = argObject.getGenericFields();
 		

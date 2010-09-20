@@ -64,6 +64,17 @@ public class SingleSampleModel extends HashModel implements ISingleRowModel {
 	}
 	
 	/**
+	 * @see com.dmurph.mvc.support.AbstractMVCSupport#cloneImpl(java.lang.String, java.lang.Object)
+	 */
+	@Override
+	protected Object cloneImpl(String argProperty, Object argO) {
+		if(argProperty.equals(IMPORTED)){
+			return null;
+		}
+		return super.cloneImpl(argProperty, argO);
+	}
+	
+	/**
 	 * @see com.dmurph.mvc.model.HashModel#getProperty(java.lang.String)
 	 */
 	@Override

@@ -70,6 +70,17 @@ public class SingleElementModel extends HashModel implements ISingleRowModel{
 		return (TridasIdentifier) getProperty(IMPORTED);
 	}
 	
+	/**
+	 * @see com.dmurph.mvc.support.AbstractMVCSupport#cloneImpl(java.lang.String, java.lang.Object)
+	 */
+	@Override
+	protected Object cloneImpl(String argProperty, Object argO) {
+		if(argProperty.equals(IMPORTED)){
+			return null;
+		}
+		return super.cloneImpl(argProperty, argO);
+	}
+	
 	public void populateToTridasElement(TridasElement argElement){
 
 		argElement.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
