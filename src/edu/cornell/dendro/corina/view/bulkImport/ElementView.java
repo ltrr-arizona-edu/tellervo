@@ -24,6 +24,8 @@ import edu.cornell.dendro.corina.components.table.TridasShapeRenderer;
 import edu.cornell.dendro.corina.components.table.TridasUnitEditor;
 import edu.cornell.dendro.corina.components.table.TridasUnitRenderer;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
+import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
+import edu.cornell.dendro.corina.control.bulkImport.ColumnsModifiedEvent;
 import edu.cornell.dendro.corina.control.bulkImport.GPXBrowse;
 import edu.cornell.dendro.corina.control.bulkImport.ImportSelectedEvent;
 import edu.cornell.dendro.corina.core.App;
@@ -112,6 +114,10 @@ public class ElementView extends AbstractBulkImportView{
 				ElementModel model = BulkImportModel.getInstance().getElementModel();
 				GPXBrowse event = new GPXBrowse(model);
 				event.dispatch();
+				
+				// Show waypoint column
+				ColumnsModifiedEvent ev = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED, "Waypoint", model.getColumnModel());
+				ev.dispatch();
 				
 			}
 		});

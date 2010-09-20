@@ -14,6 +14,8 @@ import com.dmurph.mvc.control.ICommand;
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 
+import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
+import edu.cornell.dendro.corina.control.bulkImport.ColumnsModifiedEvent;
 import edu.cornell.dendro.corina.control.bulkImport.GPXBrowse;
 import edu.cornell.dendro.corina.gis.GPXParser;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
@@ -43,6 +45,7 @@ public class GPXBrowseCommand implements ICommand {
 				ArrayList<GPXWaypoint> wplist = parser.getWaypoints();
 				Collections.sort(wplist);
 				list.addAll(wplist);
+							
 			} catch (FileNotFoundException e) {
 				Alert.error(I18n.getText("error"), I18n.getText("error.fileNotFound"));
 			} catch (IOException e) {

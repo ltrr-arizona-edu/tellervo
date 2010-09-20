@@ -31,7 +31,17 @@ public class ShowColumnWindowCommand implements ICommand {
 		BulkImportModel biModel = BulkImportModel.getInstance();
 		
 		if(biModel.getCurrColumnChooser() != null){
-			return;
+			
+			if(biModel.getCurrColumnChooser().isVisible())
+			{
+				biModel.getCurrColumnChooser().setVisible(false);
+				return;
+			}
+			else
+			{
+				biModel.setCurrColumnChooser(null);
+
+			}
 		}
 	
 		ColumnChooserModel model = event.model.getColumnModel();
