@@ -190,7 +190,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 			  
 			ArrayList<TridasObjectEx> siteList = getFilteredSiteList(objcode);
 			  
-			ArrayList<TridasObject> siteList2 = new ArrayList<TridasObject>();
+			ArrayList<TridasObjectEx> siteList2 = new ArrayList<TridasObjectEx>();
 			siteList2.addAll(siteList);
 			  
 			this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, siteList2) );

@@ -888,10 +888,10 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 		{
 			return;
 		}
-		else if (entities.size()!=1)
+		/*else if (entities.size()!=1)
 		{
 			return;
-		}
+		}*/
 		
 		ITridas entity = entities.get(0);
 		if(entity instanceof TridasObject)

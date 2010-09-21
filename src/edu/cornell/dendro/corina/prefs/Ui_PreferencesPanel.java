@@ -308,23 +308,23 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 
         btnReloadDictionary.setText("Force Dictionary Reload");
 
-        org.jdesktop.layout.GroupLayout panelWebserviceLayout = new org.jdesktop.layout.GroupLayout(panelWebservice);
-        panelWebservice.setLayout(panelWebserviceLayout);
-        panelWebserviceLayout.setHorizontalGroup(
-            panelWebserviceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelWebserviceLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelWebservice = new org.jdesktop.layout.GroupLayout(panelWebservice);
+        panelWebservice.setLayout(gl_panelWebservice);
+        gl_panelWebservice.setHorizontalGroup(
+            gl_panelWebservice.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelWebservice.createSequentialGroup()
                 .addContainerGap()
                 .add(lblWSURL, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 125, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(panelWebserviceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(gl_panelWebservice.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(btnReloadDictionary)
                     .add(txtWSURL, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        panelWebserviceLayout.setVerticalGroup(
-            panelWebserviceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelWebserviceLayout.createSequentialGroup()
-                .add(panelWebserviceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+        gl_panelWebservice.setVerticalGroup(
+            gl_panelWebservice.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelWebservice.createSequentialGroup()
+                .add(gl_panelWebservice.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblWSURL)
                     .add(txtWSURL, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -339,21 +339,21 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         txtSMTPServer.setText("appsmtp.mail.cornell.edu");
         txtSMTPServer.setMinimumSize(new java.awt.Dimension(5, 28));
 
-        org.jdesktop.layout.GroupLayout panelEmailLayout = new org.jdesktop.layout.GroupLayout(panelEmail);
-        panelEmail.setLayout(panelEmailLayout);
-        panelEmailLayout.setHorizontalGroup(
-            panelEmailLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelEmailLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelEmail = new org.jdesktop.layout.GroupLayout(panelEmail);
+        panelEmail.setLayout(gl_panelEmail);
+        gl_panelEmail.setHorizontalGroup(
+            gl_panelEmail.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelEmail.createSequentialGroup()
                 .addContainerGap()
                 .add(lblSMTPServer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 120, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(18, 18, 18)
                 .add(txtSMTPServer, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        panelEmailLayout.setVerticalGroup(
-            panelEmailLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelEmailLayout.createSequentialGroup()
-                .add(panelEmailLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+        gl_panelEmail.setVerticalGroup(
+            gl_panelEmail.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelEmail.createSequentialGroup()
+                .add(gl_panelEmail.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblSMTPServer)
                     .add(txtSMTPServer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -397,54 +397,54 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         proxyButtonGroup.add(btnManualProxy);
         btnManualProxy.setText("Use manual proxy settings:");
 
-        org.jdesktop.layout.GroupLayout panelProxyLayout = new org.jdesktop.layout.GroupLayout(panelProxy);
-        panelProxy.setLayout(panelProxyLayout);
-        panelProxyLayout.setHorizontalGroup(
-            panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelProxyLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelProxy = new org.jdesktop.layout.GroupLayout(panelProxy);
+        panelProxy.setLayout(gl_panelProxy);
+        gl_panelProxy.setHorizontalGroup(
+            gl_panelProxy.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelProxy.createSequentialGroup()
                 .addContainerGap()
-                .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelProxyLayout.createSequentialGroup()
-                        .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(gl_panelProxy.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(gl_panelProxy.createSequentialGroup()
+                        .add(gl_panelProxy.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(btnManualProxy)
                             .add(btnNoProxy)
                             .add(btnDefaultProxy))
                         .add(299, 299, 299))
-                    .add(panelProxyLayout.createSequentialGroup()
+                    .add(gl_panelProxy.createSequentialGroup()
                         .add(28, 28, 28)
-                        .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                        .add(gl_panelProxy.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                             .add(lblProxyServer)
                             .add(lblProxyServer1))
                         .add(18, 18, 18)
-                        .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(gl_panelProxy.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(txtProxyURL, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
                             .add(txtProxyURL1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(gl_panelProxy.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, lblProxyPort)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, lblProxyPort1))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                        .add(gl_panelProxy.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                             .add(spnProxyPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 72, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(spnProxyPort1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 72, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
                 .add(85, 85, 85))
         );
-        panelProxyLayout.setVerticalGroup(
-            panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelProxyLayout.createSequentialGroup()
+        gl_panelProxy.setVerticalGroup(
+            gl_panelProxy.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelProxy.createSequentialGroup()
                 .add(btnDefaultProxy)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnNoProxy)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnManualProxy)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelProxy.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(spnProxyPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblProxyPort)
                     .add(txtProxyURL, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblProxyServer))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelProxyLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelProxy.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(spnProxyPort1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblProxyPort1)
                     .add(txtProxyURL1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -452,21 +452,21 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        org.jdesktop.layout.GroupLayout panelNetworkConnectionsLayout = new org.jdesktop.layout.GroupLayout(panelNetworkConnections);
-        panelNetworkConnections.setLayout(panelNetworkConnectionsLayout);
-        panelNetworkConnectionsLayout.setHorizontalGroup(
-            panelNetworkConnectionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelNetworkConnectionsLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelNetworkConnections = new org.jdesktop.layout.GroupLayout(panelNetworkConnections);
+        panelNetworkConnections.setLayout(gl_panelNetworkConnections);
+        gl_panelNetworkConnections.setHorizontalGroup(
+            gl_panelNetworkConnections.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelNetworkConnections.createSequentialGroup()
                 .addContainerGap()
-                .add(panelNetworkConnectionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(gl_panelNetworkConnections.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, panelWebservice, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(panelProxy, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, panelEmail, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        panelNetworkConnectionsLayout.setVerticalGroup(
-            panelNetworkConnectionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelNetworkConnectionsLayout.createSequentialGroup()
+        gl_panelNetworkConnections.setVerticalGroup(
+            gl_panelNetworkConnections.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelNetworkConnections.createSequentialGroup()
                 .addContainerGap()
                 .add(panelWebservice, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
@@ -513,66 +513,66 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         cboParity.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None" }));
         cboParity.setEnabled(false);
 
-        org.jdesktop.layout.GroupLayout panelPlatformLayout = new org.jdesktop.layout.GroupLayout(panelPlatform);
-        panelPlatform.setLayout(panelPlatformLayout);
-        panelPlatformLayout.setHorizontalGroup(
-            panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelPlatformLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelPlatform = new org.jdesktop.layout.GroupLayout(panelPlatform);
+        panelPlatform.setLayout(gl_panelPlatform);
+        gl_panelPlatform.setHorizontalGroup(
+            gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelPlatform.createSequentialGroup()
                 .addContainerGap()
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelPlatformLayout.createSequentialGroup()
-                        .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(gl_panelPlatform.createSequentialGroup()
+                        .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(lblPlatformType)
                             .add(lblPort)
                             .add(lblPlatformUnits))
                         .add(59, 59, 59)
-                        .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(cboPlatformType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 313, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(cboPlatformUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                    .add(panelPlatformLayout.createSequentialGroup()
-                        .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(gl_panelPlatform.createSequentialGroup()
+                        .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(lblStopbits)
                             .add(lblParity)
                             .add(lblBaud)
                             .add(lblDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 91, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(cboParity, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(cboStopbits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(134, Short.MAX_VALUE))
         );
-        panelPlatformLayout.setVerticalGroup(
-            panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelPlatformLayout.createSequentialGroup()
+        gl_panelPlatform.setVerticalGroup(
+            gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelPlatform.createSequentialGroup()
                 .addContainerGap()
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblPlatformType)
                     .add(cboPlatformType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblPort)
                     .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblPlatformUnits)
                     .add(cboPlatformUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(18, 18, 18)
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblBaud)
                     .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblDatabits))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblStopbits)
                     .add(cboStopbits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelPlatformLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblParity)
                     .add(cboParity, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -586,40 +586,40 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         txtComCheckLog.setRows(5);
         jScrollPane1.setViewportView(txtComCheckLog);
 
-        org.jdesktop.layout.GroupLayout panelTestCommsLayout = new org.jdesktop.layout.GroupLayout(panelTestComms);
-        panelTestComms.setLayout(panelTestCommsLayout);
-        panelTestCommsLayout.setHorizontalGroup(
-            panelTestCommsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelTestCommsLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelTestComms = new org.jdesktop.layout.GroupLayout(panelTestComms);
+        panelTestComms.setLayout(gl_panelTestComms);
+        gl_panelTestComms.setHorizontalGroup(
+            gl_panelTestComms.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelTestComms.createSequentialGroup()
                 .addContainerGap()
-                .add(panelTestCommsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(gl_panelTestComms.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
                     .add(btnStartMeasuring))
                 .addContainerGap())
         );
-        panelTestCommsLayout.setVerticalGroup(
-            panelTestCommsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelTestCommsLayout.createSequentialGroup()
+        gl_panelTestComms.setVerticalGroup(
+            gl_panelTestComms.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelTestComms.createSequentialGroup()
                 .add(btnStartMeasuring)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        org.jdesktop.layout.GroupLayout panelHardwareLayout = new org.jdesktop.layout.GroupLayout(panelHardware);
-        panelHardware.setLayout(panelHardwareLayout);
-        panelHardwareLayout.setHorizontalGroup(
-            panelHardwareLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelHardwareLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelHardware = new org.jdesktop.layout.GroupLayout(panelHardware);
+        panelHardware.setLayout(gl_panelHardware);
+        gl_panelHardware.setHorizontalGroup(
+            gl_panelHardware.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, gl_panelHardware.createSequentialGroup()
                 .addContainerGap()
-                .add(panelHardwareLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                .add(gl_panelHardware.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, panelTestComms, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, panelPlatform, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        panelHardwareLayout.setVerticalGroup(
-            panelHardwareLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelHardwareLayout.createSequentialGroup()
+        gl_panelHardware.setVerticalGroup(
+            gl_panelHardware.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelHardware.createSequentialGroup()
                 .addContainerGap()
                 .add(panelPlatform, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
@@ -656,20 +656,20 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         cboWJ.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0.5", "0.49", "0.492", "0.4915", "0.49152", "49%", "49.2%", "49.15%", "49.152%" }));
         cboWJ.setSelectedIndex(1);
 
-        org.jdesktop.layout.GroupLayout panelNumberFormatsLayout = new org.jdesktop.layout.GroupLayout(panelNumberFormats);
-        panelNumberFormats.setLayout(panelNumberFormatsLayout);
-        panelNumberFormatsLayout.setHorizontalGroup(
-            panelNumberFormatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelNumberFormatsLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelNumberFormats = new org.jdesktop.layout.GroupLayout(panelNumberFormats);
+        panelNumberFormats.setLayout(gl_panelNumberFormats);
+        gl_panelNumberFormats.setHorizontalGroup(
+            gl_panelNumberFormats.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, gl_panelNumberFormats.createSequentialGroup()
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(panelNumberFormatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                .add(gl_panelNumberFormats.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, lblRValue, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, lblTrend, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, lblDScore, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, lblWJ, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, lblTScore, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 94, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelNumberFormatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(gl_panelNumberFormats.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(cboRValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(cboTScore, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(cboTrend, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -677,27 +677,27 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
                     .add(cboWJ, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
-        panelNumberFormatsLayout.setVerticalGroup(
-            panelNumberFormatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelNumberFormatsLayout.createSequentialGroup()
+        gl_panelNumberFormats.setVerticalGroup(
+            gl_panelNumberFormats.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelNumberFormats.createSequentialGroup()
                 .addContainerGap()
-                .add(panelNumberFormatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelNumberFormats.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblTScore)
                     .add(cboTScore, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelNumberFormatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelNumberFormats.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblRValue)
                     .add(cboRValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelNumberFormatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelNumberFormats.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblTrend)
                     .add(cboTrend, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelNumberFormatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelNumberFormats.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblDScore)
                     .add(cboDScore, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelNumberFormatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelNumberFormats.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblWJ)
                     .add(cboWJ, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(16, Short.MAX_VALUE))
@@ -715,64 +715,64 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 
         lblHighlightColor.setText("Highlight color:");
 
-        org.jdesktop.layout.GroupLayout panelSigScoresLayout = new org.jdesktop.layout.GroupLayout(panelSigScores);
-        panelSigScores.setLayout(panelSigScoresLayout);
-        panelSigScoresLayout.setHorizontalGroup(
-            panelSigScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelSigScoresLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelSigScores = new org.jdesktop.layout.GroupLayout(panelSigScores);
+        panelSigScores.setLayout(gl_panelSigScores);
+        gl_panelSigScores.setHorizontalGroup(
+            gl_panelSigScores.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelSigScores.createSequentialGroup()
                 .addContainerGap()
-                .add(panelSigScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(panelSigScoresLayout.createSequentialGroup()
-                        .add(panelSigScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                .add(gl_panelSigScores.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(gl_panelSigScores.createSequentialGroup()
+                        .add(gl_panelSigScores.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, lblMinOverlapDScore, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, lblMinOverlap, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(panelSigScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(gl_panelSigScores.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(spnMinOverlapDScore, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
                             .add(spnMinOverlap, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)))
                     .add(chkHighlightSig)
-                    .add(panelSigScoresLayout.createSequentialGroup()
+                    .add(gl_panelSigScores.createSequentialGroup()
                         .add(lblHighlightColor)
                         .add(18, 18, 18)
                         .add(cboHighlightColor, 0, 181, Short.MAX_VALUE)))
                 .addContainerGap())
         );
-        panelSigScoresLayout.setVerticalGroup(
-            panelSigScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelSigScoresLayout.createSequentialGroup()
+        gl_panelSigScores.setVerticalGroup(
+            gl_panelSigScores.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelSigScores.createSequentialGroup()
                 .addContainerGap()
-                .add(panelSigScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelSigScores.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblMinOverlap)
                     .add(spnMinOverlap, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelSigScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelSigScores.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblMinOverlapDScore)
                     .add(spnMinOverlapDScore, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(chkHighlightSig)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(panelSigScoresLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelSigScores.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblHighlightColor)
                     .add(cboHighlightColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(39, Short.MAX_VALUE))
         );
 
-        org.jdesktop.layout.GroupLayout panelStatisticsLayout = new org.jdesktop.layout.GroupLayout(panelStatistics);
-        panelStatistics.setLayout(panelStatisticsLayout);
-        panelStatisticsLayout.setHorizontalGroup(
-            panelStatisticsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelStatisticsLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelStatistics = new org.jdesktop.layout.GroupLayout(panelStatistics);
+        panelStatistics.setLayout(gl_panelStatistics);
+        gl_panelStatistics.setHorizontalGroup(
+            gl_panelStatistics.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelStatistics.createSequentialGroup()
                 .addContainerGap()
                 .add(panelNumberFormats, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(panelSigScores, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        panelStatisticsLayout.setVerticalGroup(
-            panelStatisticsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelStatisticsLayout.createSequentialGroup()
+        gl_panelStatistics.setVerticalGroup(
+            gl_panelStatistics.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, gl_panelStatistics.createSequentialGroup()
                 .addContainerGap()
-                .add(panelStatisticsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                .add(gl_panelStatistics.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, panelSigScores, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, panelNumberFormats, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .add(294, 294, 294))
@@ -807,20 +807,20 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 
         lblShowEditorGrid.setText("Gridlines:");
 
-        org.jdesktop.layout.GroupLayout panelEditorLayout = new org.jdesktop.layout.GroupLayout(panelEditor);
-        panelEditor.setLayout(panelEditorLayout);
-        panelEditorLayout.setHorizontalGroup(
-            panelEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelEditorLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelEditor = new org.jdesktop.layout.GroupLayout(panelEditor);
+        panelEditor.setLayout(gl_panelEditor);
+        gl_panelEditor.setHorizontalGroup(
+            gl_panelEditor.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelEditor.createSequentialGroup()
                 .addContainerGap()
-                .add(panelEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                .add(gl_panelEditor.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(lblEditorBGColor, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
                     .add(lblTextColor, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(lblDisplayUnits, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(lblFont, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(lblShowEditorGrid, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(gl_panelEditor.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(chkShowEditorGrid)
                     .add(btnFont, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, cboTextColor, 0, 395, Short.MAX_VALUE)
@@ -828,26 +828,26 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, cboDisplayUnits, 0, 395, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        panelEditorLayout.setVerticalGroup(
-            panelEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelEditorLayout.createSequentialGroup()
-                .add(panelEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+        gl_panelEditor.setVerticalGroup(
+            gl_panelEditor.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelEditor.createSequentialGroup()
+                .add(gl_panelEditor.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblDisplayUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(cboDisplayUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelEditor.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(cboTextColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblTextColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelEditor.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblEditorBGColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(cboEditorBGColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelEditor.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnFont)
                     .add(lblFont, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelEditorLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelEditor.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(chkShowEditorGrid)
                     .add(lblShowEditorGrid))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -876,43 +876,43 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
             }
         });
 
-        org.jdesktop.layout.GroupLayout panelChartsLayout = new org.jdesktop.layout.GroupLayout(panelCharts);
-        panelCharts.setLayout(panelChartsLayout);
-        panelChartsLayout.setHorizontalGroup(
-            panelChartsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelChartsLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelCharts = new org.jdesktop.layout.GroupLayout(panelCharts);
+        panelCharts.setLayout(gl_panelCharts);
+        gl_panelCharts.setHorizontalGroup(
+            gl_panelCharts.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelCharts.createSequentialGroup()
                 .addContainerGap()
-                .add(panelChartsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                .add(gl_panelCharts.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(lblShowChartGrid, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(lblGridColor, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(lblChartBGColor, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(lblAxisCursorColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 139, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelChartsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(gl_panelCharts.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(chkShowChartGrid)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, cboChartBGColor, 0, 392, Short.MAX_VALUE)
-                    .add(panelChartsLayout.createSequentialGroup()
+                    .add(gl_panelCharts.createSequentialGroup()
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(cboGridColor, 0, 392, Short.MAX_VALUE))
                     .add(cboAxisCursorColor, 0, 392, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        panelChartsLayout.setVerticalGroup(
-            panelChartsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelChartsLayout.createSequentialGroup()
-                .add(panelChartsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+        gl_panelCharts.setVerticalGroup(
+            gl_panelCharts.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelCharts.createSequentialGroup()
+                .add(gl_panelCharts.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(cboAxisCursorColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblAxisCursorColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelChartsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelCharts.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(cboChartBGColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblChartBGColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelChartsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelCharts.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(cboGridColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblGridColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelChartsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelCharts.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(chkShowChartGrid)
                     .add(lblShowChartGrid))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -920,37 +920,37 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 
         panelUI.setBorder(javax.swing.BorderFactory.createTitledBorder("User interface"));
 
-        org.jdesktop.layout.GroupLayout panelUILayout = new org.jdesktop.layout.GroupLayout(panelUI);
-        panelUI.setLayout(panelUILayout);
-        panelUILayout.setHorizontalGroup(
-            panelUILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelUILayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelUI = new org.jdesktop.layout.GroupLayout(panelUI);
+        panelUI.setLayout(gl_panelUI);
+        gl_panelUI.setHorizontalGroup(
+            gl_panelUI.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelUI.createSequentialGroup()
                 .addContainerGap()
                 .add(scrollPaneUIDefaults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        panelUILayout.setVerticalGroup(
-            panelUILayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelUILayout.createSequentialGroup()
+        gl_panelUI.setVerticalGroup(
+            gl_panelUI.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelUI.createSequentialGroup()
                 .add(scrollPaneUIDefaults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        org.jdesktop.layout.GroupLayout panelAppearanceLayout = new org.jdesktop.layout.GroupLayout(panelAppearance);
-        panelAppearance.setLayout(panelAppearanceLayout);
-        panelAppearanceLayout.setHorizontalGroup(
-            panelAppearanceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelAppearanceLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelAppearance = new org.jdesktop.layout.GroupLayout(panelAppearance);
+        panelAppearance.setLayout(gl_panelAppearance);
+        gl_panelAppearance.setHorizontalGroup(
+            gl_panelAppearance.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, gl_panelAppearance.createSequentialGroup()
                 .addContainerGap()
-                .add(panelAppearanceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                .add(gl_panelAppearance.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, panelUI, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, panelEditor, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, panelCharts, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        panelAppearanceLayout.setVerticalGroup(
-            panelAppearanceLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelAppearanceLayout.createSequentialGroup()
+        gl_panelAppearance.setVerticalGroup(
+            gl_panelAppearance.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelAppearance.createSequentialGroup()
                 .addContainerGap()
                 .add(panelEditor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
@@ -986,24 +986,24 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 
         btnWMSRemove.setText("Remove");
 
-        org.jdesktop.layout.GroupLayout panelWMSLayout = new org.jdesktop.layout.GroupLayout(panelWMS);
-        panelWMS.setLayout(panelWMSLayout);
-        panelWMSLayout.setHorizontalGroup(
-            panelWMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelWMSLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelWMS = new org.jdesktop.layout.GroupLayout(panelWMS);
+        panelWMS.setLayout(gl_panelWMS);
+        gl_panelWMS.setHorizontalGroup(
+            gl_panelWMS.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, gl_panelWMS.createSequentialGroup()
                 .addContainerGap()
-                .add(panelWMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                .add(gl_panelWMS.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
-                    .add(panelWMSLayout.createSequentialGroup()
+                    .add(gl_panelWMS.createSequentialGroup()
                         .add(btnWMSRemove)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(btnWMSAdd)))
                 .addContainerGap())
         );
-        panelWMSLayout.setVerticalGroup(
-            panelWMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelWMSLayout.createSequentialGroup()
-                .add(panelWMSLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+        gl_panelWMS.setVerticalGroup(
+            gl_panelWMS.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelWMS.createSequentialGroup()
+                .add(gl_panelWMS.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnWMSAdd)
                     .add(btnWMSRemove))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -1011,31 +1011,31 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
                 .addContainerGap())
         );
 
-        org.jdesktop.layout.GroupLayout panelGrfxWarningLayout = new org.jdesktop.layout.GroupLayout(panelGrfxWarning);
-        panelGrfxWarning.setLayout(panelGrfxWarningLayout);
-        panelGrfxWarningLayout.setHorizontalGroup(
-            panelGrfxWarningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+        org.jdesktop.layout.GroupLayout gl_panelGrfxWarning = new org.jdesktop.layout.GroupLayout(panelGrfxWarning);
+        panelGrfxWarning.setLayout(gl_panelGrfxWarning);
+        gl_panelGrfxWarning.setHorizontalGroup(
+            gl_panelGrfxWarning.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(0, 561, Short.MAX_VALUE)
         );
-        panelGrfxWarningLayout.setVerticalGroup(
-            panelGrfxWarningLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+        gl_panelGrfxWarning.setVerticalGroup(
+            gl_panelGrfxWarning.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(0, 125, Short.MAX_VALUE)
         );
 
-        org.jdesktop.layout.GroupLayout panelMappingLayout = new org.jdesktop.layout.GroupLayout(panelMapping);
-        panelMapping.setLayout(panelMappingLayout);
-        panelMappingLayout.setHorizontalGroup(
-            panelMappingLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelMappingLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelMapping = new org.jdesktop.layout.GroupLayout(panelMapping);
+        panelMapping.setLayout(gl_panelMapping);
+        gl_panelMapping.setHorizontalGroup(
+            gl_panelMapping.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, gl_panelMapping.createSequentialGroup()
                 .addContainerGap()
-                .add(panelMappingLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                .add(gl_panelMapping.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, panelWMS, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, panelGrfxWarning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        panelMappingLayout.setVerticalGroup(
-            panelMappingLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelMappingLayout.createSequentialGroup()
+        gl_panelMapping.setVerticalGroup(
+            gl_panelMapping.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelMapping.createSequentialGroup()
                 .add(13, 13, 13)
                 .add(panelGrfxWarning, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -1054,11 +1054,11 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         seperatorButtons.setBackground(new java.awt.Color(153, 153, 153));
         seperatorButtons.setOpaque(true);
 
-        org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
-        panelButtons.setLayout(panelButtonsLayout);
-        panelButtonsLayout.setHorizontalGroup(
-            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelButtonsLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelButtons = new org.jdesktop.layout.GroupLayout(panelButtons);
+        panelButtons.setLayout(gl_panelButtons);
+        gl_panelButtons.setHorizontalGroup(
+            gl_panelButtons.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelButtons.createSequentialGroup()
                 .addContainerGap()
                 .add(btnResetAll)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 273, Short.MAX_VALUE)
@@ -1068,12 +1068,12 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
                 .addContainerGap())
             .add(seperatorButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
         );
-        panelButtonsLayout.setVerticalGroup(
-            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelButtonsLayout.createSequentialGroup()
+        gl_panelButtons.setVerticalGroup(
+            gl_panelButtons.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelButtons.createSequentialGroup()
                 .add(seperatorButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(gl_panelButtons.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnCancel)
                     .add(btnOk)
                     .add(btnResetAll))

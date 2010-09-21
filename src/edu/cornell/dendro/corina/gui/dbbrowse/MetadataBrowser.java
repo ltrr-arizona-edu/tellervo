@@ -208,6 +208,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
         
         // set properties and load from entity
 		propertiesPanel.setProperties(propArray);
+		propertiesTable.expandAllBranches(true);
 		
 		// Add data to table from entity
 		if(entity!=null)

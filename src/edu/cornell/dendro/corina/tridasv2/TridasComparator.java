@@ -113,14 +113,25 @@ public class TridasComparator implements Comparator<ITridas> {
 		case LAB_CODE_THEN_TITLES: {
 			if(o1 instanceof TridasSample){
 				TridasSample s1 = (TridasSample) o1;
+				try{
 				v1 = GenericFieldUtils.findField(s1, "corina.internal.labcodeText").getValue().toString();
+				} catch (NullPointerException e)
+				{
+					v1 = o1.getTitle();
+				}
 			}
 			else{
 				v1 =o1.getTitle();
 			}
+			
 			if(o2 instanceof TridasSample){
 				TridasSample s2 = (TridasSample) o2;
+				try{
 				v2 = GenericFieldUtils.findField(s2, "corina.internal.labcodeText").getValue().toString();
+				} catch (NullPointerException e)
+				{
+					v2 = o2.getTitle();
+				}
 			}
 			else{
 				v2 =o2.getTitle();

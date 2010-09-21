@@ -17,8 +17,10 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
 import com.l2fprod.common.propertysheet.PropertySheetTable;
+import com.l2fprod.common.propertysheet.PropertySheetTableModel.Item;
 
 public class CorinaPropertySheetTable extends PropertySheetTable {
 	private static final long serialVersionUID = 1L;
@@ -35,7 +37,6 @@ public class CorinaPropertySheetTable extends PropertySheetTable {
 		isEditable = true;
 		isPreviewing = false;
 		setColumnWidths();
-		
 	}
 	
 	public void setEditable(boolean isEditable) {
@@ -142,5 +143,19 @@ public class CorinaPropertySheetTable extends PropertySheetTable {
 		    }
 		}
 
+	}
+	
+	public void expandAllBranches(Boolean b)
+	{
+		TableModel model = this.getSheetModel();
+		
+		for (int i = 0; i < model.getRowCount(); i++)
+		{
+			Item item = this.getSheetModel().getPropertySheetElement(i);
+			if(item.isVisible()!=b)
+			{
+				item.toggle();
+			}
+		}
 	}
 }

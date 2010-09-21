@@ -8,6 +8,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
+import org.tridas.util.TridasObjectEx;
 
 public class TridasSelectEvent extends AWTEvent {
 
@@ -35,7 +36,7 @@ public class TridasSelectEvent extends AWTEvent {
 	 * @param entity
 	 */
 	@SuppressWarnings("unchecked")
-	public TridasSelectEvent(Object source, int id, TridasObject entity) {
+	public TridasSelectEvent(Object source, int id, TridasObjectEx entity) {
 		super(source, id);
 		entityList = new ArrayList<TridasObject>();
 		entityList.add(entity);
@@ -100,9 +101,9 @@ public class TridasSelectEvent extends AWTEvent {
 	 * @param entityList
 	 */
 	@SuppressWarnings("unchecked")
-	public TridasSelectEvent(Object source, int id, List<TridasObject> entityList) {
+	public TridasSelectEvent(Object source, int id, List<TridasObjectEx> entityList) {
 		super(source, id);
-		this.entityList = new ArrayList<TridasObject>();
+		this.entityList = new ArrayList<TridasObjectEx>();
 		this.entityList.addAll(entityList);
 		multiSelector = true;
 	}

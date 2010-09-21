@@ -44,5 +44,6 @@
 	<classpathentry kind="lib" path="Libraries/jfontchooser-1.0.5.jar"/>
 	<classpathentry kind="lib" path="Libraries/pljava.jar"/>
 	<classpathentry kind="lib" path="Libraries/postgresql-8.2-506.jdbc3.jar"/>
+	<classpathentry kind="lib" path="Libraries/miglayout15-swing.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
