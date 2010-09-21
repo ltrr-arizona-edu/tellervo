@@ -21,14 +21,14 @@ import javax.swing.tree.TreeCellEditor;
 public abstract class AbstractComboBoxEditor implements TableCellEditor, TreeCellEditor{
 	private static final long serialVersionUID = 1L;
 	
-	private DefaultCellEditor delegate = null;
+	private ComboBoxCellEditor delegate = null;
 	
 	/**
 	 * @return the delegate
 	 */
 	public DefaultCellEditor getDelegate() {
 		if(delegate == null){
-			delegate = new DefaultCellEditor(new JComboBox(getComboBoxOptions()));
+			delegate = new ComboBoxCellEditor(new JComboBox(getComboBoxOptions()));
 		}
 		return delegate;
 	}

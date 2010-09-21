@@ -110,18 +110,6 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 			model.addElement(wrapper);
 		}
 	}
-	
-	/**
-	 * @see javax.swing.JComboBox#processKeyEvent(java.awt.event.KeyEvent)
-	 */
-	@Override
-	public void processKeyEvent(KeyEvent argE) {
-		char key = argE.getKeyChar();
-		if(key == KeyEvent.CHAR_UNDEFINED){
-			super.processKeyEvent(argE);
-			return;
-		}
-	}
     
     /**
      * Gets the rendering style of this combo box.  Default style is

@@ -17,6 +17,7 @@ import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasUnit;
 import org.tridas.util.TridasObjectEx;
 
+import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
 import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
@@ -77,7 +78,7 @@ public class ElementView extends AbstractBulkImportView{
 				return argComponent.getLabCode();
 			}
 		});
-		argTable.setDefaultEditor(TridasObject.class, new DefaultCellEditor(box));
+		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(box));
 		argTable.setDefaultRenderer(TridasObject.class, new DefaultTableCellRenderer(){
 			/**
 			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
@@ -95,7 +96,7 @@ public class ElementView extends AbstractBulkImportView{
 		
 		ElementModel model = BulkImportModel.getInstance().getElementModel();
 		DynamicJComboBox<GPXWaypoint> waypointBox = new DynamicJComboBox<GPXWaypoint>(model.getWaypointList());
-		argTable.setDefaultEditor(GPXWaypoint.class, new DefaultCellEditor(waypointBox));
+		argTable.setDefaultEditor(GPXWaypoint.class, new ComboBoxCellEditor(waypointBox));
 	}
 	
 	@Override

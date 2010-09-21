@@ -11,6 +11,7 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
+import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
 import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
@@ -55,7 +56,7 @@ public class SampleView  extends AbstractBulkImportView{
 				return argComponent.getTitle();
 			}
 		});
-		argTable.setDefaultEditor(TridasElement.class, new DefaultCellEditor(box));
+		argTable.setDefaultEditor(TridasElement.class, new ComboBoxCellEditor(box));
 		argTable.setDefaultRenderer(TridasElement.class, new DefaultTableCellRenderer(){
 			/**
 			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)

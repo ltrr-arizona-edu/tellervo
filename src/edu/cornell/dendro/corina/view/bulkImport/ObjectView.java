@@ -11,6 +11,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JTable;
 
+import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
 import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
@@ -50,7 +51,7 @@ public class ObjectView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSIObjectTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
-		argTable.setDefaultEditor(GPXWaypoint.class, new DefaultCellEditor(new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(), new IDynamicJComboBoxInterpreter<GPXWaypoint>() {
+		argTable.setDefaultEditor(GPXWaypoint.class, new ComboBoxCellEditor(new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(), new IDynamicJComboBoxInterpreter<GPXWaypoint>() {
 			@Override
 			public String getStringValue(GPXWaypoint argComponent) {
 				return argComponent.toString();
