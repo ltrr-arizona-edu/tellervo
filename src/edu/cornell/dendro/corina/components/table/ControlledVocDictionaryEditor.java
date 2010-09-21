@@ -3,7 +3,12 @@
  */
 package edu.cornell.dendro.corina.components.table;
 
+import java.io.Serializable;
 import java.util.HashMap;
+
+import javax.swing.ComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JComboBox.KeySelectionManager;
 
 import org.tridas.schema.ControlledVoc;
 
@@ -67,6 +72,62 @@ public class ControlledVocDictionaryEditor extends AbstractComboBoxEditor{
 
 		
 		return voc.toString();
+	}
+	
+	/**
+	 * @see edu.cornell.dendro.corina.components.table.AbstractComboBoxEditor#populateComboBox(javax.swing.JComboBox, java.lang.String[])
+	 */
+	@Override
+	protected void populateComboBox(JComboBox argComboBox, String[] argItems) {
+		super.populateComboBox(argComboBox, argItems);
+
+		if(behavior != Behavior.NORMAL_ONLY && behavior != Behavior.VALUE){
+			argComboBox.setKeySelectionManager(new KeySelectionManager() {
+	
+				@Override
+				public int selectionForKey(char aKey, ComboBoxModel aModel) {
+					int i,c;
+		            int currentSelection = -1;
+		            Object selectedItem = aModel.getSelectedItem();
+		            String v;
+		            String pattern;
+		            System.out.println("calling!");
+	
+		            if ( selectedItem != null ) {
+		                for ( i=0,c=aModel.getSize();i<c;i++ ) {
+		                    if ( selectedItem == aModel.getElementAt(i) ) {
+		                        currentSelection  =  i;
+		                        break;
+		                    }
+		                }
+		            }
+	
+		            pattern = ("" + aKey).toLowerCase();
+		            aKey = pattern.charAt(0);
+	
+		            for ( i = ++currentSelection, c = aModel.getSize() ; i < c ; i++ ) {
+		                Object elem = aModel.getElementAt(i);
+						if (elem != null && elem.toString() != null) {
+						    v = elem.toString().toLowerCase();
+						    v = v.substring(v.indexOf('>')+1);
+						    if ( v.length() > 0 && v.charAt(0) == aKey )
+							return i;
+						}
+		            }
+	
+		            for ( i = 0 ; i < currentSelection ; i ++ ) {
+		                Object elem = aModel.getElementAt(i);
+						if (elem != null && elem.toString() != null) {
+						    v = elem.toString().toLowerCase();
+						    v = v.substring(v.indexOf('>')+1);
+						    if ( v.length() > 0 && v.charAt(0) == aKey )
+							return i;
+						}
+		            }
+		            return -1;
+				}
+			});
+		}
 	}
 	
 	protected String[] getComboBoxOptions() {

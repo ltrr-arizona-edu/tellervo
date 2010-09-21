@@ -4,13 +4,23 @@
 package edu.cornell.dendro.corina.components.table;
 
 import java.awt.Component;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.EventObject;
+import java.util.Random;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JComboBox.KeySelectionManager;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.CellEditorListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreeCellEditor;
 
@@ -28,9 +38,16 @@ public abstract class AbstractComboBoxEditor implements TableCellEditor, TreeCel
 	 */
 	public DefaultCellEditor getDelegate() {
 		if(delegate == null){
-			delegate = new ComboBoxCellEditor(new JComboBox(getComboBoxOptions()));
+			JComboBox box = new JComboBox();
+			populateComboBox(box, getComboBoxOptions());
+			delegate = new ComboBoxCellEditor(box);
 		}
 		return delegate;
+	}
+	
+	protected void populateComboBox(JComboBox argComboBox, String[] argItems ){
+		Arrays.sort(argItems);
+		argComboBox.setModel(new DefaultComboBoxModel(argItems));
 	}
 
 	protected abstract String[] getComboBoxOptions();
@@ -149,8 +166,11 @@ public abstract class AbstractComboBoxEditor implements TableCellEditor, TreeCel
 	 */
 	@Override
 	public Object getCellEditorValue() {
-		String name = getDelegate().getCellEditorValue().toString();
-		return getValueFromString(name);
+		Object name = getDelegate().getCellEditorValue();
+		if(name == null){
+			return null;
+		}
+		return getValueFromString(name.toString());
 	}
 	
 	protected abstract Object getValueFromString(String argString);
