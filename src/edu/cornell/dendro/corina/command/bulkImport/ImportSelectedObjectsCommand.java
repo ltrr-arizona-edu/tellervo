@@ -126,11 +126,18 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			}
 			
 			som.populateTridasObject(origObject);
+
+			TridasObjectEx parentObject = (TridasObjectEx) som.getProperty(SingleObjectModel.PARENT_OBJECT);
+			
 			EntityResource<TridasObjectEx> resource;
 			if(origObject.getIdentifier() != null){
 				resource = new EntityResource<TridasObjectEx>(origObject, CorinaRequestType.UPDATE, TridasObjectEx.class);
 			}else{
-				resource = new EntityResource<TridasObjectEx>(origObject, CorinaRequestType.CREATE, TridasObjectEx.class);
+				if(parentObject != null){
+					resource = new EntityResource<TridasObjectEx>(origObject, parentObject, TridasObjectEx.class);
+				}else{
+					resource = new EntityResource<TridasObjectEx>(origObject, CorinaRequestType.CREATE, TridasObjectEx.class);
+				}
 			}
 			
 			// set up a dialog...

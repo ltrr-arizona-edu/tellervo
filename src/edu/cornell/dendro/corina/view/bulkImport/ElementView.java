@@ -68,7 +68,6 @@ public class ElementView extends AbstractBulkImportView{
 		argTable.setDefaultEditor(WSITaxonDictionary.class, new ControlledVocDictionaryEditor("taxonDictionary"));
 		argTable.setDefaultRenderer(WSITaxonDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
-		// this combo box should update from mvc events
 		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(), new IDynamicJComboBoxInterpreter<TridasObjectEx>() {
 			@Override
 			public String getStringValue(TridasObjectEx argComponent) {

@@ -171,7 +171,7 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 			setProperty(UNIT, d.getUnit());
 		}
 		
-		// stupid location
+		// I love how nested this is!
 		if(argElement.getLocation() != null &&
 				argElement.getLocation().getLocationGeometry() != null&&
 				argElement.getLocation().getLocationGeometry().getPoint() != null &&

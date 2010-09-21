@@ -3,6 +3,8 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
+import org.tridas.schema.TridasObject;
+
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
 
@@ -34,6 +36,8 @@ public class ObjectTableModel extends AbstractBulkImportTableModel {
 			return Double.class;
 		}else if(argColumn.equals(SingleObjectModel.WAYPOINT)){
 			return GPXWaypoint.class;
+		}else if(argColumn.equals(SingleObjectModel.PARENT_OBJECT)){
+			return TridasObject.class;
 		}
 		return null;
 	}

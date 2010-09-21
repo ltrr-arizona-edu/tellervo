@@ -34,10 +34,11 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	public static final String LATITUDE = "Latitude";
 	public static final String LONGTITUDE = "Longtitude";
 	public static final String WAYPOINT = "Waypoint";
+	public static final String PARENT_OBJECT = "Parent Object";
 	
 	
 	public static final String[] TABLE_PROPERTIES = {
-		OBJECT_CODE, TITLE, COMMENTS, TYPE, DESCRIPTION, LATITUDE, LONGTITUDE, WAYPOINT
+		OBJECT_CODE, TITLE, COMMENTS, TYPE, DESCRIPTION, LATITUDE, LONGTITUDE, WAYPOINT, PARENT_OBJECT
 	};
 	
 	public SingleObjectModel(){
@@ -95,7 +96,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		}
 		setProperty(DESCRIPTION, argObject.getDescription());
 		
-		// stupid location
+		// i love how nested this is!
 		if(argObject.getLocation() != null &&
 				argObject.getLocation().getLocationGeometry() != null&&
 				argObject.getLocation().getLocationGeometry().getPoint() != null &&
@@ -117,39 +118,19 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		codeField.setValue(getProperty(OBJECT_CODE)+"");
 		argObject.getGenericFields().add(codeField);
 		
-		Object title = getProperty(TITLE);
-		Object identifier = getProperty(IMPORTED);
-		Object comments = getProperty(COMMENTS);
-		Object type = getProperty(TYPE);
-		Object description = getProperty(DESCRIPTION);
+		argObject.setTitle((String)getProperty(TITLE));
+		argObject.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
+		argObject.setComments((String)getProperty(COMMENTS));
+		argObject.setType((ControlledVoc) getProperty(TYPE));
+		argObject.setDescription((String) getProperty(DESCRIPTION));
+		
 		Object latitude = getProperty(LATITUDE);
 		Object longitude = getProperty(LONGTITUDE);
-		Object waypoint = getProperty(WAYPOINT);
-		
-		if(title != null){
-			argObject.setTitle(title.toString());
-		}
-		
-		if(identifier != null){
-			argObject.setIdentifier((TridasIdentifier) identifier);
-		}
-		
-		if(comments != null){
-			argObject.setComments(comments.toString());
-		}
-		
-		if(type != null){
-			argObject.setType((ControlledVoc) type);
-		}
-		
-		if(description != null){
-			argObject.setDescription(description.toString());
-		}
 		
 		if(latitude != null && longitude != null){
 			// Lat/Long is set so use these
-			double lat = (Double)getProperty(LATITUDE);
-			double lon = (Double)getProperty(LONGTITUDE);
+			double lat = (Double)latitude;
+			double lon = (Double)longitude;
 			Pos p = new Pos();
 			p.getValues().add(lat);
 			p.getValues().add(lon);

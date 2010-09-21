@@ -10,6 +10,10 @@ import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+
+import org.tridas.schema.TridasObject;
+import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
@@ -20,6 +24,7 @@ import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
 import edu.cornell.dendro.corina.control.bulkImport.ColumnsModifiedEvent;
 import edu.cornell.dendro.corina.control.bulkImport.GPXBrowse;
 import edu.cornell.dendro.corina.control.bulkImport.ImportSelectedEvent;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectModel;
@@ -51,12 +56,32 @@ public class ObjectView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSIObjectTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
-		argTable.setDefaultEditor(GPXWaypoint.class, new ComboBoxCellEditor(new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(), new IDynamicJComboBoxInterpreter<GPXWaypoint>() {
+		argTable.setDefaultEditor(GPXWaypoint.class, new ComboBoxCellEditor(new DynamicJComboBox<GPXWaypoint>(model.getWaypointList())));
+		
+		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(), new IDynamicJComboBoxInterpreter<TridasObjectEx>() {
 			@Override
-			public String getStringValue(GPXWaypoint argComponent) {
-				return argComponent.toString();
+			public String getStringValue(TridasObjectEx argComponent) {
+				if(argComponent == null){
+					return "";
+				}
+				return argComponent.getLabCode();
 			}
-		})));
+		});
+		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(box));
+		argTable.setDefaultRenderer(TridasObject.class, new DefaultTableCellRenderer(){
+			/**
+			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
+			 */
+			@Override
+			protected void setValue(Object argValue) {
+				if(argValue == null){
+					super.setValue(argValue);
+					return;
+				}
+				TridasObjectEx object = (TridasObjectEx) argValue;
+				super.setValue(object.getLabCode());
+			}
+		});
 	}
 	
 	/**
