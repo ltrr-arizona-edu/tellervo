@@ -4,6 +4,7 @@
 package edu.cornell.dendro.corina.components.table;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.AbstractListModel;
@@ -20,11 +21,11 @@ import javax.swing.MutableComboBoxModel;
 public class DynamicJComboBoxModel extends AbstractListModel implements MutableComboBoxModel, Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	private Vector objects;
+	private final Vector objects;
     private Object selectedObject;
 
     /**
-     * Constructs an empty DefaultComboBoxModel object.
+     * Constructs an empty DefaultComboBoxModel.
      */
     public DynamicJComboBoxModel() {
         objects = new Vector();
@@ -140,6 +141,10 @@ public class DynamicJComboBoxModel extends AbstractListModel implements MutableC
         objects.removeElementAt(index);
 
         fireIntervalRemoved(this, index, index);
+    }
+    
+    public void sort(){
+    	Collections.sort(objects);
     }
 
     // implements javax.swing.MutableComboBoxModel

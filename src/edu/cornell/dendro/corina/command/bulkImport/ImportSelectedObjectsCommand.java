@@ -18,6 +18,7 @@ import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
+import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSingleRowModel;
 import edu.cornell.dendro.corina.model.bulkImport.ObjectTableModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleObjectModel;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
@@ -40,16 +41,16 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		BulkImportModel model = BulkImportModel.getInstance();
 		
 		ObjectTableModel tmodel = model.getObjectModel().getTableModel();
-		ArrayList<SingleObjectModel> selected = new ArrayList<SingleObjectModel>();
+		ArrayList<IBulkImportSingleRowModel> selected = new ArrayList<IBulkImportSingleRowModel>();
 		tmodel.getSelected(selected);
 		
 		// here is where we verify they contain required info
 		HashSet<String> requiredMessages = new HashSet<String>();
-		ArrayList<SingleObjectModel> incompleteModels = new ArrayList<SingleObjectModel>();
+		ArrayList<IBulkImportSingleRowModel> incompleteModels = new ArrayList<IBulkImportSingleRowModel>();
 		
 		HashSet<String> definedProps = new HashSet<String>();
 		HashSet<String> objectCodeSet = new HashSet<String>();
-		for(SingleObjectModel som : selected){
+		for(IBulkImportSingleRowModel som : selected){
 			
 			definedProps.clear();
 			for(String s : SingleObjectModel.TABLE_PROPERTIES){
@@ -116,7 +117,8 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		}
 		
 		// now we actually create the models
-		for(SingleObjectModel som : selected){
+		for(IBulkImportSingleRowModel srm : selected){
+			SingleObjectModel som = (SingleObjectModel) srm;
 			TridasObjectEx origObject = new TridasObjectEx();
 			
 			if(!som.isDirty()){

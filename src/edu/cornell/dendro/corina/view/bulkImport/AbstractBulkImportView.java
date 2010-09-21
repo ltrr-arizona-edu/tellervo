@@ -274,32 +274,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 	protected abstract void setupTableCells(JTable argTable);
 	
 	protected void removeSelectedPressed(){
-		
-		// Confirm user is happy to continue
-		int response;
-		
-		
-		
-		if(model.getTableModel().getSelectedCount()==0)
-		{
-			return;
-		}
-		else if (model.getTableModel().getSelectedCount()==1)
-		{
-			response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the selected row?");
-		}
-		else
-		{
-			response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the "
-					+ model.getTableModel().getSelectedCount()
-					+ " selected rows?");
-		}
-			
-		if(response==JOptionPane.YES_OPTION)
-		{
-			RemoveSelectedEvent event = new RemoveSelectedEvent(model);
-			event.dispatch();
-		}
+		RemoveSelectedEvent event = new RemoveSelectedEvent(model);
+		event.dispatch();
 	}
 	
 	protected void selectAllPressed(){
@@ -343,7 +319,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		addRow.setText(I18n.getText("bulkimport.addrow"));
 		addRow.setIcon(Builder.getIcon("insertrow.png", 22));
 		
-		copyRow.setText(I18n.getText("bulkimport.copyrow"));
+		copyRow.setText(I18n.getText("bulkimport.copyrows"));
 		copyRow.setIcon(Builder.getIcon("copyrow.png", 22));
 		
 		showHideColumns.setToolTipText(I18n.getText("bulkimport.showHideCols"));

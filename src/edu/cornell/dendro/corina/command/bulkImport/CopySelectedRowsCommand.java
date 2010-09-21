@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import com.dmurph.mvc.ICloneable;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
-import com.dmurph.mvc.model.HashModel;
 
 import edu.cornell.dendro.corina.control.bulkImport.CopySelectedRowsEvent;
+import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSingleRowModel;
 
 /**
  * @author Daniel
@@ -25,10 +25,11 @@ public class CopySelectedRowsCommand implements ICommand {
 	public void execute(MVCEvent argEvent) {
 		CopySelectedRowsEvent event = (CopySelectedRowsEvent) argEvent;
 		
-		HashModel[] selected = event.model.getTableModel().getSelectedRows();
-		ArrayList<Object> cloned = new ArrayList<Object>(selected.length);
+		ArrayList<IBulkImportSingleRowModel> selected = new ArrayList<IBulkImportSingleRowModel>();
+		event.model.getTableModel().getSelected(selected);
+		ArrayList<Object> cloned = new ArrayList<Object>(selected.size());
 		
-		for(HashModel hm : selected){
+		for(IBulkImportSingleRowModel hm : selected){
 			ICloneable newRow = event.model.createRowInstance();
 			newRow.cloneFrom(hm);
 			cloned.add(newRow);

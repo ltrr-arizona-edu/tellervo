@@ -5,12 +5,15 @@ package edu.cornell.dendro.corina.view.bulkImport;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasObject;
+import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
-import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpretter;
+import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.control.bulkImport.ImportSelectedEvent;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
@@ -43,7 +46,7 @@ public class SampleView  extends AbstractBulkImportView{
 		
 
 		ElementModel m = BulkImportModel.getInstance().getElementModel();
-		DynamicJComboBox<TridasElement> box = new DynamicJComboBox<TridasElement>(m.getImportedList(), new IDynamicJComboBoxInterpretter<TridasElement>() {
+		DynamicJComboBox<TridasElement> box = new DynamicJComboBox<TridasElement>(m.getImportedList(), new IDynamicJComboBoxInterpreter<TridasElement>() {
 			@Override
 			public String getStringValue(TridasElement argComponent) {
 				if(argComponent == null){
@@ -53,6 +56,20 @@ public class SampleView  extends AbstractBulkImportView{
 			}
 		});
 		argTable.setDefaultEditor(TridasElement.class, new DefaultCellEditor(box));
+		argTable.setDefaultRenderer(TridasElement.class, new DefaultTableCellRenderer(){
+			/**
+			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
+			 */
+			@Override
+			protected void setValue(Object argValue) {
+				if(argValue == null){
+					super.setValue(argValue);
+					return;
+				}
+				TridasElement object = (TridasElement) argValue;
+				super.setValue(object.getTitle());
+			}
+		});
 	}
 
 	/**

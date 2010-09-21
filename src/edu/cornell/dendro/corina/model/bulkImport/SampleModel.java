@@ -86,10 +86,10 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 	 */
 	@Override
 	public void removeSelected() {
-		ArrayList<SingleSampleModel> removed = new ArrayList<SingleSampleModel>();
+		ArrayList<IBulkImportSingleRowModel> removed = new ArrayList<IBulkImportSingleRowModel>();
 		getTableModel().removeSelected(removed);
 		
-		Iterator<SingleSampleModel> it = removed.iterator();
+		Iterator<IBulkImportSingleRowModel> it = removed.iterator();
 		
 		while(it.hasNext()){
 			if(it.next().getImported() == null){
@@ -102,7 +102,7 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 		MVCArrayList<TridasSample> imported = getImportedList();
 		for(int i=0; i< imported.size(); i++){
 			TridasSample o = imported.get(i);
-			for(SingleSampleModel som : removed){
+			for(IBulkImportSingleRowModel som : removed){
 				if(o.getIdentifier().equals(som.getImported())){
 					imported.remove(i);
 					i--;
@@ -115,7 +115,7 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#createRowInstance()
 	 */
 	@Override
-	public ISingleRowModel createRowInstance() {
+	public IBulkImportSingleRowModel createRowInstance() {
 		SingleSampleModel model = new SingleSampleModel();
 		if(isRadiusWithSample()){
 			model.setRadiusModel(new SingleRadiusModel());

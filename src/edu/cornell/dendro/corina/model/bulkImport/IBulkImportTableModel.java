@@ -3,9 +3,9 @@
  */
 package edu.cornell.dendro.corina.model.bulkImport;
 
-import javax.swing.table.TableModel;
+import java.util.ArrayList;
 
-import com.dmurph.mvc.model.HashModel;
+import javax.swing.table.TableModel;
 
 /**
  * @author Daniel
@@ -17,7 +17,7 @@ public interface IBulkImportTableModel extends TableModel {
 	
 	public void selectNone();
 	
-	public Integer getSelectedCount();
+	public int getSelectedCount();
 	
-	public HashModel[] getSelectedRows();
+	public void getSelected(ArrayList<IBulkImportSingleRowModel> argModels);
 }

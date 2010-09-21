@@ -13,11 +13,10 @@ import javax.swing.JTable;
 
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
-import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpretter;
+import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
 import edu.cornell.dendro.corina.control.bulkImport.ColumnsModifiedEvent;
-import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.control.bulkImport.GPXBrowse;
 import edu.cornell.dendro.corina.control.bulkImport.ImportSelectedEvent;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
@@ -51,7 +50,7 @@ public class ObjectView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSIObjectTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
-		argTable.setDefaultEditor(GPXWaypoint.class, new DefaultCellEditor(new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(), new IDynamicJComboBoxInterpretter<GPXWaypoint>() {
+		argTable.setDefaultEditor(GPXWaypoint.class, new DefaultCellEditor(new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(), new IDynamicJComboBoxInterpreter<GPXWaypoint>() {
 			@Override
 			public String getStringValue(GPXWaypoint argComponent) {
 				return argComponent.toString();

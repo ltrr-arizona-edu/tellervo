@@ -19,7 +19,7 @@ import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
-import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpretter;
+import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
 import edu.cornell.dendro.corina.components.table.TridasShapeEditor;
 import edu.cornell.dendro.corina.components.table.TridasShapeRenderer;
 import edu.cornell.dendro.corina.components.table.TridasUnitEditor;
@@ -68,7 +68,7 @@ public class ElementView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSITaxonDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 		// this combo box should update from mvc events
-		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(), new IDynamicJComboBoxInterpretter<TridasObjectEx>() {
+		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(), new IDynamicJComboBoxInterpreter<TridasObjectEx>() {
 			@Override
 			public String getStringValue(TridasObjectEx argComponent) {
 				if(argComponent == null){

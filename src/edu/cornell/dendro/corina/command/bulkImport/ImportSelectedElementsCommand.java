@@ -20,6 +20,7 @@ import com.dmurph.mvc.control.ICommand;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementTableModel;
+import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSingleRowModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleElementModel;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -44,16 +45,16 @@ public class ImportSelectedElementsCommand implements ICommand {
 		ElementModel emodel = model.getElementModel();
 		ElementTableModel tmodel = emodel.getTableModel();
 		
-		ArrayList<SingleElementModel> selected = new ArrayList<SingleElementModel>();
+		ArrayList<IBulkImportSingleRowModel> selected = new ArrayList<IBulkImportSingleRowModel>();
 		tmodel.getSelected(selected);
 		
 		// here is where we verify they contain required info
 		HashSet<String> requiredMessages = new HashSet<String>();
-		ArrayList<SingleElementModel> incompleteModels = new ArrayList<SingleElementModel>();
+		ArrayList<IBulkImportSingleRowModel> incompleteModels = new ArrayList<IBulkImportSingleRowModel>();
 		
 		HashSet<String> titles = new HashSet<String>();
 		HashSet<String> definedProps = new HashSet<String>();
-		for(SingleElementModel som : selected){
+		for(IBulkImportSingleRowModel som : selected){
 			
 			definedProps.clear();
 			for(String s : SingleElementModel.TABLE_PROPERTIES){
@@ -133,11 +134,12 @@ public class ImportSelectedElementsCommand implements ICommand {
 		}
 		
 		// now we actually create the models
-		for(SingleElementModel som : selected){
+		for(IBulkImportSingleRowModel srm : selected){
+			SingleElementModel som = (SingleElementModel) srm;
 			TridasElement origElement = new TridasElement();
 			
 			if(!som.isDirty()){
-				System.out.println("Object isn't dirty, not saving/updating: "+som.getProperty(SingleElementModel.TITLE).toString());
+				System.out.println("Element isn't dirty, not saving/updating: "+som.getProperty(SingleElementModel.TITLE).toString());
 			}
 			
 			som.populateToTridasElement(origElement);

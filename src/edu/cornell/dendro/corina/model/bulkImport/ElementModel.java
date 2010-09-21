@@ -77,10 +77,10 @@ public class ElementModel extends HashModel implements IBulkImportSectionModel{
 	 */
 	@Override
 	public void removeSelected() {
-		ArrayList<SingleElementModel> removed = new ArrayList<SingleElementModel>();
+		ArrayList<IBulkImportSingleRowModel> removed = new ArrayList<IBulkImportSingleRowModel>();
 		getTableModel().removeSelected(removed);
 		
-		Iterator<SingleElementModel> it = removed.iterator();
+		Iterator<IBulkImportSingleRowModel> it = removed.iterator();
 		
 		while(it.hasNext()){
 			if(it.next().getImported() == null){
@@ -93,7 +93,7 @@ public class ElementModel extends HashModel implements IBulkImportSectionModel{
 		MVCArrayList<TridasElement> imported = getImportedList();
 		for(int i=0; i< imported.size(); i++){
 			TridasElement o = imported.get(i);
-			for(SingleElementModel som : removed){
+			for(IBulkImportSingleRowModel som : removed){
 				if(o.getIdentifier().equals(som.getImported())){
 					imported.remove(i);
 					i--;
@@ -106,7 +106,7 @@ public class ElementModel extends HashModel implements IBulkImportSectionModel{
 	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSectionModel#createRowInstance()
 	 */
 	@Override
-	public ISingleRowModel createRowInstance() {
+	public IBulkImportSingleRowModel createRowInstance() {
 		return new SingleElementModel();
 	}
 

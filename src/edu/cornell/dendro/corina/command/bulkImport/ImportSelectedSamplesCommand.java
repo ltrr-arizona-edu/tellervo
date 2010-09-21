@@ -19,6 +19,7 @@ import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ElementModel;
+import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSingleRowModel;
 import edu.cornell.dendro.corina.model.bulkImport.SampleModel;
 import edu.cornell.dendro.corina.model.bulkImport.SampleTableModel;
 import edu.cornell.dendro.corina.model.bulkImport.SingleRadiusModel;
@@ -46,7 +47,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 		SampleModel smodel = model.getSampleModel();
 		SampleTableModel tmodel = smodel.getTableModel();
 		
-		ArrayList<SingleSampleModel> selected = new ArrayList<SingleSampleModel>();
+		ArrayList<IBulkImportSingleRowModel> selected = new ArrayList<IBulkImportSingleRowModel>();
 		tmodel.getSelected(selected);
 		
 		// here is where we verify they contain required info
@@ -54,8 +55,8 @@ public class ImportSelectedSamplesCommand implements ICommand {
 		ArrayList<SingleSampleModel> incompleteModels = new ArrayList<SingleSampleModel>();
 		
 		HashSet<String> definedProps = new HashSet<String>();
-		for(SingleSampleModel som : selected){
-			
+		for(IBulkImportSingleRowModel srm : selected){
+			SingleSampleModel som = (SingleSampleModel) srm;
 			definedProps.clear();
 			for(String s : SingleSampleModel.TABLE_PROPERTIES){
 				if(som.getProperty(s) != null){
@@ -111,7 +112,8 @@ public class ImportSelectedSamplesCommand implements ICommand {
 		}
 		
 		// now we actually create the models
-		for(SingleSampleModel som : selected){
+		for(IBulkImportSingleRowModel srm : selected){
+			SingleSampleModel som = (SingleSampleModel) srm;
 			TridasSample origSample = new TridasSample();
 			
 			if(!som.isDirty()){

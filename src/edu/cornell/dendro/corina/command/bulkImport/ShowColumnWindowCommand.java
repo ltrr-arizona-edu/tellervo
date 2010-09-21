@@ -12,7 +12,7 @@ import com.dmurph.mvc.control.ICommand;
 import edu.cornell.dendro.corina.control.bulkImport.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.model.bulkImport.BulkImportModel;
 import edu.cornell.dendro.corina.model.bulkImport.ColumnChooserModel;
-import edu.cornell.dendro.corina.model.bulkImport.ISingleRowModel;
+import edu.cornell.dendro.corina.model.bulkImport.IBulkImportSingleRowModel;
 import edu.cornell.dendro.corina.view.bulkImport.ColumnChooserView;
 
 /**
@@ -51,7 +51,7 @@ public class ShowColumnWindowCommand implements ICommand {
 		// remove any columns in the model that aren't possible columns
 		for(String s : model){
 			if(!model.getPossibleColumns().contains(s)){
-				if(!s.equals(ISingleRowModel.IMPORTED)){
+				if(!s.equals(IBulkImportSingleRowModel.IMPORTED)){
 					model.remove(s);	
 				}
 			}

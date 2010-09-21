@@ -5,13 +5,14 @@ package edu.cornell.dendro.corina.model.bulkImport;
 
 import org.tridas.interfaces.ITridas;
 
+import com.dmurph.mvc.IModel;
 import com.dmurph.mvc.model.MVCArrayList;
 
 /**
  * @author daniel
  *
  */
-public interface IBulkImportSectionModel {
+public interface IBulkImportSectionModel extends IModel{
 	public static final String COLUMN_MODEL = "columnModel";
 	public static final String ROWS = "rows";
 	public static final String TABLE_MODEL = "tableModel";
@@ -28,7 +29,7 @@ public interface IBulkImportSectionModel {
 	 * Gets an instance of a row object for this model;
 	 * @return
 	 */
-	public ISingleRowModel createRowInstance();
+	public IBulkImportSingleRowModel createRowInstance();
 		
 	/**
 	 * Gets the table properties

@@ -14,7 +14,7 @@ import com.dmurph.mvc.model.HashModel;
  * @author Daniel Murphy
  *
  */
-public class SingleRadiusModel extends HashModel implements ISingleRowModel{
+public class SingleRadiusModel extends HashModel implements IBulkImportSingleRowModel{
 	private static final long serialVersionUID = 1L;
 	
 	public static final String TITLE = "Radius Title";
@@ -56,5 +56,13 @@ public class SingleRadiusModel extends HashModel implements ISingleRowModel{
 		setProperty(TITLE, argTridasRadius.getTitle());
 		setProperty(COMMENTS, argTridasRadius.getComments());
 		setProperty(AZIMUTH, argTridasRadius.getAzimuth());
+	}
+
+	/**
+	 * @see edu.cornell.dendro.corina.model.bulkImport.IBulkImportSingleRowModel#getImported()
+	 */
+	@Override
+	public TridasIdentifier getImported() {
+		return (TridasIdentifier) getProperty(IMPORTED);
 	}
 }

@@ -26,7 +26,7 @@ import com.dmurph.mvc.model.HashModel;
  * @author Daniel Murphy
  *
  */
-public class SingleElementModel extends HashModel implements ISingleRowModel{
+public class SingleElementModel extends HashModel implements IBulkImportSingleRowModel{
 	private static final long serialVersionUID = 1L;	
 	
 	public static final String OBJECT = "Parent Object";

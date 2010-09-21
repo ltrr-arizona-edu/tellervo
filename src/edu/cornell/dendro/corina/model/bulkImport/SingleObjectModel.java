@@ -23,7 +23,7 @@ import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
  * @author Daniel Murphy
  *
  */
-public class SingleObjectModel extends HashModel implements ISingleRowModel{
+public class SingleObjectModel extends HashModel implements IBulkImportSingleRowModel{
 	private static final long serialVersionUID = 1L;
 	
 	public static final String OBJECT_CODE = "Object Code";

@@ -12,7 +12,7 @@ public class CopyRowCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		CopyRowEvent event = (CopyRowEvent) argEvent;
-		ICloneable selected = (ICloneable) event.model.getRows().get(event.selectedRowIndex);
+		ICloneable selected = (ICloneable) event.model.getRows().get(event.getValue());
 		ICloneable newInstance = event.model.createRowInstance();
 		newInstance.cloneFrom(selected);
 		

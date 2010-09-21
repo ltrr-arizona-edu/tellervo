@@ -7,7 +7,7 @@ package edu.cornell.dendro.corina.components.table;
  * @author Daniel
  *
  */
-public interface IDynamicJComboBoxInterpretter<E> {
+public interface IDynamicJComboBoxInterpreter<E> {
 	
 	/**
 	 * @param argComponent can be null

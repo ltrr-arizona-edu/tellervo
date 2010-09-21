@@ -3,6 +3,7 @@
  */
 package edu.cornell.dendro.corina.components.table;
 
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Stack;
@@ -20,15 +21,39 @@ import com.dmurph.mvc.model.MVCArrayList;
 public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeListener {
 	private static final long serialVersionUID = 1L;
 	
+	public static enum DynamicJComboBoxStyle{
+		/**
+		 * List is sorted alphabetically.
+		 */
+		ALPHA_SORT,
+		/**
+		 * New objects are added to the end.
+		 */
+		ADD_NEW_TO_END,
+		/**
+		 * New object are added to the front.
+		 */
+		ADD_NEW_TO_BEGINNING
+	}
+	
+	
 	private DynamicJComboBoxModel model;
 	private final MVCArrayList<?> data;
-	private final IDynamicJComboBoxInterpretter<E> interpretter;
+	private final IDynamicJComboBoxInterpreter<E> interpretter;
+	private final Object lock = new Object();
+	private DynamicJComboBoxStyle style;
+	
 	
 	// for performance
 	private final Stack<ObjectWrapper<E>> pool = new Stack<ObjectWrapper<E>>();
 	
+	/**
+	 * Constracts a dynamic combo box with the given data and
+	 * default style of {@link DynamicJComboBoxStyle#ALPHA_SORT}.
+	 * @param argData
+	 */
 	public DynamicJComboBox(MVCArrayList<E> argData) {
-		this(argData, new IDynamicJComboBoxInterpretter<E>() {
+		this(argData, new IDynamicJComboBoxInterpreter<E>() {
 			@Override
 			public String getStringValue(Object argComponent) {
 				if(argComponent == null){
@@ -36,11 +61,39 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 				}
 				return argComponent.toString();
 			}
-		});
+		}, DynamicJComboBoxStyle.ALPHA_SORT);
 	}
 	
-	public DynamicJComboBox(MVCArrayList<E> argData, IDynamicJComboBoxInterpretter<E> argInterpretter) {
+	public DynamicJComboBox(MVCArrayList<E> argData, DynamicJComboBoxStyle argStyle) {
+		this(argData, new IDynamicJComboBoxInterpreter<E>() {
+			@Override
+			public String getStringValue(Object argComponent) {
+				if(argComponent == null){
+					return null;
+				}
+				return argComponent.toString();
+			}
+		}, argStyle);
+	}
+	
+	/**
+	 * Constructs a dynamic combo box with the given data and data interpreter.
+	 * @param argData
+	 * @param argInterpretter
+	 */
+	public DynamicJComboBox(MVCArrayList<E> argData, IDynamicJComboBoxInterpreter<E> argInterpretter) {
+		this(argData, argInterpretter, DynamicJComboBoxStyle.ALPHA_SORT);
+	}
+	
+	/**
+	 * Constructs with the given data, interpreter, and style.
+	 * @param argData
+	 * @param argInterpretter
+	 * @param argStyle
+	 */
+	public DynamicJComboBox(MVCArrayList<E> argData, IDynamicJComboBoxInterpreter<E> argInterpretter, DynamicJComboBoxStyle argStyle) {
 		data = argData;
+		style = argStyle;
 		interpretter = argInterpretter;
 		model = new DynamicJComboBoxModel();
 		setModel(model);
@@ -58,31 +111,97 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 		}
 	}
 	
-	public synchronized void addToFront(E argNewObj) {
+	/**
+	 * @see javax.swing.JComboBox#processKeyEvent(java.awt.event.KeyEvent)
+	 */
+	@Override
+	public void processKeyEvent(KeyEvent argE) {
+		char key = argE.getKeyChar();
+		if(key == KeyEvent.CHAR_UNDEFINED){
+			super.processKeyEvent(argE);
+			return;
+		}
+	}
+    
+    /**
+     * Gets the rendering style of this combo box.  Default style is
+     * {@link DynamicJComboBoxStyle#ALPHA_SORT}. 
+     * @return
+     */
+    public DynamicJComboBoxStyle getStyle(){
+    	return style;
+    }
+    
+    /**
+     * Sets the style of this combo box
+     * @param argStyle
+     */
+    public void setStyle(DynamicJComboBoxStyle argStyle){
+    	style = argStyle;
+    	if(style == DynamicJComboBoxStyle.ALPHA_SORT){
+    		model.sort();
+    	}
+    }
+    
+	private void add(E argNewObj) {
 		String s = interpretter.getStringValue(argNewObj);
 		if (s == null) {
 			return;
 		}
-		ObjectWrapper<E> wrapper = getWrapper();
-		wrapper.object = argNewObj;
-		wrapper.string = s;
-		model.insertElementAt(wrapper, 0);
+		synchronized (lock) {
+			switch(style){
+				case ALPHA_SORT:{
+					ObjectWrapper<E> wrapper = getWrapper();
+					wrapper.object = argNewObj;
+					wrapper.string = s;
+					boolean inserted = false;
+					for(int i=0; i<model.getSize(); i++){
+						ObjectWrapper<E> wrapper2 = (ObjectWrapper<E>) model.getElementAt(i);
+						if(wrapper2.string.compareTo(s) > 0){
+							model.insertElementAt(wrapper, i);
+							inserted = true;
+							break;
+						}
+					}
+					if(!inserted){
+						model.addElement(wrapper);
+					}
+					break;
+				}
+				case ADD_NEW_TO_BEGINNING:{
+					ObjectWrapper<E> wrapper = getWrapper();
+					wrapper.object = argNewObj;
+					wrapper.string = s;
+					model.insertElementAt(wrapper, 0);
+					break;
+				}
+				case ADD_NEW_TO_END:{
+					ObjectWrapper<E> wrapper = getWrapper();
+					wrapper.object = argNewObj;
+					wrapper.string = s;
+					model.addElement(wrapper);
+				}
+			}
+			
+		}
 	}
 	
-	public synchronized void change(E argOld, E argNew) {
+	private void change(E argOld, E argNew) {
 		String s1 = interpretter.getStringValue(argOld);
 		String s2 = interpretter.getStringValue(argNew);
 		if (s2 == null || s1 == null) {
 			return;
 		}
-		int size = model.getSize();
-		for (int i = 0; i < size; i++) {
-			ObjectWrapper<E> objWrapper = (ObjectWrapper<E>) model.getElementAt(i);
-			if (objWrapper.string.equals(s1)) {
-				objWrapper.string = s2;
-				objWrapper.object = argNew;
-				model.setElementAt(objWrapper, i);
-				return;
+		synchronized (lock) {
+			int size = model.getSize();
+			for (int i = 0; i < size; i++) {
+				ObjectWrapper<E> objWrapper = (ObjectWrapper<E>) model.getElementAt(i);
+				if (objWrapper.string.equals(s1)) {
+					objWrapper.string = s2;
+					objWrapper.object = argNew;
+					model.setElementAt(objWrapper, i);
+					return;
+				}
 			}
 		}
 	}
@@ -92,24 +211,28 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 	 */
 	@Override
 	public Object getSelectedItem() {
-		ObjectWrapper<E> objWrapper = (ObjectWrapper<E>)super.getSelectedItem();
-		if(objWrapper == null){
-			return null;
+		synchronized (lock) {
+			ObjectWrapper<E> objWrapper = (ObjectWrapper<E>)super.getSelectedItem();
+			if(objWrapper == null){
+				return null;
+			}
+			return objWrapper.object;
 		}
-		return objWrapper.object;
 	}
 	
-	public synchronized void remove(E argVal) {
+	private void remove(E argVal) {
 		String s = interpretter.getStringValue(argVal);
 		if (s == null) {
 			return;
 		}
-		for(int i=0; i<model.getSize();i ++){
-			ObjectWrapper<E> objWrapper = (ObjectWrapper<E>) model.getElementAt(i);
-			if(objWrapper.object.equals(argVal)){
-				model.removeElementAt(i);
-				recycleWrapper(objWrapper);
-				return;
+		synchronized (lock) {
+			for(int i=0; i<model.getSize();i ++){
+				ObjectWrapper<E> objWrapper = (ObjectWrapper<E>) model.getElementAt(i);
+				if(objWrapper.object.equals(argVal)){
+					model.removeElementAt(i);
+					recycleWrapper(objWrapper);
+					return;
+				}
 			}
 		}
 	}
@@ -122,7 +245,7 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 	public void propertyChange(PropertyChangeEvent argEvt) {
 		String prop = argEvt.getPropertyName();
 		if (prop.equals(MVCArrayList.ADDED)) {
-			addToFront((E)argEvt.getNewValue());
+			add((E)argEvt.getNewValue());
 		}
 		else if (prop.equals(MVCArrayList.CHANGED)) {
 			change((E)argEvt.getOldValue(),(E) argEvt.getNewValue());
@@ -146,11 +269,19 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 		pool.push(argWrapper);
 	}
 	
-	protected static class ObjectWrapper<E>{
+	protected static class ObjectWrapper<E> implements Comparable<ObjectWrapper>{
 		public E object;
 		public String string;
 		public String toString(){
 			return string;
+		}
+		
+		/**
+		 * @see java.lang.Comparable#compareTo(java.lang.Object)
+		 */
+		@Override
+		public int compareTo(ObjectWrapper argO) {
+			return (this.string.compareTo(argO.string));
 		}
 	}
 }
