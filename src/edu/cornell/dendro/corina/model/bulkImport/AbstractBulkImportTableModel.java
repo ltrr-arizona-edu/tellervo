@@ -27,6 +27,7 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	
 	private MVCArrayList<String> columns;
 	private final HashMap<IBulkImportSingleRowModel, Boolean> selected = new HashMap<IBulkImportSingleRowModel, Boolean>();
+	private boolean recreateSelectedLock = false;
 	
 	public AbstractBulkImportTableModel(IBulkImportSectionModel argModel){
 		setModel(argModel);
@@ -71,26 +72,32 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	 * @param argRemovedObjects where to put the objects that were removed
 	 */
 	public void removeSelected( ArrayList<IBulkImportSingleRowModel> argRemovedObjects) {
-		Iterator<IBulkImportSingleRowModel> it = selected.keySet().iterator();
-		while(it.hasNext()){
-			IBulkImportSingleRowModel som = it.next();
-			if(! selected.get(som)){
-				continue; // if it's not selected
-			}
-			if(som.getImported() != null){
-				int response = JOptionPane.showConfirmDialog(BulkImportModel.getInstance().getMainView(),
-						"The object you are removing has been imported.  If any elements reference this object" +
-						" as a parent, then they will no longer be able to be imported.  Still remove?", "Warning",
-						JOptionPane.OK_CANCEL_OPTION);
-				if( response != JOptionPane.OK_OPTION){
-					continue;
+		recreateSelectedLock = true;
+		try{
+			Iterator<IBulkImportSingleRowModel> it = selected.keySet().iterator();
+			while(it.hasNext()){
+				IBulkImportSingleRowModel som = it.next();
+				if(! selected.get(som)){
+					continue; // if it's not selected
 				}
+				if(som.getImported() != null){
+					int response = JOptionPane.showConfirmDialog(BulkImportModel.getInstance().getMainView(),
+							"The object you are removing has been imported.  If any elements reference this object" +
+							" as a parent, then they will no longer be able to be imported.  Still remove?", "Warning",
+							JOptionPane.OK_CANCEL_OPTION);
+					if( response != JOptionPane.OK_OPTION){
+						continue;
+					}
+				}
+				// careful, as changing the models list causes recreateSelected to be called, so we want to make sure
+				// that we remove from the selected list first.
+				it.remove();
+				models.remove(som);
+				argRemovedObjects.add(som);
 			}
-			// careful, as changing the models list causes recreateSelected to be called, so we want to make sure
-			// that we remove from the selected list first.
-			it.remove();
-			models.remove(som);
-			argRemovedObjects.add(som);
+		}finally{
+			recreateSelectedLock = false;
+			recreateSelected();
 		}
 	}
 	
@@ -110,6 +117,9 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	
 	
 	private void recreateSelected() {
+		if(recreateSelectedLock){
+			return;
+		}
 		// add any missing rows from model
 		for(IBulkImportSingleRowModel som : models){
 			if(!selected.containsKey(som)){
@@ -286,7 +296,12 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		Object source = evt.getSource();
 		if(source == models){
 			if(prop.equals(MVCArrayList.REMOVED)){
-				fireTableStructureChanged();
+				if(evt instanceof IndexedPropertyChangeEvent){
+					IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
+					fireTableRowsDeleted(event.getIndex(), event.getIndex());
+				}else{
+					fireTableDataChanged();
+				}
 				recreateSelected();
 			}
 			else if(prop.equals(MVCArrayList.CHANGED)){
