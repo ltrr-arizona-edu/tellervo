@@ -3,13 +3,10 @@
  */
 package edu.cornell.dendro.corina.view.bulkImport;
 
-import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasObject;
-import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
