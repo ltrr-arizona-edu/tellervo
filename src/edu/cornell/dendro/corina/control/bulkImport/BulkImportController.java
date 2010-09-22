@@ -123,6 +123,7 @@ public class BulkImportController extends FrontController {
 	
 	private void populateRadiusDefaults(ColumnChooserModel ccmodel){
 		ccmodel.add(SingleRadiusModel.TITLE);
+		ccmodel.add(SingleElementModel.IMPORTED);
 	}
 	
 	public static void main() {

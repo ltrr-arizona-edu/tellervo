@@ -22,7 +22,7 @@ public class SingleRadiusModel extends HashModel implements IBulkImportSingleRow
 	public static final String AZIMUTH = "Radius Azimuth";
 	
 	public static final String[] PROPERTIES = {
-		TITLE, COMMENTS, AZIMUTH
+		TITLE, COMMENTS, AZIMUTH, IMPORTED
 	};
 	
 	public SingleRadiusModel(){

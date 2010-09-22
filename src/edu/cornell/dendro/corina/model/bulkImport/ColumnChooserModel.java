@@ -24,7 +24,9 @@ public class ColumnChooserModel extends MVCArrayList<String> {
 	public void poplutePossibleColumns(String[] argTableColumns){
 		possibleColumns.clear();
 		for(String s : argTableColumns){
-			possibleColumns.add(s);
+			if(!s.equals(IBulkImportSingleRowModel.IMPORTED)){
+				possibleColumns.add(s);
+			}
 		}
 	}
 	
