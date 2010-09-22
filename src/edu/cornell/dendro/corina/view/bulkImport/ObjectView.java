@@ -8,15 +8,18 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
-import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
+import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
+import edu.cornell.dendro.corina.components.table.HTMLKeySelectionManager;
 import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
@@ -51,7 +54,7 @@ public class ObjectView extends AbstractBulkImportView{
 	 */
 	@Override
 	protected void setupTableCells(JTable argTable) {
-		argTable.setDefaultEditor(WSIObjectTypeDictionary.class, new ControlledVocDictionaryEditor("objectTypeDictionary"));
+		argTable.setDefaultEditor(WSIObjectTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("objectTypeDictionary")));
 		argTable.setDefaultRenderer(WSIObjectTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();

@@ -9,7 +9,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.tridas.schema.TridasElement;
 
 import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
-import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
+import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
 import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
@@ -39,7 +39,7 @@ public class SampleView  extends AbstractBulkImportView{
 	 */
 	@Override
 	protected void setupTableCells(JTable argTable) {
-		argTable.setDefaultEditor(WSISampleTypeDictionary.class, new ControlledVocDictionaryEditor("sampleTypeDictionary"));
+		argTable.setDefaultEditor(WSISampleTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("sampleTypeDictionary")));
 		argTable.setDefaultRenderer(WSISampleTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 

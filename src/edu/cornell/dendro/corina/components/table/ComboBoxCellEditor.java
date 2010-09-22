@@ -106,6 +106,10 @@ public class ComboBoxCellEditor extends DefaultCellEditor {
 			public void run() {
 				if (table.getCellEditor() != ComboBoxCellEditor.this)
 					return;
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
 				JComboBox combo = (JComboBox)getComponent();
 				if (!combo.isPopupVisible()) {
 					combo.showPopup();

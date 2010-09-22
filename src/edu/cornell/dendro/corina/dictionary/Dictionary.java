@@ -23,6 +23,8 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceCacher;
 
 public class Dictionary extends CorinaResource {
 
+	public static final String DICTIONARY_REGISTERED = "DICTIONARY_DICTIONARY_REGISTERED";
+	
 	public Dictionary() {
 		super("dictionaries", CorinaRequestType.READ);
 		
@@ -110,6 +112,8 @@ public class Dictionary extends CorinaResource {
 		list.addAll(dictionary);
 		
 		System.out.println("Registering dictionary: " + dictionaryName);
+		DictionaryRegisteredEvent event = new DictionaryRegisteredEvent(dictionaryName, list);
+		event.dispatch();
 	}
 	
 	/**

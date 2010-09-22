@@ -6,6 +6,8 @@ package edu.cornell.dendro.corina.components.table;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Stack;
 
 import javax.swing.JComboBox;
@@ -38,7 +40,7 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 	
 	
 	private DynamicJComboBoxModel model;
-	private final MVCArrayList<?> data;
+	private final MVCArrayList<E> data;
 	private final IDynamicJComboBoxInterpreter<E> interpretter;
 	private final Object lock = new Object();
 	private DynamicJComboBoxStyle style;
@@ -98,16 +100,18 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 		model = new DynamicJComboBoxModel();
 		setModel(model);
 		
-		argData.addPropertyChangeListener(this);
-		for (Object o : data) {
-			String s = interpretter.getStringValue((E)o);
-			if (s == null) {
-				continue;
+		if(data != null){
+			argData.addPropertyChangeListener(this);
+			for (Object o : data) {
+				String s = interpretter.getStringValue((E)o);
+				if (s == null) {
+					continue;
+				}
+				ObjectWrapper<E> wrapper = getWrapper();
+				wrapper.object = (E)o;
+				wrapper.string = s;
+				model.addElement(wrapper);
 			}
-			ObjectWrapper<E> wrapper = getWrapper();
-			wrapper.object = (E)o;
-			wrapper.string = s;
-			model.addElement(wrapper);
 		}
 	}
     
@@ -121,6 +125,17 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
     }
     
     /**
+     * Gets the data list.  This is used to access
+     * data with {@link #refreshData()}, so override
+     * if you want to customize what the data is (sending
+     * null to the contructor is a good idea in that case)
+     * @return
+     */
+    public ArrayList<E> getData(){
+    	return data;
+    }
+    
+    /**
      * Sets the style of this combo box
      * @param argStyle
      */
@@ -129,6 +144,22 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
     	if(style == DynamicJComboBoxStyle.ALPHA_SORT){
     		model.sort();
     	}
+    }
+    
+    public void refreshData(){
+    	synchronized (lock) {
+    		// remove all elements
+    		model.removeAllElements();
+        	for(E e: getData()){
+        		ObjectWrapper<E> wrapper = getWrapper();
+        		wrapper.object = e;
+        		wrapper.string = interpretter.getStringValue(e);
+        		model.addElement(wrapper);
+        	}
+        	if(style == DynamicJComboBoxStyle.ALPHA_SORT){
+            	model.sort();
+        	}
+		}
     }
     
 	private void add(E argNewObj) {

@@ -16,6 +16,7 @@ import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 public class TridasUnitRenderer extends DefaultCellRenderer {
 	private static final long serialVersionUID = 1L;
 
+	
 	/**
 	 * @see com.l2fprod.common.swing.renderer.DefaultCellRenderer#convertToString(java.lang.Object)
 	 */

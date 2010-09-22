@@ -17,12 +17,12 @@ import org.tridas.schema.TridasUnit;
 import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
-import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryEditor;
+import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
 import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
-import edu.cornell.dendro.corina.components.table.TridasShapeEditor;
+import edu.cornell.dendro.corina.components.table.TridasShapeComboBox;
 import edu.cornell.dendro.corina.components.table.TridasShapeRenderer;
-import edu.cornell.dendro.corina.components.table.TridasUnitEditor;
+import edu.cornell.dendro.corina.components.table.TridasUnitComboBox;
 import edu.cornell.dendro.corina.components.table.TridasUnitRenderer;
 import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
 import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
@@ -58,13 +58,13 @@ public class ElementView extends AbstractBulkImportView{
 	 */
 	@Override
 	protected void setupTableCells(JTable argTable) {
-		argTable.setDefaultEditor(WSIElementTypeDictionary.class, new ControlledVocDictionaryEditor("elementTypeDictionary"));
+		argTable.setDefaultEditor(WSIElementTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("elementTypeDictionary")));
 		argTable.setDefaultRenderer(WSIElementTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
-		argTable.setDefaultEditor(TridasShape.class, new TridasShapeEditor());
+		argTable.setDefaultEditor(TridasShape.class, new ComboBoxCellEditor(new TridasShapeComboBox()));
 		argTable.setDefaultRenderer(TridasShape.class, new TridasShapeRenderer());
-		argTable.setDefaultEditor(TridasUnit.class, new TridasUnitEditor());
+		argTable.setDefaultEditor(TridasUnit.class, new ComboBoxCellEditor(new TridasUnitComboBox()));
 		argTable.setDefaultRenderer(TridasUnit.class, new TridasUnitRenderer());
-		argTable.setDefaultEditor(WSITaxonDictionary.class, new ControlledVocDictionaryEditor("taxonDictionary"));
+		argTable.setDefaultEditor(WSITaxonDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("taxonDictionary")));
 		argTable.setDefaultRenderer(WSITaxonDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(), new IDynamicJComboBoxInterpreter<TridasObjectEx>() {
