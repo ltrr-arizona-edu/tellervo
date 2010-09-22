@@ -261,6 +261,11 @@
   	<pathelement location="Libraries/jaxb/plugin/proplistplugin.jar"/> -->
   </path>
 	
+    <path id="ant-deb.classpath">
+        <fileset dir="native/LinBuild/" includes="*.jar"/>
+    </path>
+
+	
   <!-- XJC JAXB schema compiler -->
   <taskdef name="xjc" classname="org.jvnet.jaxb2_commons.xjc.XJC2Task">
 	<classpath refid="xjc.classpath" />
@@ -276,6 +281,13 @@
 	classname="net.sourceforge.jarbundler.JarBundler" 
 	classpath="${jarbundler.dir}/jarbundler-2.1.0.jar"/>
 
+  <!-- Deb -->
+  <taskdef name="deb" 
+  	classname="com.googlecode.ant_deb_task.Deb" 
+  	classpathref="ant-deb.classpath"/>
+  <taskdef name="desktopEntry" 
+  	classname="com.googlecode.ant_deb_task.DesktopEntry" 
+  	classpathref="ant-deb.classpath"/>
 	
 <!-- ==================== All Target ====================================== -->
 
@@ -614,8 +626,6 @@
 	
 	<!-- Clean existing executables-->
 	<target name="native-clean">
-		<echo message="${os.name}"/>
-
 		  <delete includeemptydirs="true">
 		    <fileset dir="${dist.home}" includes="**/*"/>
 		  </delete>
@@ -659,14 +669,45 @@
 			<arg line="create -srcfolder ${dist.home}/Corina.app ${dist.home}/Corina.dmg"/>
 		</exec>
 		
+		<!-- Delete the Corina.app folder -->
+		<delete dir="${dist.home}/Corina.app" />
+		
 	</target>
 	
 	<!-- Ubuntu Linux Native Executable -->
 	<target name="native-linux" depends="create_run_jar" description="Build native Ubuntu Linux deb file">
-		<!-- Not implemented yet! -->
+		
+        <desktopEntry
+            toFile="target/Corina.desktop"
+            name="Corina"
+            comment="Dendrochronology Software"
+            exec="java -jar /usr/share/corina/Corina.jar"
+            path="/usr/share/corina/"
+            icon="/usr/share/corina/corina-application.png"
+            categories="Education;Utility;Science"
+        />
+		
+		<deb todir="${dist.home}" package="corina" section="utils" depends="sun-java6-jre">
+			<version upstream="2.10"/>
+			<maintainer email="p.brewer@cornell.edu" name="Peter Brewer"/>
+			<description synopsis="Dendrochronology software">Software for measuring and organising dendro data</description>
+			<tarfileset dir="target" prefix="usr/share/corina">
+				<include name="*.jar"/>
+			</tarfileset>
+			<tarfileset dir="native/Libraries" prefix="usr/lib">
+				<include name="*.jnilib"/>
+				<include name="*.so"/>
+			</tarfileset>
+			<tarfileset file="src/edu/cornell/dendro/corina_resources/Icons/128x128/corina-application.png" prefix="usr/share/corina"/>
+			<tarfileset file="target/Corina.desktop" prefix="usr/share/applications"/>
+		</deb>
+		
+		<delete file="target/Corina.desktop" />
 	</target>
 	
 	<!-- Build native executables for all platforms -->
-	<target name="native-all-platforms" depends="native-win, native-mac, native-linux" description="Build native executables for all platforms"/>
+	<target name="native-all-platforms" depends="native-win, native-mac, native-linux" description="Build native executables for all platforms">
+		<echo message="Building on platform: ${os.name}"/>
+	</target>
 	
 </project>
