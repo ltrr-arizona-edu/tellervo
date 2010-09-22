@@ -31,6 +31,9 @@
   <!-- Load user property definition overrides -->
   <property file="build.properties"/>
   <property file="${user.home}/build.properties"/>
+  <property file="${os.name}.properties"/>
+	
+	
 
 
 <!-- ==================== File and Directory Names ======================== -->
@@ -72,7 +75,7 @@
   <property name="build.home"    value="build"/>
   <property name="deploy.home"   value="deploy"/>
   <property name="dist.home"     value="target"/>
-  <property name="launch4j.dir"  location="Scripts/launch4j" />
+  <property name="launch4j.dir"  value="(set this in os specific properties file!)" />
   <property name="jarbundler.dir"  location="Libraries" />
 
 <!--  ==================== Compilation Control Options ==================== -->
@@ -611,6 +614,8 @@
 	
 	<!-- Clean existing executables-->
 	<target name="native-clean">
+		<echo message="${os.name}"/>
+
 		  <delete includeemptydirs="true">
 		    <fileset dir="${dist.home}" includes="**/*"/>
 		  </delete>
