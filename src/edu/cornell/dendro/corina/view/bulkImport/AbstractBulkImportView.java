@@ -182,6 +182,11 @@ public abstract class AbstractBulkImportView extends JPanel{
 				if(table.getSelectedColumn()==table.getColumnCount()-1 && 
 				   table.getSelectedRow()==table.getRowCount()-1)
 				{
+					if(e.isShiftDown())
+					{
+						return;
+					}
+					
 					// In last column of last row and tab or enter have been pressed
 					if(e.getKeyCode()==KeyEvent.VK_TAB || e.getKeyCode()==KeyEvent.VK_ENTER)
 					{
