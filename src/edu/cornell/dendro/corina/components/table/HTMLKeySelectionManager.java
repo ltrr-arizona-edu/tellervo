@@ -67,10 +67,8 @@ public class HTMLKeySelectionManager implements KeySelectionManager{
         long nowMillis = System.currentTimeMillis();
         if(nowMillis - lastMillis < timeout){
         	builtString += aKey;
-        	System.out.println("built string '"+builtString+"'");
         }else{
         	builtString = aKey+"";
-        	System.out.println("built string '"+builtString+"'");
         }
         lastMillis = nowMillis;
 

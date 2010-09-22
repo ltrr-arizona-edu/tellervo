@@ -136,6 +136,20 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
     }
     
     /**
+     * @see javax.swing.JComboBox#processKeyEvent(java.awt.event.KeyEvent)
+     */
+    @Override
+    public void processKeyEvent(KeyEvent argE) {
+    	if(argE.getKeyChar() == KeyEvent.VK_BACK_SPACE){
+    		System.out.println("backspace!");
+    		setSelectedItem(null);
+    		super.hidePopup();
+    	}else{
+    		super.processKeyEvent(argE);
+    	}
+    }
+    
+    /**
      * Sets the style of this combo box
      * @param argStyle
      */
