@@ -4,6 +4,7 @@
 package edu.cornell.dendro.corina.view.bulkImport;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,12 +15,15 @@ import java.awt.event.MouseListener;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.TableCellEditor;
 
+import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.control.bulkImport.AddRowEvent;
 import edu.cornell.dendro.corina.control.bulkImport.CopyRowEvent;
 import edu.cornell.dendro.corina.control.bulkImport.CopySelectedRowsEvent;
@@ -184,9 +188,26 @@ public abstract class AbstractBulkImportView extends JPanel{
 						// Add a new row
 						addRowPressed();
 						
+						// Oh man... this is just plain nasty.  Send thread to sleep
+						// for 1/10th sec to make sure the row is finished adding before
+						// we continue.  Yeah yeah I know... I'm going to programmer hell.
+						try {
+							Thread.currentThread();
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {
+						}
+						
 						// Move selection to the first cell of new row
 						table.changeSelection(table.getRowCount()-1, 0, false, false);
 						table.requestFocus();
+					}
+				}
+				
+				if(!table.isEditing())
+				{					
+					if(e.getKeyCode()==KeyEvent.VK_DELETE || e.getKeyCode()==KeyEvent.VK_BACK_SPACE)
+					{
+						table.getModel().setValueAt(null, table.getSelectedRow(), table.getSelectedColumn());						
 					}
 				}
 			}

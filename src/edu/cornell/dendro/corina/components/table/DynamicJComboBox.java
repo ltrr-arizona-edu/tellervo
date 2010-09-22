@@ -140,8 +140,7 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
      */
     @Override
     public void processKeyEvent(KeyEvent argE) {
-    	if(argE.getKeyChar() == KeyEvent.VK_BACK_SPACE){
-    		System.out.println("backspace!");
+    	if(argE.getKeyChar() == KeyEvent.VK_BACK_SPACE || argE.getKeyChar() == KeyEvent.VK_DELETE){
     		setSelectedItem(null);
     		super.hidePopup();
     	}else{
@@ -269,6 +268,7 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 			}
 		}
 	}
+	
 	
 	/**
 	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)

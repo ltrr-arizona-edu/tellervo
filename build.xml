@@ -684,11 +684,11 @@
             exec="java -jar /usr/share/corina/Corina.jar"
             path="/usr/share/corina/"
             icon="/usr/share/corina/corina-application.png"
-            categories="Education;Utility;Science"
+            categories="Education"
         />
 		
 		<deb todir="${dist.home}" package="corina" section="utils" depends="sun-java6-jre">
-			<version upstream="2.10"/>
+			<version upstream="2.11"/>
 			<maintainer email="p.brewer@cornell.edu" name="Peter Brewer"/>
 			<description synopsis="Dendrochronology software">Software for measuring and organising dendro data</description>
 			<tarfileset dir="target" prefix="usr/share/corina">
