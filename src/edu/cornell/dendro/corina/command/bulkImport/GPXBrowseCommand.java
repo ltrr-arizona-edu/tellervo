@@ -3,6 +3,7 @@ package edu.cornell.dendro.corina.command.bulkImport;
 import java.awt.FileDialog;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +34,7 @@ public class GPXBrowseCommand implements ICommand {
 		
 		FileDialog dialog  = new FileDialog(new JFrame());
 		dialog.setTitle("Choose GPX File");
-		dialog.setFile("*.gpx");
+		dialog.setFilenameFilter(new GPXFilenameFilter());
 		dialog.setVisible(true);
 		String curFile;
 
@@ -55,4 +56,15 @@ public class GPXBrowseCommand implements ICommand {
 		
 	}
 
+	public class GPXFilenameFilter implements FilenameFilter
+	{
+
+		@Override
+		public boolean accept(File dir, String name) {
+			if(name.endsWith("gpx")) return true;
+			
+			return false;
+		}
+		
+	}
 }
