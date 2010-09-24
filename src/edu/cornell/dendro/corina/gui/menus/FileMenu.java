@@ -166,7 +166,7 @@ public class FileMenu extends JMenu {
 	}
 	
 	public void addDataEntryMenus(){
-		add(Builder.makeMenuItem("menus.file.bulkimport", "edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow.main()", "database.png"));
+		add(Builder.makeMenuItem("menus.file.bulkimport", "edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow.main()", "database.png"));
 
 	}
 
