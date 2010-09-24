@@ -26,6 +26,8 @@ import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasSample;
 
+import com.dmurph.mvc.model.MVCArrayList;
+
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.editor.ScanBarcodeUI;
@@ -60,6 +62,7 @@ public class BoxCuration extends javax.swing.JDialog
 	private WSIBox box = null;
 	private BoxCurationType type = BoxCurationType.BROWSE;
 	private ArrayListModel<WSIBox> boxModel;
+	private MVCArrayList<WSIBox> boxList;
 	protected SampleListTableModel sampleTableModel = new SampleListTableModel();
 	private TableRowSorter<SampleListTableModel> sampleTableSorter;
 
@@ -267,6 +270,23 @@ public class BoxCuration extends javax.swing.JDialog
 		}
 		
 		box = resource.getAssociatedResult();
+		
+		if(isNewRecord)
+		{
+			boxList.add(box);
+		}
+		else
+		{
+			for (WSIBox bx: boxList)
+			{
+				if(box.getIdentifier().equals(bx.getIdentifier()))
+				{
+					bx=box;
+				}
+			}
+		}
+		
+		
 		updateBoxGui();
 		btnApply.setEnabled(false);
 		this.isNewRecord = false;
@@ -288,7 +308,7 @@ public class BoxCuration extends javax.swing.JDialog
     	setIconImage(Builder.getApplicationIcon());
     	
     	// Set up box list model etc
-    	ArrayList<WSIBox> boxList = (ArrayList<WSIBox>) Dictionary.getDictionaryAsArrayList("boxDictionary");
+    	boxList = (MVCArrayList<WSIBox>) Dictionary.getMutableDictionary("boxDictionary");
 		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
 				TridasComparator.NullBehavior.NULLS_LAST, 
 				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
@@ -578,6 +598,8 @@ public class BoxCuration extends javax.swing.JDialog
     	if(box.isSetTrackingLocation()) 	 txtTrackingLocation.setText(box.getTrackingLocation());
     	if(box.isSetComments()) 			 txtComments.setText(box.getComments());
         
+    
+    	
     	// Update table 
     	updateSampleTable();
     	haveDetailsChanged();

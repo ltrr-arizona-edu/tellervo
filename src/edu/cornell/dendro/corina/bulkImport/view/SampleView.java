@@ -3,6 +3,11 @@
  */
 package edu.cornell.dendro.corina.bulkImport.view;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -10,6 +15,7 @@ import org.tridas.schema.TridasElement;
 
 import edu.cornell.dendro.corina.bulkImport.control.BulkImportController;
 import edu.cornell.dendro.corina.bulkImport.control.ImportSelectedEvent;
+import edu.cornell.dendro.corina.bulkImport.control.PrintSampleBarcodesEvent;
 import edu.cornell.dendro.corina.bulkImport.model.BulkImportModel;
 import edu.cornell.dendro.corina.bulkImport.model.ElementModel;
 import edu.cornell.dendro.corina.bulkImport.model.SampleModel;
@@ -23,6 +29,8 @@ import edu.cornell.dendro.corina.schema.WSIBoxDictionary;
 import edu.cornell.dendro.corina.schema.WSISampleTypeDictionary;
 import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer;
 import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer.Behavior;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 
 /**
@@ -32,7 +40,8 @@ import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer.Behavior;
 @SuppressWarnings("serial")
 public class SampleView  extends AbstractBulkImportView{
 
-
+	private JButton printBarcodes;
+	
 	public SampleView(SampleModel argModel) {
 		super(argModel);
 	}
@@ -103,6 +112,39 @@ public class SampleView  extends AbstractBulkImportView{
 		
 	}
 
+	@Override
+	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
+			JButton argCopyRow, JButton argShowHideColumnButton){
+	Box box = Box.createHorizontalBox();
+	box.add(argAddRowButton);
+	box.add(argDeleteRowButton);
+	box.add(argCopyRow);
+	box.add( Box.createHorizontalGlue());
+	printBarcodes = new JButton();
+	printBarcodes.setIcon(Builder.getIcon("barcode.png", 22));
+	printBarcodes.setToolTipText(I18n.getText("bulkimport.printBarcodes"));
+	box.add(printBarcodes);
+	box.add(argShowHideColumnButton);
+	
+	return box;
+}
+	
+	@Override
+	protected void addListeners() {
+		super.addListeners();
+		
+		printBarcodes.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SampleModel model = BulkImportModel.getInstance().getSampleModel();
+				PrintSampleBarcodesEvent event = new PrintSampleBarcodesEvent(model);
+				event.dispatch();
+			}
+		});
+	}
+	
+	
 	/**
 	 * @see edu.cornell.dendro.corina.bulkImport.view.AbstractBulkImportView#importSelectedPressed()
 	 */

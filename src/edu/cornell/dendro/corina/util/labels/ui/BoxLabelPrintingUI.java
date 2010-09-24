@@ -123,7 +123,7 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionList
     private void populateBoxList(){
 	
     // Grab box dictionary
-    ArrayList<WSIBox> boxlist = (ArrayList<WSIBox>) Dictionary.getDictionaryAsArrayList("boxDictionary");
+    ArrayList<WSIBox> boxlist = (ArrayList<WSIBox>) Dictionary.getMutableDictionary("boxDictionary");
 	
 	TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
 			TridasComparator.NullBehavior.NULLS_LAST, 

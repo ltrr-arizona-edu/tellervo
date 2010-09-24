@@ -19,6 +19,7 @@ import edu.cornell.dendro.corina.bulkImport.command.HideColumnWindowCommand;
 import edu.cornell.dendro.corina.bulkImport.command.ImportSelectedElementsCommand;
 import edu.cornell.dendro.corina.bulkImport.command.ImportSelectedObjectsCommand;
 import edu.cornell.dendro.corina.bulkImport.command.ImportSelectedSamplesCommand;
+import edu.cornell.dendro.corina.bulkImport.command.PrintBarcodesCommand;
 import edu.cornell.dendro.corina.bulkImport.command.RemoveSelectedCommand;
 import edu.cornell.dendro.corina.bulkImport.command.ShowColumnWindowCommand;
 import edu.cornell.dendro.corina.bulkImport.model.BulkImportModel;
@@ -53,6 +54,7 @@ public class BulkImportController extends FrontController {
 	public static final String SET_DYNAMIC_COMBO_BOX_SAMPLES = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX_SAMPLES";
 	
 	public static final String BROWSE_GPX_FILE = "BULK_IMPORT_BROWSE_GPX_FILE";
+	public static final String PRINT_SAMPLE_BARCODES = "BULK_IMPORT_PRINT_BARCODES";
 
 	
 	public BulkImportController(){
@@ -68,6 +70,7 @@ public class BulkImportController extends FrontController {
 		registerCommand(IMPORT_SELECTED_ELEMENTS, ImportSelectedElementsCommand.class);
 		registerCommand(IMPORT_SELECTED_SAMPLES, ImportSelectedSamplesCommand.class);
 		registerCommand(BROWSE_GPX_FILE, GPXBrowseCommand.class);
+		registerCommand(PRINT_SAMPLE_BARCODES, PrintBarcodesCommand.class);
 	}
 	
 	public void display(MVCEvent argEvent){
