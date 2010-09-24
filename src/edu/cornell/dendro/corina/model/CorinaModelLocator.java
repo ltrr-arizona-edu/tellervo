@@ -1,8 +1,8 @@
 package edu.cornell.dendro.corina.model;
 
-import edu.cornell.dendro.corina.control.bulkImport.BulkImportController;
-import edu.cornell.dendro.corina.control.bulkImport.ColumnChooserController;
-import edu.cornell.dendro.corina.control.editor.EditorController;
+import edu.cornell.dendro.corina.bulkImport.control.BulkImportController;
+import edu.cornell.dendro.corina.bulkImport.control.ColumnChooserController;
+import edu.cornell.dendro.corina.editor.control.EditorController;
 
 /**
  *

@@ -33,6 +33,7 @@ import org.tridas.io.util.TridasUtils;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.editor.ScanBarcodeUI;
@@ -64,7 +65,6 @@ import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
 import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
-import edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow;
 
 // TODO:
 // -- refactor so Editor can use it (export)

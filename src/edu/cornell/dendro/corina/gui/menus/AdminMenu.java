@@ -36,6 +36,7 @@ import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.util.TridasObjectEx;
 
+import edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.CorinaGazetteerPanel;
 import edu.cornell.dendro.corina.gis.GISFrame;
@@ -47,7 +48,6 @@ import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.view.bulkImport.BulkImportWindow;
 import gov.nasa.worldwind.examples.ApplicationTemplate;
 import gov.nasa.worldwind.examples.ApplicationTemplate.AppFrame;
 import gov.nasa.worldwind.examples.util.ScreenShotAction;
