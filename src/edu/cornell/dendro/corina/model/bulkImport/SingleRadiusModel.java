@@ -17,7 +17,7 @@ import com.dmurph.mvc.model.HashModel;
 public class SingleRadiusModel extends HashModel implements IBulkImportSingleRowModel{
 	private static final long serialVersionUID = 1L;
 	
-	public static final String TITLE = "Radius Title";
+	public static final String TITLE = "Radius Code";
 	public static final String COMMENTS = "Radius Comments";
 	public static final String AZIMUTH = "Radius Azimuth";
 	

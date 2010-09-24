@@ -715,7 +715,10 @@
 	<target name="server-package" description="Build Ubuntu deb package for all Corina server components">
 		<delete file="${dist.home}/corina-server_2.11-1_all.deb" />
 		<deb todir="${dist.home}" package="corina-server" section="utils" 
-			depends="postgresql-8.4, apache2" 
+			depends="postgresql-8.4, postgis, postgresql-8.4-postgis, postgresql-contrib-8.4 
+			sun-java6-jre
+			apache2,
+			php5, php5-pgsql, php5-curl, php5-mhash" 
 			suggests="pgadmin3, openssl"
 			postinst="native/LinBuild/server_post_install.sh">
 			<version upstream="2.11"/>

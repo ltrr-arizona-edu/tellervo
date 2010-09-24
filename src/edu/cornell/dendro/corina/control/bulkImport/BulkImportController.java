@@ -101,28 +101,28 @@ public class BulkImportController extends FrontController {
 	}
 	
 	private void populateObjectDefaults(ColumnChooserModel ccmodel){
-		ccmodel.add(SingleObjectModel.TITLE);
 		ccmodel.add(SingleObjectModel.OBJECT_CODE);
+		ccmodel.add(SingleObjectModel.TITLE);
 		ccmodel.add(SingleObjectModel.TYPE);
 		ccmodel.add(SingleObjectModel.IMPORTED);
 	}
 	
 	private void populateElementDefaults(ColumnChooserModel ccmodel){
-		ccmodel.add(SingleElementModel.TITLE);
 		ccmodel.add(SingleElementModel.OBJECT);
-		ccmodel.add(SingleElementModel.TAXON);
+		ccmodel.add(SingleElementModel.TITLE);
 		ccmodel.add(SingleElementModel.TYPE);
+		ccmodel.add(SingleElementModel.TAXON);
 		ccmodel.add(SingleElementModel.IMPORTED);
 	}
 	
 	private void populateSampleDefaults(ColumnChooserModel ccmodel){
-		ccmodel.add(SingleSampleModel.TITLE);
 		ccmodel.add(SingleSampleModel.ELEMENT);
+		ccmodel.add(SingleSampleModel.TITLE);
 		ccmodel.add(SingleSampleModel.TYPE);
+		ccmodel.add(SingleSampleModel.BOX);
 	}
 	
 	private void populateRadiusDefaults(ColumnChooserModel ccmodel){
-		ccmodel.add(SingleRadiusModel.TITLE);
 		ccmodel.add(SingleElementModel.IMPORTED);
 	}
 	

@@ -20,6 +20,7 @@ import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.model.HashModel.PropertyType;
 
+import edu.cornell.dendro.corina.schema.WSIBoxDictionary;
 import edu.cornell.dendro.corina.schema.WSISampleTypeDictionary;
 
 /**
@@ -49,6 +50,8 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 			return BigDecimal.class;
 		}else if(argColumn.equals(SingleSampleModel.ELEMENT)){
 			return TridasElement.class;
+		}else if(argColumn.equals(SingleSampleModel.BOX)){
+			return WSIBoxDictionary.class;
 		}
 		return null;
 	}

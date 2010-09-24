@@ -30,7 +30,7 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 	private static final long serialVersionUID = 1L;	
 	
 	public static final String OBJECT = "Parent Object";
-	public static final String TITLE = "Title";
+	public static final String TITLE = "Element code";
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
 	public static final String DESCRIPTION = "Description";

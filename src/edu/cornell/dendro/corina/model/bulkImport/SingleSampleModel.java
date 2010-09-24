@@ -10,6 +10,10 @@ import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.model.HashModel;
+import com.dmurph.mvc.model.MVCArrayList;
+
+import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.schema.WSIBox;
 
 /**
  * @author Daniel Murphy
@@ -19,7 +23,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	private static final long serialVersionUID = 1L;
 
 	public static final String ELEMENT = "Parent Element";
-	public static final String TITLE = "Title";
+	public static final String TITLE = "Sample Code";
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
 	public static final String DESCRIPTION = "Description";
@@ -27,7 +31,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	public static final String POSITION = "Position";
 	public static final String STATE = "State";
 	public static final String KNOTS = "Knots";
-	public static final String BOX_ID = "BoxID";
+	public static final String BOX = "Box";
 	public static final String IMPORTED = "Imported";
 	
 	// radius stuff
@@ -35,7 +39,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 
 	public static final String[] TABLE_PROPERTIES = {
 		ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION,
-		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX_ID, IMPORTED
+		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, IMPORTED
 	};
 	
 	public SingleSampleModel(){
@@ -117,7 +121,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		argSample.setState((String)getProperty(STATE));
 		argSample.setKnots((Boolean)getProperty(KNOTS));
 		
-		if(getProperty(BOX_ID) != null){
+		if(getProperty(BOX) != null){
 			TridasGenericField field = null;
 			for(TridasGenericField gf: argSample.getGenericFields()){
 				if(gf.getName().equals("corina.boxID")){
@@ -128,7 +132,9 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 				field = new TridasGenericField();
 				argSample.getGenericFields().add(field);
 			}
-			field.setValue((String) getProperty(BOX_ID));
+			field.setName("corina.boxID");
+			field.setType("xs:string");
+			field.setValue(((WSIBox)getProperty(BOX)).getIdentifier().getValue());
 		}
 		
 		argSample.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
@@ -143,19 +149,32 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		setProperty(POSITION, argSample.getPosition());
 		setProperty(STATE, argSample.getState());
 		setProperty(KNOTS, argSample.isKnots());
+		setProperty(IMPORTED, argSample.getIdentifier());
 		
+		// Set box to null initially
+		setProperty(BOX, null);
+		
+		// Get boxID generic field
 		TridasGenericField field = null;
 		for(TridasGenericField gf: argSample.getGenericFields()){
 			if(gf.getName().equals("corina.boxID")){
 				field = gf;
 			}
 		}
+			
 		if(field != null){
-			setProperty(BOX_ID, field.getValue());
-		}else{
-			setProperty(BOX_ID, null);
+			// Find the box in the dictionary using its identifier and set it in this singlesamplemodel 
+			MVCArrayList<WSIBox> boxdict = Dictionary.getMutableDictionary("boxDictionary");
+			for(WSIBox bx : boxdict)
+			{
+				if(field.getValue().equals(bx.getIdentifier().getValue()))
+				{
+					setProperty(BOX, bx);
+					break;
+				}
+			}
 		}
 		
-		setProperty(IMPORTED, argSample.getIdentifier());
+		
 	}
 }
