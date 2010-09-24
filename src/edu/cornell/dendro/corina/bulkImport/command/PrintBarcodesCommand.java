@@ -53,21 +53,22 @@ public class PrintBarcodesCommand implements ICommand {
 				warnNotImported = true;
 			}
 		}
-		
-		if(warnNotImported)
-		{
-			Alert.message(I18n.getText("warning"), "Only samples that have been imported can have barcodes printed");
-		}
-		
+				
 		if(printList.size()>0)
 		{
+			
+			if(warnNotImported)
+			{
+				Alert.message(I18n.getText("warning"), I18n.getText("bulkimport.barcodeWarning"));
+			}
+			
 				try {
 					PDFLabelMaker.preview(printList);
 				} catch (DocumentException e) {
-					Alert.error(I18n.getText("error"), "Error creating barcode labels");
+					Alert.error(I18n.getText("error"), I18n.getText("bulkimport.barcodeGenericWarning"));
 					e.printStackTrace();
 				} catch (IOException e) {
-					Alert.error(I18n.getText("error"), "Error creating barcode labels");
+					Alert.error(I18n.getText("error"), I18n.getText("bulkimport.barcodeGenericWarning"));
 					e.printStackTrace();
 				}
 		}
