@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry excluding="edu/cornell/dendro/corina/cross/legacy/|edu/cornell/dendro/corina/db/|edu/cornell/dendro/corina/gui/datawizard/|edu/cornell/dendro/corina/search/|edu/cornell/dendro/corina/browser/|edu/cornell/dendro/corina/gui/newui/" including="edu/cornell/dendro/corina/**|edu/cornell/dendro/corina_indexing/**|edu/cornell/dendro/corina_resources/**|edu/cornell/dendro/cpgdb/**|edu/cornell/dendro/webservice/schemas/*|log4j.xml|net/opengis/gml/schema/**|org/tridas/**" kind="src" path="src">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Corina-Dev/native"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Corina-Dev/native/Libraries"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="Libraries/batik.jar"/>

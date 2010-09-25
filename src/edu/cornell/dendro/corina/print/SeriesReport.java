@@ -106,13 +106,12 @@ public class SeriesReport extends ReportBase {
 			ct.setSimpleColumn(document.left(), document.top()-163, 283, document.top(), 20, Element.ALIGN_LEFT);
 			ct.addText(getTitlePDF());
 			ct.go();
-			
+						
 			// Barcode
 			ColumnText ct2 = new ColumnText(cb);
-			ct2.setAlignment(Element.ALIGN_RIGHT);
-			ct2.setSimpleColumn(324, document.top()-163, document.right(10), document.top(), 20, Element.ALIGN_RIGHT);
+			ct2.setSimpleColumn(370, document.top(15)-100, document.right(0), document.top(0), 20, Element.ALIGN_RIGHT);
 			ct2.addElement(getBarCode());
-			ct2.go();			
+			ct2.go();	
 				
 			// Timestamp
 			ColumnText ct3 = new ColumnText(cb);
@@ -971,9 +970,31 @@ public class SeriesReport extends ReportBase {
 		p.add(new Chunk("- A total of "+ String.valueOf(s.countRings()) + " rings were measured.",bodyFont));
 		
 		// Unmeasured rings
-		p.add(new Chunk(" Additional rings were observed but not measured ("+String.valueOf(woodCompleteness.getNrOfUnmeasuredInnerRings())+
-				" towards the pith and " + String.valueOf(woodCompleteness.getNrOfUnmeasuredOuterRings()) + " towards the bark.",bodyFont));
-		p.add(new Chunk("\n"));
+		if(woodCompleteness.isSetNrOfUnmeasuredInnerRings() || woodCompleteness.isSetNrOfUnmeasuredOuterRings())
+		{		
+			String txt = " Additional rings were observed but not measured (";
+			if(woodCompleteness.isSetNrOfUnmeasuredInnerRings())
+			{
+				txt += String.valueOf(woodCompleteness.getNrOfUnmeasuredInnerRings())+" towards the pith";
+				if(woodCompleteness.isSetNrOfUnmeasuredOuterRings())
+				{
+					txt+= " and ";
+				}
+			}
+			if(woodCompleteness.isSetNrOfUnmeasuredOuterRings())
+			{
+				txt+=String.valueOf(woodCompleteness.getNrOfUnmeasuredOuterRings()) + " towards the bark";
+			}
+			
+			txt+=").";
+			
+			p.add(new Chunk(txt,bodyFont));
+			p.add(new Chunk("\n"));
+		}
+		else
+		{
+			p.add(new Chunk("\n"));
+		}
 				
 		// Extract Heartwood and sapwood info
 		p.add(getHeartSapwoodDetails(woodCompleteness, WoodType.HEARTWOOD));
