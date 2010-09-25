@@ -21,7 +21,7 @@ public class CornellSampleLabelPage implements LabelPage {
 	}
 
 	public float getLabelWidth() {
-		return 100 * mmpd;
+		return 70 * mmpd;
 	}
 
 	public float getPageBottomMargin() {

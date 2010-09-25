@@ -48,7 +48,7 @@ public class PDFLabelMaker {
 	
 	private PdfPTable table;
 	
-	private int horizontalAlignment = Element.ALIGN_LEFT;
+	private int horizontalAlignment = Element.ALIGN_RIGHT;
 	private int verticalAlignment = Element.ALIGN_MIDDLE;
 	
 	private Font labelfont = new Font(Font.HELVETICA, 15f, Font.BOLD);
@@ -141,7 +141,7 @@ public class PDFLabelMaker {
 		cell.setFixedHeight(margins.getLabelHeight());
 			
 		//cell.setHorizontalAlignment(horizontalAlignment);
-		cell.setVerticalAlignment(Element.ALIGN_TOP);
+		//cell.setVerticalAlignment(Element.ALIGN_TOP);
 		
 		if(curX != 0)
 		{
@@ -182,8 +182,11 @@ public class PDFLabelMaker {
 			// if it's tiny, hide the label
 			if(margins.getLabelHeight() * .80f < barcode.getBarHeight()) {
 				barcode.setBarHeight(margins.getLabelHeight() * .45f);
-				barcode.setX(0.46f);
-				barcode.setSize(4.0f);
+				barcode.setX(1.8f);
+				barcode.setN(10f);
+				barcode.setSize(10f);
+				barcode.setBaseline(10f);
+				barcode.setBarHeight(50f);
 				barcode.setFont(null);
 			}
 			else
@@ -193,14 +196,6 @@ public class PDFLabelMaker {
 				barcode.setSize(4.0f);
 
 			}
-			
-			//barcode.setFont(null);
-			Image img = barcode.createImageWithBarcode(contentb, Color.black, Color.gray);
-						
-			PdfPCell bccell = new PdfPCell();
-			//bccell.setHorizontalAlignment(Element.ALIGN_CENTER);
-			bccell.addElement(img);
-			addCell(bccell);
 			
 			PdfPCell lbcell = new PdfPCell();
 			
@@ -213,10 +208,24 @@ public class PDFLabelMaker {
 			labelText = (labcodeField != null) ? labcodeField.getValue() : s.getTitle();
 			
 			p.add(new Chunk(labelText, labelfont));
+			//p.add(new Chunk("bbb", labelfont));
 			//p.add(new Chunk(s.getIdentifier().getValue().toString(), uuidfont));
-		
+			
+			//barcode.setFont(null);
+			Image img = barcode.createImageWithBarcode(contentb, Color.black, Color.gray);
+						
+			PdfPCell bccell = new PdfPCell();
+			bccell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+			
+			bccell.addElement(img);
+			bccell.addElement(p);
+			addCell(bccell);
+			
+			lbcell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			lbcell.addElement(p);
 			addCell(lbcell);
+			
+			addCell(new PdfPCell());
 			
 		/**	PdfPTable tbl = new PdfPTable(2);
 			

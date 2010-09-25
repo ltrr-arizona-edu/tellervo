@@ -43,7 +43,7 @@ public class Avery5160LabelPage implements LabelPage {
 	}
 
 	public Rectangle getPageSize() {
-		return PageSize.LETTER;
+		return PageSize.A5;
 	}
 
 	public float getPageTopMargin() {

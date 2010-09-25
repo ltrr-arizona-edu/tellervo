@@ -110,13 +110,13 @@ public class BoxLabel extends ReportBase{
 			    
 				// Title Left		
 				ColumnText ct = new ColumnText(cb);
-				ct.setSimpleColumn(document.left(), document.top(15)-163, 283, document.top(15), 20, Element.ALIGN_LEFT);
+				ct.setSimpleColumn(document.left(), document.top(15)-210, 368, document.top(15), 20, Element.ALIGN_LEFT);
 				ct.addText(getTitlePDF(b));
 				ct.go();
 				
 				// Barcode
 				ColumnText ct2 = new ColumnText(cb);
-				ct2.setSimpleColumn(284, document.top(15)-100, document.right(15), document.top(15), 20, Element.ALIGN_RIGHT);
+				ct2.setSimpleColumn(370, document.top(15)-100, document.right(0), document.top(0), 20, Element.ALIGN_RIGHT);
 				ct2.addElement(getBarCode(b));
 				ct2.go();			
 					
@@ -182,10 +182,11 @@ public class BoxLabel extends ReportBase{
 		UUID uuid = UUID.fromString(b.getIdentifier().getValue());
 		LabBarcode barcode = new LabBarcode(LabBarcode.Type.BOX, uuid);
 
-		barcode.setX(0.8f);
+		//barcode.setX(1f);
+		//barcode.setN(0.5f);
 		barcode.setSize(5f);
-		barcode.setBarHeight(20f);
-		barcode.setBaseline(-1f);	
+		barcode.setBaseline(-1f);
+		barcode.setBarHeight(60f);
 		
 		Image image = barcode.createImageWithBarcode(cb, null, null);
 	
