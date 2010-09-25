@@ -23,6 +23,8 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
 /**
+ * Generates properties file for TRiDaS documentation.  This is used 
+ * 
  * @author lucasm
  * 
  */
