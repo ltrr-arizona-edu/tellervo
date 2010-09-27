@@ -47,7 +47,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			registerProperty(s, PropertyType.READ_WRITE);
 		}
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
-		registerProperty(RADIUS_MODEL, PropertyType.READ_ONLY);
+		registerProperty(RADIUS_MODEL, PropertyType.READ_ONLY, null);
 	}
 	
 	/**
@@ -100,11 +100,11 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	}
 	
 	public TridasIdentifier getImported(){
-		return (TridasIdentifier)getProperty(IMPORTED);
+		return (TridasIdentifier) super.getProperty(IMPORTED);
 	}
 	
 	public SingleRadiusModel getRadiusModel(){
-		return (SingleRadiusModel) getProperty(RADIUS_MODEL);
+		return (SingleRadiusModel) super.getProperty(RADIUS_MODEL);
 	}
 	
 	public void setRadiusModel(SingleRadiusModel argModel){
