@@ -243,13 +243,11 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 	 */
 	@Override
 	public Object getSelectedItem() {
-		synchronized (lock) {
 			ObjectWrapper<E> objWrapper = (ObjectWrapper<E>)super.getSelectedItem();
 			if(objWrapper == null){
 				return null;
 			}
 			return objWrapper.object;
-		}
 	}
 	
 	private void remove(E argVal) {

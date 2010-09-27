@@ -95,7 +95,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		return super.getProperty(argKey);
 	}
 	
-	public void setImported(boolean argImported){
+	public void setImported(TridasIdentifier argImported){
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
 	}
 	
@@ -149,7 +149,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		setProperty(POSITION, argSample.getPosition());
 		setProperty(STATE, argSample.getState());
 		setProperty(KNOTS, argSample.isKnots());
-		setProperty(IMPORTED, argSample.getIdentifier());
+		setImported(argSample.getIdentifier());
 		
 		// Set box to null initially
 		setProperty(BOX, null);

@@ -3,22 +3,10 @@ ss * Created at Aug 23, 2010, 3:35:03 AM
  */
 package edu.cornell.dendro.corina.bulkImport.model;
 
-import java.beans.IndexedPropertyChangeEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import javax.swing.table.AbstractTableModel;
 
 import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
-
-import com.dmurph.mvc.model.HashModel;
-import com.dmurph.mvc.model.MVCArrayList;
-import com.dmurph.mvc.model.HashModel.PropertyType;
 
 import edu.cornell.dendro.corina.schema.WSIBoxDictionary;
 import edu.cornell.dendro.corina.schema.WSISampleTypeDictionary;

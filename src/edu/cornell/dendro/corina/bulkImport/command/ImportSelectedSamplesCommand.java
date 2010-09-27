@@ -169,37 +169,39 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				model.getSampleModel().getImportedList().add(sampleResource.getAssociatedResult());
 			}
 			
-			// now lets do the radius
-			TridasRadius origRadius = new TridasRadius();
-			som.getRadiusModel().populateToTridasRadius(origRadius);
-			
-			TridasSample parentSample = sampleResource.getAssociatedResult();
-			
-			// sample first
-			EntityResource<TridasRadius> radiusResource;
-			if(origRadius.getIdentifier() != null){
-				radiusResource = new EntityResource<TridasRadius>(origRadius, CorinaRequestType.UPDATE, TridasRadius.class);
-			}else{
-				radiusResource = new EntityResource<TridasRadius>(origRadius, parentSample, TridasRadius.class);
+			if(som.getRadiusModel() != null){
+				// now lets do the radius
+				TridasRadius origRadius = new TridasRadius();
+				som.getRadiusModel().populateToTridasRadius(origRadius);
+				
+				TridasSample parentSample = sampleResource.getAssociatedResult();
+				
+				// sample first
+				EntityResource<TridasRadius> radiusResource;
+				if(origRadius.getIdentifier() != null){
+					radiusResource = new EntityResource<TridasRadius>(origRadius, CorinaRequestType.UPDATE, TridasRadius.class);
+				}else{
+					radiusResource = new EntityResource<TridasRadius>(origRadius, parentSample, TridasRadius.class);
+				}
+				
+				
+				// set up a dialog...
+				parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
+				dialog = CorinaResourceAccessDialog.forWindow(parentWindow, radiusResource);
+				
+				radiusResource.query();
+				dialog.setVisible(true);
+				
+				if(!dialog.isSuccessful()) { 
+					JOptionPane.showMessageDialog(BulkImportModel.getInstance().getMainView(), I18n.getText("error.savingChanges") + "\r\n" +
+							I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
+							I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+					continue;
+				}
+				som.getRadiusModel().populateFromTridasRadius(radiusResource.getAssociatedResult());
+				som.getRadiusModel().setDirty(false);
+				tmodel.setSelected(som, false);
 			}
-			
-			
-			// set up a dialog...
-			parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
-			dialog = CorinaResourceAccessDialog.forWindow(parentWindow, radiusResource);
-			
-			radiusResource.query();
-			dialog.setVisible(true);
-			
-			if(!dialog.isSuccessful()) { 
-				JOptionPane.showMessageDialog(BulkImportModel.getInstance().getMainView(), I18n.getText("error.savingChanges") + "\r\n" +
-						I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
-						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
-				continue;
-			}
-			som.getRadiusModel().populateFromTridasRadius(radiusResource.getAssociatedResult());
-			som.getRadiusModel().setDirty(false);
-			tmodel.setSelected(som, false);
 		}
 	}
 }
