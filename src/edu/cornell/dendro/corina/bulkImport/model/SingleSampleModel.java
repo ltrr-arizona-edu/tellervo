@@ -174,7 +174,5 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 				}
 			}
 		}
-		
-		
 	}
 }

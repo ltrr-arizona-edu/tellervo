@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.MVCEvent;
@@ -121,35 +122,22 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			}
 			
 			som.populateToTridasSample(origSample);
-			
 			TridasElement parentObject = (TridasElement) som.getProperty(SingleSampleModel.ELEMENT);
 			
-			ElementModel emodel = BulkImportModel.getInstance().getElementModel();
-			for(TridasElement o : emodel.getImportedList()){
-				if(o.getTitle().equals(som.getProperty(SingleSampleModel.ELEMENT))){
-					parentObject = o;
-				}
-			}
-			if(parentObject == null){
-				String s = "Could not find parent object locally with title: "+som.getProperty(SingleSampleModel.ELEMENT);
-				System.err.println(s);
-				Alert.error("Saving Error", s);
-				continue;
-			}
-			
-			EntityResource<TridasSample> resource;
-			
+			// sample first
+			EntityResource<TridasSample> sampleResource;
 			if(origSample.getIdentifier() != null){
-				resource = new EntityResource<TridasSample>(origSample, CorinaRequestType.UPDATE, TridasSample.class);
+				sampleResource = new EntityResource<TridasSample>(origSample, CorinaRequestType.UPDATE, TridasSample.class);
 			}else{
-				resource = new EntityResource<TridasSample>(origSample, parentObject, TridasSample.class);
+				sampleResource = new EntityResource<TridasSample>(origSample, parentObject, TridasSample.class);
 			}
+			
 			
 			// set up a dialog...
 			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
-			CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
+			CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, sampleResource);
 			
-			resource.query();
+			sampleResource.query();
 			dialog.setVisible(true);
 			
 			if(!dialog.isSuccessful()) { 
@@ -158,7 +146,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 				continue;
 			}
-			som.populateFromTridasSample(resource.getAssociatedResult());
+			som.populateFromTridasSample(sampleResource.getAssociatedResult());
 			som.setDirty(false);
 			tmodel.setSelected(som, false);
 			
@@ -174,12 +162,44 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				if(found == null){
 					Alert.error("Error updating model", "Couldn't find the object in the model to update, please report bug.");
 				}else{
-					resource.getAssociatedResult().copyTo(found);
+					sampleResource.getAssociatedResult().copyTo(found);
 				}
 			}
 			else{
-				model.getSampleModel().getImportedList().add(resource.getAssociatedResult());
+				model.getSampleModel().getImportedList().add(sampleResource.getAssociatedResult());
 			}
+			
+			// now lets do the radius
+			TridasRadius origRadius = new TridasRadius();
+			som.getRadiusModel().populateToTridasRadius(origRadius);
+			
+			TridasSample parentSample = sampleResource.getAssociatedResult();
+			
+			// sample first
+			EntityResource<TridasRadius> radiusResource;
+			if(origRadius.getIdentifier() != null){
+				radiusResource = new EntityResource<TridasRadius>(origRadius, CorinaRequestType.UPDATE, TridasRadius.class);
+			}else{
+				radiusResource = new EntityResource<TridasRadius>(origRadius, parentSample, TridasRadius.class);
+			}
+			
+			
+			// set up a dialog...
+			parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
+			dialog = CorinaResourceAccessDialog.forWindow(parentWindow, radiusResource);
+			
+			radiusResource.query();
+			dialog.setVisible(true);
+			
+			if(!dialog.isSuccessful()) { 
+				JOptionPane.showMessageDialog(BulkImportModel.getInstance().getMainView(), I18n.getText("error.savingChanges") + "\r\n" +
+						I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
+						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+				continue;
+			}
+			som.getRadiusModel().populateFromTridasRadius(radiusResource.getAssociatedResult());
+			som.getRadiusModel().setDirty(false);
+			tmodel.setSelected(som, false);
 		}
 	}
 }

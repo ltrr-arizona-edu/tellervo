@@ -29,7 +29,9 @@ import edu.cornell.dendro.corina.bulkImport.model.SingleObjectModel;
 import edu.cornell.dendro.corina.bulkImport.model.SingleRadiusModel;
 import edu.cornell.dendro.corina.bulkImport.model.SingleSampleModel;
 import edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
+import edu.cornell.dendro.corina.schema.WSIRequest.Dictionaries;
 
 /**
  * @author daniel
@@ -80,6 +82,7 @@ public class BulkImportController extends FrontController {
 		}else{
 			MVC.getTracker().resetSession();
 		}
+		MVC.showEventMonitor();
 		
 		if(BulkImportModel.getInstance().getMainView() != null){
 			BulkImportWindow window = BulkImportModel.getInstance().getMainView();
@@ -100,7 +103,7 @@ public class BulkImportController extends FrontController {
 		BulkImportModel.getInstance().setMainView(frame);
 		frame.pack();
 		frame.setVisible(true);
-		MVC.showEventMonitor();
+		//MVC.showEventMonitor();
 	}
 	
 	private void populateObjectDefaults(ColumnChooserModel ccmodel){

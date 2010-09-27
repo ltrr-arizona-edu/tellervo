@@ -27,7 +27,7 @@ public class SingleRadiusModel extends HashModel implements IBulkImportSingleRow
 	
 	public SingleRadiusModel(){
 		registerProperty(PROPERTIES, PropertyType.READ_WRITE);
-		registerProperty(IMPORTED, PropertyType.READ_ONLY, false);
+		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
 	}
 	
 	public void setImported(TridasIdentifier argImported){
