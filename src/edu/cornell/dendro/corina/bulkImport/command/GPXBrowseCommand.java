@@ -45,6 +45,7 @@ public class GPXBrowseCommand implements ICommand {
 				MVCArrayList<GPXWaypoint> list = (MVCArrayList<GPXWaypoint>) model.getProperty(IBulkImportSectionModel.WAYPOINT_LIST);
 				ArrayList<GPXWaypoint> wplist = parser.getWaypoints();
 				Collections.sort(wplist);
+				list.clear();
 				list.addAll(wplist);
 							
 			} catch (FileNotFoundException e) {
