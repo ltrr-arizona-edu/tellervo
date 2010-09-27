@@ -205,7 +205,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	// gui -- new
 	private SampleDataView dataView; // (a jpanel)
 	
-	private GISPanel wwMapPanel;
+	protected GISPanel wwMapPanel;
 	
 	private JTabbedPane tabbedPanel;
 	

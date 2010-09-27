@@ -1,20 +1,26 @@
 package edu.cornell.dendro.corina.gis;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.examples.util.ScreenShotAction;
 
 public class GISFileMenu extends FileMenu {
 
 	private static final long serialVersionUID = 4583709816910084036L;
-	protected GISPanel wwMapPanel;
+	private GISFrame gisframe;
 	
-	public GISFileMenu(JFrame f, GISPanel wwMapPanel) {
+	public GISFileMenu(GISFrame f) {
 		super(f);
-		this.wwMapPanel = wwMapPanel;
 	}
 	
 	@Override
@@ -34,8 +40,13 @@ public class GISFileMenu extends FileMenu {
 	@Override
 	public void addExportMenus(){
 		
-        JMenuItem snapItem = Builder.makeMenuItem("menus.file.exportmapimage", "edu.cornell.dendro.corina.gis.GISFileMenu.exportMapImage()", "fileexport.png");
-        add(snapItem);
+		GISPanel panel = ((GISFrame)this.f).wwMapPanel;
+		
+        JMenuItem exportmenu = new JMenuItem(I18n.getText("menus.file.exportmapimage"));
+        exportmenu.setIcon(Builder.getIcon("fileexport.png", 22));
+        exportmenu.addActionListener(new ScreenShotAction(panel.wwd));
+        
+        add(exportmenu);
 		
 	}
 	
@@ -45,11 +56,6 @@ public class GISFileMenu extends FileMenu {
 		JMenuItem importmenu = Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png");
 		importmenu.setEnabled(false);
 		add(importmenu);
-	}
-	
-	public void exportMapImage()
-	{
-		ScreenShotAction screenshot = new ScreenShotAction(this.wwMapPanel.getWwd());
 	}
 
 }

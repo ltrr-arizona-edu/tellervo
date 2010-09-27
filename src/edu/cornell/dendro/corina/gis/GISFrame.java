@@ -10,7 +10,9 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
@@ -27,6 +29,7 @@ import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 import gov.nasa.worldwind.AnaglyphSceneController;
+import gov.nasa.worldwind.examples.util.ScreenShotAction;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.MarkerLayer;
@@ -99,18 +102,21 @@ public class GISFrame extends JFrame {
 
         JMenuBar menuBar = new JMenuBar();
         
-		menuBar.add(new GISFileMenu(this, wwMapPanel));
+		menuBar.add(new GISFileMenu(this));
 
 		menuBar.add(new EditMenu(this));
-		menuBar.add(new AdminMenu(this));
-		menuBar.add(new GISViewMenu(wwMapPanel.getWwd(), wwMapPanel.getVisibleLayers()));
 		
+		menuBar.add(new GISViewMenu(wwMapPanel.getWwd(), wwMapPanel.getVisibleLayers()));
+	
 		if (Platform.isMac())
 			menuBar.add(new WindowMenu(this));
 		menuBar.add(new HelpMenu());
         
 		
+		
         this.setJMenuBar(menuBar);
 
 	}
+	
+
 }

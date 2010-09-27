@@ -6,11 +6,14 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gis.GISPanel;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.io.ExportDialog;
 import edu.cornell.dendro.corina.print.SeriesReport;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+import gov.nasa.worldwind.examples.util.ScreenShotAction;
 
 // a FileMenu with "Export..." for samples.
 // TODO: this doesn't need to be public.
@@ -67,5 +70,25 @@ public class EditorFileMenu extends FileMenu {
 			}
 		});
 		add(export);
+		
+		
+		
+		GISPanel panel = ((Editor)this.f).wwMapPanel;
+		
+        JMenuItem exportmenu = new JMenuItem(I18n.getText("menus.file.exportmapimage"));
+        exportmenu.setIcon(Builder.getIcon("fileexport.png", 22));
+        if(panel!=null)
+        {
+        	exportmenu.addActionListener(new ScreenShotAction(panel.getWwd()));
+        	exportmenu.setEnabled(true);
+        }
+        else
+        {
+        	exportmenu.setEnabled(false);
+        }
+        
+        add(exportmenu);
+		
+		
 	}
 }
