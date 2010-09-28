@@ -20,7 +20,6 @@
 	<classpathentry kind="lib" path="Libraries/httpclient-4.0-beta2.jar"/>
 	<classpathentry kind="lib" path="Libraries/httpcore-4.0-beta3.jar"/>
 	<classpathentry kind="lib" path="Libraries/httpmime-4.0-beta2.jar"/>
-	<classpathentry kind="lib" path="Libraries/jh.jar"/>
 	<classpathentry kind="lib" path="Libraries/jsyntaxpane-0.9.5-b17.jar"/>
 	<classpathentry kind="lib" path="Libraries/activation.jar"/>
 	<classpathentry kind="lib" path="Libraries/l2fprod-common-shared.jar" sourcepath="Libraries/src/l2fprod-common-7.3-src.zip"/>
@@ -42,8 +41,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="Libraries/JFontChooser.jar"/>
 	<classpathentry kind="lib" path="Libraries/jfontchooser-1.0.5.jar"/>
+	<classpathentry kind="lib" path="Libraries/miglayout15-swing.jar"/>
+	<classpathentry kind="lib" path="Libraries/jh.jar"/>
 	<classpathentry kind="lib" path="Libraries/pljava.jar"/>
 	<classpathentry kind="lib" path="Libraries/postgresql-8.2-506.jdbc3.jar"/>
-	<classpathentry kind="lib" path="Libraries/miglayout15-swing.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

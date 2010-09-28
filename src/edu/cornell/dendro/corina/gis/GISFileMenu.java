@@ -43,7 +43,7 @@ public class GISFileMenu extends FileMenu {
 		GISPanel panel = ((GISFrame)this.f).wwMapPanel;
 		
         JMenuItem exportmenu = new JMenuItem(I18n.getText("menus.file.exportmapimage"));
-        exportmenu.setIcon(Builder.getIcon("fileexport.png", 22));
+        exportmenu.setIcon(Builder.getIcon("captureimage.png", 22));
         exportmenu.addActionListener(new ScreenShotAction(panel.wwd));
         
         add(exportmenu);

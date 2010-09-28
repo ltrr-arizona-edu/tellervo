@@ -82,7 +82,7 @@ public class BulkImportController extends FrontController {
 		}else{
 			MVC.getTracker().resetSession();
 		}
-		MVC.showEventMonitor();
+		//MVC.showEventMonitor();
 		
 		if(BulkImportModel.getInstance().getMainView() != null){
 			BulkImportWindow window = BulkImportModel.getInstance().getMainView();

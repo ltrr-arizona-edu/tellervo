@@ -166,7 +166,7 @@ public class FileMenu extends JMenu {
 	}
 	
 	public void addDataEntryMenus(){
-		add(Builder.makeMenuItem("menus.file.bulkimport", "edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow.main()", "database.png"));
+		add(Builder.makeMenuItem("menus.file.bulkimport", "edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow.main()", "bulkDataEntry.png"));
 
 	}
 
@@ -572,7 +572,7 @@ public class FileMenu extends JMenu {
 
 	public void addPageSetupMenu() {
 		// menuitem
-		JMenuItem setup = Builder.makeMenuItem("menus.file.pagesetup");
+		JMenuItem setup = Builder.makeMenuItem("menus.file.pagesetup", true, "pagesetup.png");
 
 		if (f instanceof PrintableDocument) {
 			// page setup

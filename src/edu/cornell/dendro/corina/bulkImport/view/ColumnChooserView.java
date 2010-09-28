@@ -40,7 +40,7 @@ public class ColumnChooserView extends JWindow{
 	private final ColumnChooserModel model;
 	private final MVCArrayList<String> columns;
 	
-	public ColumnChooserView(ColumnChooserModel argModel, JFrame argParent, Component argLocationComponenet){
+	public ColumnChooserView(ColumnChooserModel argModel, JFrame argParent, Component argLocationComponent){
 		super(argParent);
 
 		model = argModel;
@@ -66,7 +66,8 @@ public class ColumnChooserView extends JWindow{
 		linkModel();
 		addListeners();
 		populateLocale();
-		setLocationRelativeTo(argLocationComponenet);
+		pack();
+		setLocationRelativeTo(argLocationComponent);
 	}
 	
 	public void initComponents() {

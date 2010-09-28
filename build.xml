@@ -581,7 +581,7 @@
             <fileset dir="build"/>
             <zipfileset dir="Libraries" includes="batik.jar"/>
             <zipfileset dir="Libraries" includes="junit.jar"/>
-            <fileset dir="Libraries"/>
+            <!--<fileset dir="Libraries"/>-->
             <zipfileset dir="Libraries" includes="RXTXcomm.jar"/>
             <zipfileset dir="Libraries" includes="jdom.jar"/>
             <zipfileset dir="Libraries" includes="forms-1.1.0.jar"/>
@@ -594,7 +594,6 @@
             <zipfileset dir="Libraries" includes="httpclient-4.0-beta2.jar"/>
             <zipfileset dir="Libraries" includes="httpcore-4.0-beta3.jar"/>
             <zipfileset dir="Libraries" includes="httpmime-4.0-beta2.jar"/>
-            <zipfileset dir="Libraries" includes="jh.jar"/>
             <zipfileset dir="Libraries" includes="jsyntaxpane-0.9.5-b17.jar"/>
             <zipfileset dir="Libraries" includes="activation.jar"/>
             <zipfileset dir="Libraries" includes="l2fprod-common-shared.jar"/>
@@ -615,8 +614,6 @@
             <zipfileset dir="Libraries" includes="worldwind-0.6.570.13645.jar"/>
             <zipfileset dir="Libraries" includes="JFontChooser.jar"/>
             <zipfileset dir="Libraries" includes="jfontchooser-1.0.5.jar"/>
-            <zipfileset dir="Libraries" includes="pljava.jar"/>
-            <zipfileset dir="Libraries" includes="postgresql-8.2-506.jdbc3.jar"/>
             <zipfileset dir="Libraries" includes="miglayout15-swing.jar"/>
         </jar>
     	

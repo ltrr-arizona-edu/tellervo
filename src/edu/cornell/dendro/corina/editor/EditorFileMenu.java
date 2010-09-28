@@ -76,7 +76,7 @@ public class EditorFileMenu extends FileMenu {
 		GISPanel panel = ((Editor)this.f).wwMapPanel;
 		
         JMenuItem exportmenu = new JMenuItem(I18n.getText("menus.file.exportmapimage"));
-        exportmenu.setIcon(Builder.getIcon("fileexport.png", 22));
+        exportmenu.setIcon(Builder.getIcon("captureimage.png", 22));
         if(panel!=null)
         {
         	exportmenu.addActionListener(new ScreenShotAction(panel.getWwd()));
