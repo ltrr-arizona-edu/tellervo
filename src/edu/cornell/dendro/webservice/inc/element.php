@@ -846,7 +846,7 @@ class element extends elementEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblelement where elementid=".$this->getID();
+                $sql = "delete from tblelement where elementid='".$this->getID()."'";
 
                 // Run SQL command
                 if ($sql)

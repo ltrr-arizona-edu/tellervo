@@ -419,6 +419,7 @@ class object extends objectEntity implements IDBAccessor
 
         global $dbconn;
         global $domain;
+        global $firebug;
         $sql = "";
         $sql2 = "";
 
@@ -545,8 +546,31 @@ class object extends objectEntity implements IDBAccessor
                         $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
                         switch($PHPErrorCode)
                         {
+                        case "23505":
+                        		if(strpos(pg_result_error_field($result, PGSQL_DIAG_MESSAGE_PRIMARY), "object_code_index"))
+                        		{
+                        			$this->setErrorMessage("908", "An object with the code '".$this->getCode()."' already exists.");	
+                        		}	
+                        		else
+                        		{
+                        			$this->setErrorMessage("908", pg_result_error($result)."--- SQL was $sql");	
+                        		}
                         default:
                                 // Any other error
+                                /*$firebug->log(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE), "PGSQL_DIAG_SQLSTATE");
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_MESSAGE_HINT), "PGSQL_DIAG_MESSAGE_HINT");
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_MESSAGE_PRIMARY), "PGSQL_DIAG_MESSAGE_PRIMARY");
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_MESSAGE_DETAIL), "PGSQL_DIAG_MESSAGE_DETAIL");
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_SEVERITY), "PGSQL_DIAG_SEVERITY");
+                                
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_STATEMENT_POSITION), "PGSQL_DIAG_STATEMENT_POSITION");
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_INTERNAL_POSITION), "PGSQL_DIAG_INTERNAL_POSITION");
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_INTERNAL_QUERY), "PGSQL_DIAG_INTERNAL_QUERY");
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_CONTEXT), "PGSQL_DIAG_CONTEXT");
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_SOURCE_FILE), "PGSQL_DIAG_SOURCE_FILE");
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_SOURCE_LINE), "PGSQL_DIAG_SOURCE_LINE");
+                                $firebug->log(pg_result_error_field($result, PGSQL_DIAG_SOURCE_FUNCTION), "PGSQL_DIAG_SOURCE_FUNCTION"); 
+                             */
                                 $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
                         }
                         return FALSE;

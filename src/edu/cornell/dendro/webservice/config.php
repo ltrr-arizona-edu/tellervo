@@ -19,10 +19,13 @@
 //************************
 
 // Database name
-$dbName = corina_dev;
+$dbName = "corina_dev";
 
 // Domain name of the server this software is running on
 $domain = "dendro.cornell.edu/dev/";
+
+// Does the server use https?
+$securehttp = TRUE;
 
 // Whether to display debug messages
 $debugFlag = TRUE; 

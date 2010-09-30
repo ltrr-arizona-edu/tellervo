@@ -91,6 +91,7 @@ function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd
 function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd="")
 {
     global $domain;
+    global $securehttp;
     global $corinaNS;
     global $tridasNS;
     global $gmlNS;
@@ -100,8 +101,16 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
     $outputStr.="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     if ($metaHeader->status =="Error")
     {
-        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/corina.css\"?>\n";
-        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"https://".$domain."css/docbook/driver.css\"?>\n";
+    	if($securehttp===TRUE)
+    	{
+    		$http = "https://";
+    	}
+    	else
+    	{
+    		$http = "http://";
+    	}
+        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"$http".$domain."css/corina.css\"?>\n";
+        $outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"$http".$domain."css/docbook/driver.css\"?>\n";
     }
     
    	// Set root XML tag
