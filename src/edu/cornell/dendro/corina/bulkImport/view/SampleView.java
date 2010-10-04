@@ -5,11 +5,11 @@ package edu.cornell.dendro.corina.bulkImport.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Comparator;
 
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tridas.schema.TridasElement;
 
@@ -22,7 +22,9 @@ import edu.cornell.dendro.corina.bulkImport.model.SampleModel;
 import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
-import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
+import edu.cornell.dendro.corina.components.table.DynamicKeySelectionManager;
+import edu.cornell.dendro.corina.components.table.TridasElementRenderer;
+import edu.cornell.dendro.corina.components.table.WSIBoxRenderer;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.schema.WSIBoxDictionary;
@@ -56,60 +58,61 @@ public class SampleView  extends AbstractBulkImportView{
 		
 
 		ElementModel m = BulkImportModel.getInstance().getElementModel();
-		DynamicJComboBox<TridasElement> cboElement = new DynamicJComboBox<TridasElement>(m.getImportedList(), new IDynamicJComboBoxInterpreter<TridasElement>() {
-			@Override
-			public String getStringValue(TridasElement argComponent) {
-				if(argComponent == null){
-					return null;
+		DynamicJComboBox<TridasElement> cboElement = new DynamicJComboBox<TridasElement>(m.getImportedList(), new Comparator<TridasElement>(){
+			public int compare(TridasElement argO1, TridasElement argO2) {
+				if(argO1 == null){
+					return -1;
 				}
-				return argComponent.getTitle();
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.getTitle().compareToIgnoreCase(argO2.getTitle());
 			}
 		});
+		cboElement.setRenderer(new TridasElementRenderer());
+		cboElement.setKeySelectionManager(new DynamicKeySelectionManager() {
+			@Override
+			public String convertToString(Object argO) {
+				if(argO == null){
+					return "";
+				}
+				return ((TridasElement)argO).getTitle();
+			}
+		});
+		
 		argTable.setDefaultEditor(TridasElement.class, new ComboBoxCellEditor(cboElement));
-		argTable.setDefaultRenderer(TridasElement.class, new DefaultTableCellRenderer(){
-			/**
-			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
-			 */
-			@Override
-			protected void setValue(Object argValue) {
-				if(argValue == null){
-					super.setValue(argValue);
-					return;
-				}
-				TridasElement object = (TridasElement) argValue;
-				super.setValue(object.getTitle());
-			}
-		});
+		argTable.setDefaultRenderer(TridasElement.class, new TridasElementRenderer());
 		
 		DynamicJComboBox<WSIBox> cboBox = new DynamicJComboBox<WSIBox>(Dictionary.getMutableDictionary("boxDictionary"), 
-				new IDynamicJComboBoxInterpreter<WSIBox>() {
-
-					@Override
-					public String getStringValue(WSIBox argComponent) {
-						if(argComponent == null){
-							return null;
-						}
-						return argComponent.getTitle();
-					}
-		});
-		argTable.setDefaultEditor(WSIBoxDictionary.class, new ComboBoxCellEditor(cboBox));
-		argTable.setDefaultRenderer(WSIBoxDictionary.class, new DefaultTableCellRenderer(){
+			new Comparator<WSIBox>() {
 			/**
-			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 			 */
 			@Override
-			protected void setValue(Object argValue) {
-				if(argValue == null){
-					super.setValue(argValue);
-					return;
+			public int compare(WSIBox argO1, WSIBox argO2) {
+				if(argO1 == null){
+					return -1;
 				}
-				WSIBox object = (WSIBox) argValue;
-				super.setValue(object.getTitle());
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.getTitle().compareToIgnoreCase(argO2.getTitle());
+			}
+		});
+		cboBox.setRenderer(new WSIBoxRenderer());
+		cboBox.setKeySelectionManager(new DynamicKeySelectionManager() {
+			
+			@Override
+			public String convertToString(Object argO) {
+				if(argO == null){
+					return "";
+				}
+				return ((WSIBox)argO).getTitle();
 			}
 		});
 		
-		
-		
+		argTable.setDefaultEditor(WSIBoxDictionary.class, new ComboBoxCellEditor(cboBox));
+		argTable.setDefaultRenderer(WSIBoxDictionary.class, new WSIBoxRenderer());
 	}
 
 	@Override

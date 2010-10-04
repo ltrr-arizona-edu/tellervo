@@ -4,6 +4,7 @@
 package edu.cornell.dendro.corina.components.table;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,14 +22,18 @@ public class TridasShapeComboBox extends DynamicJComboBox<TridasShape>{
 	private ArrayList<TridasShape> data = new ArrayList<TridasShape>();
 	
 	public TridasShapeComboBox(){
-		super(null, new IDynamicJComboBoxInterpreter<TridasShape>() {
+		super(null, new Comparator<TridasShape>() {
 			@Override
-			public String getStringValue(TridasShape argComponent) {
-				String rep = argComponent.getNormalTridas().toString().replaceAll("___", " ");
-				rep = rep.toLowerCase();
-				rep = StringUtils.capitaliseAllWords(rep);
-				return rep;
+			public int compare(TridasShape argO1, TridasShape argO2) {
+				if(argO1 == null){
+					return -1;
+				}
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.getNormalTridas().toString().compareTo(argO2.getNormalTridas().toString());
 			}
+			
 		});
 		
 		for(NormalTridasShape normal : NormalTridasShape.values()){
@@ -36,6 +41,7 @@ public class TridasShapeComboBox extends DynamicJComboBox<TridasShape>{
 			shape.setNormalTridas(normal);
 			data.add(shape);
 		}
+		setRenderer(new TridasShapeRenderer());
 		refreshData();
 	}
 	

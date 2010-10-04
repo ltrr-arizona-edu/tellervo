@@ -10,7 +10,7 @@ import javax.swing.JComboBox.KeySelectionManager;
  * @author Daniel
  *
  */
-public class HTMLKeySelectionManager implements KeySelectionManager{
+public abstract class DynamicKeySelectionManager implements KeySelectionManager{
 	public static final int DEFAULT_TIMEOUT = 1000;
 	
 	private int timeout;
@@ -18,7 +18,7 @@ public class HTMLKeySelectionManager implements KeySelectionManager{
 	private String builtString = "";
 	private long lastMillis = 0;
 	
-	public HTMLKeySelectionManager(){
+	public DynamicKeySelectionManager(){
 		this(DEFAULT_TIMEOUT);
 	}
 	
@@ -26,7 +26,7 @@ public class HTMLKeySelectionManager implements KeySelectionManager{
 	 * timout for autoselect word building, in milliseconds
 	 * @param argTimeout
 	 */
-	public HTMLKeySelectionManager(int argTimeout){
+	public DynamicKeySelectionManager(int argTimeout){
 		timeout = argTimeout;
 	}
 	
@@ -51,7 +51,7 @@ public class HTMLKeySelectionManager implements KeySelectionManager{
         Object selectedItem = aModel.getSelectedItem();
         String v;
         String pattern;
-
+        
         if ( selectedItem != null ) {
             for ( i=0,c=aModel.getSize();i<c;i++ ) {
                 if ( selectedItem == aModel.getElementAt(i) ) {
@@ -72,26 +72,29 @@ public class HTMLKeySelectionManager implements KeySelectionManager{
         }
         lastMillis = nowMillis;
 
+        System.out.println("builtstring: "+builtString);
+        
         for ( i = ++currentSelection, c = aModel.getSize() ; i < c ; i++ ) {
             Object elem = aModel.getElementAt(i);
 			if (elem != null && elem.toString() != null) {
-			    v = elem.toString().toLowerCase();
-			    v = v.substring(v.indexOf('>')+1);
-			    if ( v.length() > 0 && v.substring(0, builtString.length()).equals(builtString)  )
+			    v = convertToString(elem).toLowerCase();
+			    if ( v.length() > 0 && v.length() >= builtString.length() &&  v.substring(0, builtString.length()).equals(builtString)  ){
 			    	return i;
+			    }
 			}
         }
 
         for ( i = 0 ; i < currentSelection ; i ++ ) {
             Object elem = aModel.getElementAt(i);
 			if (elem != null && elem.toString() != null) {
-			    v = elem.toString().toLowerCase();
-			    v = v.substring(v.indexOf('>')+1);
-			    if ( v.length() > 0 && v.substring(0, builtString.length()).equals(builtString) )
+			    v = convertToString(elem).toLowerCase();
+			    if ( v.length() > 0 && v.length() >= builtString.length() && v.substring(0, builtString.length()).equals(builtString) ){
 			    	return i;
+			    }
 			}
         }
         return -1;
 	}
 
+	public abstract String convertToString(Object o);
 }

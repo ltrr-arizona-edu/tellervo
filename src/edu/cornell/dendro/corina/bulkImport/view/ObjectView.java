@@ -5,6 +5,7 @@ package edu.cornell.dendro.corina.bulkImport.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Comparator;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -26,9 +27,12 @@ import edu.cornell.dendro.corina.bulkImport.model.ObjectModel;
 import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
-import edu.cornell.dendro.corina.components.table.HTMLKeySelectionManager;
-import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
+import edu.cornell.dendro.corina.components.table.DynamicJComboBox.DynamicJComboBoxStyle;
+import edu.cornell.dendro.corina.components.table.DynamicKeySelectionManager;
+import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxFilter;
+import edu.cornell.dendro.corina.components.table.TridasObjectExRenderer;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gis.GPXParser;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
 import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer;
@@ -58,17 +62,47 @@ public class ObjectView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSIObjectTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
-		argTable.setDefaultEditor(GPXWaypoint.class, new ComboBoxCellEditor(new DynamicJComboBox<GPXWaypoint>(model.getWaypointList())));
-		
-		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(), new IDynamicJComboBoxInterpreter<TridasObjectEx>() {
+		DynamicJComboBox<GPXWaypoint> waypointBox = new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(),new Comparator<GPXWaypoint>() {
+			/**
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+			 */
 			@Override
-			public String getStringValue(TridasObjectEx argComponent) {
-				if(argComponent == null){
-					return "";
+			public int compare(GPXWaypoint argO1, GPXWaypoint argO2) {
+				if(argO1 == null){
+					return -1;
 				}
-				return argComponent.getLabCode();
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.compareTo(argO2);
 			}
 		});
+		argTable.setDefaultEditor(GPXWaypoint.class, new ComboBoxCellEditor(waypointBox));
+		
+		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(),
+				new Comparator<TridasObjectEx>() {
+			public int compare(TridasObjectEx argO1, TridasObjectEx argO2) {
+				if(argO1 == null){
+					return -1;
+				}
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.getLabCode().compareToIgnoreCase(argO2.getLabCode());
+			}
+		});
+		box.setRenderer(new TridasObjectExRenderer());
+		box.setKeySelectionManager(new DynamicKeySelectionManager() {
+			@Override
+			public String convertToString(Object argO) {
+				if(argO == null){
+					return "";
+				}
+				TridasObjectEx o = (TridasObjectEx) argO;
+				return o.getLabCode();
+			}
+		});
+		
 		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(box));
 		argTable.setDefaultRenderer(TridasObject.class, new DefaultTableCellRenderer(){
 			/**

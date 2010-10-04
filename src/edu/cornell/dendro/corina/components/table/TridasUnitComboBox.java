@@ -4,6 +4,7 @@
 package edu.cornell.dendro.corina.components.table;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import org.apache.commons.lang.StringUtils;
 import org.tridas.schema.NormalTridasUnit;
@@ -17,23 +18,31 @@ import org.tridas.schema.TridasUnitless;
 public class TridasUnitComboBox extends DynamicJComboBox{
 	private static final long serialVersionUID = 1L;
 	
-	private final ArrayList data = new ArrayList<TridasUnit>();
+	private final ArrayList data = new ArrayList();
 	
 	@SuppressWarnings("unchecked")
 	public TridasUnitComboBox(){
-		super(null, new IDynamicJComboBoxInterpreter() {
-			@Override
-			public String getStringValue(Object argComponent) {
-				if(argComponent instanceof TridasUnit){
-					String rep = ((TridasUnit) argComponent).getNormalTridas().toString().replaceAll("_", " ");
-					rep = rep.toLowerCase();
-					rep = StringUtils.capitaliseAllWords(rep);
-					return rep;
+		super(null, new Comparator(){
+			public int compare(Object argO1, Object argO2) {
+				if(argO1 == null){
+					return -1;
 				}
-				else if(argComponent instanceof TridasUnitless){
-					return "Unitless";
+				if(argO2 == null){
+					return 1;
 				}
-				return null;
+				String s1,s2;
+				if(argO1 instanceof TridasUnit){
+					s1 = ((TridasUnit) argO1).getNormalTridas().toString();
+				}else{
+					s1 = "Unitless";
+				}
+				
+				if(argO2 instanceof TridasUnit){
+					s2 = ((TridasUnit) argO2).getNormalTridas().toString();
+				}else{
+					s2 = "Unitless";
+				}
+				return s1.compareTo(s2);
 			}
 		});
 		
@@ -43,6 +52,7 @@ public class TridasUnitComboBox extends DynamicJComboBox{
 			data.add(unit);
 		}
 		data.add(new TridasUnitless());
+		setRenderer(new TridasUnitRenderer());
 		refreshData();
 	}
 	

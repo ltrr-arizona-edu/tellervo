@@ -4,7 +4,9 @@
 package edu.cornell.dendro.corina.components.table;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 import javax.swing.AbstractListModel;
@@ -18,11 +20,11 @@ import javax.swing.MutableComboBoxModel;
  *
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class DynamicJComboBoxModel extends AbstractListModel implements MutableComboBoxModel, Serializable{
+public class DynamicJComboBoxModel<E> extends AbstractListModel implements MutableComboBoxModel, Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	private final Vector objects;
-    private Object selectedObject;
+	private final Vector<E> objects;
+    private E selectedObject;
 
     /**
      * Constructs an empty DefaultComboBoxModel.
@@ -37,7 +39,7 @@ public class DynamicJComboBoxModel extends AbstractListModel implements MutableC
      *
      * @param items  an array of Object objects
      */
-	public DynamicJComboBoxModel(final Object items[]) {
+	public DynamicJComboBoxModel(final E items[]) {
         objects = new Vector();
         objects.ensureCapacity( items.length );
 
@@ -56,7 +58,7 @@ public class DynamicJComboBoxModel extends AbstractListModel implements MutableC
      *
      * @param v  a Vector object ...
      */
-    public DynamicJComboBoxModel(Vector<?> v) {
+    public DynamicJComboBoxModel(Vector<E> v) {
         objects = v;
 
         if ( getSize() > 0 ) {
@@ -73,13 +75,13 @@ public class DynamicJComboBoxModel extends AbstractListModel implements MutableC
     public void setSelectedItem(Object anObject) {
         if ((selectedObject != null && !selectedObject.equals( anObject )) ||
 	    selectedObject == null && anObject != null) {
-	    selectedObject = anObject;
+	    selectedObject = (E) anObject;
 	    fireContentsChanged(this, -1, -1);
         }
     }
 
     // implements javax.swing.ComboBoxModel
-    public Object getSelectedItem() {
+    public E getSelectedItem() {
         return selectedObject;
     }
 
@@ -89,7 +91,7 @@ public class DynamicJComboBoxModel extends AbstractListModel implements MutableC
     }
 
     // implements javax.swing.ListModel
-    public Object getElementAt(int index) {
+    public E getElementAt(int index) {
         if ( index >= 0 && index < objects.size() )
             return objects.elementAt(index);
         else
@@ -109,20 +111,47 @@ public class DynamicJComboBoxModel extends AbstractListModel implements MutableC
 
     // implements javax.swing.MutableComboBoxModel
     public void addElement(Object anObject) {
-        objects.addElement(anObject);
+        objects.addElement((E)anObject);
         fireIntervalAdded(this,objects.size()-1, objects.size()-1);
         if ( objects.size() == 1 && selectedObject == null && anObject != null ) {
             setSelectedItem( anObject );
         }
     }
+    
+    public void addElements(int argIndex, Collection<E> argElements){
+    	if(argElements == null){
+    		return;
+    	}
+    	
+    	objects.addAll(argIndex, argElements);
+        fireIntervalAdded(this, argIndex, argIndex + argElements.size() - 1);  
+        
+        if ( objects.size() == 1 && selectedObject == null) {
+        	setSelectedItem(objects.get(0));
+        }
+    }
+    
+    public void addElements(Collection<E> argElements){
+    	if(argElements == null){
+    		return;
+    	}
+    	
+    	int oldSize = argElements.size();
+    	objects.addAll(argElements);
+        fireIntervalAdded(this,oldSize, objects.size()-1);  
+        
+        if ( objects.size() == 1 && selectedObject == null) {
+        	setSelectedItem(objects.get(0));
+        }
+    }
 
     // implements javax.swing.MutableComboBoxModel
     public void insertElementAt(Object anObject,int index) {
-        objects.insertElementAt(anObject,index);
+        objects.insertElementAt((E)anObject,index);
         fireIntervalAdded(this, index, index);
     }
     
-    public void setElementAt(Object anObject, int index){
+    public void setElementAt(E anObject, int index){
     	objects.setElementAt(anObject, index);
     	fireContentsChanged(this, index, index);
     }
@@ -143,8 +172,8 @@ public class DynamicJComboBoxModel extends AbstractListModel implements MutableC
         fireIntervalRemoved(this, index, index);
     }
     
-    public void sort(){
-    	Collections.sort(objects);
+    public void sort(Comparator<E> argComparator){
+    	Collections.sort(objects, argComparator);
     }
 
     // implements javax.swing.MutableComboBoxModel
@@ -159,14 +188,14 @@ public class DynamicJComboBoxModel extends AbstractListModel implements MutableC
      * Empties the list.
      */
     public void removeAllElements() {
-        if ( objects.size() > 0 ) {
-            int firstIndex = 0;
-            int lastIndex = objects.size() - 1;
-            objects.removeAllElements();
-	    selectedObject = null;
-            fireIntervalRemoved(this, firstIndex, lastIndex);
-        } else {
-	    selectedObject = null;
-	}
+	    if ( objects.size() > 0 ) {
+	            int firstIndex = 0;
+	            int lastIndex = objects.size() - 1;
+	            objects.removeAllElements();
+		    selectedObject = null;
+	            fireIntervalRemoved(this, firstIndex, lastIndex);
+	        } else {
+		    selectedObject = null;
+		}
     }
 }

@@ -80,6 +80,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 		importSelected = new JButton();
 		importSelected.putClientProperty("JButton.buttonType", "bevel");
 		
+		table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+		
 		setLayout(new BorderLayout());
 		
 	

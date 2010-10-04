@@ -7,7 +7,10 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Stack;
 
 import javax.swing.JComboBox;
@@ -39,78 +42,67 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 	}
 	
 	
-	private DynamicJComboBoxModel model;
+	private DynamicJComboBoxModel<E> model;
 	private final MVCArrayList<E> data;
-	private final IDynamicJComboBoxInterpreter<E> interpretter;
+	private final IDynamicJComboBoxFilter<E> filter;
 	private final Object lock = new Object();
 	private DynamicJComboBoxStyle style;
+	private Comparator<E> comparator = null;
 	
-	
-	// for performance
-	private final Stack<ObjectWrapper<E>> pool = new Stack<ObjectWrapper<E>>();
 	
 	/**
 	 * Constracts a dynamic combo box with the given data and
 	 * default style of {@link DynamicJComboBoxStyle#ALPHA_SORT}.
 	 * @param argData
 	 */
-	public DynamicJComboBox(MVCArrayList<E> argData) {
-		this(argData, new IDynamicJComboBoxInterpreter<E>() {
-			@Override
-			public String getStringValue(Object argComponent) {
-				if(argComponent == null){
-					return null;
-				}
-				return argComponent.toString();
-			}
-		}, DynamicJComboBoxStyle.ALPHA_SORT);
+	public DynamicJComboBox(MVCArrayList<E> argData, Comparator<E> argComparator) {
+		this(argData, new IDynamicJComboBoxFilter<E>() {
+			public boolean showItem(E argComponent) {
+				return true;
+			};
+		}, DynamicJComboBoxStyle.ALPHA_SORT, argComparator);
 	}
 	
 	public DynamicJComboBox(MVCArrayList<E> argData, DynamicJComboBoxStyle argStyle) {
-		this(argData, new IDynamicJComboBoxInterpreter<E>() {
-			@Override
-			public String getStringValue(Object argComponent) {
-				if(argComponent == null){
-					return null;
-				}
-				return argComponent.toString();
-			}
-		}, argStyle);
+		this(argData, new IDynamicJComboBoxFilter<E>() {
+			public boolean showItem(E argComponent) {
+				return true;
+			};
+		}, argStyle, null);
 	}
 	
 	/**
 	 * Constructs a dynamic combo box with the given data and data interpreter.
 	 * @param argData
-	 * @param argInterpretter
+	 * @param argFilter
 	 */
-	public DynamicJComboBox(MVCArrayList<E> argData, IDynamicJComboBoxInterpreter<E> argInterpretter) {
-		this(argData, argInterpretter, DynamicJComboBoxStyle.ALPHA_SORT);
+	public DynamicJComboBox(MVCArrayList<E> argData, IDynamicJComboBoxFilter<E> argFilter, Comparator<E> argComparator) {
+		this(argData, argFilter, DynamicJComboBoxStyle.ALPHA_SORT, null);
 	}
 	
 	/**
 	 * Constructs with the given data, interpreter, and style.
 	 * @param argData
-	 * @param argInterpretter
+	 * @param argFilter
 	 * @param argStyle
 	 */
-	public DynamicJComboBox(MVCArrayList<E> argData, IDynamicJComboBoxInterpreter<E> argInterpretter, DynamicJComboBoxStyle argStyle) {
+	public DynamicJComboBox(MVCArrayList<E> argData, IDynamicJComboBoxFilter<E> argFilter, DynamicJComboBoxStyle argStyle, Comparator<E> argComparator) {
 		data = argData;
 		style = argStyle;
-		interpretter = argInterpretter;
-		model = new DynamicJComboBoxModel();
+		filter = argFilter;
+		comparator = argComparator;
+		model = new DynamicJComboBoxModel<E>();
 		setModel(model);
 		
 		if(data != null){
 			argData.addPropertyChangeListener(this);
-			for (Object o : data) {
-				String s = interpretter.getStringValue((E)o);
-				if (s == null) {
-					continue;
+			for (E o : data) {
+				if(filter.showItem(o)){
+					model.addElement(o);
 				}
-				ObjectWrapper<E> wrapper = getWrapper();
-				wrapper.object = (E)o;
-				wrapper.string = s;
-				model.addElement(wrapper);
+			}
+			if(style == DynamicJComboBoxStyle.ALPHA_SORT){
+				model.sort(comparator);
 			}
 		}
 	}
@@ -136,6 +128,18 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
     }
     
     /**
+     * Sets the comparator used for the {@link DynamicJComboBoxStyle#ALPHA_SORT} style.
+     * @param argComparator
+     */
+    public void setComparator(Comparator<E> argComparator) {
+		this.comparator = argComparator;
+	}
+
+	public Comparator<E> getComparator() {
+		return comparator;
+	}
+
+	/**
      * @see javax.swing.JComboBox#processKeyEvent(java.awt.event.KeyEvent)
      */
     @Override
@@ -155,7 +159,10 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
     public void setStyle(DynamicJComboBoxStyle argStyle){
     	style = argStyle;
     	if(style == DynamicJComboBoxStyle.ALPHA_SORT){
-    		model.sort();
+    		if(comparator == null){
+				throw new NullPointerException("DynamicJComboBox style is set to Alpha Sort, but the comparator is null.");
+    		}
+    		model.sort(comparator);
     	}
     }
     
@@ -164,54 +171,81 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
     		// remove all elements
     		model.removeAllElements();
         	for(E e: getData()){
-        		ObjectWrapper<E> wrapper = getWrapper();
-        		wrapper.object = e;
-        		wrapper.string = interpretter.getStringValue(e);
-        		model.addElement(wrapper);
+        		if(filter.showItem(e)){
+        			model.addElement(e);
+        		}
         	}
         	if(style == DynamicJComboBoxStyle.ALPHA_SORT){
-            	model.sort();
+        		if(comparator == null){
+					throw new NullPointerException("DynamicJComboBox style is set to Alpha Sort, but the comparator is null.");
+        		}
+            	model.sort(comparator);
         	}
 		}
     }
     
 	private void add(E argNewObj) {
-		String s = interpretter.getStringValue(argNewObj);
-		if (s == null) {
+		boolean b = filter.showItem(argNewObj);
+		if (b == false) {
 			return;
 		}
 		synchronized (lock) {
 			switch(style){
 				case ALPHA_SORT:{
-					ObjectWrapper<E> wrapper = getWrapper();
-					wrapper.object = argNewObj;
-					wrapper.string = s;
+					if(comparator == null){
+						throw new NullPointerException("DynamicJComboBox style is set to Alpha Sort, but the comparator is null.");
+					}
 					boolean inserted = false;
 					for(int i=0; i<model.getSize(); i++){
-						ObjectWrapper<E> wrapper2 = (ObjectWrapper<E>) model.getElementAt(i);
-						if(wrapper2.string.compareTo(s) > 0){
-							model.insertElementAt(wrapper, i);
+						E e = model.getElementAt(i);
+						if(comparator.compare(e, argNewObj) > 0){
+							model.insertElementAt(argNewObj, i);
 							inserted = true;
 							break;
 						}
 					}
 					if(!inserted){
-						model.addElement(wrapper);
+						model.addElement(argNewObj);
 					}
 					break;
 				}
 				case ADD_NEW_TO_BEGINNING:{
-					ObjectWrapper<E> wrapper = getWrapper();
-					wrapper.object = argNewObj;
-					wrapper.string = s;
-					model.insertElementAt(wrapper, 0);
+					model.insertElementAt(argNewObj, 0);
 					break;
 				}
 				case ADD_NEW_TO_END:{
-					ObjectWrapper<E> wrapper = getWrapper();
-					wrapper.object = argNewObj;
-					wrapper.string = s;
-					model.addElement(wrapper);
+					model.addElement(argNewObj);
+				}
+			}
+			
+		}
+	}
+	
+	private void addAll(Collection<E> argNewObjects) {
+		LinkedList<E> filtered = new LinkedList<E>();
+		
+		Iterator<E> it = argNewObjects.iterator();
+		while(it.hasNext()){
+			E e = it.next();
+			if(filter.showItem(e)){
+				filtered.add(e);
+			}
+		}
+		if(filtered.size() == 0){
+			return;
+		}
+		synchronized (lock) {
+			switch(style){
+				case ALPHA_SORT:{
+					model.addElements(filtered);
+					break;
+				}
+				case ADD_NEW_TO_BEGINNING:{
+					model.addElements(0, filtered);
+					break;
+				}
+				case ADD_NEW_TO_END:{
+					model.addElements(filtered);
 				}
 			}
 			
@@ -219,48 +253,42 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 	}
 	
 	private void change(E argOld, E argNew) {
-		String s1 = interpretter.getStringValue(argOld);
-		String s2 = interpretter.getStringValue(argNew);
-		if (s2 == null || s1 == null) {
+		boolean so = filter.showItem(argOld);
+		boolean sn = filter.showItem(argNew);
+		if(!sn){
+			remove(argOld);
 			return;
+		}
+		if(!so){
+			if(sn){
+				add(argNew);
+				return;
+			}else{
+				return;
+			}
 		}
 		synchronized (lock) {
 			int size = model.getSize();
 			for (int i = 0; i < size; i++) {
-				ObjectWrapper<E> objWrapper = (ObjectWrapper<E>) model.getElementAt(i);
-				if (objWrapper.string.equals(s1)) {
-					objWrapper.string = s2;
-					objWrapper.object = argNew;
-					model.setElementAt(objWrapper, i);
+				E e = model.getElementAt(i);
+				if (e == argOld) {
+					model.setElementAt(argNew, i);
 					return;
 				}
 			}
 		}
 	}
 	
-	/**
-	 * @see javax.swing.JComboBox#getSelectedItem()
-	 */
-	@Override
-	public Object getSelectedItem() {
-			ObjectWrapper<E> objWrapper = (ObjectWrapper<E>)super.getSelectedItem();
-			if(objWrapper == null){
-				return null;
-			}
-			return objWrapper.object;
-	}
-	
 	private void remove(E argVal) {
-		String s = interpretter.getStringValue(argVal);
-		if (s == null) {
+		boolean is = filter.showItem(argVal);
+		if (!is) {
 			return;
 		}
 		synchronized (lock) {
 			for(int i=0; i<model.getSize();i ++){
-				ObjectWrapper<E> objWrapper = (ObjectWrapper<E>) model.getElementAt(i);
-				if(objWrapper.object.equals(argVal)){
+				E e = model.getElementAt(i);
+				if(e == argVal){
 					model.removeElementAt(i);
-					recycleWrapper(objWrapper);
 					return;
 				}
 			}
@@ -278,41 +306,17 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 		if (prop.equals(MVCArrayList.ADDED)) {
 			add((E)argEvt.getNewValue());
 		}
+		else if(prop.equals(MVCArrayList.ADDED_ALL)){
+			addAll((Collection<E>) argEvt.getNewValue());
+		}
 		else if (prop.equals(MVCArrayList.CHANGED)) {
 			change((E)argEvt.getOldValue(),(E) argEvt.getNewValue());
 		}
 		else if (prop.equals(MVCArrayList.REMOVED)) {
 			remove((E)argEvt.getOldValue());
 		}
-	}
-	
-	private ObjectWrapper<E> getWrapper(){
-		if(pool.isEmpty()){
-			pool.push(new ObjectWrapper<E>());
-			pool.push(new ObjectWrapper<E>());
-			pool.push(new ObjectWrapper<E>());
-			pool.push(new ObjectWrapper<E>());
-		}
-		return pool.pop();
-	}
-	
-	private void recycleWrapper(ObjectWrapper<E> argWrapper){
-		pool.push(argWrapper);
-	}
-	
-	protected static class ObjectWrapper<E> implements Comparable<ObjectWrapper>{
-		public E object;
-		public String string;
-		public String toString(){
-			return string;
-		}
-		
-		/**
-		 * @see java.lang.Comparable#compareTo(java.lang.Object)
-		 */
-		@Override
-		public int compareTo(ObjectWrapper argO) {
-			return (this.string.compareTo(argO.string));
+		else if(prop.equals(MVCArrayList.REMOVED_ALL)){
+			model.removeAllElements();
 		}
 	}
 }

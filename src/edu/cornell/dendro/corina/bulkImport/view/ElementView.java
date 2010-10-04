@@ -5,6 +5,7 @@ package edu.cornell.dendro.corina.bulkImport.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Comparator;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -26,7 +27,9 @@ import edu.cornell.dendro.corina.bulkImport.model.ElementModel;
 import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
-import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxInterpreter;
+import edu.cornell.dendro.corina.components.table.DynamicKeySelectionManager;
+import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxFilter;
+import edu.cornell.dendro.corina.components.table.TridasObjectExRenderer;
 import edu.cornell.dendro.corina.components.table.TridasShapeComboBox;
 import edu.cornell.dendro.corina.components.table.TridasShapeRenderer;
 import edu.cornell.dendro.corina.components.table.TridasUnitComboBox;
@@ -67,15 +70,31 @@ public class ElementView extends AbstractBulkImportView{
 		argTable.setDefaultEditor(WSITaxonDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("taxonDictionary")));
 		argTable.setDefaultRenderer(WSITaxonDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
-		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(), new IDynamicJComboBoxInterpreter<TridasObjectEx>() {
-			@Override
-			public String getStringValue(TridasObjectEx argComponent) {
-				if(argComponent == null){
-					return "";
+		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(),
+				new Comparator<TridasObjectEx>() {
+			public int compare(TridasObjectEx argO1, TridasObjectEx argO2) {
+				if(argO1 == null){
+					return -1;
 				}
-				return argComponent.getLabCode();
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.getLabCode().compareToIgnoreCase(argO2.getLabCode());
 			}
 		});
+		box.setKeySelectionManager(new DynamicKeySelectionManager() {
+			@Override
+			public String convertToString(Object argO) {
+				if(argO == null){
+					return "";
+				}
+				TridasObjectEx o = (TridasObjectEx) argO;
+				return o.getLabCode();
+			}
+		});
+		
+		box.setRenderer(new TridasObjectExRenderer());
+		
 		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(box));
 		argTable.setDefaultRenderer(TridasObject.class, new DefaultTableCellRenderer(){
 			/**
@@ -93,7 +112,21 @@ public class ElementView extends AbstractBulkImportView{
 		});
 		
 		ElementModel model = BulkImportModel.getInstance().getElementModel();
-		DynamicJComboBox<GPXWaypoint> waypointBox = new DynamicJComboBox<GPXWaypoint>(model.getWaypointList());
+		DynamicJComboBox<GPXWaypoint> waypointBox = new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(), new Comparator<GPXWaypoint>() {
+			/**
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public int compare(GPXWaypoint argO1, GPXWaypoint argO2) {
+				if(argO1 == null){
+					return -1;
+				}
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.compareTo(argO2);
+			}
+		});
 		argTable.setDefaultEditor(GPXWaypoint.class, new ComboBoxCellEditor(waypointBox));
 	}
 	
