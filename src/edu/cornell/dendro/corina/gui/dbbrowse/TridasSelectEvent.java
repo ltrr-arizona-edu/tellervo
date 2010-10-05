@@ -7,7 +7,10 @@ import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
 public class TridasSelectEvent extends AWTEvent {
@@ -167,6 +170,43 @@ public class TridasSelectEvent extends AWTEvent {
 		if(entityList==null)
 		{
 			return null;
+		}
+		
+		if(entityList.get(0) instanceof TridasObjectEx)
+		{
+			TridasObjectEx obj = (TridasObjectEx) entityList.get(0);
+			if(obj.isSetElements())
+			{
+				TridasElement el = obj.getElements().get(0);
+				if(el.isSetSamples())
+				{
+					TridasSample samp = el.getSamples().get(0);
+					if(samp.isSetRadiuses())
+					{
+						TridasRadius rad = samp.getRadiuses().get(0);
+						if(rad.isSetMeasurementSeries())
+						{
+							return rad.getMeasurementSeries().get(0);
+						}
+						else 
+						{
+							return rad;
+						}
+					}
+					else
+					{
+						return samp;
+					}
+				}
+				else
+				{
+					return el;
+				}
+			}
+			else
+			{
+				return obj;
+			}
 		}
 		else
 		{

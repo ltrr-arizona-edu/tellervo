@@ -8,37 +8,39 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET escape_string_warning = off;
 
+
+IF(
+
+CREATE DATABASE corina WITH TEMPLATE = template0 ENCODING = 'UTF8';
+
+\connect corina
+
+
 --
--- Name: cpgdb; Type: SCHEMA; Schema: -; Owner: lucasm
+-- Name: cpgdb; Type: SCHEMA; Schema: -; Owner: -
 --
 
 CREATE SCHEMA cpgdb;
 
 
-ALTER SCHEMA cpgdb OWNER TO lucasm;
-
 --
--- Name: cpgdbj; Type: SCHEMA; Schema: -; Owner: lucasm
+-- Name: cpgdbj; Type: SCHEMA; Schema: -; Owner: -
 --
 
 CREATE SCHEMA cpgdbj;
 
 
-ALTER SCHEMA cpgdbj OWNER TO lucasm;
-
 --
--- Name: sqlj; Type: SCHEMA; Schema: -; Owner: postgres
+-- Name: sqlj; Type: SCHEMA; Schema: -; Owner: -
 --
 
 CREATE SCHEMA sqlj;
 
 
-ALTER SCHEMA sqlj OWNER TO postgres;
-
 SET search_path = sqlj, pg_catalog;
 
 --
--- Name: java_call_handler(); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: java_call_handler(); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION java_call_handler() RETURNS language_handler
@@ -46,19 +48,15 @@ CREATE FUNCTION java_call_handler() RETURNS language_handler
     LANGUAGE c;
 
 
-ALTER FUNCTION sqlj.java_call_handler() OWNER TO postgres;
-
 --
--- Name: java; Type: PROCEDURAL LANGUAGE; Schema: sqlj; Owner: postgres
+-- Name: java; Type: PROCEDURAL LANGUAGE; Schema: sqlj; Owner: -
 --
 
 CREATE TRUSTED PROCEDURAL LANGUAGE java HANDLER java_call_handler;
 
 
-ALTER PROCEDURAL LANGUAGE java OWNER TO postgres;
-
 --
--- Name: javau_call_handler(); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: javau_call_handler(); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION javau_call_handler() RETURNS language_handler
@@ -66,46 +64,38 @@ CREATE FUNCTION javau_call_handler() RETURNS language_handler
     LANGUAGE c;
 
 
-ALTER FUNCTION sqlj.javau_call_handler() OWNER TO postgres;
-
 --
--- Name: javau; Type: PROCEDURAL LANGUAGE; Schema: sqlj; Owner: postgres
+-- Name: javau; Type: PROCEDURAL LANGUAGE; Schema: sqlj; Owner: -
 --
 
 CREATE PROCEDURAL LANGUAGE javau HANDLER javau_call_handler;
 
 
-ALTER PROCEDURAL LANGUAGE javau OWNER TO postgres;
-
 --
--- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: -
 --
 
 CREATE PROCEDURAL LANGUAGE plpgsql;
 
 
-ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
-
 --
--- Name: plpythonu; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+-- Name: plpythonu; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: -
 --
 
 CREATE PROCEDURAL LANGUAGE plpythonu;
 
 
-ALTER PROCEDURAL LANGUAGE plpythonu OWNER TO postgres;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: box2d; Type: SHELL TYPE; Schema: public; Owner: aps03pwb
+-- Name: box2d; Type: SHELL TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE box2d;
 
 
 --
--- Name: box2d_in(cstring); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_in(cstring) RETURNS box2d
@@ -113,10 +103,8 @@ CREATE FUNCTION box2d_in(cstring) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_in(cstring) OWNER TO aps03pwb;
-
 --
--- Name: box2d_out(box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_out(box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_out(box2d) RETURNS cstring
@@ -124,10 +112,8 @@ CREATE FUNCTION box2d_out(box2d) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_out(box2d) OWNER TO aps03pwb;
-
 --
--- Name: box2d; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: box2d; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE box2d (
@@ -139,17 +125,15 @@ CREATE TYPE box2d (
 );
 
 
-ALTER TYPE public.box2d OWNER TO aps03pwb;
-
 --
--- Name: box3d; Type: SHELL TYPE; Schema: public; Owner: aps03pwb
+-- Name: box3d; Type: SHELL TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE box3d;
 
 
 --
--- Name: box3d_in(cstring); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box3d_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box3d_in(cstring) RETURNS box3d
@@ -157,10 +141,8 @@ CREATE FUNCTION box3d_in(cstring) RETURNS box3d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box3d_in(cstring) OWNER TO aps03pwb;
-
 --
--- Name: box3d_out(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box3d_out(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box3d_out(box3d) RETURNS cstring
@@ -168,10 +150,8 @@ CREATE FUNCTION box3d_out(box3d) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box3d_out(box3d) OWNER TO aps03pwb;
-
 --
--- Name: box3d; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: box3d; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE box3d (
@@ -183,17 +163,15 @@ CREATE TYPE box3d (
 );
 
 
-ALTER TYPE public.box3d OWNER TO aps03pwb;
-
 --
--- Name: chip; Type: SHELL TYPE; Schema: public; Owner: aps03pwb
+-- Name: chip; Type: SHELL TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE chip;
 
 
 --
--- Name: chip_in(cstring); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: chip_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION chip_in(cstring) RETURNS chip
@@ -201,10 +179,8 @@ CREATE FUNCTION chip_in(cstring) RETURNS chip
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.chip_in(cstring) OWNER TO aps03pwb;
-
 --
--- Name: chip_out(chip); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: chip_out(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION chip_out(chip) RETURNS cstring
@@ -212,10 +188,8 @@ CREATE FUNCTION chip_out(chip) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.chip_out(chip) OWNER TO aps03pwb;
-
 --
--- Name: chip; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: chip; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE chip (
@@ -227,10 +201,8 @@ CREATE TYPE chip (
 );
 
 
-ALTER TYPE public.chip OWNER TO aps03pwb;
-
 --
--- Name: datingtypeclass; Type: TYPE; Schema: public; Owner: lucasm
+-- Name: datingtypeclass; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE datingtypeclass AS ENUM (
@@ -239,17 +211,15 @@ CREATE TYPE datingtypeclass AS ENUM (
 );
 
 
-ALTER TYPE public.datingtypeclass OWNER TO lucasm;
-
 --
--- Name: geometry; Type: SHELL TYPE; Schema: public; Owner: aps03pwb
+-- Name: geometry; Type: SHELL TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE geometry;
 
 
 --
--- Name: geometry_analyze(internal); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_analyze(internal); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_analyze(internal) RETURNS boolean
@@ -257,10 +227,8 @@ CREATE FUNCTION geometry_analyze(internal) RETURNS boolean
     LANGUAGE c STRICT;
 
 
-ALTER FUNCTION public.geometry_analyze(internal) OWNER TO aps03pwb;
-
 --
--- Name: geometry_in(cstring); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_in(cstring) RETURNS geometry
@@ -268,10 +236,8 @@ CREATE FUNCTION geometry_in(cstring) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_in(cstring) OWNER TO aps03pwb;
-
 --
--- Name: geometry_out(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_out(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_out(geometry) RETURNS cstring
@@ -279,10 +245,8 @@ CREATE FUNCTION geometry_out(geometry) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_out(geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_recv(internal); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_recv(internal); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_recv(internal) RETURNS geometry
@@ -290,10 +254,8 @@ CREATE FUNCTION geometry_recv(internal) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_recv(internal) OWNER TO aps03pwb;
-
 --
--- Name: geometry_send(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_send(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_send(geometry) RETURNS bytea
@@ -301,10 +263,8 @@ CREATE FUNCTION geometry_send(geometry) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_send(geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: geometry; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE geometry (
@@ -320,10 +280,8 @@ CREATE TYPE geometry (
 );
 
 
-ALTER TYPE public.geometry OWNER TO aps03pwb;
-
 --
--- Name: geometry_dump; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: geometry_dump; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE geometry_dump AS (
@@ -332,17 +290,15 @@ CREATE TYPE geometry_dump AS (
 );
 
 
-ALTER TYPE public.geometry_dump OWNER TO aps03pwb;
-
 --
--- Name: histogram2d; Type: SHELL TYPE; Schema: public; Owner: aps03pwb
+-- Name: histogram2d; Type: SHELL TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE histogram2d;
 
 
 --
--- Name: histogram2d_in(cstring); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: histogram2d_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION histogram2d_in(cstring) RETURNS histogram2d
@@ -350,10 +306,8 @@ CREATE FUNCTION histogram2d_in(cstring) RETURNS histogram2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.histogram2d_in(cstring) OWNER TO aps03pwb;
-
 --
--- Name: histogram2d_out(histogram2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: histogram2d_out(histogram2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION histogram2d_out(histogram2d) RETURNS cstring
@@ -361,10 +315,8 @@ CREATE FUNCTION histogram2d_out(histogram2d) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.histogram2d_out(histogram2d) OWNER TO aps03pwb;
-
 --
--- Name: histogram2d; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: histogram2d; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE histogram2d (
@@ -376,10 +328,8 @@ CREATE TYPE histogram2d (
 );
 
 
-ALTER TYPE public.histogram2d OWNER TO aps03pwb;
-
 --
--- Name: securityuserandobjectid; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: securityuserandobjectid; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE securityuserandobjectid AS (
@@ -388,17 +338,15 @@ CREATE TYPE securityuserandobjectid AS (
 );
 
 
-ALTER TYPE public.securityuserandobjectid OWNER TO aps03pwb;
-
 --
--- Name: spheroid; Type: SHELL TYPE; Schema: public; Owner: aps03pwb
+-- Name: spheroid; Type: SHELL TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE spheroid;
 
 
 --
--- Name: spheroid_in(cstring); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: spheroid_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION spheroid_in(cstring) RETURNS spheroid
@@ -406,10 +354,8 @@ CREATE FUNCTION spheroid_in(cstring) RETURNS spheroid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.spheroid_in(cstring) OWNER TO aps03pwb;
-
 --
--- Name: spheroid_out(spheroid); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: spheroid_out(spheroid); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION spheroid_out(spheroid) RETURNS cstring
@@ -417,10 +363,8 @@ CREATE FUNCTION spheroid_out(spheroid) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.spheroid_out(spheroid) OWNER TO aps03pwb;
-
 --
--- Name: spheroid; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: spheroid; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE spheroid (
@@ -432,10 +376,8 @@ CREATE TYPE spheroid (
 );
 
 
-ALTER TYPE public.spheroid OWNER TO aps03pwb;
-
 --
--- Name: tablefunc_crosstab_11; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: tablefunc_crosstab_11; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE tablefunc_crosstab_11 AS (
@@ -454,10 +396,8 @@ CREATE TYPE tablefunc_crosstab_11 AS (
 );
 
 
-ALTER TYPE public.tablefunc_crosstab_11 OWNER TO aps03pwb;
-
 --
--- Name: tablefunc_crosstab_2; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: tablefunc_crosstab_2; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE tablefunc_crosstab_2 AS (
@@ -467,10 +407,8 @@ CREATE TYPE tablefunc_crosstab_2 AS (
 );
 
 
-ALTER TYPE public.tablefunc_crosstab_2 OWNER TO aps03pwb;
-
 --
--- Name: tablefunc_crosstab_3; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: tablefunc_crosstab_3; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE tablefunc_crosstab_3 AS (
@@ -481,10 +419,8 @@ CREATE TYPE tablefunc_crosstab_3 AS (
 );
 
 
-ALTER TYPE public.tablefunc_crosstab_3 OWNER TO aps03pwb;
-
 --
--- Name: tablefunc_crosstab_4; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: tablefunc_crosstab_4; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE tablefunc_crosstab_4 AS (
@@ -496,10 +432,8 @@ CREATE TYPE tablefunc_crosstab_4 AS (
 );
 
 
-ALTER TYPE public.tablefunc_crosstab_4 OWNER TO aps03pwb;
-
 --
--- Name: tablefunc_crosstab_9; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: tablefunc_crosstab_9; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE tablefunc_crosstab_9 AS (
@@ -516,10 +450,8 @@ CREATE TYPE tablefunc_crosstab_9 AS (
 );
 
 
-ALTER TYPE public.tablefunc_crosstab_9 OWNER TO aps03pwb;
-
 --
--- Name: typfulltaxonomy; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: typfulltaxonomy; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE typfulltaxonomy AS (
@@ -542,10 +474,8 @@ CREATE TYPE typfulltaxonomy AS (
 );
 
 
-ALTER TYPE public.typfulltaxonomy OWNER TO aps03pwb;
-
 --
--- Name: typpermissionset; Type: TYPE; Schema: public; Owner: lucasm
+-- Name: typpermissionset; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE typpermissionset AS (
@@ -558,10 +488,8 @@ CREATE TYPE typpermissionset AS (
 );
 
 
-ALTER TYPE public.typpermissionset OWNER TO lucasm;
-
 --
--- Name: typtaxonflat2; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: typtaxonflat2; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE typtaxonflat2 AS (
@@ -573,10 +501,8 @@ CREATE TYPE typtaxonflat2 AS (
 );
 
 
-ALTER TYPE public.typtaxonflat2 OWNER TO aps03pwb;
-
 --
--- Name: typtaxonrankname; Type: TYPE; Schema: public; Owner: aps03pwb
+-- Name: typtaxonrankname; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE typtaxonrankname AS (
@@ -586,10 +512,8 @@ CREATE TYPE typtaxonrankname AS (
 );
 
 
-ALTER TYPE public.typtaxonrankname OWNER TO aps03pwb;
-
 --
--- Name: typvmeasurementsearchresult; Type: TYPE; Schema: public; Owner: lucasm
+-- Name: typvmeasurementsearchresult; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE typvmeasurementsearchresult AS (
@@ -605,10 +529,8 @@ CREATE TYPE typvmeasurementsearchresult AS (
 );
 
 
-ALTER TYPE public.typvmeasurementsearchresult OWNER TO lucasm;
-
 --
--- Name: typvmeasurementsummaryinfo; Type: TYPE; Schema: public; Owner: lucasm
+-- Name: typvmeasurementsummaryinfo; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE typvmeasurementsummaryinfo AS (
@@ -620,12 +542,10 @@ CREATE TYPE typvmeasurementsummaryinfo AS (
 );
 
 
-ALTER TYPE public.typvmeasurementsummaryinfo OWNER TO lucasm;
-
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: _fcojc(character varying, character varying); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: _fcojc(character varying, character varying); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION _fcojc(character varying, character varying) RETURNS character varying
@@ -637,10 +557,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE;
 
 
-ALTER FUNCTION cpgdb._fcojc(character varying, character varying) OWNER TO lucasm;
-
 --
--- Name: _gettaxonfordepth(integer, public.typfulltaxonomy); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: _gettaxonfordepth(integer, public.typfulltaxonomy); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION _gettaxonfordepth(integer, public.typfulltaxonomy) RETURNS text
@@ -667,12 +585,10 @@ $_$
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION cpgdb._gettaxonfordepth(integer, public.typfulltaxonomy) OWNER TO lucasm;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: ndims(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: ndims(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION ndims(geometry) RETURNS smallint
@@ -680,10 +596,8 @@ CREATE FUNCTION ndims(geometry) RETURNS smallint
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.ndims(geometry) OWNER TO aps03pwb;
-
 --
--- Name: srid(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: srid(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION srid(geometry) RETURNS integer
@@ -691,14 +605,12 @@ CREATE FUNCTION srid(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.srid(geometry) OWNER TO aps03pwb;
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: tblobject; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblobject; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblobject (
@@ -734,17 +646,15 @@ CREATE TABLE tblobject (
 );
 
 
-ALTER TABLE public.tblobject OWNER TO aps03pwb;
-
 --
--- Name: COLUMN tblobject.coveragetemporalid; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblobject.coveragetemporalid; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblobject.coveragetemporalid IS 'deprecated. - now allowing free text';
 
 
 --
--- Name: COLUMN tblobject.coveragetemporalfoundationid; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblobject.coveragetemporalfoundationid; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblobject.coveragetemporalfoundationid IS 'deprecated. - now allowing free text';
@@ -753,7 +663,7 @@ COMMENT ON COLUMN tblobject.coveragetemporalfoundationid IS 'deprecated. - now a
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: _internalfindobjectsanddescendantswhere(text); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: _internalfindobjectsanddescendantswhere(text); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION _internalfindobjectsanddescendantswhere(whereclause text) RETURNS SETOF public.tblobject
@@ -797,12 +707,10 @@ $$
     LANGUAGE plpgsql STABLE;
 
 
-ALTER FUNCTION cpgdb._internalfindobjectsanddescendantswhere(whereclause text) OWNER TO lucasm;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: tlkpreadingnote; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpreadingnote; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpreadingnote (
@@ -816,12 +724,10 @@ CREATE TABLE tlkpreadingnote (
 );
 
 
-ALTER TABLE public.tlkpreadingnote OWNER TO aps03pwb;
-
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: addcustomreadingnote(uuid, integer, text); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: addcustomreadingnote(uuid, integer, text); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION addcustomreadingnote(uuid, integer, text) RETURNS public.tlkpreadingnote
@@ -908,10 +814,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.addcustomreadingnote(uuid, integer, text) OWNER TO lucasm;
-
 --
--- Name: addreadingnote(uuid, integer, integer, boolean); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: addreadingnote(uuid, integer, integer, boolean); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION addreadingnote(uuid, integer, integer, boolean) RETURNS void
@@ -977,10 +881,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.addreadingnote(uuid, integer, integer, boolean) OWNER TO lucasm;
-
 --
--- Name: andpermissionsets(public.typpermissionset, public.typpermissionset); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: andpermissionsets(public.typpermissionset, public.typpermissionset); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION andpermissionsets(origset public.typpermissionset, newset public.typpermissionset) RETURNS public.typpermissionset
@@ -1022,10 +924,8 @@ $$
     LANGUAGE plpgsql IMMUTABLE;
 
 
-ALTER FUNCTION cpgdb.andpermissionsets(origset public.typpermissionset, newset public.typpermissionset) OWNER TO lucasm;
-
 --
--- Name: clearreadingnotes(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: clearreadingnotes(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION clearreadingnotes(uuid) RETURNS integer
@@ -1065,12 +965,10 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.clearreadingnotes(uuid) OWNER TO lucasm;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: tblvmeasurementmetacache; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblvmeasurementmetacache; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblvmeasurementmetacache (
@@ -1091,12 +989,10 @@ CREATE TABLE tblvmeasurementmetacache (
 );
 
 
-ALTER TABLE public.tblvmeasurementmetacache OWNER TO aps03pwb;
-
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: createmetacache(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: createmetacache(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION createmetacache(uuid) RETURNS public.tblvmeasurementmetacache
@@ -1189,10 +1085,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.createmetacache(uuid) OWNER TO lucasm;
-
 --
--- Name: createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, character varying, character varying) RETURNS uuid
@@ -1327,10 +1221,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, character varying, character varying) OWNER TO lucasm;
-
 --
--- Name: createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, date); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, date); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, date) RETURNS uuid
@@ -1501,10 +1393,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, date) OWNER TO lucasm;
-
 --
--- Name: elementlocationchangedtrigger(); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: elementlocationchangedtrigger(); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION elementlocationchangedtrigger() RETURNS trigger
@@ -1548,10 +1438,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.elementlocationchangedtrigger() OWNER TO lucasm;
-
 --
--- Name: findchildrenof(character varying, anyelement); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: findchildrenof(character varying, anyelement); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findchildrenof(character varying, anyelement) RETURNS SETOF public.typvmeasurementsearchresult
@@ -1601,10 +1489,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.findchildrenof(character varying, anyelement) OWNER TO lucasm;
-
 --
--- Name: findchildrenofobjectancestor(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: findchildrenofobjectancestor(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findchildrenofobjectancestor(parentid uuid) RETURNS SETOF public.typvmeasurementsearchresult
@@ -1623,10 +1509,8 @@ $$
     LANGUAGE plpgsql STABLE;
 
 
-ALTER FUNCTION cpgdb.findchildrenofobjectancestor(parentid uuid) OWNER TO lucasm;
-
 --
--- Name: findelementobjectancestors(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: findelementobjectancestors(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findelementobjectancestors(uuid) RETURNS SETOF public.tblobject
@@ -1636,10 +1520,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.findelementobjectancestors(uuid) OWNER TO lucasm;
-
 --
--- Name: findobjectancestors(uuid, boolean); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: findobjectancestors(uuid, boolean); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findobjectancestors(uuid, boolean) RETURNS SETOF public.tblobject
@@ -1649,10 +1531,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.findobjectancestors(uuid, boolean) OWNER TO lucasm;
-
 --
--- Name: findobjectancestorsfromcode(character varying, boolean); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: findobjectancestorsfromcode(character varying, boolean); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findobjectancestorsfromcode(thiscode character varying, includeself boolean) RETURNS SETOF public.tblobject
@@ -1678,10 +1558,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.findobjectancestorsfromcode(thiscode character varying, includeself boolean) OWNER TO aps03pwb;
-
 --
--- Name: findobjectdescendants(uuid, boolean); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: findobjectdescendants(uuid, boolean); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findobjectdescendants(uuid, boolean) RETURNS SETOF public.tblobject
@@ -1691,10 +1569,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.findobjectdescendants(uuid, boolean) OWNER TO lucasm;
-
 --
--- Name: findobjectdescendantsfromcode(character varying, boolean); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: findobjectdescendantsfromcode(character varying, boolean); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findobjectdescendantsfromcode(thiscode character varying, includeself boolean) RETURNS SETOF public.tblobject
@@ -1720,10 +1596,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.findobjectdescendantsfromcode(thiscode character varying, includeself boolean) OWNER TO aps03pwb;
-
 --
--- Name: findobjectsanddescendantswhere(text); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: findobjectsanddescendantswhere(text); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findobjectsanddescendantswhere(whereclause text) RETURNS SETOF public.tblobject
@@ -1733,10 +1607,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.findobjectsanddescendantswhere(whereclause text) OWNER TO lucasm;
-
 --
--- Name: findobjecttoplevelancestor(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: findobjecttoplevelancestor(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findobjecttoplevelancestor(objid uuid) RETURNS public.tblobject
@@ -1761,10 +1633,8 @@ $$
     LANGUAGE plpgsql STABLE;
 
 
-ALTER FUNCTION cpgdb.findobjecttoplevelancestor(objid uuid) OWNER TO lucasm;
-
 --
--- Name: findvmchildren(uuid, boolean); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: findvmchildren(uuid, boolean); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findvmchildren(uuid, boolean) RETURNS SETOF public.typvmeasurementsearchresult
@@ -1774,12 +1644,10 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.findvmchildren(uuid, boolean) OWNER TO lucasm;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: tblmeasurement; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblmeasurement; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblmeasurement (
@@ -1806,12 +1674,10 @@ CREATE TABLE tblmeasurement (
 );
 
 
-ALTER TABLE public.tblmeasurement OWNER TO aps03pwb;
-
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: findvmparentmeasurements(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: findvmparentmeasurements(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findvmparentmeasurements(uuid) RETURNS SETOF public.tblmeasurement
@@ -1824,10 +1690,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.findvmparentmeasurements(uuid) OWNER TO lucasm;
-
 --
--- Name: findvmparents(uuid, boolean); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: findvmparents(uuid, boolean); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION findvmparents(uuid, boolean) RETURNS SETOF public.typvmeasurementsearchresult
@@ -1837,10 +1701,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.findvmparents(uuid, boolean) OWNER TO lucasm;
-
 --
--- Name: finishcrossdate(uuid, integer, uuid, text, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: finishcrossdate(uuid, integer, uuid, text, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION finishcrossdate(uuid, integer, uuid, text, integer) RETURNS integer
@@ -1896,10 +1758,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.finishcrossdate(uuid, integer, uuid, text, integer) OWNER TO lucasm;
-
 --
--- Name: finishcrossdate(uuid, integer, integer, text); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: finishcrossdate(uuid, integer, integer, text); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION finishcrossdate(uuid, integer, integer, text) RETURNS integer
@@ -1939,10 +1799,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.finishcrossdate(uuid, integer, integer, text) OWNER TO lucasm;
-
 --
--- Name: finishredate(uuid, integer, integer, text); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: finishredate(uuid, integer, integer, text); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION finishredate(uuid, integer, integer, text) RETURNS integer
@@ -1982,10 +1840,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.finishredate(uuid, integer, integer, text) OWNER TO lucasm;
-
 --
--- Name: finishtruncate(uuid, integer, integer, text); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: finishtruncate(uuid, integer, integer, text); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION finishtruncate(uuid, integer, integer, text) RETURNS integer
@@ -2041,12 +1897,10 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.finishtruncate(uuid, integer, integer, text) OWNER TO lucasm;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: tblvmeasurementderivedcache; Type: TABLE; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: tblvmeasurementderivedcache; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblvmeasurementderivedcache (
@@ -2056,10 +1910,8 @@ CREATE TABLE tblvmeasurementderivedcache (
 );
 
 
-ALTER TABLE public.tblvmeasurementderivedcache OWNER TO lucasm;
-
 --
--- Name: TABLE tblvmeasurementderivedcache; Type: COMMENT; Schema: public; Owner: lucasm
+-- Name: TABLE tblvmeasurementderivedcache; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON TABLE tblvmeasurementderivedcache IS 'A non-recursive cache for breaking down vmeasurement derivations. Provides a map from vmeasurementid (one) to measurementid (many) and vice versa. Updated by metacache functions.';
@@ -2068,7 +1920,7 @@ COMMENT ON TABLE tblvmeasurementderivedcache IS 'A non-recursive cache for break
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: getderivedcache(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getderivedcache(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getderivedcache(uuid) RETURNS SETOF public.tblvmeasurementderivedcache
@@ -2079,12 +1931,10 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.getderivedcache(uuid) OWNER TO lucasm;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: tblsecuritygroup; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblsecuritygroup; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblsecuritygroup (
@@ -2095,12 +1945,10 @@ CREATE TABLE tblsecuritygroup (
 );
 
 
-ALTER TABLE public.tblsecuritygroup OWNER TO aps03pwb;
-
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: getgroupmembership(integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getgroupmembership(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getgroupmembership(integer) RETURNS SETOF public.tblsecuritygroup
@@ -2130,10 +1978,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.getgroupmembership(integer) OWNER TO lucasm;
-
 --
--- Name: getgroupmembershiparray(integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getgroupmembershiparray(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getgroupmembershiparray(integer) RETURNS integer[]
@@ -2143,10 +1989,8 @@ $_$
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION cpgdb.getgroupmembershiparray(integer) OWNER TO lucasm;
-
 --
--- Name: getgrouppermissions(integer[], character varying, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getgrouppermissions(integer[], character varying, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getgrouppermissions(integer[], character varying, integer) RETURNS character varying[]
@@ -2235,10 +2079,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.getgrouppermissions(integer[], character varying, integer) OWNER TO lucasm;
-
 --
--- Name: getgrouppermissionset(integer[], character varying, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getgrouppermissionset(integer[], character varying, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getgrouppermissionset(_groupids integer[], _permtype character varying, _pid integer) RETURNS public.typpermissionset
@@ -2392,10 +2234,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.getgrouppermissionset(_groupids integer[], _permtype character varying, _pid integer) OWNER TO lucasm;
-
 --
--- Name: getgrouppermissionset(integer[], character varying, uuid); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: getgrouppermissionset(integer[], character varying, uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getgrouppermissionset(_groupids integer[], _permtype character varying, _pid uuid) RETURNS public.typpermissionset
@@ -2551,10 +2391,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.getgrouppermissionset(_groupids integer[], _permtype character varying, _pid uuid) OWNER TO aps03pwb;
-
 --
--- Name: getlabel(text, uuid, boolean); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getlabel(text, uuid, boolean); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getlabel(text, uuid, boolean) RETURNS text
@@ -2693,10 +2531,8 @@ $_$
     LANGUAGE plpgsql STABLE;
 
 
-ALTER FUNCTION cpgdb.getlabel(text, uuid, boolean) OWNER TO lucasm;
-
 --
--- Name: getmetacache(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getmetacache(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getmetacache(uuid) RETURNS public.tblvmeasurementmetacache
@@ -2721,10 +2557,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.getmetacache(uuid) OWNER TO lucasm;
-
 --
--- Name: getnote(text, text); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getnote(text, text); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getnote(text, text) RETURNS public.tlkpreadingnote
@@ -2747,10 +2581,8 @@ $_$
     LANGUAGE plpgsql STABLE;
 
 
-ALTER FUNCTION cpgdb.getnote(text, text) OWNER TO lucasm;
-
 --
--- Name: getrequestxml(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: getrequestxml(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getrequestxml(requestid integer) RETURNS character varying
@@ -2766,10 +2598,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.getrequestxml(requestid integer) OWNER TO aps03pwb;
-
 --
--- Name: getsearchresultforid(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getsearchresultforid(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getsearchresultforid(uuid) RETURNS public.typvmeasurementsearchresult
@@ -2801,10 +2631,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.getsearchresultforid(uuid) OWNER TO lucasm;
-
 --
--- Name: getusedversionsforconstituents(uuid[]); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getusedversionsforconstituents(uuid[]); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getusedversionsforconstituents(uuid[]) RETURNS SETOF text
@@ -2823,10 +2651,8 @@ $_$
     LANGUAGE sql STABLE;
 
 
-ALTER FUNCTION cpgdb.getusedversionsforconstituents(uuid[]) OWNER TO lucasm;
-
 --
--- Name: getuserpermissions(integer, character varying, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getuserpermissions(integer, character varying, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getuserpermissions(integer, character varying, integer) RETURNS character varying[]
@@ -2854,10 +2680,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.getuserpermissions(integer, character varying, integer) OWNER TO lucasm;
-
 --
--- Name: getuserpermissionset(integer, character varying, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getuserpermissionset(integer, character varying, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getuserpermissionset(integer, character varying, integer) RETURNS public.typpermissionset
@@ -2901,10 +2725,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.getuserpermissionset(integer, character varying, integer) OWNER TO lucasm;
-
 --
--- Name: getuserpermissionset(integer, character varying, uuid); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: getuserpermissionset(integer, character varying, uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getuserpermissionset(integer, character varying, uuid) RETURNS public.typpermissionset
@@ -2950,10 +2772,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.getuserpermissionset(integer, character varying, uuid) OWNER TO aps03pwb;
-
 --
--- Name: getvmeasurementlabel(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getvmeasurementlabel(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getvmeasurementlabel(uuid) RETURNS text
@@ -2963,10 +2783,8 @@ $_$
     LANGUAGE sql STABLE;
 
 
-ALTER FUNCTION cpgdb.getvmeasurementlabel(uuid) OWNER TO lucasm;
-
 --
--- Name: getvmeasurementprefix(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getvmeasurementprefix(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getvmeasurementprefix(uuid) RETURNS text
@@ -2976,12 +2794,10 @@ $_$
     LANGUAGE sql STABLE;
 
 
-ALTER FUNCTION cpgdb.getvmeasurementprefix(uuid) OWNER TO lucasm;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: tblvmeasurementreadingresult; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblvmeasurementreadingresult; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblvmeasurementreadingresult (
@@ -2996,12 +2812,10 @@ CREATE TABLE tblvmeasurementreadingresult (
 );
 
 
-ALTER TABLE public.tblvmeasurementreadingresult OWNER TO aps03pwb;
-
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: getvmeasurementreadingresult(character varying); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getvmeasurementreadingresult(character varying); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getvmeasurementreadingresult(character varying) RETURNS SETOF public.tblvmeasurementreadingresult
@@ -3009,12 +2823,10 @@ CREATE FUNCTION getvmeasurementreadingresult(character varying) RETURNS SETOF pu
     LANGUAGE sql STABLE;
 
 
-ALTER FUNCTION cpgdb.getvmeasurementreadingresult(character varying) OWNER TO lucasm;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: tblvmeasurementresult; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblvmeasurementresult; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblvmeasurementresult (
@@ -3038,12 +2850,10 @@ CREATE TABLE tblvmeasurementresult (
 );
 
 
-ALTER TABLE public.tblvmeasurementresult OWNER TO aps03pwb;
-
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: getvmeasurementresult(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getvmeasurementresult(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getvmeasurementresult(uuid) RETURNS SETOF public.tblvmeasurementresult
@@ -3051,10 +2861,8 @@ CREATE FUNCTION getvmeasurementresult(uuid) RETURNS SETOF public.tblvmeasurement
     LANGUAGE javau;
 
 
-ALTER FUNCTION cpgdb.getvmeasurementresult(uuid) OWNER TO lucasm;
-
 --
--- Name: getvmeasurementresultid(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getvmeasurementresultid(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getvmeasurementresultid(uuid) RETURNS character varying
@@ -3062,10 +2870,8 @@ CREATE FUNCTION getvmeasurementresultid(uuid) RETURNS character varying
     LANGUAGE javau;
 
 
-ALTER FUNCTION cpgdb.getvmeasurementresultid(uuid) OWNER TO lucasm;
-
 --
--- Name: getvmeasurementsummaryinfo(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: getvmeasurementsummaryinfo(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION getvmeasurementsummaryinfo(uuid) RETURNS public.typvmeasurementsummaryinfo
@@ -3154,10 +2960,8 @@ $_$
     LANGUAGE plpgsql STABLE;
 
 
-ALTER FUNCTION cpgdb.getvmeasurementsummaryinfo(uuid) OWNER TO lucasm;
-
 --
--- Name: isadmin(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: isadmin(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION isadmin(securityuserid integer) RETURNS boolean
@@ -3172,10 +2976,8 @@ where securitygroupsbyuser=1;$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.isadmin(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: lookupenvdata(integer, integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: lookupenvdata(integer, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION lookupenvdata(theelementid integer, therasterlayerid integer) RETURNS double precision
@@ -3216,10 +3018,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.lookupenvdata(theelementid integer, therasterlayerid integer) OWNER TO aps03pwb;
-
 --
--- Name: lookupenvdatabylayer(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: lookupenvdatabylayer(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION lookupenvdatabylayer(therasterlayerid integer) RETURNS void
@@ -3249,10 +3049,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.lookupenvdatabylayer(therasterlayerid integer) OWNER TO aps03pwb;
-
 --
--- Name: lookupenvdatabytree(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: lookupenvdatabytree(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION lookupenvdatabytree(theelementid integer) RETURNS void
@@ -3281,12 +3079,10 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.lookupenvdatabytree(theelementid integer) OWNER TO aps03pwb;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: geometrytype(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometrytype(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometrytype(geometry) RETURNS text
@@ -3294,10 +3090,8 @@ CREATE FUNCTION geometrytype(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometrytype(geometry) OWNER TO aps03pwb;
-
 --
--- Name: tblelement; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblelement; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblelement (
@@ -3347,38 +3141,36 @@ CREATE TABLE tblelement (
 );
 
 
-ALTER TABLE public.tblelement OWNER TO aps03pwb;
-
 --
--- Name: COLUMN tblelement.locationprecision; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblelement.locationprecision; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblelement.locationprecision IS 'precision of lat/long in meters';
 
 
 --
--- Name: COLUMN tblelement.description; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblelement.description; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblelement.description IS 'Other information about the element';
 
 
 --
--- Name: COLUMN tblelement.processing; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblelement.processing; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblelement.processing IS 'Processing (carved, sawn etc) rafting marks';
 
 
 --
--- Name: COLUMN tblelement.marks; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblelement.marks; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblelement.marks IS 'Carpenter marks inscriptions';
 
 
 --
--- Name: COLUMN tblelement.unsupportedxml; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblelement.unsupportedxml; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblelement.unsupportedxml IS 'Raw XML for fields that are not currently supported in Corina';
@@ -3387,7 +3179,7 @@ COMMENT ON COLUMN tblelement.unsupportedxml IS 'Raw XML for fields that are not 
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: mergeelements(uuid, uuid); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: mergeelements(uuid, uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION mergeelements(goodelementid uuid, badelementid uuid) RETURNS public.tblelement
@@ -3742,10 +3534,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.mergeelements(goodelementid uuid, badelementid uuid) OWNER TO aps03pwb;
-
 --
--- Name: mergeobjects(uuid, uuid); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: mergeobjects(uuid, uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION mergeobjects(goodobject uuid, badobject uuid) RETURNS public.tblobject
@@ -3984,12 +3774,10 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.mergeobjects(goodobject uuid, badobject uuid) OWNER TO aps03pwb;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: tblradius; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblradius; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblradius (
@@ -4016,12 +3804,10 @@ CREATE TABLE tblradius (
 );
 
 
-ALTER TABLE public.tblradius OWNER TO aps03pwb;
-
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: mergeradii(uuid, uuid); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: mergeradii(uuid, uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION mergeradii(goodradiusid uuid, badradiusid uuid) RETURNS public.tblradius
@@ -4229,10 +4015,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.mergeradii(goodradiusid uuid, badradiusid uuid) OWNER TO aps03pwb;
-
 --
--- Name: FUNCTION mergeradii(goodradiusid uuid, badradiusid uuid); Type: COMMENT; Schema: cpgdb; Owner: aps03pwb
+-- Name: FUNCTION mergeradii(goodradiusid uuid, badradiusid uuid); Type: COMMENT; Schema: cpgdb; Owner: -
 --
 
 COMMENT ON FUNCTION mergeradii(goodradiusid uuid, badradiusid uuid) IS 'This function merges a ''bad'' radius with a ''good'' radius.  References to the bad radius are changed to point to the new radius, any discrepancies between fields are marked in the comments field and then the ''bad'' radius is deleted.';
@@ -4241,7 +4025,7 @@ COMMENT ON FUNCTION mergeradii(goodradiusid uuid, badradiusid uuid) IS 'This fun
 SET search_path = public, pg_catalog;
 
 --
--- Name: tblsample; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblsample; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblsample (
@@ -4265,10 +4049,8 @@ CREATE TABLE tblsample (
 );
 
 
-ALTER TABLE public.tblsample OWNER TO aps03pwb;
-
 --
--- Name: COLUMN tblsample.sampleid; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblsample.sampleid; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblsample.sampleid IS 'Unique sample indentifier
@@ -4276,49 +4058,49 @@ COMMENT ON COLUMN tblsample.sampleid IS 'Unique sample indentifier
 
 
 --
--- Name: COLUMN tblsample.samplingdate; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblsample.samplingdate; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblsample.samplingdate IS 'Year of dendrochronological sampling';
 
 
 --
--- Name: COLUMN tblsample.identifierdomain; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblsample.identifierdomain; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblsample.identifierdomain IS 'Domain from which the identifier-value was issued';
 
 
 --
--- Name: COLUMN tblsample.file; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblsample.file; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblsample.file IS 'Digital photo or scanned image filenames';
 
 
 --
--- Name: COLUMN tblsample."position"; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblsample."position"; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblsample."position" IS 'Position of sample in element';
 
 
 --
--- Name: COLUMN tblsample.state; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblsample.state; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblsample.state IS 'State of material (dry / wet / conserved / burned / woodworm/ rot / cracks) things that indicate the quality of the measurements';
 
 
 --
--- Name: COLUMN tblsample.knots; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblsample.knots; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblsample.knots IS 'Presence of knots';
 
 
 --
--- Name: COLUMN tblsample.description; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblsample.description; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblsample.description IS 'More information about the sample';
@@ -4327,7 +4109,7 @@ COMMENT ON COLUMN tblsample.description IS 'More information about the sample';
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: mergesamples(uuid, uuid); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: mergesamples(uuid, uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION mergesamples(goodsample uuid, badsample uuid) RETURNS public.tblsample
@@ -4526,10 +4308,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.mergesamples(goodsample uuid, badsample uuid) OWNER TO aps03pwb;
-
 --
--- Name: mpsobject(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: mpsobject(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION mpsobject(securityuserid integer) RETURNS SETOF public.tblobject
@@ -4559,10 +4339,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.mpsobject(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: mpstree(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: mpstree(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION mpstree(securityuserid integer) RETURNS SETOF public.tblelement
@@ -4592,10 +4370,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.mpstree(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: mpsvmeasurementmetacache(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: mpsvmeasurementmetacache(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION mpsvmeasurementmetacache(securityuserid integer) RETURNS SETOF public.tblvmeasurementmetacache
@@ -4625,10 +4401,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.mpsvmeasurementmetacache(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: objectregionmodified(); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: objectregionmodified(); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION objectregionmodified() RETURNS trigger
@@ -4642,10 +4416,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.objectregionmodified() OWNER TO aps03pwb;
-
 --
--- Name: populate_cache(); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: populate_cache(); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION populate_cache() RETURNS text
@@ -4688,10 +4460,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.populate_cache() OWNER TO lucasm;
-
 --
--- Name: populate_cache_gaps(); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: populate_cache_gaps(); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION populate_cache_gaps() RETURNS text
@@ -4701,10 +4471,8 @@ $$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.populate_cache_gaps() OWNER TO lucasm;
-
 --
--- Name: populate_cache_gaps(integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: populate_cache_gaps(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION populate_cache_gaps(maxcnt integer) RETURNS text
@@ -4751,10 +4519,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.populate_cache_gaps(maxcnt integer) OWNER TO lucasm;
-
 --
--- Name: qappvmeasurementresultreadingopsum(uuid, uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: qappvmeasurementresultreadingopsum(uuid, uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION qappvmeasurementresultreadingopsum(uuid, uuid) RETURNS integer
@@ -4856,10 +4622,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.qappvmeasurementresultreadingopsum(uuid, uuid) OWNER TO lucasm;
-
 --
--- Name: qrytaxonflat1(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: qrytaxonflat1(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION qrytaxonflat1(taxonid integer) RETURNS SETOF public.typtaxonrankname
@@ -4893,10 +4657,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.qrytaxonflat1(taxonid integer) OWNER TO aps03pwb;
-
 --
--- Name: qrytaxonflat2(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: qrytaxonflat2(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION qrytaxonflat2(taxonid integer) RETURNS SETOF public.typtaxonflat2
@@ -4911,10 +4673,8 @@ ORDER BY tlkptaxonrank.rankorder ASC;$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.qrytaxonflat2(taxonid integer) OWNER TO aps03pwb;
-
 --
--- Name: qrytaxonomy(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: qrytaxonomy(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION qrytaxonomy(taxonid integer) RETURNS public.typfulltaxonomy
@@ -4948,17 +4708,15 @@ subform text);$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.qrytaxonomy(taxonid integer) OWNER TO aps03pwb;
-
 --
--- Name: FUNCTION qrytaxonomy(taxonid integer); Type: COMMENT; Schema: cpgdb; Owner: aps03pwb
+-- Name: FUNCTION qrytaxonomy(taxonid integer); Type: COMMENT; Schema: cpgdb; Owner: -
 --
 
 COMMENT ON FUNCTION qrytaxonomy(taxonid integer) IS 'This is a cross tab query that builds on qrytaxonflat1 and 2 to flatten out the entire taxonomic tree for a given taxonid. ';
 
 
 --
--- Name: qupdvmeasurementresultinfo(uuid); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: qupdvmeasurementresultinfo(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION qupdvmeasurementresultinfo(uuid) RETURNS boolean
@@ -4996,10 +4754,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.qupdvmeasurementresultinfo(uuid) OWNER TO lucasm;
-
 --
--- Name: rasteratpoint(character varying, double precision, double precision); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: rasteratpoint(character varying, double precision, double precision); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION rasteratpoint(rasterfile character varying, latitude double precision, longitude double precision) RETURNS double precision
@@ -5032,10 +4788,8 @@ return myCellValue$$
     LANGUAGE plpythonu;
 
 
-ALTER FUNCTION cpgdb.rasteratpoint(rasterfile character varying, latitude double precision, longitude double precision) OWNER TO aps03pwb;
-
 --
--- Name: recursefindobjectancestors(uuid, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: recursefindobjectancestors(uuid, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION recursefindobjectancestors(objid uuid, _recursionlevel integer) RETURNS SETOF public.tblobject
@@ -5077,10 +4831,8 @@ $$
     LANGUAGE plpgsql STABLE;
 
 
-ALTER FUNCTION cpgdb.recursefindobjectancestors(objid uuid, _recursionlevel integer) OWNER TO lucasm;
-
 --
--- Name: recursefindobjectdescendants(uuid, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: recursefindobjectdescendants(uuid, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION recursefindobjectdescendants(objid uuid, _recursionlevel integer) RETURNS SETOF public.tblobject
@@ -5128,10 +4880,8 @@ $$
     LANGUAGE plpgsql STABLE;
 
 
-ALTER FUNCTION cpgdb.recursefindobjectdescendants(objid uuid, _recursionlevel integer) OWNER TO lucasm;
-
 --
--- Name: recursefindvmchildren(uuid, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: recursefindvmchildren(uuid, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION recursefindvmchildren(uuid, integer) RETURNS SETOF public.typvmeasurementsearchresult
@@ -5201,10 +4951,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.recursefindvmchildren(uuid, integer) OWNER TO lucasm;
-
 --
--- Name: recursefindvmparents(uuid, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: recursefindvmparents(uuid, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION recursefindvmparents(uuid, integer) RETURNS SETOF public.typvmeasurementsearchresult
@@ -5279,10 +5027,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.recursefindvmparents(uuid, integer) OWNER TO lucasm;
-
 --
--- Name: recursegetparentgroups(integer, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: recursegetparentgroups(integer, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION recursegetparentgroups(integer, integer) RETURNS SETOF public.tblsecuritygroup
@@ -5316,10 +5062,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.recursegetparentgroups(integer, integer) OWNER TO lucasm;
-
 --
--- Name: removereadingnote(uuid, integer, integer); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: removereadingnote(uuid, integer, integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION removereadingnote(uuid, integer, integer) RETURNS integer
@@ -5368,10 +5112,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.removereadingnote(uuid, integer, integer) OWNER TO lucasm;
-
 --
--- Name: resultnotestojson(integer[], integer[]); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: resultnotestojson(integer[], integer[]); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION resultnotestojson(integer[], integer[]) RETURNS text
@@ -5437,10 +5179,8 @@ $_$
     LANGUAGE plpgsql STABLE;
 
 
-ALTER FUNCTION cpgdb.resultnotestojson(integer[], integer[]) OWNER TO lucasm;
-
 --
--- Name: text_to_uuid(text); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: text_to_uuid(text); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION text_to_uuid(text) RETURNS uuid
@@ -5450,10 +5190,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdb.text_to_uuid(text) OWNER TO lucasm;
-
 --
--- Name: update_allobjectextents(); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: update_allobjectextents(); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION update_allobjectextents() RETURNS boolean
@@ -5472,10 +5210,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.update_allobjectextents() OWNER TO aps03pwb;
-
 --
--- Name: update_allobjectregions(); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: update_allobjectregions(); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION update_allobjectregions() RETURNS boolean
@@ -5494,10 +5230,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.update_allobjectregions() OWNER TO aps03pwb;
-
 --
--- Name: update_objectextentbyobject(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: update_objectextentbyobject(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION update_objectextentbyobject(theobjectid integer) RETURNS public.geometry
@@ -5551,10 +5285,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.update_objectextentbyobject(theobjectid integer) OWNER TO aps03pwb;
-
 --
--- Name: update_objectextentbysubobject(integer); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: update_objectextentbysubobject(integer); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION update_objectextentbysubobject(subobjectid integer) RETURNS public.geometry
@@ -5570,10 +5302,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.update_objectextentbysubobject(subobjectid integer) OWNER TO aps03pwb;
-
 --
--- Name: update_objectregions(integer, character varying); Type: FUNCTION; Schema: cpgdb; Owner: aps03pwb
+-- Name: update_objectregions(integer, character varying); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION update_objectregions(pkeyid integer, type character varying) RETURNS boolean
@@ -5621,10 +5351,8 @@ END;$_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.update_objectregions(pkeyid integer, type character varying) OWNER TO aps03pwb;
-
 --
--- Name: verifysumsarecontiguousanddated(uuid[]); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: verifysumsarecontiguousanddated(uuid[]); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION verifysumsarecontiguousanddated(uuid[]) RETURNS boolean
@@ -5691,10 +5419,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.verifysumsarecontiguousanddated(uuid[]) OWNER TO lucasm;
-
 --
--- Name: vmeasurementmodifiedcachetrigger(); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: vmeasurementmodifiedcachetrigger(); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION vmeasurementmodifiedcachetrigger() RETURNS trigger
@@ -5716,10 +5442,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.vmeasurementmodifiedcachetrigger() OWNER TO lucasm;
-
 --
--- Name: vmeasurementmodifiedtrigger(); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: vmeasurementmodifiedtrigger(); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION vmeasurementmodifiedtrigger() RETURNS trigger
@@ -5746,10 +5470,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.vmeasurementmodifiedtrigger() OWNER TO lucasm;
-
 --
--- Name: vmeasurementrelyearnotetrigger(); Type: FUNCTION; Schema: cpgdb; Owner: lucasm
+-- Name: vmeasurementrelyearnotetrigger(); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
 CREATE FUNCTION vmeasurementrelyearnotetrigger() RETURNS trigger
@@ -5776,12 +5498,10 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdb.vmeasurementrelyearnotetrigger() OWNER TO lucasm;
-
 SET search_path = cpgdbj, pg_catalog;
 
 --
--- Name: applyderivedreadingnotes(uuid, uuid, uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: applyderivedreadingnotes(uuid, uuid, uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION applyderivedreadingnotes(uuid, uuid, uuid, uuid) RETURNS void
@@ -5838,10 +5558,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdbj.applyderivedreadingnotes(uuid, uuid, uuid, uuid) OWNER TO lucasm;
-
 --
--- Name: qacqvmeasurementreadingresult(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qacqvmeasurementreadingresult(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qacqvmeasurementreadingresult(paramcurrentvmeasurementresultid uuid, OUT relyear integer, OUT reading integer) RETURNS SETOF record
@@ -5855,10 +5573,8 @@ $_$
     LANGUAGE sql STABLE;
 
 
-ALTER FUNCTION cpgdbj.qacqvmeasurementreadingresult(paramcurrentvmeasurementresultid uuid, OUT relyear integer, OUT reading integer) OWNER TO lucasm;
-
 --
--- Name: qappvmeasurementreadingnoteresult(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementreadingnoteresult(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qappvmeasurementreadingnoteresult(paramvmeasurementresultid uuid) RETURNS void
@@ -5875,10 +5591,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdbj.qappvmeasurementreadingnoteresult(paramvmeasurementresultid uuid) OWNER TO lucasm;
-
 --
--- Name: qappvmeasurementreadingresult(uuid, integer); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementreadingresult(uuid, integer); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qappvmeasurementreadingresult(paramvmeasurementresultid uuid, parammeasurementid integer) RETURNS void
@@ -5893,10 +5607,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdbj.qappvmeasurementreadingresult(paramvmeasurementresultid uuid, parammeasurementid integer) OWNER TO lucasm;
-
 --
--- Name: qappvmeasurementresult(uuid, uuid, uuid, uuid, integer, integer); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementresult(uuid, uuid, uuid, uuid, integer, integer); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qappvmeasurementresult(paramvmeasurementresultid uuid, paramvmeasurementid uuid, paramvmeasurementresultgroupid uuid, paramvmeasurementresultmasterid uuid, owneruserid integer, parammeasurementid integer) RETURNS void
@@ -5913,10 +5625,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdbj.qappvmeasurementresult(paramvmeasurementresultid uuid, paramvmeasurementid uuid, paramvmeasurementresultgroupid uuid, paramvmeasurementresultmasterid uuid, owneruserid integer, parammeasurementid integer) OWNER TO lucasm;
-
 --
--- Name: qappvmeasurementresultopindex(uuid, uuid, uuid, integer, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementresultopindex(uuid, uuid, uuid, integer, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qappvmeasurementresultopindex(paramnewvmeasurementresultid uuid, paramvmeasurementid uuid, paramvmeasurementresultmasterid uuid, owneruserid integer, paramcurrentvmeasurementresultid uuid) RETURNS void
@@ -5933,10 +5643,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdbj.qappvmeasurementresultopindex(paramnewvmeasurementresultid uuid, paramvmeasurementid uuid, paramvmeasurementresultmasterid uuid, owneruserid integer, paramcurrentvmeasurementresultid uuid) OWNER TO lucasm;
-
 --
--- Name: qappvmeasurementresultopsum(uuid, uuid, uuid, integer, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementresultopsum(uuid, uuid, uuid, integer, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qappvmeasurementresultopsum(paramnewvmeasurementresultid uuid, paramvmeasurementid uuid, paramvmeasurementresultmasterid uuid, owneruserid integer, paramvmeasurementresultgroupid uuid) RETURNS void
@@ -5951,10 +5659,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdbj.qappvmeasurementresultopsum(paramnewvmeasurementresultid uuid, paramvmeasurementid uuid, paramvmeasurementresultmasterid uuid, owneruserid integer, paramvmeasurementresultgroupid uuid) OWNER TO lucasm;
-
 --
--- Name: qappvmeasurementresultreadingopsum(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementresultreadingopsum(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qappvmeasurementresultreadingopsum(paramnewvmeasurementresultgroupid uuid, paramnewvmeasurementresultid uuid) RETURNS integer
@@ -5966,10 +5672,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdbj.qappvmeasurementresultreadingopsum(paramnewvmeasurementresultgroupid uuid, paramnewvmeasurementresultid uuid) OWNER TO lucasm;
-
 --
--- Name: qdelvmeasurementresultremovemasterid(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qdelvmeasurementresultremovemasterid(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qdelvmeasurementresultremovemasterid(paramvmeasurementresultmasterid uuid, paramvmeasurementresultid uuid) RETURNS void
@@ -5983,10 +5687,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdbj.qdelvmeasurementresultremovemasterid(paramvmeasurementresultmasterid uuid, paramvmeasurementresultid uuid) OWNER TO lucasm;
-
 --
--- Name: qryvmeasurementmembers(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qryvmeasurementmembers(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qryvmeasurementmembers(paramvmeasurementid uuid, OUT vmeasurementid uuid, OUT membervmeasurementid uuid) RETURNS SETOF record
@@ -6002,10 +5704,8 @@ $_$
     LANGUAGE sql STABLE;
 
 
-ALTER FUNCTION cpgdbj.qryvmeasurementmembers(paramvmeasurementid uuid, OUT vmeasurementid uuid, OUT membervmeasurementid uuid) OWNER TO lucasm;
-
 --
--- Name: qryvmeasurementtype(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qryvmeasurementtype(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qryvmeasurementtype(vmeasurementid uuid, OUT vmeasurementid uuid, OUT op text, OUT vmeasurementsingroup bigint, OUT measurementid integer, OUT vmeasurementopparameter integer) RETURNS record
@@ -6024,10 +5724,8 @@ $_$
     LANGUAGE sql STABLE;
 
 
-ALTER FUNCTION cpgdbj.qryvmeasurementtype(vmeasurementid uuid, OUT vmeasurementid uuid, OUT op text, OUT vmeasurementsingroup bigint, OUT measurementid integer, OUT vmeasurementopparameter integer) OWNER TO lucasm;
-
 --
--- Name: qupdvmeasurementresultattachgroupid(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultattachgroupid(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qupdvmeasurementresultattachgroupid(paramvmeasurementresultgroupid uuid, paramvmeasurementresultid uuid) RETURNS void
@@ -6041,10 +5739,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdbj.qupdvmeasurementresultattachgroupid(paramvmeasurementresultgroupid uuid, paramvmeasurementresultid uuid) OWNER TO lucasm;
-
 --
--- Name: qupdvmeasurementresultcleargroupid(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultcleargroupid(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qupdvmeasurementresultcleargroupid(paramvmeasurementresultgroupid uuid) RETURNS void
@@ -6058,10 +5754,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdbj.qupdvmeasurementresultcleargroupid(paramvmeasurementresultgroupid uuid) OWNER TO lucasm;
-
 --
--- Name: qupdvmeasurementresultinfo(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultinfo(uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qupdvmeasurementresultinfo(uuid) RETURNS boolean
@@ -6099,10 +5793,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdbj.qupdvmeasurementresultinfo(uuid) OWNER TO lucasm;
-
 --
--- Name: qupdvmeasurementresultopclean(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultopclean(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qupdvmeasurementresultopclean(paramvmeasurementid uuid, paramcurrentvmeasurementresultid uuid) RETURNS void
@@ -6116,10 +5808,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION cpgdbj.qupdvmeasurementresultopclean(paramvmeasurementid uuid, paramcurrentvmeasurementresultid uuid) OWNER TO lucasm;
-
 --
--- Name: qupdvmeasurementresultopcrossdate(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultopcrossdate(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qupdvmeasurementresultopcrossdate(paramvmeasurementid uuid, paramcurrentvmeasurementresultid uuid) RETURNS void
@@ -6146,10 +5836,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdbj.qupdvmeasurementresultopcrossdate(paramvmeasurementid uuid, paramcurrentvmeasurementresultid uuid) OWNER TO lucasm;
-
 --
--- Name: qupdvmeasurementresultopredate(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultopredate(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qupdvmeasurementresultopredate(paramvmeasurementid uuid, paramcurrentvmeasurementresultid uuid) RETURNS void
@@ -6178,10 +5866,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdbj.qupdvmeasurementresultopredate(paramvmeasurementid uuid, paramcurrentvmeasurementresultid uuid) OWNER TO lucasm;
-
 --
--- Name: qupdvmeasurementresultoptruncate(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultoptruncate(uuid, uuid); Type: FUNCTION; Schema: cpgdbj; Owner: -
 --
 
 CREATE FUNCTION qupdvmeasurementresultoptruncate(paramvmeasurementid uuid, paramvmeasurementresultid uuid) RETURNS void
@@ -6229,12 +5915,10 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION cpgdbj.qupdvmeasurementresultoptruncate(paramvmeasurementid uuid, paramvmeasurementresultid uuid) OWNER TO lucasm;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: _st_asgml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: _st_asgml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION _st_asgml(integer, geometry, integer) RETURNS text
@@ -6242,10 +5926,8 @@ CREATE FUNCTION _st_asgml(integer, geometry, integer) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public._st_asgml(integer, geometry, integer) OWNER TO postgres;
-
 --
--- Name: _st_askml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: _st_askml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION _st_askml(integer, geometry, integer) RETURNS text
@@ -6253,10 +5935,8 @@ CREATE FUNCTION _st_askml(integer, geometry, integer) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public._st_askml(integer, geometry, integer) OWNER TO postgres;
-
 --
--- Name: _st_contains(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: _st_contains(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION _st_contains(geometry, geometry) RETURNS boolean
@@ -6264,10 +5944,8 @@ CREATE FUNCTION _st_contains(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public._st_contains(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: _st_crosses(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: _st_crosses(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION _st_crosses(geometry, geometry) RETURNS boolean
@@ -6275,10 +5953,8 @@ CREATE FUNCTION _st_crosses(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public._st_crosses(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: _st_intersects(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: _st_intersects(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION _st_intersects(geometry, geometry) RETURNS boolean
@@ -6286,10 +5962,8 @@ CREATE FUNCTION _st_intersects(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public._st_intersects(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: _st_overlaps(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: _st_overlaps(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION _st_overlaps(geometry, geometry) RETURNS boolean
@@ -6297,10 +5971,8 @@ CREATE FUNCTION _st_overlaps(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public._st_overlaps(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: _st_touches(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: _st_touches(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION _st_touches(geometry, geometry) RETURNS boolean
@@ -6308,10 +5980,8 @@ CREATE FUNCTION _st_touches(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public._st_touches(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: _st_within(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: _st_within(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION _st_within(geometry, geometry) RETURNS boolean
@@ -6319,10 +5989,8 @@ CREATE FUNCTION _st_within(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public._st_within(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: addauth(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: addauth(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION addauth(text) RETURNS boolean
@@ -6357,10 +6025,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.addauth(text) OWNER TO aps03pwb;
-
 --
--- Name: addbbox(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: addbbox(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION addbbox(geometry) RETURNS geometry
@@ -6368,10 +6034,8 @@ CREATE FUNCTION addbbox(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.addbbox(geometry) OWNER TO aps03pwb;
-
 --
--- Name: addgeometrycolumn(character varying, character varying, character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: addgeometrycolumn(character varying, character varying, character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION addgeometrycolumn(character varying, character varying, character varying, character varying, integer, character varying, integer) RETURNS text
@@ -6525,10 +6189,8 @@ $_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.addgeometrycolumn(character varying, character varying, character varying, character varying, integer, character varying, integer) OWNER TO aps03pwb;
-
 --
--- Name: addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer) RETURNS text
@@ -6543,10 +6205,8 @@ $_$
     LANGUAGE plpgsql STABLE STRICT;
 
 
-ALTER FUNCTION public.addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer) OWNER TO aps03pwb;
-
 --
--- Name: addgeometrycolumn(character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: addgeometrycolumn(character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION addgeometrycolumn(character varying, character varying, integer, character varying, integer) RETURNS text
@@ -6561,10 +6221,8 @@ $_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.addgeometrycolumn(character varying, character varying, integer, character varying, integer) OWNER TO aps03pwb;
-
 --
--- Name: addpoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: addpoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION addpoint(geometry, geometry) RETURNS geometry
@@ -6572,10 +6230,8 @@ CREATE FUNCTION addpoint(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.addpoint(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: addpoint(geometry, geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: addpoint(geometry, geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION addpoint(geometry, geometry, integer) RETURNS geometry
@@ -6583,10 +6239,8 @@ CREATE FUNCTION addpoint(geometry, geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.addpoint(geometry, geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) RETURNS geometry
@@ -6594,10 +6248,8 @@ CREATE FUNCTION affine(geometry, double precision, double precision, double prec
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision) RETURNS geometry
@@ -6605,10 +6257,8 @@ CREATE FUNCTION affine(geometry, double precision, double precision, double prec
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: agg_first(anyelement, anyelement); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: agg_first(anyelement, anyelement); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION agg_first(state anyelement, value anyelement) RETURNS anyelement
@@ -6626,10 +6276,8 @@ $$
     LANGUAGE plpgsql IMMUTABLE;
 
 
-ALTER FUNCTION public.agg_first(state anyelement, value anyelement) OWNER TO aps03pwb;
-
 --
--- Name: area(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: area(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION area(geometry) RETURNS double precision
@@ -6637,10 +6285,8 @@ CREATE FUNCTION area(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.area(geometry) OWNER TO aps03pwb;
-
 --
--- Name: area2d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: area2d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION area2d(geometry) RETURNS double precision
@@ -6648,10 +6294,8 @@ CREATE FUNCTION area2d(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.area2d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: arraytorows(anyarray); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: arraytorows(anyarray); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION arraytorows(arr anyarray) RETURNS SETOF anyelement
@@ -6667,10 +6311,8 @@ $$
     LANGUAGE plpgsql IMMUTABLE;
 
 
-ALTER FUNCTION public.arraytorows(arr anyarray) OWNER TO lucasm;
-
 --
--- Name: asbinary(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asbinary(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asbinary(geometry) RETURNS bytea
@@ -6678,10 +6320,8 @@ CREATE FUNCTION asbinary(geometry) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asbinary(geometry) OWNER TO aps03pwb;
-
 --
--- Name: asbinary(geometry, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asbinary(geometry, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asbinary(geometry, text) RETURNS bytea
@@ -6689,10 +6329,8 @@ CREATE FUNCTION asbinary(geometry, text) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asbinary(geometry, text) OWNER TO aps03pwb;
-
 --
--- Name: asdf(); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: asdf(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asdf() RETURNS record
@@ -6702,10 +6340,8 @@ $$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.asdf() OWNER TO lucasm;
-
 --
--- Name: asewkb(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asewkb(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asewkb(geometry) RETURNS bytea
@@ -6713,10 +6349,8 @@ CREATE FUNCTION asewkb(geometry) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asewkb(geometry) OWNER TO aps03pwb;
-
 --
--- Name: asewkb(geometry, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asewkb(geometry, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asewkb(geometry, text) RETURNS bytea
@@ -6724,10 +6358,8 @@ CREATE FUNCTION asewkb(geometry, text) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asewkb(geometry, text) OWNER TO aps03pwb;
-
 --
--- Name: asewkt(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asewkt(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asewkt(geometry) RETURNS text
@@ -6735,10 +6367,8 @@ CREATE FUNCTION asewkt(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asewkt(geometry) OWNER TO aps03pwb;
-
 --
--- Name: asgml(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asgml(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asgml(geometry, integer, integer) RETURNS text
@@ -6746,10 +6376,8 @@ CREATE FUNCTION asgml(geometry, integer, integer) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asgml(geometry, integer, integer) OWNER TO aps03pwb;
-
 --
--- Name: asgml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asgml(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asgml(geometry, integer) RETURNS text
@@ -6757,10 +6385,8 @@ CREATE FUNCTION asgml(geometry, integer) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asgml(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: asgml(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asgml(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asgml(geometry) RETURNS text
@@ -6768,10 +6394,8 @@ CREATE FUNCTION asgml(geometry) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asgml(geometry) OWNER TO aps03pwb;
-
 --
--- Name: ashexewkb(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: ashexewkb(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION ashexewkb(geometry) RETURNS text
@@ -6779,10 +6403,8 @@ CREATE FUNCTION ashexewkb(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.ashexewkb(geometry) OWNER TO aps03pwb;
-
 --
--- Name: ashexewkb(geometry, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: ashexewkb(geometry, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION ashexewkb(geometry, text) RETURNS text
@@ -6790,10 +6412,8 @@ CREATE FUNCTION ashexewkb(geometry, text) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.ashexewkb(geometry, text) OWNER TO aps03pwb;
-
 --
--- Name: askml(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: askml(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION askml(geometry, integer, integer) RETURNS text
@@ -6801,10 +6421,8 @@ CREATE FUNCTION askml(geometry, integer, integer) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.askml(geometry, integer, integer) OWNER TO aps03pwb;
-
 --
--- Name: askml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: askml(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION askml(geometry, integer) RETURNS text
@@ -6812,10 +6430,8 @@ CREATE FUNCTION askml(geometry, integer) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.askml(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: askml(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: askml(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION askml(geometry) RETURNS text
@@ -6823,10 +6439,8 @@ CREATE FUNCTION askml(geometry) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.askml(geometry) OWNER TO aps03pwb;
-
 --
--- Name: askml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: askml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION askml(integer, geometry, integer) RETURNS text
@@ -6834,10 +6448,8 @@ CREATE FUNCTION askml(integer, geometry, integer) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.askml(integer, geometry, integer) OWNER TO postgres;
-
 --
--- Name: assvg(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: assvg(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION assvg(geometry, integer, integer) RETURNS text
@@ -6845,10 +6457,8 @@ CREATE FUNCTION assvg(geometry, integer, integer) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.assvg(geometry, integer, integer) OWNER TO aps03pwb;
-
 --
--- Name: assvg(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: assvg(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION assvg(geometry, integer) RETURNS text
@@ -6856,10 +6466,8 @@ CREATE FUNCTION assvg(geometry, integer) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.assvg(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: assvg(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: assvg(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION assvg(geometry) RETURNS text
@@ -6867,10 +6475,8 @@ CREATE FUNCTION assvg(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.assvg(geometry) OWNER TO aps03pwb;
-
 --
--- Name: astext(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: astext(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION astext(geometry) RETURNS text
@@ -6878,10 +6484,8 @@ CREATE FUNCTION astext(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.astext(geometry) OWNER TO aps03pwb;
-
 --
--- Name: asukml(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asukml(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asukml(geometry, integer, integer) RETURNS text
@@ -6889,10 +6493,8 @@ CREATE FUNCTION asukml(geometry, integer, integer) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asukml(geometry, integer, integer) OWNER TO aps03pwb;
-
 --
--- Name: asukml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asukml(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asukml(geometry, integer) RETURNS text
@@ -6900,10 +6502,8 @@ CREATE FUNCTION asukml(geometry, integer) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asukml(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: asukml(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: asukml(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION asukml(geometry) RETURNS text
@@ -6911,10 +6511,8 @@ CREATE FUNCTION asukml(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.asukml(geometry) OWNER TO aps03pwb;
-
 --
--- Name: azimuth(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: azimuth(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION azimuth(geometry, geometry) RETURNS double precision
@@ -6922,10 +6520,8 @@ CREATE FUNCTION azimuth(geometry, geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.azimuth(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: bdmpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: bdmpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION bdmpolyfromtext(text, integer) RETURNS geometry
@@ -6951,10 +6547,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.bdmpolyfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: bdpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: bdpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION bdpolyfromtext(text, integer) RETURNS geometry
@@ -6985,10 +6579,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.bdpolyfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: boundary(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: boundary(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION boundary(geometry) RETURNS geometry
@@ -6996,10 +6588,8 @@ CREATE FUNCTION boundary(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.boundary(geometry) OWNER TO aps03pwb;
-
 --
--- Name: box(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box(geometry) RETURNS box
@@ -7007,10 +6597,8 @@ CREATE FUNCTION box(geometry) RETURNS box
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box(geometry) OWNER TO aps03pwb;
-
 --
--- Name: box(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box(box3d) RETURNS box
@@ -7018,10 +6606,8 @@ CREATE FUNCTION box(box3d) RETURNS box
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box(box3d) OWNER TO aps03pwb;
-
 --
--- Name: box2d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d(geometry) RETURNS box2d
@@ -7029,10 +6615,8 @@ CREATE FUNCTION box2d(geometry) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: box2d(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d(box3d) RETURNS box2d
@@ -7040,10 +6624,8 @@ CREATE FUNCTION box2d(box3d) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d(box3d) OWNER TO aps03pwb;
-
 --
--- Name: box2d_contain(box2d, box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_contain(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_contain(box2d, box2d) RETURNS boolean
@@ -7051,10 +6633,8 @@ CREATE FUNCTION box2d_contain(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_contain(box2d, box2d) OWNER TO aps03pwb;
-
 --
--- Name: box2d_contained(box2d, box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_contained(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_contained(box2d, box2d) RETURNS boolean
@@ -7062,10 +6642,8 @@ CREATE FUNCTION box2d_contained(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_contained(box2d, box2d) OWNER TO aps03pwb;
-
 --
--- Name: box2d_intersects(box2d, box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_intersects(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_intersects(box2d, box2d) RETURNS boolean
@@ -7073,10 +6651,8 @@ CREATE FUNCTION box2d_intersects(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_intersects(box2d, box2d) OWNER TO aps03pwb;
-
 --
--- Name: box2d_left(box2d, box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_left(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_left(box2d, box2d) RETURNS boolean
@@ -7084,10 +6660,8 @@ CREATE FUNCTION box2d_left(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_left(box2d, box2d) OWNER TO aps03pwb;
-
 --
--- Name: box2d_overlap(box2d, box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_overlap(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_overlap(box2d, box2d) RETURNS boolean
@@ -7095,10 +6669,8 @@ CREATE FUNCTION box2d_overlap(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_overlap(box2d, box2d) OWNER TO aps03pwb;
-
 --
--- Name: box2d_overleft(box2d, box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_overleft(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_overleft(box2d, box2d) RETURNS boolean
@@ -7106,10 +6678,8 @@ CREATE FUNCTION box2d_overleft(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_overleft(box2d, box2d) OWNER TO aps03pwb;
-
 --
--- Name: box2d_overright(box2d, box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_overright(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_overright(box2d, box2d) RETURNS boolean
@@ -7117,10 +6687,8 @@ CREATE FUNCTION box2d_overright(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_overright(box2d, box2d) OWNER TO aps03pwb;
-
 --
--- Name: box2d_right(box2d, box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_right(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_right(box2d, box2d) RETURNS boolean
@@ -7128,10 +6696,8 @@ CREATE FUNCTION box2d_right(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_right(box2d, box2d) OWNER TO aps03pwb;
-
 --
--- Name: box2d_same(box2d, box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box2d_same(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box2d_same(box2d, box2d) RETURNS boolean
@@ -7139,10 +6705,8 @@ CREATE FUNCTION box2d_same(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box2d_same(box2d, box2d) OWNER TO aps03pwb;
-
 --
--- Name: box3d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box3d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box3d(geometry) RETURNS box3d
@@ -7150,10 +6714,8 @@ CREATE FUNCTION box3d(geometry) RETURNS box3d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box3d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: box3d(box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box3d(box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box3d(box2d) RETURNS box3d
@@ -7161,10 +6723,8 @@ CREATE FUNCTION box3d(box2d) RETURNS box3d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box3d(box2d) OWNER TO aps03pwb;
-
 --
--- Name: box3dtobox(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: box3dtobox(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION box3dtobox(box3d) RETURNS box
@@ -7172,10 +6732,8 @@ CREATE FUNCTION box3dtobox(box3d) RETURNS box
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.box3dtobox(box3d) OWNER TO aps03pwb;
-
 --
--- Name: buffer(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: buffer(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION buffer(geometry, double precision) RETURNS geometry
@@ -7183,10 +6741,8 @@ CREATE FUNCTION buffer(geometry, double precision) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.buffer(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: buffer(geometry, double precision, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: buffer(geometry, double precision, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION buffer(geometry, double precision, integer) RETURNS geometry
@@ -7194,10 +6750,8 @@ CREATE FUNCTION buffer(geometry, double precision, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.buffer(geometry, double precision, integer) OWNER TO aps03pwb;
-
 --
--- Name: build_histogram2d(histogram2d, text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: build_histogram2d(histogram2d, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION build_histogram2d(histogram2d, text, text) RETURNS histogram2d
@@ -7205,10 +6759,8 @@ CREATE FUNCTION build_histogram2d(histogram2d, text, text) RETURNS histogram2d
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.build_histogram2d(histogram2d, text, text) OWNER TO aps03pwb;
-
 --
--- Name: build_histogram2d(histogram2d, text, text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: build_histogram2d(histogram2d, text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION build_histogram2d(histogram2d, text, text, text) RETURNS histogram2d
@@ -7221,10 +6773,8 @@ $_$
     LANGUAGE plpgsql STABLE STRICT;
 
 
-ALTER FUNCTION public.build_histogram2d(histogram2d, text, text, text) OWNER TO aps03pwb;
-
 --
--- Name: buildarea(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: buildarea(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION buildarea(geometry) RETURNS geometry
@@ -7232,10 +6782,8 @@ CREATE FUNCTION buildarea(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.buildarea(geometry) OWNER TO aps03pwb;
-
 --
--- Name: bytea(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: bytea(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION bytea(geometry) RETURNS bytea
@@ -7243,10 +6791,8 @@ CREATE FUNCTION bytea(geometry) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.bytea(geometry) OWNER TO aps03pwb;
-
 --
--- Name: cache_bbox(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: cache_bbox(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION cache_bbox() RETURNS trigger
@@ -7254,10 +6800,8 @@ CREATE FUNCTION cache_bbox() RETURNS trigger
     LANGUAGE c;
 
 
-ALTER FUNCTION public.cache_bbox() OWNER TO aps03pwb;
-
 --
--- Name: centroid(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: centroid(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION centroid(geometry) RETURNS geometry
@@ -7265,10 +6809,8 @@ CREATE FUNCTION centroid(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.centroid(geometry) OWNER TO aps03pwb;
-
 --
--- Name: check_datingerrors(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: check_datingerrors(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION check_datingerrors() RETURNS trigger
@@ -7297,10 +6839,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.check_datingerrors() OWNER TO aps03pwb;
-
 --
--- Name: checkauth(text, text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: checkauth(text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION checkauth(text, text, text) RETURNS integer
@@ -7331,10 +6871,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.checkauth(text, text, text) OWNER TO aps03pwb;
-
 --
--- Name: checkauth(text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: checkauth(text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION checkauth(text, text) RETURNS integer
@@ -7342,10 +6880,8 @@ CREATE FUNCTION checkauth(text, text) RETURNS integer
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.checkauth(text, text) OWNER TO aps03pwb;
-
 --
--- Name: checkauthtrigger(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: checkauthtrigger(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION checkauthtrigger() RETURNS trigger
@@ -7353,10 +6889,8 @@ CREATE FUNCTION checkauthtrigger() RETURNS trigger
     LANGUAGE c;
 
 
-ALTER FUNCTION public.checkauthtrigger() OWNER TO aps03pwb;
-
 --
--- Name: collect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: collect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION collect(geometry, geometry) RETURNS geometry
@@ -7364,10 +6898,8 @@ CREATE FUNCTION collect(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.collect(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: collect_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: collect_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION collect_garray(geometry[]) RETURNS geometry
@@ -7375,10 +6907,8 @@ CREATE FUNCTION collect_garray(geometry[]) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.collect_garray(geometry[]) OWNER TO aps03pwb;
-
 --
--- Name: collector(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: collector(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION collector(geometry, geometry) RETURNS geometry
@@ -7386,10 +6916,8 @@ CREATE FUNCTION collector(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.collector(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: combine_bbox(box2d, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: combine_bbox(box2d, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION combine_bbox(box2d, geometry) RETURNS box2d
@@ -7397,10 +6925,8 @@ CREATE FUNCTION combine_bbox(box2d, geometry) RETURNS box2d
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.combine_bbox(box2d, geometry) OWNER TO aps03pwb;
-
 --
--- Name: combine_bbox(box3d, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: combine_bbox(box3d, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION combine_bbox(box3d, geometry) RETURNS box3d
@@ -7408,10 +6934,8 @@ CREATE FUNCTION combine_bbox(box3d, geometry) RETURNS box3d
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.combine_bbox(box3d, geometry) OWNER TO aps03pwb;
-
 --
--- Name: compression(chip); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: compression(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION compression(chip) RETURNS integer
@@ -7419,10 +6943,8 @@ CREATE FUNCTION compression(chip) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.compression(chip) OWNER TO aps03pwb;
-
 --
--- Name: connectby(text, text, text, text, integer, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: connectby(text, text, text, text, integer, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION connectby(text, text, text, text, integer, text) RETURNS SETOF record
@@ -7430,10 +6952,8 @@ CREATE FUNCTION connectby(text, text, text, text, integer, text) RETURNS SETOF r
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.connectby(text, text, text, text, integer, text) OWNER TO aps03pwb;
-
 --
--- Name: connectby(text, text, text, text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: connectby(text, text, text, text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION connectby(text, text, text, text, integer) RETURNS SETOF record
@@ -7441,10 +6961,8 @@ CREATE FUNCTION connectby(text, text, text, text, integer) RETURNS SETOF record
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.connectby(text, text, text, text, integer) OWNER TO aps03pwb;
-
 --
--- Name: connectby(text, text, text, text, text, integer, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: connectby(text, text, text, text, text, integer, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION connectby(text, text, text, text, text, integer, text) RETURNS SETOF record
@@ -7452,10 +6970,8 @@ CREATE FUNCTION connectby(text, text, text, text, text, integer, text) RETURNS S
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.connectby(text, text, text, text, text, integer, text) OWNER TO aps03pwb;
-
 --
--- Name: connectby(text, text, text, text, text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: connectby(text, text, text, text, text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION connectby(text, text, text, text, text, integer) RETURNS SETOF record
@@ -7463,10 +6979,8 @@ CREATE FUNCTION connectby(text, text, text, text, text, integer) RETURNS SETOF r
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.connectby(text, text, text, text, text, integer) OWNER TO aps03pwb;
-
 --
--- Name: contains(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: contains(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION contains(geometry, geometry) RETURNS boolean
@@ -7474,10 +6988,8 @@ CREATE FUNCTION contains(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.contains(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: convexhull(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: convexhull(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION convexhull(geometry) RETURNS geometry
@@ -7485,10 +6997,8 @@ CREATE FUNCTION convexhull(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.convexhull(geometry) OWNER TO aps03pwb;
-
 --
--- Name: create_defaultreadingnotestandardisedid(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: create_defaultreadingnotestandardisedid(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION create_defaultreadingnotestandardisedid() RETURNS trigger
@@ -7516,10 +7026,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.create_defaultreadingnotestandardisedid() OWNER TO aps03pwb;
-
 --
--- Name: create_defaultsecurityrecordforgroup(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: create_defaultsecurityrecordforgroup(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION create_defaultsecurityrecordforgroup() RETURNS trigger
@@ -7530,10 +7038,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.create_defaultsecurityrecordforgroup() OWNER TO aps03pwb;
-
 --
--- Name: create_histogram2d(box2d, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: create_histogram2d(box2d, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION create_histogram2d(box2d, integer) RETURNS histogram2d
@@ -7541,10 +7047,8 @@ CREATE FUNCTION create_histogram2d(box2d, integer) RETURNS histogram2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.create_histogram2d(box2d, integer) OWNER TO aps03pwb;
-
 --
--- Name: create_objectsecurity(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: create_objectsecurity(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION create_objectsecurity(objectid integer, securityuserid integer) RETURNS boolean
@@ -7556,10 +7060,8 @@ select true;$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.create_objectsecurity(objectid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: create_subobjectforobject(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: create_subobjectforobject(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION create_subobjectforobject() RETURNS trigger
@@ -7570,10 +7072,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.create_subobjectforobject() OWNER TO aps03pwb;
-
 --
--- Name: FUNCTION create_subobjectforobject(); Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: FUNCTION create_subobjectforobject(); Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON FUNCTION create_subobjectforobject() IS '
@@ -7581,7 +7081,7 @@ COMMENT ON FUNCTION create_subobjectforobject() IS '
 
 
 --
--- Name: create_treesecurity(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: create_treesecurity(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION create_treesecurity(elementid integer, securityuserid integer) RETURNS boolean
@@ -7593,10 +7093,8 @@ select true;$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.create_treesecurity(elementid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: create_vmeasurementsecurity(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: create_vmeasurementsecurity(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION create_vmeasurementsecurity(vmeasurementid integer, securityuserid integer) RETURNS boolean
@@ -7608,10 +7106,8 @@ select true;$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.create_vmeasurementsecurity(vmeasurementid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: crosses(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: crosses(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION crosses(geometry, geometry) RETURNS boolean
@@ -7619,10 +7115,8 @@ CREATE FUNCTION crosses(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.crosses(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: crosstab(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: crosstab(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION crosstab(text) RETURNS SETOF record
@@ -7630,10 +7124,8 @@ CREATE FUNCTION crosstab(text) RETURNS SETOF record
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.crosstab(text) OWNER TO aps03pwb;
-
 --
--- Name: crosstab(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: crosstab(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION crosstab(text, integer) RETURNS SETOF record
@@ -7641,10 +7133,8 @@ CREATE FUNCTION crosstab(text, integer) RETURNS SETOF record
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.crosstab(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: crosstab(text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: crosstab(text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION crosstab(text, text) RETURNS SETOF record
@@ -7652,10 +7142,8 @@ CREATE FUNCTION crosstab(text, text) RETURNS SETOF record
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.crosstab(text, text) OWNER TO aps03pwb;
-
 --
--- Name: crosstab11(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: crosstab11(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION crosstab11(text) RETURNS SETOF tablefunc_crosstab_11
@@ -7663,10 +7151,8 @@ CREATE FUNCTION crosstab11(text) RETURNS SETOF tablefunc_crosstab_11
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.crosstab11(text) OWNER TO aps03pwb;
-
 --
--- Name: crosstab2(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: crosstab2(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION crosstab2(text) RETURNS SETOF tablefunc_crosstab_2
@@ -7674,10 +7160,8 @@ CREATE FUNCTION crosstab2(text) RETURNS SETOF tablefunc_crosstab_2
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.crosstab2(text) OWNER TO aps03pwb;
-
 --
--- Name: crosstab3(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: crosstab3(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION crosstab3(text) RETURNS SETOF tablefunc_crosstab_3
@@ -7685,10 +7169,8 @@ CREATE FUNCTION crosstab3(text) RETURNS SETOF tablefunc_crosstab_3
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.crosstab3(text) OWNER TO aps03pwb;
-
 --
--- Name: crosstab4(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: crosstab4(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION crosstab4(text) RETURNS SETOF tablefunc_crosstab_4
@@ -7696,10 +7178,8 @@ CREATE FUNCTION crosstab4(text) RETURNS SETOF tablefunc_crosstab_4
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.crosstab4(text) OWNER TO aps03pwb;
-
 --
--- Name: crosstab9(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: crosstab9(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION crosstab9(text) RETURNS SETOF tablefunc_crosstab_9
@@ -7707,10 +7187,8 @@ CREATE FUNCTION crosstab9(text) RETURNS SETOF tablefunc_crosstab_9
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.crosstab9(text) OWNER TO aps03pwb;
-
 --
--- Name: datatype(chip); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: datatype(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION datatype(chip) RETURNS integer
@@ -7718,10 +7196,8 @@ CREATE FUNCTION datatype(chip) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.datatype(chip) OWNER TO aps03pwb;
-
 --
--- Name: difference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: difference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION difference(geometry, geometry) RETURNS geometry
@@ -7729,10 +7205,8 @@ CREATE FUNCTION difference(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.difference(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: dimension(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: dimension(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION dimension(geometry) RETURNS integer
@@ -7740,10 +7214,8 @@ CREATE FUNCTION dimension(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.dimension(geometry) OWNER TO aps03pwb;
-
 --
--- Name: disablelongtransactions(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: disablelongtransactions(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION disablelongtransactions() RETURNS text
@@ -7784,10 +7256,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.disablelongtransactions() OWNER TO aps03pwb;
-
 --
--- Name: disjoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: disjoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION disjoint(geometry, geometry) RETURNS boolean
@@ -7795,10 +7265,8 @@ CREATE FUNCTION disjoint(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.disjoint(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION distance(geometry, geometry) RETURNS double precision
@@ -7806,10 +7274,8 @@ CREATE FUNCTION distance(geometry, geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.distance(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: distance_sphere(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: distance_sphere(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION distance_sphere(geometry, geometry) RETURNS double precision
@@ -7817,10 +7283,8 @@ CREATE FUNCTION distance_sphere(geometry, geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.distance_sphere(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: distance_spheroid(geometry, geometry, spheroid); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: distance_spheroid(geometry, geometry, spheroid); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION distance_spheroid(geometry, geometry, spheroid) RETURNS double precision
@@ -7828,10 +7292,8 @@ CREATE FUNCTION distance_spheroid(geometry, geometry, spheroid) RETURNS double p
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.distance_spheroid(geometry, geometry, spheroid) OWNER TO aps03pwb;
-
 --
--- Name: dropbbox(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: dropbbox(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION dropbbox(geometry) RETURNS geometry
@@ -7839,10 +7301,8 @@ CREATE FUNCTION dropbbox(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.dropbbox(geometry) OWNER TO aps03pwb;
-
 --
--- Name: dropgeometrycolumn(character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrycolumn(character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION dropgeometrycolumn(character varying, character varying, character varying, character varying) RETURNS text
@@ -7906,10 +7366,8 @@ $_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.dropgeometrycolumn(character varying, character varying, character varying, character varying) OWNER TO aps03pwb;
-
 --
--- Name: dropgeometrycolumn(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrycolumn(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION dropgeometrycolumn(character varying, character varying, character varying) RETURNS text
@@ -7924,10 +7382,8 @@ $_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.dropgeometrycolumn(character varying, character varying, character varying) OWNER TO aps03pwb;
-
 --
--- Name: dropgeometrycolumn(character varying, character varying); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrycolumn(character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION dropgeometrycolumn(character varying, character varying) RETURNS text
@@ -7942,10 +7398,8 @@ $_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.dropgeometrycolumn(character varying, character varying) OWNER TO aps03pwb;
-
 --
--- Name: dropgeometrytable(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrytable(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION dropgeometrytable(character varying, character varying, character varying) RETURNS text
@@ -7984,10 +7438,8 @@ $_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.dropgeometrytable(character varying, character varying, character varying) OWNER TO aps03pwb;
-
 --
--- Name: dropgeometrytable(character varying, character varying); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrytable(character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION dropgeometrytable(character varying, character varying) RETURNS text
@@ -7995,10 +7447,8 @@ CREATE FUNCTION dropgeometrytable(character varying, character varying) RETURNS 
     LANGUAGE sql STRICT;
 
 
-ALTER FUNCTION public.dropgeometrytable(character varying, character varying) OWNER TO aps03pwb;
-
 --
--- Name: dropgeometrytable(character varying); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrytable(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION dropgeometrytable(character varying) RETURNS text
@@ -8006,10 +7456,8 @@ CREATE FUNCTION dropgeometrytable(character varying) RETURNS text
     LANGUAGE sql STRICT;
 
 
-ALTER FUNCTION public.dropgeometrytable(character varying) OWNER TO aps03pwb;
-
 --
--- Name: dump(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: dump(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION dump(geometry) RETURNS SETOF geometry_dump
@@ -8017,10 +7465,8 @@ CREATE FUNCTION dump(geometry) RETURNS SETOF geometry_dump
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.dump(geometry) OWNER TO aps03pwb;
-
 --
--- Name: dumprings(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: dumprings(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION dumprings(geometry) RETURNS SETOF geometry_dump
@@ -8028,10 +7474,8 @@ CREATE FUNCTION dumprings(geometry) RETURNS SETOF geometry_dump
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.dumprings(geometry) OWNER TO aps03pwb;
-
 --
--- Name: enablelongtransactions(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: enablelongtransactions(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION enablelongtransactions() RETURNS text
@@ -8087,10 +7531,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.enablelongtransactions() OWNER TO aps03pwb;
-
 --
--- Name: endpoint(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: endpoint(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION endpoint(geometry) RETURNS geometry
@@ -8098,10 +7540,8 @@ CREATE FUNCTION endpoint(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.endpoint(geometry) OWNER TO aps03pwb;
-
 --
--- Name: envelope(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: envelope(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION envelope(geometry) RETURNS geometry
@@ -8109,10 +7549,8 @@ CREATE FUNCTION envelope(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.envelope(geometry) OWNER TO aps03pwb;
-
 --
--- Name: equals(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: equals(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION equals(geometry, geometry) RETURNS boolean
@@ -8120,10 +7558,8 @@ CREATE FUNCTION equals(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.equals(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: estimate_histogram2d(histogram2d, box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: estimate_histogram2d(histogram2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION estimate_histogram2d(histogram2d, box2d) RETURNS double precision
@@ -8131,10 +7567,8 @@ CREATE FUNCTION estimate_histogram2d(histogram2d, box2d) RETURNS double precisio
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.estimate_histogram2d(histogram2d, box2d) OWNER TO aps03pwb;
-
 --
--- Name: estimated_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: estimated_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION estimated_extent(text, text, text) RETURNS box2d
@@ -8142,10 +7576,8 @@ CREATE FUNCTION estimated_extent(text, text, text) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT SECURITY DEFINER;
 
 
-ALTER FUNCTION public.estimated_extent(text, text, text) OWNER TO aps03pwb;
-
 --
--- Name: estimated_extent(text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: estimated_extent(text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION estimated_extent(text, text) RETURNS box2d
@@ -8153,10 +7585,8 @@ CREATE FUNCTION estimated_extent(text, text) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT SECURITY DEFINER;
 
 
-ALTER FUNCTION public.estimated_extent(text, text) OWNER TO aps03pwb;
-
 --
--- Name: expand(box3d, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: expand(box3d, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION expand(box3d, double precision) RETURNS box3d
@@ -8164,10 +7594,8 @@ CREATE FUNCTION expand(box3d, double precision) RETURNS box3d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.expand(box3d, double precision) OWNER TO aps03pwb;
-
 --
--- Name: expand(box2d, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: expand(box2d, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION expand(box2d, double precision) RETURNS box2d
@@ -8175,10 +7603,8 @@ CREATE FUNCTION expand(box2d, double precision) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.expand(box2d, double precision) OWNER TO aps03pwb;
-
 --
--- Name: expand(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: expand(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION expand(geometry, double precision) RETURNS geometry
@@ -8186,10 +7612,8 @@ CREATE FUNCTION expand(geometry, double precision) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.expand(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: explode_histogram2d(histogram2d, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: explode_histogram2d(histogram2d, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION explode_histogram2d(histogram2d, text) RETURNS histogram2d
@@ -8197,10 +7621,8 @@ CREATE FUNCTION explode_histogram2d(histogram2d, text) RETURNS histogram2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.explode_histogram2d(histogram2d, text) OWNER TO aps03pwb;
-
 --
--- Name: exteriorring(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: exteriorring(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION exteriorring(geometry) RETURNS geometry
@@ -8208,10 +7630,8 @@ CREATE FUNCTION exteriorring(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.exteriorring(geometry) OWNER TO aps03pwb;
-
 --
--- Name: factor(chip); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: factor(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION factor(chip) RETURNS real
@@ -8219,10 +7639,8 @@ CREATE FUNCTION factor(chip) RETURNS real
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.factor(chip) OWNER TO aps03pwb;
-
 --
--- Name: find_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: find_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION find_extent(text, text, text) RETURNS box2d
@@ -8242,10 +7660,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.find_extent(text, text, text) OWNER TO aps03pwb;
-
 --
--- Name: find_extent(text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: find_extent(text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION find_extent(text, text) RETURNS box2d
@@ -8264,10 +7680,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.find_extent(text, text) OWNER TO aps03pwb;
-
 --
--- Name: find_srid(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: find_srid(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION find_srid(character varying, character varying, character varying) RETURNS integer
@@ -8307,10 +7721,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.find_srid(character varying, character varying, character varying) OWNER TO aps03pwb;
-
 --
--- Name: fix_geometry_columns(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: fix_geometry_columns(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION fix_geometry_columns() RETURNS text
@@ -8406,10 +7818,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.fix_geometry_columns() OWNER TO aps03pwb;
-
 --
--- Name: force_2d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: force_2d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION force_2d(geometry) RETURNS geometry
@@ -8417,10 +7827,8 @@ CREATE FUNCTION force_2d(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.force_2d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: force_3d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: force_3d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION force_3d(geometry) RETURNS geometry
@@ -8428,10 +7836,8 @@ CREATE FUNCTION force_3d(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.force_3d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: force_3dm(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: force_3dm(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION force_3dm(geometry) RETURNS geometry
@@ -8439,10 +7845,8 @@ CREATE FUNCTION force_3dm(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.force_3dm(geometry) OWNER TO aps03pwb;
-
 --
--- Name: force_3dz(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: force_3dz(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION force_3dz(geometry) RETURNS geometry
@@ -8450,10 +7854,8 @@ CREATE FUNCTION force_3dz(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.force_3dz(geometry) OWNER TO aps03pwb;
-
 --
--- Name: force_4d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: force_4d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION force_4d(geometry) RETURNS geometry
@@ -8461,10 +7863,8 @@ CREATE FUNCTION force_4d(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.force_4d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: force_collection(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: force_collection(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION force_collection(geometry) RETURNS geometry
@@ -8472,10 +7872,8 @@ CREATE FUNCTION force_collection(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.force_collection(geometry) OWNER TO aps03pwb;
-
 --
--- Name: forcerhr(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: forcerhr(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION forcerhr(geometry) RETURNS geometry
@@ -8483,10 +7881,8 @@ CREATE FUNCTION forcerhr(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.forcerhr(geometry) OWNER TO aps03pwb;
-
 --
--- Name: geom_accum(geometry[], geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geom_accum(geometry[], geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geom_accum(geometry[], geometry) RETURNS geometry[]
@@ -8494,10 +7890,8 @@ CREATE FUNCTION geom_accum(geometry[], geometry) RETURNS geometry[]
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.geom_accum(geometry[], geometry) OWNER TO aps03pwb;
-
 --
--- Name: geomcollfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomcollfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomcollfromtext(text, integer) RETURNS geometry
@@ -8510,10 +7904,8 @@ CREATE FUNCTION geomcollfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomcollfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: geomcollfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomcollfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomcollfromtext(text) RETURNS geometry
@@ -8526,10 +7918,8 @@ CREATE FUNCTION geomcollfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomcollfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: geomcollfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomcollfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomcollfromwkb(bytea, integer) RETURNS geometry
@@ -8542,10 +7932,8 @@ CREATE FUNCTION geomcollfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomcollfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: geomcollfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomcollfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomcollfromwkb(bytea) RETURNS geometry
@@ -8558,10 +7946,8 @@ CREATE FUNCTION geomcollfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomcollfromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: geometry(box2d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry(box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry(box2d) RETURNS geometry
@@ -8569,10 +7955,8 @@ CREATE FUNCTION geometry(box2d) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry(box2d) OWNER TO aps03pwb;
-
 --
--- Name: geometry(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry(box3d) RETURNS geometry
@@ -8580,10 +7964,8 @@ CREATE FUNCTION geometry(box3d) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry(box3d) OWNER TO aps03pwb;
-
 --
--- Name: geometry(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry(text) RETURNS geometry
@@ -8591,10 +7973,8 @@ CREATE FUNCTION geometry(text) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry(text) OWNER TO aps03pwb;
-
 --
--- Name: geometry(chip); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry(chip) RETURNS geometry
@@ -8602,10 +7982,8 @@ CREATE FUNCTION geometry(chip) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry(chip) OWNER TO aps03pwb;
-
 --
--- Name: geometry(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry(bytea) RETURNS geometry
@@ -8613,10 +7991,8 @@ CREATE FUNCTION geometry(bytea) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry(bytea) OWNER TO aps03pwb;
-
 --
--- Name: geometry_above(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_above(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_above(geometry, geometry) RETURNS boolean
@@ -8624,10 +8000,8 @@ CREATE FUNCTION geometry_above(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_above(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_below(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_below(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_below(geometry, geometry) RETURNS boolean
@@ -8635,10 +8009,8 @@ CREATE FUNCTION geometry_below(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_below(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_cmp(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_cmp(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_cmp(geometry, geometry) RETURNS integer
@@ -8646,10 +8018,8 @@ CREATE FUNCTION geometry_cmp(geometry, geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_cmp(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_contain(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_contain(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_contain(geometry, geometry) RETURNS boolean
@@ -8657,10 +8027,8 @@ CREATE FUNCTION geometry_contain(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_contain(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_contained(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_contained(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_contained(geometry, geometry) RETURNS boolean
@@ -8668,10 +8036,8 @@ CREATE FUNCTION geometry_contained(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_contained(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_eq(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_eq(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_eq(geometry, geometry) RETURNS boolean
@@ -8679,10 +8045,8 @@ CREATE FUNCTION geometry_eq(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_eq(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_ge(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_ge(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_ge(geometry, geometry) RETURNS boolean
@@ -8690,10 +8054,8 @@ CREATE FUNCTION geometry_ge(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_ge(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_gt(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_gt(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_gt(geometry, geometry) RETURNS boolean
@@ -8701,10 +8063,8 @@ CREATE FUNCTION geometry_gt(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_gt(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_le(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_le(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_le(geometry, geometry) RETURNS boolean
@@ -8712,10 +8072,8 @@ CREATE FUNCTION geometry_le(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_le(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_left(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_left(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_left(geometry, geometry) RETURNS boolean
@@ -8723,10 +8081,8 @@ CREATE FUNCTION geometry_left(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_left(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_lt(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_lt(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_lt(geometry, geometry) RETURNS boolean
@@ -8734,10 +8090,8 @@ CREATE FUNCTION geometry_lt(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_lt(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_overabove(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_overabove(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_overabove(geometry, geometry) RETURNS boolean
@@ -8745,10 +8099,8 @@ CREATE FUNCTION geometry_overabove(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_overabove(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_overbelow(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_overbelow(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_overbelow(geometry, geometry) RETURNS boolean
@@ -8756,10 +8108,8 @@ CREATE FUNCTION geometry_overbelow(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_overbelow(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_overlap(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_overlap(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_overlap(geometry, geometry) RETURNS boolean
@@ -8767,10 +8117,8 @@ CREATE FUNCTION geometry_overlap(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_overlap(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_overleft(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_overleft(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_overleft(geometry, geometry) RETURNS boolean
@@ -8778,10 +8126,8 @@ CREATE FUNCTION geometry_overleft(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_overleft(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_overright(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_overright(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_overright(geometry, geometry) RETURNS boolean
@@ -8789,10 +8135,8 @@ CREATE FUNCTION geometry_overright(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_overright(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_right(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_right(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_right(geometry, geometry) RETURNS boolean
@@ -8800,10 +8144,8 @@ CREATE FUNCTION geometry_right(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_right(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometry_same(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometry_same(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometry_same(geometry, geometry) RETURNS boolean
@@ -8811,10 +8153,8 @@ CREATE FUNCTION geometry_same(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometry_same(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geometryfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometryfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometryfromtext(text) RETURNS geometry
@@ -8822,10 +8162,8 @@ CREATE FUNCTION geometryfromtext(text) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometryfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: geometryfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometryfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometryfromtext(text, integer) RETURNS geometry
@@ -8833,10 +8171,8 @@ CREATE FUNCTION geometryfromtext(text, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometryfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: geometryn(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geometryn(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geometryn(geometry, integer) RETURNS geometry
@@ -8844,10 +8180,8 @@ CREATE FUNCTION geometryn(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geometryn(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: geomfromewkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomfromewkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomfromewkb(bytea) RETURNS geometry
@@ -8855,10 +8189,8 @@ CREATE FUNCTION geomfromewkb(bytea) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomfromewkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: geomfromewkt(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomfromewkt(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomfromewkt(text) RETURNS geometry
@@ -8866,10 +8198,8 @@ CREATE FUNCTION geomfromewkt(text) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomfromewkt(text) OWNER TO aps03pwb;
-
 --
--- Name: geomfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomfromtext(text) RETURNS geometry
@@ -8877,10 +8207,8 @@ CREATE FUNCTION geomfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: geomfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomfromtext(text, integer) RETURNS geometry
@@ -8888,10 +8216,8 @@ CREATE FUNCTION geomfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: geomfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomfromwkb(bytea) RETURNS geometry
@@ -8899,10 +8225,8 @@ CREATE FUNCTION geomfromwkb(bytea) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomfromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: geomfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomfromwkb(bytea, integer) RETURNS geometry
@@ -8910,10 +8234,8 @@ CREATE FUNCTION geomfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: geomunion(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geomunion(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geomunion(geometry, geometry) RETURNS geometry
@@ -8921,10 +8243,8 @@ CREATE FUNCTION geomunion(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.geomunion(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: geosnoop(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: geosnoop(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION geosnoop(geometry) RETURNS geometry
@@ -8932,10 +8252,8 @@ CREATE FUNCTION geosnoop(geometry) RETURNS geometry
     LANGUAGE c STRICT;
 
 
-ALTER FUNCTION public.geosnoop(geometry) OWNER TO aps03pwb;
-
 --
--- Name: get_proj4_from_srid(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: get_proj4_from_srid(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION get_proj4_from_srid(integer) RETURNS text
@@ -8947,10 +8265,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.get_proj4_from_srid(integer) OWNER TO aps03pwb;
-
 --
--- Name: getbbox(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: getbbox(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION getbbox(geometry) RETURNS box2d
@@ -8958,10 +8274,8 @@ CREATE FUNCTION getbbox(geometry) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.getbbox(geometry) OWNER TO aps03pwb;
-
 --
--- Name: getsrid(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: getsrid(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION getsrid(geometry) RETURNS integer
@@ -8969,10 +8283,8 @@ CREATE FUNCTION getsrid(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.getsrid(geometry) OWNER TO aps03pwb;
-
 --
--- Name: gettransactionid(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: gettransactionid(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION gettransactionid() RETURNS xid
@@ -8980,10 +8292,8 @@ CREATE FUNCTION gettransactionid() RETURNS xid
     LANGUAGE c;
 
 
-ALTER FUNCTION public.gettransactionid() OWNER TO aps03pwb;
-
 --
--- Name: hasbbox(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: hasbbox(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION hasbbox(geometry) RETURNS boolean
@@ -8991,10 +8301,8 @@ CREATE FUNCTION hasbbox(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.hasbbox(geometry) OWNER TO aps03pwb;
-
 --
--- Name: height(chip); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: height(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION height(chip) RETURNS integer
@@ -9002,10 +8310,8 @@ CREATE FUNCTION height(chip) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.height(chip) OWNER TO aps03pwb;
-
 --
--- Name: interiorringn(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: interiorringn(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION interiorringn(geometry, integer) RETURNS geometry
@@ -9013,10 +8319,8 @@ CREATE FUNCTION interiorringn(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.interiorringn(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: intersection(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: intersection(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION intersection(geometry, geometry) RETURNS geometry
@@ -9024,10 +8328,8 @@ CREATE FUNCTION intersection(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.intersection(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: intersects(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: intersects(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION intersects(geometry, geometry) RETURNS boolean
@@ -9035,10 +8337,8 @@ CREATE FUNCTION intersects(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.intersects(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: isadmin(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: isadmin(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION isadmin(securityuserid integer) RETURNS boolean
@@ -9053,10 +8353,8 @@ where securitygroupsbyuser=1;$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.isadmin(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: isclosed(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: isclosed(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION isclosed(geometry) RETURNS boolean
@@ -9064,10 +8362,8 @@ CREATE FUNCTION isclosed(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.isclosed(geometry) OWNER TO aps03pwb;
-
 --
--- Name: isempty(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: isempty(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION isempty(geometry) RETURNS boolean
@@ -9075,10 +8371,8 @@ CREATE FUNCTION isempty(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.isempty(geometry) OWNER TO aps03pwb;
-
 --
--- Name: isring(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: isring(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION isring(geometry) RETURNS boolean
@@ -9086,10 +8380,8 @@ CREATE FUNCTION isring(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.isring(geometry) OWNER TO aps03pwb;
-
 --
--- Name: issimple(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: issimple(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION issimple(geometry) RETURNS boolean
@@ -9097,10 +8389,8 @@ CREATE FUNCTION issimple(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.issimple(geometry) OWNER TO aps03pwb;
-
 --
--- Name: isvalid(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: isvalid(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION isvalid(geometry) RETURNS boolean
@@ -9108,10 +8398,8 @@ CREATE FUNCTION isvalid(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.isvalid(geometry) OWNER TO aps03pwb;
-
 --
--- Name: jtsnoop(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: jtsnoop(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION jtsnoop(geometry) RETURNS geometry
@@ -9119,10 +8407,8 @@ CREATE FUNCTION jtsnoop(geometry) RETURNS geometry
     LANGUAGE c STRICT;
 
 
-ALTER FUNCTION public.jtsnoop(geometry) OWNER TO aps03pwb;
-
 --
--- Name: length(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: length(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION length(geometry) RETURNS double precision
@@ -9130,10 +8416,8 @@ CREATE FUNCTION length(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.length(geometry) OWNER TO aps03pwb;
-
 --
--- Name: length2d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: length2d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION length2d(geometry) RETURNS double precision
@@ -9141,10 +8425,8 @@ CREATE FUNCTION length2d(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.length2d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: length2d_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: length2d_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION length2d_spheroid(geometry, spheroid) RETURNS double precision
@@ -9152,10 +8434,8 @@ CREATE FUNCTION length2d_spheroid(geometry, spheroid) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.length2d_spheroid(geometry, spheroid) OWNER TO aps03pwb;
-
 --
--- Name: length3d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: length3d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION length3d(geometry) RETURNS double precision
@@ -9163,10 +8443,8 @@ CREATE FUNCTION length3d(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.length3d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: length3d_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: length3d_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION length3d_spheroid(geometry, spheroid) RETURNS double precision
@@ -9174,10 +8452,8 @@ CREATE FUNCTION length3d_spheroid(geometry, spheroid) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.length3d_spheroid(geometry, spheroid) OWNER TO aps03pwb;
-
 --
--- Name: length_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: length_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION length_spheroid(geometry, spheroid) RETURNS double precision
@@ -9185,10 +8461,8 @@ CREATE FUNCTION length_spheroid(geometry, spheroid) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.length_spheroid(geometry, spheroid) OWNER TO aps03pwb;
-
 --
--- Name: line_interpolate_point(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: line_interpolate_point(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION line_interpolate_point(geometry, double precision) RETURNS geometry
@@ -9196,10 +8470,8 @@ CREATE FUNCTION line_interpolate_point(geometry, double precision) RETURNS geome
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.line_interpolate_point(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: line_locate_point(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: line_locate_point(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION line_locate_point(geometry, geometry) RETURNS double precision
@@ -9207,10 +8479,8 @@ CREATE FUNCTION line_locate_point(geometry, geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.line_locate_point(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: line_substring(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: line_substring(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION line_substring(geometry, double precision, double precision) RETURNS geometry
@@ -9218,10 +8488,8 @@ CREATE FUNCTION line_substring(geometry, double precision, double precision) RET
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.line_substring(geometry, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: linefrommultipoint(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: linefrommultipoint(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION linefrommultipoint(geometry) RETURNS geometry
@@ -9229,10 +8497,8 @@ CREATE FUNCTION linefrommultipoint(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.linefrommultipoint(geometry) OWNER TO aps03pwb;
-
 --
--- Name: linefromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: linefromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION linefromtext(text) RETURNS geometry
@@ -9244,10 +8510,8 @@ CREATE FUNCTION linefromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.linefromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: linefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: linefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION linefromtext(text, integer) RETURNS geometry
@@ -9259,10 +8523,8 @@ CREATE FUNCTION linefromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.linefromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: linefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: linefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION linefromwkb(bytea, integer) RETURNS geometry
@@ -9274,10 +8536,8 @@ CREATE FUNCTION linefromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.linefromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: linefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: linefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION linefromwkb(bytea) RETURNS geometry
@@ -9289,10 +8549,8 @@ CREATE FUNCTION linefromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.linefromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: linemerge(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: linemerge(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION linemerge(geometry) RETURNS geometry
@@ -9300,10 +8558,8 @@ CREATE FUNCTION linemerge(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.linemerge(geometry) OWNER TO aps03pwb;
-
 --
--- Name: linestringfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: linestringfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION linestringfromtext(text) RETURNS geometry
@@ -9311,10 +8567,8 @@ CREATE FUNCTION linestringfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.linestringfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: linestringfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: linestringfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION linestringfromtext(text, integer) RETURNS geometry
@@ -9322,10 +8576,8 @@ CREATE FUNCTION linestringfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.linestringfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: linestringfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: linestringfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION linestringfromwkb(bytea, integer) RETURNS geometry
@@ -9337,10 +8589,8 @@ CREATE FUNCTION linestringfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.linestringfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: linestringfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: linestringfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION linestringfromwkb(bytea) RETURNS geometry
@@ -9352,10 +8602,8 @@ CREATE FUNCTION linestringfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.linestringfromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: locate_along_measure(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: locate_along_measure(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION locate_along_measure(geometry, double precision) RETURNS geometry
@@ -9363,10 +8611,8 @@ CREATE FUNCTION locate_along_measure(geometry, double precision) RETURNS geometr
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.locate_along_measure(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: locate_between_measures(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: locate_between_measures(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION locate_between_measures(geometry, double precision, double precision) RETURNS geometry
@@ -9374,10 +8620,8 @@ CREATE FUNCTION locate_between_measures(geometry, double precision, double preci
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.locate_between_measures(geometry, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: lockrow(text, text, text, text, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lockrow(text, text, text, text, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lockrow(text, text, text, text, timestamp without time zone) RETURNS integer
@@ -9429,10 +8673,8 @@ END;$_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.lockrow(text, text, text, text, timestamp without time zone) OWNER TO aps03pwb;
-
 --
--- Name: lockrow(text, text, text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lockrow(text, text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lockrow(text, text, text, text) RETURNS integer
@@ -9440,10 +8682,8 @@ CREATE FUNCTION lockrow(text, text, text, text) RETURNS integer
     LANGUAGE sql STRICT;
 
 
-ALTER FUNCTION public.lockrow(text, text, text, text) OWNER TO aps03pwb;
-
 --
--- Name: lockrow(text, text, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lockrow(text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lockrow(text, text, text) RETURNS integer
@@ -9451,10 +8691,8 @@ CREATE FUNCTION lockrow(text, text, text) RETURNS integer
     LANGUAGE sql STRICT;
 
 
-ALTER FUNCTION public.lockrow(text, text, text) OWNER TO aps03pwb;
-
 --
--- Name: lockrow(text, text, text, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lockrow(text, text, text, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lockrow(text, text, text, timestamp without time zone) RETURNS integer
@@ -9462,10 +8700,8 @@ CREATE FUNCTION lockrow(text, text, text, timestamp without time zone) RETURNS i
     LANGUAGE sql STRICT;
 
 
-ALTER FUNCTION public.lockrow(text, text, text, timestamp without time zone) OWNER TO aps03pwb;
-
 --
--- Name: longtransactionsenabled(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: longtransactionsenabled(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION longtransactionsenabled() RETURNS boolean
@@ -9483,10 +8719,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.longtransactionsenabled() OWNER TO aps03pwb;
-
 --
--- Name: lwgeom_gist_compress(internal); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_compress(internal); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lwgeom_gist_compress(internal) RETURNS internal
@@ -9494,10 +8728,8 @@ CREATE FUNCTION lwgeom_gist_compress(internal) RETURNS internal
     LANGUAGE c;
 
 
-ALTER FUNCTION public.lwgeom_gist_compress(internal) OWNER TO aps03pwb;
-
 --
--- Name: lwgeom_gist_consistent(internal, geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_consistent(internal, geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lwgeom_gist_consistent(internal, geometry, integer) RETURNS boolean
@@ -9505,10 +8737,8 @@ CREATE FUNCTION lwgeom_gist_consistent(internal, geometry, integer) RETURNS bool
     LANGUAGE c;
 
 
-ALTER FUNCTION public.lwgeom_gist_consistent(internal, geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: lwgeom_gist_decompress(internal); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_decompress(internal); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lwgeom_gist_decompress(internal) RETURNS internal
@@ -9516,10 +8746,8 @@ CREATE FUNCTION lwgeom_gist_decompress(internal) RETURNS internal
     LANGUAGE c;
 
 
-ALTER FUNCTION public.lwgeom_gist_decompress(internal) OWNER TO aps03pwb;
-
 --
--- Name: lwgeom_gist_penalty(internal, internal, internal); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_penalty(internal, internal, internal); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lwgeom_gist_penalty(internal, internal, internal) RETURNS internal
@@ -9527,10 +8755,8 @@ CREATE FUNCTION lwgeom_gist_penalty(internal, internal, internal) RETURNS intern
     LANGUAGE c;
 
 
-ALTER FUNCTION public.lwgeom_gist_penalty(internal, internal, internal) OWNER TO aps03pwb;
-
 --
--- Name: lwgeom_gist_picksplit(internal, internal); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_picksplit(internal, internal); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lwgeom_gist_picksplit(internal, internal) RETURNS internal
@@ -9538,10 +8764,8 @@ CREATE FUNCTION lwgeom_gist_picksplit(internal, internal) RETURNS internal
     LANGUAGE c;
 
 
-ALTER FUNCTION public.lwgeom_gist_picksplit(internal, internal) OWNER TO aps03pwb;
-
 --
--- Name: lwgeom_gist_same(box2d, box2d, internal); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_same(box2d, box2d, internal); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lwgeom_gist_same(box2d, box2d, internal) RETURNS internal
@@ -9549,10 +8773,8 @@ CREATE FUNCTION lwgeom_gist_same(box2d, box2d, internal) RETURNS internal
     LANGUAGE c;
 
 
-ALTER FUNCTION public.lwgeom_gist_same(box2d, box2d, internal) OWNER TO aps03pwb;
-
 --
--- Name: lwgeom_gist_union(bytea, internal); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_union(bytea, internal); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION lwgeom_gist_union(bytea, internal) RETURNS internal
@@ -9560,10 +8782,8 @@ CREATE FUNCTION lwgeom_gist_union(bytea, internal) RETURNS internal
     LANGUAGE c;
 
 
-ALTER FUNCTION public.lwgeom_gist_union(bytea, internal) OWNER TO aps03pwb;
-
 --
--- Name: m(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: m(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION m(geometry) RETURNS double precision
@@ -9571,10 +8791,8 @@ CREATE FUNCTION m(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.m(geometry) OWNER TO aps03pwb;
-
 --
--- Name: makebox2d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: makebox2d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION makebox2d(geometry, geometry) RETURNS box2d
@@ -9582,10 +8800,8 @@ CREATE FUNCTION makebox2d(geometry, geometry) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.makebox2d(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: makebox3d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: makebox3d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION makebox3d(geometry, geometry) RETURNS box3d
@@ -9593,10 +8809,8 @@ CREATE FUNCTION makebox3d(geometry, geometry) RETURNS box3d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.makebox3d(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: makeline(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: makeline(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION makeline(geometry, geometry) RETURNS geometry
@@ -9604,10 +8818,8 @@ CREATE FUNCTION makeline(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.makeline(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: makeline_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: makeline_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION makeline_garray(geometry[]) RETURNS geometry
@@ -9615,10 +8827,8 @@ CREATE FUNCTION makeline_garray(geometry[]) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.makeline_garray(geometry[]) OWNER TO aps03pwb;
-
 --
--- Name: makepoint(double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: makepoint(double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION makepoint(double precision, double precision) RETURNS geometry
@@ -9626,10 +8836,8 @@ CREATE FUNCTION makepoint(double precision, double precision) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.makepoint(double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: makepoint(double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: makepoint(double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION makepoint(double precision, double precision, double precision) RETURNS geometry
@@ -9637,10 +8845,8 @@ CREATE FUNCTION makepoint(double precision, double precision, double precision) 
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.makepoint(double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: makepoint(double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: makepoint(double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION makepoint(double precision, double precision, double precision, double precision) RETURNS geometry
@@ -9648,10 +8854,8 @@ CREATE FUNCTION makepoint(double precision, double precision, double precision, 
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.makepoint(double precision, double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: makepointm(double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: makepointm(double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION makepointm(double precision, double precision, double precision) RETURNS geometry
@@ -9659,10 +8863,8 @@ CREATE FUNCTION makepointm(double precision, double precision, double precision)
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.makepointm(double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: makepolygon(geometry, geometry[]); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: makepolygon(geometry, geometry[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION makepolygon(geometry, geometry[]) RETURNS geometry
@@ -9670,10 +8872,8 @@ CREATE FUNCTION makepolygon(geometry, geometry[]) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.makepolygon(geometry, geometry[]) OWNER TO aps03pwb;
-
 --
--- Name: makepolygon(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: makepolygon(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION makepolygon(geometry) RETURNS geometry
@@ -9681,10 +8881,8 @@ CREATE FUNCTION makepolygon(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.makepolygon(geometry) OWNER TO aps03pwb;
-
 --
--- Name: max_distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: max_distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION max_distance(geometry, geometry) RETURNS double precision
@@ -9692,10 +8890,8 @@ CREATE FUNCTION max_distance(geometry, geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.max_distance(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: mem_size(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mem_size(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mem_size(geometry) RETURNS integer
@@ -9703,10 +8899,8 @@ CREATE FUNCTION mem_size(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mem_size(geometry) OWNER TO aps03pwb;
-
 --
--- Name: mlinefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mlinefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mlinefromtext(text, integer) RETURNS geometry
@@ -9719,10 +8913,8 @@ CREATE FUNCTION mlinefromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mlinefromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: mlinefromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mlinefromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mlinefromtext(text) RETURNS geometry
@@ -9734,10 +8926,8 @@ CREATE FUNCTION mlinefromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mlinefromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: mlinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mlinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mlinefromwkb(bytea, integer) RETURNS geometry
@@ -9749,10 +8939,8 @@ CREATE FUNCTION mlinefromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mlinefromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: mlinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mlinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mlinefromwkb(bytea) RETURNS geometry
@@ -9764,10 +8952,8 @@ CREATE FUNCTION mlinefromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mlinefromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: mpointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mpointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mpointfromtext(text, integer) RETURNS geometry
@@ -9779,10 +8965,8 @@ CREATE FUNCTION mpointfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mpointfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: mpointfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mpointfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mpointfromtext(text) RETURNS geometry
@@ -9794,10 +8978,8 @@ CREATE FUNCTION mpointfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mpointfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: mpointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mpointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mpointfromwkb(bytea, integer) RETURNS geometry
@@ -9809,10 +8991,8 @@ CREATE FUNCTION mpointfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mpointfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: mpointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mpointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mpointfromwkb(bytea) RETURNS geometry
@@ -9824,10 +9004,8 @@ CREATE FUNCTION mpointfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mpointfromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: mpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mpolyfromtext(text, integer) RETURNS geometry
@@ -9839,10 +9017,8 @@ CREATE FUNCTION mpolyfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mpolyfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: mpolyfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mpolyfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mpolyfromtext(text) RETURNS geometry
@@ -9854,10 +9030,8 @@ CREATE FUNCTION mpolyfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mpolyfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: mpolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mpolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mpolyfromwkb(bytea, integer) RETURNS geometry
@@ -9869,10 +9043,8 @@ CREATE FUNCTION mpolyfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mpolyfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: mpolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mpolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mpolyfromwkb(bytea) RETURNS geometry
@@ -9884,10 +9056,8 @@ CREATE FUNCTION mpolyfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.mpolyfromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: multi(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multi(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multi(geometry) RETURNS geometry
@@ -9895,10 +9065,8 @@ CREATE FUNCTION multi(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multi(geometry) OWNER TO aps03pwb;
-
 --
--- Name: multilinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multilinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multilinefromwkb(bytea, integer) RETURNS geometry
@@ -9910,10 +9078,8 @@ CREATE FUNCTION multilinefromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multilinefromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: multilinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multilinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multilinefromwkb(bytea) RETURNS geometry
@@ -9925,10 +9091,8 @@ CREATE FUNCTION multilinefromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multilinefromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: multilinestringfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multilinestringfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multilinestringfromtext(text) RETURNS geometry
@@ -9936,10 +9100,8 @@ CREATE FUNCTION multilinestringfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multilinestringfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: multilinestringfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multilinestringfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multilinestringfromtext(text, integer) RETURNS geometry
@@ -9947,10 +9109,8 @@ CREATE FUNCTION multilinestringfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multilinestringfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: multipointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multipointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multipointfromtext(text, integer) RETURNS geometry
@@ -9958,10 +9118,8 @@ CREATE FUNCTION multipointfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multipointfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: multipointfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multipointfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multipointfromtext(text) RETURNS geometry
@@ -9969,10 +9127,8 @@ CREATE FUNCTION multipointfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multipointfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: multipointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multipointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multipointfromwkb(bytea, integer) RETURNS geometry
@@ -9984,10 +9140,8 @@ CREATE FUNCTION multipointfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multipointfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: multipointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multipointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multipointfromwkb(bytea) RETURNS geometry
@@ -9999,10 +9153,8 @@ CREATE FUNCTION multipointfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multipointfromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: multipolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multipolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multipolyfromwkb(bytea, integer) RETURNS geometry
@@ -10014,10 +9166,8 @@ CREATE FUNCTION multipolyfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multipolyfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: multipolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multipolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multipolyfromwkb(bytea) RETURNS geometry
@@ -10029,10 +9179,8 @@ CREATE FUNCTION multipolyfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multipolyfromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: multipolygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multipolygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multipolygonfromtext(text, integer) RETURNS geometry
@@ -10040,10 +9188,8 @@ CREATE FUNCTION multipolygonfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multipolygonfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: multipolygonfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: multipolygonfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION multipolygonfromtext(text) RETURNS geometry
@@ -10051,10 +9197,8 @@ CREATE FUNCTION multipolygonfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.multipolygonfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: mymath(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mymath(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mymath(integer) RETURNS integer
@@ -10062,10 +9206,8 @@ CREATE FUNCTION mymath(integer) RETURNS integer
     LANGUAGE java;
 
 
-ALTER FUNCTION public.mymath(integer) OWNER TO aps03pwb;
-
 --
--- Name: mymultiply(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: mymultiply(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION mymultiply(integer) RETURNS integer
@@ -10073,10 +9215,8 @@ CREATE FUNCTION mymultiply(integer) RETURNS integer
     LANGUAGE java;
 
 
-ALTER FUNCTION public.mymultiply(integer) OWNER TO aps03pwb;
-
 --
--- Name: noop(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: noop(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION noop(geometry) RETURNS geometry
@@ -10084,10 +9224,8 @@ CREATE FUNCTION noop(geometry) RETURNS geometry
     LANGUAGE c STRICT;
 
 
-ALTER FUNCTION public.noop(geometry) OWNER TO aps03pwb;
-
 --
--- Name: normal_rand(integer, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: normal_rand(integer, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION normal_rand(integer, double precision, double precision) RETURNS SETOF double precision
@@ -10095,10 +9233,8 @@ CREATE FUNCTION normal_rand(integer, double precision, double precision) RETURNS
     LANGUAGE c STRICT;
 
 
-ALTER FUNCTION public.normal_rand(integer, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: npoints(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: npoints(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION npoints(geometry) RETURNS integer
@@ -10106,10 +9242,8 @@ CREATE FUNCTION npoints(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.npoints(geometry) OWNER TO aps03pwb;
-
 --
--- Name: nrings(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: nrings(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION nrings(geometry) RETURNS integer
@@ -10117,10 +9251,8 @@ CREATE FUNCTION nrings(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.nrings(geometry) OWNER TO aps03pwb;
-
 --
--- Name: numgeometries(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: numgeometries(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION numgeometries(geometry) RETURNS integer
@@ -10128,10 +9260,8 @@ CREATE FUNCTION numgeometries(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.numgeometries(geometry) OWNER TO aps03pwb;
-
 --
--- Name: numinteriorring(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: numinteriorring(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION numinteriorring(geometry) RETURNS integer
@@ -10139,10 +9269,8 @@ CREATE FUNCTION numinteriorring(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.numinteriorring(geometry) OWNER TO aps03pwb;
-
 --
--- Name: numinteriorrings(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: numinteriorrings(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION numinteriorrings(geometry) RETURNS integer
@@ -10150,10 +9278,8 @@ CREATE FUNCTION numinteriorrings(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.numinteriorrings(geometry) OWNER TO aps03pwb;
-
 --
--- Name: numpoints(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: numpoints(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION numpoints(geometry) RETURNS integer
@@ -10161,10 +9287,8 @@ CREATE FUNCTION numpoints(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.numpoints(geometry) OWNER TO aps03pwb;
-
 --
--- Name: overlaps(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: overlaps(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION "overlaps"(geometry, geometry) RETURNS boolean
@@ -10172,10 +9296,8 @@ CREATE FUNCTION "overlaps"(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public."overlaps"(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: perimeter(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: perimeter(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION perimeter(geometry) RETURNS double precision
@@ -10183,10 +9305,8 @@ CREATE FUNCTION perimeter(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.perimeter(geometry) OWNER TO aps03pwb;
-
 --
--- Name: perimeter2d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: perimeter2d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION perimeter2d(geometry) RETURNS double precision
@@ -10194,10 +9314,8 @@ CREATE FUNCTION perimeter2d(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.perimeter2d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: perimeter3d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: perimeter3d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION perimeter3d(geometry) RETURNS double precision
@@ -10205,10 +9323,8 @@ CREATE FUNCTION perimeter3d(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.perimeter3d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: pljava_test_external(integer); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: pljava_test_external(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION pljava_test_external(integer) RETURNS character varying
@@ -10216,10 +9332,8 @@ CREATE FUNCTION pljava_test_external(integer) RETURNS character varying
     LANGUAGE javau;
 
 
-ALTER FUNCTION public.pljava_test_external(integer) OWNER TO lucasm;
-
 --
--- Name: pljava_test_internal(integer); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: pljava_test_internal(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION pljava_test_internal(integer) RETURNS character varying
@@ -10227,10 +9341,8 @@ CREATE FUNCTION pljava_test_internal(integer) RETURNS character varying
     LANGUAGE javau;
 
 
-ALTER FUNCTION public.pljava_test_internal(integer) OWNER TO lucasm;
-
 --
--- Name: plpgsql_test_external(character varying); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: plpgsql_test_external(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION plpgsql_test_external(character varying) RETURNS character varying
@@ -10242,10 +9354,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.plpgsql_test_external(character varying) OWNER TO lucasm;
-
 --
--- Name: point_inside_circle(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: point_inside_circle(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION point_inside_circle(geometry, double precision, double precision, double precision) RETURNS boolean
@@ -10253,10 +9363,8 @@ CREATE FUNCTION point_inside_circle(geometry, double precision, double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.point_inside_circle(geometry, double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: pointfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: pointfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION pointfromtext(text) RETURNS geometry
@@ -10268,10 +9376,8 @@ CREATE FUNCTION pointfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.pointfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: pointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: pointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION pointfromtext(text, integer) RETURNS geometry
@@ -10283,10 +9389,8 @@ CREATE FUNCTION pointfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.pointfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: pointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: pointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION pointfromwkb(bytea, integer) RETURNS geometry
@@ -10298,10 +9402,8 @@ CREATE FUNCTION pointfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.pointfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: pointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: pointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION pointfromwkb(bytea) RETURNS geometry
@@ -10313,10 +9415,8 @@ CREATE FUNCTION pointfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.pointfromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: pointn(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: pointn(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION pointn(geometry, integer) RETURNS geometry
@@ -10324,10 +9424,8 @@ CREATE FUNCTION pointn(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.pointn(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: pointonsurface(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: pointonsurface(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION pointonsurface(geometry) RETURNS geometry
@@ -10335,10 +9433,8 @@ CREATE FUNCTION pointonsurface(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.pointonsurface(geometry) OWNER TO aps03pwb;
-
 --
--- Name: polyfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: polyfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION polyfromtext(text) RETURNS geometry
@@ -10350,10 +9446,8 @@ CREATE FUNCTION polyfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.polyfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: polyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: polyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION polyfromtext(text, integer) RETURNS geometry
@@ -10365,10 +9459,8 @@ CREATE FUNCTION polyfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.polyfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: polyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: polyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION polyfromwkb(bytea, integer) RETURNS geometry
@@ -10380,10 +9472,8 @@ CREATE FUNCTION polyfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.polyfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: polyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: polyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION polyfromwkb(bytea) RETURNS geometry
@@ -10395,10 +9485,8 @@ CREATE FUNCTION polyfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.polyfromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: polygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: polygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION polygonfromtext(text, integer) RETURNS geometry
@@ -10406,10 +9494,8 @@ CREATE FUNCTION polygonfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.polygonfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: polygonfromtext(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: polygonfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION polygonfromtext(text) RETURNS geometry
@@ -10417,10 +9503,8 @@ CREATE FUNCTION polygonfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.polygonfromtext(text) OWNER TO aps03pwb;
-
 --
--- Name: polygonfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: polygonfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION polygonfromwkb(bytea, integer) RETURNS geometry
@@ -10432,10 +9516,8 @@ CREATE FUNCTION polygonfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.polygonfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: polygonfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: polygonfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION polygonfromwkb(bytea) RETURNS geometry
@@ -10447,10 +9529,8 @@ CREATE FUNCTION polygonfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.polygonfromwkb(bytea) OWNER TO aps03pwb;
-
 --
--- Name: polygonize_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: polygonize_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION polygonize_garray(geometry[]) RETURNS geometry
@@ -10458,10 +9538,8 @@ CREATE FUNCTION polygonize_garray(geometry[]) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.polygonize_garray(geometry[]) OWNER TO aps03pwb;
-
 --
--- Name: postgis_full_version(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_full_version(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_full_version() RETURNS text
@@ -10515,10 +9593,8 @@ $$
     LANGUAGE plpgsql IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_full_version() OWNER TO aps03pwb;
-
 --
--- Name: postgis_geos_version(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_geos_version(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_geos_version() RETURNS text
@@ -10526,10 +9602,8 @@ CREATE FUNCTION postgis_geos_version() RETURNS text
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_geos_version() OWNER TO aps03pwb;
-
 --
--- Name: postgis_gist_joinsel(internal, oid, internal, smallint); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_gist_joinsel(internal, oid, internal, smallint); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_gist_joinsel(internal, oid, internal, smallint) RETURNS double precision
@@ -10537,10 +9611,8 @@ CREATE FUNCTION postgis_gist_joinsel(internal, oid, internal, smallint) RETURNS 
     LANGUAGE c;
 
 
-ALTER FUNCTION public.postgis_gist_joinsel(internal, oid, internal, smallint) OWNER TO aps03pwb;
-
 --
--- Name: postgis_gist_sel(internal, oid, internal, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_gist_sel(internal, oid, internal, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_gist_sel(internal, oid, internal, integer) RETURNS double precision
@@ -10548,10 +9620,8 @@ CREATE FUNCTION postgis_gist_sel(internal, oid, internal, integer) RETURNS doubl
     LANGUAGE c;
 
 
-ALTER FUNCTION public.postgis_gist_sel(internal, oid, internal, integer) OWNER TO aps03pwb;
-
 --
--- Name: postgis_jts_version(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_jts_version(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_jts_version() RETURNS text
@@ -10559,10 +9629,8 @@ CREATE FUNCTION postgis_jts_version() RETURNS text
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_jts_version() OWNER TO aps03pwb;
-
 --
--- Name: postgis_lib_build_date(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_lib_build_date(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_lib_build_date() RETURNS text
@@ -10570,10 +9638,8 @@ CREATE FUNCTION postgis_lib_build_date() RETURNS text
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_lib_build_date() OWNER TO aps03pwb;
-
 --
--- Name: postgis_lib_version(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_lib_version(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_lib_version() RETURNS text
@@ -10581,10 +9647,8 @@ CREATE FUNCTION postgis_lib_version() RETURNS text
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_lib_version() OWNER TO aps03pwb;
-
 --
--- Name: postgis_proj_version(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_proj_version(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_proj_version() RETURNS text
@@ -10592,10 +9656,8 @@ CREATE FUNCTION postgis_proj_version() RETURNS text
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_proj_version() OWNER TO aps03pwb;
-
 --
--- Name: postgis_scripts_build_date(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_scripts_build_date(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_scripts_build_date() RETURNS text
@@ -10603,10 +9665,8 @@ CREATE FUNCTION postgis_scripts_build_date() RETURNS text
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_scripts_build_date() OWNER TO aps03pwb;
-
 --
--- Name: postgis_scripts_installed(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_scripts_installed(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_scripts_installed() RETURNS text
@@ -10614,10 +9674,8 @@ CREATE FUNCTION postgis_scripts_installed() RETURNS text
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_scripts_installed() OWNER TO aps03pwb;
-
 --
--- Name: postgis_scripts_released(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_scripts_released(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_scripts_released() RETURNS text
@@ -10625,10 +9683,8 @@ CREATE FUNCTION postgis_scripts_released() RETURNS text
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_scripts_released() OWNER TO aps03pwb;
-
 --
--- Name: postgis_uses_stats(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_uses_stats(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_uses_stats() RETURNS boolean
@@ -10636,10 +9692,8 @@ CREATE FUNCTION postgis_uses_stats() RETURNS boolean
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_uses_stats() OWNER TO aps03pwb;
-
 --
--- Name: postgis_version(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: postgis_version(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION postgis_version() RETURNS text
@@ -10647,10 +9701,8 @@ CREATE FUNCTION postgis_version() RETURNS text
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.postgis_version() OWNER TO aps03pwb;
-
 --
--- Name: probe_geometry_columns(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: probe_geometry_columns(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION probe_geometry_columns() RETURNS text
@@ -10737,10 +9789,8 @@ $$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.probe_geometry_columns() OWNER TO aps03pwb;
-
 --
--- Name: qappvmeasurementresultreadingopsum1(character varying, integer); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: qappvmeasurementresultreadingopsum1(character varying, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION qappvmeasurementresultreadingopsum1(character varying, integer) RETURNS SETOF record
@@ -10754,10 +9804,8 @@ $_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.qappvmeasurementresultreadingopsum1(character varying, integer) OWNER TO lucasm;
-
 --
--- Name: relate(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: relate(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION relate(geometry, geometry) RETURNS text
@@ -10765,10 +9813,8 @@ CREATE FUNCTION relate(geometry, geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.relate(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: relate(geometry, geometry, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: relate(geometry, geometry, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION relate(geometry, geometry, text) RETURNS boolean
@@ -10776,10 +9822,8 @@ CREATE FUNCTION relate(geometry, geometry, text) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.relate(geometry, geometry, text) OWNER TO aps03pwb;
-
 --
--- Name: removepoint(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: removepoint(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION removepoint(geometry, integer) RETURNS geometry
@@ -10787,10 +9831,8 @@ CREATE FUNCTION removepoint(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.removepoint(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: rename_geometry_table_constraints(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: rename_geometry_table_constraints(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION rename_geometry_table_constraints() RETURNS text
@@ -10800,10 +9842,8 @@ $$
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION public.rename_geometry_table_constraints() OWNER TO aps03pwb;
-
 --
--- Name: reverse(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: reverse(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION reverse(geometry) RETURNS geometry
@@ -10811,10 +9851,8 @@ CREATE FUNCTION reverse(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.reverse(geometry) OWNER TO aps03pwb;
-
 --
--- Name: rotate(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: rotate(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION rotate(geometry, double precision) RETURNS geometry
@@ -10822,10 +9860,8 @@ CREATE FUNCTION rotate(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.rotate(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: rotatex(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: rotatex(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION rotatex(geometry, double precision) RETURNS geometry
@@ -10833,10 +9869,8 @@ CREATE FUNCTION rotatex(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.rotatex(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: rotatey(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: rotatey(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION rotatey(geometry, double precision) RETURNS geometry
@@ -10844,10 +9878,8 @@ CREATE FUNCTION rotatey(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.rotatey(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: rotatez(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: rotatez(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION rotatez(geometry, double precision) RETURNS geometry
@@ -10855,10 +9887,8 @@ CREATE FUNCTION rotatez(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.rotatez(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: scale(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: scale(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION scale(geometry, double precision, double precision, double precision) RETURNS geometry
@@ -10866,10 +9896,8 @@ CREATE FUNCTION scale(geometry, double precision, double precision, double preci
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.scale(geometry, double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: scale(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: scale(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION scale(geometry, double precision, double precision) RETURNS geometry
@@ -10877,10 +9905,8 @@ CREATE FUNCTION scale(geometry, double precision, double precision) RETURNS geom
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.scale(geometry, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: se_envelopesintersect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: se_envelopesintersect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION se_envelopesintersect(geometry, geometry) RETURNS boolean
@@ -10890,10 +9916,8 @@ CREATE FUNCTION se_envelopesintersect(geometry, geometry) RETURNS boolean
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.se_envelopesintersect(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: se_is3d(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: se_is3d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION se_is3d(geometry) RETURNS boolean
@@ -10909,10 +9933,8 @@ CREATE FUNCTION se_is3d(geometry) RETURNS boolean
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.se_is3d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: se_ismeasured(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: se_ismeasured(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION se_ismeasured(geometry) RETURNS boolean
@@ -10928,10 +9950,8 @@ CREATE FUNCTION se_ismeasured(geometry) RETURNS boolean
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.se_ismeasured(geometry) OWNER TO aps03pwb;
-
 --
--- Name: se_locatealong(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: se_locatealong(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION se_locatealong(geometry, double precision) RETURNS geometry
@@ -10939,10 +9959,8 @@ CREATE FUNCTION se_locatealong(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.se_locatealong(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: se_locatebetween(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: se_locatebetween(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION se_locatebetween(geometry, double precision, double precision) RETURNS geometry
@@ -10950,10 +9968,8 @@ CREATE FUNCTION se_locatebetween(geometry, double precision, double precision) R
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.se_locatebetween(geometry, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: se_m(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: se_m(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION se_m(geometry) RETURNS double precision
@@ -10961,10 +9977,8 @@ CREATE FUNCTION se_m(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.se_m(geometry) OWNER TO aps03pwb;
-
 --
--- Name: se_z(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: se_z(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION se_z(geometry) RETURNS double precision
@@ -10972,10 +9986,8 @@ CREATE FUNCTION se_z(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.se_z(geometry) OWNER TO aps03pwb;
-
 --
--- Name: securitygroupobjectmaster(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygroupobjectmaster(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygroupobjectmaster(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -10985,10 +9997,8 @@ where (((securitygrouprestrictiveobjectcombined.objectid) is null));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygroupobjectmaster(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouppermissivedefaultcombined(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivedefaultcombined(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissivedefaultcombined(securitypermissionid integer, securityuserid integer) RETURNS SETOF integer
@@ -10999,10 +10009,8 @@ UNION SELECT * from securitygrouppermissivedefault3($1,$2);$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissivedefaultcombined(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouppermissiveobject1(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissiveobject1(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissiveobject1(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11017,10 +10025,8 @@ HAVING (((tblsecurityuser.securityuserid)=$2));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissiveobject1(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: FUNCTION securitygrouppermissiveobject1(securitypermissionid integer, securityuserid integer); Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: FUNCTION securitygrouppermissiveobject1(securitypermissionid integer, securityuserid integer); Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON FUNCTION securitygrouppermissiveobject1(securitypermissionid integer, securityuserid integer) IS 'This is part of a series of functions:
@@ -11028,7 +10034,7 @@ securitygrouppermissiveobject1, securitygrouppermissiveobject2, securitygroupper
 
 
 --
--- Name: securitygrouppermissiveobject2(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissiveobject2(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissiveobject2(securitypermission integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11045,10 +10051,8 @@ having (((tblsecurityuser.securityuserid)=$2));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissiveobject2(securitypermission integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: FUNCTION securitygrouppermissiveobject2(securitypermission integer, securityuserid integer); Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: FUNCTION securitygrouppermissiveobject2(securitypermission integer, securityuserid integer); Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON FUNCTION securitygrouppermissiveobject2(securitypermission integer, securityuserid integer) IS 'This is part of a series of functions:
@@ -11056,7 +10060,7 @@ securitygrouppermissiveobject1, securitygrouppermissiveobject2, securitygroupper
 
 
 --
--- Name: securitygrouppermissiveobject3(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissiveobject3(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissiveobject3(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11075,10 +10079,8 @@ having (((tblsecurityuser.securityuserid)=$2));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissiveobject3(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: FUNCTION securitygrouppermissiveobject3(securitypermissionid integer, securityuserid integer); Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: FUNCTION securitygrouppermissiveobject3(securitypermissionid integer, securityuserid integer); Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON FUNCTION securitygrouppermissiveobject3(securitypermissionid integer, securityuserid integer) IS 'This is part of a series of functions:
@@ -11086,7 +10088,7 @@ securitygrouppermissiveobject1, securitygrouppermissiveobject2, securitygroupper
 
 
 --
--- Name: securitygrouppermissiveobjectcombined(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissiveobjectcombined(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissiveobjectcombined(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11097,10 +10099,8 @@ UNION SELECT * from securitygrouppermissiveobject3($1,$2);$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissiveobjectcombined(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: FUNCTION securitygrouppermissiveobjectcombined(securitypermissionid integer, securityuserid integer); Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: FUNCTION securitygrouppermissiveobjectcombined(securitypermissionid integer, securityuserid integer); Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON FUNCTION securitygrouppermissiveobjectcombined(securitypermissionid integer, securityuserid integer) IS 'This is part of a series of functions:
@@ -11108,7 +10108,7 @@ securitygrouppermissiveobject1, securitygrouppermissiveobject2, securitygroupper
 
 
 --
--- Name: securitygrouppermissivetree1(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivetree1(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissivetree1(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11123,10 +10123,8 @@ HAVING (((tblsecurityuser.securityuserid)=$2));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissivetree1(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouppermissivetree2(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivetree2(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissivetree2(securitypermission integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11143,10 +10141,8 @@ having (((tblsecurityuser.securityuserid)=$2));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissivetree2(securitypermission integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouppermissivetree3(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivetree3(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissivetree3(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11165,10 +10161,8 @@ having (((tblsecurityuser.securityuserid)=$2));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissivetree3(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouppermissivetreecombined(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivetreecombined(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissivetreecombined(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11179,10 +10173,8 @@ UNION SELECT * from securitygrouppermissivetree3($1,$2);$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissivetreecombined(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouppermissivevmeasurement1(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivevmeasurement1(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissivevmeasurement1(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11194,10 +10186,8 @@ HAVING (((tblsecurityuser.securityuserid)=$2));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissivevmeasurement1(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouppermissivevmeasurement2(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivevmeasurement2(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissivevmeasurement2(securitypermission integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11209,10 +10199,8 @@ having (((tblsecurityuser.securityuserid)=$2));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissivevmeasurement2(securitypermission integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouppermissivevmeasurement3(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivevmeasurement3(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissivevmeasurement3(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11231,10 +10219,8 @@ having (((tblsecurityuser.securityuserid)=$2));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissivevmeasurement3(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouppermissivevmeasurementcombined(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivevmeasurementcombined(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouppermissivevmeasurementcombined(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11245,10 +10231,8 @@ UNION SELECT * from securitygrouppermissivevmeasurement3($1,$2);$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouppermissivevmeasurementcombined(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictiveobject1(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictiveobject1(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictiveobject1(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11260,10 +10244,8 @@ having (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictiveobject1(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictiveobject2(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictiveobject2(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictiveobject2(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11275,10 +10257,8 @@ having (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictiveobject2(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictiveobject3(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictiveobject3(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictiveobject3(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11290,10 +10270,8 @@ having (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictiveobject3(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictiveobjectcombined(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictiveobjectcombined(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictiveobjectcombined(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11304,10 +10282,8 @@ UNION SELECT * from securitygrouprestrictiveobject3($1);$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictiveobjectcombined(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictivetree1(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivetree1(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictivetree1(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11319,10 +10295,8 @@ having (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictivetree1(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictivetree2(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivetree2(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictivetree2(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11334,10 +10308,8 @@ having (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictivetree2(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictivetree3(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivetree3(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictivetree3(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11349,10 +10321,8 @@ having (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictivetree3(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictivetreecombined(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivetreecombined(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictivetreecombined(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11363,10 +10333,8 @@ UNION SELECT * from securitygrouprestrictivetree3($1);$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictivetreecombined(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictivevmeasurement1(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivevmeasurement1(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictivevmeasurement1(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11378,10 +10346,8 @@ having (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictivevmeasurement1(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictivevmeasurement2(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivevmeasurement2(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictivevmeasurement2(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11393,10 +10359,8 @@ having (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictivevmeasurement2(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictivevmeasurement3(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivevmeasurement3(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictivevmeasurement3(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11408,10 +10372,8 @@ having (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictivevmeasurement3(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouprestrictivevmeasurementcombined(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivevmeasurementcombined(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouprestrictivevmeasurementcombined(securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11422,10 +10384,8 @@ UNION SELECT * from securitygrouprestrictivevmeasurement3($1);$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouprestrictivevmeasurementcombined(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygroupsbyuser(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygroupsbyuser(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygroupsbyuser(securityuserid integer) RETURNS SETOF integer
@@ -11436,10 +10396,8 @@ UNION SELECT * from securitygroupsbyuser3($1)$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygroupsbyuser(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygroupsbyuser1(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygroupsbyuser1(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygroupsbyuser1(securityuserid integer) RETURNS SETOF integer
@@ -11452,10 +10410,8 @@ WHERE (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygroupsbyuser1(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygroupsbyuser2(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygroupsbyuser2(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygroupsbyuser2(securityuserid integer) RETURNS SETOF integer
@@ -11470,10 +10426,8 @@ WHERE (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygroupsbyuser2(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygroupsbyuser3(integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygroupsbyuser3(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygroupsbyuser3(securityuserid integer) RETURNS SETOF integer
@@ -11496,10 +10450,8 @@ where (((tblsecurityuser.securityuserid)=$1));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygroupsbyuser3(securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygrouptreemaster(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygrouptreemaster(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygrouptreemaster(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11509,10 +10461,8 @@ where (((securitygrouprestrictivetreecombined.objectid) is null));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygrouptreemaster(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitygroupvmeasurementmaster(integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitygroupvmeasurementmaster(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitygroupvmeasurementmaster(securitypermissionid integer, securityuserid integer) RETURNS SETOF securityuserandobjectid
@@ -11522,10 +10472,8 @@ where (((securitygrouprestrictivevmeasurementcombined.objectid) is null));$_$
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.securitygroupvmeasurementmaster(securitypermissionid integer, securityuserid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitypermsobject(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitypermsobject(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitypermsobject(securityuserid integer, securitypermissionid integer, securityobjectid integer) RETURNS boolean
@@ -11578,10 +10526,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.securitypermsobject(securityuserid integer, securitypermissionid integer, securityobjectid integer) OWNER TO aps03pwb;
-
 --
--- Name: securitypermstree(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: securitypermstree(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION securitypermstree(securityuserid integer, securitypermissionid integer, elementid integer) RETURNS boolean
@@ -11632,10 +10578,8 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.securitypermstree(securityuserid integer, securitypermissionid integer, elementid integer) OWNER TO aps03pwb;
-
 --
--- Name: segmentize(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: segmentize(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION segmentize(geometry, double precision) RETURNS geometry
@@ -11643,10 +10587,8 @@ CREATE FUNCTION segmentize(geometry, double precision) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.segmentize(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: setfactor(chip, real); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: setfactor(chip, real); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION setfactor(chip, real) RETURNS chip
@@ -11654,10 +10596,8 @@ CREATE FUNCTION setfactor(chip, real) RETURNS chip
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.setfactor(chip, real) OWNER TO aps03pwb;
-
 --
--- Name: setpoint(geometry, integer, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: setpoint(geometry, integer, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION setpoint(geometry, integer, geometry) RETURNS geometry
@@ -11665,10 +10605,8 @@ CREATE FUNCTION setpoint(geometry, integer, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.setpoint(geometry, integer, geometry) OWNER TO aps03pwb;
-
 --
--- Name: setsrid(chip, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: setsrid(chip, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION setsrid(chip, integer) RETURNS chip
@@ -11676,10 +10614,8 @@ CREATE FUNCTION setsrid(chip, integer) RETURNS chip
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.setsrid(chip, integer) OWNER TO aps03pwb;
-
 --
--- Name: setsrid(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: setsrid(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION setsrid(geometry, integer) RETURNS geometry
@@ -11687,10 +10623,8 @@ CREATE FUNCTION setsrid(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.setsrid(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: shift_longitude(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: shift_longitude(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION shift_longitude(geometry) RETURNS geometry
@@ -11698,10 +10632,8 @@ CREATE FUNCTION shift_longitude(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.shift_longitude(geometry) OWNER TO aps03pwb;
-
 --
--- Name: simplify(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: simplify(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION simplify(geometry, double precision) RETURNS geometry
@@ -11709,10 +10641,8 @@ CREATE FUNCTION simplify(geometry, double precision) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.simplify(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION snaptogrid(geometry, double precision, double precision, double precision, double precision) RETURNS geometry
@@ -11720,10 +10650,8 @@ CREATE FUNCTION snaptogrid(geometry, double precision, double precision, double 
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.snaptogrid(geometry, double precision, double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: snaptogrid(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: snaptogrid(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION snaptogrid(geometry, double precision, double precision) RETURNS geometry
@@ -11731,10 +10659,8 @@ CREATE FUNCTION snaptogrid(geometry, double precision, double precision) RETURNS
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.snaptogrid(geometry, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: snaptogrid(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: snaptogrid(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION snaptogrid(geometry, double precision) RETURNS geometry
@@ -11742,10 +10668,8 @@ CREATE FUNCTION snaptogrid(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.snaptogrid(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision) RETURNS geometry
@@ -11753,10 +10677,8 @@ CREATE FUNCTION snaptogrid(geometry, geometry, double precision, double precisio
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: srid(chip); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: srid(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION srid(chip) RETURNS integer
@@ -11764,10 +10686,8 @@ CREATE FUNCTION srid(chip) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.srid(chip) OWNER TO aps03pwb;
-
 --
--- Name: st_addbbox(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_addbbox(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_addbbox(geometry) RETURNS geometry
@@ -11775,10 +10695,8 @@ CREATE FUNCTION st_addbbox(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_addbbox(geometry) OWNER TO postgres;
-
 --
--- Name: st_addpoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_addpoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_addpoint(geometry, geometry) RETURNS geometry
@@ -11786,10 +10704,8 @@ CREATE FUNCTION st_addpoint(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_addpoint(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_addpoint(geometry, geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_addpoint(geometry, geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_addpoint(geometry, geometry, integer) RETURNS geometry
@@ -11797,10 +10713,8 @@ CREATE FUNCTION st_addpoint(geometry, geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_addpoint(geometry, geometry, integer) OWNER TO postgres;
-
 --
--- Name: st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) RETURNS geometry
@@ -11808,10 +10722,8 @@ CREATE FUNCTION st_affine(geometry, double precision, double precision, double p
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision) RETURNS geometry
@@ -11819,10 +10731,8 @@ CREATE FUNCTION st_affine(geometry, double precision, double precision, double p
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_area(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_area(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_area(geometry) RETURNS double precision
@@ -11830,10 +10740,8 @@ CREATE FUNCTION st_area(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_area(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_area2d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_area2d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_area2d(geometry) RETURNS double precision
@@ -11841,10 +10749,8 @@ CREATE FUNCTION st_area2d(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_area2d(geometry) OWNER TO postgres;
-
 --
--- Name: st_asbinary(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_asbinary(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_asbinary(geometry) RETURNS bytea
@@ -11852,10 +10758,8 @@ CREATE FUNCTION st_asbinary(geometry) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_asbinary(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_asbinary(geometry, text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_asbinary(geometry, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_asbinary(geometry, text) RETURNS bytea
@@ -11863,10 +10767,8 @@ CREATE FUNCTION st_asbinary(geometry, text) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_asbinary(geometry, text) OWNER TO postgres;
-
 --
--- Name: st_asewkb(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_asewkb(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_asewkb(geometry) RETURNS bytea
@@ -11874,10 +10776,8 @@ CREATE FUNCTION st_asewkb(geometry) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_asewkb(geometry) OWNER TO postgres;
-
 --
--- Name: st_asewkb(geometry, text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_asewkb(geometry, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_asewkb(geometry, text) RETURNS bytea
@@ -11885,10 +10785,8 @@ CREATE FUNCTION st_asewkb(geometry, text) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_asewkb(geometry, text) OWNER TO postgres;
-
 --
--- Name: st_asewkt(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_asewkt(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_asewkt(geometry) RETURNS text
@@ -11896,10 +10794,8 @@ CREATE FUNCTION st_asewkt(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_asewkt(geometry) OWNER TO postgres;
-
 --
--- Name: st_asgml(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_asgml(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_asgml(geometry, integer) RETURNS text
@@ -11907,10 +10803,8 @@ CREATE FUNCTION st_asgml(geometry, integer) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_asgml(geometry, integer) OWNER TO postgres;
-
 --
--- Name: st_asgml(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_asgml(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_asgml(geometry) RETURNS text
@@ -11918,10 +10812,8 @@ CREATE FUNCTION st_asgml(geometry) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_asgml(geometry) OWNER TO postgres;
-
 --
--- Name: st_asgml(integer, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_asgml(integer, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_asgml(integer, geometry) RETURNS text
@@ -11929,10 +10821,8 @@ CREATE FUNCTION st_asgml(integer, geometry) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_asgml(integer, geometry) OWNER TO postgres;
-
 --
--- Name: st_asgml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_asgml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_asgml(integer, geometry, integer) RETURNS text
@@ -11940,10 +10830,8 @@ CREATE FUNCTION st_asgml(integer, geometry, integer) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_asgml(integer, geometry, integer) OWNER TO postgres;
-
 --
--- Name: st_ashexewkb(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_ashexewkb(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_ashexewkb(geometry) RETURNS text
@@ -11951,10 +10839,8 @@ CREATE FUNCTION st_ashexewkb(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_ashexewkb(geometry) OWNER TO postgres;
-
 --
--- Name: st_ashexewkb(geometry, text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_ashexewkb(geometry, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_ashexewkb(geometry, text) RETURNS text
@@ -11962,10 +10848,8 @@ CREATE FUNCTION st_ashexewkb(geometry, text) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_ashexewkb(geometry, text) OWNER TO postgres;
-
 --
--- Name: st_askml(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_askml(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_askml(geometry, integer) RETURNS text
@@ -11973,10 +10857,8 @@ CREATE FUNCTION st_askml(geometry, integer) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_askml(geometry, integer) OWNER TO postgres;
-
 --
--- Name: st_askml(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_askml(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_askml(geometry) RETURNS text
@@ -11984,10 +10866,8 @@ CREATE FUNCTION st_askml(geometry) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_askml(geometry) OWNER TO postgres;
-
 --
--- Name: st_askml(integer, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_askml(integer, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_askml(integer, geometry) RETURNS text
@@ -11995,10 +10875,8 @@ CREATE FUNCTION st_askml(integer, geometry) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_askml(integer, geometry) OWNER TO postgres;
-
 --
--- Name: st_askml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_askml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_askml(integer, geometry, integer) RETURNS text
@@ -12006,10 +10884,8 @@ CREATE FUNCTION st_askml(integer, geometry, integer) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_askml(integer, geometry, integer) OWNER TO postgres;
-
 --
--- Name: st_assvg(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_assvg(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_assvg(geometry, integer, integer) RETURNS text
@@ -12017,10 +10893,8 @@ CREATE FUNCTION st_assvg(geometry, integer, integer) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_assvg(geometry, integer, integer) OWNER TO postgres;
-
 --
--- Name: st_assvg(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_assvg(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_assvg(geometry, integer) RETURNS text
@@ -12028,10 +10902,8 @@ CREATE FUNCTION st_assvg(geometry, integer) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_assvg(geometry, integer) OWNER TO postgres;
-
 --
--- Name: st_assvg(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_assvg(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_assvg(geometry) RETURNS text
@@ -12039,10 +10911,8 @@ CREATE FUNCTION st_assvg(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_assvg(geometry) OWNER TO postgres;
-
 --
--- Name: st_astext(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_astext(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_astext(geometry) RETURNS text
@@ -12050,10 +10920,8 @@ CREATE FUNCTION st_astext(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_astext(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_azimuth(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_azimuth(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_azimuth(geometry, geometry) RETURNS double precision
@@ -12061,10 +10929,8 @@ CREATE FUNCTION st_azimuth(geometry, geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_azimuth(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_bdmpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_bdmpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_bdmpolyfromtext(text, integer) RETURNS geometry
@@ -12090,10 +10956,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_bdmpolyfromtext(text, integer) OWNER TO postgres;
-
 --
--- Name: st_bdpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_bdpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_bdpolyfromtext(text, integer) RETURNS geometry
@@ -12124,10 +10988,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_bdpolyfromtext(text, integer) OWNER TO postgres;
-
 --
--- Name: st_boundary(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_boundary(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_boundary(geometry) RETURNS geometry
@@ -12135,10 +10997,8 @@ CREATE FUNCTION st_boundary(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_boundary(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_box(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box(geometry) RETURNS box
@@ -12146,10 +11006,8 @@ CREATE FUNCTION st_box(geometry) RETURNS box
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box(geometry) OWNER TO postgres;
-
 --
--- Name: st_box(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box(box3d) RETURNS box
@@ -12157,10 +11015,8 @@ CREATE FUNCTION st_box(box3d) RETURNS box
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box(box3d) OWNER TO postgres;
-
 --
--- Name: st_box2d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d(geometry) RETURNS box2d
@@ -12168,10 +11024,8 @@ CREATE FUNCTION st_box2d(geometry) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d(geometry) OWNER TO postgres;
-
 --
--- Name: st_box2d(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d(box3d) RETURNS box2d
@@ -12179,10 +11033,8 @@ CREATE FUNCTION st_box2d(box3d) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d(box3d) OWNER TO postgres;
-
 --
--- Name: st_box2d_contain(box2d, box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_contain(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_contain(box2d, box2d) RETURNS boolean
@@ -12190,10 +11042,8 @@ CREATE FUNCTION st_box2d_contain(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_contain(box2d, box2d) OWNER TO postgres;
-
 --
--- Name: st_box2d_contained(box2d, box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_contained(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_contained(box2d, box2d) RETURNS boolean
@@ -12201,10 +11051,8 @@ CREATE FUNCTION st_box2d_contained(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_contained(box2d, box2d) OWNER TO postgres;
-
 --
--- Name: st_box2d_in(cstring); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_in(cstring) RETURNS box2d
@@ -12212,10 +11060,8 @@ CREATE FUNCTION st_box2d_in(cstring) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_in(cstring) OWNER TO postgres;
-
 --
--- Name: st_box2d_intersects(box2d, box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_intersects(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_intersects(box2d, box2d) RETURNS boolean
@@ -12223,10 +11069,8 @@ CREATE FUNCTION st_box2d_intersects(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_intersects(box2d, box2d) OWNER TO postgres;
-
 --
--- Name: st_box2d_left(box2d, box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_left(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_left(box2d, box2d) RETURNS boolean
@@ -12234,10 +11078,8 @@ CREATE FUNCTION st_box2d_left(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_left(box2d, box2d) OWNER TO postgres;
-
 --
--- Name: st_box2d_out(box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_out(box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_out(box2d) RETURNS cstring
@@ -12245,10 +11087,8 @@ CREATE FUNCTION st_box2d_out(box2d) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_out(box2d) OWNER TO postgres;
-
 --
--- Name: st_box2d_overlap(box2d, box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_overlap(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_overlap(box2d, box2d) RETURNS boolean
@@ -12256,10 +11096,8 @@ CREATE FUNCTION st_box2d_overlap(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_overlap(box2d, box2d) OWNER TO postgres;
-
 --
--- Name: st_box2d_overleft(box2d, box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_overleft(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_overleft(box2d, box2d) RETURNS boolean
@@ -12267,10 +11105,8 @@ CREATE FUNCTION st_box2d_overleft(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_overleft(box2d, box2d) OWNER TO postgres;
-
 --
--- Name: st_box2d_overright(box2d, box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_overright(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_overright(box2d, box2d) RETURNS boolean
@@ -12278,10 +11114,8 @@ CREATE FUNCTION st_box2d_overright(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_overright(box2d, box2d) OWNER TO postgres;
-
 --
--- Name: st_box2d_right(box2d, box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_right(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_right(box2d, box2d) RETURNS boolean
@@ -12289,10 +11123,8 @@ CREATE FUNCTION st_box2d_right(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_right(box2d, box2d) OWNER TO postgres;
-
 --
--- Name: st_box2d_same(box2d, box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box2d_same(box2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box2d_same(box2d, box2d) RETURNS boolean
@@ -12300,10 +11132,8 @@ CREATE FUNCTION st_box2d_same(box2d, box2d) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box2d_same(box2d, box2d) OWNER TO postgres;
-
 --
--- Name: st_box3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box3d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box3d(geometry) RETURNS box3d
@@ -12311,10 +11141,8 @@ CREATE FUNCTION st_box3d(geometry) RETURNS box3d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box3d(geometry) OWNER TO postgres;
-
 --
--- Name: st_box3d(box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box3d(box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box3d(box2d) RETURNS box3d
@@ -12322,10 +11150,8 @@ CREATE FUNCTION st_box3d(box2d) RETURNS box3d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box3d(box2d) OWNER TO postgres;
-
 --
--- Name: st_box3d_in(cstring); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box3d_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box3d_in(cstring) RETURNS box3d
@@ -12333,10 +11159,8 @@ CREATE FUNCTION st_box3d_in(cstring) RETURNS box3d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box3d_in(cstring) OWNER TO postgres;
-
 --
--- Name: st_box3d_out(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_box3d_out(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_box3d_out(box3d) RETURNS cstring
@@ -12344,10 +11168,8 @@ CREATE FUNCTION st_box3d_out(box3d) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_box3d_out(box3d) OWNER TO postgres;
-
 --
--- Name: st_buffer(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_buffer(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_buffer(geometry, double precision) RETURNS geometry
@@ -12355,10 +11177,8 @@ CREATE FUNCTION st_buffer(geometry, double precision) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_buffer(geometry, double precision) OWNER TO aps03pwb;
-
 --
--- Name: st_buffer(geometry, double precision, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_buffer(geometry, double precision, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_buffer(geometry, double precision, integer) RETURNS geometry
@@ -12366,10 +11186,8 @@ CREATE FUNCTION st_buffer(geometry, double precision, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_buffer(geometry, double precision, integer) OWNER TO postgres;
-
 --
--- Name: st_build_histogram2d(histogram2d, text, text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_build_histogram2d(histogram2d, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_build_histogram2d(histogram2d, text, text) RETURNS histogram2d
@@ -12377,10 +11195,8 @@ CREATE FUNCTION st_build_histogram2d(histogram2d, text, text) RETURNS histogram2
     LANGUAGE c STABLE STRICT;
 
 
-ALTER FUNCTION public.st_build_histogram2d(histogram2d, text, text) OWNER TO postgres;
-
 --
--- Name: st_build_histogram2d(histogram2d, text, text, text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_build_histogram2d(histogram2d, text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_build_histogram2d(histogram2d, text, text, text) RETURNS histogram2d
@@ -12393,10 +11209,8 @@ $_$
     LANGUAGE plpgsql STABLE STRICT;
 
 
-ALTER FUNCTION public.st_build_histogram2d(histogram2d, text, text, text) OWNER TO postgres;
-
 --
--- Name: st_buildarea(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_buildarea(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_buildarea(geometry) RETURNS geometry
@@ -12404,10 +11218,8 @@ CREATE FUNCTION st_buildarea(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_buildarea(geometry) OWNER TO postgres;
-
 --
--- Name: st_bytea(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_bytea(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_bytea(geometry) RETURNS bytea
@@ -12415,10 +11227,8 @@ CREATE FUNCTION st_bytea(geometry) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_bytea(geometry) OWNER TO postgres;
-
 --
--- Name: st_cache_bbox(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_cache_bbox(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_cache_bbox() RETURNS trigger
@@ -12426,10 +11236,8 @@ CREATE FUNCTION st_cache_bbox() RETURNS trigger
     LANGUAGE c;
 
 
-ALTER FUNCTION public.st_cache_bbox() OWNER TO postgres;
-
 --
--- Name: st_centroid(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_centroid(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_centroid(geometry) RETURNS geometry
@@ -12437,10 +11245,8 @@ CREATE FUNCTION st_centroid(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_centroid(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_chip_in(cstring); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_chip_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_chip_in(cstring) RETURNS chip
@@ -12448,10 +11254,8 @@ CREATE FUNCTION st_chip_in(cstring) RETURNS chip
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_chip_in(cstring) OWNER TO postgres;
-
 --
--- Name: st_chip_out(chip); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_chip_out(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_chip_out(chip) RETURNS cstring
@@ -12459,10 +11263,8 @@ CREATE FUNCTION st_chip_out(chip) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_chip_out(chip) OWNER TO postgres;
-
 --
--- Name: st_collect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_collect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_collect(geometry, geometry) RETURNS geometry
@@ -12470,10 +11272,8 @@ CREATE FUNCTION st_collect(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.st_collect(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_collect_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_collect_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_collect_garray(geometry[]) RETURNS geometry
@@ -12481,10 +11281,8 @@ CREATE FUNCTION st_collect_garray(geometry[]) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_collect_garray(geometry[]) OWNER TO postgres;
-
 --
--- Name: st_collector(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_collector(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_collector(geometry, geometry) RETURNS geometry
@@ -12492,10 +11290,8 @@ CREATE FUNCTION st_collector(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.st_collector(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_combine_bbox(box2d, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_combine_bbox(box2d, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_combine_bbox(box2d, geometry) RETURNS box2d
@@ -12503,10 +11299,8 @@ CREATE FUNCTION st_combine_bbox(box2d, geometry) RETURNS box2d
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.st_combine_bbox(box2d, geometry) OWNER TO postgres;
-
 --
--- Name: st_combine_bbox(box3d, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_combine_bbox(box3d, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_combine_bbox(box3d, geometry) RETURNS box3d
@@ -12514,10 +11308,8 @@ CREATE FUNCTION st_combine_bbox(box3d, geometry) RETURNS box3d
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.st_combine_bbox(box3d, geometry) OWNER TO postgres;
-
 --
--- Name: st_compression(chip); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_compression(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_compression(chip) RETURNS integer
@@ -12525,10 +11317,8 @@ CREATE FUNCTION st_compression(chip) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_compression(chip) OWNER TO postgres;
-
 --
--- Name: st_contains(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_contains(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_contains(geometry, geometry) RETURNS boolean
@@ -12536,10 +11326,8 @@ CREATE FUNCTION st_contains(geometry, geometry) RETURNS boolean
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION public.st_contains(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_convexhull(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_convexhull(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_convexhull(geometry) RETURNS geometry
@@ -12547,10 +11335,8 @@ CREATE FUNCTION st_convexhull(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_convexhull(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_coorddim(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_coorddim(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_coorddim(geometry) RETURNS smallint
@@ -12558,10 +11344,8 @@ CREATE FUNCTION st_coorddim(geometry) RETURNS smallint
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_coorddim(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_create_histogram2d(box2d, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_create_histogram2d(box2d, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_create_histogram2d(box2d, integer) RETURNS histogram2d
@@ -12569,10 +11353,8 @@ CREATE FUNCTION st_create_histogram2d(box2d, integer) RETURNS histogram2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_create_histogram2d(box2d, integer) OWNER TO postgres;
-
 --
--- Name: st_crosses(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_crosses(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_crosses(geometry, geometry) RETURNS boolean
@@ -12580,10 +11362,8 @@ CREATE FUNCTION st_crosses(geometry, geometry) RETURNS boolean
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION public.st_crosses(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_curvetoline(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_curvetoline(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_curvetoline(geometry, integer) RETURNS geometry
@@ -12591,10 +11371,8 @@ CREATE FUNCTION st_curvetoline(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_curvetoline(geometry, integer) OWNER TO postgres;
-
 --
--- Name: st_curvetoline(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_curvetoline(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_curvetoline(geometry) RETURNS geometry
@@ -12602,10 +11380,8 @@ CREATE FUNCTION st_curvetoline(geometry) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_curvetoline(geometry) OWNER TO postgres;
-
 --
--- Name: st_datatype(chip); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_datatype(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_datatype(chip) RETURNS integer
@@ -12613,10 +11389,8 @@ CREATE FUNCTION st_datatype(chip) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_datatype(chip) OWNER TO postgres;
-
 --
--- Name: st_difference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_difference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_difference(geometry, geometry) RETURNS geometry
@@ -12624,10 +11398,8 @@ CREATE FUNCTION st_difference(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_difference(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_dimension(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_dimension(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_dimension(geometry) RETURNS integer
@@ -12635,10 +11407,8 @@ CREATE FUNCTION st_dimension(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_dimension(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_disjoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_disjoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_disjoint(geometry, geometry) RETURNS boolean
@@ -12646,10 +11416,8 @@ CREATE FUNCTION st_disjoint(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_disjoint(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_distance(geometry, geometry) RETURNS double precision
@@ -12657,10 +11425,8 @@ CREATE FUNCTION st_distance(geometry, geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_distance(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_distance_sphere(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_distance_sphere(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_distance_sphere(geometry, geometry) RETURNS double precision
@@ -12668,10 +11434,8 @@ CREATE FUNCTION st_distance_sphere(geometry, geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_distance_sphere(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_distance_spheroid(geometry, geometry, spheroid); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_distance_spheroid(geometry, geometry, spheroid); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_distance_spheroid(geometry, geometry, spheroid) RETURNS double precision
@@ -12679,10 +11443,8 @@ CREATE FUNCTION st_distance_spheroid(geometry, geometry, spheroid) RETURNS doubl
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_distance_spheroid(geometry, geometry, spheroid) OWNER TO postgres;
-
 --
--- Name: st_dropbbox(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_dropbbox(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_dropbbox(geometry) RETURNS geometry
@@ -12690,10 +11452,8 @@ CREATE FUNCTION st_dropbbox(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_dropbbox(geometry) OWNER TO postgres;
-
 --
--- Name: st_dump(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_dump(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_dump(geometry) RETURNS SETOF geometry_dump
@@ -12701,10 +11461,8 @@ CREATE FUNCTION st_dump(geometry) RETURNS SETOF geometry_dump
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_dump(geometry) OWNER TO postgres;
-
 --
--- Name: st_dumprings(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_dumprings(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_dumprings(geometry) RETURNS SETOF geometry_dump
@@ -12712,10 +11470,8 @@ CREATE FUNCTION st_dumprings(geometry) RETURNS SETOF geometry_dump
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_dumprings(geometry) OWNER TO postgres;
-
 --
--- Name: st_dwithin(geometry, geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_dwithin(geometry, geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_dwithin(geometry, geometry, double precision) RETURNS boolean
@@ -12723,10 +11479,8 @@ CREATE FUNCTION st_dwithin(geometry, geometry, double precision) RETURNS boolean
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION public.st_dwithin(geometry, geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_endpoint(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_endpoint(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_endpoint(geometry) RETURNS geometry
@@ -12734,10 +11488,8 @@ CREATE FUNCTION st_endpoint(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_endpoint(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_envelope(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_envelope(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_envelope(geometry) RETURNS geometry
@@ -12745,10 +11497,8 @@ CREATE FUNCTION st_envelope(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_envelope(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_equals(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_equals(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_equals(geometry, geometry) RETURNS boolean
@@ -12756,10 +11506,8 @@ CREATE FUNCTION st_equals(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_equals(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_estimate_histogram2d(histogram2d, box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_estimate_histogram2d(histogram2d, box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_estimate_histogram2d(histogram2d, box2d) RETURNS double precision
@@ -12767,10 +11515,8 @@ CREATE FUNCTION st_estimate_histogram2d(histogram2d, box2d) RETURNS double preci
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_estimate_histogram2d(histogram2d, box2d) OWNER TO postgres;
-
 --
--- Name: st_estimated_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_estimated_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_estimated_extent(text, text, text) RETURNS box2d
@@ -12778,10 +11524,8 @@ CREATE FUNCTION st_estimated_extent(text, text, text) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT SECURITY DEFINER;
 
 
-ALTER FUNCTION public.st_estimated_extent(text, text, text) OWNER TO postgres;
-
 --
--- Name: st_estimated_extent(text, text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_estimated_extent(text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_estimated_extent(text, text) RETURNS box2d
@@ -12789,10 +11533,8 @@ CREATE FUNCTION st_estimated_extent(text, text) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT SECURITY DEFINER;
 
 
-ALTER FUNCTION public.st_estimated_extent(text, text) OWNER TO postgres;
-
 --
--- Name: st_expand(box3d, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_expand(box3d, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_expand(box3d, double precision) RETURNS box3d
@@ -12800,10 +11542,8 @@ CREATE FUNCTION st_expand(box3d, double precision) RETURNS box3d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_expand(box3d, double precision) OWNER TO postgres;
-
 --
--- Name: st_expand(box2d, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_expand(box2d, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_expand(box2d, double precision) RETURNS box2d
@@ -12811,10 +11551,8 @@ CREATE FUNCTION st_expand(box2d, double precision) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_expand(box2d, double precision) OWNER TO postgres;
-
 --
--- Name: st_expand(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_expand(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_expand(geometry, double precision) RETURNS geometry
@@ -12822,10 +11560,8 @@ CREATE FUNCTION st_expand(geometry, double precision) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_expand(geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_explode_histogram2d(histogram2d, text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_explode_histogram2d(histogram2d, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_explode_histogram2d(histogram2d, text) RETURNS histogram2d
@@ -12833,10 +11569,8 @@ CREATE FUNCTION st_explode_histogram2d(histogram2d, text) RETURNS histogram2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_explode_histogram2d(histogram2d, text) OWNER TO postgres;
-
 --
--- Name: st_exteriorring(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_exteriorring(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_exteriorring(geometry) RETURNS geometry
@@ -12844,10 +11578,8 @@ CREATE FUNCTION st_exteriorring(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_exteriorring(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_factor(chip); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_factor(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_factor(chip) RETURNS real
@@ -12855,10 +11587,8 @@ CREATE FUNCTION st_factor(chip) RETURNS real
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_factor(chip) OWNER TO postgres;
-
 --
--- Name: st_find_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_find_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_find_extent(text, text, text) RETURNS box2d
@@ -12878,10 +11608,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_find_extent(text, text, text) OWNER TO postgres;
-
 --
--- Name: st_find_extent(text, text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_find_extent(text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_find_extent(text, text) RETURNS box2d
@@ -12900,10 +11628,8 @@ $_$
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_find_extent(text, text) OWNER TO postgres;
-
 --
--- Name: st_force_2d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_force_2d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_force_2d(geometry) RETURNS geometry
@@ -12911,10 +11637,8 @@ CREATE FUNCTION st_force_2d(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_force_2d(geometry) OWNER TO postgres;
-
 --
--- Name: st_force_3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_force_3d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_force_3d(geometry) RETURNS geometry
@@ -12922,10 +11646,8 @@ CREATE FUNCTION st_force_3d(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_force_3d(geometry) OWNER TO postgres;
-
 --
--- Name: st_force_3dm(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_force_3dm(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_force_3dm(geometry) RETURNS geometry
@@ -12933,10 +11655,8 @@ CREATE FUNCTION st_force_3dm(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_force_3dm(geometry) OWNER TO postgres;
-
 --
--- Name: st_force_3dz(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_force_3dz(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_force_3dz(geometry) RETURNS geometry
@@ -12944,10 +11664,8 @@ CREATE FUNCTION st_force_3dz(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_force_3dz(geometry) OWNER TO postgres;
-
 --
--- Name: st_force_4d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_force_4d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_force_4d(geometry) RETURNS geometry
@@ -12955,10 +11673,8 @@ CREATE FUNCTION st_force_4d(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_force_4d(geometry) OWNER TO postgres;
-
 --
--- Name: st_force_collection(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_force_collection(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_force_collection(geometry) RETURNS geometry
@@ -12966,10 +11682,8 @@ CREATE FUNCTION st_force_collection(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_force_collection(geometry) OWNER TO postgres;
-
 --
--- Name: st_forcerhr(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_forcerhr(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_forcerhr(geometry) RETURNS geometry
@@ -12977,10 +11691,8 @@ CREATE FUNCTION st_forcerhr(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_forcerhr(geometry) OWNER TO postgres;
-
 --
--- Name: st_geom_accum(geometry[], geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geom_accum(geometry[], geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geom_accum(geometry[], geometry) RETURNS geometry[]
@@ -12988,10 +11700,8 @@ CREATE FUNCTION st_geom_accum(geometry[], geometry) RETURNS geometry[]
     LANGUAGE c IMMUTABLE;
 
 
-ALTER FUNCTION public.st_geom_accum(geometry[], geometry) OWNER TO postgres;
-
 --
--- Name: st_geomcollfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geomcollfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geomcollfromtext(text, integer) RETURNS geometry
@@ -13004,10 +11714,8 @@ CREATE FUNCTION st_geomcollfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geomcollfromtext(text, integer) OWNER TO postgres;
-
 --
--- Name: st_geomcollfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geomcollfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geomcollfromtext(text) RETURNS geometry
@@ -13020,10 +11728,8 @@ CREATE FUNCTION st_geomcollfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geomcollfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_geomcollfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geomcollfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geomcollfromwkb(bytea, integer) RETURNS geometry
@@ -13036,10 +11742,8 @@ CREATE FUNCTION st_geomcollfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geomcollfromwkb(bytea, integer) OWNER TO postgres;
-
 --
--- Name: st_geomcollfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geomcollfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geomcollfromwkb(bytea) RETURNS geometry
@@ -13052,10 +11756,8 @@ CREATE FUNCTION st_geomcollfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geomcollfromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_geometry(box2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry(box2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry(box2d) RETURNS geometry
@@ -13063,10 +11765,8 @@ CREATE FUNCTION st_geometry(box2d) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry(box2d) OWNER TO postgres;
-
 --
--- Name: st_geometry(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry(box3d) RETURNS geometry
@@ -13074,10 +11774,8 @@ CREATE FUNCTION st_geometry(box3d) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry(box3d) OWNER TO postgres;
-
 --
--- Name: st_geometry(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry(text) RETURNS geometry
@@ -13085,10 +11783,8 @@ CREATE FUNCTION st_geometry(text) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry(text) OWNER TO postgres;
-
 --
--- Name: st_geometry(chip); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry(chip) RETURNS geometry
@@ -13096,10 +11792,8 @@ CREATE FUNCTION st_geometry(chip) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry(chip) OWNER TO postgres;
-
 --
--- Name: st_geometry(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry(bytea) RETURNS geometry
@@ -13107,10 +11801,8 @@ CREATE FUNCTION st_geometry(bytea) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry(bytea) OWNER TO postgres;
-
 --
--- Name: st_geometry_above(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_above(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_above(geometry, geometry) RETURNS boolean
@@ -13118,10 +11810,8 @@ CREATE FUNCTION st_geometry_above(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_above(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_analyze(internal); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_analyze(internal); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_analyze(internal) RETURNS boolean
@@ -13129,10 +11819,8 @@ CREATE FUNCTION st_geometry_analyze(internal) RETURNS boolean
     LANGUAGE c STRICT;
 
 
-ALTER FUNCTION public.st_geometry_analyze(internal) OWNER TO postgres;
-
 --
--- Name: st_geometry_below(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_below(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_below(geometry, geometry) RETURNS boolean
@@ -13140,10 +11828,8 @@ CREATE FUNCTION st_geometry_below(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_below(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_cmp(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_cmp(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_cmp(geometry, geometry) RETURNS integer
@@ -13151,10 +11837,8 @@ CREATE FUNCTION st_geometry_cmp(geometry, geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_cmp(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_contain(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_contain(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_contain(geometry, geometry) RETURNS boolean
@@ -13162,10 +11846,8 @@ CREATE FUNCTION st_geometry_contain(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_contain(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_contained(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_contained(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_contained(geometry, geometry) RETURNS boolean
@@ -13173,10 +11855,8 @@ CREATE FUNCTION st_geometry_contained(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_contained(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_eq(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_eq(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_eq(geometry, geometry) RETURNS boolean
@@ -13184,10 +11864,8 @@ CREATE FUNCTION st_geometry_eq(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_eq(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_ge(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_ge(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_ge(geometry, geometry) RETURNS boolean
@@ -13195,10 +11873,8 @@ CREATE FUNCTION st_geometry_ge(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_ge(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_gt(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_gt(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_gt(geometry, geometry) RETURNS boolean
@@ -13206,10 +11882,8 @@ CREATE FUNCTION st_geometry_gt(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_gt(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_in(cstring); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_in(cstring) RETURNS geometry
@@ -13217,10 +11891,8 @@ CREATE FUNCTION st_geometry_in(cstring) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_in(cstring) OWNER TO postgres;
-
 --
--- Name: st_geometry_le(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_le(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_le(geometry, geometry) RETURNS boolean
@@ -13228,10 +11900,8 @@ CREATE FUNCTION st_geometry_le(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_le(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_left(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_left(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_left(geometry, geometry) RETURNS boolean
@@ -13239,10 +11909,8 @@ CREATE FUNCTION st_geometry_left(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_left(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_lt(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_lt(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_lt(geometry, geometry) RETURNS boolean
@@ -13250,10 +11918,8 @@ CREATE FUNCTION st_geometry_lt(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_lt(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_out(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_out(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_out(geometry) RETURNS cstring
@@ -13261,10 +11927,8 @@ CREATE FUNCTION st_geometry_out(geometry) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_out(geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_overabove(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_overabove(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_overabove(geometry, geometry) RETURNS boolean
@@ -13272,10 +11936,8 @@ CREATE FUNCTION st_geometry_overabove(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_overabove(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_overbelow(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_overbelow(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_overbelow(geometry, geometry) RETURNS boolean
@@ -13283,10 +11945,8 @@ CREATE FUNCTION st_geometry_overbelow(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_overbelow(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_overlap(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_overlap(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_overlap(geometry, geometry) RETURNS boolean
@@ -13294,10 +11954,8 @@ CREATE FUNCTION st_geometry_overlap(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_overlap(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_overleft(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_overleft(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_overleft(geometry, geometry) RETURNS boolean
@@ -13305,10 +11963,8 @@ CREATE FUNCTION st_geometry_overleft(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_overleft(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_overright(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_overright(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_overright(geometry, geometry) RETURNS boolean
@@ -13316,10 +11972,8 @@ CREATE FUNCTION st_geometry_overright(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_overright(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_recv(internal); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_recv(internal); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_recv(internal) RETURNS geometry
@@ -13327,10 +11981,8 @@ CREATE FUNCTION st_geometry_recv(internal) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_recv(internal) OWNER TO postgres;
-
 --
--- Name: st_geometry_right(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_right(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_right(geometry, geometry) RETURNS boolean
@@ -13338,10 +11990,8 @@ CREATE FUNCTION st_geometry_right(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_right(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_same(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_same(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_same(geometry, geometry) RETURNS boolean
@@ -13349,10 +11999,8 @@ CREATE FUNCTION st_geometry_same(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_same(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_geometry_send(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometry_send(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometry_send(geometry) RETURNS bytea
@@ -13360,10 +12008,8 @@ CREATE FUNCTION st_geometry_send(geometry) RETURNS bytea
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometry_send(geometry) OWNER TO postgres;
-
 --
--- Name: st_geometryfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometryfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometryfromtext(text) RETURNS geometry
@@ -13371,10 +12017,8 @@ CREATE FUNCTION st_geometryfromtext(text) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometryfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_geometryfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geometryfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometryfromtext(text, integer) RETURNS geometry
@@ -13382,10 +12026,8 @@ CREATE FUNCTION st_geometryfromtext(text, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometryfromtext(text, integer) OWNER TO postgres;
-
 --
--- Name: st_geometryn(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_geometryn(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometryn(geometry, integer) RETURNS geometry
@@ -13393,10 +12035,8 @@ CREATE FUNCTION st_geometryn(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometryn(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_geometrytype(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_geometrytype(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geometrytype(geometry) RETURNS text
@@ -13425,10 +12065,8 @@ CREATE FUNCTION st_geometrytype(geometry) RETURNS text
     LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geometrytype(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_geomfromewkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geomfromewkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geomfromewkb(bytea) RETURNS geometry
@@ -13436,10 +12074,8 @@ CREATE FUNCTION st_geomfromewkb(bytea) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geomfromewkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_geomfromewkt(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geomfromewkt(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geomfromewkt(text) RETURNS geometry
@@ -13447,10 +12083,8 @@ CREATE FUNCTION st_geomfromewkt(text) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geomfromewkt(text) OWNER TO postgres;
-
 --
--- Name: st_geomfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_geomfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geomfromtext(text, integer) RETURNS geometry
@@ -13458,10 +12092,8 @@ CREATE FUNCTION st_geomfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geomfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_geomfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geomfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geomfromtext(text) RETURNS geometry
@@ -13469,10 +12101,8 @@ CREATE FUNCTION st_geomfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geomfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_geomfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_geomfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geomfromwkb(bytea, integer) RETURNS geometry
@@ -13480,10 +12110,8 @@ CREATE FUNCTION st_geomfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geomfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_geomfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_geomfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_geomfromwkb(bytea) RETURNS geometry
@@ -13491,10 +12119,8 @@ CREATE FUNCTION st_geomfromwkb(bytea) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_geomfromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_hasarc(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_hasarc(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_hasarc(geometry) RETURNS boolean
@@ -13502,10 +12128,8 @@ CREATE FUNCTION st_hasarc(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_hasarc(geometry) OWNER TO postgres;
-
 --
--- Name: st_hasbbox(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_hasbbox(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_hasbbox(geometry) RETURNS boolean
@@ -13513,10 +12137,8 @@ CREATE FUNCTION st_hasbbox(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_hasbbox(geometry) OWNER TO postgres;
-
 --
--- Name: st_height(chip); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_height(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_height(chip) RETURNS integer
@@ -13524,10 +12146,8 @@ CREATE FUNCTION st_height(chip) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_height(chip) OWNER TO postgres;
-
 --
--- Name: st_histogram2d_in(cstring); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_histogram2d_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_histogram2d_in(cstring) RETURNS histogram2d
@@ -13535,10 +12155,8 @@ CREATE FUNCTION st_histogram2d_in(cstring) RETURNS histogram2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_histogram2d_in(cstring) OWNER TO postgres;
-
 --
--- Name: st_histogram2d_out(histogram2d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_histogram2d_out(histogram2d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_histogram2d_out(histogram2d) RETURNS cstring
@@ -13546,10 +12164,8 @@ CREATE FUNCTION st_histogram2d_out(histogram2d) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_histogram2d_out(histogram2d) OWNER TO postgres;
-
 --
--- Name: st_interiorringn(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_interiorringn(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_interiorringn(geometry, integer) RETURNS geometry
@@ -13557,10 +12173,8 @@ CREATE FUNCTION st_interiorringn(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_interiorringn(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_intersection(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_intersection(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_intersection(geometry, geometry) RETURNS geometry
@@ -13568,10 +12182,8 @@ CREATE FUNCTION st_intersection(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_intersection(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_intersects(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_intersects(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_intersects(geometry, geometry) RETURNS boolean
@@ -13579,10 +12191,8 @@ CREATE FUNCTION st_intersects(geometry, geometry) RETURNS boolean
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION public.st_intersects(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_isclosed(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_isclosed(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_isclosed(geometry) RETURNS boolean
@@ -13590,10 +12200,8 @@ CREATE FUNCTION st_isclosed(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_isclosed(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_isempty(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_isempty(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_isempty(geometry) RETURNS boolean
@@ -13601,10 +12209,8 @@ CREATE FUNCTION st_isempty(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_isempty(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_isring(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_isring(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_isring(geometry) RETURNS boolean
@@ -13612,10 +12218,8 @@ CREATE FUNCTION st_isring(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_isring(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_issimple(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_issimple(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_issimple(geometry) RETURNS boolean
@@ -13623,10 +12227,8 @@ CREATE FUNCTION st_issimple(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_issimple(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_isvalid(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_isvalid(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_isvalid(geometry) RETURNS boolean
@@ -13634,10 +12236,8 @@ CREATE FUNCTION st_isvalid(geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_isvalid(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_length(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_length(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_length(geometry) RETURNS double precision
@@ -13645,10 +12245,8 @@ CREATE FUNCTION st_length(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_length(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_length2d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_length2d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_length2d(geometry) RETURNS double precision
@@ -13656,10 +12254,8 @@ CREATE FUNCTION st_length2d(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_length2d(geometry) OWNER TO postgres;
-
 --
--- Name: st_length2d_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_length2d_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_length2d_spheroid(geometry, spheroid) RETURNS double precision
@@ -13667,10 +12263,8 @@ CREATE FUNCTION st_length2d_spheroid(geometry, spheroid) RETURNS double precisio
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_length2d_spheroid(geometry, spheroid) OWNER TO postgres;
-
 --
--- Name: st_length3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_length3d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_length3d(geometry) RETURNS double precision
@@ -13678,10 +12272,8 @@ CREATE FUNCTION st_length3d(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_length3d(geometry) OWNER TO postgres;
-
 --
--- Name: st_length3d_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_length3d_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_length3d_spheroid(geometry, spheroid) RETURNS double precision
@@ -13689,10 +12281,8 @@ CREATE FUNCTION st_length3d_spheroid(geometry, spheroid) RETURNS double precisio
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_length3d_spheroid(geometry, spheroid) OWNER TO postgres;
-
 --
--- Name: st_length_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_length_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_length_spheroid(geometry, spheroid) RETURNS double precision
@@ -13700,10 +12290,8 @@ CREATE FUNCTION st_length_spheroid(geometry, spheroid) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_length_spheroid(geometry, spheroid) OWNER TO postgres;
-
 --
--- Name: st_line_interpolate_point(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_line_interpolate_point(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_line_interpolate_point(geometry, double precision) RETURNS geometry
@@ -13711,10 +12299,8 @@ CREATE FUNCTION st_line_interpolate_point(geometry, double precision) RETURNS ge
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_line_interpolate_point(geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_line_locate_point(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_line_locate_point(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_line_locate_point(geometry, geometry) RETURNS double precision
@@ -13722,10 +12308,8 @@ CREATE FUNCTION st_line_locate_point(geometry, geometry) RETURNS double precisio
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_line_locate_point(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_line_substring(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_line_substring(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_line_substring(geometry, double precision, double precision) RETURNS geometry
@@ -13733,10 +12317,8 @@ CREATE FUNCTION st_line_substring(geometry, double precision, double precision) 
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_line_substring(geometry, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_linefrommultipoint(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_linefrommultipoint(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_linefrommultipoint(geometry) RETURNS geometry
@@ -13744,10 +12326,8 @@ CREATE FUNCTION st_linefrommultipoint(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_linefrommultipoint(geometry) OWNER TO postgres;
-
 --
--- Name: st_linefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_linefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_linefromtext(text, integer) RETURNS geometry
@@ -13759,10 +12339,8 @@ CREATE FUNCTION st_linefromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_linefromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_linefromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_linefromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_linefromtext(text) RETURNS geometry
@@ -13774,10 +12352,8 @@ CREATE FUNCTION st_linefromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_linefromtext(text) OWNER TO postgres;
-
 --
--- Name: st_linefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_linefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_linefromwkb(bytea, integer) RETURNS geometry
@@ -13789,10 +12365,8 @@ CREATE FUNCTION st_linefromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_linefromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_linefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_linefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_linefromwkb(bytea) RETURNS geometry
@@ -13804,10 +12378,8 @@ CREATE FUNCTION st_linefromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_linefromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_linemerge(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_linemerge(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_linemerge(geometry) RETURNS geometry
@@ -13815,10 +12387,8 @@ CREATE FUNCTION st_linemerge(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_linemerge(geometry) OWNER TO postgres;
-
 --
--- Name: st_linestringfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_linestringfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_linestringfromwkb(bytea, integer) RETURNS geometry
@@ -13830,10 +12400,8 @@ CREATE FUNCTION st_linestringfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_linestringfromwkb(bytea, integer) OWNER TO postgres;
-
 --
--- Name: st_linestringfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_linestringfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_linestringfromwkb(bytea) RETURNS geometry
@@ -13845,10 +12413,8 @@ CREATE FUNCTION st_linestringfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_linestringfromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_linetocurve(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_linetocurve(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_linetocurve(geometry) RETURNS geometry
@@ -13856,10 +12422,8 @@ CREATE FUNCTION st_linetocurve(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_linetocurve(geometry) OWNER TO postgres;
-
 --
--- Name: st_locate_along_measure(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_locate_along_measure(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_locate_along_measure(geometry, double precision) RETURNS geometry
@@ -13867,10 +12431,8 @@ CREATE FUNCTION st_locate_along_measure(geometry, double precision) RETURNS geom
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_locate_along_measure(geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_locate_between_measures(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_locate_between_measures(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_locate_between_measures(geometry, double precision, double precision) RETURNS geometry
@@ -13878,10 +12440,8 @@ CREATE FUNCTION st_locate_between_measures(geometry, double precision, double pr
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_locate_between_measures(geometry, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_m(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_m(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_m(geometry) RETURNS double precision
@@ -13889,10 +12449,8 @@ CREATE FUNCTION st_m(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_m(geometry) OWNER TO postgres;
-
 --
--- Name: st_makebox2d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_makebox2d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_makebox2d(geometry, geometry) RETURNS box2d
@@ -13900,10 +12458,8 @@ CREATE FUNCTION st_makebox2d(geometry, geometry) RETURNS box2d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_makebox2d(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_makebox3d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_makebox3d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_makebox3d(geometry, geometry) RETURNS box3d
@@ -13911,10 +12467,8 @@ CREATE FUNCTION st_makebox3d(geometry, geometry) RETURNS box3d
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_makebox3d(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_makeline(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_makeline(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_makeline(geometry, geometry) RETURNS geometry
@@ -13922,10 +12476,8 @@ CREATE FUNCTION st_makeline(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_makeline(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_makeline_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_makeline_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_makeline_garray(geometry[]) RETURNS geometry
@@ -13933,10 +12485,8 @@ CREATE FUNCTION st_makeline_garray(geometry[]) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_makeline_garray(geometry[]) OWNER TO postgres;
-
 --
--- Name: st_makepoint(double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_makepoint(double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_makepoint(double precision, double precision) RETURNS geometry
@@ -13944,10 +12494,8 @@ CREATE FUNCTION st_makepoint(double precision, double precision) RETURNS geometr
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_makepoint(double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_makepoint(double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_makepoint(double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_makepoint(double precision, double precision, double precision) RETURNS geometry
@@ -13955,10 +12503,8 @@ CREATE FUNCTION st_makepoint(double precision, double precision, double precisio
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_makepoint(double precision, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_makepoint(double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_makepoint(double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_makepoint(double precision, double precision, double precision, double precision) RETURNS geometry
@@ -13966,10 +12512,8 @@ CREATE FUNCTION st_makepoint(double precision, double precision, double precisio
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_makepoint(double precision, double precision, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_makepolygon(geometry, geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_makepolygon(geometry, geometry[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_makepolygon(geometry, geometry[]) RETURNS geometry
@@ -13977,10 +12521,8 @@ CREATE FUNCTION st_makepolygon(geometry, geometry[]) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_makepolygon(geometry, geometry[]) OWNER TO postgres;
-
 --
--- Name: st_makepolygon(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_makepolygon(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_makepolygon(geometry) RETURNS geometry
@@ -13988,10 +12530,8 @@ CREATE FUNCTION st_makepolygon(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_makepolygon(geometry) OWNER TO postgres;
-
 --
--- Name: st_max_distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_max_distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_max_distance(geometry, geometry) RETURNS double precision
@@ -13999,10 +12539,8 @@ CREATE FUNCTION st_max_distance(geometry, geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_max_distance(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_mem_size(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_mem_size(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mem_size(geometry) RETURNS integer
@@ -14010,10 +12548,8 @@ CREATE FUNCTION st_mem_size(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mem_size(geometry) OWNER TO postgres;
-
 --
--- Name: st_mlinefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_mlinefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mlinefromtext(text, integer) RETURNS geometry
@@ -14026,10 +12562,8 @@ CREATE FUNCTION st_mlinefromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mlinefromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_mlinefromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_mlinefromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mlinefromtext(text) RETURNS geometry
@@ -14041,10 +12575,8 @@ CREATE FUNCTION st_mlinefromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mlinefromtext(text) OWNER TO postgres;
-
 --
--- Name: st_mlinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_mlinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mlinefromwkb(bytea, integer) RETURNS geometry
@@ -14056,10 +12588,8 @@ CREATE FUNCTION st_mlinefromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mlinefromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_mlinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_mlinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mlinefromwkb(bytea) RETURNS geometry
@@ -14071,10 +12601,8 @@ CREATE FUNCTION st_mlinefromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mlinefromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_mpointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_mpointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mpointfromtext(text, integer) RETURNS geometry
@@ -14086,10 +12614,8 @@ CREATE FUNCTION st_mpointfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mpointfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_mpointfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_mpointfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mpointfromtext(text) RETURNS geometry
@@ -14101,10 +12627,8 @@ CREATE FUNCTION st_mpointfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mpointfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_mpointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_mpointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mpointfromwkb(bytea, integer) RETURNS geometry
@@ -14116,10 +12640,8 @@ CREATE FUNCTION st_mpointfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mpointfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_mpointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_mpointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mpointfromwkb(bytea) RETURNS geometry
@@ -14131,10 +12653,8 @@ CREATE FUNCTION st_mpointfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mpointfromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_mpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_mpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mpolyfromtext(text, integer) RETURNS geometry
@@ -14146,10 +12666,8 @@ CREATE FUNCTION st_mpolyfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mpolyfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_mpolyfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_mpolyfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mpolyfromtext(text) RETURNS geometry
@@ -14161,10 +12679,8 @@ CREATE FUNCTION st_mpolyfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mpolyfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_mpolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_mpolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mpolyfromwkb(bytea, integer) RETURNS geometry
@@ -14176,10 +12692,8 @@ CREATE FUNCTION st_mpolyfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mpolyfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_mpolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_mpolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_mpolyfromwkb(bytea) RETURNS geometry
@@ -14191,10 +12705,8 @@ CREATE FUNCTION st_mpolyfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_mpolyfromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_multi(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multi(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multi(geometry) RETURNS geometry
@@ -14202,10 +12714,8 @@ CREATE FUNCTION st_multi(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multi(geometry) OWNER TO postgres;
-
 --
--- Name: st_multilinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multilinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multilinefromwkb(bytea) RETURNS geometry
@@ -14217,10 +12727,8 @@ CREATE FUNCTION st_multilinefromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multilinefromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_multilinestringfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multilinestringfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multilinestringfromtext(text) RETURNS geometry
@@ -14228,10 +12736,8 @@ CREATE FUNCTION st_multilinestringfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multilinestringfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_multilinestringfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multilinestringfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multilinestringfromtext(text, integer) RETURNS geometry
@@ -14239,10 +12745,8 @@ CREATE FUNCTION st_multilinestringfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multilinestringfromtext(text, integer) OWNER TO postgres;
-
 --
--- Name: st_multipointfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multipointfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multipointfromtext(text) RETURNS geometry
@@ -14250,10 +12754,8 @@ CREATE FUNCTION st_multipointfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multipointfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_multipointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multipointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multipointfromwkb(bytea, integer) RETURNS geometry
@@ -14265,10 +12767,8 @@ CREATE FUNCTION st_multipointfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multipointfromwkb(bytea, integer) OWNER TO postgres;
-
 --
--- Name: st_multipointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multipointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multipointfromwkb(bytea) RETURNS geometry
@@ -14280,10 +12780,8 @@ CREATE FUNCTION st_multipointfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multipointfromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_multipolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multipolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multipolyfromwkb(bytea, integer) RETURNS geometry
@@ -14295,10 +12793,8 @@ CREATE FUNCTION st_multipolyfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multipolyfromwkb(bytea, integer) OWNER TO postgres;
-
 --
--- Name: st_multipolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multipolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multipolyfromwkb(bytea) RETURNS geometry
@@ -14310,10 +12806,8 @@ CREATE FUNCTION st_multipolyfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multipolyfromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_multipolygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multipolygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multipolygonfromtext(text, integer) RETURNS geometry
@@ -14321,10 +12815,8 @@ CREATE FUNCTION st_multipolygonfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multipolygonfromtext(text, integer) OWNER TO postgres;
-
 --
--- Name: st_multipolygonfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_multipolygonfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_multipolygonfromtext(text) RETURNS geometry
@@ -14332,10 +12824,8 @@ CREATE FUNCTION st_multipolygonfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_multipolygonfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_ndims(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_ndims(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_ndims(geometry) RETURNS smallint
@@ -14343,10 +12833,8 @@ CREATE FUNCTION st_ndims(geometry) RETURNS smallint
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_ndims(geometry) OWNER TO postgres;
-
 --
--- Name: st_noop(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_noop(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_noop(geometry) RETURNS geometry
@@ -14354,10 +12842,8 @@ CREATE FUNCTION st_noop(geometry) RETURNS geometry
     LANGUAGE c STRICT;
 
 
-ALTER FUNCTION public.st_noop(geometry) OWNER TO postgres;
-
 --
--- Name: st_npoints(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_npoints(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_npoints(geometry) RETURNS integer
@@ -14365,10 +12851,8 @@ CREATE FUNCTION st_npoints(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_npoints(geometry) OWNER TO postgres;
-
 --
--- Name: st_nrings(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_nrings(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_nrings(geometry) RETURNS integer
@@ -14376,10 +12860,8 @@ CREATE FUNCTION st_nrings(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_nrings(geometry) OWNER TO postgres;
-
 --
--- Name: st_numgeometries(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_numgeometries(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_numgeometries(geometry) RETURNS integer
@@ -14387,10 +12869,8 @@ CREATE FUNCTION st_numgeometries(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_numgeometries(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_numinteriorring(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_numinteriorring(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_numinteriorring(geometry) RETURNS integer
@@ -14398,10 +12878,8 @@ CREATE FUNCTION st_numinteriorring(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_numinteriorring(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_numinteriorrings(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_numinteriorrings(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_numinteriorrings(geometry) RETURNS integer
@@ -14409,10 +12887,8 @@ CREATE FUNCTION st_numinteriorrings(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_numinteriorrings(geometry) OWNER TO postgres;
-
 --
--- Name: st_numpoints(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_numpoints(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_numpoints(geometry) RETURNS integer
@@ -14420,10 +12896,8 @@ CREATE FUNCTION st_numpoints(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_numpoints(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_orderingequals(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_orderingequals(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_orderingequals(geometry, geometry) RETURNS boolean
@@ -14433,10 +12907,8 @@ CREATE FUNCTION st_orderingequals(geometry, geometry) RETURNS boolean
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_orderingequals(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_overlaps(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_overlaps(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_overlaps(geometry, geometry) RETURNS boolean
@@ -14444,10 +12916,8 @@ CREATE FUNCTION st_overlaps(geometry, geometry) RETURNS boolean
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION public.st_overlaps(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_perimeter(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_perimeter(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_perimeter(geometry) RETURNS double precision
@@ -14455,10 +12925,8 @@ CREATE FUNCTION st_perimeter(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_perimeter(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_perimeter2d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_perimeter2d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_perimeter2d(geometry) RETURNS double precision
@@ -14466,10 +12934,8 @@ CREATE FUNCTION st_perimeter2d(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_perimeter2d(geometry) OWNER TO postgres;
-
 --
--- Name: st_perimeter3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_perimeter3d(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_perimeter3d(geometry) RETURNS double precision
@@ -14477,10 +12943,8 @@ CREATE FUNCTION st_perimeter3d(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_perimeter3d(geometry) OWNER TO postgres;
-
 --
--- Name: st_point(double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_point(double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_point(double precision, double precision) RETURNS geometry
@@ -14488,10 +12952,8 @@ CREATE FUNCTION st_point(double precision, double precision) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_point(double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: st_point_inside_circle(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_point_inside_circle(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_point_inside_circle(geometry, double precision, double precision, double precision) RETURNS boolean
@@ -14499,10 +12961,8 @@ CREATE FUNCTION st_point_inside_circle(geometry, double precision, double precis
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_point_inside_circle(geometry, double precision, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_pointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_pointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_pointfromtext(text, integer) RETURNS geometry
@@ -14514,10 +12974,8 @@ CREATE FUNCTION st_pointfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_pointfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_pointfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_pointfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_pointfromtext(text) RETURNS geometry
@@ -14529,10 +12987,8 @@ CREATE FUNCTION st_pointfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_pointfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_pointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_pointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_pointfromwkb(bytea, integer) RETURNS geometry
@@ -14544,10 +13000,8 @@ CREATE FUNCTION st_pointfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_pointfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_pointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_pointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_pointfromwkb(bytea) RETURNS geometry
@@ -14559,10 +13013,8 @@ CREATE FUNCTION st_pointfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_pointfromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_pointn(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_pointn(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_pointn(geometry) RETURNS geometry
@@ -14570,10 +13022,8 @@ CREATE FUNCTION st_pointn(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_pointn(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_pointn(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_pointn(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_pointn(geometry, integer) RETURNS geometry
@@ -14581,10 +13031,8 @@ CREATE FUNCTION st_pointn(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_pointn(geometry, integer) OWNER TO postgres;
-
 --
--- Name: st_pointonsurface(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_pointonsurface(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_pointonsurface(geometry) RETURNS geometry
@@ -14592,10 +13040,8 @@ CREATE FUNCTION st_pointonsurface(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_pointonsurface(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_polyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_polyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_polyfromtext(text, integer) RETURNS geometry
@@ -14607,10 +13053,8 @@ CREATE FUNCTION st_polyfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_polyfromtext(text, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_polyfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_polyfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_polyfromtext(text) RETURNS geometry
@@ -14622,10 +13066,8 @@ CREATE FUNCTION st_polyfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_polyfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_polyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_polyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_polyfromwkb(bytea, integer) RETURNS geometry
@@ -14637,10 +13079,8 @@ CREATE FUNCTION st_polyfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_polyfromwkb(bytea, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_polyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_polyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_polyfromwkb(bytea) RETURNS geometry
@@ -14652,10 +13092,8 @@ CREATE FUNCTION st_polyfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_polyfromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_polygon(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_polygon(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_polygon(geometry, integer) RETURNS geometry
@@ -14665,10 +13103,8 @@ CREATE FUNCTION st_polygon(geometry, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_polygon(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_polygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_polygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_polygonfromtext(text, integer) RETURNS geometry
@@ -14676,10 +13112,8 @@ CREATE FUNCTION st_polygonfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_polygonfromtext(text, integer) OWNER TO postgres;
-
 --
--- Name: st_polygonfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_polygonfromtext(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_polygonfromtext(text) RETURNS geometry
@@ -14687,10 +13121,8 @@ CREATE FUNCTION st_polygonfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_polygonfromtext(text) OWNER TO postgres;
-
 --
--- Name: st_polygonfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_polygonfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_polygonfromwkb(bytea, integer) RETURNS geometry
@@ -14702,10 +13134,8 @@ CREATE FUNCTION st_polygonfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_polygonfromwkb(bytea, integer) OWNER TO postgres;
-
 --
--- Name: st_polygonfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_polygonfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_polygonfromwkb(bytea) RETURNS geometry
@@ -14717,10 +13147,8 @@ CREATE FUNCTION st_polygonfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_polygonfromwkb(bytea) OWNER TO postgres;
-
 --
--- Name: st_polygonize_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_polygonize_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_polygonize_garray(geometry[]) RETURNS geometry
@@ -14728,10 +13156,8 @@ CREATE FUNCTION st_polygonize_garray(geometry[]) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_polygonize_garray(geometry[]) OWNER TO postgres;
-
 --
--- Name: st_postgis_gist_joinsel(internal, oid, internal, smallint); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_postgis_gist_joinsel(internal, oid, internal, smallint); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_postgis_gist_joinsel(internal, oid, internal, smallint) RETURNS double precision
@@ -14739,10 +13165,8 @@ CREATE FUNCTION st_postgis_gist_joinsel(internal, oid, internal, smallint) RETUR
     LANGUAGE c;
 
 
-ALTER FUNCTION public.st_postgis_gist_joinsel(internal, oid, internal, smallint) OWNER TO postgres;
-
 --
--- Name: st_postgis_gist_sel(internal, oid, internal, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_postgis_gist_sel(internal, oid, internal, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_postgis_gist_sel(internal, oid, internal, integer) RETURNS double precision
@@ -14750,10 +13174,8 @@ CREATE FUNCTION st_postgis_gist_sel(internal, oid, internal, integer) RETURNS do
     LANGUAGE c;
 
 
-ALTER FUNCTION public.st_postgis_gist_sel(internal, oid, internal, integer) OWNER TO postgres;
-
 --
--- Name: st_relate(geometry, geometry, text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_relate(geometry, geometry, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_relate(geometry, geometry, text) RETURNS boolean
@@ -14761,10 +13183,8 @@ CREATE FUNCTION st_relate(geometry, geometry, text) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_relate(geometry, geometry, text) OWNER TO aps03pwb;
-
 --
--- Name: st_relate(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_relate(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_relate(geometry, geometry) RETURNS text
@@ -14772,10 +13192,8 @@ CREATE FUNCTION st_relate(geometry, geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_relate(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_removepoint(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_removepoint(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_removepoint(geometry, integer) RETURNS geometry
@@ -14783,10 +13201,8 @@ CREATE FUNCTION st_removepoint(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_removepoint(geometry, integer) OWNER TO postgres;
-
 --
--- Name: st_reverse(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_reverse(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_reverse(geometry) RETURNS geometry
@@ -14794,10 +13210,8 @@ CREATE FUNCTION st_reverse(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_reverse(geometry) OWNER TO postgres;
-
 --
--- Name: st_rotate(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_rotate(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_rotate(geometry, double precision) RETURNS geometry
@@ -14805,10 +13219,8 @@ CREATE FUNCTION st_rotate(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_rotate(geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_rotatex(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_rotatex(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_rotatex(geometry, double precision) RETURNS geometry
@@ -14816,10 +13228,8 @@ CREATE FUNCTION st_rotatex(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_rotatex(geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_rotatey(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_rotatey(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_rotatey(geometry, double precision) RETURNS geometry
@@ -14827,10 +13237,8 @@ CREATE FUNCTION st_rotatey(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_rotatey(geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_rotatez(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_rotatez(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_rotatez(geometry, double precision) RETURNS geometry
@@ -14838,10 +13246,8 @@ CREATE FUNCTION st_rotatez(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_rotatez(geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_scale(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_scale(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_scale(geometry, double precision, double precision, double precision) RETURNS geometry
@@ -14849,10 +13255,8 @@ CREATE FUNCTION st_scale(geometry, double precision, double precision, double pr
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_scale(geometry, double precision, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_scale(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_scale(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_scale(geometry, double precision, double precision) RETURNS geometry
@@ -14860,10 +13264,8 @@ CREATE FUNCTION st_scale(geometry, double precision, double precision) RETURNS g
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_scale(geometry, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_segmentize(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_segmentize(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_segmentize(geometry, double precision) RETURNS geometry
@@ -14871,10 +13273,8 @@ CREATE FUNCTION st_segmentize(geometry, double precision) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_segmentize(geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_setfactor(chip, real); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_setfactor(chip, real); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_setfactor(chip, real) RETURNS chip
@@ -14882,10 +13282,8 @@ CREATE FUNCTION st_setfactor(chip, real) RETURNS chip
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_setfactor(chip, real) OWNER TO postgres;
-
 --
--- Name: st_setpoint(geometry, integer, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_setpoint(geometry, integer, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_setpoint(geometry, integer, geometry) RETURNS geometry
@@ -14893,10 +13291,8 @@ CREATE FUNCTION st_setpoint(geometry, integer, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_setpoint(geometry, integer, geometry) OWNER TO postgres;
-
 --
--- Name: st_setsrid(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_setsrid(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_setsrid(geometry, integer) RETURNS geometry
@@ -14904,10 +13300,8 @@ CREATE FUNCTION st_setsrid(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_setsrid(geometry, integer) OWNER TO postgres;
-
 --
--- Name: st_shift_longitude(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_shift_longitude(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_shift_longitude(geometry) RETURNS geometry
@@ -14915,10 +13309,8 @@ CREATE FUNCTION st_shift_longitude(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_shift_longitude(geometry) OWNER TO postgres;
-
 --
--- Name: st_simplify(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_simplify(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_simplify(geometry, double precision) RETURNS geometry
@@ -14926,10 +13318,8 @@ CREATE FUNCTION st_simplify(geometry, double precision) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_simplify(geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_snaptogrid(geometry, double precision, double precision, double precision, double precision) RETURNS geometry
@@ -14937,10 +13327,8 @@ CREATE FUNCTION st_snaptogrid(geometry, double precision, double precision, doub
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_snaptogrid(geometry, double precision, double precision, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_snaptogrid(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_snaptogrid(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_snaptogrid(geometry, double precision, double precision) RETURNS geometry
@@ -14948,10 +13336,8 @@ CREATE FUNCTION st_snaptogrid(geometry, double precision, double precision) RETU
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_snaptogrid(geometry, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_snaptogrid(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_snaptogrid(geometry, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_snaptogrid(geometry, double precision) RETURNS geometry
@@ -14959,10 +13345,8 @@ CREATE FUNCTION st_snaptogrid(geometry, double precision) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_snaptogrid(geometry, double precision) OWNER TO postgres;
-
 --
--- Name: st_snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision) RETURNS geometry
@@ -14970,10 +13354,8 @@ CREATE FUNCTION st_snaptogrid(geometry, geometry, double precision, double preci
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_spheroid_in(cstring); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_spheroid_in(cstring); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_spheroid_in(cstring) RETURNS spheroid
@@ -14981,10 +13363,8 @@ CREATE FUNCTION st_spheroid_in(cstring) RETURNS spheroid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_spheroid_in(cstring) OWNER TO postgres;
-
 --
--- Name: st_spheroid_out(spheroid); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_spheroid_out(spheroid); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_spheroid_out(spheroid) RETURNS cstring
@@ -14992,10 +13372,8 @@ CREATE FUNCTION st_spheroid_out(spheroid) RETURNS cstring
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_spheroid_out(spheroid) OWNER TO postgres;
-
 --
--- Name: st_srid(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_srid(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_srid(geometry) RETURNS integer
@@ -15003,10 +13381,8 @@ CREATE FUNCTION st_srid(geometry) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_srid(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_srid(chip); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_srid(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_srid(chip) RETURNS integer
@@ -15014,10 +13390,8 @@ CREATE FUNCTION st_srid(chip) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_srid(chip) OWNER TO postgres;
-
 --
--- Name: st_startpoint(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_startpoint(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_startpoint(geometry) RETURNS geometry
@@ -15025,10 +13399,8 @@ CREATE FUNCTION st_startpoint(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_startpoint(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_summary(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_summary(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_summary(geometry) RETURNS text
@@ -15036,10 +13408,8 @@ CREATE FUNCTION st_summary(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_summary(geometry) OWNER TO postgres;
-
 --
--- Name: st_symdifference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_symdifference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_symdifference(geometry, geometry) RETURNS geometry
@@ -15047,10 +13417,8 @@ CREATE FUNCTION st_symdifference(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_symdifference(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_symmetricdifference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_symmetricdifference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_symmetricdifference(geometry, geometry) RETURNS geometry
@@ -15058,10 +13426,8 @@ CREATE FUNCTION st_symmetricdifference(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_symmetricdifference(geometry, geometry) OWNER TO postgres;
-
 --
--- Name: st_text(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_text(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_text(geometry) RETURNS text
@@ -15069,10 +13435,8 @@ CREATE FUNCTION st_text(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_text(geometry) OWNER TO postgres;
-
 --
--- Name: st_text(boolean); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_text(boolean); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_text(boolean) RETURNS text
@@ -15080,10 +13444,8 @@ CREATE FUNCTION st_text(boolean) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_text(boolean) OWNER TO postgres;
-
 --
--- Name: st_touches(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_touches(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_touches(geometry, geometry) RETURNS boolean
@@ -15091,10 +13453,8 @@ CREATE FUNCTION st_touches(geometry, geometry) RETURNS boolean
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION public.st_touches(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_transform(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_transform(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_transform(geometry, integer) RETURNS geometry
@@ -15102,10 +13462,8 @@ CREATE FUNCTION st_transform(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_transform(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: st_translate(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_translate(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_translate(geometry, double precision, double precision, double precision) RETURNS geometry
@@ -15113,10 +13471,8 @@ CREATE FUNCTION st_translate(geometry, double precision, double precision, doubl
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_translate(geometry, double precision, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_translate(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_translate(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_translate(geometry, double precision, double precision) RETURNS geometry
@@ -15124,10 +13480,8 @@ CREATE FUNCTION st_translate(geometry, double precision, double precision) RETUR
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_translate(geometry, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_transscale(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_transscale(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_transscale(geometry, double precision, double precision, double precision, double precision) RETURNS geometry
@@ -15136,10 +13490,8 @@ CREATE FUNCTION st_transscale(geometry, double precision, double precision, doub
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_transscale(geometry, double precision, double precision, double precision, double precision) OWNER TO postgres;
-
 --
--- Name: st_union(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_union(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_union(geometry, geometry) RETURNS geometry
@@ -15147,10 +13499,8 @@ CREATE FUNCTION st_union(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_union(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_unite_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_unite_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_unite_garray(geometry[]) RETURNS geometry
@@ -15158,10 +13508,8 @@ CREATE FUNCTION st_unite_garray(geometry[]) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_unite_garray(geometry[]) OWNER TO postgres;
-
 --
--- Name: st_width(chip); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_width(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_width(chip) RETURNS integer
@@ -15169,10 +13517,8 @@ CREATE FUNCTION st_width(chip) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_width(chip) OWNER TO postgres;
-
 --
--- Name: st_within(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_within(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_within(geometry, geometry) RETURNS boolean
@@ -15180,10 +13526,8 @@ CREATE FUNCTION st_within(geometry, geometry) RETURNS boolean
     LANGUAGE sql IMMUTABLE;
 
 
-ALTER FUNCTION public.st_within(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_wkbtosql(bytea); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_wkbtosql(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_wkbtosql(bytea) RETURNS geometry
@@ -15191,10 +13535,8 @@ CREATE FUNCTION st_wkbtosql(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_wkbtosql(bytea) OWNER TO aps03pwb;
-
 --
--- Name: st_wkttosql(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_wkttosql(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_wkttosql(text) RETURNS geometry
@@ -15202,10 +13544,8 @@ CREATE FUNCTION st_wkttosql(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_wkttosql(text) OWNER TO aps03pwb;
-
 --
--- Name: st_x(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_x(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_x(geometry) RETURNS double precision
@@ -15213,10 +13553,8 @@ CREATE FUNCTION st_x(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_x(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_xmax(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_xmax(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_xmax(box3d) RETURNS double precision
@@ -15224,10 +13562,8 @@ CREATE FUNCTION st_xmax(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_xmax(box3d) OWNER TO postgres;
-
 --
--- Name: st_xmin(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_xmin(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_xmin(box3d) RETURNS double precision
@@ -15235,10 +13571,8 @@ CREATE FUNCTION st_xmin(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_xmin(box3d) OWNER TO postgres;
-
 --
--- Name: st_y(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: st_y(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_y(geometry) RETURNS double precision
@@ -15246,10 +13580,8 @@ CREATE FUNCTION st_y(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_y(geometry) OWNER TO aps03pwb;
-
 --
--- Name: st_ymax(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_ymax(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_ymax(box3d) RETURNS double precision
@@ -15257,10 +13589,8 @@ CREATE FUNCTION st_ymax(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_ymax(box3d) OWNER TO postgres;
-
 --
--- Name: st_ymin(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_ymin(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_ymin(box3d) RETURNS double precision
@@ -15268,10 +13598,8 @@ CREATE FUNCTION st_ymin(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_ymin(box3d) OWNER TO postgres;
-
 --
--- Name: st_z(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_z(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_z(geometry) RETURNS double precision
@@ -15279,10 +13607,8 @@ CREATE FUNCTION st_z(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_z(geometry) OWNER TO postgres;
-
 --
--- Name: st_zmax(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_zmax(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_zmax(box3d) RETURNS double precision
@@ -15290,10 +13616,8 @@ CREATE FUNCTION st_zmax(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_zmax(box3d) OWNER TO postgres;
-
 --
--- Name: st_zmflag(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_zmflag(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_zmflag(geometry) RETURNS smallint
@@ -15301,10 +13625,8 @@ CREATE FUNCTION st_zmflag(geometry) RETURNS smallint
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_zmflag(geometry) OWNER TO postgres;
-
 --
--- Name: st_zmin(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: st_zmin(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION st_zmin(box3d) RETURNS double precision
@@ -15312,10 +13634,8 @@ CREATE FUNCTION st_zmin(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.st_zmin(box3d) OWNER TO postgres;
-
 --
--- Name: startpoint(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: startpoint(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION startpoint(geometry) RETURNS geometry
@@ -15323,10 +13643,8 @@ CREATE FUNCTION startpoint(geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.startpoint(geometry) OWNER TO aps03pwb;
-
 --
--- Name: strtouuid(character varying); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: strtouuid(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION strtouuid(character varying) RETURNS uuid
@@ -15334,10 +13652,8 @@ CREATE FUNCTION strtouuid(character varying) RETURNS uuid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.strtouuid(character varying) OWNER TO lucasm;
-
 --
--- Name: strtouuid(text); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: strtouuid(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION strtouuid(text) RETURNS uuid
@@ -15345,10 +13661,8 @@ CREATE FUNCTION strtouuid(text) RETURNS uuid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.strtouuid(text) OWNER TO lucasm;
-
 --
--- Name: summary(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: summary(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION summary(geometry) RETURNS text
@@ -15356,10 +13670,8 @@ CREATE FUNCTION summary(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.summary(geometry) OWNER TO aps03pwb;
-
 --
--- Name: symdifference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: symdifference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION symdifference(geometry, geometry) RETURNS geometry
@@ -15367,10 +13679,8 @@ CREATE FUNCTION symdifference(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.symdifference(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: symmetricdifference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: symmetricdifference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION symmetricdifference(geometry, geometry) RETURNS geometry
@@ -15378,10 +13688,8 @@ CREATE FUNCTION symmetricdifference(geometry, geometry) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.symmetricdifference(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: text(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: text(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION text(geometry) RETURNS text
@@ -15389,10 +13697,8 @@ CREATE FUNCTION text(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.text(geometry) OWNER TO aps03pwb;
-
 --
--- Name: text(boolean); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: text(boolean); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION text(boolean) RETURNS text
@@ -15400,10 +13706,8 @@ CREATE FUNCTION text(boolean) RETURNS text
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.text(boolean) OWNER TO aps03pwb;
-
 --
--- Name: touches(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: touches(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION touches(geometry, geometry) RETURNS boolean
@@ -15411,10 +13715,8 @@ CREATE FUNCTION touches(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.touches(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: transform(geometry, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: transform(geometry, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION transform(geometry, integer) RETURNS geometry
@@ -15422,10 +13724,8 @@ CREATE FUNCTION transform(geometry, integer) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.transform(geometry, integer) OWNER TO aps03pwb;
-
 --
--- Name: transform_geometry(geometry, text, text, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: transform_geometry(geometry, text, text, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION transform_geometry(geometry, text, text, integer) RETURNS geometry
@@ -15433,10 +13733,8 @@ CREATE FUNCTION transform_geometry(geometry, text, text, integer) RETURNS geomet
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.transform_geometry(geometry, text, text, integer) OWNER TO aps03pwb;
-
 --
--- Name: translate(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: translate(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION translate(geometry, double precision, double precision, double precision) RETURNS geometry
@@ -15444,10 +13742,8 @@ CREATE FUNCTION translate(geometry, double precision, double precision, double p
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.translate(geometry, double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: translate(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: translate(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION translate(geometry, double precision, double precision) RETURNS geometry
@@ -15455,10 +13751,8 @@ CREATE FUNCTION translate(geometry, double precision, double precision) RETURNS 
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.translate(geometry, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: transscale(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: transscale(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION transscale(geometry, double precision, double precision, double precision, double precision) RETURNS geometry
@@ -15467,10 +13761,8 @@ CREATE FUNCTION transscale(geometry, double precision, double precision, double 
     LANGUAGE sql IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.transscale(geometry, double precision, double precision, double precision, double precision) OWNER TO aps03pwb;
-
 --
--- Name: unite_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: unite_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION unite_garray(geometry[]) RETURNS geometry
@@ -15478,10 +13770,8 @@ CREATE FUNCTION unite_garray(geometry[]) RETURNS geometry
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.unite_garray(geometry[]) OWNER TO aps03pwb;
-
 --
--- Name: unlockrows(text); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: unlockrows(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION unlockrows(text) RETURNS integer
@@ -15505,10 +13795,8 @@ $_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.unlockrows(text) OWNER TO aps03pwb;
-
 --
--- Name: update_geometry_stats(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: update_geometry_stats(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_geometry_stats() RETURNS text
@@ -15516,10 +13804,8 @@ CREATE FUNCTION update_geometry_stats() RETURNS text
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.update_geometry_stats() OWNER TO aps03pwb;
-
 --
--- Name: update_geometry_stats(character varying, character varying); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: update_geometry_stats(character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_geometry_stats(character varying, character varying) RETURNS text
@@ -15527,10 +13813,8 @@ CREATE FUNCTION update_geometry_stats(character varying, character varying) RETU
     LANGUAGE sql;
 
 
-ALTER FUNCTION public.update_geometry_stats(character varying, character varying) OWNER TO aps03pwb;
-
 --
--- Name: update_lastmodifiedtimestamp(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: update_lastmodifiedtimestamp(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_lastmodifiedtimestamp() RETURNS trigger
@@ -15541,10 +13825,8 @@ End;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.update_lastmodifiedtimestamp() OWNER TO aps03pwb;
-
 --
--- Name: update_layerenvdata(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: update_layerenvdata(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_layerenvdata() RETURNS trigger
@@ -15555,10 +13837,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.update_layerenvdata() OWNER TO aps03pwb;
-
 --
--- Name: update_objectextentontreeedit(); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: update_objectextentontreeedit(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_objectextentontreeedit() RETURNS trigger
@@ -15571,10 +13851,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.update_objectextentontreeedit() OWNER TO lucasm;
-
 --
--- Name: update_treeenvdata(); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: update_treeenvdata(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION update_treeenvdata() RETURNS trigger
@@ -15594,10 +13872,8 @@ END;$$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION public.update_treeenvdata() OWNER TO aps03pwb;
-
 --
--- Name: updategeometrysrid(character varying, character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: updategeometrysrid(character varying, character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION updategeometrysrid(character varying, character varying, character varying, character varying, integer) RETURNS text
@@ -15679,10 +13955,8 @@ $_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.updategeometrysrid(character varying, character varying, character varying, character varying, integer) OWNER TO aps03pwb;
-
 --
--- Name: updategeometrysrid(character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: updategeometrysrid(character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION updategeometrysrid(character varying, character varying, character varying, integer) RETURNS text
@@ -15697,10 +13971,8 @@ $_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.updategeometrysrid(character varying, character varying, character varying, integer) OWNER TO aps03pwb;
-
 --
--- Name: updategeometrysrid(character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: updategeometrysrid(character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION updategeometrysrid(character varying, character varying, integer) RETURNS text
@@ -15715,10 +13987,8 @@ $_$
     LANGUAGE plpgsql STRICT;
 
 
-ALTER FUNCTION public.updategeometrysrid(character varying, character varying, integer) OWNER TO aps03pwb;
-
 --
--- Name: uuid_generate_v1(); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: uuid_generate_v1(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION uuid_generate_v1() RETURNS uuid
@@ -15726,10 +13996,8 @@ CREATE FUNCTION uuid_generate_v1() RETURNS uuid
     LANGUAGE c STRICT;
 
 
-ALTER FUNCTION public.uuid_generate_v1() OWNER TO lucasm;
-
 --
--- Name: uuid_generate_v1mc(); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: uuid_generate_v1mc(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION uuid_generate_v1mc() RETURNS uuid
@@ -15737,10 +14005,8 @@ CREATE FUNCTION uuid_generate_v1mc() RETURNS uuid
     LANGUAGE c STRICT;
 
 
-ALTER FUNCTION public.uuid_generate_v1mc() OWNER TO lucasm;
-
 --
--- Name: uuid_generate_v3(uuid, text); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: uuid_generate_v3(uuid, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION uuid_generate_v3(namespace uuid, name text) RETURNS uuid
@@ -15748,10 +14014,8 @@ CREATE FUNCTION uuid_generate_v3(namespace uuid, name text) RETURNS uuid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.uuid_generate_v3(namespace uuid, name text) OWNER TO lucasm;
-
 --
--- Name: uuid_generate_v4(); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: uuid_generate_v4(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION uuid_generate_v4() RETURNS uuid
@@ -15759,10 +14023,8 @@ CREATE FUNCTION uuid_generate_v4() RETURNS uuid
     LANGUAGE c STRICT;
 
 
-ALTER FUNCTION public.uuid_generate_v4() OWNER TO lucasm;
-
 --
--- Name: uuid_generate_v5(uuid, text); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: uuid_generate_v5(uuid, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION uuid_generate_v5(namespace uuid, name text) RETURNS uuid
@@ -15770,10 +14032,8 @@ CREATE FUNCTION uuid_generate_v5(namespace uuid, name text) RETURNS uuid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.uuid_generate_v5(namespace uuid, name text) OWNER TO lucasm;
-
 --
--- Name: uuid_nil(); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: uuid_nil(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION uuid_nil() RETURNS uuid
@@ -15781,10 +14041,8 @@ CREATE FUNCTION uuid_nil() RETURNS uuid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.uuid_nil() OWNER TO lucasm;
-
 --
--- Name: uuid_ns_dns(); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: uuid_ns_dns(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION uuid_ns_dns() RETURNS uuid
@@ -15792,10 +14050,8 @@ CREATE FUNCTION uuid_ns_dns() RETURNS uuid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.uuid_ns_dns() OWNER TO lucasm;
-
 --
--- Name: uuid_ns_oid(); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: uuid_ns_oid(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION uuid_ns_oid() RETURNS uuid
@@ -15803,10 +14059,8 @@ CREATE FUNCTION uuid_ns_oid() RETURNS uuid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.uuid_ns_oid() OWNER TO lucasm;
-
 --
--- Name: uuid_ns_url(); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: uuid_ns_url(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION uuid_ns_url() RETURNS uuid
@@ -15814,10 +14068,8 @@ CREATE FUNCTION uuid_ns_url() RETURNS uuid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.uuid_ns_url() OWNER TO lucasm;
-
 --
--- Name: uuid_ns_x500(); Type: FUNCTION; Schema: public; Owner: lucasm
+-- Name: uuid_ns_x500(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION uuid_ns_x500() RETURNS uuid
@@ -15825,10 +14077,8 @@ CREATE FUNCTION uuid_ns_x500() RETURNS uuid
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.uuid_ns_x500() OWNER TO lucasm;
-
 --
--- Name: width(chip); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: width(chip); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION width(chip) RETURNS integer
@@ -15836,10 +14086,8 @@ CREATE FUNCTION width(chip) RETURNS integer
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.width(chip) OWNER TO aps03pwb;
-
 --
--- Name: within(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: within(geometry, geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION within(geometry, geometry) RETURNS boolean
@@ -15847,10 +14095,8 @@ CREATE FUNCTION within(geometry, geometry) RETURNS boolean
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.within(geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: x(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: x(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION x(geometry) RETURNS double precision
@@ -15858,10 +14104,8 @@ CREATE FUNCTION x(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.x(geometry) OWNER TO aps03pwb;
-
 --
--- Name: xmax(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: xmax(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION xmax(box3d) RETURNS double precision
@@ -15869,10 +14113,8 @@ CREATE FUNCTION xmax(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.xmax(box3d) OWNER TO aps03pwb;
-
 --
--- Name: xmin(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: xmin(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION xmin(box3d) RETURNS double precision
@@ -15880,10 +14122,8 @@ CREATE FUNCTION xmin(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.xmin(box3d) OWNER TO aps03pwb;
-
 --
--- Name: y(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: y(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION y(geometry) RETURNS double precision
@@ -15891,10 +14131,8 @@ CREATE FUNCTION y(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.y(geometry) OWNER TO aps03pwb;
-
 --
--- Name: ymax(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: ymax(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION ymax(box3d) RETURNS double precision
@@ -15902,10 +14140,8 @@ CREATE FUNCTION ymax(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.ymax(box3d) OWNER TO aps03pwb;
-
 --
--- Name: ymin(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: ymin(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION ymin(box3d) RETURNS double precision
@@ -15913,10 +14149,8 @@ CREATE FUNCTION ymin(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.ymin(box3d) OWNER TO aps03pwb;
-
 --
--- Name: z(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: z(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION z(geometry) RETURNS double precision
@@ -15924,10 +14158,8 @@ CREATE FUNCTION z(geometry) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.z(geometry) OWNER TO aps03pwb;
-
 --
--- Name: zmax(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: zmax(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION zmax(box3d) RETURNS double precision
@@ -15935,10 +14167,8 @@ CREATE FUNCTION zmax(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.zmax(box3d) OWNER TO aps03pwb;
-
 --
--- Name: zmflag(geometry); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: zmflag(geometry); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION zmflag(geometry) RETURNS smallint
@@ -15946,10 +14176,8 @@ CREATE FUNCTION zmflag(geometry) RETURNS smallint
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.zmflag(geometry) OWNER TO aps03pwb;
-
 --
--- Name: zmin(box3d); Type: FUNCTION; Schema: public; Owner: aps03pwb
+-- Name: zmin(box3d); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION zmin(box3d) RETURNS double precision
@@ -15957,12 +14185,10 @@ CREATE FUNCTION zmin(box3d) RETURNS double precision
     LANGUAGE c IMMUTABLE STRICT;
 
 
-ALTER FUNCTION public.zmin(box3d) OWNER TO aps03pwb;
-
 SET search_path = sqlj, pg_catalog;
 
 --
--- Name: add_type_mapping(character varying, character varying); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: add_type_mapping(character varying, character varying); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION add_type_mapping(character varying, character varying) RETURNS void
@@ -15970,10 +14196,8 @@ CREATE FUNCTION add_type_mapping(character varying, character varying) RETURNS v
     LANGUAGE java SECURITY DEFINER;
 
 
-ALTER FUNCTION sqlj.add_type_mapping(character varying, character varying) OWNER TO postgres;
-
 --
--- Name: drop_type_mapping(character varying); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: drop_type_mapping(character varying); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION drop_type_mapping(character varying) RETURNS void
@@ -15981,10 +14205,8 @@ CREATE FUNCTION drop_type_mapping(character varying) RETURNS void
     LANGUAGE java SECURITY DEFINER;
 
 
-ALTER FUNCTION sqlj.drop_type_mapping(character varying) OWNER TO postgres;
-
 --
--- Name: get_classpath(character varying); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: get_classpath(character varying); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION get_classpath(character varying) RETURNS character varying
@@ -15992,10 +14214,8 @@ CREATE FUNCTION get_classpath(character varying) RETURNS character varying
     LANGUAGE java STABLE SECURITY DEFINER;
 
 
-ALTER FUNCTION sqlj.get_classpath(character varying) OWNER TO postgres;
-
 --
--- Name: install_jar(character varying, character varying, boolean); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: install_jar(character varying, character varying, boolean); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION install_jar(character varying, character varying, boolean) RETURNS void
@@ -16003,10 +14223,8 @@ CREATE FUNCTION install_jar(character varying, character varying, boolean) RETUR
     LANGUAGE java SECURITY DEFINER;
 
 
-ALTER FUNCTION sqlj.install_jar(character varying, character varying, boolean) OWNER TO postgres;
-
 --
--- Name: install_jar(bytea, character varying, boolean); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: install_jar(bytea, character varying, boolean); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION install_jar(bytea, character varying, boolean) RETURNS void
@@ -16014,10 +14232,8 @@ CREATE FUNCTION install_jar(bytea, character varying, boolean) RETURNS void
     LANGUAGE java SECURITY DEFINER;
 
 
-ALTER FUNCTION sqlj.install_jar(bytea, character varying, boolean) OWNER TO postgres;
-
 --
--- Name: remove_jar(character varying, boolean); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: remove_jar(character varying, boolean); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION remove_jar(character varying, boolean) RETURNS void
@@ -16025,10 +14241,8 @@ CREATE FUNCTION remove_jar(character varying, boolean) RETURNS void
     LANGUAGE java SECURITY DEFINER;
 
 
-ALTER FUNCTION sqlj.remove_jar(character varying, boolean) OWNER TO postgres;
-
 --
--- Name: replace_jar(character varying, character varying, boolean); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: replace_jar(character varying, character varying, boolean); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION replace_jar(character varying, character varying, boolean) RETURNS void
@@ -16036,10 +14250,8 @@ CREATE FUNCTION replace_jar(character varying, character varying, boolean) RETUR
     LANGUAGE java SECURITY DEFINER;
 
 
-ALTER FUNCTION sqlj.replace_jar(character varying, character varying, boolean) OWNER TO postgres;
-
 --
--- Name: replace_jar(bytea, character varying, boolean); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: replace_jar(bytea, character varying, boolean); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION replace_jar(bytea, character varying, boolean) RETURNS void
@@ -16047,10 +14259,8 @@ CREATE FUNCTION replace_jar(bytea, character varying, boolean) RETURNS void
     LANGUAGE java SECURITY DEFINER;
 
 
-ALTER FUNCTION sqlj.replace_jar(bytea, character varying, boolean) OWNER TO postgres;
-
 --
--- Name: set_classpath(character varying, character varying); Type: FUNCTION; Schema: sqlj; Owner: postgres
+-- Name: set_classpath(character varying, character varying); Type: FUNCTION; Schema: sqlj; Owner: -
 --
 
 CREATE FUNCTION set_classpath(character varying, character varying) RETURNS void
@@ -16058,12 +14268,10 @@ CREATE FUNCTION set_classpath(character varying, character varying) RETURNS void
     LANGUAGE java SECURITY DEFINER;
 
 
-ALTER FUNCTION sqlj.set_classpath(character varying, character varying) OWNER TO postgres;
-
 SET search_path = public, pg_catalog;
 
 --
--- Name: accum(geometry); Type: AGGREGATE; Schema: public; Owner: aps03pwb
+-- Name: accum(geometry); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE accum(geometry) (
@@ -16072,10 +14280,8 @@ CREATE AGGREGATE accum(geometry) (
 );
 
 
-ALTER AGGREGATE public.accum(geometry) OWNER TO aps03pwb;
-
 --
--- Name: array_accum(anyelement); Type: AGGREGATE; Schema: public; Owner: lucasm
+-- Name: array_accum(anyelement); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE array_accum(anyelement) (
@@ -16085,10 +14291,8 @@ CREATE AGGREGATE array_accum(anyelement) (
 );
 
 
-ALTER AGGREGATE public.array_accum(anyelement) OWNER TO lucasm;
-
 --
--- Name: collect(geometry); Type: AGGREGATE; Schema: public; Owner: aps03pwb
+-- Name: collect(geometry); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE collect(geometry) (
@@ -16098,10 +14302,8 @@ CREATE AGGREGATE collect(geometry) (
 );
 
 
-ALTER AGGREGATE public.collect(geometry) OWNER TO aps03pwb;
-
 --
--- Name: extent(geometry); Type: AGGREGATE; Schema: public; Owner: aps03pwb
+-- Name: extent(geometry); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE extent(geometry) (
@@ -16110,10 +14312,8 @@ CREATE AGGREGATE extent(geometry) (
 );
 
 
-ALTER AGGREGATE public.extent(geometry) OWNER TO aps03pwb;
-
 --
--- Name: extent3d(geometry); Type: AGGREGATE; Schema: public; Owner: aps03pwb
+-- Name: extent3d(geometry); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE extent3d(geometry) (
@@ -16122,10 +14322,8 @@ CREATE AGGREGATE extent3d(geometry) (
 );
 
 
-ALTER AGGREGATE public.extent3d(geometry) OWNER TO aps03pwb;
-
 --
--- Name: first(anyelement); Type: AGGREGATE; Schema: public; Owner: lucasm
+-- Name: first(anyelement); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE first(anyelement) (
@@ -16134,10 +14332,8 @@ CREATE AGGREGATE first(anyelement) (
 );
 
 
-ALTER AGGREGATE public.first(anyelement) OWNER TO lucasm;
-
 --
--- Name: geomunion(geometry); Type: AGGREGATE; Schema: public; Owner: aps03pwb
+-- Name: geomunion(geometry); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE geomunion(geometry) (
@@ -16147,10 +14343,8 @@ CREATE AGGREGATE geomunion(geometry) (
 );
 
 
-ALTER AGGREGATE public.geomunion(geometry) OWNER TO aps03pwb;
-
 --
--- Name: makeline(geometry); Type: AGGREGATE; Schema: public; Owner: aps03pwb
+-- Name: makeline(geometry); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE makeline(geometry) (
@@ -16160,10 +14354,8 @@ CREATE AGGREGATE makeline(geometry) (
 );
 
 
-ALTER AGGREGATE public.makeline(geometry) OWNER TO aps03pwb;
-
 --
--- Name: memcollect(geometry); Type: AGGREGATE; Schema: public; Owner: aps03pwb
+-- Name: memcollect(geometry); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE memcollect(geometry) (
@@ -16172,10 +14364,8 @@ CREATE AGGREGATE memcollect(geometry) (
 );
 
 
-ALTER AGGREGATE public.memcollect(geometry) OWNER TO aps03pwb;
-
 --
--- Name: memgeomunion(geometry); Type: AGGREGATE; Schema: public; Owner: aps03pwb
+-- Name: memgeomunion(geometry); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE memgeomunion(geometry) (
@@ -16184,10 +14374,8 @@ CREATE AGGREGATE memgeomunion(geometry) (
 );
 
 
-ALTER AGGREGATE public.memgeomunion(geometry) OWNER TO aps03pwb;
-
 --
--- Name: polygonize(geometry); Type: AGGREGATE; Schema: public; Owner: aps03pwb
+-- Name: polygonize(geometry); Type: AGGREGATE; Schema: public; Owner: -
 --
 
 CREATE AGGREGATE polygonize(geometry) (
@@ -16197,10 +14385,8 @@ CREATE AGGREGATE polygonize(geometry) (
 );
 
 
-ALTER AGGREGATE public.polygonize(geometry) OWNER TO aps03pwb;
-
 --
--- Name: &&; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: &&; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR && (
@@ -16213,10 +14399,8 @@ CREATE OPERATOR && (
 );
 
 
-ALTER OPERATOR public.&& (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: &<; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: &<; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR &< (
@@ -16229,10 +14413,8 @@ CREATE OPERATOR &< (
 );
 
 
-ALTER OPERATOR public.&< (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: &<|; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: &<|; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR &<| (
@@ -16245,10 +14427,8 @@ CREATE OPERATOR &<| (
 );
 
 
-ALTER OPERATOR public.&<| (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: &>; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: &>; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR &> (
@@ -16261,10 +14441,8 @@ CREATE OPERATOR &> (
 );
 
 
-ALTER OPERATOR public.&> (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: <; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: <; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR < (
@@ -16278,10 +14456,8 @@ CREATE OPERATOR < (
 );
 
 
-ALTER OPERATOR public.< (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: <<; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: <<; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR << (
@@ -16294,10 +14470,8 @@ CREATE OPERATOR << (
 );
 
 
-ALTER OPERATOR public.<< (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: <<|; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: <<|; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR <<| (
@@ -16310,10 +14484,8 @@ CREATE OPERATOR <<| (
 );
 
 
-ALTER OPERATOR public.<<| (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: <=; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: <=; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR <= (
@@ -16327,10 +14499,8 @@ CREATE OPERATOR <= (
 );
 
 
-ALTER OPERATOR public.<= (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: =; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: =; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR = (
@@ -16343,10 +14513,8 @@ CREATE OPERATOR = (
 );
 
 
-ALTER OPERATOR public.= (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: >; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: >; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR > (
@@ -16360,10 +14528,8 @@ CREATE OPERATOR > (
 );
 
 
-ALTER OPERATOR public.> (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: >=; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: >=; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR >= (
@@ -16377,10 +14543,8 @@ CREATE OPERATOR >= (
 );
 
 
-ALTER OPERATOR public.>= (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: >>; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: >>; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR >> (
@@ -16393,10 +14557,8 @@ CREATE OPERATOR >> (
 );
 
 
-ALTER OPERATOR public.>> (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: @; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: @; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR @ (
@@ -16409,10 +14571,8 @@ CREATE OPERATOR @ (
 );
 
 
-ALTER OPERATOR public.@ (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: |&>; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: |&>; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR |&> (
@@ -16425,10 +14585,8 @@ CREATE OPERATOR |&> (
 );
 
 
-ALTER OPERATOR public.|&> (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: |>>; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: |>>; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR |>> (
@@ -16441,10 +14599,8 @@ CREATE OPERATOR |>> (
 );
 
 
-ALTER OPERATOR public.|>> (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: ~; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: ~; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR ~ (
@@ -16457,10 +14613,8 @@ CREATE OPERATOR ~ (
 );
 
 
-ALTER OPERATOR public.~ (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: ~=; Type: OPERATOR; Schema: public; Owner: aps03pwb
+-- Name: ~=; Type: OPERATOR; Schema: public; Owner: -
 --
 
 CREATE OPERATOR ~= (
@@ -16473,19 +14627,15 @@ CREATE OPERATOR ~= (
 );
 
 
-ALTER OPERATOR public.~= (geometry, geometry) OWNER TO aps03pwb;
-
 --
--- Name: btree_geometry_ops; Type: OPERATOR FAMILY; Schema: public; Owner: postgres
+-- Name: btree_geometry_ops; Type: OPERATOR FAMILY; Schema: public; Owner: -
 --
 
 CREATE OPERATOR FAMILY btree_geometry_ops USING btree;
 
 
-ALTER OPERATOR FAMILY public.btree_geometry_ops USING btree OWNER TO postgres;
-
 --
--- Name: btree_geometry_ops; Type: OPERATOR CLASS; Schema: public; Owner: aps03pwb
+-- Name: btree_geometry_ops; Type: OPERATOR CLASS; Schema: public; Owner: -
 --
 
 CREATE OPERATOR CLASS btree_geometry_ops
@@ -16498,19 +14648,15 @@ CREATE OPERATOR CLASS btree_geometry_ops
     FUNCTION 1 geometry_cmp(geometry,geometry);
 
 
-ALTER OPERATOR CLASS public.btree_geometry_ops USING btree OWNER TO aps03pwb;
-
 --
--- Name: gist_geometry_ops; Type: OPERATOR FAMILY; Schema: public; Owner: postgres
+-- Name: gist_geometry_ops; Type: OPERATOR FAMILY; Schema: public; Owner: -
 --
 
 CREATE OPERATOR FAMILY gist_geometry_ops USING gist;
 
 
-ALTER OPERATOR FAMILY public.gist_geometry_ops USING gist OWNER TO postgres;
-
 --
--- Name: gist_geometry_ops; Type: OPERATOR CLASS; Schema: public; Owner: aps03pwb
+-- Name: gist_geometry_ops; Type: OPERATOR CLASS; Schema: public; Owner: -
 --
 
 CREATE OPERATOR CLASS gist_geometry_ops
@@ -16537,110 +14683,108 @@ CREATE OPERATOR CLASS gist_geometry_ops
     FUNCTION 7 lwgeom_gist_same(box2d,box2d,internal);
 
 
-ALTER OPERATOR CLASS public.gist_geometry_ops USING gist OWNER TO aps03pwb;
-
 SET search_path = pg_catalog;
 
 --
--- Name: CAST (public.box2d AS public.box3d); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.box2d AS public.box3d); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.box2d AS public.box3d) WITH FUNCTION public.box3d(public.box2d) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box2d AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.box2d AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.box2d AS public.geometry) WITH FUNCTION public.geometry(public.box2d) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box3d AS box); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.box3d AS box); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.box3d AS box) WITH FUNCTION public.box(public.box3d) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box3d AS public.box2d); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.box3d AS public.box2d); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.box3d AS public.box2d) WITH FUNCTION public.box2d(public.box3d) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box3d AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.box3d AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.box3d AS public.geometry) WITH FUNCTION public.geometry(public.box3d) AS IMPLICIT;
 
 
 --
--- Name: CAST (bytea AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (bytea AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (bytea AS public.geometry) WITH FUNCTION public.geometry(bytea) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.chip AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.chip AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.chip AS public.geometry) WITH FUNCTION public.geometry(public.chip) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geometry AS box); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.geometry AS box); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.geometry AS box) WITH FUNCTION public.box(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geometry AS public.box2d); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.geometry AS public.box2d); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.geometry AS public.box2d) WITH FUNCTION public.box2d(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geometry AS public.box3d); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.geometry AS public.box3d); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.geometry AS public.box3d) WITH FUNCTION public.box3d(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geometry AS bytea); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.geometry AS bytea); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.geometry AS bytea) WITH FUNCTION public.bytea(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geometry AS text); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (public.geometry AS text); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (public.geometry AS text) WITH FUNCTION public.text(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (text AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (text AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (text AS public.geometry) WITH FUNCTION public.geometry(text) AS IMPLICIT;
 
 
 --
--- Name: CAST (text AS uuid); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (text AS uuid); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (text AS uuid) WITH FUNCTION public.strtouuid(text) AS IMPLICIT;
 
 
 --
--- Name: CAST (character varying AS uuid); Type: CAST; Schema: pg_catalog; Owner: 
+-- Name: CAST (character varying AS uuid); Type: CAST; Schema: pg_catalog; Owner: -
 --
 
 CREATE CAST (character varying AS uuid) WITH FUNCTION public.strtouuid(character varying) AS IMPLICIT;
@@ -16651,7 +14795,7 @@ SET search_path = public, pg_catalog;
 SET default_with_oids = true;
 
 --
--- Name: geometry_columns; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: geometry_columns; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE geometry_columns (
@@ -16665,12 +14809,10 @@ CREATE TABLE geometry_columns (
 );
 
 
-ALTER TABLE public.geometry_columns OWNER TO aps03pwb;
-
 SET default_with_oids = false;
 
 --
--- Name: spatial_ref_sys; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: spatial_ref_sys; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE spatial_ref_sys (
@@ -16682,10 +14824,8 @@ CREATE TABLE spatial_ref_sys (
 );
 
 
-ALTER TABLE public.spatial_ref_sys OWNER TO aps03pwb;
-
 --
--- Name: tblbox; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblbox; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblbox (
@@ -16699,10 +14839,8 @@ CREATE TABLE tblbox (
 );
 
 
-ALTER TABLE public.tblbox OWNER TO aps03pwb;
-
 --
--- Name: tblcrossdate; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblcrossdate; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblcrossdate (
@@ -16717,10 +14855,8 @@ CREATE TABLE tblcrossdate (
 );
 
 
-ALTER TABLE public.tblcrossdate OWNER TO aps03pwb;
-
 --
--- Name: tblcrossdate_crossdateid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblcrossdate_crossdateid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblcrossdate_crossdateid_seq
@@ -16730,24 +14866,22 @@ CREATE SEQUENCE tblcrossdate_crossdateid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblcrossdate_crossdateid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblcrossdate_crossdateid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblcrossdate_crossdateid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblcrossdate_crossdateid_seq OWNED BY tblcrossdate.crossdateid;
 
 
 --
--- Name: tblcrossdate_crossdateid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblcrossdate_crossdateid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblcrossdate_crossdateid_seq', 461, true);
 
 
 --
--- Name: tlkptrackinglocation; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkptrackinglocation; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkptrackinglocation (
@@ -16756,10 +14890,8 @@ CREATE TABLE tlkptrackinglocation (
 );
 
 
-ALTER TABLE public.tlkptrackinglocation OWNER TO aps03pwb;
-
 --
--- Name: tblcurationlocation_curationlocationid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblcurationlocation_curationlocationid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblcurationlocation_curationlocationid_seq
@@ -16770,24 +14902,22 @@ CREATE SEQUENCE tblcurationlocation_curationlocationid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblcurationlocation_curationlocationid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblcurationlocation_curationlocationid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblcurationlocation_curationlocationid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblcurationlocation_curationlocationid_seq OWNED BY tlkptrackinglocation.trackinglocationid;
 
 
 --
--- Name: tblcurationlocation_curationlocationid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblcurationlocation_curationlocationid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblcurationlocation_curationlocationid_seq', 1, false);
 
 
 --
--- Name: tblcustomvocabterm; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblcustomvocabterm; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblcustomvocabterm (
@@ -16800,10 +14930,8 @@ CREATE TABLE tblcustomvocabterm (
 );
 
 
-ALTER TABLE public.tblcustomvocabterm OWNER TO aps03pwb;
-
 --
--- Name: tblcustomvocabterm_customvocabtermid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblcustomvocabterm_customvocabtermid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblcustomvocabterm_customvocabtermid_seq
@@ -16814,24 +14942,22 @@ CREATE SEQUENCE tblcustomvocabterm_customvocabtermid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblcustomvocabterm_customvocabtermid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblcustomvocabterm_customvocabtermid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblcustomvocabterm_customvocabtermid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblcustomvocabterm_customvocabtermid_seq OWNED BY tblcustomvocabterm.customvocabtermid;
 
 
 --
--- Name: tblcustomvocabterm_customvocabtermid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblcustomvocabterm_customvocabtermid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblcustomvocabterm_customvocabtermid_seq', 1, false);
 
 
 --
--- Name: tblelement_elementid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblelement_elementid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblelement_elementid_seq
@@ -16841,17 +14967,15 @@ CREATE SEQUENCE tblelement_elementid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblelement_elementid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblelement_elementid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblelement_elementid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblelement_elementid_seq', 1556, true);
 
 
 --
--- Name: tbliptracking; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tbliptracking; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tbliptracking (
@@ -16861,10 +14985,8 @@ CREATE TABLE tbliptracking (
 );
 
 
-ALTER TABLE public.tbliptracking OWNER TO aps03pwb;
-
 --
--- Name: tblmeasurement_measurementid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblmeasurement_measurementid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblmeasurement_measurementid_seq
@@ -16874,24 +14996,22 @@ CREATE SEQUENCE tblmeasurement_measurementid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblmeasurement_measurementid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblmeasurement_measurementid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblmeasurement_measurementid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblmeasurement_measurementid_seq OWNED BY tblmeasurement.measurementid;
 
 
 --
--- Name: tblmeasurement_measurementid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblmeasurement_measurementid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblmeasurement_measurementid_seq', 16430, true);
 
 
 --
--- Name: tblobject_objectid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblobject_objectid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblobject_objectid_seq
@@ -16901,17 +15021,15 @@ CREATE SEQUENCE tblobject_objectid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblobject_objectid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblobject_objectid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblobject_objectid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblobject_objectid_seq', 2832, true);
 
 
 --
--- Name: tblradius_radiusid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblradius_radiusid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblradius_radiusid_seq
@@ -16921,24 +15039,22 @@ CREATE SEQUENCE tblradius_radiusid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblradius_radiusid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblradius_radiusid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblradius_radiusid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblradius_radiusid_seq OWNED BY tblradius.radiusid;
 
 
 --
--- Name: tblradius_radiusid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblradius_radiusid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblradius_radiusid_seq', 1611, true);
 
 
 --
--- Name: tblreading; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblreading; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblreading (
@@ -16949,10 +15065,8 @@ CREATE TABLE tblreading (
 );
 
 
-ALTER TABLE public.tblreading OWNER TO aps03pwb;
-
 --
--- Name: tblreading_readingid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblreading_readingid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblreading_readingid_seq
@@ -16962,24 +15076,22 @@ CREATE SEQUENCE tblreading_readingid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblreading_readingid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblreading_readingid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblreading_readingid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblreading_readingid_seq OWNED BY tblreading.readingid;
 
 
 --
--- Name: tblreading_readingid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblreading_readingid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblreading_readingid_seq', 2954759, true);
 
 
 --
--- Name: tblreadingreadingnote; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblreadingreadingnote; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblreadingreadingnote (
@@ -16991,10 +15103,8 @@ CREATE TABLE tblreadingreadingnote (
 );
 
 
-ALTER TABLE public.tblreadingreadingnote OWNER TO aps03pwb;
-
 --
--- Name: tblreadingreadingnote_readingreadingnoteid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblreadingreadingnote_readingreadingnoteid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblreadingreadingnote_readingreadingnoteid_seq
@@ -17004,24 +15114,22 @@ CREATE SEQUENCE tblreadingreadingnote_readingreadingnoteid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblreadingreadingnote_readingreadingnoteid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblreadingreadingnote_readingreadingnoteid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblreadingreadingnote_readingreadingnoteid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblreadingreadingnote_readingreadingnoteid_seq OWNED BY tblreadingreadingnote.readingreadingnoteid;
 
 
 --
--- Name: tblreadingreadingnote_readingreadingnoteid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblreadingreadingnote_readingreadingnoteid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblreadingreadingnote_readingreadingnoteid_seq', 141694, true);
 
 
 --
--- Name: tblredate; Type: TABLE; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: tblredate; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblredate (
@@ -17033,10 +15141,8 @@ CREATE TABLE tblredate (
 );
 
 
-ALTER TABLE public.tblredate OWNER TO lucasm;
-
 --
--- Name: tblredate_redateid_seq; Type: SEQUENCE; Schema: public; Owner: lucasm
+-- Name: tblredate_redateid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblredate_redateid_seq
@@ -17046,24 +15152,22 @@ CREATE SEQUENCE tblredate_redateid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblredate_redateid_seq OWNER TO lucasm;
-
 --
--- Name: tblredate_redateid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: lucasm
+-- Name: tblredate_redateid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblredate_redateid_seq OWNED BY tblredate.redateid;
 
 
 --
--- Name: tblredate_redateid_seq; Type: SEQUENCE SET; Schema: public; Owner: lucasm
+-- Name: tblredate_redateid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblredate_redateid_seq', 573, true);
 
 
 --
--- Name: tblregion_regionid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblregion_regionid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblregion_regionid_seq
@@ -17074,17 +15178,15 @@ CREATE SEQUENCE tblregion_regionid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblregion_regionid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblregion_regionid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblregion_regionid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblregion_regionid_seq', 1, false);
 
 
 --
--- Name: tblrequestlog; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblrequestlog; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblrequestlog (
@@ -17099,10 +15201,8 @@ CREATE TABLE tblrequestlog (
 );
 
 
-ALTER TABLE public.tblrequestlog OWNER TO aps03pwb;
-
 --
--- Name: tblrequestlog_requestlogid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblrequestlog_requestlogid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblrequestlog_requestlogid_seq
@@ -17112,24 +15212,22 @@ CREATE SEQUENCE tblrequestlog_requestlogid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblrequestlog_requestlogid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblrequestlog_requestlogid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblrequestlog_requestlogid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblrequestlog_requestlogid_seq OWNED BY tblrequestlog.requestlogid;
 
 
 --
--- Name: tblrequestlog_requestlogid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblrequestlog_requestlogid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblrequestlog_requestlogid_seq', 189230, true);
 
 
 --
--- Name: tblsample_sampleid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblsample_sampleid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblsample_sampleid_seq
@@ -17139,24 +15237,22 @@ CREATE SEQUENCE tblsample_sampleid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblsample_sampleid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblsample_sampleid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblsample_sampleid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblsample_sampleid_seq OWNED BY tblsample.sampleid;
 
 
 --
--- Name: tblsample_sampleid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblsample_sampleid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblsample_sampleid_seq', 1583, true);
 
 
 --
--- Name: tblsecuritydefault; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblsecuritydefault; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblsecuritydefault (
@@ -17166,10 +15262,8 @@ CREATE TABLE tblsecuritydefault (
 );
 
 
-ALTER TABLE public.tblsecuritydefault OWNER TO aps03pwb;
-
 --
--- Name: tblsecuritydefault_securitydefaultid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritydefault_securitydefaultid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblsecuritydefault_securitydefaultid_seq
@@ -17179,24 +15273,22 @@ CREATE SEQUENCE tblsecuritydefault_securitydefaultid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblsecuritydefault_securitydefaultid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblsecuritydefault_securitydefaultid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritydefault_securitydefaultid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblsecuritydefault_securitydefaultid_seq OWNED BY tblsecuritydefault.securitydefaultid;
 
 
 --
--- Name: tblsecuritydefault_securitydefaultid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritydefault_securitydefaultid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblsecuritydefault_securitydefaultid_seq', 19, true);
 
 
 --
--- Name: tblsecurityelement; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblsecurityelement; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblsecurityelement (
@@ -17207,10 +15299,8 @@ CREATE TABLE tblsecurityelement (
 );
 
 
-ALTER TABLE public.tblsecurityelement OWNER TO aps03pwb;
-
 --
--- Name: tblsecuritygroup_securitygroupid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritygroup_securitygroupid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblsecuritygroup_securitygroupid_seq
@@ -17220,24 +15310,22 @@ CREATE SEQUENCE tblsecuritygroup_securitygroupid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblsecuritygroup_securitygroupid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblsecuritygroup_securitygroupid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritygroup_securitygroupid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblsecuritygroup_securitygroupid_seq OWNED BY tblsecuritygroup.securitygroupid;
 
 
 --
--- Name: tblsecuritygroup_securitygroupid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritygroup_securitygroupid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblsecuritygroup_securitygroupid_seq', 6, true);
 
 
 --
--- Name: tblsecuritygroupmembership; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblsecuritygroupmembership; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblsecuritygroupmembership (
@@ -17247,10 +15335,8 @@ CREATE TABLE tblsecuritygroupmembership (
 );
 
 
-ALTER TABLE public.tblsecuritygroupmembership OWNER TO aps03pwb;
-
 --
--- Name: tblsecuritygroupmembership_securitygroupmembershipid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritygroupmembership_securitygroupmembershipid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblsecuritygroupmembership_securitygroupmembershipid_seq
@@ -17260,24 +15346,22 @@ CREATE SEQUENCE tblsecuritygroupmembership_securitygroupmembershipid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblsecuritygroupmembership_securitygroupmembershipid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblsecuritygroupmembership_securitygroupmembershipid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritygroupmembership_securitygroupmembershipid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblsecuritygroupmembership_securitygroupmembershipid_seq OWNED BY tblsecuritygroupmembership.securitygroupmembershipid;
 
 
 --
--- Name: tblsecuritygroupmembership_securitygroupmembershipid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritygroupmembership_securitygroupmembershipid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblsecuritygroupmembership_securitygroupmembershipid_seq', 4, true);
 
 
 --
--- Name: tblsecurityobject; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblsecurityobject; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblsecurityobject (
@@ -17288,10 +15372,8 @@ CREATE TABLE tblsecurityobject (
 );
 
 
-ALTER TABLE public.tblsecurityobject OWNER TO aps03pwb;
-
 --
--- Name: tblsecurityobject_securityobjectid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityobject_securityobjectid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblsecurityobject_securityobjectid_seq
@@ -17301,24 +15383,22 @@ CREATE SEQUENCE tblsecurityobject_securityobjectid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblsecurityobject_securityobjectid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblsecurityobject_securityobjectid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityobject_securityobjectid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblsecurityobject_securityobjectid_seq OWNED BY tblsecurityobject.securityobjectid;
 
 
 --
--- Name: tblsecurityobject_securityobjectid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityobject_securityobjectid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblsecurityobject_securityobjectid_seq', 39, true);
 
 
 --
--- Name: tblsecuritytree_securityelementid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritytree_securityelementid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblsecuritytree_securityelementid_seq
@@ -17328,24 +15408,22 @@ CREATE SEQUENCE tblsecuritytree_securityelementid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblsecuritytree_securityelementid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblsecuritytree_securityelementid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritytree_securityelementid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblsecuritytree_securityelementid_seq OWNED BY tblsecurityelement.securityelementid;
 
 
 --
--- Name: tblsecuritytree_securityelementid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritytree_securityelementid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblsecuritytree_securityelementid_seq', 67, true);
 
 
 --
--- Name: tblsecurityuser; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblsecurityuser; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblsecurityuser (
@@ -17358,10 +15436,8 @@ CREATE TABLE tblsecurityuser (
 );
 
 
-ALTER TABLE public.tblsecurityuser OWNER TO aps03pwb;
-
 --
--- Name: tblsecurityuser_securityuserid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityuser_securityuserid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblsecurityuser_securityuserid_seq
@@ -17371,24 +15447,22 @@ CREATE SEQUENCE tblsecurityuser_securityuserid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblsecurityuser_securityuserid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblsecurityuser_securityuserid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityuser_securityuserid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblsecurityuser_securityuserid_seq OWNED BY tblsecurityuser.securityuserid;
 
 
 --
--- Name: tblsecurityuser_securityuserid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityuser_securityuserid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblsecurityuser_securityuserid_seq', 185, true);
 
 
 --
--- Name: tblsecurityusermembership; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblsecurityusermembership; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblsecurityusermembership (
@@ -17398,10 +15472,8 @@ CREATE TABLE tblsecurityusermembership (
 );
 
 
-ALTER TABLE public.tblsecurityusermembership OWNER TO aps03pwb;
-
 --
--- Name: tblsecurityusermembership_tblsecurityusermembershipid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityusermembership_tblsecurityusermembershipid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblsecurityusermembership_tblsecurityusermembershipid_seq
@@ -17411,24 +15483,22 @@ CREATE SEQUENCE tblsecurityusermembership_tblsecurityusermembershipid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblsecurityusermembership_tblsecurityusermembershipid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblsecurityusermembership_tblsecurityusermembershipid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityusermembership_tblsecurityusermembershipid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblsecurityusermembership_tblsecurityusermembershipid_seq OWNED BY tblsecurityusermembership.tblsecurityusermembershipid;
 
 
 --
--- Name: tblsecurityusermembership_tblsecurityusermembershipid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityusermembership_tblsecurityusermembershipid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblsecurityusermembership_tblsecurityusermembershipid_seq', 103, true);
 
 
 --
--- Name: tblsecurityvmeasurement; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblsecurityvmeasurement; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblsecurityvmeasurement (
@@ -17439,10 +15509,8 @@ CREATE TABLE tblsecurityvmeasurement (
 );
 
 
-ALTER TABLE public.tblsecurityvmeasurement OWNER TO aps03pwb;
-
 --
--- Name: tblsecurityvmeasurement_securityvmeasurementid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityvmeasurement_securityvmeasurementid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblsecurityvmeasurement_securityvmeasurementid_seq
@@ -17452,24 +15520,22 @@ CREATE SEQUENCE tblsecurityvmeasurement_securityvmeasurementid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblsecurityvmeasurement_securityvmeasurementid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblsecurityvmeasurement_securityvmeasurementid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityvmeasurement_securityvmeasurementid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblsecurityvmeasurement_securityvmeasurementid_seq OWNED BY tblsecurityvmeasurement.securityvmeasurementid;
 
 
 --
--- Name: tblsecurityvmeasurement_securityvmeasurementid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityvmeasurement_securityvmeasurementid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblsecurityvmeasurement_securityvmeasurementid_seq', 180, true);
 
 
 --
--- Name: tbltruncate; Type: TABLE; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: tbltruncate; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tbltruncate (
@@ -17481,10 +15547,8 @@ CREATE TABLE tbltruncate (
 );
 
 
-ALTER TABLE public.tbltruncate OWNER TO lucasm;
-
 --
--- Name: tbltruncate_truncateid_seq; Type: SEQUENCE; Schema: public; Owner: lucasm
+-- Name: tbltruncate_truncateid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tbltruncate_truncateid_seq
@@ -17494,24 +15558,22 @@ CREATE SEQUENCE tbltruncate_truncateid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tbltruncate_truncateid_seq OWNER TO lucasm;
-
 --
--- Name: tbltruncate_truncateid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: lucasm
+-- Name: tbltruncate_truncateid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tbltruncate_truncateid_seq OWNED BY tbltruncate.truncateid;
 
 
 --
--- Name: tbltruncate_truncateid_seq; Type: SEQUENCE SET; Schema: public; Owner: lucasm
+-- Name: tbltruncate_truncateid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tbltruncate_truncateid_seq', 113, true);
 
 
 --
--- Name: tblvmeasurement; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblvmeasurement; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblvmeasurement (
@@ -17532,17 +15594,15 @@ CREATE TABLE tblvmeasurement (
 );
 
 
-ALTER TABLE public.tblvmeasurement OWNER TO aps03pwb;
-
 --
--- Name: COLUMN tblvmeasurement.birthdate; Type: COMMENT; Schema: public; Owner: aps03pwb
+-- Name: COLUMN tblvmeasurement.birthdate; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN tblvmeasurement.birthdate IS 'maps to TRiDaS measurementSeries.measuringDate and derivedSeries.derivationDate';
 
 
 --
--- Name: tblvmeasurement_vmeasurementid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurement_vmeasurementid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblvmeasurement_vmeasurementid_seq
@@ -17552,24 +15612,22 @@ CREATE SEQUENCE tblvmeasurement_vmeasurementid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblvmeasurement_vmeasurementid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblvmeasurement_vmeasurementid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurement_vmeasurementid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblvmeasurement_vmeasurementid_seq OWNED BY tblvmeasurement.vmeasurementid;
 
 
 --
--- Name: tblvmeasurement_vmeasurementid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurement_vmeasurementid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblvmeasurement_vmeasurementid_seq', 2272, true);
 
 
 --
--- Name: tblvmeasurementderivedcache_derivedcacheid_seq; Type: SEQUENCE; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementderivedcache_derivedcacheid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblvmeasurementderivedcache_derivedcacheid_seq
@@ -17579,24 +15637,22 @@ CREATE SEQUENCE tblvmeasurementderivedcache_derivedcacheid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblvmeasurementderivedcache_derivedcacheid_seq OWNER TO lucasm;
-
 --
--- Name: tblvmeasurementderivedcache_derivedcacheid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementderivedcache_derivedcacheid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblvmeasurementderivedcache_derivedcacheid_seq OWNED BY tblvmeasurementderivedcache.derivedcacheid;
 
 
 --
--- Name: tblvmeasurementderivedcache_derivedcacheid_seq; Type: SEQUENCE SET; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementderivedcache_derivedcacheid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblvmeasurementderivedcache_derivedcacheid_seq', 52629, true);
 
 
 --
--- Name: tblvmeasurementgroup; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tblvmeasurementgroup; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblvmeasurementgroup (
@@ -17606,10 +15662,8 @@ CREATE TABLE tblvmeasurementgroup (
 );
 
 
-ALTER TABLE public.tblvmeasurementgroup OWNER TO aps03pwb;
-
 --
--- Name: tblvmeasurementgroup_vmeasurementgroupid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementgroup_vmeasurementgroupid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblvmeasurementgroup_vmeasurementgroupid_seq
@@ -17619,24 +15673,22 @@ CREATE SEQUENCE tblvmeasurementgroup_vmeasurementgroupid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblvmeasurementgroup_vmeasurementgroupid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblvmeasurementgroup_vmeasurementgroupid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementgroup_vmeasurementgroupid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblvmeasurementgroup_vmeasurementgroupid_seq OWNED BY tblvmeasurementgroup.vmeasurementgroupid;
 
 
 --
--- Name: tblvmeasurementgroup_vmeasurementgroupid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementgroup_vmeasurementgroupid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblvmeasurementgroup_vmeasurementgroupid_seq', 5465, true);
 
 
 --
--- Name: tblvmeasurementmetacache_vmeasurementmetacacheid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementmetacache_vmeasurementmetacacheid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblvmeasurementmetacache_vmeasurementmetacacheid_seq
@@ -17646,24 +15698,22 @@ CREATE SEQUENCE tblvmeasurementmetacache_vmeasurementmetacacheid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblvmeasurementmetacache_vmeasurementmetacacheid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblvmeasurementmetacache_vmeasurementmetacacheid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementmetacache_vmeasurementmetacacheid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblvmeasurementmetacache_vmeasurementmetacacheid_seq OWNED BY tblvmeasurementmetacache.vmeasurementmetacacheid;
 
 
 --
--- Name: tblvmeasurementmetacache_vmeasurementmetacacheid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementmetacache_vmeasurementmetacacheid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblvmeasurementmetacache_vmeasurementmetacacheid_seq', 48239, true);
 
 
 --
--- Name: tblvmeasurementreadingnoteresult; Type: TABLE; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: tblvmeasurementreadingnoteresult; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblvmeasurementreadingnoteresult (
@@ -17674,10 +15724,8 @@ CREATE TABLE tblvmeasurementreadingnoteresult (
 );
 
 
-ALTER TABLE public.tblvmeasurementreadingnoteresult OWNER TO lucasm;
-
 --
--- Name: tblvmeasurementreadingresult_vmeasurementreadingresultid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementreadingresult_vmeasurementreadingresultid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblvmeasurementreadingresult_vmeasurementreadingresultid_seq
@@ -17687,24 +15735,22 @@ CREATE SEQUENCE tblvmeasurementreadingresult_vmeasurementreadingresultid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblvmeasurementreadingresult_vmeasurementreadingresultid_seq OWNER TO aps03pwb;
-
 --
--- Name: tblvmeasurementreadingresult_vmeasurementreadingresultid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementreadingresult_vmeasurementreadingresultid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tblvmeasurementreadingresult_vmeasurementreadingresultid_seq OWNED BY tblvmeasurementreadingresult.vmeasurementreadingresultid;
 
 
 --
--- Name: tblvmeasurementreadingresult_vmeasurementreadingresultid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementreadingresult_vmeasurementreadingresultid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblvmeasurementreadingresult_vmeasurementreadingresultid_seq', 22679383, true);
 
 
 --
--- Name: tblvmeasurementrelyearreadingnote_relyearreadingnoteid_seq; Type: SEQUENCE; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementrelyearreadingnote_relyearreadingnoteid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tblvmeasurementrelyearreadingnote_relyearreadingnoteid_seq
@@ -17714,17 +15760,15 @@ CREATE SEQUENCE tblvmeasurementrelyearreadingnote_relyearreadingnoteid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tblvmeasurementrelyearreadingnote_relyearreadingnoteid_seq OWNER TO lucasm;
-
 --
--- Name: tblvmeasurementrelyearreadingnote_relyearreadingnoteid_seq; Type: SEQUENCE SET; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementrelyearreadingnote_relyearreadingnoteid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tblvmeasurementrelyearreadingnote_relyearreadingnoteid_seq', 13, true);
 
 
 --
--- Name: tblvmeasurementrelyearreadingnote; Type: TABLE; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: tblvmeasurementrelyearreadingnote; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tblvmeasurementrelyearreadingnote (
@@ -17738,10 +15782,8 @@ CREATE TABLE tblvmeasurementrelyearreadingnote (
 );
 
 
-ALTER TABLE public.tblvmeasurementrelyearreadingnote OWNER TO lucasm;
-
 --
--- Name: tlkpcomplexpresenceabsence; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpcomplexpresenceabsence; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpcomplexpresenceabsence (
@@ -17750,10 +15792,8 @@ CREATE TABLE tlkpcomplexpresenceabsence (
 );
 
 
-ALTER TABLE public.tlkpcomplexpresenceabsence OWNER TO aps03pwb;
-
 --
--- Name: tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq
@@ -17763,24 +15803,22 @@ CREATE SEQUENCE tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq OWNED BY tlkpcomplexpresenceabsence.complexpresenceabsenceid;
 
 
 --
--- Name: tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq', 5, true);
 
 
 --
--- Name: tlkpcoveragetemporal; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpcoveragetemporal; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpcoveragetemporal (
@@ -17789,10 +15827,8 @@ CREATE TABLE tlkpcoveragetemporal (
 );
 
 
-ALTER TABLE public.tlkpcoveragetemporal OWNER TO aps03pwb;
-
 --
--- Name: tlkpcoveragetemporal_coveragetemporalid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpcoveragetemporal_coveragetemporalid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpcoveragetemporal_coveragetemporalid_seq
@@ -17802,24 +15838,22 @@ CREATE SEQUENCE tlkpcoveragetemporal_coveragetemporalid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpcoveragetemporal_coveragetemporalid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpcoveragetemporal_coveragetemporalid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpcoveragetemporal_coveragetemporalid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpcoveragetemporal_coveragetemporalid_seq OWNED BY tlkpcoveragetemporal.coveragetemporalid;
 
 
 --
--- Name: tlkpcoveragetemporal_coveragetemporalid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpcoveragetemporal_coveragetemporalid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpcoveragetemporal_coveragetemporalid_seq', 7, true);
 
 
 --
--- Name: tlkpcoveragetemporalfoundation; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpcoveragetemporalfoundation; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpcoveragetemporalfoundation (
@@ -17828,10 +15862,8 @@ CREATE TABLE tlkpcoveragetemporalfoundation (
 );
 
 
-ALTER TABLE public.tlkpcoveragetemporalfoundation OWNER TO aps03pwb;
-
 --
--- Name: tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq
@@ -17841,24 +15873,22 @@ CREATE SEQUENCE tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq OWNED BY tlkpcoveragetemporalfoundation.coveragetemporalfoundationid;
 
 
 --
--- Name: tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq', 6, true);
 
 
 --
--- Name: tlkpdatecertainty; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpdatecertainty; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpdatecertainty (
@@ -17867,10 +15897,8 @@ CREATE TABLE tlkpdatecertainty (
 );
 
 
-ALTER TABLE public.tlkpdatecertainty OWNER TO aps03pwb;
-
 --
--- Name: tlkpdatecertainty_datecertaintyid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpdatecertainty_datecertaintyid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpdatecertainty_datecertaintyid_seq
@@ -17880,24 +15908,22 @@ CREATE SEQUENCE tlkpdatecertainty_datecertaintyid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpdatecertainty_datecertaintyid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpdatecertainty_datecertaintyid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpdatecertainty_datecertaintyid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpdatecertainty_datecertaintyid_seq OWNED BY tlkpdatecertainty.datecertaintyid;
 
 
 --
--- Name: tlkpdatecertainty_datecertaintyid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpdatecertainty_datecertaintyid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpdatecertainty_datecertaintyid_seq', 5, true);
 
 
 --
--- Name: tlkpdatingtype; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpdatingtype; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpdatingtype (
@@ -17907,10 +15933,8 @@ CREATE TABLE tlkpdatingtype (
 );
 
 
-ALTER TABLE public.tlkpdatingtype OWNER TO aps03pwb;
-
 --
--- Name: tlkpdatingtype_datingtypeid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpdatingtype_datingtypeid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpdatingtype_datingtypeid_seq
@@ -17920,24 +15944,22 @@ CREATE SEQUENCE tlkpdatingtype_datingtypeid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpdatingtype_datingtypeid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpdatingtype_datingtypeid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpdatingtype_datingtypeid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpdatingtype_datingtypeid_seq OWNED BY tlkpdatingtype.datingtypeid;
 
 
 --
--- Name: tlkpdatingtype_datingtypeid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpdatingtype_datingtypeid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpdatingtype_datingtypeid_seq', 4, true);
 
 
 --
--- Name: tlkpelementauthenticity; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpelementauthenticity; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpelementauthenticity (
@@ -17946,10 +15968,8 @@ CREATE TABLE tlkpelementauthenticity (
 );
 
 
-ALTER TABLE public.tlkpelementauthenticity OWNER TO aps03pwb;
-
 --
--- Name: tlkpelementauthenticity_elementauthenticityid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementauthenticity_elementauthenticityid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpelementauthenticity_elementauthenticityid_seq
@@ -17960,24 +15980,22 @@ CREATE SEQUENCE tlkpelementauthenticity_elementauthenticityid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpelementauthenticity_elementauthenticityid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpelementauthenticity_elementauthenticityid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementauthenticity_elementauthenticityid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpelementauthenticity_elementauthenticityid_seq OWNED BY tlkpelementauthenticity.elementauthenticityid;
 
 
 --
--- Name: tlkpelementauthenticity_elementauthenticityid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementauthenticity_elementauthenticityid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpelementauthenticity_elementauthenticityid_seq', 1, false);
 
 
 --
--- Name: tlkpelementshape; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpelementshape; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpelementshape (
@@ -17986,10 +16004,8 @@ CREATE TABLE tlkpelementshape (
 );
 
 
-ALTER TABLE public.tlkpelementshape OWNER TO aps03pwb;
-
 --
--- Name: tlkpelementshape_elementshapeid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementshape_elementshapeid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpelementshape_elementshapeid_seq
@@ -17999,24 +16015,22 @@ CREATE SEQUENCE tlkpelementshape_elementshapeid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpelementshape_elementshapeid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpelementshape_elementshapeid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementshape_elementshapeid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpelementshape_elementshapeid_seq OWNED BY tlkpelementshape.elementshapeid;
 
 
 --
--- Name: tlkpelementshape_elementshapeid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementshape_elementshapeid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpelementshape_elementshapeid_seq', 19, true);
 
 
 --
--- Name: tlkpelementtype; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpelementtype; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpelementtype (
@@ -18025,10 +16039,8 @@ CREATE TABLE tlkpelementtype (
 );
 
 
-ALTER TABLE public.tlkpelementtype OWNER TO aps03pwb;
-
 --
--- Name: tlkpelementtype_elementtypeid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementtype_elementtypeid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpelementtype_elementtypeid_seq
@@ -18038,24 +16050,22 @@ CREATE SEQUENCE tlkpelementtype_elementtypeid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpelementtype_elementtypeid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpelementtype_elementtypeid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementtype_elementtypeid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpelementtype_elementtypeid_seq OWNED BY tlkpelementtype.elementtypeid;
 
 
 --
--- Name: tlkpelementtype_elementtypeid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementtype_elementtypeid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpelementtype_elementtypeid_seq', 3, true);
 
 
 --
--- Name: tlkpindextype; Type: TABLE; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: tlkpindextype; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpindextype (
@@ -18064,10 +16074,8 @@ CREATE TABLE tlkpindextype (
 );
 
 
-ALTER TABLE public.tlkpindextype OWNER TO lucasm;
-
 --
--- Name: tlkplocationtype; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkplocationtype; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkplocationtype (
@@ -18076,10 +16084,8 @@ CREATE TABLE tlkplocationtype (
 );
 
 
-ALTER TABLE public.tlkplocationtype OWNER TO aps03pwb;
-
 --
--- Name: tlkplocationtype_locationtypeid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkplocationtype_locationtypeid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkplocationtype_locationtypeid_seq
@@ -18089,24 +16095,22 @@ CREATE SEQUENCE tlkplocationtype_locationtypeid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkplocationtype_locationtypeid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkplocationtype_locationtypeid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkplocationtype_locationtypeid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkplocationtype_locationtypeid_seq OWNED BY tlkplocationtype.locationtypeid;
 
 
 --
--- Name: tlkplocationtype_locationtypeid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkplocationtype_locationtypeid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkplocationtype_locationtypeid_seq', 6, true);
 
 
 --
--- Name: tlkpmeasurementvariable; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpmeasurementvariable; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpmeasurementvariable (
@@ -18115,10 +16119,8 @@ CREATE TABLE tlkpmeasurementvariable (
 );
 
 
-ALTER TABLE public.tlkpmeasurementvariable OWNER TO aps03pwb;
-
 --
--- Name: tlkpmeasurementvariable_measurementvariableid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpmeasurementvariable_measurementvariableid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpmeasurementvariable_measurementvariableid_seq
@@ -18128,24 +16130,22 @@ CREATE SEQUENCE tlkpmeasurementvariable_measurementvariableid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpmeasurementvariable_measurementvariableid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpmeasurementvariable_measurementvariableid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpmeasurementvariable_measurementvariableid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpmeasurementvariable_measurementvariableid_seq OWNED BY tlkpmeasurementvariable.measurementvariableid;
 
 
 --
--- Name: tlkpmeasurementvariable_measurementvariableid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpmeasurementvariable_measurementvariableid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpmeasurementvariable_measurementvariableid_seq', 1, true);
 
 
 --
--- Name: tlkpmeasuringmethod; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpmeasuringmethod; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpmeasuringmethod (
@@ -18154,10 +16154,8 @@ CREATE TABLE tlkpmeasuringmethod (
 );
 
 
-ALTER TABLE public.tlkpmeasuringmethod OWNER TO aps03pwb;
-
 --
--- Name: tlkpmeasuringmethod_measuringmethodid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpmeasuringmethod_measuringmethodid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpmeasuringmethod_measuringmethodid_seq
@@ -18167,24 +16165,22 @@ CREATE SEQUENCE tlkpmeasuringmethod_measuringmethodid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpmeasuringmethod_measuringmethodid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpmeasuringmethod_measuringmethodid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpmeasuringmethod_measuringmethodid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpmeasuringmethod_measuringmethodid_seq OWNED BY tlkpmeasuringmethod.measuringmethodid;
 
 
 --
--- Name: tlkpmeasuringmethod_measuringmethodid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpmeasuringmethod_measuringmethodid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpmeasuringmethod_measuringmethodid_seq', 1, true);
 
 
 --
--- Name: tlkpobjecttype; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpobjecttype; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpobjecttype (
@@ -18194,10 +16190,8 @@ CREATE TABLE tlkpobjecttype (
 );
 
 
-ALTER TABLE public.tlkpobjecttype OWNER TO aps03pwb;
-
 --
--- Name: tlkpobjecttype_objecttype_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpobjecttype_objecttype_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpobjecttype_objecttype_seq
@@ -18207,24 +16201,22 @@ CREATE SEQUENCE tlkpobjecttype_objecttype_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpobjecttype_objecttype_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpobjecttype_objecttype_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpobjecttype_objecttype_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpobjecttype_objecttype_seq OWNED BY tlkpobjecttype.objecttypeid;
 
 
 --
--- Name: tlkpobjecttype_objecttype_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpobjecttype_objecttype_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpobjecttype_objecttype_seq', 5, true);
 
 
 --
--- Name: tlkprank_rankid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkprank_rankid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkprank_rankid_seq
@@ -18235,17 +16227,15 @@ CREATE SEQUENCE tlkprank_rankid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkprank_rankid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkprank_rankid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkprank_rankid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkprank_rankid_seq', 1, false);
 
 
 --
--- Name: tlkpreadingnote_readingnoteid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpreadingnote_readingnoteid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpreadingnote_readingnoteid_seq
@@ -18255,24 +16245,22 @@ CREATE SEQUENCE tlkpreadingnote_readingnoteid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpreadingnote_readingnoteid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpreadingnote_readingnoteid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpreadingnote_readingnoteid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpreadingnote_readingnoteid_seq OWNED BY tlkpreadingnote.readingnoteid;
 
 
 --
--- Name: tlkpreadingnote_readingnoteid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpreadingnote_readingnoteid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpreadingnote_readingnoteid_seq', 165, true);
 
 
 --
--- Name: tlkpsampletype; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpsampletype; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpsampletype (
@@ -18281,10 +16269,8 @@ CREATE TABLE tlkpsampletype (
 );
 
 
-ALTER TABLE public.tlkpsampletype OWNER TO aps03pwb;
-
 --
--- Name: tlkpsampletype_sampletypeid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpsampletype_sampletypeid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpsampletype_sampletypeid_seq
@@ -18295,24 +16281,22 @@ CREATE SEQUENCE tlkpsampletype_sampletypeid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpsampletype_sampletypeid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpsampletype_sampletypeid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpsampletype_sampletypeid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpsampletype_sampletypeid_seq OWNED BY tlkpsampletype.sampletypeid;
 
 
 --
--- Name: tlkpsampletype_sampletypeid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpsampletype_sampletypeid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpsampletype_sampletypeid_seq', 1, false);
 
 
 --
--- Name: tlkpsecuritypermission; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpsecuritypermission; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpsecuritypermission (
@@ -18321,10 +16305,8 @@ CREATE TABLE tlkpsecuritypermission (
 );
 
 
-ALTER TABLE public.tlkpsecuritypermission OWNER TO aps03pwb;
-
 --
--- Name: tlkpsecuritypermission_securitypermissionid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpsecuritypermission_securitypermissionid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpsecuritypermission_securitypermissionid_seq
@@ -18335,24 +16317,22 @@ CREATE SEQUENCE tlkpsecuritypermission_securitypermissionid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpsecuritypermission_securitypermissionid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpsecuritypermission_securitypermissionid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpsecuritypermission_securitypermissionid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpsecuritypermission_securitypermissionid_seq OWNED BY tlkpsecuritypermission.securitypermissionid;
 
 
 --
--- Name: tlkpsecuritypermission_securitypermissionid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpsecuritypermission_securitypermissionid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpsecuritypermission_securitypermissionid_seq', 1, false);
 
 
 --
--- Name: tlkptaxon_taxonid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkptaxon_taxonid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkptaxon_taxonid_seq
@@ -18362,17 +16342,15 @@ CREATE SEQUENCE tlkptaxon_taxonid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkptaxon_taxonid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkptaxon_taxonid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkptaxon_taxonid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkptaxon_taxonid_seq', 811, true);
 
 
 --
--- Name: tlkptaxon; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkptaxon; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkptaxon (
@@ -18385,10 +16363,8 @@ CREATE TABLE tlkptaxon (
 );
 
 
-ALTER TABLE public.tlkptaxon OWNER TO aps03pwb;
-
 --
--- Name: tlkptaxonrank; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkptaxonrank; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkptaxonrank (
@@ -18398,10 +16374,8 @@ CREATE TABLE tlkptaxonrank (
 );
 
 
-ALTER TABLE public.tlkptaxonrank OWNER TO aps03pwb;
-
 --
--- Name: tlkpunit; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpunit; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpunit (
@@ -18410,10 +16384,8 @@ CREATE TABLE tlkpunit (
 );
 
 
-ALTER TABLE public.tlkpunit OWNER TO aps03pwb;
-
 --
--- Name: tlkpunits_unitsid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpunits_unitsid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpunits_unitsid_seq
@@ -18423,24 +16395,22 @@ CREATE SEQUENCE tlkpunits_unitsid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpunits_unitsid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpunits_unitsid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpunits_unitsid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpunits_unitsid_seq OWNED BY tlkpunit.unitid;
 
 
 --
--- Name: tlkpunits_unitsid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpunits_unitsid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpunits_unitsid_seq', 6, true);
 
 
 --
--- Name: tlkpvmeasurementop; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpvmeasurementop; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpvmeasurementop (
@@ -18450,10 +16420,8 @@ CREATE TABLE tlkpvmeasurementop (
 );
 
 
-ALTER TABLE public.tlkpvmeasurementop OWNER TO aps03pwb;
-
 --
--- Name: tlkpvmeasurementop_vmeasurementopid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpvmeasurementop_vmeasurementopid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpvmeasurementop_vmeasurementopid_seq
@@ -18463,24 +16431,22 @@ CREATE SEQUENCE tlkpvmeasurementop_vmeasurementopid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpvmeasurementop_vmeasurementopid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpvmeasurementop_vmeasurementopid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpvmeasurementop_vmeasurementopid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpvmeasurementop_vmeasurementopid_seq OWNED BY tlkpvmeasurementop.vmeasurementopid;
 
 
 --
--- Name: tlkpvmeasurementop_vmeasurementopid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpvmeasurementop_vmeasurementopid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpvmeasurementop_vmeasurementopid_seq', 7, true);
 
 
 --
--- Name: tlkpvocabulary; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpvocabulary; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpvocabulary (
@@ -18490,10 +16456,8 @@ CREATE TABLE tlkpvocabulary (
 );
 
 
-ALTER TABLE public.tlkpvocabulary OWNER TO aps03pwb;
-
 --
--- Name: tlkpvocabulary_vocabularyid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpvocabulary_vocabularyid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpvocabulary_vocabularyid_seq
@@ -18503,24 +16467,22 @@ CREATE SEQUENCE tlkpvocabulary_vocabularyid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpvocabulary_vocabularyid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpvocabulary_vocabularyid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpvocabulary_vocabularyid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpvocabulary_vocabularyid_seq OWNED BY tlkpvocabulary.vocabularyid;
 
 
 --
--- Name: tlkpvocabulary_vocabularyid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpvocabulary_vocabularyid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpvocabulary_vocabularyid_seq', 2, true);
 
 
 --
--- Name: tlkpwmsserver; Type: TABLE; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: tlkpwmsserver; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE tlkpwmsserver (
@@ -18530,10 +16492,8 @@ CREATE TABLE tlkpwmsserver (
 );
 
 
-ALTER TABLE public.tlkpwmsserver OWNER TO aps03pwb;
-
 --
--- Name: tlkpwmsserver_wmsserverid_seq; Type: SEQUENCE; Schema: public; Owner: aps03pwb
+-- Name: tlkpwmsserver_wmsserverid_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tlkpwmsserver_wmsserverid_seq
@@ -18543,326 +16503,264 @@ CREATE SEQUENCE tlkpwmsserver_wmsserverid_seq
     CACHE 1;
 
 
-ALTER TABLE public.tlkpwmsserver_wmsserverid_seq OWNER TO aps03pwb;
-
 --
--- Name: tlkpwmsserver_wmsserverid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aps03pwb
+-- Name: tlkpwmsserver_wmsserverid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tlkpwmsserver_wmsserverid_seq OWNED BY tlkpwmsserver.wmsserverid;
 
 
 --
--- Name: tlkpwmsserver_wmsserverid_seq; Type: SEQUENCE SET; Schema: public; Owner: aps03pwb
+-- Name: tlkpwmsserver_wmsserverid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tlkpwmsserver_wmsserverid_seq', 2, true);
 
 
 --
--- Name: vlkpvmeasurement; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vlkpvmeasurement; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vlkpvmeasurement AS
     SELECT tblvmeasurement.vmeasurementid, tblvmeasurement.code AS name, tlkpvmeasurementop.name AS op FROM (tlkpvmeasurementop JOIN tblvmeasurement ON ((tlkpvmeasurementop.vmeasurementopid = tblvmeasurement.vmeasurementopid))) ORDER BY tblvmeasurement.code;
 
 
-ALTER TABLE public.vlkpvmeasurement OWNER TO lucasm;
-
 --
--- Name: vw_bigbrothertracking; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vw_bigbrothertracking; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vw_bigbrothertracking AS
     SELECT tblsecurityuser.firstname, tblsecurityuser.lastname, tblsecurityuser.username, tbliptracking.ipaddr, tbliptracking."timestamp" FROM tbliptracking, tblsecurityuser WHERE (tbliptracking.securityuserid = tblsecurityuser.securityuserid);
 
 
-ALTER TABLE public.vw_bigbrothertracking OWNER TO aps03pwb;
-
 --
--- Name: vw_requestlogsummary; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vw_requestlogsummary; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vw_requestlogsummary AS
     SELECT tblrequestlog.requestlogid, (((tblsecurityuser.firstname)::text || ' '::text) || (tblsecurityuser.lastname)::text) AS name, tblrequestlog.ipaddr, tblrequestlog.createdtimestamp, tblrequestlog.wsversion, tblrequestlog.page, tblrequestlog.client, "substring"((tblrequestlog.request)::text, 53, 300) AS requesttrimmed FROM tblrequestlog, tblsecurityuser WHERE (tblrequestlog.securityuserid = tblsecurityuser.securityuserid) ORDER BY tblrequestlog.requestlogid DESC LIMIT 50;
 
 
-ALTER TABLE public.vw_requestlogsummary OWNER TO aps03pwb;
-
 --
--- Name: vw_tblelementwithtoplevelobject; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vw_tblelementwithtoplevelobject; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vw_tblelementwithtoplevelobject AS
     SELECT tblelement.elementid, tblelement.taxonid, tblelement.locationprecision, tblelement.code, tblelement.createdtimestamp, tblelement.lastmodifiedtimestamp, tblelement.locationgeometry, tblelement.islivetree, tblelement.originaltaxonname, tblelement.locationtypeid, tblelement.locationcomment, tblelement.file, tblelement.description, tblelement.processing, tblelement.marks, tblelement.diameter, tblelement.width, tblelement.height, tblelement.depth, tblelement.unsupportedxml, tblelement.units, tblelement.objectid, tblelement.elementtypeid, tblelement.elementauthenticityid, tblelement.elementshapeid, tblelement.altitude, tblelement.slopeangle, tblelement.slopeazimuth, tblelement.soildescription, tblelement.soildepth, tblelement.bedrockdescription, tblelement.comments, tblelement.locationaddressline2, tblelement.locationcityortown, tblelement.locationstateprovinceregion, tblelement.locationpostalcode, tblelement.locationcountry, tblelement.locationaddressline1, tlo.code AS tlocode FROM tblelement, cpgdb.findobjecttoplevelancestor('2989b494-0217-11df-8c1e-37fe5d447737'::uuid) tlo(objectid, title, code, createdtimestamp, lastmodifiedtimestamp, locationgeometry, locationtypeid, locationprecision, locationcomment, file, creator, owner, parentobjectid, description, objecttypeid, coveragetemporalid, coveragetemporalfoundationid, comments, coveragetemporal, coveragetemporalfoundation, locationaddressline1, locationaddressline2, locationcityortown, locationstateprovinceregion, locationpostalcode, locationcountry);
 
 
-ALTER TABLE public.vw_tblelementwithtoplevelobject OWNER TO aps03pwb;
-
 --
--- Name: vwderivedcount; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwderivedcount; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwderivedcount AS
     SELECT tblvmeasurementderivedcache.vmeasurementid, count(tblvmeasurementderivedcache.measurementid) AS count, first(tblvmeasurementderivedcache.measurementid) AS firstmeasurementid FROM tblvmeasurementderivedcache GROUP BY tblvmeasurementderivedcache.vmeasurementid;
 
 
-ALTER TABLE public.vwderivedcount OWNER TO lucasm;
-
 --
--- Name: vwderivedtitles; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwderivedtitles; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwderivedtitles AS
     SELECT dc.vmeasurementid, dc.count AS derivedcount, dc.firstmeasurementid, CASE WHEN (dc.count = 1) THEN o.objectid ELSE NULL::uuid END AS objectid, CASE WHEN (dc.count = 1) THEN o.title ELSE NULL::character varying END AS objecttitle, CASE WHEN (dc.count = 1) THEN o.code ELSE NULL::character varying END AS objectcode, CASE WHEN (dc.count = 1) THEN e.code ELSE NULL::character varying END AS elementcode, CASE WHEN (dc.count = 1) THEN s.code ELSE NULL::character varying END AS samplecode, CASE WHEN (dc.count = 1) THEN r.code ELSE NULL::character varying END AS radiuscode FROM (((((vwderivedcount dc LEFT JOIN tblmeasurement m ON ((m.measurementid = dc.firstmeasurementid))) LEFT JOIN tblradius r ON ((r.radiusid = m.radiusid))) LEFT JOIN tblsample s ON ((s.sampleid = r.sampleid))) LEFT JOIN tblelement e ON ((e.elementid = s.elementid))) LEFT JOIN tblobject o ON ((o.objectid = e.objectid)));
 
 
-ALTER TABLE public.vwderivedtitles OWNER TO lucasm;
-
 --
--- Name: vwdirectchildcount; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwdirectchildcount; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwdirectchildcount AS
     SELECT tblvmeasurementgroup.membervmeasurementid AS vmeasurementid, count(tblvmeasurementgroup.vmeasurementid) AS directchildcount FROM tblvmeasurementgroup GROUP BY tblvmeasurementgroup.membervmeasurementid;
 
 
-ALTER TABLE public.vwdirectchildcount OWNER TO lucasm;
-
 --
--- Name: vwcomprehensivevm; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwcomprehensivevm; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwcomprehensivevm AS
     SELECT vm.vmeasurementid, vm.measurementid, vm.vmeasurementopid, vm.vmeasurementopparameter, vm.code, vm.comments, vm.ispublished, vm.owneruserid, vm.createdtimestamp, vm.lastmodifiedtimestamp, vm.isgenerating, vm.objective, vm.version, vm.birthdate, mc.startyear, mc.readingcount, mc.measurementcount, mc.objectcode AS objectcodesummary, mc.objectcount, mc.commontaxonname, mc.taxoncount, mc.prefix, m.radiusid, m.isreconciled, m.startyear AS measurementstartyear, m.islegacycleaned, m.importtablename, m.measuredbyid, mc.datingtypeid, m.datingerrorpositive, m.datingerrornegative, m.measurementvariableid, m.unitid, m.power, m.provenance, m.measuringmethodid, m.supervisedbyid, su.username, op.name AS opname, dt.datingtype, mc.vmextent AS extentgeometry, cd.crossdateid, cd.mastervmeasurementid, cd.startyear AS newstartyear, cd.justification, cd.confidence, der.objectid, der.objecttitle, der.objectcode, der.elementcode, der.samplecode, der.radiuscode, dcc.directchildcount FROM ((((((((tblvmeasurement vm JOIN tlkpvmeasurementop op ON ((vm.vmeasurementopid = op.vmeasurementopid))) LEFT JOIN vwderivedtitles der ON ((vm.vmeasurementid = der.vmeasurementid))) LEFT JOIN vwdirectchildcount dcc ON ((vm.vmeasurementid = dcc.vmeasurementid))) LEFT JOIN tblmeasurement m ON ((vm.measurementid = m.measurementid))) LEFT JOIN tblvmeasurementmetacache mc ON ((vm.vmeasurementid = mc.vmeasurementid))) LEFT JOIN tlkpdatingtype dt ON ((mc.datingtypeid = dt.datingtypeid))) LEFT JOIN tblsecurityuser su ON ((vm.owneruserid = su.securityuserid))) LEFT JOIN tblcrossdate cd ON ((vm.vmeasurementid = cd.vmeasurementid)));
 
 
-ALTER TABLE public.vwcomprehensivevm OWNER TO lucasm;
-
 --
--- Name: vwcomprehensivevm2; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwcomprehensivevm2; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwcomprehensivevm2 AS
     SELECT vm.vmeasurementid, vm.measurementid, vm.vmeasurementopid, vm.vmeasurementopparameter, vm.code, vm.comments, vm.ispublished, vm.owneruserid, vm.createdtimestamp, vm.lastmodifiedtimestamp, vm.isgenerating, vm.objective, vm.version, vm.birthdate, mc.startyear, mc.readingcount, mc.measurementcount, mc.objectcode AS objectcodesummary, mc.objectcount, mc.commontaxonname, mc.taxoncount, mc.prefix, m.radiusid, m.isreconciled, m.startyear AS measurementstartyear, m.islegacycleaned, m.importtablename, m.measuredbyid, mc.datingtypeid, m.datingerrorpositive, m.datingerrornegative, m.measurementvariableid, m.unitid, m.power, m.provenance, m.measuringmethodid, m.supervisedbyid, su.username, op.name AS opname, dt.datingtype, mc.vmextent AS extentgeometry, cd.crossdateid, cd.mastervmeasurementid, cd.startyear AS newstartyear, cd.justification, cd.confidence, der.objectid, der.objecttitle, der.objectcode, der.elementcode, der.samplecode, der.radiuscode, dcc.directchildcount FROM ((((((((tblvmeasurement vm JOIN tlkpvmeasurementop op ON ((vm.vmeasurementopid = op.vmeasurementopid))) LEFT JOIN vwderivedtitles der ON ((vm.vmeasurementid = der.vmeasurementid))) LEFT JOIN vwdirectchildcount dcc ON ((vm.vmeasurementid = dcc.vmeasurementid))) LEFT JOIN tblmeasurement m ON ((vm.measurementid = m.measurementid))) LEFT JOIN tblvmeasurementmetacache mc ON ((vm.vmeasurementid = mc.vmeasurementid))) LEFT JOIN tlkpdatingtype dt ON ((mc.datingtypeid = dt.datingtypeid))) LEFT JOIN tblsecurityuser su ON ((vm.owneruserid = su.securityuserid))) LEFT JOIN tblcrossdate cd ON ((vm.vmeasurementid = cd.vmeasurementid)));
 
 
-ALTER TABLE public.vwcomprehensivevm2 OWNER TO aps03pwb;
-
 --
--- Name: vwcountperpersonperobject; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwcountperpersonperobject; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwcountperpersonperobject AS
     SELECT o.code AS objectcode, (((seu.lastname)::text || ', '::text) || (seu.firstname)::text) AS name, count(vm.owneruserid) AS count FROM ((((((tblvmeasurement vm LEFT JOIN tblmeasurement m ON ((vm.measurementid = m.measurementid))) LEFT JOIN tblsecurityuser seu ON ((seu.securityuserid = vm.owneruserid))) LEFT JOIN tblradius r ON ((m.radiusid = r.radiusid))) LEFT JOIN tblsample s ON ((r.sampleid = s.sampleid))) LEFT JOIN tblelement e ON ((s.elementid = e.elementid))) LEFT JOIN tblobject o ON ((e.objectid = o.objectid))) WHERE (vm.vmeasurementopid = 5) GROUP BY vm.owneruserid, o.code, (((seu.lastname)::text || ', '::text) || (seu.firstname)::text) ORDER BY count(vm.owneruserid) DESC;
 
 
-ALTER TABLE public.vwcountperpersonperobject OWNER TO aps03pwb;
-
 --
--- Name: vwresultnotesasarray; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwresultnotesasarray; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwresultnotesasarray AS
     SELECT tblvmeasurementreadingnoteresult.relyear, tblvmeasurementreadingnoteresult.vmeasurementresultid, array_accum(tblvmeasurementreadingnoteresult.readingnoteid) AS noteids, array_accum(tblvmeasurementreadingnoteresult.inheritedcount) AS inheritedcounts FROM tblvmeasurementreadingnoteresult GROUP BY tblvmeasurementreadingnoteresult.relyear, tblvmeasurementreadingnoteresult.vmeasurementresultid;
 
 
-ALTER TABLE public.vwresultnotesasarray OWNER TO lucasm;
-
 --
--- Name: vwjsonnotedreadingresult; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwjsonnotedreadingresult; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwjsonnotedreadingresult AS
     SELECT res.vmeasurementreadingresultid, res.vmeasurementresultid, res.relyear, res.reading, res.wjinc, res.wjdec, res.count, res.readingid, cpgdb.resultnotestojson(notes.noteids, notes.inheritedcounts) AS jsonnotes FROM (tblvmeasurementreadingresult res LEFT JOIN vwresultnotesasarray notes ON (((res.vmeasurementresultid = notes.vmeasurementresultid) AND (res.relyear = notes.relyear))));
 
 
-ALTER TABLE public.vwjsonnotedreadingresult OWNER TO lucasm;
-
 --
--- Name: vwlabcodesforsamples; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwlabcodesforsamples; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwlabcodesforsamples AS
     SELECT o.objectid, o.code AS objectcode, e.elementid, e.code AS elementcode, s.sampleid, s.code AS samplecode FROM ((tblsample s LEFT JOIN tblelement e ON ((e.elementid = s.elementid))) LEFT JOIN tblobject o ON ((o.objectid = e.objectid)));
 
 
-ALTER TABLE public.vwlabcodesforsamples OWNER TO aps03pwb;
-
 --
--- Name: vwringsleaderboard; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwringsleaderboard; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwringsleaderboard AS
     SELECT su.securityuserid, (((su.lastname)::text || ', '::text) || (su.firstname)::text) AS name, count(r.*) AS rings FROM (((tblvmeasurement vm LEFT JOIN tblsecurityuser su ON ((vm.owneruserid = su.securityuserid))) LEFT JOIN tblmeasurement m ON ((vm.measurementid = m.measurementid))) LEFT JOIN tblreading r ON ((m.measurementid = r.measurementid))) WHERE (vm.vmeasurementopid = 5) GROUP BY (((su.lastname)::text || ', '::text) || (su.firstname)::text), su.securityuserid ORDER BY count(r.*) DESC;
 
 
-ALTER TABLE public.vwringsleaderboard OWNER TO aps03pwb;
-
 --
--- Name: vwringwidthleaderboard; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwringwidthleaderboard; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwringwidthleaderboard AS
     SELECT su.securityuserid, (((su.lastname)::text || ', '::text) || (su.firstname)::text) AS name, sum(r.reading) AS totalringwidth FROM (((tblvmeasurement vm LEFT JOIN tblsecurityuser su ON ((vm.owneruserid = su.securityuserid))) LEFT JOIN tblmeasurement m ON ((vm.measurementid = m.measurementid))) LEFT JOIN tblreading r ON ((m.measurementid = r.measurementid))) WHERE (vm.vmeasurementopid = 5) GROUP BY (((su.lastname)::text || ', '::text) || (su.firstname)::text), su.securityuserid ORDER BY sum(r.reading) DESC;
 
 
-ALTER TABLE public.vwringwidthleaderboard OWNER TO aps03pwb;
-
 --
--- Name: vwsampleleaderboard; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwsampleleaderboard; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwsampleleaderboard AS
     SELECT su.securityuserid, (((su.lastname)::text || ', '::text) || (su.firstname)::text) AS name, count(m.*) AS samples FROM ((tblvmeasurement vm LEFT JOIN tblsecurityuser su ON ((vm.owneruserid = su.securityuserid))) LEFT JOIN tblmeasurement m ON ((vm.measurementid = m.measurementid))) WHERE (vm.vmeasurementopid = 5) GROUP BY (((su.lastname)::text || ', '::text) || (su.firstname)::text), su.securityuserid ORDER BY count(m.*) DESC;
 
 
-ALTER TABLE public.vwsampleleaderboard OWNER TO aps03pwb;
-
 --
--- Name: vwleaderboard; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwleaderboard; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwleaderboard AS
     SELECT slb.securityuserid, slb.name, slb.samples, rlb.rings, rwlb.totalringwidth FROM vwsampleleaderboard slb, vwringsleaderboard rlb, vwringwidthleaderboard rwlb WHERE ((slb.securityuserid = rlb.securityuserid) AND (slb.securityuserid = rwlb.securityuserid));
 
 
-ALTER TABLE public.vwleaderboard OWNER TO aps03pwb;
-
 --
--- Name: vwnotedreadingresult; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwnotedreadingresult; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwnotedreadingresult AS
     SELECT res.vmeasurementreadingresultid, res.vmeasurementresultid, res.relyear, res.reading, res.wjinc, res.wjdec, res.count, res.readingid, array_to_string(notes.noteids, ','::text) AS noteids, array_to_string(notes.inheritedcounts, ','::text) AS inheritedcounts FROM (tblvmeasurementreadingresult res LEFT JOIN vwresultnotesasarray notes ON (((res.vmeasurementresultid = notes.vmeasurementresultid) AND (res.relyear = notes.relyear))));
 
 
-ALTER TABLE public.vwnotedreadingresult OWNER TO lucasm;
-
 --
--- Name: vwstartyear; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwstartyear; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwstartyear AS
     SELECT tblreading.measurementid, min(tblreading.relyear) AS minofrelyear FROM tblreading GROUP BY tblreading.measurementid;
 
 
-ALTER TABLE public.vwstartyear OWNER TO aps03pwb;
-
 --
--- Name: vwtblbox; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwtblbox; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwtblbox AS
     SELECT b.boxid, b.title, b.curationlocation, b.trackinglocation, b.createdtimestamp, b.lastmodifiedtimestamp, b.comments, count(s.sampleid) AS samplecount FROM (tblbox b LEFT JOIN tblsample s ON ((b.boxid = s.boxid))) GROUP BY b.boxid, b.title, b.curationlocation, b.trackinglocation, b.createdtimestamp, b.lastmodifiedtimestamp, b.comments;
 
 
-ALTER TABLE public.vwtblbox OWNER TO aps03pwb;
-
 --
--- Name: vwtlkptaxon; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwtlkptaxon; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwtlkptaxon AS
     SELECT taxon.taxonid, taxon.label AS taxonlabel, taxon.parenttaxonid, taxon.colid, taxon.colparentid, rank.taxonrank FROM (tlkptaxon taxon JOIN tlkptaxonrank rank ON ((rank.taxonrankid = taxon.taxonrankid)));
 
 
-ALTER TABLE public.vwtlkptaxon OWNER TO aps03pwb;
-
 --
--- Name: vwtblelement; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwtblelement; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwtblelement AS
     SELECT (SELECT findobjecttoplevelancestor.code FROM cpgdb.findobjecttoplevelancestor(e.objectid) findobjecttoplevelancestor(objectid, title, code, createdtimestamp, lastmodifiedtimestamp, locationgeometry, locationtypeid, locationprecision, locationcomment, file, creator, owner, parentobjectid, description, objecttypeid, coveragetemporalid, coveragetemporalfoundationid, comments, coveragetemporal, coveragetemporalfoundation, locationaddressline1, locationaddressline2, locationcityortown, locationstateprovinceregion, locationpostalcode, locationcountry)) AS objectcode, e.comments, e.elementid, e.locationprecision, e.code AS title, e.code, e.createdtimestamp, e.lastmodifiedtimestamp, e.locationgeometry, e.islivetree, e.originaltaxonname, e.locationtypeid, e.locationcomment, e.locationaddressline1, e.locationaddressline2, e.locationcityortown, e.locationstateprovinceregion, e.locationpostalcode, e.locationcountry, e.file, e.description, e.processing, e.marks, e.diameter, e.width, e.height, e.depth, e.unsupportedxml, e.units, e.objectid, e.elementtypeid, e.elementauthenticityid, e.elementshapeid, auth.elementauthenticity, shape.elementshape, tbltype.elementtype, loctype.locationtype, e.altitude, e.slopeangle, e.slopeazimuth, e.soildescription, e.soildepth, e.bedrockdescription, vwt.taxonid, vwt.taxonlabel, vwt.parenttaxonid, vwt.colid, vwt.colparentid, vwt.taxonrank FROM (((((tblelement e LEFT JOIN tlkpelementauthenticity auth ON ((e.elementauthenticityid = auth.elementauthenticityid))) LEFT JOIN tlkpelementshape shape ON ((e.elementshapeid = shape.elementshapeid))) LEFT JOIN tlkpelementtype tbltype ON ((e.elementtypeid = tbltype.elementtypeid))) LEFT JOIN tlkplocationtype loctype ON ((e.locationtypeid = loctype.locationtypeid))) LEFT JOIN vwtlkptaxon vwt ON ((e.taxonid = vwt.taxonid)));
 
 
-ALTER TABLE public.vwtblelement OWNER TO aps03pwb;
-
 --
--- Name: vwtblmeasurement; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwtblmeasurement; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwtblmeasurement AS
     SELECT tblmeasurement.measurementid, tblmeasurement.radiusid, tblmeasurement.isreconciled AS measurementidreconciled, tblmeasurement.islegacycleaned, tblmeasurement.importtablename, tblmeasurement.measuredbyid, tblsecurityuser.username AS measuredbyusername, tlkpdatingtype.datingtype, tblmeasurement.datingerrorpositive, tblmeasurement.datingerrornegative FROM tblmeasurement, tblsecurityuser, tlkpdatingtype WHERE ((tblmeasurement.measuredbyid = tblsecurityuser.securityuserid) AND (tblmeasurement.datingtypeid = tlkpdatingtype.datingtypeid));
 
 
-ALTER TABLE public.vwtblmeasurement OWNER TO lucasm;
-
 --
--- Name: vwtblobject; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwtblobject; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwtblobject AS
     SELECT cquery.countofchildvmeasurements, o.comments, o.objectid, o.title, o.code, o.createdtimestamp, o.lastmodifiedtimestamp, o.locationgeometry, o.locationtypeid, o.locationprecision, o.locationcomment, o.locationaddressline1, o.locationaddressline2, o.locationcityortown, o.locationstateprovinceregion, o.locationpostalcode, o.locationcountry, array_to_string(o.file, '><'::text) AS file, o.creator, o.owner, o.parentobjectid, o.description, o.objecttypeid, loctype.locationtype, objtype.objecttype, covtemp.coveragetemporal, covtempfound.coveragetemporalfoundation FROM (((((tblobject o LEFT JOIN tlkplocationtype loctype ON ((o.locationtypeid = loctype.locationtypeid))) LEFT JOIN tlkpobjecttype objtype ON ((o.objecttypeid = objtype.objecttypeid))) LEFT JOIN tlkpcoveragetemporal covtemp ON ((o.coveragetemporalid = covtemp.coveragetemporalid))) LEFT JOIN tlkpcoveragetemporalfoundation covtempfound ON ((o.coveragetemporalfoundationid = covtempfound.coveragetemporalfoundationid))) LEFT JOIN (SELECT e.objectid AS masterobjectid, count(e.objectid) AS countofchildvmeasurements FROM ((((tblelement e JOIN tblsample s ON ((s.elementid = e.elementid))) JOIN tblradius r ON ((r.sampleid = s.sampleid))) JOIN tblmeasurement m ON ((m.radiusid = r.radiusid))) JOIN tblvmeasurementderivedcache vc ON ((vc.measurementid = m.measurementid))) GROUP BY e.objectid) cquery ON ((cquery.masterobjectid = o.objectid)));
 
 
-ALTER TABLE public.vwtblobject OWNER TO aps03pwb;
-
 --
--- Name: vwtblradius; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwtblradius; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwtblradius AS
     SELECT tblradius.comments, tblradius.radiusid, tblradius.sampleid, tblradius.code AS radiuscode, tblradius.azimuth, tblradius.createdtimestamp AS radiuscreated, tblradius.lastmodifiedtimestamp AS radiuslastmodified, tblradius.numberofsapwoodrings, tblradius.barkpresent, tblradius.lastringunderbark, tblradius.lastringunderbarkpresent, tblradius.missingheartwoodringstopith, tblradius.missingheartwoodringstopithfoundation, tblradius.missingsapwoodringstobark, tblradius.missingsapwoodringstobarkfoundation, tblradius.nrofunmeasuredouterrings, tblradius.nrofunmeasuredinnerrings, spw.complexpresenceabsenceid AS sapwoodid, spw.complexpresenceabsence AS sapwood, hwd.complexpresenceabsenceid AS heartwoodid, hwd.complexpresenceabsence AS heartwood, pth.complexpresenceabsenceid AS pithid, pth.complexpresenceabsence AS pith FROM (((tblradius LEFT JOIN tlkpcomplexpresenceabsence spw ON ((tblradius.sapwoodid = spw.complexpresenceabsenceid))) LEFT JOIN tlkpcomplexpresenceabsence hwd ON ((tblradius.heartwoodid = hwd.complexpresenceabsenceid))) LEFT JOIN tlkpcomplexpresenceabsence pth ON ((tblradius.pithid = pth.complexpresenceabsenceid)));
 
 
-ALTER TABLE public.vwtblradius OWNER TO aps03pwb;
-
 --
--- Name: vwtblsample; Type: VIEW; Schema: public; Owner: aps03pwb
+-- Name: vwtblsample; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwtblsample AS
     SELECT s.sampleid, s.code, s.comments, s.code AS title, s.elementid, s.samplingdate, s.createdtimestamp, s.lastmodifiedtimestamp, st.sampletypeid, st.sampletype, s.file, s."position", s.state, s.knots, s.description, dc.datecertainty, s.boxid, lc.objectcode, lc.elementcode FROM (((tblsample s LEFT JOIN tlkpdatecertainty dc ON ((s.datecertaintyid = dc.datecertaintyid))) LEFT JOIN tlkpsampletype st ON ((s.typeid = st.sampletypeid))) LEFT JOIN vwlabcodesforsamples lc ON ((s.sampleid = lc.sampleid)));
 
 
-ALTER TABLE public.vwtblsample OWNER TO aps03pwb;
-
 --
--- Name: vwtblvmeasurement; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwtblvmeasurement; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwtblvmeasurement AS
     SELECT tblvmeasurement.vmeasurementid, tblvmeasurement.measurementid, tblvmeasurement.vmeasurementopid, tlkpvmeasurementop.name AS measurementoperator, tblvmeasurement.vmeasurementopparameter AS operatorparameter, tblvmeasurement.code AS measurementname, tblvmeasurement.comments AS measurementdescription, tblvmeasurement.ispublished AS measurementispublished, tblvmeasurement.owneruserid AS measurementowneruserid, tblvmeasurement.createdtimestamp AS measurementcreated, tblvmeasurement.lastmodifiedtimestamp AS measurementlastmodified FROM tblvmeasurement, tlkpvmeasurementop WHERE (tblvmeasurement.vmeasurementopid = tlkpvmeasurementop.vmeasurementopid);
 
 
-ALTER TABLE public.vwtblvmeasurement OWNER TO lucasm;
-
 --
--- Name: vwtblvmeasurementmetacache; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwtblvmeasurementmetacache; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwtblvmeasurementmetacache AS
     SELECT tblvmeasurementmetacache.vmeasurementmetacacheid, tblvmeasurementmetacache.vmeasurementid, tblvmeasurementmetacache.startyear, tblvmeasurementmetacache.readingcount, tblvmeasurementmetacache.measurementcount, ymin((tblvmeasurementmetacache.vmextent)::box3d) AS measurementymin, ymax((tblvmeasurementmetacache.vmextent)::box3d) AS measurementymax, xmin((tblvmeasurementmetacache.vmextent)::box3d) AS measurementxmin, ymax((tblvmeasurementmetacache.vmextent)::box3d) AS measurementxmax, x(centroid(((tblvmeasurementmetacache.vmextent)::box3d)::geometry)) AS measurementxcentroid, y(centroid(((tblvmeasurementmetacache.vmextent)::box3d)::geometry)) AS measurementycentroid, tblvmeasurementmetacache.vmextent AS measurementextent FROM tblvmeasurementmetacache;
 
 
-ALTER TABLE public.vwtblvmeasurementmetacache OWNER TO lucasm;
-
 --
--- Name: vwtblvmeasurementresult; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwtblvmeasurementresult; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwtblvmeasurementresult AS
     SELECT tblvmeasurementresult.vmeasurementresultid, tblvmeasurementresult.vmeasurementid, tblvmeasurementresult.isreconciled AS measurementisreconciled, tblvmeasurementresult.islegacycleaned, tblvmeasurementresult.datingerrorpositive, tblvmeasurementresult.datingerrornegative, tlkpdatingtype.datingtype FROM tblvmeasurementresult, tlkpdatingtype WHERE (tblvmeasurementresult.datingtypeid = tlkpdatingtype.datingtypeid);
 
 
-ALTER TABLE public.vwtblvmeasurementresult OWNER TO lucasm;
-
 --
--- Name: vwvmeasurement; Type: VIEW; Schema: public; Owner: lucasm
+-- Name: vwvmeasurement; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW vwvmeasurement AS
     SELECT tblvmeasurementresult.vmeasurementid, tblvmeasurement.measurementid, tblvmeasurementresult.radiusid, tblvmeasurementresult.isreconciled, tblvmeasurementresult.startyear, tblvmeasurementresult.createdtimestamp AS measurementcreated, tblvmeasurementresult.lastmodifiedtimestamp AS measurementlastmodified FROM tblvmeasurementresult, tblvmeasurement WHERE (tblvmeasurementresult.vmeasurementid = tblvmeasurement.vmeasurementid);
 
 
-ALTER TABLE public.vwvmeasurement OWNER TO lucasm;
-
 SET search_path = sqlj, pg_catalog;
 
 --
--- Name: classpath_entry; Type: TABLE; Schema: sqlj; Owner: postgres; Tablespace: 
+-- Name: classpath_entry; Type: TABLE; Schema: sqlj; Owner: -; Tablespace: 
 --
 
 CREATE TABLE classpath_entry (
@@ -18872,10 +16770,8 @@ CREATE TABLE classpath_entry (
 );
 
 
-ALTER TABLE sqlj.classpath_entry OWNER TO postgres;
-
 --
--- Name: jar_entry; Type: TABLE; Schema: sqlj; Owner: postgres; Tablespace: 
+-- Name: jar_entry; Type: TABLE; Schema: sqlj; Owner: -; Tablespace: 
 --
 
 CREATE TABLE jar_entry (
@@ -18886,10 +16782,8 @@ CREATE TABLE jar_entry (
 );
 
 
-ALTER TABLE sqlj.jar_entry OWNER TO postgres;
-
 --
--- Name: jar_entry_entryid_seq; Type: SEQUENCE; Schema: sqlj; Owner: postgres
+-- Name: jar_entry_entryid_seq; Type: SEQUENCE; Schema: sqlj; Owner: -
 --
 
 CREATE SEQUENCE jar_entry_entryid_seq
@@ -18899,24 +16793,22 @@ CREATE SEQUENCE jar_entry_entryid_seq
     CACHE 1;
 
 
-ALTER TABLE sqlj.jar_entry_entryid_seq OWNER TO postgres;
-
 --
--- Name: jar_entry_entryid_seq; Type: SEQUENCE OWNED BY; Schema: sqlj; Owner: postgres
+-- Name: jar_entry_entryid_seq; Type: SEQUENCE OWNED BY; Schema: sqlj; Owner: -
 --
 
 ALTER SEQUENCE jar_entry_entryid_seq OWNED BY jar_entry.entryid;
 
 
 --
--- Name: jar_entry_entryid_seq; Type: SEQUENCE SET; Schema: sqlj; Owner: postgres
+-- Name: jar_entry_entryid_seq; Type: SEQUENCE SET; Schema: sqlj; Owner: -
 --
 
 SELECT pg_catalog.setval('jar_entry_entryid_seq', 919, true);
 
 
 --
--- Name: jar_repository; Type: TABLE; Schema: sqlj; Owner: postgres; Tablespace: 
+-- Name: jar_repository; Type: TABLE; Schema: sqlj; Owner: -; Tablespace: 
 --
 
 CREATE TABLE jar_repository (
@@ -18929,10 +16821,8 @@ CREATE TABLE jar_repository (
 );
 
 
-ALTER TABLE sqlj.jar_repository OWNER TO postgres;
-
 --
--- Name: jar_repository_jarid_seq; Type: SEQUENCE; Schema: sqlj; Owner: postgres
+-- Name: jar_repository_jarid_seq; Type: SEQUENCE; Schema: sqlj; Owner: -
 --
 
 CREATE SEQUENCE jar_repository_jarid_seq
@@ -18942,24 +16832,22 @@ CREATE SEQUENCE jar_repository_jarid_seq
     CACHE 1;
 
 
-ALTER TABLE sqlj.jar_repository_jarid_seq OWNER TO postgres;
-
 --
--- Name: jar_repository_jarid_seq; Type: SEQUENCE OWNED BY; Schema: sqlj; Owner: postgres
+-- Name: jar_repository_jarid_seq; Type: SEQUENCE OWNED BY; Schema: sqlj; Owner: -
 --
 
 ALTER SEQUENCE jar_repository_jarid_seq OWNED BY jar_repository.jarid;
 
 
 --
--- Name: jar_repository_jarid_seq; Type: SEQUENCE SET; Schema: sqlj; Owner: postgres
+-- Name: jar_repository_jarid_seq; Type: SEQUENCE SET; Schema: sqlj; Owner: -
 --
 
 SELECT pg_catalog.setval('jar_repository_jarid_seq', 7, true);
 
 
 --
--- Name: typemap_entry; Type: TABLE; Schema: sqlj; Owner: postgres; Tablespace: 
+-- Name: typemap_entry; Type: TABLE; Schema: sqlj; Owner: -; Tablespace: 
 --
 
 CREATE TABLE typemap_entry (
@@ -18969,10 +16857,8 @@ CREATE TABLE typemap_entry (
 );
 
 
-ALTER TABLE sqlj.typemap_entry OWNER TO postgres;
-
 --
--- Name: typemap_entry_mapid_seq; Type: SEQUENCE; Schema: sqlj; Owner: postgres
+-- Name: typemap_entry_mapid_seq; Type: SEQUENCE; Schema: sqlj; Owner: -
 --
 
 CREATE SEQUENCE typemap_entry_mapid_seq
@@ -18983,17 +16869,15 @@ CREATE SEQUENCE typemap_entry_mapid_seq
     CACHE 1;
 
 
-ALTER TABLE sqlj.typemap_entry_mapid_seq OWNER TO postgres;
-
 --
--- Name: typemap_entry_mapid_seq; Type: SEQUENCE OWNED BY; Schema: sqlj; Owner: postgres
+-- Name: typemap_entry_mapid_seq; Type: SEQUENCE OWNED BY; Schema: sqlj; Owner: -
 --
 
 ALTER SEQUENCE typemap_entry_mapid_seq OWNED BY typemap_entry.mapid;
 
 
 --
--- Name: typemap_entry_mapid_seq; Type: SEQUENCE SET; Schema: sqlj; Owner: postgres
+-- Name: typemap_entry_mapid_seq; Type: SEQUENCE SET; Schema: sqlj; Owner: -
 --
 
 SELECT pg_catalog.setval('typemap_entry_mapid_seq', 1, false);
@@ -19002,280 +16886,280 @@ SELECT pg_catalog.setval('typemap_entry_mapid_seq', 1, false);
 SET search_path = public, pg_catalog;
 
 --
--- Name: crossdateid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: crossdateid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblcrossdate ALTER COLUMN crossdateid SET DEFAULT nextval('tblcrossdate_crossdateid_seq'::regclass);
 
 
 --
--- Name: customvocabtermid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: customvocabtermid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblcustomvocabterm ALTER COLUMN customvocabtermid SET DEFAULT nextval('tblcustomvocabterm_customvocabtermid_seq'::regclass);
 
 
 --
--- Name: measurementid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: measurementid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblmeasurement ALTER COLUMN measurementid SET DEFAULT nextval('tblmeasurement_measurementid_seq'::regclass);
 
 
 --
--- Name: readingid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: readingid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblreading ALTER COLUMN readingid SET DEFAULT nextval('tblreading_readingid_seq'::regclass);
 
 
 --
--- Name: readingreadingnoteid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: readingreadingnoteid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblreadingreadingnote ALTER COLUMN readingreadingnoteid SET DEFAULT nextval('tblreadingreadingnote_readingreadingnoteid_seq'::regclass);
 
 
 --
--- Name: redateid; Type: DEFAULT; Schema: public; Owner: lucasm
+-- Name: redateid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblredate ALTER COLUMN redateid SET DEFAULT nextval('tblredate_redateid_seq'::regclass);
 
 
 --
--- Name: requestlogid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: requestlogid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblrequestlog ALTER COLUMN requestlogid SET DEFAULT nextval('tblrequestlog_requestlogid_seq'::regclass);
 
 
 --
--- Name: securitydefaultid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: securitydefaultid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblsecuritydefault ALTER COLUMN securitydefaultid SET DEFAULT nextval('tblsecuritydefault_securitydefaultid_seq'::regclass);
 
 
 --
--- Name: securityelementid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: securityelementid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblsecurityelement ALTER COLUMN securityelementid SET DEFAULT nextval('tblsecuritytree_securityelementid_seq'::regclass);
 
 
 --
--- Name: securitygroupid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: securitygroupid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblsecuritygroup ALTER COLUMN securitygroupid SET DEFAULT nextval('tblsecuritygroup_securitygroupid_seq'::regclass);
 
 
 --
--- Name: securitygroupmembershipid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: securitygroupmembershipid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblsecuritygroupmembership ALTER COLUMN securitygroupmembershipid SET DEFAULT nextval('tblsecuritygroupmembership_securitygroupmembershipid_seq'::regclass);
 
 
 --
--- Name: securityobjectid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: securityobjectid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblsecurityobject ALTER COLUMN securityobjectid SET DEFAULT nextval('tblsecurityobject_securityobjectid_seq'::regclass);
 
 
 --
--- Name: securityuserid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: securityuserid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblsecurityuser ALTER COLUMN securityuserid SET DEFAULT nextval('tblsecurityuser_securityuserid_seq'::regclass);
 
 
 --
--- Name: tblsecurityusermembershipid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityusermembershipid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblsecurityusermembership ALTER COLUMN tblsecurityusermembershipid SET DEFAULT nextval('tblsecurityusermembership_tblsecurityusermembershipid_seq'::regclass);
 
 
 --
--- Name: securityvmeasurementid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: securityvmeasurementid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblsecurityvmeasurement ALTER COLUMN securityvmeasurementid SET DEFAULT nextval('tblsecurityvmeasurement_securityvmeasurementid_seq'::regclass);
 
 
 --
--- Name: truncateid; Type: DEFAULT; Schema: public; Owner: lucasm
+-- Name: truncateid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tbltruncate ALTER COLUMN truncateid SET DEFAULT nextval('tbltruncate_truncateid_seq'::regclass);
 
 
 --
--- Name: derivedcacheid; Type: DEFAULT; Schema: public; Owner: lucasm
+-- Name: derivedcacheid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblvmeasurementderivedcache ALTER COLUMN derivedcacheid SET DEFAULT nextval('tblvmeasurementderivedcache_derivedcacheid_seq'::regclass);
 
 
 --
--- Name: vmeasurementgroupid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: vmeasurementgroupid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblvmeasurementgroup ALTER COLUMN vmeasurementgroupid SET DEFAULT nextval('tblvmeasurementgroup_vmeasurementgroupid_seq'::regclass);
 
 
 --
--- Name: vmeasurementmetacacheid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: vmeasurementmetacacheid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblvmeasurementmetacache ALTER COLUMN vmeasurementmetacacheid SET DEFAULT nextval('tblvmeasurementmetacache_vmeasurementmetacacheid_seq'::regclass);
 
 
 --
--- Name: vmeasurementreadingresultid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: vmeasurementreadingresultid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tblvmeasurementreadingresult ALTER COLUMN vmeasurementreadingresultid SET DEFAULT nextval('tblvmeasurementreadingresult_vmeasurementreadingresultid_seq'::regclass);
 
 
 --
--- Name: complexpresenceabsenceid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: complexpresenceabsenceid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpcomplexpresenceabsence ALTER COLUMN complexpresenceabsenceid SET DEFAULT nextval('tlkpcomplexpresenceabsence_complexpresenceabsenceid_seq'::regclass);
 
 
 --
--- Name: coveragetemporalid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: coveragetemporalid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpcoveragetemporal ALTER COLUMN coveragetemporalid SET DEFAULT nextval('tlkpcoveragetemporal_coveragetemporalid_seq'::regclass);
 
 
 --
--- Name: coveragetemporalfoundationid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: coveragetemporalfoundationid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpcoveragetemporalfoundation ALTER COLUMN coveragetemporalfoundationid SET DEFAULT nextval('tlkpcoveragetemporalfoundation_coveragetemporalfoundationid_seq'::regclass);
 
 
 --
--- Name: datecertaintyid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: datecertaintyid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpdatecertainty ALTER COLUMN datecertaintyid SET DEFAULT nextval('tlkpdatecertainty_datecertaintyid_seq'::regclass);
 
 
 --
--- Name: datingtypeid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: datingtypeid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpdatingtype ALTER COLUMN datingtypeid SET DEFAULT nextval('tlkpdatingtype_datingtypeid_seq'::regclass);
 
 
 --
--- Name: elementauthenticityid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: elementauthenticityid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpelementauthenticity ALTER COLUMN elementauthenticityid SET DEFAULT nextval('tlkpelementauthenticity_elementauthenticityid_seq'::regclass);
 
 
 --
--- Name: elementshapeid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: elementshapeid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpelementshape ALTER COLUMN elementshapeid SET DEFAULT nextval('tlkpelementshape_elementshapeid_seq'::regclass);
 
 
 --
--- Name: elementtypeid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: elementtypeid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpelementtype ALTER COLUMN elementtypeid SET DEFAULT nextval('tlkpelementtype_elementtypeid_seq'::regclass);
 
 
 --
--- Name: locationtypeid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: locationtypeid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkplocationtype ALTER COLUMN locationtypeid SET DEFAULT nextval('tlkplocationtype_locationtypeid_seq'::regclass);
 
 
 --
--- Name: measurementvariableid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: measurementvariableid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpmeasurementvariable ALTER COLUMN measurementvariableid SET DEFAULT nextval('tlkpmeasurementvariable_measurementvariableid_seq'::regclass);
 
 
 --
--- Name: measuringmethodid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: measuringmethodid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpmeasuringmethod ALTER COLUMN measuringmethodid SET DEFAULT nextval('tlkpmeasuringmethod_measuringmethodid_seq'::regclass);
 
 
 --
--- Name: objecttypeid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: objecttypeid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpobjecttype ALTER COLUMN objecttypeid SET DEFAULT nextval('tlkpobjecttype_objecttype_seq'::regclass);
 
 
 --
--- Name: readingnoteid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: readingnoteid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpreadingnote ALTER COLUMN readingnoteid SET DEFAULT nextval('tlkpreadingnote_readingnoteid_seq'::regclass);
 
 
 --
--- Name: sampletypeid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: sampletypeid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpsampletype ALTER COLUMN sampletypeid SET DEFAULT nextval('tlkpsampletype_sampletypeid_seq'::regclass);
 
 
 --
--- Name: securitypermissionid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: securitypermissionid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpsecuritypermission ALTER COLUMN securitypermissionid SET DEFAULT nextval('tlkpsecuritypermission_securitypermissionid_seq'::regclass);
 
 
 --
--- Name: trackinglocationid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: trackinglocationid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkptrackinglocation ALTER COLUMN trackinglocationid SET DEFAULT nextval('tblcurationlocation_curationlocationid_seq'::regclass);
 
 
 --
--- Name: unitid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: unitid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpunit ALTER COLUMN unitid SET DEFAULT nextval('tlkpunits_unitsid_seq'::regclass);
 
 
 --
--- Name: vmeasurementopid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: vmeasurementopid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpvmeasurementop ALTER COLUMN vmeasurementopid SET DEFAULT nextval('tlkpvmeasurementop_vmeasurementopid_seq'::regclass);
 
 
 --
--- Name: vocabularyid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: vocabularyid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpvocabulary ALTER COLUMN vocabularyid SET DEFAULT nextval('tlkpvocabulary_vocabularyid_seq'::regclass);
 
 
 --
--- Name: wmsserverid; Type: DEFAULT; Schema: public; Owner: aps03pwb
+-- Name: wmsserverid; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE tlkpwmsserver ALTER COLUMN wmsserverid SET DEFAULT nextval('tlkpwmsserver_wmsserverid_seq'::regclass);
@@ -19284,21 +17168,21 @@ ALTER TABLE tlkpwmsserver ALTER COLUMN wmsserverid SET DEFAULT nextval('tlkpwmss
 SET search_path = sqlj, pg_catalog;
 
 --
--- Name: entryid; Type: DEFAULT; Schema: sqlj; Owner: postgres
+-- Name: entryid; Type: DEFAULT; Schema: sqlj; Owner: -
 --
 
 ALTER TABLE jar_entry ALTER COLUMN entryid SET DEFAULT nextval('jar_entry_entryid_seq'::regclass);
 
 
 --
--- Name: jarid; Type: DEFAULT; Schema: sqlj; Owner: postgres
+-- Name: jarid; Type: DEFAULT; Schema: sqlj; Owner: -
 --
 
 ALTER TABLE jar_repository ALTER COLUMN jarid SET DEFAULT nextval('jar_repository_jarid_seq'::regclass);
 
 
 --
--- Name: mapid; Type: DEFAULT; Schema: sqlj; Owner: postgres
+-- Name: mapid; Type: DEFAULT; Schema: sqlj; Owner: -
 --
 
 ALTER TABLE typemap_entry ALTER COLUMN mapid SET DEFAULT nextval('typemap_entry_mapid_seq'::regclass);
@@ -19307,7 +17191,7 @@ ALTER TABLE typemap_entry ALTER COLUMN mapid SET DEFAULT nextval('typemap_entry_
 SET search_path = public, pg_catalog;
 
 --
--- Data for Name: geometry_columns; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: geometry_columns; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY geometry_columns (f_table_catalog, f_table_schema, f_table_name, f_geometry_column, coord_dimension, srid, type) FROM stdin;
@@ -19325,7 +17209,7 @@ COPY geometry_columns (f_table_catalog, f_table_schema, f_table_name, f_geometry
 
 
 --
--- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
@@ -22495,7 +20379,7 @@ COPY spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
 
 
 --
--- Data for Name: tblbox; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblbox; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblbox (boxid, title, curationlocation, trackinglocation, createdtimestamp, lastmodifiedtimestamp, comments) FROM stdin;
@@ -22503,7 +20387,7 @@ COPY tblbox (boxid, title, curationlocation, trackinglocation, createdtimestamp,
 
 
 --
--- Data for Name: tblcrossdate; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblcrossdate; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblcrossdate (crossdateid, vmeasurementid, mastervmeasurementid, startyear, justification, confidence) FROM stdin;
@@ -22511,7 +20395,7 @@ COPY tblcrossdate (crossdateid, vmeasurementid, mastervmeasurementid, startyear,
 
 
 --
--- Data for Name: tblcustomvocabterm; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblcustomvocabterm; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblcustomvocabterm (customvocabtermid, "table", field, id, customvocabterm, dictionaryname) FROM stdin;
@@ -22519,7 +20403,7 @@ COPY tblcustomvocabterm (customvocabtermid, "table", field, id, customvocabterm,
 
 
 --
--- Data for Name: tblelement; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblelement; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblelement (elementid, taxonid, locationprecision, code, createdtimestamp, lastmodifiedtimestamp, locationgeometry, islivetree, originaltaxonname, locationtypeid, locationcomment, file, description, processing, marks, diameter, width, height, depth, unsupportedxml, units, objectid, elementtypeid, elementauthenticityid, elementshapeid, altitude, slopeangle, slopeazimuth, soildescription, soildepth, bedrockdescription, comments, locationaddressline2, locationcityortown, locationstateprovinceregion, locationpostalcode, locationcountry, locationaddressline1) FROM stdin;
@@ -22527,7 +20411,7 @@ COPY tblelement (elementid, taxonid, locationprecision, code, createdtimestamp, 
 
 
 --
--- Data for Name: tbliptracking; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tbliptracking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tbliptracking (ipaddr, securityuserid, "timestamp") FROM stdin;
@@ -22535,7 +20419,7 @@ COPY tbliptracking (ipaddr, securityuserid, "timestamp") FROM stdin;
 
 
 --
--- Data for Name: tblmeasurement; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblmeasurement; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblmeasurement (measurementid, radiusid, isreconciled, startyear, islegacycleaned, importtablename, measuredbyid, createdtimestamp, lastmodifiedtimestamp, datingtypeid, datingerrorpositive, datingerrornegative, measurementvariableid, unitid, power, provenance, measuringmethodid, supervisedbyid) FROM stdin;
@@ -22543,7 +20427,7 @@ COPY tblmeasurement (measurementid, radiusid, isreconciled, startyear, islegacyc
 
 
 --
--- Data for Name: tblobject; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblobject; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblobject (objectid, title, code, createdtimestamp, lastmodifiedtimestamp, locationgeometry, locationtypeid, locationprecision, locationcomment, file, creator, owner, parentobjectid, description, objecttypeid, coveragetemporalid, coveragetemporalfoundationid, comments, coveragetemporal, coveragetemporalfoundation, locationaddressline1, locationaddressline2, locationcityortown, locationstateprovinceregion, locationpostalcode, locationcountry) FROM stdin;
@@ -22551,7 +20435,7 @@ COPY tblobject (objectid, title, code, createdtimestamp, lastmodifiedtimestamp, 
 
 
 --
--- Data for Name: tblradius; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblradius; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblradius (radiusid, sampleid, code, createdtimestamp, lastmodifiedtimestamp, numberofsapwoodrings, pithid, barkpresent, lastringunderbark, missingheartwoodringstopith, missingheartwoodringstopithfoundation, missingsapwoodringstobark, missingsapwoodringstobarkfoundation, sapwoodid, heartwoodid, azimuth, comments, lastringunderbarkpresent, nrofunmeasuredinnerrings, nrofunmeasuredouterrings) FROM stdin;
@@ -22559,7 +20443,7 @@ COPY tblradius (radiusid, sampleid, code, createdtimestamp, lastmodifiedtimestam
 
 
 --
--- Data for Name: tblreading; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblreading; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblreading (readingid, measurementid, relyear, reading) FROM stdin;
@@ -22567,7 +20451,7 @@ COPY tblreading (readingid, measurementid, relyear, reading) FROM stdin;
 
 
 --
--- Data for Name: tblreadingreadingnote; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblreadingreadingnote; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblreadingreadingnote (readingid, readingnoteid, createdtimestamp, lastmodifiedtimestamp, readingreadingnoteid) FROM stdin;
@@ -22575,7 +20459,7 @@ COPY tblreadingreadingnote (readingid, readingnoteid, createdtimestamp, lastmodi
 
 
 --
--- Data for Name: tblredate; Type: TABLE DATA; Schema: public; Owner: lucasm
+-- Data for Name: tblredate; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblredate (redateid, vmeasurementid, startyear, redatingtypeid, justification) FROM stdin;
@@ -22583,7 +20467,7 @@ COPY tblredate (redateid, vmeasurementid, startyear, redatingtypeid, justificati
 
 
 --
--- Data for Name: tblrequestlog; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblrequestlog; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblrequestlog (requestlogid, securityuserid, request, ipaddr, createdtimestamp, wsversion, page, client) FROM stdin;
@@ -22591,7 +20475,7 @@ COPY tblrequestlog (requestlogid, securityuserid, request, ipaddr, createdtimest
 
 
 --
--- Data for Name: tblsample; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblsample; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblsample (sampleid, code, elementid, samplingdate, createdtimestamp, lastmodifiedtimestamp, type, identifierdomain, file, "position", state, knots, description, datecertaintyid, typeid, boxid, comments) FROM stdin;
@@ -22599,7 +20483,7 @@ COPY tblsample (sampleid, code, elementid, samplingdate, createdtimestamp, lastm
 
 
 --
--- Data for Name: tblsecuritydefault; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblsecuritydefault; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblsecuritydefault (securitydefaultid, securitygroupid, securitypermissionid) FROM stdin;
@@ -22615,7 +20499,7 @@ COPY tblsecuritydefault (securitydefaultid, securitygroupid, securitypermissioni
 
 
 --
--- Data for Name: tblsecurityelement; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblsecurityelement; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblsecurityelement (elementid, securitygroupid, securitypermissionid, securityelementid) FROM stdin;
@@ -22623,7 +20507,7 @@ COPY tblsecurityelement (elementid, securitygroupid, securitypermissionid, secur
 
 
 --
--- Data for Name: tblsecuritygroup; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblsecuritygroup; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblsecuritygroup (securitygroupid, name, description, isactive) FROM stdin;
@@ -22637,7 +20521,7 @@ COPY tblsecuritygroup (securitygroupid, name, description, isactive) FROM stdin;
 
 
 --
--- Data for Name: tblsecuritygroupmembership; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblsecuritygroupmembership; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblsecuritygroupmembership (securitygroupmembershipid, parentsecuritygroupid, childsecuritygroupid) FROM stdin;
@@ -22645,7 +20529,7 @@ COPY tblsecuritygroupmembership (securitygroupmembershipid, parentsecuritygroupi
 
 
 --
--- Data for Name: tblsecurityobject; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblsecurityobject; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblsecurityobject (securityobjectid, objectid, securitygroupid, securitypermissionid) FROM stdin;
@@ -22653,7 +20537,7 @@ COPY tblsecurityobject (securityobjectid, objectid, securitygroupid, securityper
 
 
 --
--- Data for Name: tblsecurityuser; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblsecurityuser; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblsecurityuser (securityuserid, username, password, firstname, lastname, isactive) FROM stdin;
@@ -22662,7 +20546,7 @@ COPY tblsecurityuser (securityuserid, username, password, firstname, lastname, i
 
 
 --
--- Data for Name: tblsecurityusermembership; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblsecurityusermembership; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblsecurityusermembership (tblsecurityusermembershipid, securityuserid, securitygroupid) FROM stdin;
@@ -22671,7 +20555,7 @@ COPY tblsecurityusermembership (tblsecurityusermembershipid, securityuserid, sec
 
 
 --
--- Data for Name: tblsecurityvmeasurement; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblsecurityvmeasurement; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblsecurityvmeasurement (securityvmeasurementid, vmeasurementid, securitygroupid, securitypermissionid) FROM stdin;
@@ -22679,7 +20563,7 @@ COPY tblsecurityvmeasurement (securityvmeasurementid, vmeasurementid, securitygr
 
 
 --
--- Data for Name: tbltruncate; Type: TABLE DATA; Schema: public; Owner: lucasm
+-- Data for Name: tbltruncate; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tbltruncate (truncateid, vmeasurementid, startrelyear, endrelyear, justification) FROM stdin;
@@ -22687,7 +20571,7 @@ COPY tbltruncate (truncateid, vmeasurementid, startrelyear, endrelyear, justific
 
 
 --
--- Data for Name: tblvmeasurement; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblvmeasurement; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblvmeasurement (vmeasurementid, measurementid, vmeasurementopid, vmeasurementopparameter, code, comments, ispublished, owneruserid, createdtimestamp, lastmodifiedtimestamp, isgenerating, objective, version, birthdate) FROM stdin;
@@ -22695,7 +20579,7 @@ COPY tblvmeasurement (vmeasurementid, measurementid, vmeasurementopid, vmeasurem
 
 
 --
--- Data for Name: tblvmeasurementderivedcache; Type: TABLE DATA; Schema: public; Owner: lucasm
+-- Data for Name: tblvmeasurementderivedcache; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblvmeasurementderivedcache (derivedcacheid, vmeasurementid, measurementid) FROM stdin;
@@ -22703,7 +20587,7 @@ COPY tblvmeasurementderivedcache (derivedcacheid, vmeasurementid, measurementid)
 
 
 --
--- Data for Name: tblvmeasurementgroup; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblvmeasurementgroup; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblvmeasurementgroup (vmeasurementid, membervmeasurementid, vmeasurementgroupid) FROM stdin;
@@ -22711,7 +20595,7 @@ COPY tblvmeasurementgroup (vmeasurementid, membervmeasurementid, vmeasurementgro
 
 
 --
--- Data for Name: tblvmeasurementmetacache; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblvmeasurementmetacache; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblvmeasurementmetacache (vmeasurementid, startyear, readingcount, measurementcount, vmextent, vmeasurementmetacacheid, objectcode, objectcount, commontaxonname, taxoncount, prefix, datingtypeid) FROM stdin;
@@ -22719,7 +20603,7 @@ COPY tblvmeasurementmetacache (vmeasurementid, startyear, readingcount, measurem
 
 
 --
--- Data for Name: tblvmeasurementreadingnoteresult; Type: TABLE DATA; Schema: public; Owner: lucasm
+-- Data for Name: tblvmeasurementreadingnoteresult; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblvmeasurementreadingnoteresult (vmeasurementresultid, relyear, readingnoteid, inheritedcount) FROM stdin;
@@ -22727,7 +20611,7 @@ COPY tblvmeasurementreadingnoteresult (vmeasurementresultid, relyear, readingnot
 
 
 --
--- Data for Name: tblvmeasurementreadingresult; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblvmeasurementreadingresult; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblvmeasurementreadingresult (vmeasurementreadingresultid, vmeasurementresultid, relyear, reading, wjinc, wjdec, count, readingid) FROM stdin;
@@ -22735,7 +20619,7 @@ COPY tblvmeasurementreadingresult (vmeasurementreadingresultid, vmeasurementresu
 
 
 --
--- Data for Name: tblvmeasurementrelyearreadingnote; Type: TABLE DATA; Schema: public; Owner: lucasm
+-- Data for Name: tblvmeasurementrelyearreadingnote; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblvmeasurementrelyearreadingnote (vmeasurementid, relyear, readingnoteid, disabledoverride, createdtimestamp, lastmodifiedtimestamp, relyearreadingnoteid) FROM stdin;
@@ -22743,7 +20627,7 @@ COPY tblvmeasurementrelyearreadingnote (vmeasurementid, relyear, readingnoteid, 
 
 
 --
--- Data for Name: tblvmeasurementresult; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tblvmeasurementresult; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tblvmeasurementresult (vmeasurementresultid, vmeasurementid, radiusid, isreconciled, startyear, islegacycleaned, createdtimestamp, lastmodifiedtimestamp, vmeasurementresultmasterid, owneruserid, vmeasurementresultgroupid, datingtypeid, datingerrorpositive, datingerrornegative, code, comments, ispublished) FROM stdin;
@@ -22751,7 +20635,7 @@ COPY tblvmeasurementresult (vmeasurementresultid, vmeasurementid, radiusid, isre
 
 
 --
--- Data for Name: tlkpcomplexpresenceabsence; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpcomplexpresenceabsence; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpcomplexpresenceabsence (complexpresenceabsenceid, complexpresenceabsence) FROM stdin;
@@ -22765,7 +20649,7 @@ COPY tlkpcomplexpresenceabsence (complexpresenceabsenceid, complexpresenceabsenc
 
 
 --
--- Data for Name: tlkpcoveragetemporal; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpcoveragetemporal; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpcoveragetemporal (coveragetemporalid, coveragetemporal) FROM stdin;
@@ -22781,7 +20665,7 @@ COPY tlkpcoveragetemporal (coveragetemporalid, coveragetemporal) FROM stdin;
 
 
 --
--- Data for Name: tlkpcoveragetemporalfoundation; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpcoveragetemporalfoundation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpcoveragetemporalfoundation (coveragetemporalfoundationid, coveragetemporalfoundation) FROM stdin;
@@ -22796,7 +20680,7 @@ COPY tlkpcoveragetemporalfoundation (coveragetemporalfoundationid, coveragetempo
 
 
 --
--- Data for Name: tlkpdatecertainty; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpdatecertainty; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpdatecertainty (datecertaintyid, datecertainty) FROM stdin;
@@ -22809,7 +20693,7 @@ COPY tlkpdatecertainty (datecertaintyid, datecertainty) FROM stdin;
 
 
 --
--- Data for Name: tlkpdatingtype; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpdatingtype; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpdatingtype (datingtypeid, datingtype, datingclass) FROM stdin;
@@ -22821,7 +20705,7 @@ COPY tlkpdatingtype (datingtypeid, datingtype, datingclass) FROM stdin;
 
 
 --
--- Data for Name: tlkpelementauthenticity; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpelementauthenticity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpelementauthenticity (elementauthenticityid, elementauthenticity) FROM stdin;
@@ -22829,7 +20713,7 @@ COPY tlkpelementauthenticity (elementauthenticityid, elementauthenticity) FROM s
 
 
 --
--- Data for Name: tlkpelementshape; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpelementshape; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpelementshape (elementshapeid, elementshape) FROM stdin;
@@ -22857,7 +20741,7 @@ COPY tlkpelementshape (elementshapeid, elementshape) FROM stdin;
 
 
 --
--- Data for Name: tlkpelementtype; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpelementtype; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpelementtype (elementtypeid, elementtype) FROM stdin;
@@ -22871,7 +20755,7 @@ COPY tlkpelementtype (elementtypeid, elementtype) FROM stdin;
 
 
 --
--- Data for Name: tlkpindextype; Type: TABLE DATA; Schema: public; Owner: lucasm
+-- Data for Name: tlkpindextype; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpindextype (indexid, indexname) FROM stdin;
@@ -22890,7 +20774,7 @@ COPY tlkpindextype (indexid, indexname) FROM stdin;
 
 
 --
--- Data for Name: tlkplocationtype; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkplocationtype; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkplocationtype (locationtypeid, locationtype) FROM stdin;
@@ -22905,7 +20789,7 @@ COPY tlkplocationtype (locationtypeid, locationtype) FROM stdin;
 
 
 --
--- Data for Name: tlkpmeasurementvariable; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpmeasurementvariable; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpmeasurementvariable (measurementvariableid, measurementvariable) FROM stdin;
@@ -22915,7 +20799,7 @@ COPY tlkpmeasurementvariable (measurementvariableid, measurementvariable) FROM s
 
 
 --
--- Data for Name: tlkpmeasuringmethod; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpmeasuringmethod; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpmeasuringmethod (measuringmethodid, measuringmethod) FROM stdin;
@@ -22926,7 +20810,7 @@ COPY tlkpmeasuringmethod (measuringmethodid, measuringmethod) FROM stdin;
 
 
 --
--- Data for Name: tlkpobjecttype; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpobjecttype; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpobjecttype (objecttype, vocabularyid, objecttypeid) FROM stdin;
@@ -22940,7 +20824,7 @@ Test	\N	5
 
 
 --
--- Data for Name: tlkpreadingnote; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpreadingnote; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpreadingnote (readingnoteid, note, vocabularyid, standardisedid, parentreadingid, parentvmrelyearreadingnoteid) FROM stdin;
@@ -22967,7 +20851,7 @@ COPY tlkpreadingnote (readingnoteid, note, vocabularyid, standardisedid, parentr
 
 
 --
--- Data for Name: tlkpsampletype; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpsampletype; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpsampletype (sampletypeid, sampletype) FROM stdin;
@@ -22980,7 +20864,7 @@ COPY tlkpsampletype (sampletypeid, sampletype) FROM stdin;
 
 
 --
--- Data for Name: tlkpsecuritypermission; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpsecuritypermission; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpsecuritypermission (securitypermissionid, name) FROM stdin;
@@ -22993,7 +20877,7 @@ COPY tlkpsecuritypermission (securitypermissionid, name) FROM stdin;
 
 
 --
--- Data for Name: tlkptaxon; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkptaxon; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkptaxon (taxonid, colid, colparentid, taxonrankid, label, parenttaxonid) FROM stdin;
@@ -23769,7 +21653,7 @@ COPY tlkptaxon (taxonid, colid, colparentid, taxonrankid, label, parenttaxonid) 
 
 
 --
--- Data for Name: tlkptaxonrank; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkptaxonrank; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkptaxonrank (taxonrankid, taxonrank, rankorder) FROM stdin;
@@ -23792,7 +21676,7 @@ COPY tlkptaxonrank (taxonrankid, taxonrank, rankorder) FROM stdin;
 
 
 --
--- Data for Name: tlkptrackinglocation; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkptrackinglocation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkptrackinglocation (trackinglocationid, location) FROM stdin;
@@ -23804,7 +21688,7 @@ COPY tlkptrackinglocation (trackinglocationid, location) FROM stdin;
 
 
 --
--- Data for Name: tlkpunit; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpunit; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpunit (unitid, unit) FROM stdin;
@@ -23818,7 +21702,7 @@ COPY tlkpunit (unitid, unit) FROM stdin;
 
 
 --
--- Data for Name: tlkpvmeasurementop; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpvmeasurementop; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpvmeasurementop (vmeasurementopid, name, legacycode) FROM stdin;
@@ -23833,7 +21717,7 @@ COPY tlkpvmeasurementop (vmeasurementopid, name, legacycode) FROM stdin;
 
 
 --
--- Data for Name: tlkpvocabulary; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpvocabulary; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpvocabulary (vocabularyid, name, url) FROM stdin;
@@ -23845,7 +21729,7 @@ COPY tlkpvocabulary (vocabularyid, name, url) FROM stdin;
 
 
 --
--- Data for Name: tlkpwmsserver; Type: TABLE DATA; Schema: public; Owner: aps03pwb
+-- Data for Name: tlkpwmsserver; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tlkpwmsserver (wmsserverid, name, url) FROM stdin;
@@ -23857,7 +21741,7 @@ COPY tlkpwmsserver (wmsserverid, name, url) FROM stdin;
 SET search_path = sqlj, pg_catalog;
 
 --
--- Data for Name: classpath_entry; Type: TABLE DATA; Schema: sqlj; Owner: postgres
+-- Data for Name: classpath_entry; Type: TABLE DATA; Schema: sqlj; Owner: -
 --
 
 COPY classpath_entry (schemaname, ordinal, jarid) FROM stdin;
@@ -23867,7 +21751,7 @@ cpgdb	2	7
 
 
 --
--- Data for Name: jar_entry; Type: TABLE DATA; Schema: sqlj; Owner: postgres
+-- Data for Name: jar_entry; Type: TABLE DATA; Schema: sqlj; Owner: -
 --
 
 COPY jar_entry (entryid, entryname, jarid, entryimage) FROM stdin;
@@ -23908,7 +21792,7 @@ COPY jar_entry (entryid, entryname, jarid, entryimage) FROM stdin;
 
 
 --
--- Data for Name: jar_repository; Type: TABLE DATA; Schema: sqlj; Owner: postgres
+-- Data for Name: jar_repository; Type: TABLE DATA; Schema: sqlj; Owner: -
 --
 
 COPY jar_repository (jarid, jarname, jarorigin, jarowner, jarmanifest, deploymentdesc) FROM stdin;
@@ -23919,7 +21803,7 @@ COPY jar_repository (jarid, jarname, jarorigin, jarowner, jarmanifest, deploymen
 
 
 --
--- Data for Name: typemap_entry; Type: TABLE DATA; Schema: sqlj; Owner: postgres
+-- Data for Name: typemap_entry; Type: TABLE DATA; Schema: sqlj; Owner: -
 --
 
 COPY typemap_entry (mapid, javaname, sqlname) FROM stdin;
@@ -23929,7 +21813,7 @@ COPY typemap_entry (mapid, javaname, sqlname) FROM stdin;
 SET search_path = public, pg_catalog;
 
 --
--- Name: colid; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: colid; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkptaxon
@@ -23937,7 +21821,7 @@ ALTER TABLE ONLY tlkptaxon
 
 
 --
--- Name: geometry_columns_pk; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: geometry_columns_pk; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY geometry_columns
@@ -23945,7 +21829,7 @@ ALTER TABLE ONLY geometry_columns
 
 
 --
--- Name: only_unique_derivations; Type: CONSTRAINT; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: only_unique_derivations; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblvmeasurementderivedcache
@@ -23953,7 +21837,7 @@ ALTER TABLE ONLY tblvmeasurementderivedcache
 
 
 --
--- Name: pkey_complexpresenceabsence; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_complexpresenceabsence; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpcomplexpresenceabsence
@@ -23961,7 +21845,7 @@ ALTER TABLE ONLY tlkpcomplexpresenceabsence
 
 
 --
--- Name: pkey_coveragetemporal; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_coveragetemporal; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpcoveragetemporal
@@ -23969,7 +21853,7 @@ ALTER TABLE ONLY tlkpcoveragetemporal
 
 
 --
--- Name: pkey_coveragetemporalfoundation; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_coveragetemporalfoundation; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpcoveragetemporalfoundation
@@ -23977,7 +21861,7 @@ ALTER TABLE ONLY tlkpcoveragetemporalfoundation
 
 
 --
--- Name: pkey_curationlocation; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_curationlocation; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkptrackinglocation
@@ -23985,7 +21869,7 @@ ALTER TABLE ONLY tlkptrackinglocation
 
 
 --
--- Name: pkey_customvocabterm; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_customvocabterm; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblcustomvocabterm
@@ -23993,7 +21877,7 @@ ALTER TABLE ONLY tblcustomvocabterm
 
 
 --
--- Name: pkey_datecertainty; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_datecertainty; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpdatecertainty
@@ -24001,7 +21885,7 @@ ALTER TABLE ONLY tlkpdatecertainty
 
 
 --
--- Name: pkey_datingtype; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_datingtype; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpdatingtype
@@ -24009,7 +21893,7 @@ ALTER TABLE ONLY tlkpdatingtype
 
 
 --
--- Name: pkey_elementauthenticity; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_elementauthenticity; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpelementauthenticity
@@ -24017,7 +21901,7 @@ ALTER TABLE ONLY tlkpelementauthenticity
 
 
 --
--- Name: pkey_elementshape; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_elementshape; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpelementshape
@@ -24025,7 +21909,7 @@ ALTER TABLE ONLY tlkpelementshape
 
 
 --
--- Name: pkey_elementtype; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_elementtype; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpelementtype
@@ -24033,7 +21917,7 @@ ALTER TABLE ONLY tlkpelementtype
 
 
 --
--- Name: pkey_iptracking; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_iptracking; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tbliptracking
@@ -24041,7 +21925,7 @@ ALTER TABLE ONLY tbliptracking
 
 
 --
--- Name: pkey_locationtype; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_locationtype; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkplocationtype
@@ -24049,7 +21933,7 @@ ALTER TABLE ONLY tlkplocationtype
 
 
 --
--- Name: pkey_measurement; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_measurement; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblmeasurement
@@ -24057,7 +21941,7 @@ ALTER TABLE ONLY tblmeasurement
 
 
 --
--- Name: pkey_measurementvariable; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_measurementvariable; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpmeasurementvariable
@@ -24065,7 +21949,7 @@ ALTER TABLE ONLY tlkpmeasurementvariable
 
 
 --
--- Name: pkey_measuringmethod; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_measuringmethod; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpmeasuringmethod
@@ -24073,7 +21957,7 @@ ALTER TABLE ONLY tlkpmeasuringmethod
 
 
 --
--- Name: pkey_object; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_object; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblobject
@@ -24081,7 +21965,7 @@ ALTER TABLE ONLY tblobject
 
 
 --
--- Name: pkey_objectype; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_objectype; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpobjecttype
@@ -24089,7 +21973,7 @@ ALTER TABLE ONLY tlkpobjecttype
 
 
 --
--- Name: pkey_radius; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_radius; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblradius
@@ -24097,7 +21981,7 @@ ALTER TABLE ONLY tblradius
 
 
 --
--- Name: pkey_reading; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_reading; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblreading
@@ -24105,7 +21989,7 @@ ALTER TABLE ONLY tblreading
 
 
 --
--- Name: pkey_readingnote; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_readingnote; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpreadingnote
@@ -24113,7 +21997,7 @@ ALTER TABLE ONLY tlkpreadingnote
 
 
 --
--- Name: pkey_readingreadingnote; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_readingreadingnote; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblreadingreadingnote
@@ -24121,7 +22005,7 @@ ALTER TABLE ONLY tblreadingreadingnote
 
 
 --
--- Name: pkey_requestlog; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_requestlog; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblrequestlog
@@ -24129,7 +22013,7 @@ ALTER TABLE ONLY tblrequestlog
 
 
 --
--- Name: pkey_sample; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_sample; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsample
@@ -24137,7 +22021,7 @@ ALTER TABLE ONLY tblsample
 
 
 --
--- Name: pkey_sampletype; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_sampletype; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpsampletype
@@ -24145,7 +22029,7 @@ ALTER TABLE ONLY tlkpsampletype
 
 
 --
--- Name: pkey_securitydefault; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_securitydefault; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecuritydefault
@@ -24153,7 +22037,7 @@ ALTER TABLE ONLY tblsecuritydefault
 
 
 --
--- Name: pkey_securitygroup; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_securitygroup; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecuritygroup
@@ -24161,7 +22045,7 @@ ALTER TABLE ONLY tblsecuritygroup
 
 
 --
--- Name: pkey_securitygroupmembership; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_securitygroupmembership; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecuritygroupmembership
@@ -24169,7 +22053,7 @@ ALTER TABLE ONLY tblsecuritygroupmembership
 
 
 --
--- Name: pkey_securityobject; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_securityobject; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecurityobject
@@ -24177,7 +22061,7 @@ ALTER TABLE ONLY tblsecurityobject
 
 
 --
--- Name: pkey_securitypermission; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_securitypermission; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpsecuritypermission
@@ -24185,7 +22069,7 @@ ALTER TABLE ONLY tlkpsecuritypermission
 
 
 --
--- Name: pkey_securitytree; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_securitytree; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecurityelement
@@ -24193,7 +22077,7 @@ ALTER TABLE ONLY tblsecurityelement
 
 
 --
--- Name: pkey_securityuser; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_securityuser; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecurityuser
@@ -24201,7 +22085,7 @@ ALTER TABLE ONLY tblsecurityuser
 
 
 --
--- Name: pkey_securityusermembership; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_securityusermembership; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecurityusermembership
@@ -24209,7 +22093,7 @@ ALTER TABLE ONLY tblsecurityusermembership
 
 
 --
--- Name: pkey_securityvmeasurement; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_securityvmeasurement; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecurityvmeasurement
@@ -24217,7 +22101,7 @@ ALTER TABLE ONLY tblsecurityvmeasurement
 
 
 --
--- Name: pkey_taxon; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_taxon; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkptaxon
@@ -24225,7 +22109,7 @@ ALTER TABLE ONLY tlkptaxon
 
 
 --
--- Name: pkey_taxonrank; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_taxonrank; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkptaxonrank
@@ -24233,7 +22117,7 @@ ALTER TABLE ONLY tlkptaxonrank
 
 
 --
--- Name: pkey_tblbox; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_tblbox; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblbox
@@ -24241,7 +22125,7 @@ ALTER TABLE ONLY tblbox
 
 
 --
--- Name: pkey_tblcrossdate; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_tblcrossdate; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblcrossdate
@@ -24249,7 +22133,7 @@ ALTER TABLE ONLY tblcrossdate
 
 
 --
--- Name: pkey_tblredate; Type: CONSTRAINT; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: pkey_tblredate; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblredate
@@ -24257,7 +22141,7 @@ ALTER TABLE ONLY tblredate
 
 
 --
--- Name: pkey_tbltruncate; Type: CONSTRAINT; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: pkey_tbltruncate; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tbltruncate
@@ -24265,7 +22149,7 @@ ALTER TABLE ONLY tbltruncate
 
 
 --
--- Name: pkey_tree; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_tree; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblelement
@@ -24273,7 +22157,7 @@ ALTER TABLE ONLY tblelement
 
 
 --
--- Name: pkey_unit; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_unit; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpunit
@@ -24281,7 +22165,7 @@ ALTER TABLE ONLY tlkpunit
 
 
 --
--- Name: pkey_vmeasurementgroup; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_vmeasurementgroup; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblvmeasurementgroup
@@ -24289,7 +22173,7 @@ ALTER TABLE ONLY tblvmeasurementgroup
 
 
 --
--- Name: pkey_vmeasurementmetacache; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_vmeasurementmetacache; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblvmeasurementmetacache
@@ -24297,7 +22181,7 @@ ALTER TABLE ONLY tblvmeasurementmetacache
 
 
 --
--- Name: pkey_vmeasurementop; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_vmeasurementop; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpvmeasurementop
@@ -24305,7 +22189,7 @@ ALTER TABLE ONLY tlkpvmeasurementop
 
 
 --
--- Name: pkey_vmeasurementreadingresult; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_vmeasurementreadingresult; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblvmeasurementreadingresult
@@ -24313,7 +22197,7 @@ ALTER TABLE ONLY tblvmeasurementreadingresult
 
 
 --
--- Name: pkey_vmeasurementresult; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_vmeasurementresult; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblvmeasurementresult
@@ -24321,7 +22205,7 @@ ALTER TABLE ONLY tblvmeasurementresult
 
 
 --
--- Name: pkey_vocabulary; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: pkey_vocabulary; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpvocabulary
@@ -24329,7 +22213,7 @@ ALTER TABLE ONLY tlkpvocabulary
 
 
 --
--- Name: spatial_ref_sys_pkey; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: spatial_ref_sys_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY spatial_ref_sys
@@ -24337,7 +22221,7 @@ ALTER TABLE ONLY spatial_ref_sys
 
 
 --
--- Name: tblvmeasurementderivedcache_pkey; Type: CONSTRAINT; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: tblvmeasurementderivedcache_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblvmeasurementderivedcache
@@ -24345,7 +22229,7 @@ ALTER TABLE ONLY tblvmeasurementderivedcache
 
 
 --
--- Name: tblvmeasurementrelyearreadingnote_pkey; Type: CONSTRAINT; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: tblvmeasurementrelyearreadingnote_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblvmeasurementrelyearreadingnote
@@ -24353,7 +22237,7 @@ ALTER TABLE ONLY tblvmeasurementrelyearreadingnote
 
 
 --
--- Name: tlkpindextype_pkey; Type: CONSTRAINT; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: tlkpindextype_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpindextype
@@ -24361,7 +22245,7 @@ ALTER TABLE ONLY tlkpindextype
 
 
 --
--- Name: uniq_boxtitle; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_boxtitle; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblbox
@@ -24369,7 +22253,7 @@ ALTER TABLE ONLY tblbox
 
 
 --
--- Name: uniq_datecertainty; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_datecertainty; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpdatecertainty
@@ -24377,7 +22261,7 @@ ALTER TABLE ONLY tlkpdatecertainty
 
 
 --
--- Name: uniq_rankorder; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_rankorder; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkptaxonrank
@@ -24385,7 +22269,7 @@ ALTER TABLE ONLY tlkptaxonrank
 
 
 --
--- Name: uniq_readingreadingnote_notesperreading; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_readingreadingnote_notesperreading; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblreadingreadingnote
@@ -24393,7 +22277,7 @@ ALTER TABLE ONLY tblreadingreadingnote
 
 
 --
--- Name: uniq_redate_vmeasurement; Type: CONSTRAINT; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: uniq_redate_vmeasurement; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblredate
@@ -24401,7 +22285,7 @@ ALTER TABLE ONLY tblredate
 
 
 --
--- Name: uniq_sampletype_label; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_sampletype_label; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpsampletype
@@ -24409,7 +22293,7 @@ ALTER TABLE ONLY tlkpsampletype
 
 
 --
--- Name: uniq_securitygroupmembership_parentchildsecuritygroups; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_securitygroupmembership_parentchildsecuritygroups; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecuritygroupmembership
@@ -24417,7 +22301,7 @@ ALTER TABLE ONLY tblsecuritygroupmembership
 
 
 --
--- Name: uniq_securityuser_username; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_securityuser_username; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecurityuser
@@ -24425,7 +22309,7 @@ ALTER TABLE ONLY tblsecurityuser
 
 
 --
--- Name: uniq_securityusermembership_userpergroup; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_securityusermembership_userpergroup; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecurityusermembership
@@ -24433,7 +22317,7 @@ ALTER TABLE ONLY tblsecurityusermembership
 
 
 --
--- Name: uniq_securityvmeasurement; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_securityvmeasurement; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsecurityvmeasurement
@@ -24441,7 +22325,7 @@ ALTER TABLE ONLY tblsecurityvmeasurement
 
 
 --
--- Name: uniq_taxon-label; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_taxon-label; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkptaxon
@@ -24449,7 +22333,7 @@ ALTER TABLE ONLY tlkptaxon
 
 
 --
--- Name: uniq_taxonrank; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_taxonrank; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkptaxonrank
@@ -24457,7 +22341,7 @@ ALTER TABLE ONLY tlkptaxonrank
 
 
 --
--- Name: uniq_truncate_vmeasurement; Type: CONSTRAINT; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: uniq_truncate_vmeasurement; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tbltruncate
@@ -24465,7 +22349,7 @@ ALTER TABLE ONLY tbltruncate
 
 
 --
--- Name: uniq_unit; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_unit; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpunit
@@ -24473,7 +22357,7 @@ ALTER TABLE ONLY tlkpunit
 
 
 --
--- Name: uniq_vmeasurement; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_vmeasurement; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblcrossdate
@@ -24481,7 +22365,7 @@ ALTER TABLE ONLY tblcrossdate
 
 
 --
--- Name: uniq_vmeasurementgroup_members; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_vmeasurementgroup_members; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblvmeasurementgroup
@@ -24489,7 +22373,7 @@ ALTER TABLE ONLY tblvmeasurementgroup
 
 
 --
--- Name: uniq_vmeasurementop_name; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: uniq_vmeasurementop_name; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpvmeasurementop
@@ -24497,7 +22381,7 @@ ALTER TABLE ONLY tlkpvmeasurementop
 
 
 --
--- Name: unique_parent-title; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: unique_parent-title; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblobject
@@ -24505,7 +22389,7 @@ ALTER TABLE ONLY tblobject
 
 
 --
--- Name: unique_parentelement-code; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: unique_parentelement-code; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblsample
@@ -24513,7 +22397,7 @@ ALTER TABLE ONLY tblsample
 
 
 --
--- Name: unique_parentobject-code; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: unique_parentobject-code; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblelement
@@ -24521,7 +22405,7 @@ ALTER TABLE ONLY tblelement
 
 
 --
--- Name: unique_parentsample-code; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: unique_parentsample-code; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblradius
@@ -24529,7 +22413,7 @@ ALTER TABLE ONLY tblradius
 
 
 --
--- Name: vmeasurementid; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: vmeasurementid; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tblvmeasurement
@@ -24537,7 +22421,7 @@ ALTER TABLE ONLY tblvmeasurement
 
 
 --
--- Name: wmsserver-pkey; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: wmsserver-pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpwmsserver
@@ -24545,7 +22429,7 @@ ALTER TABLE ONLY tlkpwmsserver
 
 
 --
--- Name: wmsserver-uniqname; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: wmsserver-uniqname; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpwmsserver
@@ -24553,7 +22437,7 @@ ALTER TABLE ONLY tlkpwmsserver
 
 
 --
--- Name: wmsserver-uniqurl; Type: CONSTRAINT; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: wmsserver-uniqurl; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY tlkpwmsserver
@@ -24563,7 +22447,7 @@ ALTER TABLE ONLY tlkpwmsserver
 SET search_path = sqlj, pg_catalog;
 
 --
--- Name: classpath_entry_pkey; Type: CONSTRAINT; Schema: sqlj; Owner: postgres; Tablespace: 
+-- Name: classpath_entry_pkey; Type: CONSTRAINT; Schema: sqlj; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY classpath_entry
@@ -24571,7 +22455,7 @@ ALTER TABLE ONLY classpath_entry
 
 
 --
--- Name: jar_entry_jarid_key; Type: CONSTRAINT; Schema: sqlj; Owner: postgres; Tablespace: 
+-- Name: jar_entry_jarid_key; Type: CONSTRAINT; Schema: sqlj; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY jar_entry
@@ -24579,7 +22463,7 @@ ALTER TABLE ONLY jar_entry
 
 
 --
--- Name: jar_entry_pkey; Type: CONSTRAINT; Schema: sqlj; Owner: postgres; Tablespace: 
+-- Name: jar_entry_pkey; Type: CONSTRAINT; Schema: sqlj; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY jar_entry
@@ -24587,7 +22471,7 @@ ALTER TABLE ONLY jar_entry
 
 
 --
--- Name: jar_repository_jarname_key; Type: CONSTRAINT; Schema: sqlj; Owner: postgres; Tablespace: 
+-- Name: jar_repository_jarname_key; Type: CONSTRAINT; Schema: sqlj; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY jar_repository
@@ -24595,7 +22479,7 @@ ALTER TABLE ONLY jar_repository
 
 
 --
--- Name: jar_repository_pkey; Type: CONSTRAINT; Schema: sqlj; Owner: postgres; Tablespace: 
+-- Name: jar_repository_pkey; Type: CONSTRAINT; Schema: sqlj; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY jar_repository
@@ -24603,7 +22487,7 @@ ALTER TABLE ONLY jar_repository
 
 
 --
--- Name: typemap_entry_pkey; Type: CONSTRAINT; Schema: sqlj; Owner: postgres; Tablespace: 
+-- Name: typemap_entry_pkey; Type: CONSTRAINT; Schema: sqlj; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY typemap_entry
@@ -24613,294 +22497,294 @@ ALTER TABLE ONLY typemap_entry
 SET search_path = public, pg_catalog;
 
 --
--- Name: idx_standardisiedid-vocabularyid; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: idx_standardisiedid-vocabularyid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX "idx_standardisiedid-vocabularyid" ON tlkpreadingnote USING btree (standardisedid, vocabularyid);
 
 
 --
--- Name: ind_iptracking-securityuser; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_iptracking-securityuser; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_iptracking-securityuser" ON tbliptracking USING btree (securityuserid);
 
 
 --
--- Name: ind_measurement-datingtype; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_measurement-datingtype; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_measurement-datingtype" ON tblmeasurement USING btree (datingtypeid);
 
 
 --
--- Name: ind_measurement-radius; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_measurement-radius; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_measurement-radius" ON tblmeasurement USING btree (radiusid);
 
 
 --
--- Name: ind_measurement-securityuser; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_measurement-securityuser; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_measurement-securityuser" ON tblmeasurement USING btree (measuredbyid);
 
 
 --
--- Name: ind_radius-sample; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_radius-sample; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_radius-sample" ON tblradius USING btree (sampleid);
 
 
 --
--- Name: ind_reading-measurement; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_reading-measurement; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_reading-measurement" ON tblreading USING btree (measurementid);
 
 
 --
--- Name: ind_readingreadingnote-reading; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_readingreadingnote-reading; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_readingreadingnote-reading" ON tblreadingreadingnote USING btree (readingid);
 
 
 --
--- Name: ind_readingreadingnote-readingnote; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_readingreadingnote-readingnote; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_readingreadingnote-readingnote" ON tblreadingreadingnote USING btree (readingnoteid);
 
 
 --
--- Name: ind_requestlog-securityuser; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_requestlog-securityuser; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_requestlog-securityuser" ON tblrequestlog USING btree (securityuserid);
 
 
 --
--- Name: ind_result-relyear-noteid; Type: INDEX; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: ind_result-relyear-noteid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_result-relyear-noteid" ON tblvmeasurementreadingnoteresult USING btree (vmeasurementresultid, relyear, readingnoteid);
 
 
 --
--- Name: ind_sample-sampletype; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_sample-sampletype; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_sample-sampletype" ON tblsample USING btree (type);
 
 
 --
--- Name: ind_sample-tree; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_sample-tree; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_sample-tree" ON tblsample USING btree (elementid);
 
 
 --
--- Name: ind_securitydefault-securitygroup; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securitydefault-securitygroup; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securitydefault-securitygroup" ON tblsecuritydefault USING btree (securitygroupid);
 
 
 --
--- Name: ind_securitydefault-securitypermission; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securitydefault-securitypermission; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securitydefault-securitypermission" ON tblsecuritydefault USING btree (securitypermissionid);
 
 
 --
--- Name: ind_securitygroupmembereship-childsecuritygroup; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securitygroupmembereship-childsecuritygroup; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securitygroupmembereship-childsecuritygroup" ON tblsecuritygroupmembership USING btree (childsecuritygroupid);
 
 
 --
--- Name: ind_securitygroupmembership-parentsecuritygroup; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securitygroupmembership-parentsecuritygroup; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securitygroupmembership-parentsecuritygroup" ON tblsecuritygroupmembership USING btree (parentsecuritygroupid);
 
 
 --
--- Name: ind_securityobject-securitygroup; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securityobject-securitygroup; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securityobject-securitygroup" ON tblsecurityobject USING btree (securitygroupid);
 
 
 --
--- Name: ind_securityobject-securitypermission; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securityobject-securitypermission; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securityobject-securitypermission" ON tblsecurityobject USING btree (securitypermissionid);
 
 
 --
--- Name: ind_securitytree-securitygroup; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securitytree-securitygroup; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securitytree-securitygroup" ON tblsecurityelement USING btree (securitygroupid);
 
 
 --
--- Name: ind_securitytree-securitypermission; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securitytree-securitypermission; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securitytree-securitypermission" ON tblsecurityelement USING btree (securitypermissionid);
 
 
 --
--- Name: ind_securitytree-tree; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securitytree-tree; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securitytree-tree" ON tblsecurityelement USING btree (elementid);
 
 
 --
--- Name: ind_securityusermembership-securitygroup; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securityusermembership-securitygroup; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securityusermembership-securitygroup" ON tblsecurityusermembership USING btree (securitygroupid);
 
 
 --
--- Name: ind_securityusermembership-securityuser; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securityusermembership-securityuser; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securityusermembership-securityuser" ON tblsecurityusermembership USING btree (securityuserid);
 
 
 --
--- Name: ind_securityvmeasurement-securitygroup; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securityvmeasurement-securitygroup; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securityvmeasurement-securitygroup" ON tblsecurityvmeasurement USING btree (securitygroupid);
 
 
 --
--- Name: ind_securityvmeasurement-securitypermission; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securityvmeasurement-securitypermission; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securityvmeasurement-securitypermission" ON tblsecurityvmeasurement USING btree (securitypermissionid);
 
 
 --
--- Name: ind_securityvmeasurement-vmeasurement; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_securityvmeasurement-vmeasurement; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_securityvmeasurement-vmeasurement" ON tblsecurityvmeasurement USING btree (vmeasurementid);
 
 
 --
--- Name: ind_taxon-taxonrank; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_taxon-taxonrank; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_taxon-taxonrank" ON tlkptaxon USING btree (taxonrankid);
 
 
 --
--- Name: ind_vmeasurement-measurement; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_vmeasurement-measurement; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_vmeasurement-measurement" ON tblvmeasurement USING btree (measurementid);
 
 
 --
--- Name: ind_vmeasurement-securityuser; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_vmeasurement-securityuser; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_vmeasurement-securityuser" ON tblvmeasurement USING btree (owneruserid);
 
 
 --
--- Name: ind_vmeasurement-vmeasurementop; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_vmeasurement-vmeasurementop; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_vmeasurement-vmeasurementop" ON tblvmeasurement USING btree (vmeasurementopid);
 
 
 --
--- Name: ind_vmeasurementderivedcache-measurement; Type: INDEX; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: ind_vmeasurementderivedcache-measurement; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_vmeasurementderivedcache-measurement" ON tblvmeasurementderivedcache USING btree (measurementid);
 
 
 --
--- Name: ind_vmeasurementderivedcache-vmeasurement; Type: INDEX; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: ind_vmeasurementderivedcache-vmeasurement; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_vmeasurementderivedcache-vmeasurement" ON tblvmeasurementderivedcache USING btree (vmeasurementid);
 
 
 --
--- Name: ind_vmeasurementgroup-vmeasurement1; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_vmeasurementgroup-vmeasurement1; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_vmeasurementgroup-vmeasurement1" ON tblvmeasurementgroup USING btree (vmeasurementid);
 
 
 --
--- Name: ind_vmeasurementgroup-vmeasurement2; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_vmeasurementgroup-vmeasurement2; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_vmeasurementgroup-vmeasurement2" ON tblvmeasurementgroup USING btree (membervmeasurementid);
 
 
 --
--- Name: ind_vmeasurementmetacache-vmeasurement; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_vmeasurementmetacache-vmeasurement; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_vmeasurementmetacache-vmeasurement" ON tblvmeasurementmetacache USING btree (vmeasurementid);
 
 
 --
--- Name: ind_vmeasurementreadingresult-vmeasurementresult_relyear; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: ind_vmeasurementreadingresult-vmeasurementresult_relyear; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX "ind_vmeasurementreadingresult-vmeasurementresult_relyear" ON tblvmeasurementreadingresult USING btree (vmeasurementresultid, relyear);
 
 
 --
--- Name: ind_vmrelyearreadingnote-vmeasurementid; Type: INDEX; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: ind_vmrelyearreadingnote-vmeasurementid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX "ind_vmrelyearreadingnote-vmeasurementid" ON tblvmeasurementrelyearreadingnote USING btree (vmeasurementid);
 
 
 --
--- Name: object_code_index; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: object_code_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX object_code_index ON tblobject USING btree (code);
 
 
 --
--- Name: parent_object_index; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: parent_object_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX parent_object_index ON tblobject USING btree (parentobjectid);
 
 
 --
--- Name: pkey_indexname; Type: INDEX; Schema: public; Owner: lucasm; Tablespace: 
+-- Name: pkey_indexname; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX pkey_indexname ON tlkpindextype USING btree (indexname);
 
 
 --
--- Name: postgis_object_extent; Type: INDEX; Schema: public; Owner: aps03pwb; Tablespace: 
+-- Name: postgis_object_extent; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX postgis_object_extent ON tblobject USING gist (locationgeometry);
@@ -24909,7 +22793,7 @@ ALTER TABLE tblobject CLUSTER ON postgis_object_extent;
 
 
 --
--- Name: check_measurementdatingerrors; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: check_measurementdatingerrors; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER check_measurementdatingerrors
@@ -24919,7 +22803,7 @@ CREATE TRIGGER check_measurementdatingerrors
 
 
 --
--- Name: check_vm_is_derived; Type: TRIGGER; Schema: public; Owner: lucasm
+-- Name: check_vm_is_derived; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER check_vm_is_derived
@@ -24929,7 +22813,7 @@ CREATE TRIGGER check_vm_is_derived
 
 
 --
--- Name: create_defaultsecurityrecordforgroup; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: create_defaultsecurityrecordforgroup; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER create_defaultsecurityrecordforgroup
@@ -24939,7 +22823,7 @@ CREATE TRIGGER create_defaultsecurityrecordforgroup
 
 
 --
--- Name: default_standardisedid; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: default_standardisedid; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER default_standardisedid
@@ -24949,7 +22833,7 @@ CREATE TRIGGER default_standardisedid
 
 
 --
--- Name: update_measurement_lastmodifiedtimestamp_trigger; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: update_measurement_lastmodifiedtimestamp_trigger; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_measurement_lastmodifiedtimestamp_trigger
@@ -24959,7 +22843,7 @@ CREATE TRIGGER update_measurement_lastmodifiedtimestamp_trigger
 
 
 --
--- Name: update_object_lastmodifiedtimestamp_trigger; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: update_object_lastmodifiedtimestamp_trigger; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_object_lastmodifiedtimestamp_trigger
@@ -24969,7 +22853,7 @@ CREATE TRIGGER update_object_lastmodifiedtimestamp_trigger
 
 
 --
--- Name: update_radius_lastmodifiedtimestamp_trigger; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: update_radius_lastmodifiedtimestamp_trigger; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_radius_lastmodifiedtimestamp_trigger
@@ -24979,7 +22863,7 @@ CREATE TRIGGER update_radius_lastmodifiedtimestamp_trigger
 
 
 --
--- Name: update_sample-lastmodifiedtimestamp; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: update_sample-lastmodifiedtimestamp; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER "update_sample-lastmodifiedtimestamp"
@@ -24989,7 +22873,7 @@ CREATE TRIGGER "update_sample-lastmodifiedtimestamp"
 
 
 --
--- Name: update_tree_lastmodifiedtimestamp_trigger; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: update_tree_lastmodifiedtimestamp_trigger; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_tree_lastmodifiedtimestamp_trigger
@@ -24999,7 +22883,7 @@ CREATE TRIGGER update_tree_lastmodifiedtimestamp_trigger
 
 
 --
--- Name: update_vmeasurement; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: update_vmeasurement; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_vmeasurement
@@ -25009,7 +22893,7 @@ CREATE TRIGGER update_vmeasurement
 
 
 --
--- Name: update_vmeasurementcache_extents; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: update_vmeasurementcache_extents; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_vmeasurementcache_extents
@@ -25019,7 +22903,7 @@ CREATE TRIGGER update_vmeasurementcache_extents
 
 
 --
--- Name: update_vmeasurementresult_lastmodifiedtimestamp_trigger; Type: TRIGGER; Schema: public; Owner: aps03pwb
+-- Name: update_vmeasurementresult_lastmodifiedtimestamp_trigger; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_vmeasurementresult_lastmodifiedtimestamp_trigger
@@ -25029,7 +22913,7 @@ CREATE TRIGGER update_vmeasurementresult_lastmodifiedtimestamp_trigger
 
 
 --
--- Name: fkey_element-elementauthenticity; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_element-elementauthenticity; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblelement
@@ -25037,7 +22921,7 @@ ALTER TABLE ONLY tblelement
 
 
 --
--- Name: fkey_element-elementshape; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_element-elementshape; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblelement
@@ -25045,7 +22929,7 @@ ALTER TABLE ONLY tblelement
 
 
 --
--- Name: fkey_element-elementtype; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_element-elementtype; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblelement
@@ -25053,7 +22937,7 @@ ALTER TABLE ONLY tblelement
 
 
 --
--- Name: fkey_element-locationtype; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_element-locationtype; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblelement
@@ -25061,7 +22945,7 @@ ALTER TABLE ONLY tblelement
 
 
 --
--- Name: fkey_iptracking_securityuser; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_iptracking_securityuser; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tbliptracking
@@ -25069,7 +22953,7 @@ ALTER TABLE ONLY tbliptracking
 
 
 --
--- Name: fkey_measurement-datingtype; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_measurement-datingtype; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblmeasurement
@@ -25077,7 +22961,7 @@ ALTER TABLE ONLY tblmeasurement
 
 
 --
--- Name: fkey_measurement-measurementvariable; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_measurement-measurementvariable; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblmeasurement
@@ -25085,7 +22969,7 @@ ALTER TABLE ONLY tblmeasurement
 
 
 --
--- Name: fkey_measurement-measuringmethod; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_measurement-measuringmethod; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblmeasurement
@@ -25093,7 +22977,7 @@ ALTER TABLE ONLY tblmeasurement
 
 
 --
--- Name: fkey_measurement-radius; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_measurement-radius; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblmeasurement
@@ -25101,7 +22985,7 @@ ALTER TABLE ONLY tblmeasurement
 
 
 --
--- Name: fkey_measurement-securityuser; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_measurement-securityuser; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblmeasurement
@@ -25109,7 +22993,7 @@ ALTER TABLE ONLY tblmeasurement
 
 
 --
--- Name: fkey_measurement-supervisedby; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_measurement-supervisedby; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblmeasurement
@@ -25117,7 +23001,7 @@ ALTER TABLE ONLY tblmeasurement
 
 
 --
--- Name: fkey_measurement-unit; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_measurement-unit; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblmeasurement
@@ -25125,7 +23009,7 @@ ALTER TABLE ONLY tblmeasurement
 
 
 --
--- Name: fkey_noteresult-readingresult; Type: FK CONSTRAINT; Schema: public; Owner: lucasm
+-- Name: fkey_noteresult-readingresult; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementreadingnoteresult
@@ -25133,7 +23017,7 @@ ALTER TABLE ONLY tblvmeasurementreadingnoteresult
 
 
 --
--- Name: fkey_object-coveragetemporal; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_object-coveragetemporal; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblobject
@@ -25141,7 +23025,7 @@ ALTER TABLE ONLY tblobject
 
 
 --
--- Name: fkey_object-coveragetemporalfoundation; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_object-coveragetemporalfoundation; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblobject
@@ -25149,7 +23033,7 @@ ALTER TABLE ONLY tblobject
 
 
 --
--- Name: fkey_object-objecttype; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_object-objecttype; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblobject
@@ -25157,7 +23041,7 @@ ALTER TABLE ONLY tblobject
 
 
 --
--- Name: fkey_objecttype-vocabulary; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_objecttype-vocabulary; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tlkpobjecttype
@@ -25165,7 +23049,7 @@ ALTER TABLE ONLY tlkpobjecttype
 
 
 --
--- Name: fkey_radius-heartwood; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_radius-heartwood; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblradius
@@ -25173,7 +23057,7 @@ ALTER TABLE ONLY tblradius
 
 
 --
--- Name: fkey_radius-pith; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_radius-pith; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblradius
@@ -25181,7 +23065,7 @@ ALTER TABLE ONLY tblradius
 
 
 --
--- Name: fkey_radius-sample; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_radius-sample; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblradius
@@ -25189,7 +23073,7 @@ ALTER TABLE ONLY tblradius
 
 
 --
--- Name: fkey_radius-sapwood; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_radius-sapwood; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblradius
@@ -25197,7 +23081,7 @@ ALTER TABLE ONLY tblradius
 
 
 --
--- Name: fkey_reading-measurement; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_reading-measurement; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblreading
@@ -25205,7 +23089,7 @@ ALTER TABLE ONLY tblreading
 
 
 --
--- Name: fkey_readingnote-vocabulary; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_readingnote-vocabulary; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tlkpreadingnote
@@ -25213,7 +23097,7 @@ ALTER TABLE ONLY tlkpreadingnote
 
 
 --
--- Name: fkey_readingreadingnote-reading; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_readingreadingnote-reading; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblreadingreadingnote
@@ -25221,7 +23105,7 @@ ALTER TABLE ONLY tblreadingreadingnote
 
 
 --
--- Name: fkey_readingreadingnote-readingnote; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_readingreadingnote-readingnote; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblreadingreadingnote
@@ -25229,7 +23113,7 @@ ALTER TABLE ONLY tblreadingreadingnote
 
 
 --
--- Name: fkey_relyearreadingnote-readingnote; Type: FK CONSTRAINT; Schema: public; Owner: lucasm
+-- Name: fkey_relyearreadingnote-readingnote; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementrelyearreadingnote
@@ -25237,7 +23121,7 @@ ALTER TABLE ONLY tblvmeasurementrelyearreadingnote
 
 
 --
--- Name: fkey_relyearreadingnote-vmeasurement; Type: FK CONSTRAINT; Schema: public; Owner: lucasm
+-- Name: fkey_relyearreadingnote-vmeasurement; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementrelyearreadingnote
@@ -25245,7 +23129,7 @@ ALTER TABLE ONLY tblvmeasurementrelyearreadingnote
 
 
 --
--- Name: fkey_requestlog-securityuser; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_requestlog-securityuser; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblrequestlog
@@ -25253,7 +23137,7 @@ ALTER TABLE ONLY tblrequestlog
 
 
 --
--- Name: fkey_result-vmeasurement_id; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_result-vmeasurement_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementresult
@@ -25261,7 +23145,7 @@ ALTER TABLE ONLY tblvmeasurementresult
 
 
 --
--- Name: fkey_sample-box; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_sample-box; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsample
@@ -25269,7 +23153,7 @@ ALTER TABLE ONLY tblsample
 
 
 --
--- Name: fkey_sample-datecertainty; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_sample-datecertainty; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsample
@@ -25277,7 +23161,7 @@ ALTER TABLE ONLY tblsample
 
 
 --
--- Name: fkey_sample-sampletype; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_sample-sampletype; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsample
@@ -25285,7 +23169,7 @@ ALTER TABLE ONLY tblsample
 
 
 --
--- Name: fkey_sample-tree; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_sample-tree; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsample
@@ -25293,7 +23177,7 @@ ALTER TABLE ONLY tblsample
 
 
 --
--- Name: fkey_securitydefault-securitygroup; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securitydefault-securitygroup; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecuritydefault
@@ -25301,7 +23185,7 @@ ALTER TABLE ONLY tblsecuritydefault
 
 
 --
--- Name: fkey_securitydefault-securitypermission; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securitydefault-securitypermission; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecuritydefault
@@ -25309,7 +23193,7 @@ ALTER TABLE ONLY tblsecuritydefault
 
 
 --
--- Name: fkey_securitygroupmembership-securitygroup1; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securitygroupmembership-securitygroup1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecuritygroupmembership
@@ -25317,7 +23201,7 @@ ALTER TABLE ONLY tblsecuritygroupmembership
 
 
 --
--- Name: fkey_securitygroupmembership-securitygroup2; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securitygroupmembership-securitygroup2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecuritygroupmembership
@@ -25325,7 +23209,7 @@ ALTER TABLE ONLY tblsecuritygroupmembership
 
 
 --
--- Name: fkey_securityobject-object; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securityobject-object; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityobject
@@ -25333,7 +23217,7 @@ ALTER TABLE ONLY tblsecurityobject
 
 
 --
--- Name: fkey_securityobject-securitygroup; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securityobject-securitygroup; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityobject
@@ -25341,7 +23225,7 @@ ALTER TABLE ONLY tblsecurityobject
 
 
 --
--- Name: fkey_securityobject-securitypermission; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securityobject-securitypermission; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityobject
@@ -25349,7 +23233,7 @@ ALTER TABLE ONLY tblsecurityobject
 
 
 --
--- Name: fkey_securitytree-securitygroup; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securitytree-securitygroup; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityelement
@@ -25357,7 +23241,7 @@ ALTER TABLE ONLY tblsecurityelement
 
 
 --
--- Name: fkey_securitytree-securitypermission; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securitytree-securitypermission; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityelement
@@ -25365,7 +23249,7 @@ ALTER TABLE ONLY tblsecurityelement
 
 
 --
--- Name: fkey_securitytree-tree; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securitytree-tree; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityelement
@@ -25373,7 +23257,7 @@ ALTER TABLE ONLY tblsecurityelement
 
 
 --
--- Name: fkey_securityusermembership-securitygroup; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securityusermembership-securitygroup; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityusermembership
@@ -25381,7 +23265,7 @@ ALTER TABLE ONLY tblsecurityusermembership
 
 
 --
--- Name: fkey_securityusermembership-securityuser; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securityusermembership-securityuser; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityusermembership
@@ -25389,7 +23273,7 @@ ALTER TABLE ONLY tblsecurityusermembership
 
 
 --
--- Name: fkey_securityvmeasurement-securitygroup; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securityvmeasurement-securitygroup; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityvmeasurement
@@ -25397,7 +23281,7 @@ ALTER TABLE ONLY tblsecurityvmeasurement
 
 
 --
--- Name: fkey_securityvmeasurement-securitypermission; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securityvmeasurement-securitypermission; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityvmeasurement
@@ -25405,7 +23289,7 @@ ALTER TABLE ONLY tblsecurityvmeasurement
 
 
 --
--- Name: fkey_securityvmeasurement-vmeasurement; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_securityvmeasurement-vmeasurement; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblsecurityvmeasurement
@@ -25413,7 +23297,7 @@ ALTER TABLE ONLY tblsecurityvmeasurement
 
 
 --
--- Name: fkey_taxon-taxonrank; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_taxon-taxonrank; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tlkptaxon
@@ -25421,7 +23305,7 @@ ALTER TABLE ONLY tlkptaxon
 
 
 --
--- Name: fkey_tblcrossdate-tblvmeasurement; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_tblcrossdate-tblvmeasurement; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblcrossdate
@@ -25429,7 +23313,7 @@ ALTER TABLE ONLY tblcrossdate
 
 
 --
--- Name: fkey_tblcrossdate-tblvmeasurement_master; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_tblcrossdate-tblvmeasurement_master; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblcrossdate
@@ -25437,7 +23321,7 @@ ALTER TABLE ONLY tblcrossdate
 
 
 --
--- Name: fkey_tblredate-tblvmeasurement; Type: FK CONSTRAINT; Schema: public; Owner: lucasm
+-- Name: fkey_tblredate-tblvmeasurement; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblredate
@@ -25445,7 +23329,7 @@ ALTER TABLE ONLY tblredate
 
 
 --
--- Name: fkey_tblredate-tlkpdatingtype; Type: FK CONSTRAINT; Schema: public; Owner: lucasm
+-- Name: fkey_tblredate-tlkpdatingtype; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblredate
@@ -25453,7 +23337,7 @@ ALTER TABLE ONLY tblredate
 
 
 --
--- Name: fkey_tbltruncate-tblvmeasurement; Type: FK CONSTRAINT; Schema: public; Owner: lucasm
+-- Name: fkey_tbltruncate-tblvmeasurement; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tbltruncate
@@ -25461,7 +23345,7 @@ ALTER TABLE ONLY tbltruncate
 
 
 --
--- Name: fkey_vmeasurement-measurement; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_vmeasurement-measurement; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurement
@@ -25469,7 +23353,7 @@ ALTER TABLE ONLY tblvmeasurement
 
 
 --
--- Name: fkey_vmeasurement-securityuser; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_vmeasurement-securityuser; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurement
@@ -25477,7 +23361,7 @@ ALTER TABLE ONLY tblvmeasurement
 
 
 --
--- Name: fkey_vmeasurement-vmeasurementop; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_vmeasurement-vmeasurementop; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurement
@@ -25485,7 +23369,7 @@ ALTER TABLE ONLY tblvmeasurement
 
 
 --
--- Name: fkey_vmeasurementgroup-vmeasurement1; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_vmeasurementgroup-vmeasurement1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementgroup
@@ -25493,7 +23377,7 @@ ALTER TABLE ONLY tblvmeasurementgroup
 
 
 --
--- Name: fkey_vmeasurementgroup-vmeasurement2; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_vmeasurementgroup-vmeasurement2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementgroup
@@ -25501,7 +23385,7 @@ ALTER TABLE ONLY tblvmeasurementgroup
 
 
 --
--- Name: fkey_vmeasurementreadingresult-vmeasurementresult; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: fkey_vmeasurementreadingresult-vmeasurementresult; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementreadingresult
@@ -25509,7 +23393,7 @@ ALTER TABLE ONLY tblvmeasurementreadingresult
 
 
 --
--- Name: tblelement_objectid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: tblelement_objectid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblelement
@@ -25517,7 +23401,7 @@ ALTER TABLE ONLY tblelement
 
 
 --
--- Name: tblobject_parentobjectid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: tblobject_parentobjectid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblobject
@@ -25525,7 +23409,7 @@ ALTER TABLE ONLY tblobject
 
 
 --
--- Name: tblvmeasurementderivedcache_measurementid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementderivedcache_measurementid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementderivedcache
@@ -25533,7 +23417,7 @@ ALTER TABLE ONLY tblvmeasurementderivedcache
 
 
 --
--- Name: tblvmeasurementderivedcache_vmeasurementid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementderivedcache_vmeasurementid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementderivedcache
@@ -25541,7 +23425,7 @@ ALTER TABLE ONLY tblvmeasurementderivedcache
 
 
 --
--- Name: tblvmeasurementmetacache_datingtypeid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementmetacache_datingtypeid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementmetacache
@@ -25549,7 +23433,7 @@ ALTER TABLE ONLY tblvmeasurementmetacache
 
 
 --
--- Name: tblvmeasurementmetacache_vmeasurementid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementmetacache_vmeasurementid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementmetacache
@@ -25557,7 +23441,7 @@ ALTER TABLE ONLY tblvmeasurementmetacache
 
 
 --
--- Name: tblvmeasurementreadingnoteresult_readingnoteid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementreadingnoteresult_readingnoteid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tblvmeasurementreadingnoteresult
@@ -25565,7 +23449,7 @@ ALTER TABLE ONLY tblvmeasurementreadingnoteresult
 
 
 --
--- Name: tlkpreadingnote_parentreadingid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: tlkpreadingnote_parentreadingid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tlkpreadingnote
@@ -25573,7 +23457,7 @@ ALTER TABLE ONLY tlkpreadingnote
 
 
 --
--- Name: tlkpreadingnote_parentvmrelyearreadingnoteid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: aps03pwb
+-- Name: tlkpreadingnote_parentvmrelyearreadingnoteid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tlkpreadingnote
@@ -25583,7 +23467,7 @@ ALTER TABLE ONLY tlkpreadingnote
 SET search_path = sqlj, pg_catalog;
 
 --
--- Name: classpath_entry_jarid_fkey; Type: FK CONSTRAINT; Schema: sqlj; Owner: postgres
+-- Name: classpath_entry_jarid_fkey; Type: FK CONSTRAINT; Schema: sqlj; Owner: -
 --
 
 ALTER TABLE ONLY classpath_entry
@@ -25591,7 +23475,7 @@ ALTER TABLE ONLY classpath_entry
 
 
 --
--- Name: jar_entry_jarid_fkey; Type: FK CONSTRAINT; Schema: sqlj; Owner: postgres
+-- Name: jar_entry_jarid_fkey; Type: FK CONSTRAINT; Schema: sqlj; Owner: -
 --
 
 ALTER TABLE ONLY jar_entry
@@ -25599,7 +23483,7 @@ ALTER TABLE ONLY jar_entry
 
 
 --
--- Name: jar_repository_deploymentdesc_fkey; Type: FK CONSTRAINT; Schema: sqlj; Owner: postgres
+-- Name: jar_repository_deploymentdesc_fkey; Type: FK CONSTRAINT; Schema: sqlj; Owner: -
 --
 
 ALTER TABLE ONLY jar_repository
@@ -25607,7 +23491,7 @@ ALTER TABLE ONLY jar_repository
 
 
 --
--- Name: cpgdb; Type: ACL; Schema: -; Owner: lucasm
+-- Name: cpgdb; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE ALL ON SCHEMA cpgdb FROM PUBLIC;
@@ -25617,7 +23501,7 @@ GRANT ALL ON SCHEMA cpgdb TO "Webgroup";
 
 
 --
--- Name: cpgdbj; Type: ACL; Schema: -; Owner: lucasm
+-- Name: cpgdbj; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE ALL ON SCHEMA cpgdbj FROM PUBLIC;
@@ -25627,7 +23511,7 @@ GRANT ALL ON SCHEMA cpgdbj TO "Webgroup";
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: postgres
+-- Name: public; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
@@ -25638,7 +23522,7 @@ GRANT ALL ON SCHEMA public TO "Webgroup";
 
 
 --
--- Name: sqlj; Type: ACL; Schema: -; Owner: postgres
+-- Name: sqlj; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE ALL ON SCHEMA sqlj FROM PUBLIC;
@@ -25650,7 +23534,7 @@ GRANT USAGE ON SCHEMA sqlj TO PUBLIC;
 SET search_path = public, pg_catalog;
 
 --
--- Name: box2d_in(cstring); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_in(cstring); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_in(cstring) FROM PUBLIC;
@@ -25661,7 +23545,7 @@ GRANT ALL ON FUNCTION box2d_in(cstring) TO "Webgroup";
 
 
 --
--- Name: box2d_out(box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_out(box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_out(box2d) FROM PUBLIC;
@@ -25672,7 +23556,7 @@ GRANT ALL ON FUNCTION box2d_out(box2d) TO "Webgroup";
 
 
 --
--- Name: box3d_in(cstring); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box3d_in(cstring); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box3d_in(cstring) FROM PUBLIC;
@@ -25683,7 +23567,7 @@ GRANT ALL ON FUNCTION box3d_in(cstring) TO "Webgroup";
 
 
 --
--- Name: box3d_out(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box3d_out(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box3d_out(box3d) FROM PUBLIC;
@@ -25694,7 +23578,7 @@ GRANT ALL ON FUNCTION box3d_out(box3d) TO "Webgroup";
 
 
 --
--- Name: chip_in(cstring); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: chip_in(cstring); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION chip_in(cstring) FROM PUBLIC;
@@ -25705,7 +23589,7 @@ GRANT ALL ON FUNCTION chip_in(cstring) TO "Webgroup";
 
 
 --
--- Name: chip_out(chip); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: chip_out(chip); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION chip_out(chip) FROM PUBLIC;
@@ -25716,7 +23600,7 @@ GRANT ALL ON FUNCTION chip_out(chip) TO "Webgroup";
 
 
 --
--- Name: geometry_analyze(internal); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_analyze(internal); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_analyze(internal) FROM PUBLIC;
@@ -25727,7 +23611,7 @@ GRANT ALL ON FUNCTION geometry_analyze(internal) TO "Webgroup";
 
 
 --
--- Name: geometry_in(cstring); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_in(cstring); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_in(cstring) FROM PUBLIC;
@@ -25738,7 +23622,7 @@ GRANT ALL ON FUNCTION geometry_in(cstring) TO "Webgroup";
 
 
 --
--- Name: geometry_out(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_out(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_out(geometry) FROM PUBLIC;
@@ -25749,7 +23633,7 @@ GRANT ALL ON FUNCTION geometry_out(geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_recv(internal); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_recv(internal); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_recv(internal) FROM PUBLIC;
@@ -25760,7 +23644,7 @@ GRANT ALL ON FUNCTION geometry_recv(internal) TO "Webgroup";
 
 
 --
--- Name: geometry_send(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_send(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_send(geometry) FROM PUBLIC;
@@ -25771,7 +23655,7 @@ GRANT ALL ON FUNCTION geometry_send(geometry) TO "Webgroup";
 
 
 --
--- Name: histogram2d_in(cstring); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: histogram2d_in(cstring); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION histogram2d_in(cstring) FROM PUBLIC;
@@ -25782,7 +23666,7 @@ GRANT ALL ON FUNCTION histogram2d_in(cstring) TO "Webgroup";
 
 
 --
--- Name: histogram2d_out(histogram2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: histogram2d_out(histogram2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION histogram2d_out(histogram2d) FROM PUBLIC;
@@ -25793,7 +23677,7 @@ GRANT ALL ON FUNCTION histogram2d_out(histogram2d) TO "Webgroup";
 
 
 --
--- Name: spheroid_in(cstring); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: spheroid_in(cstring); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION spheroid_in(cstring) FROM PUBLIC;
@@ -25804,7 +23688,7 @@ GRANT ALL ON FUNCTION spheroid_in(cstring) TO "Webgroup";
 
 
 --
--- Name: spheroid_out(spheroid); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: spheroid_out(spheroid); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION spheroid_out(spheroid) FROM PUBLIC;
@@ -25817,7 +23701,7 @@ GRANT ALL ON FUNCTION spheroid_out(spheroid) TO "Webgroup";
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: _fcojc(character varying, character varying); Type: ACL; Schema: cpgdb; Owner: lucasm
+-- Name: _fcojc(character varying, character varying); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION _fcojc(character varying, character varying) FROM PUBLIC;
@@ -25830,7 +23714,7 @@ GRANT ALL ON FUNCTION _fcojc(character varying, character varying) TO "Webgroup"
 SET search_path = public, pg_catalog;
 
 --
--- Name: ndims(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: ndims(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION ndims(geometry) FROM PUBLIC;
@@ -25841,7 +23725,7 @@ GRANT ALL ON FUNCTION ndims(geometry) TO "Webgroup";
 
 
 --
--- Name: srid(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: srid(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION srid(geometry) FROM PUBLIC;
@@ -25852,7 +23736,7 @@ GRANT ALL ON FUNCTION srid(geometry) TO "Webgroup";
 
 
 --
--- Name: tblobject; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblobject; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblobject FROM PUBLIC;
@@ -25862,7 +23746,7 @@ GRANT ALL ON TABLE tblobject TO "Webgroup";
 
 
 --
--- Name: tlkpreadingnote; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpreadingnote; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpreadingnote FROM PUBLIC;
@@ -25872,7 +23756,7 @@ GRANT ALL ON TABLE tlkpreadingnote TO "Webgroup";
 
 
 --
--- Name: tblvmeasurementmetacache; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementmetacache; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblvmeasurementmetacache FROM PUBLIC;
@@ -25882,7 +23766,7 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE tblvmeasurementmetacache TO "Webgroup
 
 
 --
--- Name: tblmeasurement; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblmeasurement; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblmeasurement FROM PUBLIC;
@@ -25892,7 +23776,7 @@ GRANT ALL ON TABLE tblmeasurement TO "Webgroup";
 
 
 --
--- Name: tblvmeasurementderivedcache; Type: ACL; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementderivedcache; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblvmeasurementderivedcache FROM PUBLIC;
@@ -25902,7 +23786,7 @@ GRANT ALL ON TABLE tblvmeasurementderivedcache TO "Webgroup";
 
 
 --
--- Name: tblsecuritygroup; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritygroup; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblsecuritygroup FROM PUBLIC;
@@ -25914,7 +23798,7 @@ GRANT ALL ON TABLE tblsecuritygroup TO "Webgroup";
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: getgroupmembership(integer); Type: ACL; Schema: cpgdb; Owner: lucasm
+-- Name: getgroupmembership(integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION getgroupmembership(integer) FROM PUBLIC;
@@ -25925,7 +23809,7 @@ GRANT ALL ON FUNCTION getgroupmembership(integer) TO "Webgroup";
 
 
 --
--- Name: getgroupmembershiparray(integer); Type: ACL; Schema: cpgdb; Owner: lucasm
+-- Name: getgroupmembershiparray(integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION getgroupmembershiparray(integer) FROM PUBLIC;
@@ -25936,7 +23820,7 @@ GRANT ALL ON FUNCTION getgroupmembershiparray(integer) TO "Webgroup";
 
 
 --
--- Name: getgrouppermissions(integer[], character varying, integer); Type: ACL; Schema: cpgdb; Owner: lucasm
+-- Name: getgrouppermissions(integer[], character varying, integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION getgrouppermissions(integer[], character varying, integer) FROM PUBLIC;
@@ -25947,7 +23831,7 @@ GRANT ALL ON FUNCTION getgrouppermissions(integer[], character varying, integer)
 
 
 --
--- Name: getuserpermissions(integer, character varying, integer); Type: ACL; Schema: cpgdb; Owner: lucasm
+-- Name: getuserpermissions(integer, character varying, integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION getuserpermissions(integer, character varying, integer) FROM PUBLIC;
@@ -25960,7 +23844,7 @@ GRANT ALL ON FUNCTION getuserpermissions(integer, character varying, integer) TO
 SET search_path = public, pg_catalog;
 
 --
--- Name: tblvmeasurementreadingresult; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementreadingresult; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblvmeasurementreadingresult FROM PUBLIC;
@@ -25972,7 +23856,7 @@ GRANT ALL ON TABLE tblvmeasurementreadingresult TO "Webgroup";
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: getvmeasurementreadingresult(character varying); Type: ACL; Schema: cpgdb; Owner: lucasm
+-- Name: getvmeasurementreadingresult(character varying); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION getvmeasurementreadingresult(character varying) FROM PUBLIC;
@@ -25985,7 +23869,7 @@ GRANT ALL ON FUNCTION getvmeasurementreadingresult(character varying) TO "Webgro
 SET search_path = public, pg_catalog;
 
 --
--- Name: tblvmeasurementresult; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementresult; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblvmeasurementresult FROM PUBLIC;
@@ -25997,7 +23881,7 @@ GRANT ALL ON TABLE tblvmeasurementresult TO "Webgroup";
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: getvmeasurementresult(uuid); Type: ACL; Schema: cpgdb; Owner: lucasm
+-- Name: getvmeasurementresult(uuid); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION getvmeasurementresult(uuid) FROM PUBLIC;
@@ -26008,7 +23892,7 @@ GRANT ALL ON FUNCTION getvmeasurementresult(uuid) TO "Webgroup";
 
 
 --
--- Name: isadmin(integer); Type: ACL; Schema: cpgdb; Owner: aps03pwb
+-- Name: isadmin(integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION isadmin(securityuserid integer) FROM PUBLIC;
@@ -26019,7 +23903,7 @@ GRANT ALL ON FUNCTION isadmin(securityuserid integer) TO "Webgroup";
 
 
 --
--- Name: lookupenvdata(integer, integer); Type: ACL; Schema: cpgdb; Owner: aps03pwb
+-- Name: lookupenvdata(integer, integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lookupenvdata(theelementid integer, therasterlayerid integer) FROM PUBLIC;
@@ -26030,7 +23914,7 @@ GRANT ALL ON FUNCTION lookupenvdata(theelementid integer, therasterlayerid integ
 
 
 --
--- Name: lookupenvdatabylayer(integer); Type: ACL; Schema: cpgdb; Owner: aps03pwb
+-- Name: lookupenvdatabylayer(integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lookupenvdatabylayer(therasterlayerid integer) FROM PUBLIC;
@@ -26041,7 +23925,7 @@ GRANT ALL ON FUNCTION lookupenvdatabylayer(therasterlayerid integer) TO "Webgrou
 
 
 --
--- Name: lookupenvdatabytree(integer); Type: ACL; Schema: cpgdb; Owner: aps03pwb
+-- Name: lookupenvdatabytree(integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lookupenvdatabytree(theelementid integer) FROM PUBLIC;
@@ -26054,7 +23938,7 @@ GRANT ALL ON FUNCTION lookupenvdatabytree(theelementid integer) TO "Webgroup";
 SET search_path = public, pg_catalog;
 
 --
--- Name: geometrytype(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometrytype(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometrytype(geometry) FROM PUBLIC;
@@ -26065,7 +23949,7 @@ GRANT ALL ON FUNCTION geometrytype(geometry) TO "Webgroup";
 
 
 --
--- Name: tblelement; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblelement; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblelement FROM PUBLIC;
@@ -26075,7 +23959,7 @@ GRANT ALL ON TABLE tblelement TO "Webgroup";
 
 
 --
--- Name: tblradius; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblradius; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblradius FROM PUBLIC;
@@ -26085,7 +23969,7 @@ GRANT ALL ON TABLE tblradius TO "Webgroup";
 
 
 --
--- Name: tblsample; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsample; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblsample FROM PUBLIC;
@@ -26097,7 +23981,7 @@ GRANT ALL ON TABLE tblsample TO "Webgroup";
 SET search_path = cpgdb, pg_catalog;
 
 --
--- Name: qrytaxonflat1(integer); Type: ACL; Schema: cpgdb; Owner: aps03pwb
+-- Name: qrytaxonflat1(integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qrytaxonflat1(taxonid integer) FROM PUBLIC;
@@ -26109,7 +23993,7 @@ GRANT ALL ON FUNCTION qrytaxonflat1(taxonid integer) TO lucasm;
 
 
 --
--- Name: qrytaxonflat2(integer); Type: ACL; Schema: cpgdb; Owner: aps03pwb
+-- Name: qrytaxonflat2(integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qrytaxonflat2(taxonid integer) FROM PUBLIC;
@@ -26121,7 +24005,7 @@ GRANT ALL ON FUNCTION qrytaxonflat2(taxonid integer) TO "Webgroup";
 
 
 --
--- Name: qrytaxonomy(integer); Type: ACL; Schema: cpgdb; Owner: aps03pwb
+-- Name: qrytaxonomy(integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qrytaxonomy(taxonid integer) FROM PUBLIC;
@@ -26133,7 +24017,7 @@ GRANT ALL ON FUNCTION qrytaxonomy(taxonid integer) TO lucasm;
 
 
 --
--- Name: rasteratpoint(character varying, double precision, double precision); Type: ACL; Schema: cpgdb; Owner: aps03pwb
+-- Name: rasteratpoint(character varying, double precision, double precision); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION rasteratpoint(rasterfile character varying, latitude double precision, longitude double precision) FROM PUBLIC;
@@ -26144,7 +24028,7 @@ GRANT ALL ON FUNCTION rasteratpoint(rasterfile character varying, latitude doubl
 
 
 --
--- Name: recursegetparentgroups(integer, integer); Type: ACL; Schema: cpgdb; Owner: lucasm
+-- Name: recursegetparentgroups(integer, integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION recursegetparentgroups(integer, integer) FROM PUBLIC;
@@ -26155,7 +24039,7 @@ GRANT ALL ON FUNCTION recursegetparentgroups(integer, integer) TO "Webgroup";
 
 
 --
--- Name: update_objectextentbyobject(integer); Type: ACL; Schema: cpgdb; Owner: aps03pwb
+-- Name: update_objectextentbyobject(integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION update_objectextentbyobject(theobjectid integer) FROM PUBLIC;
@@ -26166,7 +24050,7 @@ GRANT ALL ON FUNCTION update_objectextentbyobject(theobjectid integer) TO "Webgr
 
 
 --
--- Name: update_objectextentbysubobject(integer); Type: ACL; Schema: cpgdb; Owner: aps03pwb
+-- Name: update_objectextentbysubobject(integer); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION update_objectextentbysubobject(subobjectid integer) FROM PUBLIC;
@@ -26177,7 +24061,7 @@ GRANT ALL ON FUNCTION update_objectextentbysubobject(subobjectid integer) TO "We
 
 
 --
--- Name: vmeasurementmodifiedcachetrigger(); Type: ACL; Schema: cpgdb; Owner: lucasm
+-- Name: vmeasurementmodifiedcachetrigger(); Type: ACL; Schema: cpgdb; Owner: -
 --
 
 REVOKE ALL ON FUNCTION vmeasurementmodifiedcachetrigger() FROM PUBLIC;
@@ -26190,7 +24074,7 @@ GRANT ALL ON FUNCTION vmeasurementmodifiedcachetrigger() TO "Webgroup";
 SET search_path = cpgdbj, pg_catalog;
 
 --
--- Name: qacqvmeasurementreadingresult(uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qacqvmeasurementreadingresult(uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qacqvmeasurementreadingresult(paramcurrentvmeasurementresultid uuid, OUT relyear integer, OUT reading integer) FROM PUBLIC;
@@ -26201,7 +24085,7 @@ GRANT ALL ON FUNCTION qacqvmeasurementreadingresult(paramcurrentvmeasurementresu
 
 
 --
--- Name: qappvmeasurementreadingresult(uuid, integer); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementreadingresult(uuid, integer); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qappvmeasurementreadingresult(paramvmeasurementresultid uuid, parammeasurementid integer) FROM PUBLIC;
@@ -26212,7 +24096,7 @@ GRANT ALL ON FUNCTION qappvmeasurementreadingresult(paramvmeasurementresultid uu
 
 
 --
--- Name: qappvmeasurementresult(uuid, uuid, uuid, uuid, integer, integer); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementresult(uuid, uuid, uuid, uuid, integer, integer); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qappvmeasurementresult(paramvmeasurementresultid uuid, paramvmeasurementid uuid, paramvmeasurementresultgroupid uuid, paramvmeasurementresultmasterid uuid, owneruserid integer, parammeasurementid integer) FROM PUBLIC;
@@ -26223,7 +24107,7 @@ GRANT ALL ON FUNCTION qappvmeasurementresult(paramvmeasurementresultid uuid, par
 
 
 --
--- Name: qappvmeasurementresultopindex(uuid, uuid, uuid, integer, uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementresultopindex(uuid, uuid, uuid, integer, uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qappvmeasurementresultopindex(paramnewvmeasurementresultid uuid, paramvmeasurementid uuid, paramvmeasurementresultmasterid uuid, owneruserid integer, paramcurrentvmeasurementresultid uuid) FROM PUBLIC;
@@ -26234,7 +24118,7 @@ GRANT ALL ON FUNCTION qappvmeasurementresultopindex(paramnewvmeasurementresultid
 
 
 --
--- Name: qappvmeasurementresultopsum(uuid, uuid, uuid, integer, uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementresultopsum(uuid, uuid, uuid, integer, uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qappvmeasurementresultopsum(paramnewvmeasurementresultid uuid, paramvmeasurementid uuid, paramvmeasurementresultmasterid uuid, owneruserid integer, paramvmeasurementresultgroupid uuid) FROM PUBLIC;
@@ -26245,7 +24129,7 @@ GRANT ALL ON FUNCTION qappvmeasurementresultopsum(paramnewvmeasurementresultid u
 
 
 --
--- Name: qappvmeasurementresultreadingopsum(uuid, uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qappvmeasurementresultreadingopsum(uuid, uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qappvmeasurementresultreadingopsum(paramnewvmeasurementresultgroupid uuid, paramnewvmeasurementresultid uuid) FROM PUBLIC;
@@ -26256,7 +24140,7 @@ GRANT ALL ON FUNCTION qappvmeasurementresultreadingopsum(paramnewvmeasurementres
 
 
 --
--- Name: qdelvmeasurementresultremovemasterid(uuid, uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qdelvmeasurementresultremovemasterid(uuid, uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qdelvmeasurementresultremovemasterid(paramvmeasurementresultmasterid uuid, paramvmeasurementresultid uuid) FROM PUBLIC;
@@ -26267,7 +24151,7 @@ GRANT ALL ON FUNCTION qdelvmeasurementresultremovemasterid(paramvmeasurementresu
 
 
 --
--- Name: qryvmeasurementmembers(uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qryvmeasurementmembers(uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qryvmeasurementmembers(paramvmeasurementid uuid, OUT vmeasurementid uuid, OUT membervmeasurementid uuid) FROM PUBLIC;
@@ -26278,7 +24162,7 @@ GRANT ALL ON FUNCTION qryvmeasurementmembers(paramvmeasurementid uuid, OUT vmeas
 
 
 --
--- Name: qryvmeasurementtype(uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qryvmeasurementtype(uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qryvmeasurementtype(vmeasurementid uuid, OUT vmeasurementid uuid, OUT op text, OUT vmeasurementsingroup bigint, OUT measurementid integer, OUT vmeasurementopparameter integer) FROM PUBLIC;
@@ -26289,7 +24173,7 @@ GRANT ALL ON FUNCTION qryvmeasurementtype(vmeasurementid uuid, OUT vmeasurementi
 
 
 --
--- Name: qupdvmeasurementresultattachgroupid(uuid, uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultattachgroupid(uuid, uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qupdvmeasurementresultattachgroupid(paramvmeasurementresultgroupid uuid, paramvmeasurementresultid uuid) FROM PUBLIC;
@@ -26300,7 +24184,7 @@ GRANT ALL ON FUNCTION qupdvmeasurementresultattachgroupid(paramvmeasurementresul
 
 
 --
--- Name: qupdvmeasurementresultcleargroupid(uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultcleargroupid(uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qupdvmeasurementresultcleargroupid(paramvmeasurementresultgroupid uuid) FROM PUBLIC;
@@ -26311,7 +24195,7 @@ GRANT ALL ON FUNCTION qupdvmeasurementresultcleargroupid(paramvmeasurementresult
 
 
 --
--- Name: qupdvmeasurementresultinfo(uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultinfo(uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qupdvmeasurementresultinfo(uuid) FROM PUBLIC;
@@ -26322,7 +24206,7 @@ GRANT ALL ON FUNCTION qupdvmeasurementresultinfo(uuid) TO "Webgroup";
 
 
 --
--- Name: qupdvmeasurementresultopclean(uuid, uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultopclean(uuid, uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qupdvmeasurementresultopclean(paramvmeasurementid uuid, paramcurrentvmeasurementresultid uuid) FROM PUBLIC;
@@ -26333,7 +24217,7 @@ GRANT ALL ON FUNCTION qupdvmeasurementresultopclean(paramvmeasurementid uuid, pa
 
 
 --
--- Name: qupdvmeasurementresultopcrossdate(uuid, uuid); Type: ACL; Schema: cpgdbj; Owner: lucasm
+-- Name: qupdvmeasurementresultopcrossdate(uuid, uuid); Type: ACL; Schema: cpgdbj; Owner: -
 --
 
 REVOKE ALL ON FUNCTION qupdvmeasurementresultopcrossdate(paramvmeasurementid uuid, paramcurrentvmeasurementresultid uuid) FROM PUBLIC;
@@ -26346,7 +24230,7 @@ GRANT ALL ON FUNCTION qupdvmeasurementresultopcrossdate(paramvmeasurementid uuid
 SET search_path = public, pg_catalog;
 
 --
--- Name: addauth(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: addauth(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION addauth(text) FROM PUBLIC;
@@ -26357,7 +24241,7 @@ GRANT ALL ON FUNCTION addauth(text) TO "Webgroup";
 
 
 --
--- Name: addbbox(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: addbbox(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION addbbox(geometry) FROM PUBLIC;
@@ -26368,7 +24252,7 @@ GRANT ALL ON FUNCTION addbbox(geometry) TO "Webgroup";
 
 
 --
--- Name: addgeometrycolumn(character varying, character varying, character varying, character varying, integer, character varying, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: addgeometrycolumn(character varying, character varying, character varying, character varying, integer, character varying, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION addgeometrycolumn(character varying, character varying, character varying, character varying, integer, character varying, integer) FROM PUBLIC;
@@ -26379,7 +24263,7 @@ GRANT ALL ON FUNCTION addgeometrycolumn(character varying, character varying, ch
 
 
 --
--- Name: addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer) FROM PUBLIC;
@@ -26390,7 +24274,7 @@ GRANT ALL ON FUNCTION addgeometrycolumn(character varying, character varying, ch
 
 
 --
--- Name: addgeometrycolumn(character varying, character varying, integer, character varying, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: addgeometrycolumn(character varying, character varying, integer, character varying, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION addgeometrycolumn(character varying, character varying, integer, character varying, integer) FROM PUBLIC;
@@ -26401,7 +24285,7 @@ GRANT ALL ON FUNCTION addgeometrycolumn(character varying, character varying, in
 
 
 --
--- Name: addpoint(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: addpoint(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION addpoint(geometry, geometry) FROM PUBLIC;
@@ -26412,7 +24296,7 @@ GRANT ALL ON FUNCTION addpoint(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: addpoint(geometry, geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: addpoint(geometry, geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION addpoint(geometry, geometry, integer) FROM PUBLIC;
@@ -26423,7 +24307,7 @@ GRANT ALL ON FUNCTION addpoint(geometry, geometry, integer) TO "Webgroup";
 
 
 --
--- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) FROM PUBLIC;
@@ -26434,7 +24318,7 @@ GRANT ALL ON FUNCTION affine(geometry, double precision, double precision, doubl
 
 
 --
--- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision) FROM PUBLIC;
@@ -26445,7 +24329,7 @@ GRANT ALL ON FUNCTION affine(geometry, double precision, double precision, doubl
 
 
 --
--- Name: agg_first(anyelement, anyelement); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: agg_first(anyelement, anyelement); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION agg_first(state anyelement, value anyelement) FROM PUBLIC;
@@ -26456,7 +24340,7 @@ GRANT ALL ON FUNCTION agg_first(state anyelement, value anyelement) TO "Webgroup
 
 
 --
--- Name: area(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: area(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION area(geometry) FROM PUBLIC;
@@ -26467,7 +24351,7 @@ GRANT ALL ON FUNCTION area(geometry) TO "Webgroup";
 
 
 --
--- Name: area2d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: area2d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION area2d(geometry) FROM PUBLIC;
@@ -26478,7 +24362,7 @@ GRANT ALL ON FUNCTION area2d(geometry) TO "Webgroup";
 
 
 --
--- Name: asbinary(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asbinary(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asbinary(geometry) FROM PUBLIC;
@@ -26489,7 +24373,7 @@ GRANT ALL ON FUNCTION asbinary(geometry) TO "Webgroup";
 
 
 --
--- Name: asbinary(geometry, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asbinary(geometry, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asbinary(geometry, text) FROM PUBLIC;
@@ -26500,7 +24384,7 @@ GRANT ALL ON FUNCTION asbinary(geometry, text) TO "Webgroup";
 
 
 --
--- Name: asewkb(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asewkb(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asewkb(geometry) FROM PUBLIC;
@@ -26511,7 +24395,7 @@ GRANT ALL ON FUNCTION asewkb(geometry) TO "Webgroup";
 
 
 --
--- Name: asewkb(geometry, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asewkb(geometry, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asewkb(geometry, text) FROM PUBLIC;
@@ -26522,7 +24406,7 @@ GRANT ALL ON FUNCTION asewkb(geometry, text) TO "Webgroup";
 
 
 --
--- Name: asewkt(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asewkt(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asewkt(geometry) FROM PUBLIC;
@@ -26533,7 +24417,7 @@ GRANT ALL ON FUNCTION asewkt(geometry) TO "Webgroup";
 
 
 --
--- Name: asgml(geometry, integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asgml(geometry, integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asgml(geometry, integer, integer) FROM PUBLIC;
@@ -26544,7 +24428,7 @@ GRANT ALL ON FUNCTION asgml(geometry, integer, integer) TO "Webgroup";
 
 
 --
--- Name: asgml(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asgml(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asgml(geometry, integer) FROM PUBLIC;
@@ -26555,7 +24439,7 @@ GRANT ALL ON FUNCTION asgml(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: asgml(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asgml(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asgml(geometry) FROM PUBLIC;
@@ -26566,7 +24450,7 @@ GRANT ALL ON FUNCTION asgml(geometry) TO "Webgroup";
 
 
 --
--- Name: ashexewkb(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: ashexewkb(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION ashexewkb(geometry) FROM PUBLIC;
@@ -26577,7 +24461,7 @@ GRANT ALL ON FUNCTION ashexewkb(geometry) TO "Webgroup";
 
 
 --
--- Name: ashexewkb(geometry, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: ashexewkb(geometry, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION ashexewkb(geometry, text) FROM PUBLIC;
@@ -26588,7 +24472,7 @@ GRANT ALL ON FUNCTION ashexewkb(geometry, text) TO "Webgroup";
 
 
 --
--- Name: askml(geometry, integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: askml(geometry, integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION askml(geometry, integer, integer) FROM PUBLIC;
@@ -26599,7 +24483,7 @@ GRANT ALL ON FUNCTION askml(geometry, integer, integer) TO "Webgroup";
 
 
 --
--- Name: askml(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: askml(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION askml(geometry, integer) FROM PUBLIC;
@@ -26610,7 +24494,7 @@ GRANT ALL ON FUNCTION askml(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: askml(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: askml(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION askml(geometry) FROM PUBLIC;
@@ -26621,7 +24505,7 @@ GRANT ALL ON FUNCTION askml(geometry) TO "Webgroup";
 
 
 --
--- Name: assvg(geometry, integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: assvg(geometry, integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION assvg(geometry, integer, integer) FROM PUBLIC;
@@ -26632,7 +24516,7 @@ GRANT ALL ON FUNCTION assvg(geometry, integer, integer) TO "Webgroup";
 
 
 --
--- Name: assvg(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: assvg(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION assvg(geometry, integer) FROM PUBLIC;
@@ -26643,7 +24527,7 @@ GRANT ALL ON FUNCTION assvg(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: assvg(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: assvg(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION assvg(geometry) FROM PUBLIC;
@@ -26654,7 +24538,7 @@ GRANT ALL ON FUNCTION assvg(geometry) TO "Webgroup";
 
 
 --
--- Name: astext(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: astext(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION astext(geometry) FROM PUBLIC;
@@ -26665,7 +24549,7 @@ GRANT ALL ON FUNCTION astext(geometry) TO "Webgroup";
 
 
 --
--- Name: asukml(geometry, integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asukml(geometry, integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asukml(geometry, integer, integer) FROM PUBLIC;
@@ -26676,7 +24560,7 @@ GRANT ALL ON FUNCTION asukml(geometry, integer, integer) TO "Webgroup";
 
 
 --
--- Name: asukml(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asukml(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asukml(geometry, integer) FROM PUBLIC;
@@ -26687,7 +24571,7 @@ GRANT ALL ON FUNCTION asukml(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: asukml(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: asukml(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION asukml(geometry) FROM PUBLIC;
@@ -26698,7 +24582,7 @@ GRANT ALL ON FUNCTION asukml(geometry) TO "Webgroup";
 
 
 --
--- Name: azimuth(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: azimuth(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION azimuth(geometry, geometry) FROM PUBLIC;
@@ -26709,7 +24593,7 @@ GRANT ALL ON FUNCTION azimuth(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: bdmpolyfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: bdmpolyfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION bdmpolyfromtext(text, integer) FROM PUBLIC;
@@ -26720,7 +24604,7 @@ GRANT ALL ON FUNCTION bdmpolyfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: bdpolyfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: bdpolyfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION bdpolyfromtext(text, integer) FROM PUBLIC;
@@ -26731,7 +24615,7 @@ GRANT ALL ON FUNCTION bdpolyfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: boundary(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: boundary(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION boundary(geometry) FROM PUBLIC;
@@ -26742,7 +24626,7 @@ GRANT ALL ON FUNCTION boundary(geometry) TO "Webgroup";
 
 
 --
--- Name: box(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box(geometry) FROM PUBLIC;
@@ -26753,7 +24637,7 @@ GRANT ALL ON FUNCTION box(geometry) TO "Webgroup";
 
 
 --
--- Name: box(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box(box3d) FROM PUBLIC;
@@ -26764,7 +24648,7 @@ GRANT ALL ON FUNCTION box(box3d) TO "Webgroup";
 
 
 --
--- Name: box2d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d(geometry) FROM PUBLIC;
@@ -26775,7 +24659,7 @@ GRANT ALL ON FUNCTION box2d(geometry) TO "Webgroup";
 
 
 --
--- Name: box2d(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d(box3d) FROM PUBLIC;
@@ -26786,7 +24670,7 @@ GRANT ALL ON FUNCTION box2d(box3d) TO "Webgroup";
 
 
 --
--- Name: box2d_contain(box2d, box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_contain(box2d, box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_contain(box2d, box2d) FROM PUBLIC;
@@ -26797,7 +24681,7 @@ GRANT ALL ON FUNCTION box2d_contain(box2d, box2d) TO "Webgroup";
 
 
 --
--- Name: box2d_contained(box2d, box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_contained(box2d, box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_contained(box2d, box2d) FROM PUBLIC;
@@ -26808,7 +24692,7 @@ GRANT ALL ON FUNCTION box2d_contained(box2d, box2d) TO "Webgroup";
 
 
 --
--- Name: box2d_intersects(box2d, box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_intersects(box2d, box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_intersects(box2d, box2d) FROM PUBLIC;
@@ -26819,7 +24703,7 @@ GRANT ALL ON FUNCTION box2d_intersects(box2d, box2d) TO "Webgroup";
 
 
 --
--- Name: box2d_left(box2d, box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_left(box2d, box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_left(box2d, box2d) FROM PUBLIC;
@@ -26830,7 +24714,7 @@ GRANT ALL ON FUNCTION box2d_left(box2d, box2d) TO "Webgroup";
 
 
 --
--- Name: box2d_overlap(box2d, box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_overlap(box2d, box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_overlap(box2d, box2d) FROM PUBLIC;
@@ -26841,7 +24725,7 @@ GRANT ALL ON FUNCTION box2d_overlap(box2d, box2d) TO "Webgroup";
 
 
 --
--- Name: box2d_overleft(box2d, box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_overleft(box2d, box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_overleft(box2d, box2d) FROM PUBLIC;
@@ -26852,7 +24736,7 @@ GRANT ALL ON FUNCTION box2d_overleft(box2d, box2d) TO "Webgroup";
 
 
 --
--- Name: box2d_overright(box2d, box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_overright(box2d, box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_overright(box2d, box2d) FROM PUBLIC;
@@ -26863,7 +24747,7 @@ GRANT ALL ON FUNCTION box2d_overright(box2d, box2d) TO "Webgroup";
 
 
 --
--- Name: box2d_right(box2d, box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_right(box2d, box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_right(box2d, box2d) FROM PUBLIC;
@@ -26874,7 +24758,7 @@ GRANT ALL ON FUNCTION box2d_right(box2d, box2d) TO "Webgroup";
 
 
 --
--- Name: box2d_same(box2d, box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box2d_same(box2d, box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box2d_same(box2d, box2d) FROM PUBLIC;
@@ -26885,7 +24769,7 @@ GRANT ALL ON FUNCTION box2d_same(box2d, box2d) TO "Webgroup";
 
 
 --
--- Name: box3d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box3d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box3d(geometry) FROM PUBLIC;
@@ -26896,7 +24780,7 @@ GRANT ALL ON FUNCTION box3d(geometry) TO "Webgroup";
 
 
 --
--- Name: box3d(box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box3d(box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box3d(box2d) FROM PUBLIC;
@@ -26907,7 +24791,7 @@ GRANT ALL ON FUNCTION box3d(box2d) TO "Webgroup";
 
 
 --
--- Name: box3dtobox(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: box3dtobox(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION box3dtobox(box3d) FROM PUBLIC;
@@ -26918,7 +24802,7 @@ GRANT ALL ON FUNCTION box3dtobox(box3d) TO "Webgroup";
 
 
 --
--- Name: buffer(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: buffer(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION buffer(geometry, double precision) FROM PUBLIC;
@@ -26929,7 +24813,7 @@ GRANT ALL ON FUNCTION buffer(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: buffer(geometry, double precision, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: buffer(geometry, double precision, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION buffer(geometry, double precision, integer) FROM PUBLIC;
@@ -26940,7 +24824,7 @@ GRANT ALL ON FUNCTION buffer(geometry, double precision, integer) TO "Webgroup";
 
 
 --
--- Name: build_histogram2d(histogram2d, text, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: build_histogram2d(histogram2d, text, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION build_histogram2d(histogram2d, text, text) FROM PUBLIC;
@@ -26951,7 +24835,7 @@ GRANT ALL ON FUNCTION build_histogram2d(histogram2d, text, text) TO "Webgroup";
 
 
 --
--- Name: build_histogram2d(histogram2d, text, text, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: build_histogram2d(histogram2d, text, text, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION build_histogram2d(histogram2d, text, text, text) FROM PUBLIC;
@@ -26962,7 +24846,7 @@ GRANT ALL ON FUNCTION build_histogram2d(histogram2d, text, text, text) TO "Webgr
 
 
 --
--- Name: buildarea(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: buildarea(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION buildarea(geometry) FROM PUBLIC;
@@ -26973,7 +24857,7 @@ GRANT ALL ON FUNCTION buildarea(geometry) TO "Webgroup";
 
 
 --
--- Name: bytea(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: bytea(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION bytea(geometry) FROM PUBLIC;
@@ -26984,7 +24868,7 @@ GRANT ALL ON FUNCTION bytea(geometry) TO "Webgroup";
 
 
 --
--- Name: cache_bbox(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: cache_bbox(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION cache_bbox() FROM PUBLIC;
@@ -26995,7 +24879,7 @@ GRANT ALL ON FUNCTION cache_bbox() TO "Webgroup";
 
 
 --
--- Name: centroid(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: centroid(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION centroid(geometry) FROM PUBLIC;
@@ -27006,7 +24890,7 @@ GRANT ALL ON FUNCTION centroid(geometry) TO "Webgroup";
 
 
 --
--- Name: check_datingerrors(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: check_datingerrors(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION check_datingerrors() FROM PUBLIC;
@@ -27017,7 +24901,7 @@ GRANT ALL ON FUNCTION check_datingerrors() TO "Webgroup";
 
 
 --
--- Name: checkauth(text, text, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: checkauth(text, text, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION checkauth(text, text, text) FROM PUBLIC;
@@ -27028,7 +24912,7 @@ GRANT ALL ON FUNCTION checkauth(text, text, text) TO "Webgroup";
 
 
 --
--- Name: checkauth(text, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: checkauth(text, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION checkauth(text, text) FROM PUBLIC;
@@ -27039,7 +24923,7 @@ GRANT ALL ON FUNCTION checkauth(text, text) TO "Webgroup";
 
 
 --
--- Name: checkauthtrigger(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: checkauthtrigger(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION checkauthtrigger() FROM PUBLIC;
@@ -27050,7 +24934,7 @@ GRANT ALL ON FUNCTION checkauthtrigger() TO "Webgroup";
 
 
 --
--- Name: collect(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: collect(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION collect(geometry, geometry) FROM PUBLIC;
@@ -27061,7 +24945,7 @@ GRANT ALL ON FUNCTION collect(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: collect_garray(geometry[]); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: collect_garray(geometry[]); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION collect_garray(geometry[]) FROM PUBLIC;
@@ -27072,7 +24956,7 @@ GRANT ALL ON FUNCTION collect_garray(geometry[]) TO "Webgroup";
 
 
 --
--- Name: collector(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: collector(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION collector(geometry, geometry) FROM PUBLIC;
@@ -27083,7 +24967,7 @@ GRANT ALL ON FUNCTION collector(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: combine_bbox(box2d, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: combine_bbox(box2d, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION combine_bbox(box2d, geometry) FROM PUBLIC;
@@ -27094,7 +24978,7 @@ GRANT ALL ON FUNCTION combine_bbox(box2d, geometry) TO "Webgroup";
 
 
 --
--- Name: combine_bbox(box3d, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: combine_bbox(box3d, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION combine_bbox(box3d, geometry) FROM PUBLIC;
@@ -27105,7 +24989,7 @@ GRANT ALL ON FUNCTION combine_bbox(box3d, geometry) TO "Webgroup";
 
 
 --
--- Name: compression(chip); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: compression(chip); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION compression(chip) FROM PUBLIC;
@@ -27116,7 +25000,7 @@ GRANT ALL ON FUNCTION compression(chip) TO "Webgroup";
 
 
 --
--- Name: contains(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: contains(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION contains(geometry, geometry) FROM PUBLIC;
@@ -27127,7 +25011,7 @@ GRANT ALL ON FUNCTION contains(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: convexhull(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: convexhull(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION convexhull(geometry) FROM PUBLIC;
@@ -27138,7 +25022,7 @@ GRANT ALL ON FUNCTION convexhull(geometry) TO "Webgroup";
 
 
 --
--- Name: create_defaultreadingnotestandardisedid(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: create_defaultreadingnotestandardisedid(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION create_defaultreadingnotestandardisedid() FROM PUBLIC;
@@ -27149,7 +25033,7 @@ GRANT ALL ON FUNCTION create_defaultreadingnotestandardisedid() TO "Webgroup";
 
 
 --
--- Name: create_defaultsecurityrecordforgroup(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: create_defaultsecurityrecordforgroup(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION create_defaultsecurityrecordforgroup() FROM PUBLIC;
@@ -27160,7 +25044,7 @@ GRANT ALL ON FUNCTION create_defaultsecurityrecordforgroup() TO "Webgroup";
 
 
 --
--- Name: create_histogram2d(box2d, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: create_histogram2d(box2d, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION create_histogram2d(box2d, integer) FROM PUBLIC;
@@ -27171,7 +25055,7 @@ GRANT ALL ON FUNCTION create_histogram2d(box2d, integer) TO "Webgroup";
 
 
 --
--- Name: create_objectsecurity(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: create_objectsecurity(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION create_objectsecurity(objectid integer, securityuserid integer) FROM PUBLIC;
@@ -27182,7 +25066,7 @@ GRANT ALL ON FUNCTION create_objectsecurity(objectid integer, securityuserid int
 
 
 --
--- Name: create_subobjectforobject(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: create_subobjectforobject(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION create_subobjectforobject() FROM PUBLIC;
@@ -27193,7 +25077,7 @@ GRANT ALL ON FUNCTION create_subobjectforobject() TO "Webgroup";
 
 
 --
--- Name: create_treesecurity(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: create_treesecurity(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION create_treesecurity(elementid integer, securityuserid integer) FROM PUBLIC;
@@ -27204,7 +25088,7 @@ GRANT ALL ON FUNCTION create_treesecurity(elementid integer, securityuserid inte
 
 
 --
--- Name: create_vmeasurementsecurity(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: create_vmeasurementsecurity(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION create_vmeasurementsecurity(vmeasurementid integer, securityuserid integer) FROM PUBLIC;
@@ -27215,7 +25099,7 @@ GRANT ALL ON FUNCTION create_vmeasurementsecurity(vmeasurementid integer, securi
 
 
 --
--- Name: crosses(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: crosses(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION crosses(geometry, geometry) FROM PUBLIC;
@@ -27226,7 +25110,7 @@ GRANT ALL ON FUNCTION crosses(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: datatype(chip); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: datatype(chip); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION datatype(chip) FROM PUBLIC;
@@ -27237,7 +25121,7 @@ GRANT ALL ON FUNCTION datatype(chip) TO "Webgroup";
 
 
 --
--- Name: difference(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: difference(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION difference(geometry, geometry) FROM PUBLIC;
@@ -27248,7 +25132,7 @@ GRANT ALL ON FUNCTION difference(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: dimension(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: dimension(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION dimension(geometry) FROM PUBLIC;
@@ -27259,7 +25143,7 @@ GRANT ALL ON FUNCTION dimension(geometry) TO "Webgroup";
 
 
 --
--- Name: disablelongtransactions(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: disablelongtransactions(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION disablelongtransactions() FROM PUBLIC;
@@ -27270,7 +25154,7 @@ GRANT ALL ON FUNCTION disablelongtransactions() TO "Webgroup";
 
 
 --
--- Name: disjoint(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: disjoint(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION disjoint(geometry, geometry) FROM PUBLIC;
@@ -27281,7 +25165,7 @@ GRANT ALL ON FUNCTION disjoint(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: distance(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: distance(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION distance(geometry, geometry) FROM PUBLIC;
@@ -27292,7 +25176,7 @@ GRANT ALL ON FUNCTION distance(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: distance_sphere(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: distance_sphere(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION distance_sphere(geometry, geometry) FROM PUBLIC;
@@ -27303,7 +25187,7 @@ GRANT ALL ON FUNCTION distance_sphere(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: distance_spheroid(geometry, geometry, spheroid); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: distance_spheroid(geometry, geometry, spheroid); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION distance_spheroid(geometry, geometry, spheroid) FROM PUBLIC;
@@ -27314,7 +25198,7 @@ GRANT ALL ON FUNCTION distance_spheroid(geometry, geometry, spheroid) TO "Webgro
 
 
 --
--- Name: dropbbox(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: dropbbox(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION dropbbox(geometry) FROM PUBLIC;
@@ -27325,7 +25209,7 @@ GRANT ALL ON FUNCTION dropbbox(geometry) TO "Webgroup";
 
 
 --
--- Name: dropgeometrycolumn(character varying, character varying, character varying, character varying); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrycolumn(character varying, character varying, character varying, character varying); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION dropgeometrycolumn(character varying, character varying, character varying, character varying) FROM PUBLIC;
@@ -27336,7 +25220,7 @@ GRANT ALL ON FUNCTION dropgeometrycolumn(character varying, character varying, c
 
 
 --
--- Name: dropgeometrycolumn(character varying, character varying, character varying); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrycolumn(character varying, character varying, character varying); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION dropgeometrycolumn(character varying, character varying, character varying) FROM PUBLIC;
@@ -27347,7 +25231,7 @@ GRANT ALL ON FUNCTION dropgeometrycolumn(character varying, character varying, c
 
 
 --
--- Name: dropgeometrycolumn(character varying, character varying); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrycolumn(character varying, character varying); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION dropgeometrycolumn(character varying, character varying) FROM PUBLIC;
@@ -27358,7 +25242,7 @@ GRANT ALL ON FUNCTION dropgeometrycolumn(character varying, character varying) T
 
 
 --
--- Name: dropgeometrytable(character varying, character varying, character varying); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrytable(character varying, character varying, character varying); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION dropgeometrytable(character varying, character varying, character varying) FROM PUBLIC;
@@ -27369,7 +25253,7 @@ GRANT ALL ON FUNCTION dropgeometrytable(character varying, character varying, ch
 
 
 --
--- Name: dropgeometrytable(character varying, character varying); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrytable(character varying, character varying); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION dropgeometrytable(character varying, character varying) FROM PUBLIC;
@@ -27380,7 +25264,7 @@ GRANT ALL ON FUNCTION dropgeometrytable(character varying, character varying) TO
 
 
 --
--- Name: dropgeometrytable(character varying); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: dropgeometrytable(character varying); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION dropgeometrytable(character varying) FROM PUBLIC;
@@ -27391,7 +25275,7 @@ GRANT ALL ON FUNCTION dropgeometrytable(character varying) TO "Webgroup";
 
 
 --
--- Name: dump(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: dump(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION dump(geometry) FROM PUBLIC;
@@ -27402,7 +25286,7 @@ GRANT ALL ON FUNCTION dump(geometry) TO "Webgroup";
 
 
 --
--- Name: dumprings(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: dumprings(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION dumprings(geometry) FROM PUBLIC;
@@ -27413,7 +25297,7 @@ GRANT ALL ON FUNCTION dumprings(geometry) TO "Webgroup";
 
 
 --
--- Name: enablelongtransactions(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: enablelongtransactions(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION enablelongtransactions() FROM PUBLIC;
@@ -27424,7 +25308,7 @@ GRANT ALL ON FUNCTION enablelongtransactions() TO "Webgroup";
 
 
 --
--- Name: endpoint(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: endpoint(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION endpoint(geometry) FROM PUBLIC;
@@ -27435,7 +25319,7 @@ GRANT ALL ON FUNCTION endpoint(geometry) TO "Webgroup";
 
 
 --
--- Name: envelope(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: envelope(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION envelope(geometry) FROM PUBLIC;
@@ -27446,7 +25330,7 @@ GRANT ALL ON FUNCTION envelope(geometry) TO "Webgroup";
 
 
 --
--- Name: equals(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: equals(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION equals(geometry, geometry) FROM PUBLIC;
@@ -27457,7 +25341,7 @@ GRANT ALL ON FUNCTION equals(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: estimate_histogram2d(histogram2d, box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: estimate_histogram2d(histogram2d, box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION estimate_histogram2d(histogram2d, box2d) FROM PUBLIC;
@@ -27468,7 +25352,7 @@ GRANT ALL ON FUNCTION estimate_histogram2d(histogram2d, box2d) TO "Webgroup";
 
 
 --
--- Name: estimated_extent(text, text, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: estimated_extent(text, text, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION estimated_extent(text, text, text) FROM PUBLIC;
@@ -27479,7 +25363,7 @@ GRANT ALL ON FUNCTION estimated_extent(text, text, text) TO "Webgroup";
 
 
 --
--- Name: estimated_extent(text, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: estimated_extent(text, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION estimated_extent(text, text) FROM PUBLIC;
@@ -27490,7 +25374,7 @@ GRANT ALL ON FUNCTION estimated_extent(text, text) TO "Webgroup";
 
 
 --
--- Name: expand(box3d, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: expand(box3d, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION expand(box3d, double precision) FROM PUBLIC;
@@ -27501,7 +25385,7 @@ GRANT ALL ON FUNCTION expand(box3d, double precision) TO "Webgroup";
 
 
 --
--- Name: expand(box2d, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: expand(box2d, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION expand(box2d, double precision) FROM PUBLIC;
@@ -27512,7 +25396,7 @@ GRANT ALL ON FUNCTION expand(box2d, double precision) TO "Webgroup";
 
 
 --
--- Name: expand(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: expand(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION expand(geometry, double precision) FROM PUBLIC;
@@ -27523,7 +25407,7 @@ GRANT ALL ON FUNCTION expand(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: explode_histogram2d(histogram2d, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: explode_histogram2d(histogram2d, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION explode_histogram2d(histogram2d, text) FROM PUBLIC;
@@ -27534,7 +25418,7 @@ GRANT ALL ON FUNCTION explode_histogram2d(histogram2d, text) TO "Webgroup";
 
 
 --
--- Name: exteriorring(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: exteriorring(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION exteriorring(geometry) FROM PUBLIC;
@@ -27545,7 +25429,7 @@ GRANT ALL ON FUNCTION exteriorring(geometry) TO "Webgroup";
 
 
 --
--- Name: factor(chip); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: factor(chip); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION factor(chip) FROM PUBLIC;
@@ -27556,7 +25440,7 @@ GRANT ALL ON FUNCTION factor(chip) TO "Webgroup";
 
 
 --
--- Name: find_extent(text, text, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: find_extent(text, text, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION find_extent(text, text, text) FROM PUBLIC;
@@ -27567,7 +25451,7 @@ GRANT ALL ON FUNCTION find_extent(text, text, text) TO "Webgroup";
 
 
 --
--- Name: find_extent(text, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: find_extent(text, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION find_extent(text, text) FROM PUBLIC;
@@ -27578,7 +25462,7 @@ GRANT ALL ON FUNCTION find_extent(text, text) TO "Webgroup";
 
 
 --
--- Name: find_srid(character varying, character varying, character varying); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: find_srid(character varying, character varying, character varying); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION find_srid(character varying, character varying, character varying) FROM PUBLIC;
@@ -27589,7 +25473,7 @@ GRANT ALL ON FUNCTION find_srid(character varying, character varying, character 
 
 
 --
--- Name: fix_geometry_columns(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: fix_geometry_columns(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION fix_geometry_columns() FROM PUBLIC;
@@ -27600,7 +25484,7 @@ GRANT ALL ON FUNCTION fix_geometry_columns() TO "Webgroup";
 
 
 --
--- Name: force_2d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: force_2d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION force_2d(geometry) FROM PUBLIC;
@@ -27611,7 +25495,7 @@ GRANT ALL ON FUNCTION force_2d(geometry) TO "Webgroup";
 
 
 --
--- Name: force_3d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: force_3d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION force_3d(geometry) FROM PUBLIC;
@@ -27622,7 +25506,7 @@ GRANT ALL ON FUNCTION force_3d(geometry) TO "Webgroup";
 
 
 --
--- Name: force_3dm(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: force_3dm(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION force_3dm(geometry) FROM PUBLIC;
@@ -27633,7 +25517,7 @@ GRANT ALL ON FUNCTION force_3dm(geometry) TO "Webgroup";
 
 
 --
--- Name: force_3dz(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: force_3dz(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION force_3dz(geometry) FROM PUBLIC;
@@ -27644,7 +25528,7 @@ GRANT ALL ON FUNCTION force_3dz(geometry) TO "Webgroup";
 
 
 --
--- Name: force_4d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: force_4d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION force_4d(geometry) FROM PUBLIC;
@@ -27655,7 +25539,7 @@ GRANT ALL ON FUNCTION force_4d(geometry) TO "Webgroup";
 
 
 --
--- Name: force_collection(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: force_collection(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION force_collection(geometry) FROM PUBLIC;
@@ -27666,7 +25550,7 @@ GRANT ALL ON FUNCTION force_collection(geometry) TO "Webgroup";
 
 
 --
--- Name: forcerhr(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: forcerhr(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION forcerhr(geometry) FROM PUBLIC;
@@ -27677,7 +25561,7 @@ GRANT ALL ON FUNCTION forcerhr(geometry) TO "Webgroup";
 
 
 --
--- Name: geom_accum(geometry[], geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geom_accum(geometry[], geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geom_accum(geometry[], geometry) FROM PUBLIC;
@@ -27688,7 +25572,7 @@ GRANT ALL ON FUNCTION geom_accum(geometry[], geometry) TO "Webgroup";
 
 
 --
--- Name: geomcollfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomcollfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomcollfromtext(text, integer) FROM PUBLIC;
@@ -27699,7 +25583,7 @@ GRANT ALL ON FUNCTION geomcollfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: geomcollfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomcollfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomcollfromtext(text) FROM PUBLIC;
@@ -27710,7 +25594,7 @@ GRANT ALL ON FUNCTION geomcollfromtext(text) TO "Webgroup";
 
 
 --
--- Name: geomcollfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomcollfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomcollfromwkb(bytea, integer) FROM PUBLIC;
@@ -27721,7 +25605,7 @@ GRANT ALL ON FUNCTION geomcollfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: geomcollfromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomcollfromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomcollfromwkb(bytea) FROM PUBLIC;
@@ -27732,7 +25616,7 @@ GRANT ALL ON FUNCTION geomcollfromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: geometry(box2d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry(box2d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry(box2d) FROM PUBLIC;
@@ -27743,7 +25627,7 @@ GRANT ALL ON FUNCTION geometry(box2d) TO "Webgroup";
 
 
 --
--- Name: geometry(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry(box3d) FROM PUBLIC;
@@ -27754,7 +25638,7 @@ GRANT ALL ON FUNCTION geometry(box3d) TO "Webgroup";
 
 
 --
--- Name: geometry(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry(text) FROM PUBLIC;
@@ -27765,7 +25649,7 @@ GRANT ALL ON FUNCTION geometry(text) TO "Webgroup";
 
 
 --
--- Name: geometry(chip); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry(chip); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry(chip) FROM PUBLIC;
@@ -27776,7 +25660,7 @@ GRANT ALL ON FUNCTION geometry(chip) TO "Webgroup";
 
 
 --
--- Name: geometry(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry(bytea) FROM PUBLIC;
@@ -27787,7 +25671,7 @@ GRANT ALL ON FUNCTION geometry(bytea) TO "Webgroup";
 
 
 --
--- Name: geometry_above(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_above(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_above(geometry, geometry) FROM PUBLIC;
@@ -27798,7 +25682,7 @@ GRANT ALL ON FUNCTION geometry_above(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_below(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_below(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_below(geometry, geometry) FROM PUBLIC;
@@ -27809,7 +25693,7 @@ GRANT ALL ON FUNCTION geometry_below(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_cmp(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_cmp(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_cmp(geometry, geometry) FROM PUBLIC;
@@ -27820,7 +25704,7 @@ GRANT ALL ON FUNCTION geometry_cmp(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_contain(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_contain(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_contain(geometry, geometry) FROM PUBLIC;
@@ -27831,7 +25715,7 @@ GRANT ALL ON FUNCTION geometry_contain(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_contained(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_contained(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_contained(geometry, geometry) FROM PUBLIC;
@@ -27842,7 +25726,7 @@ GRANT ALL ON FUNCTION geometry_contained(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_eq(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_eq(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_eq(geometry, geometry) FROM PUBLIC;
@@ -27853,7 +25737,7 @@ GRANT ALL ON FUNCTION geometry_eq(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_ge(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_ge(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_ge(geometry, geometry) FROM PUBLIC;
@@ -27864,7 +25748,7 @@ GRANT ALL ON FUNCTION geometry_ge(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_gt(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_gt(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_gt(geometry, geometry) FROM PUBLIC;
@@ -27875,7 +25759,7 @@ GRANT ALL ON FUNCTION geometry_gt(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_le(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_le(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_le(geometry, geometry) FROM PUBLIC;
@@ -27886,7 +25770,7 @@ GRANT ALL ON FUNCTION geometry_le(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_left(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_left(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_left(geometry, geometry) FROM PUBLIC;
@@ -27897,7 +25781,7 @@ GRANT ALL ON FUNCTION geometry_left(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_lt(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_lt(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_lt(geometry, geometry) FROM PUBLIC;
@@ -27908,7 +25792,7 @@ GRANT ALL ON FUNCTION geometry_lt(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_overabove(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_overabove(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_overabove(geometry, geometry) FROM PUBLIC;
@@ -27919,7 +25803,7 @@ GRANT ALL ON FUNCTION geometry_overabove(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_overbelow(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_overbelow(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_overbelow(geometry, geometry) FROM PUBLIC;
@@ -27930,7 +25814,7 @@ GRANT ALL ON FUNCTION geometry_overbelow(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_overlap(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_overlap(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_overlap(geometry, geometry) FROM PUBLIC;
@@ -27941,7 +25825,7 @@ GRANT ALL ON FUNCTION geometry_overlap(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_overleft(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_overleft(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_overleft(geometry, geometry) FROM PUBLIC;
@@ -27952,7 +25836,7 @@ GRANT ALL ON FUNCTION geometry_overleft(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_overright(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_overright(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_overright(geometry, geometry) FROM PUBLIC;
@@ -27963,7 +25847,7 @@ GRANT ALL ON FUNCTION geometry_overright(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_right(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_right(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_right(geometry, geometry) FROM PUBLIC;
@@ -27974,7 +25858,7 @@ GRANT ALL ON FUNCTION geometry_right(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometry_same(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_same(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometry_same(geometry, geometry) FROM PUBLIC;
@@ -27985,7 +25869,7 @@ GRANT ALL ON FUNCTION geometry_same(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geometryfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometryfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometryfromtext(text) FROM PUBLIC;
@@ -27996,7 +25880,7 @@ GRANT ALL ON FUNCTION geometryfromtext(text) TO "Webgroup";
 
 
 --
--- Name: geometryfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometryfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometryfromtext(text, integer) FROM PUBLIC;
@@ -28007,7 +25891,7 @@ GRANT ALL ON FUNCTION geometryfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: geometryn(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometryn(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geometryn(geometry, integer) FROM PUBLIC;
@@ -28018,7 +25902,7 @@ GRANT ALL ON FUNCTION geometryn(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: geomfromewkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomfromewkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomfromewkb(bytea) FROM PUBLIC;
@@ -28029,7 +25913,7 @@ GRANT ALL ON FUNCTION geomfromewkb(bytea) TO "Webgroup";
 
 
 --
--- Name: geomfromewkt(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomfromewkt(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomfromewkt(text) FROM PUBLIC;
@@ -28040,7 +25924,7 @@ GRANT ALL ON FUNCTION geomfromewkt(text) TO "Webgroup";
 
 
 --
--- Name: geomfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomfromtext(text) FROM PUBLIC;
@@ -28051,7 +25935,7 @@ GRANT ALL ON FUNCTION geomfromtext(text) TO "Webgroup";
 
 
 --
--- Name: geomfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomfromtext(text, integer) FROM PUBLIC;
@@ -28062,7 +25946,7 @@ GRANT ALL ON FUNCTION geomfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: geomfromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomfromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomfromwkb(bytea) FROM PUBLIC;
@@ -28073,7 +25957,7 @@ GRANT ALL ON FUNCTION geomfromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: geomfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomfromwkb(bytea, integer) FROM PUBLIC;
@@ -28084,7 +25968,7 @@ GRANT ALL ON FUNCTION geomfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: geomunion(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geomunion(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geomunion(geometry, geometry) FROM PUBLIC;
@@ -28095,7 +25979,7 @@ GRANT ALL ON FUNCTION geomunion(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: geosnoop(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geosnoop(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION geosnoop(geometry) FROM PUBLIC;
@@ -28106,7 +25990,7 @@ GRANT ALL ON FUNCTION geosnoop(geometry) TO "Webgroup";
 
 
 --
--- Name: get_proj4_from_srid(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: get_proj4_from_srid(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION get_proj4_from_srid(integer) FROM PUBLIC;
@@ -28117,7 +26001,7 @@ GRANT ALL ON FUNCTION get_proj4_from_srid(integer) TO "Webgroup";
 
 
 --
--- Name: getbbox(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: getbbox(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION getbbox(geometry) FROM PUBLIC;
@@ -28128,7 +26012,7 @@ GRANT ALL ON FUNCTION getbbox(geometry) TO "Webgroup";
 
 
 --
--- Name: getsrid(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: getsrid(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION getsrid(geometry) FROM PUBLIC;
@@ -28139,7 +26023,7 @@ GRANT ALL ON FUNCTION getsrid(geometry) TO "Webgroup";
 
 
 --
--- Name: gettransactionid(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: gettransactionid(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION gettransactionid() FROM PUBLIC;
@@ -28150,7 +26034,7 @@ GRANT ALL ON FUNCTION gettransactionid() TO "Webgroup";
 
 
 --
--- Name: hasbbox(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: hasbbox(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION hasbbox(geometry) FROM PUBLIC;
@@ -28161,7 +26045,7 @@ GRANT ALL ON FUNCTION hasbbox(geometry) TO "Webgroup";
 
 
 --
--- Name: height(chip); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: height(chip); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION height(chip) FROM PUBLIC;
@@ -28172,7 +26056,7 @@ GRANT ALL ON FUNCTION height(chip) TO "Webgroup";
 
 
 --
--- Name: interiorringn(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: interiorringn(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION interiorringn(geometry, integer) FROM PUBLIC;
@@ -28183,7 +26067,7 @@ GRANT ALL ON FUNCTION interiorringn(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: intersection(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: intersection(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION intersection(geometry, geometry) FROM PUBLIC;
@@ -28194,7 +26078,7 @@ GRANT ALL ON FUNCTION intersection(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: intersects(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: intersects(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION intersects(geometry, geometry) FROM PUBLIC;
@@ -28205,7 +26089,7 @@ GRANT ALL ON FUNCTION intersects(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: isadmin(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: isadmin(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION isadmin(securityuserid integer) FROM PUBLIC;
@@ -28216,7 +26100,7 @@ GRANT ALL ON FUNCTION isadmin(securityuserid integer) TO "Webgroup";
 
 
 --
--- Name: isclosed(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: isclosed(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION isclosed(geometry) FROM PUBLIC;
@@ -28227,7 +26111,7 @@ GRANT ALL ON FUNCTION isclosed(geometry) TO "Webgroup";
 
 
 --
--- Name: isempty(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: isempty(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION isempty(geometry) FROM PUBLIC;
@@ -28238,7 +26122,7 @@ GRANT ALL ON FUNCTION isempty(geometry) TO "Webgroup";
 
 
 --
--- Name: isring(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: isring(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION isring(geometry) FROM PUBLIC;
@@ -28249,7 +26133,7 @@ GRANT ALL ON FUNCTION isring(geometry) TO "Webgroup";
 
 
 --
--- Name: issimple(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: issimple(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION issimple(geometry) FROM PUBLIC;
@@ -28260,7 +26144,7 @@ GRANT ALL ON FUNCTION issimple(geometry) TO "Webgroup";
 
 
 --
--- Name: isvalid(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: isvalid(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION isvalid(geometry) FROM PUBLIC;
@@ -28271,7 +26155,7 @@ GRANT ALL ON FUNCTION isvalid(geometry) TO "Webgroup";
 
 
 --
--- Name: jtsnoop(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: jtsnoop(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION jtsnoop(geometry) FROM PUBLIC;
@@ -28282,7 +26166,7 @@ GRANT ALL ON FUNCTION jtsnoop(geometry) TO "Webgroup";
 
 
 --
--- Name: length(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: length(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION length(geometry) FROM PUBLIC;
@@ -28293,7 +26177,7 @@ GRANT ALL ON FUNCTION length(geometry) TO "Webgroup";
 
 
 --
--- Name: length2d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: length2d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION length2d(geometry) FROM PUBLIC;
@@ -28304,7 +26188,7 @@ GRANT ALL ON FUNCTION length2d(geometry) TO "Webgroup";
 
 
 --
--- Name: length2d_spheroid(geometry, spheroid); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: length2d_spheroid(geometry, spheroid); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION length2d_spheroid(geometry, spheroid) FROM PUBLIC;
@@ -28315,7 +26199,7 @@ GRANT ALL ON FUNCTION length2d_spheroid(geometry, spheroid) TO "Webgroup";
 
 
 --
--- Name: length3d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: length3d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION length3d(geometry) FROM PUBLIC;
@@ -28326,7 +26210,7 @@ GRANT ALL ON FUNCTION length3d(geometry) TO "Webgroup";
 
 
 --
--- Name: length3d_spheroid(geometry, spheroid); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: length3d_spheroid(geometry, spheroid); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION length3d_spheroid(geometry, spheroid) FROM PUBLIC;
@@ -28337,7 +26221,7 @@ GRANT ALL ON FUNCTION length3d_spheroid(geometry, spheroid) TO "Webgroup";
 
 
 --
--- Name: length_spheroid(geometry, spheroid); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: length_spheroid(geometry, spheroid); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION length_spheroid(geometry, spheroid) FROM PUBLIC;
@@ -28348,7 +26232,7 @@ GRANT ALL ON FUNCTION length_spheroid(geometry, spheroid) TO "Webgroup";
 
 
 --
--- Name: line_interpolate_point(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: line_interpolate_point(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION line_interpolate_point(geometry, double precision) FROM PUBLIC;
@@ -28359,7 +26243,7 @@ GRANT ALL ON FUNCTION line_interpolate_point(geometry, double precision) TO "Web
 
 
 --
--- Name: line_locate_point(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: line_locate_point(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION line_locate_point(geometry, geometry) FROM PUBLIC;
@@ -28370,7 +26254,7 @@ GRANT ALL ON FUNCTION line_locate_point(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: line_substring(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: line_substring(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION line_substring(geometry, double precision, double precision) FROM PUBLIC;
@@ -28381,7 +26265,7 @@ GRANT ALL ON FUNCTION line_substring(geometry, double precision, double precisio
 
 
 --
--- Name: linefrommultipoint(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: linefrommultipoint(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION linefrommultipoint(geometry) FROM PUBLIC;
@@ -28392,7 +26276,7 @@ GRANT ALL ON FUNCTION linefrommultipoint(geometry) TO "Webgroup";
 
 
 --
--- Name: linefromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: linefromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION linefromtext(text) FROM PUBLIC;
@@ -28403,7 +26287,7 @@ GRANT ALL ON FUNCTION linefromtext(text) TO "Webgroup";
 
 
 --
--- Name: linefromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: linefromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION linefromtext(text, integer) FROM PUBLIC;
@@ -28414,7 +26298,7 @@ GRANT ALL ON FUNCTION linefromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: linefromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: linefromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION linefromwkb(bytea, integer) FROM PUBLIC;
@@ -28425,7 +26309,7 @@ GRANT ALL ON FUNCTION linefromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: linefromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: linefromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION linefromwkb(bytea) FROM PUBLIC;
@@ -28436,7 +26320,7 @@ GRANT ALL ON FUNCTION linefromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: linemerge(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: linemerge(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION linemerge(geometry) FROM PUBLIC;
@@ -28447,7 +26331,7 @@ GRANT ALL ON FUNCTION linemerge(geometry) TO "Webgroup";
 
 
 --
--- Name: linestringfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: linestringfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION linestringfromtext(text) FROM PUBLIC;
@@ -28458,7 +26342,7 @@ GRANT ALL ON FUNCTION linestringfromtext(text) TO "Webgroup";
 
 
 --
--- Name: linestringfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: linestringfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION linestringfromtext(text, integer) FROM PUBLIC;
@@ -28469,7 +26353,7 @@ GRANT ALL ON FUNCTION linestringfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: linestringfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: linestringfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION linestringfromwkb(bytea, integer) FROM PUBLIC;
@@ -28480,7 +26364,7 @@ GRANT ALL ON FUNCTION linestringfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: linestringfromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: linestringfromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION linestringfromwkb(bytea) FROM PUBLIC;
@@ -28491,7 +26375,7 @@ GRANT ALL ON FUNCTION linestringfromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: locate_along_measure(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: locate_along_measure(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION locate_along_measure(geometry, double precision) FROM PUBLIC;
@@ -28502,7 +26386,7 @@ GRANT ALL ON FUNCTION locate_along_measure(geometry, double precision) TO "Webgr
 
 
 --
--- Name: locate_between_measures(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: locate_between_measures(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION locate_between_measures(geometry, double precision, double precision) FROM PUBLIC;
@@ -28513,7 +26397,7 @@ GRANT ALL ON FUNCTION locate_between_measures(geometry, double precision, double
 
 
 --
--- Name: lockrow(text, text, text, text, timestamp without time zone); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lockrow(text, text, text, text, timestamp without time zone); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lockrow(text, text, text, text, timestamp without time zone) FROM PUBLIC;
@@ -28524,7 +26408,7 @@ GRANT ALL ON FUNCTION lockrow(text, text, text, text, timestamp without time zon
 
 
 --
--- Name: lockrow(text, text, text, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lockrow(text, text, text, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lockrow(text, text, text, text) FROM PUBLIC;
@@ -28535,7 +26419,7 @@ GRANT ALL ON FUNCTION lockrow(text, text, text, text) TO "Webgroup";
 
 
 --
--- Name: lockrow(text, text, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lockrow(text, text, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lockrow(text, text, text) FROM PUBLIC;
@@ -28546,7 +26430,7 @@ GRANT ALL ON FUNCTION lockrow(text, text, text) TO "Webgroup";
 
 
 --
--- Name: lockrow(text, text, text, timestamp without time zone); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lockrow(text, text, text, timestamp without time zone); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lockrow(text, text, text, timestamp without time zone) FROM PUBLIC;
@@ -28557,7 +26441,7 @@ GRANT ALL ON FUNCTION lockrow(text, text, text, timestamp without time zone) TO 
 
 
 --
--- Name: longtransactionsenabled(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: longtransactionsenabled(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION longtransactionsenabled() FROM PUBLIC;
@@ -28568,7 +26452,7 @@ GRANT ALL ON FUNCTION longtransactionsenabled() TO "Webgroup";
 
 
 --
--- Name: lwgeom_gist_compress(internal); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_compress(internal); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lwgeom_gist_compress(internal) FROM PUBLIC;
@@ -28579,7 +26463,7 @@ GRANT ALL ON FUNCTION lwgeom_gist_compress(internal) TO "Webgroup";
 
 
 --
--- Name: lwgeom_gist_consistent(internal, geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_consistent(internal, geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lwgeom_gist_consistent(internal, geometry, integer) FROM PUBLIC;
@@ -28590,7 +26474,7 @@ GRANT ALL ON FUNCTION lwgeom_gist_consistent(internal, geometry, integer) TO "We
 
 
 --
--- Name: lwgeom_gist_decompress(internal); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_decompress(internal); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lwgeom_gist_decompress(internal) FROM PUBLIC;
@@ -28601,7 +26485,7 @@ GRANT ALL ON FUNCTION lwgeom_gist_decompress(internal) TO "Webgroup";
 
 
 --
--- Name: lwgeom_gist_penalty(internal, internal, internal); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_penalty(internal, internal, internal); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lwgeom_gist_penalty(internal, internal, internal) FROM PUBLIC;
@@ -28612,7 +26496,7 @@ GRANT ALL ON FUNCTION lwgeom_gist_penalty(internal, internal, internal) TO "Webg
 
 
 --
--- Name: lwgeom_gist_picksplit(internal, internal); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_picksplit(internal, internal); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lwgeom_gist_picksplit(internal, internal) FROM PUBLIC;
@@ -28623,7 +26507,7 @@ GRANT ALL ON FUNCTION lwgeom_gist_picksplit(internal, internal) TO "Webgroup";
 
 
 --
--- Name: lwgeom_gist_same(box2d, box2d, internal); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_same(box2d, box2d, internal); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lwgeom_gist_same(box2d, box2d, internal) FROM PUBLIC;
@@ -28634,7 +26518,7 @@ GRANT ALL ON FUNCTION lwgeom_gist_same(box2d, box2d, internal) TO "Webgroup";
 
 
 --
--- Name: lwgeom_gist_union(bytea, internal); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: lwgeom_gist_union(bytea, internal); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION lwgeom_gist_union(bytea, internal) FROM PUBLIC;
@@ -28645,7 +26529,7 @@ GRANT ALL ON FUNCTION lwgeom_gist_union(bytea, internal) TO "Webgroup";
 
 
 --
--- Name: m(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: m(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION m(geometry) FROM PUBLIC;
@@ -28656,7 +26540,7 @@ GRANT ALL ON FUNCTION m(geometry) TO "Webgroup";
 
 
 --
--- Name: makebox2d(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: makebox2d(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION makebox2d(geometry, geometry) FROM PUBLIC;
@@ -28667,7 +26551,7 @@ GRANT ALL ON FUNCTION makebox2d(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: makebox3d(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: makebox3d(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION makebox3d(geometry, geometry) FROM PUBLIC;
@@ -28678,7 +26562,7 @@ GRANT ALL ON FUNCTION makebox3d(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: makeline(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: makeline(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION makeline(geometry, geometry) FROM PUBLIC;
@@ -28689,7 +26573,7 @@ GRANT ALL ON FUNCTION makeline(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: makeline_garray(geometry[]); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: makeline_garray(geometry[]); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION makeline_garray(geometry[]) FROM PUBLIC;
@@ -28700,7 +26584,7 @@ GRANT ALL ON FUNCTION makeline_garray(geometry[]) TO "Webgroup";
 
 
 --
--- Name: makepoint(double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: makepoint(double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION makepoint(double precision, double precision) FROM PUBLIC;
@@ -28711,7 +26595,7 @@ GRANT ALL ON FUNCTION makepoint(double precision, double precision) TO "Webgroup
 
 
 --
--- Name: makepoint(double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: makepoint(double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION makepoint(double precision, double precision, double precision) FROM PUBLIC;
@@ -28722,7 +26606,7 @@ GRANT ALL ON FUNCTION makepoint(double precision, double precision, double preci
 
 
 --
--- Name: makepoint(double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: makepoint(double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION makepoint(double precision, double precision, double precision, double precision) FROM PUBLIC;
@@ -28733,7 +26617,7 @@ GRANT ALL ON FUNCTION makepoint(double precision, double precision, double preci
 
 
 --
--- Name: makepointm(double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: makepointm(double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION makepointm(double precision, double precision, double precision) FROM PUBLIC;
@@ -28744,7 +26628,7 @@ GRANT ALL ON FUNCTION makepointm(double precision, double precision, double prec
 
 
 --
--- Name: makepolygon(geometry, geometry[]); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: makepolygon(geometry, geometry[]); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION makepolygon(geometry, geometry[]) FROM PUBLIC;
@@ -28755,7 +26639,7 @@ GRANT ALL ON FUNCTION makepolygon(geometry, geometry[]) TO "Webgroup";
 
 
 --
--- Name: makepolygon(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: makepolygon(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION makepolygon(geometry) FROM PUBLIC;
@@ -28766,7 +26650,7 @@ GRANT ALL ON FUNCTION makepolygon(geometry) TO "Webgroup";
 
 
 --
--- Name: max_distance(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: max_distance(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION max_distance(geometry, geometry) FROM PUBLIC;
@@ -28777,7 +26661,7 @@ GRANT ALL ON FUNCTION max_distance(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: mem_size(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mem_size(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mem_size(geometry) FROM PUBLIC;
@@ -28788,7 +26672,7 @@ GRANT ALL ON FUNCTION mem_size(geometry) TO "Webgroup";
 
 
 --
--- Name: mlinefromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mlinefromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mlinefromtext(text, integer) FROM PUBLIC;
@@ -28799,7 +26683,7 @@ GRANT ALL ON FUNCTION mlinefromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: mlinefromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mlinefromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mlinefromtext(text) FROM PUBLIC;
@@ -28810,7 +26694,7 @@ GRANT ALL ON FUNCTION mlinefromtext(text) TO "Webgroup";
 
 
 --
--- Name: mlinefromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mlinefromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mlinefromwkb(bytea, integer) FROM PUBLIC;
@@ -28821,7 +26705,7 @@ GRANT ALL ON FUNCTION mlinefromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: mlinefromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mlinefromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mlinefromwkb(bytea) FROM PUBLIC;
@@ -28832,7 +26716,7 @@ GRANT ALL ON FUNCTION mlinefromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: mpointfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mpointfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mpointfromtext(text, integer) FROM PUBLIC;
@@ -28843,7 +26727,7 @@ GRANT ALL ON FUNCTION mpointfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: mpointfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mpointfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mpointfromtext(text) FROM PUBLIC;
@@ -28854,7 +26738,7 @@ GRANT ALL ON FUNCTION mpointfromtext(text) TO "Webgroup";
 
 
 --
--- Name: mpointfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mpointfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mpointfromwkb(bytea, integer) FROM PUBLIC;
@@ -28865,7 +26749,7 @@ GRANT ALL ON FUNCTION mpointfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: mpointfromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mpointfromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mpointfromwkb(bytea) FROM PUBLIC;
@@ -28876,7 +26760,7 @@ GRANT ALL ON FUNCTION mpointfromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: mpolyfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mpolyfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mpolyfromtext(text, integer) FROM PUBLIC;
@@ -28887,7 +26771,7 @@ GRANT ALL ON FUNCTION mpolyfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: mpolyfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mpolyfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mpolyfromtext(text) FROM PUBLIC;
@@ -28898,7 +26782,7 @@ GRANT ALL ON FUNCTION mpolyfromtext(text) TO "Webgroup";
 
 
 --
--- Name: mpolyfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mpolyfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mpolyfromwkb(bytea, integer) FROM PUBLIC;
@@ -28909,7 +26793,7 @@ GRANT ALL ON FUNCTION mpolyfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: mpolyfromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mpolyfromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mpolyfromwkb(bytea) FROM PUBLIC;
@@ -28920,7 +26804,7 @@ GRANT ALL ON FUNCTION mpolyfromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: multi(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multi(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multi(geometry) FROM PUBLIC;
@@ -28931,7 +26815,7 @@ GRANT ALL ON FUNCTION multi(geometry) TO "Webgroup";
 
 
 --
--- Name: multilinefromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multilinefromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multilinefromwkb(bytea, integer) FROM PUBLIC;
@@ -28942,7 +26826,7 @@ GRANT ALL ON FUNCTION multilinefromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: multilinefromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multilinefromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multilinefromwkb(bytea) FROM PUBLIC;
@@ -28953,7 +26837,7 @@ GRANT ALL ON FUNCTION multilinefromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: multilinestringfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multilinestringfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multilinestringfromtext(text) FROM PUBLIC;
@@ -28964,7 +26848,7 @@ GRANT ALL ON FUNCTION multilinestringfromtext(text) TO "Webgroup";
 
 
 --
--- Name: multilinestringfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multilinestringfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multilinestringfromtext(text, integer) FROM PUBLIC;
@@ -28975,7 +26859,7 @@ GRANT ALL ON FUNCTION multilinestringfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: multipointfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multipointfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multipointfromtext(text, integer) FROM PUBLIC;
@@ -28986,7 +26870,7 @@ GRANT ALL ON FUNCTION multipointfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: multipointfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multipointfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multipointfromtext(text) FROM PUBLIC;
@@ -28997,7 +26881,7 @@ GRANT ALL ON FUNCTION multipointfromtext(text) TO "Webgroup";
 
 
 --
--- Name: multipointfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multipointfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multipointfromwkb(bytea, integer) FROM PUBLIC;
@@ -29008,7 +26892,7 @@ GRANT ALL ON FUNCTION multipointfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: multipointfromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multipointfromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multipointfromwkb(bytea) FROM PUBLIC;
@@ -29019,7 +26903,7 @@ GRANT ALL ON FUNCTION multipointfromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: multipolyfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multipolyfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multipolyfromwkb(bytea, integer) FROM PUBLIC;
@@ -29030,7 +26914,7 @@ GRANT ALL ON FUNCTION multipolyfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: multipolyfromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multipolyfromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multipolyfromwkb(bytea) FROM PUBLIC;
@@ -29041,7 +26925,7 @@ GRANT ALL ON FUNCTION multipolyfromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: multipolygonfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multipolygonfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multipolygonfromtext(text, integer) FROM PUBLIC;
@@ -29052,7 +26936,7 @@ GRANT ALL ON FUNCTION multipolygonfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: multipolygonfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: multipolygonfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION multipolygonfromtext(text) FROM PUBLIC;
@@ -29063,7 +26947,7 @@ GRANT ALL ON FUNCTION multipolygonfromtext(text) TO "Webgroup";
 
 
 --
--- Name: mymath(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mymath(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mymath(integer) FROM PUBLIC;
@@ -29074,7 +26958,7 @@ GRANT ALL ON FUNCTION mymath(integer) TO "Webgroup";
 
 
 --
--- Name: mymultiply(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: mymultiply(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION mymultiply(integer) FROM PUBLIC;
@@ -29085,7 +26969,7 @@ GRANT ALL ON FUNCTION mymultiply(integer) TO "Webgroup";
 
 
 --
--- Name: noop(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: noop(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION noop(geometry) FROM PUBLIC;
@@ -29096,7 +26980,7 @@ GRANT ALL ON FUNCTION noop(geometry) TO "Webgroup";
 
 
 --
--- Name: npoints(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: npoints(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION npoints(geometry) FROM PUBLIC;
@@ -29107,7 +26991,7 @@ GRANT ALL ON FUNCTION npoints(geometry) TO "Webgroup";
 
 
 --
--- Name: nrings(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: nrings(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION nrings(geometry) FROM PUBLIC;
@@ -29118,7 +27002,7 @@ GRANT ALL ON FUNCTION nrings(geometry) TO "Webgroup";
 
 
 --
--- Name: numgeometries(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: numgeometries(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION numgeometries(geometry) FROM PUBLIC;
@@ -29129,7 +27013,7 @@ GRANT ALL ON FUNCTION numgeometries(geometry) TO "Webgroup";
 
 
 --
--- Name: numinteriorring(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: numinteriorring(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION numinteriorring(geometry) FROM PUBLIC;
@@ -29140,7 +27024,7 @@ GRANT ALL ON FUNCTION numinteriorring(geometry) TO "Webgroup";
 
 
 --
--- Name: numinteriorrings(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: numinteriorrings(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION numinteriorrings(geometry) FROM PUBLIC;
@@ -29151,7 +27035,7 @@ GRANT ALL ON FUNCTION numinteriorrings(geometry) TO "Webgroup";
 
 
 --
--- Name: numpoints(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: numpoints(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION numpoints(geometry) FROM PUBLIC;
@@ -29162,7 +27046,7 @@ GRANT ALL ON FUNCTION numpoints(geometry) TO "Webgroup";
 
 
 --
--- Name: overlaps(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: overlaps(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION "overlaps"(geometry, geometry) FROM PUBLIC;
@@ -29173,7 +27057,7 @@ GRANT ALL ON FUNCTION "overlaps"(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: perimeter(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: perimeter(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION perimeter(geometry) FROM PUBLIC;
@@ -29184,7 +27068,7 @@ GRANT ALL ON FUNCTION perimeter(geometry) TO "Webgroup";
 
 
 --
--- Name: perimeter2d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: perimeter2d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION perimeter2d(geometry) FROM PUBLIC;
@@ -29195,7 +27079,7 @@ GRANT ALL ON FUNCTION perimeter2d(geometry) TO "Webgroup";
 
 
 --
--- Name: perimeter3d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: perimeter3d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION perimeter3d(geometry) FROM PUBLIC;
@@ -29206,7 +27090,7 @@ GRANT ALL ON FUNCTION perimeter3d(geometry) TO "Webgroup";
 
 
 --
--- Name: point_inside_circle(geometry, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: point_inside_circle(geometry, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION point_inside_circle(geometry, double precision, double precision, double precision) FROM PUBLIC;
@@ -29217,7 +27101,7 @@ GRANT ALL ON FUNCTION point_inside_circle(geometry, double precision, double pre
 
 
 --
--- Name: pointfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: pointfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION pointfromtext(text) FROM PUBLIC;
@@ -29228,7 +27112,7 @@ GRANT ALL ON FUNCTION pointfromtext(text) TO "Webgroup";
 
 
 --
--- Name: pointfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: pointfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION pointfromtext(text, integer) FROM PUBLIC;
@@ -29239,7 +27123,7 @@ GRANT ALL ON FUNCTION pointfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: pointfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: pointfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION pointfromwkb(bytea, integer) FROM PUBLIC;
@@ -29250,7 +27134,7 @@ GRANT ALL ON FUNCTION pointfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: pointfromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: pointfromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION pointfromwkb(bytea) FROM PUBLIC;
@@ -29261,7 +27145,7 @@ GRANT ALL ON FUNCTION pointfromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: pointn(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: pointn(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION pointn(geometry, integer) FROM PUBLIC;
@@ -29272,7 +27156,7 @@ GRANT ALL ON FUNCTION pointn(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: pointonsurface(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: pointonsurface(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION pointonsurface(geometry) FROM PUBLIC;
@@ -29283,7 +27167,7 @@ GRANT ALL ON FUNCTION pointonsurface(geometry) TO "Webgroup";
 
 
 --
--- Name: polyfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: polyfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION polyfromtext(text) FROM PUBLIC;
@@ -29294,7 +27178,7 @@ GRANT ALL ON FUNCTION polyfromtext(text) TO "Webgroup";
 
 
 --
--- Name: polyfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: polyfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION polyfromtext(text, integer) FROM PUBLIC;
@@ -29305,7 +27189,7 @@ GRANT ALL ON FUNCTION polyfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: polyfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: polyfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION polyfromwkb(bytea, integer) FROM PUBLIC;
@@ -29316,7 +27200,7 @@ GRANT ALL ON FUNCTION polyfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: polyfromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: polyfromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION polyfromwkb(bytea) FROM PUBLIC;
@@ -29327,7 +27211,7 @@ GRANT ALL ON FUNCTION polyfromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: polygonfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: polygonfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION polygonfromtext(text, integer) FROM PUBLIC;
@@ -29338,7 +27222,7 @@ GRANT ALL ON FUNCTION polygonfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: polygonfromtext(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: polygonfromtext(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION polygonfromtext(text) FROM PUBLIC;
@@ -29349,7 +27233,7 @@ GRANT ALL ON FUNCTION polygonfromtext(text) TO "Webgroup";
 
 
 --
--- Name: polygonfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: polygonfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION polygonfromwkb(bytea, integer) FROM PUBLIC;
@@ -29360,7 +27244,7 @@ GRANT ALL ON FUNCTION polygonfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: polygonfromwkb(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: polygonfromwkb(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION polygonfromwkb(bytea) FROM PUBLIC;
@@ -29371,7 +27255,7 @@ GRANT ALL ON FUNCTION polygonfromwkb(bytea) TO "Webgroup";
 
 
 --
--- Name: polygonize_garray(geometry[]); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: polygonize_garray(geometry[]); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION polygonize_garray(geometry[]) FROM PUBLIC;
@@ -29382,7 +27266,7 @@ GRANT ALL ON FUNCTION polygonize_garray(geometry[]) TO "Webgroup";
 
 
 --
--- Name: postgis_full_version(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_full_version(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_full_version() FROM PUBLIC;
@@ -29393,7 +27277,7 @@ GRANT ALL ON FUNCTION postgis_full_version() TO "Webgroup";
 
 
 --
--- Name: postgis_geos_version(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_geos_version(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_geos_version() FROM PUBLIC;
@@ -29404,7 +27288,7 @@ GRANT ALL ON FUNCTION postgis_geos_version() TO "Webgroup";
 
 
 --
--- Name: postgis_gist_joinsel(internal, oid, internal, smallint); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_gist_joinsel(internal, oid, internal, smallint); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_gist_joinsel(internal, oid, internal, smallint) FROM PUBLIC;
@@ -29415,7 +27299,7 @@ GRANT ALL ON FUNCTION postgis_gist_joinsel(internal, oid, internal, smallint) TO
 
 
 --
--- Name: postgis_gist_sel(internal, oid, internal, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_gist_sel(internal, oid, internal, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_gist_sel(internal, oid, internal, integer) FROM PUBLIC;
@@ -29426,7 +27310,7 @@ GRANT ALL ON FUNCTION postgis_gist_sel(internal, oid, internal, integer) TO "Web
 
 
 --
--- Name: postgis_jts_version(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_jts_version(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_jts_version() FROM PUBLIC;
@@ -29437,7 +27321,7 @@ GRANT ALL ON FUNCTION postgis_jts_version() TO "Webgroup";
 
 
 --
--- Name: postgis_lib_build_date(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_lib_build_date(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_lib_build_date() FROM PUBLIC;
@@ -29448,7 +27332,7 @@ GRANT ALL ON FUNCTION postgis_lib_build_date() TO "Webgroup";
 
 
 --
--- Name: postgis_lib_version(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_lib_version(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_lib_version() FROM PUBLIC;
@@ -29459,7 +27343,7 @@ GRANT ALL ON FUNCTION postgis_lib_version() TO "Webgroup";
 
 
 --
--- Name: postgis_proj_version(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_proj_version(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_proj_version() FROM PUBLIC;
@@ -29470,7 +27354,7 @@ GRANT ALL ON FUNCTION postgis_proj_version() TO "Webgroup";
 
 
 --
--- Name: postgis_scripts_build_date(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_scripts_build_date(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_scripts_build_date() FROM PUBLIC;
@@ -29481,7 +27365,7 @@ GRANT ALL ON FUNCTION postgis_scripts_build_date() TO "Webgroup";
 
 
 --
--- Name: postgis_scripts_installed(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_scripts_installed(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_scripts_installed() FROM PUBLIC;
@@ -29492,7 +27376,7 @@ GRANT ALL ON FUNCTION postgis_scripts_installed() TO "Webgroup";
 
 
 --
--- Name: postgis_scripts_released(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_scripts_released(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_scripts_released() FROM PUBLIC;
@@ -29503,7 +27387,7 @@ GRANT ALL ON FUNCTION postgis_scripts_released() TO "Webgroup";
 
 
 --
--- Name: postgis_uses_stats(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_uses_stats(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_uses_stats() FROM PUBLIC;
@@ -29514,7 +27398,7 @@ GRANT ALL ON FUNCTION postgis_uses_stats() TO "Webgroup";
 
 
 --
--- Name: postgis_version(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: postgis_version(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION postgis_version() FROM PUBLIC;
@@ -29525,7 +27409,7 @@ GRANT ALL ON FUNCTION postgis_version() TO "Webgroup";
 
 
 --
--- Name: probe_geometry_columns(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: probe_geometry_columns(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION probe_geometry_columns() FROM PUBLIC;
@@ -29536,7 +27420,7 @@ GRANT ALL ON FUNCTION probe_geometry_columns() TO "Webgroup";
 
 
 --
--- Name: relate(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: relate(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION relate(geometry, geometry) FROM PUBLIC;
@@ -29547,7 +27431,7 @@ GRANT ALL ON FUNCTION relate(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: relate(geometry, geometry, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: relate(geometry, geometry, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION relate(geometry, geometry, text) FROM PUBLIC;
@@ -29558,7 +27442,7 @@ GRANT ALL ON FUNCTION relate(geometry, geometry, text) TO "Webgroup";
 
 
 --
--- Name: removepoint(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: removepoint(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION removepoint(geometry, integer) FROM PUBLIC;
@@ -29569,7 +27453,7 @@ GRANT ALL ON FUNCTION removepoint(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: rename_geometry_table_constraints(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: rename_geometry_table_constraints(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION rename_geometry_table_constraints() FROM PUBLIC;
@@ -29580,7 +27464,7 @@ GRANT ALL ON FUNCTION rename_geometry_table_constraints() TO "Webgroup";
 
 
 --
--- Name: reverse(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: reverse(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION reverse(geometry) FROM PUBLIC;
@@ -29591,7 +27475,7 @@ GRANT ALL ON FUNCTION reverse(geometry) TO "Webgroup";
 
 
 --
--- Name: rotate(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: rotate(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION rotate(geometry, double precision) FROM PUBLIC;
@@ -29602,7 +27486,7 @@ GRANT ALL ON FUNCTION rotate(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: rotatex(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: rotatex(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION rotatex(geometry, double precision) FROM PUBLIC;
@@ -29613,7 +27497,7 @@ GRANT ALL ON FUNCTION rotatex(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: rotatey(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: rotatey(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION rotatey(geometry, double precision) FROM PUBLIC;
@@ -29624,7 +27508,7 @@ GRANT ALL ON FUNCTION rotatey(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: rotatez(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: rotatez(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION rotatez(geometry, double precision) FROM PUBLIC;
@@ -29635,7 +27519,7 @@ GRANT ALL ON FUNCTION rotatez(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: scale(geometry, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: scale(geometry, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION scale(geometry, double precision, double precision, double precision) FROM PUBLIC;
@@ -29646,7 +27530,7 @@ GRANT ALL ON FUNCTION scale(geometry, double precision, double precision, double
 
 
 --
--- Name: scale(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: scale(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION scale(geometry, double precision, double precision) FROM PUBLIC;
@@ -29657,7 +27541,7 @@ GRANT ALL ON FUNCTION scale(geometry, double precision, double precision) TO "We
 
 
 --
--- Name: se_envelopesintersect(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: se_envelopesintersect(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION se_envelopesintersect(geometry, geometry) FROM PUBLIC;
@@ -29668,7 +27552,7 @@ GRANT ALL ON FUNCTION se_envelopesintersect(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: se_is3d(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: se_is3d(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION se_is3d(geometry) FROM PUBLIC;
@@ -29679,7 +27563,7 @@ GRANT ALL ON FUNCTION se_is3d(geometry) TO "Webgroup";
 
 
 --
--- Name: se_ismeasured(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: se_ismeasured(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION se_ismeasured(geometry) FROM PUBLIC;
@@ -29690,7 +27574,7 @@ GRANT ALL ON FUNCTION se_ismeasured(geometry) TO "Webgroup";
 
 
 --
--- Name: se_locatealong(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: se_locatealong(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION se_locatealong(geometry, double precision) FROM PUBLIC;
@@ -29701,7 +27585,7 @@ GRANT ALL ON FUNCTION se_locatealong(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: se_locatebetween(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: se_locatebetween(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION se_locatebetween(geometry, double precision, double precision) FROM PUBLIC;
@@ -29712,7 +27596,7 @@ GRANT ALL ON FUNCTION se_locatebetween(geometry, double precision, double precis
 
 
 --
--- Name: se_m(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: se_m(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION se_m(geometry) FROM PUBLIC;
@@ -29723,7 +27607,7 @@ GRANT ALL ON FUNCTION se_m(geometry) TO "Webgroup";
 
 
 --
--- Name: se_z(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: se_z(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION se_z(geometry) FROM PUBLIC;
@@ -29734,7 +27618,7 @@ GRANT ALL ON FUNCTION se_z(geometry) TO "Webgroup";
 
 
 --
--- Name: securitygroupobjectmaster(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygroupobjectmaster(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygroupobjectmaster(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29745,7 +27629,7 @@ GRANT ALL ON FUNCTION securitygroupobjectmaster(securitypermissionid integer, se
 
 
 --
--- Name: securitygrouppermissivedefaultcombined(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivedefaultcombined(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissivedefaultcombined(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29756,7 +27640,7 @@ GRANT ALL ON FUNCTION securitygrouppermissivedefaultcombined(securitypermissioni
 
 
 --
--- Name: securitygrouppermissiveobject1(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissiveobject1(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissiveobject1(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29767,7 +27651,7 @@ GRANT ALL ON FUNCTION securitygrouppermissiveobject1(securitypermissionid intege
 
 
 --
--- Name: securitygrouppermissiveobject2(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissiveobject2(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissiveobject2(securitypermission integer, securityuserid integer) FROM PUBLIC;
@@ -29778,7 +27662,7 @@ GRANT ALL ON FUNCTION securitygrouppermissiveobject2(securitypermission integer,
 
 
 --
--- Name: securitygrouppermissiveobject3(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissiveobject3(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissiveobject3(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29789,7 +27673,7 @@ GRANT ALL ON FUNCTION securitygrouppermissiveobject3(securitypermissionid intege
 
 
 --
--- Name: securitygrouppermissiveobjectcombined(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissiveobjectcombined(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissiveobjectcombined(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29800,7 +27684,7 @@ GRANT ALL ON FUNCTION securitygrouppermissiveobjectcombined(securitypermissionid
 
 
 --
--- Name: securitygrouppermissivetree1(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivetree1(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissivetree1(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29811,7 +27695,7 @@ GRANT ALL ON FUNCTION securitygrouppermissivetree1(securitypermissionid integer,
 
 
 --
--- Name: securitygrouppermissivetree2(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivetree2(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissivetree2(securitypermission integer, securityuserid integer) FROM PUBLIC;
@@ -29822,7 +27706,7 @@ GRANT ALL ON FUNCTION securitygrouppermissivetree2(securitypermission integer, s
 
 
 --
--- Name: securitygrouppermissivetree3(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivetree3(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissivetree3(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29833,7 +27717,7 @@ GRANT ALL ON FUNCTION securitygrouppermissivetree3(securitypermissionid integer,
 
 
 --
--- Name: securitygrouppermissivetreecombined(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivetreecombined(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissivetreecombined(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29844,7 +27728,7 @@ GRANT ALL ON FUNCTION securitygrouppermissivetreecombined(securitypermissionid i
 
 
 --
--- Name: securitygrouppermissivevmeasurement1(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivevmeasurement1(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissivevmeasurement1(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29855,7 +27739,7 @@ GRANT ALL ON FUNCTION securitygrouppermissivevmeasurement1(securitypermissionid 
 
 
 --
--- Name: securitygrouppermissivevmeasurement2(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivevmeasurement2(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissivevmeasurement2(securitypermission integer, securityuserid integer) FROM PUBLIC;
@@ -29866,7 +27750,7 @@ GRANT ALL ON FUNCTION securitygrouppermissivevmeasurement2(securitypermission in
 
 
 --
--- Name: securitygrouppermissivevmeasurement3(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivevmeasurement3(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissivevmeasurement3(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29877,7 +27761,7 @@ GRANT ALL ON FUNCTION securitygrouppermissivevmeasurement3(securitypermissionid 
 
 
 --
--- Name: securitygrouppermissivevmeasurementcombined(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouppermissivevmeasurementcombined(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouppermissivevmeasurementcombined(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -29888,7 +27772,7 @@ GRANT ALL ON FUNCTION securitygrouppermissivevmeasurementcombined(securitypermis
 
 
 --
--- Name: securitygrouprestrictiveobject1(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictiveobject1(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictiveobject1(securityuserid integer) FROM PUBLIC;
@@ -29899,7 +27783,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictiveobject1(securityuserid integer) TO
 
 
 --
--- Name: securitygrouprestrictiveobject2(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictiveobject2(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictiveobject2(securityuserid integer) FROM PUBLIC;
@@ -29910,7 +27794,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictiveobject2(securityuserid integer) TO
 
 
 --
--- Name: securitygrouprestrictiveobject3(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictiveobject3(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictiveobject3(securityuserid integer) FROM PUBLIC;
@@ -29921,7 +27805,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictiveobject3(securityuserid integer) TO
 
 
 --
--- Name: securitygrouprestrictiveobjectcombined(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictiveobjectcombined(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictiveobjectcombined(securityuserid integer) FROM PUBLIC;
@@ -29932,7 +27816,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictiveobjectcombined(securityuserid inte
 
 
 --
--- Name: securitygrouprestrictivetree1(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivetree1(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictivetree1(securityuserid integer) FROM PUBLIC;
@@ -29943,7 +27827,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictivetree1(securityuserid integer) TO "
 
 
 --
--- Name: securitygrouprestrictivetree2(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivetree2(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictivetree2(securityuserid integer) FROM PUBLIC;
@@ -29954,7 +27838,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictivetree2(securityuserid integer) TO "
 
 
 --
--- Name: securitygrouprestrictivetree3(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivetree3(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictivetree3(securityuserid integer) FROM PUBLIC;
@@ -29965,7 +27849,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictivetree3(securityuserid integer) TO "
 
 
 --
--- Name: securitygrouprestrictivetreecombined(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivetreecombined(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictivetreecombined(securityuserid integer) FROM PUBLIC;
@@ -29976,7 +27860,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictivetreecombined(securityuserid intege
 
 
 --
--- Name: securitygrouprestrictivevmeasurement1(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivevmeasurement1(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictivevmeasurement1(securityuserid integer) FROM PUBLIC;
@@ -29987,7 +27871,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictivevmeasurement1(securityuserid integ
 
 
 --
--- Name: securitygrouprestrictivevmeasurement2(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivevmeasurement2(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictivevmeasurement2(securityuserid integer) FROM PUBLIC;
@@ -29998,7 +27882,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictivevmeasurement2(securityuserid integ
 
 
 --
--- Name: securitygrouprestrictivevmeasurement3(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivevmeasurement3(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictivevmeasurement3(securityuserid integer) FROM PUBLIC;
@@ -30009,7 +27893,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictivevmeasurement3(securityuserid integ
 
 
 --
--- Name: securitygrouprestrictivevmeasurementcombined(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouprestrictivevmeasurementcombined(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouprestrictivevmeasurementcombined(securityuserid integer) FROM PUBLIC;
@@ -30020,7 +27904,7 @@ GRANT ALL ON FUNCTION securitygrouprestrictivevmeasurementcombined(securityuseri
 
 
 --
--- Name: securitygroupsbyuser(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygroupsbyuser(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygroupsbyuser(securityuserid integer) FROM PUBLIC;
@@ -30031,7 +27915,7 @@ GRANT ALL ON FUNCTION securitygroupsbyuser(securityuserid integer) TO "Webgroup"
 
 
 --
--- Name: securitygroupsbyuser1(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygroupsbyuser1(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygroupsbyuser1(securityuserid integer) FROM PUBLIC;
@@ -30042,7 +27926,7 @@ GRANT ALL ON FUNCTION securitygroupsbyuser1(securityuserid integer) TO "Webgroup
 
 
 --
--- Name: securitygroupsbyuser2(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygroupsbyuser2(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygroupsbyuser2(securityuserid integer) FROM PUBLIC;
@@ -30053,7 +27937,7 @@ GRANT ALL ON FUNCTION securitygroupsbyuser2(securityuserid integer) TO "Webgroup
 
 
 --
--- Name: securitygroupsbyuser3(integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygroupsbyuser3(integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygroupsbyuser3(securityuserid integer) FROM PUBLIC;
@@ -30064,7 +27948,7 @@ GRANT ALL ON FUNCTION securitygroupsbyuser3(securityuserid integer) TO "Webgroup
 
 
 --
--- Name: securitygrouptreemaster(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygrouptreemaster(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygrouptreemaster(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -30075,7 +27959,7 @@ GRANT ALL ON FUNCTION securitygrouptreemaster(securitypermissionid integer, secu
 
 
 --
--- Name: securitygroupvmeasurementmaster(integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitygroupvmeasurementmaster(integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitygroupvmeasurementmaster(securitypermissionid integer, securityuserid integer) FROM PUBLIC;
@@ -30086,7 +27970,7 @@ GRANT ALL ON FUNCTION securitygroupvmeasurementmaster(securitypermissionid integ
 
 
 --
--- Name: securitypermsobject(integer, integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitypermsobject(integer, integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitypermsobject(securityuserid integer, securitypermissionid integer, securityobjectid integer) FROM PUBLIC;
@@ -30097,7 +27981,7 @@ GRANT ALL ON FUNCTION securitypermsobject(securityuserid integer, securitypermis
 
 
 --
--- Name: securitypermstree(integer, integer, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: securitypermstree(integer, integer, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION securitypermstree(securityuserid integer, securitypermissionid integer, elementid integer) FROM PUBLIC;
@@ -30108,7 +27992,7 @@ GRANT ALL ON FUNCTION securitypermstree(securityuserid integer, securitypermissi
 
 
 --
--- Name: segmentize(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: segmentize(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION segmentize(geometry, double precision) FROM PUBLIC;
@@ -30119,7 +28003,7 @@ GRANT ALL ON FUNCTION segmentize(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: setfactor(chip, real); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: setfactor(chip, real); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION setfactor(chip, real) FROM PUBLIC;
@@ -30130,7 +28014,7 @@ GRANT ALL ON FUNCTION setfactor(chip, real) TO "Webgroup";
 
 
 --
--- Name: setpoint(geometry, integer, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: setpoint(geometry, integer, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION setpoint(geometry, integer, geometry) FROM PUBLIC;
@@ -30141,7 +28025,7 @@ GRANT ALL ON FUNCTION setpoint(geometry, integer, geometry) TO "Webgroup";
 
 
 --
--- Name: setsrid(chip, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: setsrid(chip, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION setsrid(chip, integer) FROM PUBLIC;
@@ -30152,7 +28036,7 @@ GRANT ALL ON FUNCTION setsrid(chip, integer) TO "Webgroup";
 
 
 --
--- Name: setsrid(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: setsrid(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION setsrid(geometry, integer) FROM PUBLIC;
@@ -30163,7 +28047,7 @@ GRANT ALL ON FUNCTION setsrid(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: shift_longitude(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: shift_longitude(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION shift_longitude(geometry) FROM PUBLIC;
@@ -30174,7 +28058,7 @@ GRANT ALL ON FUNCTION shift_longitude(geometry) TO "Webgroup";
 
 
 --
--- Name: simplify(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: simplify(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION simplify(geometry, double precision) FROM PUBLIC;
@@ -30185,7 +28069,7 @@ GRANT ALL ON FUNCTION simplify(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION snaptogrid(geometry, double precision, double precision, double precision, double precision) FROM PUBLIC;
@@ -30196,7 +28080,7 @@ GRANT ALL ON FUNCTION snaptogrid(geometry, double precision, double precision, d
 
 
 --
--- Name: snaptogrid(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: snaptogrid(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION snaptogrid(geometry, double precision, double precision) FROM PUBLIC;
@@ -30207,7 +28091,7 @@ GRANT ALL ON FUNCTION snaptogrid(geometry, double precision, double precision) T
 
 
 --
--- Name: snaptogrid(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: snaptogrid(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION snaptogrid(geometry, double precision) FROM PUBLIC;
@@ -30218,7 +28102,7 @@ GRANT ALL ON FUNCTION snaptogrid(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision) FROM PUBLIC;
@@ -30229,7 +28113,7 @@ GRANT ALL ON FUNCTION snaptogrid(geometry, geometry, double precision, double pr
 
 
 --
--- Name: srid(chip); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: srid(chip); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION srid(chip) FROM PUBLIC;
@@ -30240,7 +28124,7 @@ GRANT ALL ON FUNCTION srid(chip) TO "Webgroup";
 
 
 --
--- Name: st_area(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_area(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_area(geometry) FROM PUBLIC;
@@ -30251,7 +28135,7 @@ GRANT ALL ON FUNCTION st_area(geometry) TO "Webgroup";
 
 
 --
--- Name: st_asbinary(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_asbinary(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_asbinary(geometry) FROM PUBLIC;
@@ -30262,7 +28146,7 @@ GRANT ALL ON FUNCTION st_asbinary(geometry) TO "Webgroup";
 
 
 --
--- Name: st_astext(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_astext(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_astext(geometry) FROM PUBLIC;
@@ -30273,7 +28157,7 @@ GRANT ALL ON FUNCTION st_astext(geometry) TO "Webgroup";
 
 
 --
--- Name: st_boundary(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_boundary(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_boundary(geometry) FROM PUBLIC;
@@ -30284,7 +28168,7 @@ GRANT ALL ON FUNCTION st_boundary(geometry) TO "Webgroup";
 
 
 --
--- Name: st_buffer(geometry, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_buffer(geometry, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_buffer(geometry, double precision) FROM PUBLIC;
@@ -30295,7 +28179,7 @@ GRANT ALL ON FUNCTION st_buffer(geometry, double precision) TO "Webgroup";
 
 
 --
--- Name: st_centroid(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_centroid(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_centroid(geometry) FROM PUBLIC;
@@ -30306,7 +28190,7 @@ GRANT ALL ON FUNCTION st_centroid(geometry) TO "Webgroup";
 
 
 --
--- Name: st_contains(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_contains(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_contains(geometry, geometry) FROM PUBLIC;
@@ -30317,7 +28201,7 @@ GRANT ALL ON FUNCTION st_contains(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_convexhull(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_convexhull(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_convexhull(geometry) FROM PUBLIC;
@@ -30328,7 +28212,7 @@ GRANT ALL ON FUNCTION st_convexhull(geometry) TO "Webgroup";
 
 
 --
--- Name: st_coorddim(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_coorddim(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_coorddim(geometry) FROM PUBLIC;
@@ -30339,7 +28223,7 @@ GRANT ALL ON FUNCTION st_coorddim(geometry) TO "Webgroup";
 
 
 --
--- Name: st_crosses(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_crosses(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_crosses(geometry, geometry) FROM PUBLIC;
@@ -30350,7 +28234,7 @@ GRANT ALL ON FUNCTION st_crosses(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_difference(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_difference(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_difference(geometry, geometry) FROM PUBLIC;
@@ -30361,7 +28245,7 @@ GRANT ALL ON FUNCTION st_difference(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_dimension(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_dimension(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_dimension(geometry) FROM PUBLIC;
@@ -30372,7 +28256,7 @@ GRANT ALL ON FUNCTION st_dimension(geometry) TO "Webgroup";
 
 
 --
--- Name: st_disjoint(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_disjoint(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_disjoint(geometry, geometry) FROM PUBLIC;
@@ -30383,7 +28267,7 @@ GRANT ALL ON FUNCTION st_disjoint(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_distance(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_distance(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_distance(geometry, geometry) FROM PUBLIC;
@@ -30394,7 +28278,7 @@ GRANT ALL ON FUNCTION st_distance(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_endpoint(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_endpoint(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_endpoint(geometry) FROM PUBLIC;
@@ -30405,7 +28289,7 @@ GRANT ALL ON FUNCTION st_endpoint(geometry) TO "Webgroup";
 
 
 --
--- Name: st_envelope(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_envelope(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_envelope(geometry) FROM PUBLIC;
@@ -30416,7 +28300,7 @@ GRANT ALL ON FUNCTION st_envelope(geometry) TO "Webgroup";
 
 
 --
--- Name: st_equals(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_equals(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_equals(geometry, geometry) FROM PUBLIC;
@@ -30427,7 +28311,7 @@ GRANT ALL ON FUNCTION st_equals(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_exteriorring(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_exteriorring(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_exteriorring(geometry) FROM PUBLIC;
@@ -30438,7 +28322,7 @@ GRANT ALL ON FUNCTION st_exteriorring(geometry) TO "Webgroup";
 
 
 --
--- Name: st_geometryn(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_geometryn(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_geometryn(geometry, integer) FROM PUBLIC;
@@ -30449,7 +28333,7 @@ GRANT ALL ON FUNCTION st_geometryn(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: st_geometrytype(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_geometrytype(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_geometrytype(geometry) FROM PUBLIC;
@@ -30460,7 +28344,7 @@ GRANT ALL ON FUNCTION st_geometrytype(geometry) TO "Webgroup";
 
 
 --
--- Name: st_geomfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_geomfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_geomfromtext(text, integer) FROM PUBLIC;
@@ -30471,7 +28355,7 @@ GRANT ALL ON FUNCTION st_geomfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: st_geomfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_geomfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_geomfromwkb(bytea, integer) FROM PUBLIC;
@@ -30482,7 +28366,7 @@ GRANT ALL ON FUNCTION st_geomfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: st_interiorringn(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_interiorringn(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_interiorringn(geometry, integer) FROM PUBLIC;
@@ -30493,7 +28377,7 @@ GRANT ALL ON FUNCTION st_interiorringn(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: st_intersection(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_intersection(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_intersection(geometry, geometry) FROM PUBLIC;
@@ -30504,7 +28388,7 @@ GRANT ALL ON FUNCTION st_intersection(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_intersects(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_intersects(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_intersects(geometry, geometry) FROM PUBLIC;
@@ -30515,7 +28399,7 @@ GRANT ALL ON FUNCTION st_intersects(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_isclosed(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_isclosed(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_isclosed(geometry) FROM PUBLIC;
@@ -30526,7 +28410,7 @@ GRANT ALL ON FUNCTION st_isclosed(geometry) TO "Webgroup";
 
 
 --
--- Name: st_isempty(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_isempty(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_isempty(geometry) FROM PUBLIC;
@@ -30537,7 +28421,7 @@ GRANT ALL ON FUNCTION st_isempty(geometry) TO "Webgroup";
 
 
 --
--- Name: st_isring(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_isring(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_isring(geometry) FROM PUBLIC;
@@ -30548,7 +28432,7 @@ GRANT ALL ON FUNCTION st_isring(geometry) TO "Webgroup";
 
 
 --
--- Name: st_issimple(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_issimple(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_issimple(geometry) FROM PUBLIC;
@@ -30559,7 +28443,7 @@ GRANT ALL ON FUNCTION st_issimple(geometry) TO "Webgroup";
 
 
 --
--- Name: st_isvalid(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_isvalid(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_isvalid(geometry) FROM PUBLIC;
@@ -30570,7 +28454,7 @@ GRANT ALL ON FUNCTION st_isvalid(geometry) TO "Webgroup";
 
 
 --
--- Name: st_length(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_length(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_length(geometry) FROM PUBLIC;
@@ -30581,7 +28465,7 @@ GRANT ALL ON FUNCTION st_length(geometry) TO "Webgroup";
 
 
 --
--- Name: st_linefromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_linefromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_linefromtext(text, integer) FROM PUBLIC;
@@ -30592,7 +28476,7 @@ GRANT ALL ON FUNCTION st_linefromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: st_linefromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_linefromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_linefromwkb(bytea, integer) FROM PUBLIC;
@@ -30603,7 +28487,7 @@ GRANT ALL ON FUNCTION st_linefromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: st_mlinefromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_mlinefromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_mlinefromtext(text, integer) FROM PUBLIC;
@@ -30614,7 +28498,7 @@ GRANT ALL ON FUNCTION st_mlinefromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: st_mlinefromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_mlinefromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_mlinefromwkb(bytea, integer) FROM PUBLIC;
@@ -30625,7 +28509,7 @@ GRANT ALL ON FUNCTION st_mlinefromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: st_mpointfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_mpointfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_mpointfromtext(text, integer) FROM PUBLIC;
@@ -30636,7 +28520,7 @@ GRANT ALL ON FUNCTION st_mpointfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: st_mpointfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_mpointfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_mpointfromwkb(bytea, integer) FROM PUBLIC;
@@ -30647,7 +28531,7 @@ GRANT ALL ON FUNCTION st_mpointfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: st_mpolyfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_mpolyfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_mpolyfromtext(text, integer) FROM PUBLIC;
@@ -30658,7 +28542,7 @@ GRANT ALL ON FUNCTION st_mpolyfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: st_mpolyfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_mpolyfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_mpolyfromwkb(bytea, integer) FROM PUBLIC;
@@ -30669,7 +28553,7 @@ GRANT ALL ON FUNCTION st_mpolyfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: st_numgeometries(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_numgeometries(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_numgeometries(geometry) FROM PUBLIC;
@@ -30680,7 +28564,7 @@ GRANT ALL ON FUNCTION st_numgeometries(geometry) TO "Webgroup";
 
 
 --
--- Name: st_numinteriorring(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_numinteriorring(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_numinteriorring(geometry) FROM PUBLIC;
@@ -30691,7 +28575,7 @@ GRANT ALL ON FUNCTION st_numinteriorring(geometry) TO "Webgroup";
 
 
 --
--- Name: st_numpoints(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_numpoints(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_numpoints(geometry) FROM PUBLIC;
@@ -30702,7 +28586,7 @@ GRANT ALL ON FUNCTION st_numpoints(geometry) TO "Webgroup";
 
 
 --
--- Name: st_orderingequals(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_orderingequals(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_orderingequals(geometry, geometry) FROM PUBLIC;
@@ -30713,7 +28597,7 @@ GRANT ALL ON FUNCTION st_orderingequals(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_overlaps(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_overlaps(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_overlaps(geometry, geometry) FROM PUBLIC;
@@ -30724,7 +28608,7 @@ GRANT ALL ON FUNCTION st_overlaps(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_perimeter(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_perimeter(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_perimeter(geometry) FROM PUBLIC;
@@ -30735,7 +28619,7 @@ GRANT ALL ON FUNCTION st_perimeter(geometry) TO "Webgroup";
 
 
 --
--- Name: st_point(double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_point(double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_point(double precision, double precision) FROM PUBLIC;
@@ -30746,7 +28630,7 @@ GRANT ALL ON FUNCTION st_point(double precision, double precision) TO "Webgroup"
 
 
 --
--- Name: st_pointfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_pointfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_pointfromtext(text, integer) FROM PUBLIC;
@@ -30757,7 +28641,7 @@ GRANT ALL ON FUNCTION st_pointfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: st_pointfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_pointfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_pointfromwkb(bytea, integer) FROM PUBLIC;
@@ -30768,7 +28652,7 @@ GRANT ALL ON FUNCTION st_pointfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: st_pointn(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_pointn(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_pointn(geometry) FROM PUBLIC;
@@ -30779,7 +28663,7 @@ GRANT ALL ON FUNCTION st_pointn(geometry) TO "Webgroup";
 
 
 --
--- Name: st_pointonsurface(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_pointonsurface(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_pointonsurface(geometry) FROM PUBLIC;
@@ -30790,7 +28674,7 @@ GRANT ALL ON FUNCTION st_pointonsurface(geometry) TO "Webgroup";
 
 
 --
--- Name: st_polyfromtext(text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_polyfromtext(text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_polyfromtext(text, integer) FROM PUBLIC;
@@ -30801,7 +28685,7 @@ GRANT ALL ON FUNCTION st_polyfromtext(text, integer) TO "Webgroup";
 
 
 --
--- Name: st_polyfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_polyfromwkb(bytea, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_polyfromwkb(bytea, integer) FROM PUBLIC;
@@ -30812,7 +28696,7 @@ GRANT ALL ON FUNCTION st_polyfromwkb(bytea, integer) TO "Webgroup";
 
 
 --
--- Name: st_polygon(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_polygon(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_polygon(geometry, integer) FROM PUBLIC;
@@ -30823,7 +28707,7 @@ GRANT ALL ON FUNCTION st_polygon(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: st_relate(geometry, geometry, text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_relate(geometry, geometry, text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_relate(geometry, geometry, text) FROM PUBLIC;
@@ -30834,7 +28718,7 @@ GRANT ALL ON FUNCTION st_relate(geometry, geometry, text) TO "Webgroup";
 
 
 --
--- Name: st_srid(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_srid(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_srid(geometry) FROM PUBLIC;
@@ -30845,7 +28729,7 @@ GRANT ALL ON FUNCTION st_srid(geometry) TO "Webgroup";
 
 
 --
--- Name: st_startpoint(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_startpoint(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_startpoint(geometry) FROM PUBLIC;
@@ -30856,7 +28740,7 @@ GRANT ALL ON FUNCTION st_startpoint(geometry) TO "Webgroup";
 
 
 --
--- Name: st_symdifference(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_symdifference(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_symdifference(geometry, geometry) FROM PUBLIC;
@@ -30867,7 +28751,7 @@ GRANT ALL ON FUNCTION st_symdifference(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_touches(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_touches(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_touches(geometry, geometry) FROM PUBLIC;
@@ -30878,7 +28762,7 @@ GRANT ALL ON FUNCTION st_touches(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_transform(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_transform(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_transform(geometry, integer) FROM PUBLIC;
@@ -30889,7 +28773,7 @@ GRANT ALL ON FUNCTION st_transform(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: st_union(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_union(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_union(geometry, geometry) FROM PUBLIC;
@@ -30900,7 +28784,7 @@ GRANT ALL ON FUNCTION st_union(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_within(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_within(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_within(geometry, geometry) FROM PUBLIC;
@@ -30911,7 +28795,7 @@ GRANT ALL ON FUNCTION st_within(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: st_wkbtosql(bytea); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_wkbtosql(bytea); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_wkbtosql(bytea) FROM PUBLIC;
@@ -30922,7 +28806,7 @@ GRANT ALL ON FUNCTION st_wkbtosql(bytea) TO "Webgroup";
 
 
 --
--- Name: st_wkttosql(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_wkttosql(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_wkttosql(text) FROM PUBLIC;
@@ -30933,7 +28817,7 @@ GRANT ALL ON FUNCTION st_wkttosql(text) TO "Webgroup";
 
 
 --
--- Name: st_x(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_x(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_x(geometry) FROM PUBLIC;
@@ -30944,7 +28828,7 @@ GRANT ALL ON FUNCTION st_x(geometry) TO "Webgroup";
 
 
 --
--- Name: st_y(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: st_y(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION st_y(geometry) FROM PUBLIC;
@@ -30955,7 +28839,7 @@ GRANT ALL ON FUNCTION st_y(geometry) TO "Webgroup";
 
 
 --
--- Name: startpoint(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: startpoint(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION startpoint(geometry) FROM PUBLIC;
@@ -30966,7 +28850,7 @@ GRANT ALL ON FUNCTION startpoint(geometry) TO "Webgroup";
 
 
 --
--- Name: summary(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: summary(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION summary(geometry) FROM PUBLIC;
@@ -30977,7 +28861,7 @@ GRANT ALL ON FUNCTION summary(geometry) TO "Webgroup";
 
 
 --
--- Name: symdifference(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: symdifference(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION symdifference(geometry, geometry) FROM PUBLIC;
@@ -30988,7 +28872,7 @@ GRANT ALL ON FUNCTION symdifference(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: symmetricdifference(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: symmetricdifference(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION symmetricdifference(geometry, geometry) FROM PUBLIC;
@@ -30999,7 +28883,7 @@ GRANT ALL ON FUNCTION symmetricdifference(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: text(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: text(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION text(geometry) FROM PUBLIC;
@@ -31010,7 +28894,7 @@ GRANT ALL ON FUNCTION text(geometry) TO "Webgroup";
 
 
 --
--- Name: text(boolean); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: text(boolean); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION text(boolean) FROM PUBLIC;
@@ -31021,7 +28905,7 @@ GRANT ALL ON FUNCTION text(boolean) TO "Webgroup";
 
 
 --
--- Name: touches(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: touches(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION touches(geometry, geometry) FROM PUBLIC;
@@ -31032,7 +28916,7 @@ GRANT ALL ON FUNCTION touches(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: transform(geometry, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: transform(geometry, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION transform(geometry, integer) FROM PUBLIC;
@@ -31043,7 +28927,7 @@ GRANT ALL ON FUNCTION transform(geometry, integer) TO "Webgroup";
 
 
 --
--- Name: transform_geometry(geometry, text, text, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: transform_geometry(geometry, text, text, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION transform_geometry(geometry, text, text, integer) FROM PUBLIC;
@@ -31054,7 +28938,7 @@ GRANT ALL ON FUNCTION transform_geometry(geometry, text, text, integer) TO "Webg
 
 
 --
--- Name: translate(geometry, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: translate(geometry, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION translate(geometry, double precision, double precision, double precision) FROM PUBLIC;
@@ -31065,7 +28949,7 @@ GRANT ALL ON FUNCTION translate(geometry, double precision, double precision, do
 
 
 --
--- Name: translate(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: translate(geometry, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION translate(geometry, double precision, double precision) FROM PUBLIC;
@@ -31076,7 +28960,7 @@ GRANT ALL ON FUNCTION translate(geometry, double precision, double precision) TO
 
 
 --
--- Name: transscale(geometry, double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: transscale(geometry, double precision, double precision, double precision, double precision); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION transscale(geometry, double precision, double precision, double precision, double precision) FROM PUBLIC;
@@ -31087,7 +28971,7 @@ GRANT ALL ON FUNCTION transscale(geometry, double precision, double precision, d
 
 
 --
--- Name: unite_garray(geometry[]); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: unite_garray(geometry[]); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION unite_garray(geometry[]) FROM PUBLIC;
@@ -31098,7 +28982,7 @@ GRANT ALL ON FUNCTION unite_garray(geometry[]) TO "Webgroup";
 
 
 --
--- Name: unlockrows(text); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: unlockrows(text); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION unlockrows(text) FROM PUBLIC;
@@ -31109,7 +28993,7 @@ GRANT ALL ON FUNCTION unlockrows(text) TO "Webgroup";
 
 
 --
--- Name: update_geometry_stats(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: update_geometry_stats(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION update_geometry_stats() FROM PUBLIC;
@@ -31120,7 +29004,7 @@ GRANT ALL ON FUNCTION update_geometry_stats() TO "Webgroup";
 
 
 --
--- Name: update_geometry_stats(character varying, character varying); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: update_geometry_stats(character varying, character varying); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION update_geometry_stats(character varying, character varying) FROM PUBLIC;
@@ -31131,7 +29015,7 @@ GRANT ALL ON FUNCTION update_geometry_stats(character varying, character varying
 
 
 --
--- Name: update_lastmodifiedtimestamp(); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: update_lastmodifiedtimestamp(); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION update_lastmodifiedtimestamp() FROM PUBLIC;
@@ -31142,7 +29026,7 @@ GRANT ALL ON FUNCTION update_lastmodifiedtimestamp() TO "Webgroup";
 
 
 --
--- Name: updategeometrysrid(character varying, character varying, character varying, character varying, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: updategeometrysrid(character varying, character varying, character varying, character varying, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION updategeometrysrid(character varying, character varying, character varying, character varying, integer) FROM PUBLIC;
@@ -31153,7 +29037,7 @@ GRANT ALL ON FUNCTION updategeometrysrid(character varying, character varying, c
 
 
 --
--- Name: updategeometrysrid(character varying, character varying, character varying, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: updategeometrysrid(character varying, character varying, character varying, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION updategeometrysrid(character varying, character varying, character varying, integer) FROM PUBLIC;
@@ -31164,7 +29048,7 @@ GRANT ALL ON FUNCTION updategeometrysrid(character varying, character varying, c
 
 
 --
--- Name: updategeometrysrid(character varying, character varying, integer); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: updategeometrysrid(character varying, character varying, integer); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION updategeometrysrid(character varying, character varying, integer) FROM PUBLIC;
@@ -31175,7 +29059,7 @@ GRANT ALL ON FUNCTION updategeometrysrid(character varying, character varying, i
 
 
 --
--- Name: width(chip); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: width(chip); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION width(chip) FROM PUBLIC;
@@ -31186,7 +29070,7 @@ GRANT ALL ON FUNCTION width(chip) TO "Webgroup";
 
 
 --
--- Name: within(geometry, geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: within(geometry, geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION within(geometry, geometry) FROM PUBLIC;
@@ -31197,7 +29081,7 @@ GRANT ALL ON FUNCTION within(geometry, geometry) TO "Webgroup";
 
 
 --
--- Name: x(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: x(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION x(geometry) FROM PUBLIC;
@@ -31208,7 +29092,7 @@ GRANT ALL ON FUNCTION x(geometry) TO "Webgroup";
 
 
 --
--- Name: xmax(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: xmax(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION xmax(box3d) FROM PUBLIC;
@@ -31219,7 +29103,7 @@ GRANT ALL ON FUNCTION xmax(box3d) TO "Webgroup";
 
 
 --
--- Name: xmin(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: xmin(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION xmin(box3d) FROM PUBLIC;
@@ -31230,7 +29114,7 @@ GRANT ALL ON FUNCTION xmin(box3d) TO "Webgroup";
 
 
 --
--- Name: y(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: y(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION y(geometry) FROM PUBLIC;
@@ -31241,7 +29125,7 @@ GRANT ALL ON FUNCTION y(geometry) TO "Webgroup";
 
 
 --
--- Name: ymax(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: ymax(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION ymax(box3d) FROM PUBLIC;
@@ -31252,7 +29136,7 @@ GRANT ALL ON FUNCTION ymax(box3d) TO "Webgroup";
 
 
 --
--- Name: ymin(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: ymin(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION ymin(box3d) FROM PUBLIC;
@@ -31263,7 +29147,7 @@ GRANT ALL ON FUNCTION ymin(box3d) TO "Webgroup";
 
 
 --
--- Name: z(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: z(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION z(geometry) FROM PUBLIC;
@@ -31274,7 +29158,7 @@ GRANT ALL ON FUNCTION z(geometry) TO "Webgroup";
 
 
 --
--- Name: zmax(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: zmax(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION zmax(box3d) FROM PUBLIC;
@@ -31285,7 +29169,7 @@ GRANT ALL ON FUNCTION zmax(box3d) TO "Webgroup";
 
 
 --
--- Name: zmflag(geometry); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: zmflag(geometry); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION zmflag(geometry) FROM PUBLIC;
@@ -31296,7 +29180,7 @@ GRANT ALL ON FUNCTION zmflag(geometry) TO "Webgroup";
 
 
 --
--- Name: zmin(box3d); Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: zmin(box3d); Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON FUNCTION zmin(box3d) FROM PUBLIC;
@@ -31307,7 +29191,7 @@ GRANT ALL ON FUNCTION zmin(box3d) TO "Webgroup";
 
 
 --
--- Name: geometry_columns; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: geometry_columns; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE geometry_columns FROM PUBLIC;
@@ -31317,7 +29201,7 @@ GRANT ALL ON TABLE geometry_columns TO "Webgroup";
 
 
 --
--- Name: spatial_ref_sys; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: spatial_ref_sys; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE spatial_ref_sys FROM PUBLIC;
@@ -31327,7 +29211,7 @@ GRANT ALL ON TABLE spatial_ref_sys TO "Webgroup";
 
 
 --
--- Name: tblbox; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblbox; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblbox FROM PUBLIC;
@@ -31337,7 +29221,7 @@ GRANT ALL ON TABLE tblbox TO "Webgroup";
 
 
 --
--- Name: tblcrossdate; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblcrossdate; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblcrossdate FROM PUBLIC;
@@ -31347,7 +29231,7 @@ GRANT ALL ON TABLE tblcrossdate TO "Webgroup";
 
 
 --
--- Name: tblcrossdate_crossdateid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblcrossdate_crossdateid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblcrossdate_crossdateid_seq FROM PUBLIC;
@@ -31357,7 +29241,7 @@ GRANT ALL ON SEQUENCE tblcrossdate_crossdateid_seq TO "Webgroup";
 
 
 --
--- Name: tblelement_elementid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblelement_elementid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblelement_elementid_seq FROM PUBLIC;
@@ -31367,7 +29251,7 @@ GRANT ALL ON SEQUENCE tblelement_elementid_seq TO "Webgroup";
 
 
 --
--- Name: tbliptracking; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tbliptracking; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tbliptracking FROM PUBLIC;
@@ -31377,7 +29261,7 @@ GRANT ALL ON TABLE tbliptracking TO "Webgroup";
 
 
 --
--- Name: tblmeasurement_measurementid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblmeasurement_measurementid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblmeasurement_measurementid_seq FROM PUBLIC;
@@ -31387,7 +29271,7 @@ GRANT ALL ON SEQUENCE tblmeasurement_measurementid_seq TO "Webgroup";
 
 
 --
--- Name: tblobject_objectid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblobject_objectid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblobject_objectid_seq FROM PUBLIC;
@@ -31397,7 +29281,7 @@ GRANT ALL ON SEQUENCE tblobject_objectid_seq TO "Webgroup";
 
 
 --
--- Name: tblradius_radiusid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblradius_radiusid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblradius_radiusid_seq FROM PUBLIC;
@@ -31407,7 +29291,7 @@ GRANT ALL ON SEQUENCE tblradius_radiusid_seq TO "Webgroup";
 
 
 --
--- Name: tblreading; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblreading; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblreading FROM PUBLIC;
@@ -31417,7 +29301,7 @@ GRANT ALL ON TABLE tblreading TO "Webgroup";
 
 
 --
--- Name: tblreading_readingid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblreading_readingid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblreading_readingid_seq FROM PUBLIC;
@@ -31427,7 +29311,7 @@ GRANT ALL ON SEQUENCE tblreading_readingid_seq TO "Webgroup";
 
 
 --
--- Name: tblreadingreadingnote; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblreadingreadingnote; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblreadingreadingnote FROM PUBLIC;
@@ -31437,7 +29321,7 @@ GRANT ALL ON TABLE tblreadingreadingnote TO "Webgroup";
 
 
 --
--- Name: tblreadingreadingnote_readingreadingnoteid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblreadingreadingnote_readingreadingnoteid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblreadingreadingnote_readingreadingnoteid_seq FROM PUBLIC;
@@ -31447,7 +29331,7 @@ GRANT ALL ON SEQUENCE tblreadingreadingnote_readingreadingnoteid_seq TO "Webgrou
 
 
 --
--- Name: tblredate; Type: ACL; Schema: public; Owner: lucasm
+-- Name: tblredate; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblredate FROM PUBLIC;
@@ -31457,7 +29341,7 @@ GRANT ALL ON TABLE tblredate TO "Webgroup";
 
 
 --
--- Name: tblredate_redateid_seq; Type: ACL; Schema: public; Owner: lucasm
+-- Name: tblredate_redateid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblredate_redateid_seq FROM PUBLIC;
@@ -31467,7 +29351,7 @@ GRANT ALL ON SEQUENCE tblredate_redateid_seq TO "Webgroup";
 
 
 --
--- Name: tblregion_regionid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblregion_regionid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblregion_regionid_seq FROM PUBLIC;
@@ -31477,7 +29361,7 @@ GRANT ALL ON SEQUENCE tblregion_regionid_seq TO "Webgroup";
 
 
 --
--- Name: tblrequestlog; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblrequestlog; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblrequestlog FROM PUBLIC;
@@ -31487,7 +29371,7 @@ GRANT ALL ON TABLE tblrequestlog TO "Webgroup";
 
 
 --
--- Name: tblrequestlog_requestlogid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblrequestlog_requestlogid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblrequestlog_requestlogid_seq FROM PUBLIC;
@@ -31497,7 +29381,7 @@ GRANT ALL ON SEQUENCE tblrequestlog_requestlogid_seq TO "Webgroup";
 
 
 --
--- Name: tblsample_sampleid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsample_sampleid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblsample_sampleid_seq FROM PUBLIC;
@@ -31507,7 +29391,7 @@ GRANT ALL ON SEQUENCE tblsample_sampleid_seq TO "Webgroup";
 
 
 --
--- Name: tblsecuritydefault; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritydefault; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblsecuritydefault FROM PUBLIC;
@@ -31517,7 +29401,7 @@ GRANT ALL ON TABLE tblsecuritydefault TO "Webgroup";
 
 
 --
--- Name: tblsecuritydefault_securitydefaultid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritydefault_securitydefaultid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblsecuritydefault_securitydefaultid_seq FROM PUBLIC;
@@ -31527,7 +29411,7 @@ GRANT ALL ON SEQUENCE tblsecuritydefault_securitydefaultid_seq TO "Webgroup";
 
 
 --
--- Name: tblsecurityelement; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityelement; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblsecurityelement FROM PUBLIC;
@@ -31537,7 +29421,7 @@ GRANT ALL ON TABLE tblsecurityelement TO "Webgroup";
 
 
 --
--- Name: tblsecuritygroup_securitygroupid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritygroup_securitygroupid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblsecuritygroup_securitygroupid_seq FROM PUBLIC;
@@ -31547,7 +29431,7 @@ GRANT ALL ON SEQUENCE tblsecuritygroup_securitygroupid_seq TO "Webgroup";
 
 
 --
--- Name: tblsecuritygroupmembership; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritygroupmembership; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblsecuritygroupmembership FROM PUBLIC;
@@ -31557,7 +29441,7 @@ GRANT ALL ON TABLE tblsecuritygroupmembership TO "Webgroup";
 
 
 --
--- Name: tblsecuritygroupmembership_securitygroupmembershipid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritygroupmembership_securitygroupmembershipid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblsecuritygroupmembership_securitygroupmembershipid_seq FROM PUBLIC;
@@ -31567,7 +29451,7 @@ GRANT ALL ON SEQUENCE tblsecuritygroupmembership_securitygroupmembershipid_seq T
 
 
 --
--- Name: tblsecurityobject; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityobject; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblsecurityobject FROM PUBLIC;
@@ -31577,7 +29461,7 @@ GRANT ALL ON TABLE tblsecurityobject TO "Webgroup";
 
 
 --
--- Name: tblsecurityobject_securityobjectid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityobject_securityobjectid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblsecurityobject_securityobjectid_seq FROM PUBLIC;
@@ -31587,7 +29471,7 @@ GRANT ALL ON SEQUENCE tblsecurityobject_securityobjectid_seq TO "Webgroup";
 
 
 --
--- Name: tblsecuritytree_securityelementid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecuritytree_securityelementid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblsecuritytree_securityelementid_seq FROM PUBLIC;
@@ -31597,7 +29481,7 @@ GRANT ALL ON SEQUENCE tblsecuritytree_securityelementid_seq TO "Webgroup";
 
 
 --
--- Name: tblsecurityuser; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityuser; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblsecurityuser FROM PUBLIC;
@@ -31607,7 +29491,7 @@ GRANT ALL ON TABLE tblsecurityuser TO "Webgroup";
 
 
 --
--- Name: tblsecurityuser_securityuserid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityuser_securityuserid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblsecurityuser_securityuserid_seq FROM PUBLIC;
@@ -31617,7 +29501,7 @@ GRANT ALL ON SEQUENCE tblsecurityuser_securityuserid_seq TO "Webgroup";
 
 
 --
--- Name: tblsecurityusermembership; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityusermembership; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblsecurityusermembership FROM PUBLIC;
@@ -31627,7 +29511,7 @@ GRANT ALL ON TABLE tblsecurityusermembership TO "Webgroup";
 
 
 --
--- Name: tblsecurityusermembership_tblsecurityusermembershipid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityusermembership_tblsecurityusermembershipid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblsecurityusermembership_tblsecurityusermembershipid_seq FROM PUBLIC;
@@ -31637,7 +29521,7 @@ GRANT ALL ON SEQUENCE tblsecurityusermembership_tblsecurityusermembershipid_seq 
 
 
 --
--- Name: tblsecurityvmeasurement; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityvmeasurement; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblsecurityvmeasurement FROM PUBLIC;
@@ -31647,7 +29531,7 @@ GRANT ALL ON TABLE tblsecurityvmeasurement TO "Webgroup";
 
 
 --
--- Name: tblsecurityvmeasurement_securityvmeasurementid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblsecurityvmeasurement_securityvmeasurementid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblsecurityvmeasurement_securityvmeasurementid_seq FROM PUBLIC;
@@ -31657,7 +29541,7 @@ GRANT ALL ON SEQUENCE tblsecurityvmeasurement_securityvmeasurementid_seq TO "Web
 
 
 --
--- Name: tbltruncate; Type: ACL; Schema: public; Owner: lucasm
+-- Name: tbltruncate; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tbltruncate FROM PUBLIC;
@@ -31667,7 +29551,7 @@ GRANT ALL ON TABLE tbltruncate TO "Webgroup";
 
 
 --
--- Name: tbltruncate_truncateid_seq; Type: ACL; Schema: public; Owner: lucasm
+-- Name: tbltruncate_truncateid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tbltruncate_truncateid_seq FROM PUBLIC;
@@ -31677,7 +29561,7 @@ GRANT ALL ON SEQUENCE tbltruncate_truncateid_seq TO "Webgroup";
 
 
 --
--- Name: tblvmeasurement; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurement; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblvmeasurement FROM PUBLIC;
@@ -31687,7 +29571,7 @@ GRANT ALL ON TABLE tblvmeasurement TO "Webgroup";
 
 
 --
--- Name: tblvmeasurement_vmeasurementid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurement_vmeasurementid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblvmeasurement_vmeasurementid_seq FROM PUBLIC;
@@ -31697,7 +29581,7 @@ GRANT ALL ON SEQUENCE tblvmeasurement_vmeasurementid_seq TO "Webgroup";
 
 
 --
--- Name: tblvmeasurementderivedcache_derivedcacheid_seq; Type: ACL; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementderivedcache_derivedcacheid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblvmeasurementderivedcache_derivedcacheid_seq FROM PUBLIC;
@@ -31707,7 +29591,7 @@ GRANT ALL ON SEQUENCE tblvmeasurementderivedcache_derivedcacheid_seq TO "Webgrou
 
 
 --
--- Name: tblvmeasurementgroup; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementgroup; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblvmeasurementgroup FROM PUBLIC;
@@ -31717,7 +29601,7 @@ GRANT ALL ON TABLE tblvmeasurementgroup TO "Webgroup";
 
 
 --
--- Name: tblvmeasurementgroup_vmeasurementgroupid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementgroup_vmeasurementgroupid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblvmeasurementgroup_vmeasurementgroupid_seq FROM PUBLIC;
@@ -31727,7 +29611,7 @@ GRANT ALL ON SEQUENCE tblvmeasurementgroup_vmeasurementgroupid_seq TO "Webgroup"
 
 
 --
--- Name: tblvmeasurementmetacache_vmeasurementmetacacheid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementmetacache_vmeasurementmetacacheid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblvmeasurementmetacache_vmeasurementmetacacheid_seq FROM PUBLIC;
@@ -31737,7 +29621,7 @@ GRANT ALL ON SEQUENCE tblvmeasurementmetacache_vmeasurementmetacacheid_seq TO "W
 
 
 --
--- Name: tblvmeasurementreadingnoteresult; Type: ACL; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementreadingnoteresult; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblvmeasurementreadingnoteresult FROM PUBLIC;
@@ -31747,7 +29631,7 @@ GRANT ALL ON TABLE tblvmeasurementreadingnoteresult TO "Webgroup";
 
 
 --
--- Name: tblvmeasurementreadingresult_vmeasurementreadingresultid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tblvmeasurementreadingresult_vmeasurementreadingresultid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tblvmeasurementreadingresult_vmeasurementreadingresultid_seq FROM PUBLIC;
@@ -31757,7 +29641,7 @@ GRANT ALL ON SEQUENCE tblvmeasurementreadingresult_vmeasurementreadingresultid_s
 
 
 --
--- Name: tblvmeasurementrelyearreadingnote; Type: ACL; Schema: public; Owner: lucasm
+-- Name: tblvmeasurementrelyearreadingnote; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tblvmeasurementrelyearreadingnote FROM PUBLIC;
@@ -31767,7 +29651,7 @@ GRANT ALL ON TABLE tblvmeasurementrelyearreadingnote TO "Webgroup";
 
 
 --
--- Name: tlkpcomplexpresenceabsence; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpcomplexpresenceabsence; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpcomplexpresenceabsence FROM PUBLIC;
@@ -31777,7 +29661,7 @@ GRANT ALL ON TABLE tlkpcomplexpresenceabsence TO "Webgroup";
 
 
 --
--- Name: tlkpcoveragetemporal; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpcoveragetemporal; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpcoveragetemporal FROM PUBLIC;
@@ -31787,7 +29671,7 @@ GRANT ALL ON TABLE tlkpcoveragetemporal TO "Webgroup";
 
 
 --
--- Name: tlkpcoveragetemporalfoundation; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpcoveragetemporalfoundation; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpcoveragetemporalfoundation FROM PUBLIC;
@@ -31797,7 +29681,7 @@ GRANT ALL ON TABLE tlkpcoveragetemporalfoundation TO "Webgroup";
 
 
 --
--- Name: tlkpdatingtype; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpdatingtype; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpdatingtype FROM PUBLIC;
@@ -31807,7 +29691,7 @@ GRANT ALL ON TABLE tlkpdatingtype TO "Webgroup";
 
 
 --
--- Name: tlkpdatingtype_datingtypeid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpdatingtype_datingtypeid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tlkpdatingtype_datingtypeid_seq FROM PUBLIC;
@@ -31817,7 +29701,7 @@ GRANT ALL ON SEQUENCE tlkpdatingtype_datingtypeid_seq TO "Webgroup";
 
 
 --
--- Name: tlkpelementauthenticity; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementauthenticity; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpelementauthenticity FROM PUBLIC;
@@ -31827,7 +29711,7 @@ GRANT ALL ON TABLE tlkpelementauthenticity TO "Webgroup";
 
 
 --
--- Name: tlkpelementshape; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementshape; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpelementshape FROM PUBLIC;
@@ -31837,7 +29721,7 @@ GRANT ALL ON TABLE tlkpelementshape TO "Webgroup";
 
 
 --
--- Name: tlkpelementtype; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpelementtype; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpelementtype FROM PUBLIC;
@@ -31847,7 +29731,7 @@ GRANT ALL ON TABLE tlkpelementtype TO "Webgroup";
 
 
 --
--- Name: tlkpindextype; Type: ACL; Schema: public; Owner: lucasm
+-- Name: tlkpindextype; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpindextype FROM PUBLIC;
@@ -31857,7 +29741,7 @@ GRANT ALL ON TABLE tlkpindextype TO "Webgroup";
 
 
 --
--- Name: tlkplocationtype; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkplocationtype; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkplocationtype FROM PUBLIC;
@@ -31868,7 +29752,7 @@ GRANT ALL ON TABLE tlkplocationtype TO "Webgroup";
 
 
 --
--- Name: tlkpmeasurementvariable; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpmeasurementvariable; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpmeasurementvariable FROM PUBLIC;
@@ -31878,7 +29762,7 @@ GRANT ALL ON TABLE tlkpmeasurementvariable TO "Webgroup";
 
 
 --
--- Name: tlkpmeasuringmethod; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpmeasuringmethod; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpmeasuringmethod FROM PUBLIC;
@@ -31888,7 +29772,7 @@ GRANT ALL ON TABLE tlkpmeasuringmethod TO "Webgroup";
 
 
 --
--- Name: tlkpobjecttype; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpobjecttype; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpobjecttype FROM PUBLIC;
@@ -31898,7 +29782,7 @@ GRANT ALL ON TABLE tlkpobjecttype TO "Webgroup";
 
 
 --
--- Name: tlkprank_rankid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkprank_rankid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tlkprank_rankid_seq FROM PUBLIC;
@@ -31908,7 +29792,7 @@ GRANT ALL ON SEQUENCE tlkprank_rankid_seq TO "Webgroup";
 
 
 --
--- Name: tlkpreadingnote_readingnoteid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpreadingnote_readingnoteid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tlkpreadingnote_readingnoteid_seq FROM PUBLIC;
@@ -31918,7 +29802,7 @@ GRANT ALL ON SEQUENCE tlkpreadingnote_readingnoteid_seq TO "Webgroup";
 
 
 --
--- Name: tlkpsampletype; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpsampletype; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpsampletype FROM PUBLIC;
@@ -31928,7 +29812,7 @@ GRANT ALL ON TABLE tlkpsampletype TO "Webgroup";
 
 
 --
--- Name: tlkpsampletype_sampletypeid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpsampletype_sampletypeid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tlkpsampletype_sampletypeid_seq FROM PUBLIC;
@@ -31938,7 +29822,7 @@ GRANT ALL ON SEQUENCE tlkpsampletype_sampletypeid_seq TO "Webgroup";
 
 
 --
--- Name: tlkpsecuritypermission; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpsecuritypermission; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpsecuritypermission FROM PUBLIC;
@@ -31948,7 +29832,7 @@ GRANT ALL ON TABLE tlkpsecuritypermission TO "Webgroup";
 
 
 --
--- Name: tlkpsecuritypermission_securitypermissionid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpsecuritypermission_securitypermissionid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tlkpsecuritypermission_securitypermissionid_seq FROM PUBLIC;
@@ -31958,7 +29842,7 @@ GRANT ALL ON SEQUENCE tlkpsecuritypermission_securitypermissionid_seq TO "Webgro
 
 
 --
--- Name: tlkptaxon_taxonid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkptaxon_taxonid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tlkptaxon_taxonid_seq FROM PUBLIC;
@@ -31968,7 +29852,7 @@ GRANT ALL ON SEQUENCE tlkptaxon_taxonid_seq TO "Webgroup";
 
 
 --
--- Name: tlkptaxon; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkptaxon; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkptaxon FROM PUBLIC;
@@ -31978,7 +29862,7 @@ GRANT ALL ON TABLE tlkptaxon TO "Webgroup";
 
 
 --
--- Name: tlkptaxonrank; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkptaxonrank; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkptaxonrank FROM PUBLIC;
@@ -31988,7 +29872,7 @@ GRANT ALL ON TABLE tlkptaxonrank TO "Webgroup";
 
 
 --
--- Name: tlkpunit; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpunit; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpunit FROM PUBLIC;
@@ -31998,7 +29882,7 @@ GRANT ALL ON TABLE tlkpunit TO "Webgroup";
 
 
 --
--- Name: tlkpvmeasurementop; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpvmeasurementop; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpvmeasurementop FROM PUBLIC;
@@ -32008,7 +29892,7 @@ GRANT ALL ON TABLE tlkpvmeasurementop TO "Webgroup";
 
 
 --
--- Name: tlkpvmeasurementop_vmeasurementopid_seq; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpvmeasurementop_vmeasurementopid_seq; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON SEQUENCE tlkpvmeasurementop_vmeasurementopid_seq FROM PUBLIC;
@@ -32018,7 +29902,7 @@ GRANT ALL ON SEQUENCE tlkpvmeasurementop_vmeasurementopid_seq TO "Webgroup";
 
 
 --
--- Name: tlkpvocabulary; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpvocabulary; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpvocabulary FROM PUBLIC;
@@ -32028,7 +29912,7 @@ GRANT ALL ON TABLE tlkpvocabulary TO "Webgroup";
 
 
 --
--- Name: tlkpwmsserver; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: tlkpwmsserver; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE tlkpwmsserver FROM PUBLIC;
@@ -32038,7 +29922,7 @@ GRANT ALL ON TABLE tlkpwmsserver TO "Webgroup";
 
 
 --
--- Name: vwcomprehensivevm; Type: ACL; Schema: public; Owner: lucasm
+-- Name: vwcomprehensivevm; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwcomprehensivevm FROM PUBLIC;
@@ -32050,7 +29934,7 @@ GRANT ALL ON TABLE vwcomprehensivevm TO aps03pwb;
 
 
 --
--- Name: vwresultnotesasarray; Type: ACL; Schema: public; Owner: lucasm
+-- Name: vwresultnotesasarray; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwresultnotesasarray FROM PUBLIC;
@@ -32060,7 +29944,7 @@ GRANT ALL ON TABLE vwresultnotesasarray TO "Webgroup";
 
 
 --
--- Name: vwjsonnotedreadingresult; Type: ACL; Schema: public; Owner: lucasm
+-- Name: vwjsonnotedreadingresult; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwjsonnotedreadingresult FROM PUBLIC;
@@ -32070,7 +29954,7 @@ GRANT ALL ON TABLE vwjsonnotedreadingresult TO "Webgroup";
 
 
 --
--- Name: vwlabcodesforsamples; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: vwlabcodesforsamples; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwlabcodesforsamples FROM PUBLIC;
@@ -32080,7 +29964,7 @@ GRANT ALL ON TABLE vwlabcodesforsamples TO "Webgroup";
 
 
 --
--- Name: vwnotedreadingresult; Type: ACL; Schema: public; Owner: lucasm
+-- Name: vwnotedreadingresult; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwnotedreadingresult FROM PUBLIC;
@@ -32090,7 +29974,7 @@ GRANT ALL ON TABLE vwnotedreadingresult TO "Webgroup";
 
 
 --
--- Name: vwstartyear; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: vwstartyear; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwstartyear FROM PUBLIC;
@@ -32100,7 +29984,7 @@ GRANT ALL ON TABLE vwstartyear TO "Webgroup";
 
 
 --
--- Name: vwtblbox; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: vwtblbox; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwtblbox FROM PUBLIC;
@@ -32110,7 +29994,7 @@ GRANT ALL ON TABLE vwtblbox TO "Webgroup";
 
 
 --
--- Name: vwtlkptaxon; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: vwtlkptaxon; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwtlkptaxon FROM PUBLIC;
@@ -32120,7 +30004,7 @@ GRANT ALL ON TABLE vwtlkptaxon TO "Webgroup";
 
 
 --
--- Name: vwtblelement; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: vwtblelement; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwtblelement FROM PUBLIC;
@@ -32130,7 +30014,7 @@ GRANT ALL ON TABLE vwtblelement TO "Webgroup";
 
 
 --
--- Name: vwtblobject; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: vwtblobject; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwtblobject FROM PUBLIC;
@@ -32140,7 +30024,7 @@ GRANT ALL ON TABLE vwtblobject TO "Webgroup";
 
 
 --
--- Name: vwtblradius; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: vwtblradius; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwtblradius FROM PUBLIC;
@@ -32150,7 +30034,7 @@ GRANT ALL ON TABLE vwtblradius TO "Webgroup";
 
 
 --
--- Name: vwtblsample; Type: ACL; Schema: public; Owner: aps03pwb
+-- Name: vwtblsample; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwtblsample FROM PUBLIC;
@@ -32160,7 +30044,7 @@ GRANT ALL ON TABLE vwtblsample TO "Webgroup";
 
 
 --
--- Name: vwtblvmeasurement; Type: ACL; Schema: public; Owner: lucasm
+-- Name: vwtblvmeasurement; Type: ACL; Schema: public; Owner: -
 --
 
 REVOKE ALL ON TABLE vwtblvmeasurement FROM PUBLIC;
@@ -32172,7 +30056,7 @@ GRANT ALL ON TABLE vwtblvmeasurement TO "Webgroup";
 SET search_path = sqlj, pg_catalog;
 
 --
--- Name: classpath_entry; Type: ACL; Schema: sqlj; Owner: postgres
+-- Name: classpath_entry; Type: ACL; Schema: sqlj; Owner: -
 --
 
 REVOKE ALL ON TABLE classpath_entry FROM PUBLIC;
@@ -32182,7 +30066,7 @@ GRANT SELECT ON TABLE classpath_entry TO PUBLIC;
 
 
 --
--- Name: jar_entry; Type: ACL; Schema: sqlj; Owner: postgres
+-- Name: jar_entry; Type: ACL; Schema: sqlj; Owner: -
 --
 
 REVOKE ALL ON TABLE jar_entry FROM PUBLIC;
@@ -32192,7 +30076,7 @@ GRANT SELECT ON TABLE jar_entry TO PUBLIC;
 
 
 --
--- Name: jar_repository; Type: ACL; Schema: sqlj; Owner: postgres
+-- Name: jar_repository; Type: ACL; Schema: sqlj; Owner: -
 --
 
 REVOKE ALL ON TABLE jar_repository FROM PUBLIC;
@@ -32202,7 +30086,7 @@ GRANT SELECT ON TABLE jar_repository TO PUBLIC;
 
 
 --
--- Name: typemap_entry; Type: ACL; Schema: sqlj; Owner: postgres
+-- Name: typemap_entry; Type: ACL; Schema: sqlj; Owner: -
 --
 
 REVOKE ALL ON TABLE typemap_entry FROM PUBLIC;

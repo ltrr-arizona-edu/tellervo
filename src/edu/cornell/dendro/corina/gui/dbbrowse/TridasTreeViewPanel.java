@@ -33,6 +33,7 @@ import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
+import edu.cornell.dendro.corina.admin.TridasEntityChooser;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel.ObjectListMode;
 import edu.cornell.dendro.corina.sample.Element;
@@ -47,6 +48,7 @@ import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.labels.LabBarcode.Type;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
@@ -59,15 +61,16 @@ import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
 public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements MouseListener, ActionListener, TridasSelectListener {
 
 	private static final long serialVersionUID = 1185669228536105855L;
-	private TridasTree tree;
-	private JPopupMenu popup;
-	private JMenuItem menuItem;
-	private CorinaCodePanel panel;
-	private EventListenerList tridasListeners = new EventListenerList();
-	private String textForSelectPopup = "Search for associated series";
-	private Boolean listenersAreCheap = false;
-	private TreeDepth depth = TreeDepth.RADIUS;
-	private ObjectListMode baseObjectListMode = ObjectListMode.TOP_LEVEL_ONLY;
+	protected TridasTree tree;
+	protected JPopupMenu popup;
+	protected JMenuItem menuItem;
+	protected CorinaCodePanel panel;
+	protected EventListenerList tridasListeners = new EventListenerList();
+	protected String textForSelectPopup = "Search for associated series";
+	protected Boolean listenersAreCheap = false;
+	protected TreeDepth depth = TreeDepth.RADIUS;
+	protected ObjectListMode baseObjectListMode = ObjectListMode.TOP_LEVEL_ONLY;
+	protected Boolean derivedVisible = false;
 	
 	/**
 	 * Basic constructor for tree view panel used in the context of searching
@@ -152,6 +155,20 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 		}
 	}
 	
+	/**
+	 * Set whether derived series should be shown in the tree
+	 * 
+	 * @param b
+	 */
+	public void setDerivedVisible(Boolean b)
+	{
+		derivedVisible = b;
+	}
+	
+	public Boolean isDerivedVisible()
+	{
+		return derivedVisible;
+	}
 	
 	/**
 	 * Sets the focus to the primary element
@@ -269,7 +286,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	/**
 	 * Set up the popup menu 
 	 */
-	private void initPopupMenu(boolean expandEnabled, Class<?> clazz)
+	protected void initPopupMenu(boolean expandEnabled, Class<?> clazz)
 	{
 		String className = this.getFriendlyClassName(clazz);
 		Boolean isTridas = false;
@@ -302,7 +319,8 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("delete");
 	        popup.add(menuItem);
-	        popup.addSeparator();
+	        	        
+	        popup.addSeparator();   
         }
         
         // Refresh
@@ -530,6 +548,13 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
     		// Set return type to radius and set search param
         	param = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
         	param.addSearchConstraint(SearchParameterName.RADIUSID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
+        	
+        	// Limit search to measurement series if requested
+        	if(derivedVisible==false)
+        	{
+        		param.addSearchConstraint(SearchParameterName.SERIESTYPE, SearchOperator.EQUALS, "Direct");
+        	}
+        	        	
     		seriesSearchResource = new SeriesSearchResource(param);
     		seriesSearchResource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
     	    		
@@ -598,7 +623,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
      * 
      * @param node
      */
-	private void doSelectEntity(DefaultMutableTreeNode node)
+	protected void doSelectEntity(DefaultMutableTreeNode node)
 	{
    	
     	if(node.getUserObject() instanceof ITridas)
@@ -647,14 +672,15 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 		return className;
 	}
     
-	
 
+	
+	
 	/**
 	 * Remove the specified node from the tree
 	 * 
 	 * @param node
 	 */
-	private void deleteEntity(DefaultMutableTreeNode node)
+	protected void deleteEntity(DefaultMutableTreeNode node)
 	{
 		ITridas entity = null;
 		EntityResource rsrc = null;
@@ -866,6 +892,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 				deleteEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
 			}			
 		}
+
 	}
 	
 	public void refreshNode(DefaultMutableTreeNode node)

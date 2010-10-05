@@ -1,0 +1,284 @@
+package edu.cornell.dendro.corina.gui.dbbrowse;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+
+import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
+
+import edu.cornell.dendro.corina.admin.TridasEntityChooser;
+import edu.cornell.dendro.corina.admin.TridasEntityChooser.EntitiesAccepted;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+
+/**
+ * Extension of the standard TridasTreeViewPanel with the addition of 
+ * a reassign right click menu for moving entities to different parents
+ * 
+ * @author peterbrewer
+ *
+ */
+public class ReassignableTreeViewPanel extends TridasTreeViewPanel {
+
+	private static final long serialVersionUID = -7973400038586992025L;
+
+	/**
+	 * Basic constructor for tree view panel used in the context of searching
+	 * for series.  Defaults are:
+	 * 
+	 * TreeDepth - Depth beyond which the tree will not expand 
+	 * @see #setTreeDepth(TreeDepth) 
+	 *   default = radius 
+	 * 
+	 * ListenersAreCheap - Are the attached listeners computationally cheap?
+	 * @see #setListenersAreCheap(Boolean)
+	 *   default = false
+	 *  
+	 * TextForSelectPopup - Text to display in popup menu when selecting entity
+	 * @see #setTextForSelectPopup(String)
+	 *   default = Search for associated series
+	 * 
+	 * BaseObjectListMode - Object list mode to use for base objects
+	 * @see edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel.ObjectListMode
+	 *   default = Top level only
+	 */
+	public ReassignableTreeViewPanel()
+	{
+		super();
+			
+	}
+	
+	/**
+	 * Complete constructor for tree view panel.  
+	 * 
+	 * @param depth - @see #setTreeDepth(TreeDepth)
+	 * @param listenersAreCheap - @see #setListenersAreCheap(Boolean)
+	 * @param textForSelectPopup - @see #setTextForSelectPopup(String)
+	 */
+	public ReassignableTreeViewPanel(TreeDepth depth, Boolean listenersAreCheap, 
+			String textForSelectPopup)
+	{
+		super(depth, listenersAreCheap, textForSelectPopup);
+	}
+	
+	
+	/**
+	 * Set up the popup menu 
+	 */
+	@Override
+	protected void initPopupMenu(boolean expandEnabled, Class<?> clazz)
+	{
+		String className = this.getFriendlyClassName(clazz);
+		Boolean isTridas = false;
+		if(clazz.getSimpleName().startsWith("Tridas"))
+		{
+			isTridas = true;
+		}
+		
+        // define the popup
+        popup = new JPopupMenu();
+        
+        if(isTridas)
+        {
+	        // Expand 
+	        menuItem = new JMenuItem("Expand branch");
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("expand");
+	       	menuItem.setEnabled(expandEnabled);
+	        popup.add(menuItem);
+	        
+	        // Select
+	        menuItem = new JMenuItem(this.textForSelectPopup);
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("select");
+	        popup.add(menuItem);
+	        popup.addSeparator();
+	        
+	        // Delete
+	        menuItem = new JMenuItem("Delete this "+className.toLowerCase());
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("delete");
+	        popup.add(menuItem);
+	        
+	        // Reassign
+	        menuItem = new JMenuItem("Reassign to another parent");
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("reassign");
+	        popup.add(menuItem);
+
+	        popup.addSeparator();   
+        }
+        
+        // Refresh
+        menuItem = new JMenuItem("Refresh");
+        menuItem.addActionListener(this);
+        menuItem.setActionCommand("refresh");
+        popup.add(menuItem);
+        
+        popup.setOpaque(true);
+        popup.setLightWeightPopupEnabled(true);
+
+	}
+
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getActionCommand().equals("expand"))
+		{
+			// Request to expand the current node of tree
+			expandEntity((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent());
+		}
+		else if (e.getActionCommand().equals("select"))
+		{
+			doSelectEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+		}
+		else if (e.getActionCommand().equals("refresh"))
+		{
+			DefaultMutableTreeNode node = ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+			this.refreshNode(node);
+		}
+		else if (e.getActionCommand().equals("delete"))
+		{
+			// Delete this entity
+			Object[] options = {"OK",
+            "Cancel"};
+			int ret = JOptionPane.showOptionDialog(getParent(), 
+					"Are you sure you want to permanently delete this entity?", 
+					"Confirm delete", 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+			
+			if(ret == JOptionPane.YES_OPTION)
+			{
+				deleteEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+			}			
+		}
+		else if (e.getActionCommand().equals("reassign"))
+		{
+			Object[] options = {"OK",
+            "Cancel"};
+			int ret = JOptionPane.showOptionDialog(getParent(), 
+					"Are you sure you want to move this to another parent?\n"+
+					"Changes will also impact entities subordinate to this one\n"+
+					"so only continue if you know what you're doing!", 
+					"Confirm move", 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+			
+			if(ret != JOptionPane.YES_OPTION)
+			{
+				return;
+			}	
+			
+			ITridas selected = (ITridas) ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent()).getUserObject();
+			Class<? extends ITridas> expectedClass = ITridas.class;
+			
+			if((selected.getClass().equals(TridasMeasurementSeries.class)) || 
+					(selected.getClass().equals(TridasDerivedSeries.class)))
+			{
+				expectedClass = TridasRadius.class;
+			}
+			else if (selected.getClass().equals(TridasRadius.class))
+			{
+				expectedClass = TridasSample.class;
+			}
+			else if (selected.getClass().equals(TridasSample.class))
+			{
+				expectedClass = TridasElement.class;
+			}
+			else if ((selected.getClass().equals(TridasElement.class)) || 
+					(selected.getClass().equals(TridasObject.class)))
+			{
+				expectedClass = TridasObject.class;
+			}
+			
+			
+			ITridas newParent = TridasEntityChooser.showDialog(null, 
+					"Select new parent", 
+					expectedClass, 
+					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
+
+			// Actually do the reassign
+			reassignEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent(), newParent);
+			
+			
+		}
+	}
+	
+	/**
+	 * Remove the specified node from the tree
+	 * 
+	 * @param node
+	 */
+	private void reassignEntity(DefaultMutableTreeNode node, ITridas newParent)
+	{	
+		ITridas entity = null;
+		EntityResource rsrc = null;
+
+		if(newParent==null)
+		{
+			return;
+		}
+		
+		String newParentEntityID = newParent.getIdentifier().getValue();
+		
+		if(node.getUserObject() instanceof TridasMeasurementSeries)
+		{
+			entity = (TridasMeasurementSeries) node.getUserObject();
+			rsrc = new EntityResource<TridasMeasurementSeries>(entity, newParentEntityID, TridasMeasurementSeries.class);
+			
+		}
+		else if(node.getUserObject() instanceof TridasRadius)
+		{
+			entity = (TridasRadius) node.getUserObject();
+			rsrc = new EntityResource<TridasRadius>(entity, newParentEntityID, TridasRadius.class);
+			
+		}
+		else if(node.getUserObject() instanceof TridasSample)
+		{
+			entity = (TridasSample) node.getUserObject();
+			rsrc = new EntityResource<TridasSample>(entity, newParentEntityID, TridasSample.class);	
+		}
+		else if(node.getUserObject() instanceof TridasElement)
+		{
+			entity = (TridasElement) node.getUserObject();
+			rsrc = new EntityResource<TridasElement>(entity, newParentEntityID, TridasElement.class);	
+		}
+		else if(node.getUserObject() instanceof TridasObject)
+		{
+			Alert.message("Not implemented", "Moving sub-objects is not yet supported");
+		}
+		else
+		{
+			Alert.message("Not implemented", "You shouldn't have been able to get here!");
+		}
+		
+		// Do query
+		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(rsrc);
+		rsrc.query();
+		accdialog.setVisible(true);
+		
+		if(accdialog.isSuccessful())
+		{
+			rsrc.getAssociatedResult();
+			((DefaultTreeModel)tree.getModel()).removeNodeFromParent(node);
+			return;
+		}
+
+		JOptionPane.showMessageDialog(this, "There was a problem reassigning this entity.", 
+				"Error", JOptionPane.ERROR_MESSAGE);
+		
+		return;
+	}
+}

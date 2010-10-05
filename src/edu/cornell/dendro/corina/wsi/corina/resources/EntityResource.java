@@ -13,6 +13,7 @@ import edu.cornell.dendro.corina.util.ListUtil;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasMeasurementSeries;
 
 /**
  * @author Lucas Madar
@@ -85,6 +86,19 @@ public class EntityResource<T extends ITridas> extends
 		this.entityType = entityClassType;
 	}
 	
+	/**
+	 * Constructor for update 
+	 * 
+	 * @param entity
+	 * @param newParentEntityID
+	 * @param entityType
+	 */
+	public EntityResource(ITridas entity, String newParentEntityID,
+			Class<T> entityType) {
+		super(entity, newParentEntityID, CorinaRequestType.UPDATE);
+		this.entityType = entityType;
+	}
+
 	@Override
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {

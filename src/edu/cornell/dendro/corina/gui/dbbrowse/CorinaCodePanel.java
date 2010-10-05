@@ -200,9 +200,9 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		// set up our query...
 		if(objcode!=null) search.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTCODE, SearchOperator.EQUALS, objcode);		
 		if(elemcode!=null) search.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, elemcode);
-		if(sampcode!=null) search.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.LIKE, sampcode);
-		if(radcode!=null) search.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.LIKE, radcode);
-		if(seriescode!=null) search.addSearchConstraint(SearchParameterName.SERIESCODE, SearchOperator.LIKE, seriescode);
+		if(sampcode!=null) search.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, sampcode);
+		if(radcode!=null) search.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.EQUALS, radcode);
+		if(seriescode!=null) search.addSearchConstraint(SearchParameterName.SERIESCODE, SearchOperator.EQUALS, seriescode);
 		
 		
 		
@@ -230,6 +230,10 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 			if(foundEntities.size()==0)
 			{
 				this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, TridasSelectType.FORCED));
+			}
+			else if(foundEntities.size()==1)
+			{
+				this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, foundEntities.get(0), TridasSelectType.FORCED));
 			}
 			else
 			{	
