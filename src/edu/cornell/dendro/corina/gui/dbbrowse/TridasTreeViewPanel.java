@@ -672,6 +672,19 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 		return className;
 	}
     
+	public static String getFriendlyPluralClassName(Class<?> clazz)
+	{
+		String className = getFriendlyClassName(clazz);
+		
+		if(className.equals("Radius"))
+		{
+			return "Radii";
+		}
+		else
+		{
+			return className+"s";
+		}
+	}
 
 	
 	

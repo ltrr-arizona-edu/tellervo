@@ -38,7 +38,16 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
+import javax.swing.JProgressBar;
 
+/**
+ * CorinaCodePanel is a jpanel containing a text field that accepts and interprets
+ * barcodes and labcodes.  It fires events for TridasListeners to listen for the 
+ * specified entities.
+ * 
+ * @author peterbrewer
+ *
+ */
 public class CorinaCodePanel extends JPanel implements KeyListener{
 
 	private static final long serialVersionUID = 1514161084317278783L;
@@ -46,14 +55,48 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	private ObjectListMode browseMode = ObjectListMode.TOP_LEVEL_ONLY;
 	private JDialog parent;
 	private JTextField textField;
+	private JProgressBar progressBar;
+	Boolean showProgress = false;
 	
+	/**
+	 * Basic constructor 
+	 * 
+	 * @param parent
+	 */
 	public CorinaCodePanel(JDialog parent)
 	{
 		this.parent = parent;
 		setup();
 	}
 	
+	/**
+	 * Constructor which includes a progress bar in the panel
+	 * 
+	 * @param parent
+	 * @param showProgress
+	 */
+	public CorinaCodePanel(JDialog parent, Boolean showProgress)
+	{
+		this.showProgress = showProgress;
+		this.parent = parent;
+		setup();
+	}
+	
+	/**
+	 * Basic constructor
+	 */
 	public CorinaCodePanel() {
+		parent = new JDialog();
+		setup();
+	}
+	
+	/**
+	 * Constructor which includes a progress bar in the panel
+	 * 
+	 * @param showProgress
+	 */
+	public CorinaCodePanel(Boolean showProgress) {
+		this.showProgress = showProgress;
 		parent = new JDialog();
 		setup();
 	}
@@ -69,15 +112,25 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		this.browseMode = mode;
 	}
 	
+	/**
+	 * Set up the gui
+	 */
 	private void setup()
 	{	
 		textField = new JTextField();
 	    textField.addKeyListener(this);    
 	    this.setLayout(new BorderLayout());
 	    add(textField, java.awt.BorderLayout.CENTER);
+	    
+	    progressBar = new JProgressBar();
+	    add(progressBar, BorderLayout.SOUTH);
+	    progressBar.setVisible(false);
 	    textField.requestDefaultFocus();
 	}
 
+	/**
+	 * Set the focus on the text field
+	 */
 	public void setFocus()
 	{
 		this.textField.requestFocus();
@@ -141,7 +194,14 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		
     }
 	
-	
+    /**
+     * Interpret the text field as a lab code
+     */
+	public void processLabCode()
+	{
+    	fireEventByCorinaCode(textField.getText());
+    	textField.setText("");
+	}
 
 
 	@SuppressWarnings("unchecked")
@@ -153,7 +213,13 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		String sampcode = null;
 		String radcode = null;
 		String seriescode = null;
-		  
+		
+		// Trim off white space
+		labcodestr = labcodestr.trim();
+		
+		// Return if empty
+		if(labcodestr.length()==0) return;
+				  
 		// Remove the "C-" from beginning if present
 		if (labcodestr.substring(0, 2).compareToIgnoreCase("C-")==0) labcodestr = labcodestr.substring(2, labcodestr.length());
 		  
@@ -163,7 +229,6 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		SearchParameters search = null;
 		
 		// Get codes from array and set up search parameter
-		if (strarray.length==0) return;
 		if (strarray.length>=1) {
 			objcode = strarray[0];
 			search = new SearchParameters(SearchReturnObject.OBJECT);
@@ -213,7 +278,10 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		searchResource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
 		CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(parent, searchResource);
 		searchResource.query();
+		
+		setGuiSearching(true);
 		dlg.setVisible(true);
+		setGuiSearching(false);
 
 			
 		if(!dlg.isSuccessful()) 
@@ -245,6 +313,19 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		
 	}
 
+	/**
+	 * Set the gui to show a search is in progress or not
+	 * 
+	 * @param b
+	 */
+	private void setGuiSearching(Boolean b)
+	{
+		if(showProgress)
+		{
+			progressBar.setIndeterminate(true);
+			progressBar.setVisible(b);
+		}
+	}
 	
 	
 	private ArrayList<TridasObjectEx> getFilteredSiteList(String searchStr) {
@@ -336,8 +417,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	    	// User is typing a lab code
 		    if (e.getKeyCode() == KeyEvent.VK_ENTER)
 		    {
-		    	fireEventByCorinaCode(textField.getText());
-		    	textField.setText("");
+		    	processLabCode();
 		    }
    		     
 		    // Enter has not been pressed so user is 

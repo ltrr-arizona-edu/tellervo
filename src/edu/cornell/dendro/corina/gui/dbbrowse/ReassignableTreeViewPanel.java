@@ -276,8 +276,20 @@ public class ReassignableTreeViewPanel extends TridasTreeViewPanel {
 			return;
 		}
 
-		JOptionPane.showMessageDialog(this, "There was a problem reassigning this entity.", 
-				"Error", JOptionPane.ERROR_MESSAGE);
+		
+		Exception exception = accdialog.getFailException();
+		
+		if(exception.getLocalizedMessage().contains("duplicate key value"))
+		{
+			JOptionPane.showMessageDialog(this, "Operation aborted:\nReassigning to this parent would result in "
+					+getFriendlyPluralClassName(node.getUserObject().getClass()).toLowerCase()+" with duplicate titles.", 
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(this, "There was a problem reassigning this entity\n"+exception, 
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
 		
 		return;
 	}

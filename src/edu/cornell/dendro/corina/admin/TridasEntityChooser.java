@@ -11,6 +11,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -47,6 +48,7 @@ import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel.TreeDepth;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel;
 import java.awt.Font;
+import javax.swing.JTextPane;
 
 public class TridasEntityChooser extends JDialog implements ActionListener, TridasSelectListener{
 
@@ -57,7 +59,8 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	private JButton okButton;
 	private JButton cancelButton;
 	private ITridas entity;
-	private JLabel lblWarning;
+	private JTextPane lblWarning;
+	private JFrame parent;
 	
 
 	public static enum EntitiesAccepted {
@@ -73,14 +76,15 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	 */
 	public TridasEntityChooser(JFrame parent){
 		super(parent, true);
-		
+		this.parent = parent;
 		setupGui();
 
 	}
 	
 	public TridasEntityChooser(JFrame parent, Class<? extends ITridas> clazz, EntitiesAccepted ea){
 		super(parent, true);
-		
+		this.parent = parent;
+
 		entitiesAccepted = ea;
 		expectedClass = clazz;
 		setupGui();
@@ -126,11 +130,11 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		{
 			JPanel panel = new JPanel();
 			this.getRootPane().add(panel, BorderLayout.CENTER);
-			panel.setLayout(new MigLayout("", "[][][grow]", "[][][][][][][][]"));
+			panel.setLayout(new MigLayout("", "[][][grow]", "[][][][][][27.00][][][]"));
 			{
 				JPanel panelIcon = new JPanel();
 				panelIcon.setBorder(null);
-				panel.add(panelIcon, "cell 0 0 1 7,alignx center,aligny top");
+				panel.add(panelIcon, "cell 0 0 1 8,alignx center,aligny top");
 				{
 					JLabel lblIcon = new JLabel("");
 					lblIcon.setIcon(Builder.getIcon("barcode.png", 128));
@@ -142,19 +146,25 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 				panel.add(lblScanBarcodeOr, "cell 2 2");
 			}
 			{
-				codePanel = new CorinaCodePanel();
-				panel.add(codePanel, "cell 2 4,growx,aligny top");
-				{
-					lblWarning = new JLabel("");
-					lblWarning.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-					lblWarning.setForeground(Color.RED);
-					panel.add(lblWarning, "cell 2 6");
-				}
+				lblWarning = new JTextPane();
+				lblWarning.setEditable(false);
+				lblWarning.setForeground(Color.RED);
+				lblWarning.setBackground(null);
+				lblWarning.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+				panel.add(lblWarning, "cell 2 3");
+			}
+			{
+				codePanel = new CorinaCodePanel(this);
+				panel.add(codePanel, "cell 2 5,growx,aligny top");
 				
 				codePanel.addTridasSelectListener(this);
 				
 			}
 		}
+		
+		this.setLocationRelativeTo(parent);
+		this.pack();
+		codePanel.setFocus();
 	}
 
 
@@ -168,8 +178,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		}
 		else if (e.getActionCommand().equals("OK"))
 		{
-				
-			dispose();
+			codePanel.processLabCode();
 		}
 		
 	}
@@ -212,7 +221,9 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
         TridasEntityChooser dialog = new TridasEntityChooser(parent, clazz, acceptabletype);
         dialog.setTitle(title);
 
+        
         dialog.setVisible(true); // blocks until user brings dialog down...
+       	dialog.setLocationRelativeTo(parent);
 
         return dialog.getEntity();
 
@@ -222,6 +233,18 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	public void entitySelected(TridasSelectEvent event) {
 		
 		try {
+			ArrayList<ITridas> entitylist = event.getEntityList();
+			if(entitylist.size()==0)
+			{
+				setWarning("No records match");
+				return;
+			}
+			else if(entitylist.size()>1)
+			{
+				setWarning("Ambiguous - multiple matches");
+				return;
+			}
+			
 			
 			entity = event.getEntity();
 			
@@ -233,23 +256,25 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 			{
 				if(entity!=null)
 				{
-					String givenClassName = TridasTreeViewPanel.getFriendlyClassName((Class<ITridas>) entity.getClass());
-					String expectedClassName = TridasTreeViewPanel.getFriendlyClassName(expectedClass);
-					String modifier = "";
+					String givenClassName = TridasTreeViewPanel.getFriendlyClassName((Class<ITridas>) entity.getClass()).toLowerCase();
+					String expectedClassName = TridasTreeViewPanel.getFriendlyClassName(expectedClass).toLowerCase();
+
+					String modifier = "";			
+					
 					if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_ABOVE))
 					{
-						modifier = " (and above)";
+						modifier = " (or above)";
 					}
 					else if (entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_BELOW))
 					{
-						modifier = " (and below)";
+						modifier = " (or below)";
 					}
-					Alert.message("Error", "The entity you entered is a " + givenClassName + "\n"+
-							"when a "+ expectedClassName + modifier + " was expected");
+					setWarning("The code you entered was for a TRiDaS " + givenClassName + "\n"+
+							"when a TRiDaS "+ expectedClassName + modifier + " was expected");
 				}
 				else
 				{
-					Alert.message("Error", "Selected entity is null");
+					setWarning("No records match");
 				}
 				
 
@@ -260,6 +285,13 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 			e.printStackTrace();
 		}
 	}
+	
+	private void setWarning(String text)
+	{
+		lblWarning.setText(text);
+		pack();
+	}
+	
 	
 	/**
 	 * Check that the specified entity is valid in terms of the level
@@ -288,9 +320,17 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 			{
 				return true;
 			}
+			else if (entity.getClass().equals(TridasObjectEx.class) && expectedClass.equals(TridasObject.class))
+			{
+				return true;
+			}
+			else if (entity.getClass().equals(TridasObject.class) && expectedClass.equals(TridasObjectEx.class))
+			{
+				return true;
+			}
 			else
 			{
-				lblWarning.setText("Invalid entity - a "+TridasTreeViewPanel.getFriendlyClassName(expectedClass)+" is expected");
+				setWarning("Invalid entity - a "+TridasTreeViewPanel.getFriendlyClassName(expectedClass)+" is expected");
 				return false;
 			}
 		}
