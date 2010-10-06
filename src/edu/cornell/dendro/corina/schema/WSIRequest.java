@@ -76,6 +76,7 @@ import org.tridas.util.TridasObjectEx;
  *       &lt;attribute name="type" type="{http://dendro.cornell.edu/schema/corina/1.0}corinaRequestType" />
  *       &lt;attribute name="format" type="{http://dendro.cornell.edu/schema/corina/1.0}corinaRequestFormat" />
  *       &lt;attribute name="parentEntityID" type="{http://www.w3.org/2001/XMLSchema}token" />
+ *       &lt;attribute name="mergeWithID" type="{http://www.w3.org/2001/XMLSchema}token" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -136,6 +137,10 @@ public class WSIRequest
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String parentEntityID;
+    @XmlAttribute(name = "mergeWithID")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "token")
+    protected String mergeWithID;
 
     /**
      * Gets the value of the dictionaries property.
@@ -676,6 +681,34 @@ public class WSIRequest
     }
 
     /**
+     * Gets the value of the mergeWithID property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getMergeWithID() {
+        return mergeWithID;
+    }
+
+    /**
+     * Sets the value of the mergeWithID property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setMergeWithID(String value) {
+        this.mergeWithID = value;
+    }
+
+    public boolean isSetMergeWithID() {
+        return (this.mergeWithID!= null);
+    }
+
+    /**
      * Sets the value of the projects property.
      * 
      * @param projects
@@ -820,6 +853,7 @@ public class WSIRequest
         equalsBuilder.append(this.getType(), that.getType());
         equalsBuilder.append(this.getFormat(), that.getFormat());
         equalsBuilder.append(this.getParentEntityID(), that.getParentEntityID());
+        equalsBuilder.append(this.getMergeWithID(), that.getMergeWithID());
     }
 
     public boolean equals(Object object) {
@@ -851,6 +885,7 @@ public class WSIRequest
         hashCodeBuilder.append(this.getType());
         hashCodeBuilder.append(this.getFormat());
         hashCodeBuilder.append(this.getParentEntityID());
+        hashCodeBuilder.append(this.getMergeWithID());
     }
 
     public int hashCode() {
@@ -939,6 +974,11 @@ public class WSIRequest
             String theParentEntityID;
             theParentEntityID = this.getParentEntityID();
             toStringBuilder.append("parentEntityID", theParentEntityID);
+        }
+        {
+            String theMergeWithID;
+            theMergeWithID = this.getMergeWithID();
+            toStringBuilder.append("mergeWithID", theMergeWithID);
         }
     }
 
@@ -1087,6 +1127,14 @@ public class WSIRequest
             copy.setParentEntityID(copyParentEntityID);
         } else {
             copy.parentEntityID = null;
+        }
+        if (this.isSetMergeWithID()) {
+            String sourceMergeWithID;
+            sourceMergeWithID = this.getMergeWithID();
+            String copyMergeWithID = ((String) copyBuilder.copy(sourceMergeWithID));
+            copy.setMergeWithID(copyMergeWithID);
+        } else {
+            copy.mergeWithID = null;
         }
         return copy;
     }

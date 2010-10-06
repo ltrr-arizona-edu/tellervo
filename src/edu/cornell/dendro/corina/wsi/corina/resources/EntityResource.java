@@ -99,6 +99,21 @@ public class EntityResource<T extends ITridas> extends
 		this.entityType = entityType;
 	}
 
+	/**
+	 * Constructor for merging records
+	 * 
+	 * @param entityType
+	 * @param entity
+	 * @param correctEntityID
+	 */
+	public EntityResource(EntityType entityType, Class<T> entityClassType, ITridas entity, String correctEntityID)
+	{
+		
+		super(entity, correctEntityID, entityType);
+		this.entityType = entityClassType;
+	}
+	
+	
 	@Override
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
@@ -112,5 +127,7 @@ public class EntityResource<T extends ITridas> extends
 
 		return true;
 	}
+	
+	
 
 }

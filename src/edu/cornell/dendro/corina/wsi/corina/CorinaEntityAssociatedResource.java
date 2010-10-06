@@ -28,9 +28,10 @@ import edu.cornell.dendro.corina.schema.WSIRequest;
 public abstract class CorinaEntityAssociatedResource<T> extends
 		CorinaAssociatedResource<T> {
 	
-	private WSIEntity readOrDeleteEntity;
+	private WSIEntity readDeleteOrMergeEntity;
 	private ITridas createOrUpdateEntity;
 	private String parentEntityID;
+	private String correctEntityIDForMerge;
 
 	/**
 	 * Constructor for create 
@@ -49,6 +50,26 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		initializeForCUD(entity, 
 				parentEntity == null ? null : parentEntity.getIdentifier().getValue(), 
 				CorinaRequestType.CREATE);
+	}
+	
+	/**
+	 * Constructor for merging records
+	 * 
+	 * @param entity
+	 * @param correctEntityID
+	 */
+	public CorinaEntityAssociatedResource(ITridas entity, String correctEntityID, EntityType entityType)
+	{
+		super(getXMLName(entity), CorinaRequestType.MERGE);
+		correctEntityIDForMerge = correctEntityID;
+		WSIEntity e = new WSIEntity();
+
+		e.setType(entityType);
+		e.setId(entity.getIdentifier().getValue());
+
+		this.readDeleteOrMergeEntity = e;
+		
+		
 	}
 	
 	/**
@@ -86,10 +107,10 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 			if(identifier == null)
 				throw new IllegalArgumentException("Delete called with a tridas entity with no identifier!");
 			
-			readOrDeleteEntity = new WSIEntity();
-			readOrDeleteEntity.setId(identifier.getValue());
+			readDeleteOrMergeEntity = new WSIEntity();
+			readDeleteOrMergeEntity.setId(identifier.getValue());
 			// cheap-ish: XmlRootElement (above) is the xml tag, which is also our entity type
-			readOrDeleteEntity.setType(EntityType.fromValue(getResourceName()));
+			readDeleteOrMergeEntity.setType(EntityType.fromValue(getResourceName()));
 			break;
 		}
 			
@@ -138,7 +159,7 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		switch(queryType) {
 		case READ:
 		case DELETE:
-			this.readOrDeleteEntity = entity;
+			this.readDeleteOrMergeEntity = entity;
 			break;
 					
 		default:
@@ -168,7 +189,7 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 			entity.setType(entityType);
 			entity.setId(identifier.getValue());
 
-			this.readOrDeleteEntity = entity;
+			this.readDeleteOrMergeEntity = entity;
 			break;
 		}
 					
@@ -203,7 +224,12 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 		switch(this.getQueryType()) {
 		case READ:
 		case DELETE:
-			request.getEntities().add(readOrDeleteEntity);
+			request.getEntities().add(readDeleteOrMergeEntity);
+			break;
+			
+		case MERGE:
+			request.setMergeWithID(correctEntityIDForMerge);
+			request.getEntities().add(readDeleteOrMergeEntity);
 			break;
 			
 		case UPDATE:
@@ -211,6 +237,8 @@ public abstract class CorinaEntityAssociatedResource<T> extends
 			request.setParentEntityID(this.parentEntityID);
 			populateAppropriateList(request);
 			break;
+			
+		
 		}
 	}
 	

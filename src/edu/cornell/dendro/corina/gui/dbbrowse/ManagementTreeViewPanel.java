@@ -19,6 +19,7 @@ import org.tridas.schema.TridasSample;
 import edu.cornell.dendro.corina.admin.TridasEntityChooser;
 import edu.cornell.dendro.corina.admin.TridasEntityChooser.EntitiesAccepted;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
+import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 
@@ -29,7 +30,7 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
  * @author peterbrewer
  *
  */
-public class ReassignableTreeViewPanel extends TridasTreeViewPanel {
+public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 
 	private static final long serialVersionUID = -7973400038586992025L;
 
@@ -53,7 +54,7 @@ public class ReassignableTreeViewPanel extends TridasTreeViewPanel {
 	 * @see edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel.ObjectListMode
 	 *   default = Top level only
 	 */
-	public ReassignableTreeViewPanel()
+	public ManagementTreeViewPanel()
 	{
 		super();
 			
@@ -66,7 +67,7 @@ public class ReassignableTreeViewPanel extends TridasTreeViewPanel {
 	 * @param listenersAreCheap - @see #setListenersAreCheap(Boolean)
 	 * @param textForSelectPopup - @see #setTextForSelectPopup(String)
 	 */
-	public ReassignableTreeViewPanel(TreeDepth depth, Boolean listenersAreCheap, 
+	public ManagementTreeViewPanel(TreeDepth depth, Boolean listenersAreCheap, 
 			String textForSelectPopup)
 	{
 		super(depth, listenersAreCheap, textForSelectPopup);
@@ -115,6 +116,12 @@ public class ReassignableTreeViewPanel extends TridasTreeViewPanel {
 	        menuItem = new JMenuItem("Reassign to another parent");
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("reassign");
+	        popup.add(menuItem);
+	        
+	        // Merge
+	        menuItem = new JMenuItem("Merge with another record");
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("merge");
 	        popup.add(menuItem);
 
 	        popup.addSeparator();   
@@ -214,6 +221,37 @@ public class ReassignableTreeViewPanel extends TridasTreeViewPanel {
 			
 			
 		}
+		
+		else if (e.getActionCommand().equals("merge"))
+		{
+			Object[] options = {"OK",
+            "Cancel"};
+			int ret = JOptionPane.showOptionDialog(getParent(), 
+					"Are you sure you want to merge this with another record?\n"+
+					"Changes will also impact entities subordinate to this one\n"+
+					"so only continue if you know what you're doing!", 
+					"Confirm merge", 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+			
+			if(ret != JOptionPane.YES_OPTION)
+			{
+				return;
+			}	
+			
+			ITridas selected = (ITridas) ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent()).getUserObject();
+			Class<? extends ITridas> expectedClass = selected.getClass();
+						
+			ITridas correctEntity = TridasEntityChooser.showDialog(null, 
+					"Select correct entity", 
+					expectedClass, 
+					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
+
+			// Actually do the merge
+			mergeEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent(), correctEntity);
+			
+			
+		}
 	}
 	
 	/**
@@ -293,4 +331,79 @@ public class ReassignableTreeViewPanel extends TridasTreeViewPanel {
 		
 		return;
 	}
+	
+	private void mergeEntity(DefaultMutableTreeNode node, ITridas correctEntity)
+	{
+		ITridas entity = null;
+		EntityResource rsrc = null;
+
+		if(correctEntity==null)
+		{
+			return;
+		}
+		
+		String correctEntityID = correctEntity.getIdentifier().getValue();
+		
+		if(node.getUserObject() instanceof TridasMeasurementSeries)
+		{
+			entity = (TridasMeasurementSeries) node.getUserObject();
+			rsrc = new EntityResource<TridasMeasurementSeries>(EntityType.MEASUREMENT_SERIES, 
+					TridasMeasurementSeries.class, entity, correctEntityID );
+			
+		}
+		else if(node.getUserObject() instanceof TridasRadius)
+		{
+			entity = (TridasRadius) node.getUserObject();
+			rsrc = new EntityResource<TridasRadius>(EntityType.RADIUS,
+					TridasRadius.class, entity, correctEntityID);
+			
+		}
+		else if(node.getUserObject() instanceof TridasSample)
+		{
+			entity = (TridasSample) node.getUserObject();
+			rsrc = new EntityResource<TridasSample>(EntityType.SAMPLE,
+					TridasSample.class, entity, correctEntityID);	
+		}
+		else if(node.getUserObject() instanceof TridasElement)
+		{
+			entity = (TridasElement) node.getUserObject();
+			rsrc = new EntityResource<TridasElement>(EntityType.ELEMENT,
+					TridasElement.class, entity, correctEntityID);	
+		}
+		else if(node.getUserObject() instanceof TridasObject)
+		{
+			entity = (TridasObject) node.getUserObject();
+			rsrc = new EntityResource<TridasObject>(EntityType.OBJECT,
+					TridasObject.class, entity, correctEntityID);	
+		}
+		else
+		{
+			Alert.message("Not implemented", "You shouldn't have been able to get here!");
+		}
+		
+		// Do query
+		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(rsrc);
+		rsrc.query();
+		accdialog.setVisible(true);
+		
+		if(accdialog.isSuccessful())
+		{
+			rsrc.getAssociatedResult();
+			((DefaultTreeModel)tree.getModel()).removeNodeFromParent(node);
+			return;
+		}
+
+		
+		Exception exception = accdialog.getFailException();
+		
+
+		JOptionPane.showMessageDialog(this, "There was a problem merging entities\n"+exception, 
+				"Error", JOptionPane.ERROR_MESSAGE);
+		
+		
+		return;
+		
+		
+	}
+		
 }

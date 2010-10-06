@@ -25,8 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="logout"/>
  *     &lt;enumeration value="help"/>
  *     &lt;enumeration value="search"/>
- *     &lt;enumeration value="assign"/>
- *     &lt;enumeration value="unassign"/>
+ *     &lt;enumeration value="merge"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -58,10 +57,8 @@ public enum CorinaRequestType {
     HELP("help"),
     @XmlEnumValue("search")
     SEARCH("search"),
-    @XmlEnumValue("assign")
-    ASSIGN("assign"),
-    @XmlEnumValue("unassign")
-    UNASSIGN("unassign");
+    @XmlEnumValue("merge")
+    MERGE("merge");
     private final String value;
 
     CorinaRequestType(String v) {

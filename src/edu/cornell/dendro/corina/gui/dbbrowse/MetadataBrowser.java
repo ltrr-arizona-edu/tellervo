@@ -58,7 +58,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
     
 	private static final long serialVersionUID = 8940640945613031936L;
 	/** Panel containing the tree view of the entities in the database	 */
-	private ReassignableTreeViewPanel treepanel;
+	private ManagementTreeViewPanel treepanel;
 	/** Our property sheet panel (contains table and description) */
 	private PropertySheetPanel propertiesPanel;
 	/** Our properties table */
@@ -98,7 +98,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
     public void setupGui()
     {
     	// Set up tree panel
-    	treepanel = new ReassignableTreeViewPanel(TreeDepth.SERIES, true, "View metadata");
+    	treepanel = new ManagementTreeViewPanel(TreeDepth.SERIES, true, "View metadata");
     	//treepanel.setObjectList(ObjectListMode.TOP_LEVEL_ONLY);
     	treepanel.addTridasSelectListener(this);
     	leftPane.add(treepanel, BorderLayout.CENTER);
