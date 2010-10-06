@@ -348,7 +348,30 @@ class auth
   }
 
   /**
-   * Enter description here...
+   * Determine if the current user has permission do stuff to a vmeasurement
+   * 
+   * @todo NEEDS WORK!!!
+   * 
+   * @param $thePermissionType
+   * @param $parentSeries
+   * @return unknown_type
+   */
+  public function getVMPermission($thePermissionType, $parentSeriesArray)
+  {
+  	if($thePermissionType=="create")
+  	{
+  		return true;
+  	}
+  	else
+  	{
+  		return false;
+  	}
+  	
+  	
+  }
+  
+  /**
+   * Check the permission setting for the current user for a particular entity id
    *
    * @param unknown_type $thePermissionType
    * @param unknown_type $theObjectType

@@ -151,6 +151,7 @@ class searchParameters implements IParams
 									'samplingdatecertainty' => 				array('tbl' => 'vwtblsample', 'field' => 'datecertainty'),
 									'sampleboxid' =>						array('tbl' => 'vwtblsample', 'field' => 'boxid'),
 									'samplecode' =>							array('tbl' => 'vwtblsample', 'field' => 'code'),
+		
 
                                     'radiusid' =>                           		array('tbl' => 'vwtblradius', 'field' => 'radiusid'),
 									//'radiusdbid' 
@@ -186,7 +187,7 @@ class searchParameters implements IParams
 									//'seriessproutyear' =>					array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									//'seriesdeathyear' =>					array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									'seriesprovenance' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'provenance'),
-									//'seriestype' =>							array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriestype' =>							array('tbl' => 'vwcomprehensivevm', 'field' => 'opname'),
 									//'seriesstandardizingmethod' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									//'seriesauthor' =>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									'seriesobjective' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'objective'),

@@ -190,16 +190,38 @@ if($myMetaHeader->status != "Error")
         	
             // Do permissions check
 			$firebug->log("Beginning permissions check...");
+			
+
             if($myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID)===FALSE)
             {
                 // Permission denied
-                if (($originalObjectType=='site') && ($objectType=='default'))
+                if (($originalObjectType=='object') && ($objectType=='default'))
                 {
                     // Permission determined from database default
                     trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." was denied. ".$myAuth->authFailReason, $defaultErrType);
                     break;
                 }
-                if ($originalObjectType!=$objectType)
+                
+                /**
+                 * TEMPORARY BODGE FIX
+                 * 
+                 * Need to handle inheritance of permissions for derived series.
+                 */
+                if(($myRequest->getCrudMode()=='create') && $originalObjectType=='measurement')
+				{
+					if( ($paramObj->getType()=="Sum") || ($paramObj->getType()=="Index") || ($paramObj->getType()=="Redate") || ($paramObj->getType()=="Crossdate") || ($paramObj->getType()=="Trunate"))
+					{
+						// For now give everyone permission to *create* a derived series
+					}
+					else
+					{
+						// Permission determined from parent object so the error message should be set accordingly
+	                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." associated with ".$objectType." ".$myID." was denied. ".$myAuth->authFailReason, $defaultErrType);
+	                    break;
+					}
+				}
+			
+                else if ($originalObjectType!=$objectType)
                 {
                     // Permission determined from parent object so the error message should be set accordingly
                     trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." associated with ".$objectType." ".$myID." was denied. ".$myAuth->authFailReason, $defaultErrType);
