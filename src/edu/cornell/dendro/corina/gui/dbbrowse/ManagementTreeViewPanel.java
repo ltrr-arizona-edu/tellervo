@@ -18,6 +18,7 @@ import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.admin.TridasEntityChooser;
 import edu.cornell.dendro.corina.admin.TridasEntityChooser.EntitiesAccepted;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -112,16 +113,20 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	        menuItem.setActionCommand("delete");
 	        popup.add(menuItem);
 	        
+		  	Boolean adm = App.isAdmin;
+	        
 	        // Reassign
 	        menuItem = new JMenuItem("Reassign to another parent");
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("reassign");
+	        menuItem.setEnabled(adm);
 	        popup.add(menuItem);
 	        
 	        // Merge
 	        menuItem = new JMenuItem("Merge with another record");
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("merge");
+	        menuItem.setEnabled(adm);
 	        popup.add(menuItem);
 
 	        popup.addSeparator();   
