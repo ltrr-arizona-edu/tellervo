@@ -50,8 +50,9 @@
 			<xs:enumeration value="logout"/>
 			<xs:enumeration value="help"/>
 			<xs:enumeration value="search"/>
-			<xs:enumeration value="assign"/>
-			<xs:enumeration value="unassign"/>
+<!--	    <xs:enumeration value="assign"/>
+			<xs:enumeration value="unassign"/>-->
+			<xs:enumeration value="merge"/>
 		</xs:restriction>	
 	</xs:simpleType>
 
@@ -326,6 +327,7 @@
 			<xs:attribute name="type" type="corinaRequestType"/>
 			<xs:attribute name="format" type="corinaRequestFormat"/>
 			<xs:attribute name="parentEntityID" type="xs:token"/>
+			<xs:attribute name="mergeWithID" type="xs:token"/>
 		</xs:complexType>
 	</xs:element>
 	<!--

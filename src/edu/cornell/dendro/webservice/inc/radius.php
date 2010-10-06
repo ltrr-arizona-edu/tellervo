@@ -623,6 +623,55 @@ class radius extends radiusEntity implements IDBAccessor
         return TRUE;
     }
 
+    function mergeRecords($mergeWithID)
+    {
+    	global $firebug;
+		global $dbconn;
+		
+		$goodID = $mergeWithID;
+		$badID  = $this->getID();
+		
+		//Only attempt to run SQL if there are no errors so far
+        if($this->getLastErrorCode() == NULL)
+        {
+        	$sql = "select * from cpgdb.mergeradii('$goodID', '$badID')";
+        	$firebug->log($sql, "SQL");
+	       	$dbconnstatus = pg_connection_status($dbconn);
+	        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+	        {
+                // Run SQL 
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                {
+                	$PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                    switch($PHPErrorCode)
+                    {
+                        default:
+                                // Any other error
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    }
+                    return FALSE;
+                }
+                else
+                {
+                	$firebug->log("Merge successful");
+                }
+	        }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }	
+        
+        // Return true as write to DB went ok.
+        
+        $this->setParamsFromDB($goodID);
+        return TRUE;
+    }
+    
 // End of Class
 } 
 ?>

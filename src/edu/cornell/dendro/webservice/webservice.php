@@ -107,6 +107,8 @@ if($myMetaHeader->status != "Error")
         // Get the name of the object (minus the Parameters bit)
         $objectType = substr(get_class($paramObj), 0, -10);
 
+        $firebug->log($myObject, "My object");
+        
         // Before doing anything else check the request parameters are valid
         if($myMetaHeader->status != "Error")
         {       
@@ -180,12 +182,12 @@ if($myMetaHeader->status != "Error")
                   
             }
         }
-        elseif( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete'))
+        elseif( ($myRequest->getCrudMode()=='merge') || ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete'))
         {
             $myID = $paramObj->getID();
         }
 
-        if( ($myRequest->getCrudMode()=='create') || ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete'))
+        if( ($myRequest->getCrudMode()=='create') || ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete') )
         {
         	
             // Do permissions check
@@ -238,7 +240,14 @@ if($myMetaHeader->status != "Error")
             if ($debugFlag===TRUE) $myMetaHeader->setTiming("Permissions check completed");
         }
         
-
+        // Merges should only be done by admins
+		if( $myRequest->getCrudMode()=='merge')
+		{
+			if(!$myAuth->isAdmin())
+			{
+				trigger_error("103"."Merges can only be done by administrators", $defaultErrType);
+			}
+		}
 
 
         // ********************
@@ -302,7 +311,7 @@ if($myMetaHeader->status != "Error")
         // ********************
                         	
         if( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete') ||
-        	($myRequest->getCrudMode()=='plainlogin')  || ($myRequest->getCrudMode()=='securelogin'))
+        	($myRequest->getCrudMode()=='plainlogin')  || ($myRequest->getCrudMode()=='securelogin') || ($myRequest->getCrudMode()=='merge') )
         {
             if($myMetaHeader->status != "Error")
             {   
@@ -400,6 +409,18 @@ if($myMetaHeader->status != "Error")
             $xmldata.= $myObject->xmlDebugOutput();
         }
 
+        // ********************
+        // Merge records
+        // ******************** 
+        if($myRequest->getCrudMode()=='merge')
+        {
+            if($myMetaHeader->status != "Error")
+            {
+            	$myObject->mergeRecords($paramObj->mergeWithID);
+       
+            }
+        }
+        
 
         // ********************
         // Include permissions in output when requested 

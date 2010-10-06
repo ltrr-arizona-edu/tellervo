@@ -386,6 +386,11 @@ class securityGroup
         // Return true as write to DB went ok.
         return TRUE;
     }
+    
+    function mergeRecords($newParentID)
+    {
+    	return false;
+    }
 
 // End of Class
 } 

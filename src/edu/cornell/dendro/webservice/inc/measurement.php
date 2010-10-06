@@ -2020,7 +2020,11 @@ class measurement extends measurementEntity implements IDBAccessor
 	}
 
 
-
+    function mergeRecords($newParentID)
+    {
+    	trigger_error("667"."measurements class should not be asked to merge", E_USER_ERROR);
+    	return false;
+    }
 
     
         

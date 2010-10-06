@@ -224,6 +224,8 @@ class request
        	$xpath->registerNamespace('cor', $corinaNS);
        	$xpath->registerNamespace('tridas', $tridasNS);
         
+       	$firebug->log($this->crudMode, "CRUD Mode");
+       	
         
     	//******
     	//SEARCH
@@ -242,47 +244,66 @@ class request
         	}
         }
         
-    	//***************
-    	//READ and DELETE
-    	//***************        
-        elseif ( ($this->crudMode=='read') || ($this->crudMode=='delete'))
+    	//**********************
+    	//READ, DELETE and MERGE
+    	//********************** 
+        elseif ( ($this->crudMode=='read') || ($this->crudMode=='delete') || ($this->crudMode=='merge'))
         {
+        	
         	if($this->xmlRequestDom->getElementsByTagName("entity")->item(0)!=NULL)
         	{
 	            foreach ($this->xmlRequestDom->getElementsByTagName("entity") as $item)
 	            {
-	                $parentID = NULL;
+	            	// Set merge with id
+	            	$mergeWithID=null;
+	                if($this->crudMode=='merge')
+	                {
+	                	 // Extract ID of Parent entity if supplied
+           				 $requestTag = $this->xmlRequestDom->getElementsByTagName("request")->item(0);
+           				 if($requestTag!=NULL) $mergeWithID = $requestTag->getAttribute("mergeWithID");
+           				 
+           				 if($mergeWithID==NULL)
+           				 {
+           				 	trigger_error("905"."Invalid XML request - merge requests require a mergeWithID", E_USER_ERROR);
+           				 }
+	                }
+
+                	// Set parentID
+                	$parentID = NULL;
+	                
+	                
+	                
 	                switch(strtolower($item->getAttribute('type')))
 	                {
 	                	case 'object':    
 	                		$newxml = "<tridas:object><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:object>";
-	                		$myParamObj = new objectParameters($newxml, $parentID);
+	                		$myParamObj = new objectParameters($newxml, $parentID, $mergeWithID);
                             break;	                		
 
                         case 'element':    
 	                		$newxml = "<tridas:element><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:element>";
-	                		$myParamObj = new elementParameters($newxml, $parentID);
+	                		$myParamObj = new elementParameters($newxml, $parentID, $mergeWithID);
                             break;	                		
                             
 	                	case 'sample':
 	                		$newxml = "<tridas:sample><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:sample>";
-	                		$myParamObj = new sampleParameters($newxml, $parentID);
+	                		$myParamObj = new sampleParameters($newxml, $parentID, $mergeWithID);
                             break;
 
 	                	case 'radius':
 	                		$newxml = "<tridas:radius><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:radius>";
-	                		$myParamObj = new radiusParameters($newxml, $parentID);
+	                		$myParamObj = new radiusParameters($newxml, $parentID, $mergeWithID);
                             break;
                             
 	                	case 'measurementseries':
 
 	                		$newxml = "<tridas:measurementSeries><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:measurementSeries>";
-	                		$myParamObj = new measurementParameters($newxml, $parentID);
+	                		$myParamObj = new measurementParameters($newxml, $parentID, $mergeWithID);
                             break;
                             
 	                	case 'derivedseries':
 	                		$newxml = "<tridas:derivedSeries><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:derivedSeries>";
-	                		$myParamObj = new measurementParameters($newxml, $parentID);
+	                		$myParamObj = new measurementParameters($newxml, $parentID, $mergeWithID);
                             break;	
 
 	                	case 'box':
@@ -309,11 +330,11 @@ class request
         	}
             else
             {
-                trigger_error("905"."Invalid XML request - read or delete requests require entity tags", E_USER_ERROR);
+                trigger_error("905"."Invalid XML request - read, merge and delete requests require entity tags", E_USER_ERROR);
             }
         
         }
-        elseif ( ($this->crudMode=='create') || ($this->crudMode=='update') || ($this->crudMode=='assign') || ($this->crudMode=='unassign') )
+        elseif ( ($this->crudMode=='create') || ($this->crudMode=='update'))
         {
 
             // Extract ID of Parent entity if supplied
@@ -357,172 +378,7 @@ class request
             	
                 if(isset($myParamObj)) array_push($this->paramObjectsArray, $myParamObj);
 
-            }
-
-
-
-/*
-            if($this->xmlrequest->xpath('//dictionaries'))
-            {
-                $parentID = NULL;
-                $item = $this->xmlrequest->xpath('//request/searchParams');
-                $myParamObj = new dictionariesParameters($this->metaHeader, $this->auth, $item, $parentID);
-                array_push($this->paramObjectsArray, $myParamObj);
-            }
-        */
-            /*
-            if($this->xmlrequest->xpath('//subSite'))
-            {
-                foreach ($this->xmlrequest->xpath('//subSite') as $item)
-                {
-                    $parentID = NULL;
-                    $parent = $item->xpath('../..');
-                    if(isset($parent[0]->site['id']))
-                    {
-                        $parentID = (int) $parent[0]->site['id'][0];
-                    }
-                    $myParamObj = new subSiteParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
-            if($this->xmlrequest->xpath('//element'))
-            {
-                foreach ($this->xmlrequest->xpath('//element') as $item)
-                {
-                    $parentID = NULL;
-                    $parent = $item->xpath('../..');
-                    if(isset($parent[0]->subSite['id']))
-                    {
-                        $parentID = $parent[0]->subSite['id'];
-                    }
-                    $myParamObj = new elementParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
-            if($this->xmlrequest->request->children('http://www.tridas.org/1.1'));
-            {
-                foreach ($this->xmlrequest->request->children('http://www.tridas.org/1.1') as $item)
-                {
-                    $myParamObj = new sampleParameters($item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
-            if($this->xmlrequest->xpath('//radius'))
-            {
-                foreach ($this->xmlrequest->xpath('//radius') as $item)
-                {
-                    $parentID = "";
-                    $parent = $item->xpath('../..');
-                    if(isset($parent[0]->sample['id']))
-                    {
-                        $parentID = $parent[0]->sample['id'];
-                    }
-                    $myParamObj = new radiusParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
-            if($this->xmlrequest->xpath('//measurement'))
-            {
-                foreach ($this->xmlrequest->xpath('//measurement') as $item)
-                {
-                    $parent = $item->xpath('../..');
-                    if(isset($parent[0]->radius['id']))
-                    {
-                        $parentID = $parent[0]->radius['id'];
-                        $myParamObj = new measurementParameters($this->metaHeader, $this->auth, $item, $parentID);
-                        array_push($this->paramObjectsArray, $myParamObj);
-                    }
-                    elseif(isset($parent[0]->references))
-                    {
-                        // this measurement is a reference within a derived measurement so ignore
-                    }
-                    elseif(isset($parent[0]->basedOn))
-                    {
-                        // this measurement is a reference within a derived measurement so ignore
-                    }
-                    else
-                    {
-                        $parentID = "";
-                        $myParamObj = new measurementParameters($this->metaHeader, $this->auth, $item, $parentID);
-                        array_push($this->paramObjectsArray, $myParamObj);
-                    }
-                }
-            }
-            
-            if($this->xmlrequest->xpath('//request/siteNote'))
-            {
-                foreach ($this->xmlrequest->xpath('//request/siteNote') as $item)
-                {
-                    $parentID = "";
-                    $myParamObj = new siteNoteParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
-            if($this->xmlrequest->xpath('//request/elementNote'))
-            {
-                foreach ($this->xmlrequest->xpath('//request/elementNote') as $item)
-                {
-                    $parentID = "";
-                    $myParamObj = new elementNoteParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
-            if($this->xmlrequest->xpath('//request/measurementNote'))
-            {
-                foreach ($this->xmlrequest->xpath('//request/measurementNote') as $item)
-                {
-                    $parentID = "";
-                    $myParamObj = new vmeasurementNoteParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
-            if($this->xmlrequest->xpath('//request/readingNote'))
-            {
-                foreach ($this->xmlrequest->xpath('//request/readingNote') as $item)
-                {
-                    $parentID = "";
-                    $myParamObj = new readingNoteParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
-            if($this->xmlrequest->xpath('//request/taxon'))
-            {
-                foreach ($this->xmlrequest->xpath('//request/taxon') as $item)
-                {
-                    $parentID = "";
-                    $myParamObj = new taxonParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
-            if($this->xmlrequest->xpath('//request/user'))
-            {
-                foreach ($this->xmlrequest->xpath('//request/user') as $item)
-                {
-                    $parentID = "";
-                    $myParamObj = new securityUserParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }
-            
-            if($this->xmlrequest->xpath('//request/securityGroup'))
-            {
-                foreach ($this->xmlrequest->xpath('//request/securityGroup') as $item)
-                {
-                    $parentID = "";
-                    $myParamObj = new securityGroupParameters($this->metaHeader, $this->auth, $item, $parentID);
-                    array_push($this->paramObjectsArray, $myParamObj);
-                }
-            }*/
-         
+            }         
 
         }
         elseif ( ($this->crudMode=='plainlogin') || ($this->crudMode=='securelogin') || ($this->crudMode=='nonce') || ($this->crudMode=='setpassword')) 
@@ -541,6 +397,7 @@ class request
         // Check that at least one parameters object has been extracted from the xml request
         if(sizeof($this->paramObjectsArray)>0)
         {
+        	$firebug->log($this->paramObjectsArray, "Parameters Objects");
             return true;
         }
         else

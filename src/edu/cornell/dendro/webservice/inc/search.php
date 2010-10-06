@@ -739,6 +739,12 @@ class search Implements IDBAccessor
     	trigger_error("667"."search class should not be asked to delete from the db", E_USER_ERROR);
     	return false;
     }
+    
+    function mergeRecords($newParentID)
+    {
+    	trigger_error("667"."search class should not be asked to merge", E_USER_ERROR);
+    	return false;
+    }
 
 
 // End of Class

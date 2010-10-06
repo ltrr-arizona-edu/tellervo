@@ -508,6 +508,11 @@ class box extends boxEntity implements IDBAccessor
         return TRUE;
     }
 
+    function mergeRecords($newParentID)
+    {
+    	return false;
+    }
+    
 // End of Class
 } 
 ?>

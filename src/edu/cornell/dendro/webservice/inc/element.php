@@ -332,7 +332,7 @@ class element extends elementEntity implements IDBAccessor
             case "delete":
                 if($paramsObj->getID() == NULL) 
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required when deleting a element.", E_USER_ERROR);
+                    trigger_error("902"."Missing parameter - 'id' field is required when deleting an element.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -361,6 +361,19 @@ class element extends elementEntity implements IDBAccessor
                 }
                 return true;
 
+            case "merge":
+                if($paramsObj->getID() == NULL) 
+                {
+                    trigger_error("902"."Missing parameter - 'id' field is required when merging.", E_USER_ERROR);
+                    return false;
+                }
+                if($paramsObj->mergeWithID == NULL)
+                {
+                	trigger_error("902"."Missing parameter - 'mergeWithID' field is required when merging.", E_USER_ERROR);
+                    return false;
+                }
+                return true;
+                
             default:
                 trigger_error("667"."Program bug - invalid crudMode specified when validating request", E_USER_ERROR);
                 return false;
@@ -882,6 +895,55 @@ class element extends elementEntity implements IDBAccessor
         // Return true as write to DB went ok.
         return TRUE;
     }
+    
+	function mergeRecords($mergeWithID)
+	{
+		global $firebug;
+		global $dbconn;
+		
+		$goodID = $mergeWithID;
+		$badID  = $this->getID();
+		        
+		//Only attempt to run SQL if there are no errors so far
+        if($this->getLastErrorCode() == NULL)
+        {
+        	$sql = "select * from cpgdb.mergeelements('$goodID', '$badID')";
+        	$firebug->log($sql, "SQL");
+	       	$dbconnstatus = pg_connection_status($dbconn);
+	        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+	        {
+                // Run SQL 
+                pg_send_query($dbconn, $sql);
+                $result = pg_get_result($dbconn);
+                if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                {
+                	$PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+                    switch($PHPErrorCode)
+                    {
+                        default:
+                                // Any other error
+                                $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+                    }
+                    return FALSE;
+                }
+                else
+                {
+                	$firebug->log("Merge successful");
+                }
+	        }
+            else
+            {
+                // Connection bad
+                $this->setErrorMessage("001", "Error connecting to database");
+                return FALSE;
+            }
+        }	
+        
+        // Return true as write to DB went ok.
+        
+        $this->setParamsFromDB($goodID);
+        return TRUE;
+	}
 
 // End of Class
 } 

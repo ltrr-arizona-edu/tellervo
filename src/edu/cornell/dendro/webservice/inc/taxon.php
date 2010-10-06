@@ -361,10 +361,17 @@ class taxon extends taxonEntity implements IDBAccessor
 
         return false;
     }
+    
     function deleteFromDB()
     {
         return false;
     }
+    
+    function mergeRecords($newParentID)
+    {
+    	return false;
+    }
+    
 // End of Class
 } 
 ?>

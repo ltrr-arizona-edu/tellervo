@@ -391,6 +391,8 @@ class auth
         global $dbconn;
 		global $firebug;
         
+		// Merge should be swapped to update as they are 
+		
         // Always allow access to dictionaries and authentication requests
         if ( ($theObjectType=='dictionaries') || ($theObjectType=='authentication') )
         {

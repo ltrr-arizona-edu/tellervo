@@ -343,8 +343,9 @@ class objectParameters extends objectEntity implements IParams
 	var $xmlRequestDom = NULL;
     var $hasChild   = FALSE;
     var $parentID   = NULL;
+    var $mergeWithID = NULL;
 
-    function __construct($xmlrequest, $parentID=NULL)
+    function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
     {
     	parent::__construct();    	
     	
@@ -360,6 +361,7 @@ class objectParameters extends objectEntity implements IParams
         }
      		
         $this->parentID=$parentID;
+        $this->mergeWithID = $mergeWithID;
             		
         // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
@@ -492,8 +494,9 @@ class elementParameters extends elementEntity implements IParams
 	var $xmlRequestDom = NULL;
     var $hasChild   = FALSE;
     var $parentID   = NULL;
-
-    function __construct($xmlrequest, $parentID=NULL)
+	var $mergeWithID = NULL;
+	
+    function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
     {
     	parent::__construct();
     	
@@ -509,6 +512,7 @@ class elementParameters extends elementEntity implements IParams
         }
     		
         $this->parentID=$parentID;
+        $this->mergeWithID = $mergeWithID;
              		
         // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
@@ -749,8 +753,9 @@ class sampleParameters extends sampleEntity implements IParams
 	var $xmlRequestDom = NULL;
     var $hasChild   = FALSE;
     var $parentID   = NULL;
-       
-    function __construct($xmlrequest, $parentID=NULL)
+	var $mergeWithID = NULL;
+	       
+    function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
     {
     	
     	parent::__construct();    	
@@ -767,6 +772,7 @@ class sampleParameters extends sampleEntity implements IParams
         }
     		
         $this->parentID=$parentID;
+        $this->mergeWithID = $mergeWithID;
                 
         // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
@@ -850,8 +856,9 @@ class radiusParameters extends radiusEntity implements IParams
 	var $xmlRequestDom = NULL;
     var $hasChild   = FALSE;
     var $parentID   = NULL;
-
-    function __construct($xmlrequest, $parentID=NULL)
+	var $mergeWithID = NULL;
+	
+    function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
     {
     	parent::__construct();    	
     	
@@ -867,6 +874,7 @@ class radiusParameters extends radiusEntity implements IParams
         }
     		
         $this->parentID=$parentID;
+        $this->mergeWithID = $mergeWithID;
         
         // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
@@ -990,8 +998,9 @@ class measurementParameters extends measurementEntity implements IParams
 	var $xmlRequestDom = NULL;
     var $hasChild   = FALSE;
     var $parentID   = NULL;
-
-    function __construct($xmlrequest, $parentID=NULL)
+	var $mergeWithID = NULL;
+	
+    function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
     {
     	parent::__construct();
     	
@@ -1007,6 +1016,7 @@ class measurementParameters extends measurementEntity implements IParams
         }
     		
         $this->parentID=$parentID;
+        $this->mergeWithID = $mergeWithID;
         
         // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
@@ -1283,10 +1293,13 @@ class measurementParameters extends measurementEntity implements IParams
 class boxParameters extends boxEntity implements IParams
 {
 	var $xmlRequestDom = NULL;
-
-    function __construct($xmlrequest, $parentID=NULL)
+	var $mergeWithID = NULL;
+	
+    function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
     {
     	parent::__construct();    	
+    	
+    	$this->mergeWithID = $mergeWithID;
     	
     	// Load the xmlrequest into a local DOM variable
         if (gettype($xmlrequest)=='box')

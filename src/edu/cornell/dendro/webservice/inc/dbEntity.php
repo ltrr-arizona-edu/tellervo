@@ -31,6 +31,7 @@ interface IDBAccessor
 	function asXML();
 	function writeToDB();
 	function deleteFromDB();
+	function mergeRecords($mergeWithID);
 	function validateRequestParams($paramsClass, $crudMode);
 }
 
