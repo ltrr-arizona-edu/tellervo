@@ -5,34 +5,29 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Corina-Dev/native/Libraries"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="Libraries/commons-lang-2.4.jar" sourcepath="C:/Users/Daniel/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4-sources.jar"/>
+	<classpathentry kind="lib" path="Libraries/TridasJLib-0.0.1-SNAPSHOT-jar-with-dependencies.jar"/>
 	<classpathentry kind="lib" path="Libraries/batik.jar"/>
-	<classpathentry kind="lib" path="Libraries/junit.jar"/>
 	<classpathentry kind="lib" path="Libraries"/>
 	<classpathentry kind="lib" path="Libraries/RXTXcomm.jar"/>
 	<classpathentry kind="lib" path="Libraries/jdom.jar"/>
-	<classpathentry kind="lib" path="Libraries/forms-1.1.0.jar"/>
 	<classpathentry kind="lib" path="Libraries/swing-layout-1.0.3.jar"/>
 	<classpathentry kind="lib" path="Libraries/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="Libraries/jna.jar"/>
-	<classpathentry kind="lib" path="Libraries/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="Libraries/apache-mime4j-0.5.jar"/>
 	<classpathentry kind="lib" path="Libraries/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="Libraries/httpclient-4.0-beta2.jar"/>
 	<classpathentry kind="lib" path="Libraries/httpcore-4.0-beta3.jar"/>
 	<classpathentry kind="lib" path="Libraries/httpmime-4.0-beta2.jar"/>
 	<classpathentry kind="lib" path="Libraries/jsyntaxpane-0.9.5-b17.jar"/>
-	<classpathentry kind="lib" path="Libraries/activation.jar"/>
 	<classpathentry kind="lib" path="Libraries/l2fprod-common-shared.jar" sourcepath="Libraries/src/l2fprod-common-7.3-src.zip"/>
 	<classpathentry kind="lib" path="Libraries/l2fprod-common-sheet.jar" sourcepath="Libraries/src/l2fprod-common-7.3-src.zip"/>
 	<classpathentry kind="lib" path="Libraries/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="Libraries/l2fprod-common-buttonbar.jar"/>
 	<classpathentry kind="lib" path="Libraries/iText-2.1.6.jar"/>
-	<classpathentry kind="lib" path="Libraries/jaxb/jsr173_1.0_api.jar"/>
-	<classpathentry kind="lib" path="Libraries/commons-lang-2.4.jar" sourcepath="C:/Users/Daniel/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/jaxb/plugin/coll-prop.0.1-1.5.jar"/>
 	<classpathentry kind="lib" path="Libraries/PDFRenderer.jar"/>
 	<classpathentry kind="lib" path="Libraries/DendroFileIO-0.0.1-SNAPSHOT.jar" sourcepath="LibraryDocsAndSources/TridasJLib-0.0.1-SNAPSHOT-sources.jar"/>
-	<classpathentry kind="lib" path="Libraries/TridasJLib-0.0.1-SNAPSHOT.jar" sourcepath="Libraries/src/TridasJLib-0.0.1-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/java-simple-mvc-1.3.4-SNAPSHOT.jar" sourcepath="LibraryDocsAndSources/java-simple-mvc-1.3.4-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/JGoogleAnalyticsTracker-1.1.0.jar" sourcepath="LibraryDocsAndSources/JGoogleAnalyticsTracker-1.1.0-sources.jar"/>
 	<classpathentry kind="lib" path="Libraries/gluegen-rt.jar"/>
