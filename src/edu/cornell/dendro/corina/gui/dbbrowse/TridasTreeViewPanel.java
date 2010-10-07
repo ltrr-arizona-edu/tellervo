@@ -50,6 +50,7 @@ import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.util.PopupListener;
 import edu.cornell.dendro.corina.util.labels.LabBarcode.Type;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
@@ -60,12 +61,10 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
 import edu.cornell.dendro.corina.ui.Builder;
 
-public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements MouseListener, ActionListener, TridasSelectListener {
+public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements ActionListener, TridasSelectListener {
 
 	private static final long serialVersionUID = 1185669228536105855L;
 	protected TridasTree tree;
-	protected JPopupMenu popup;
-	protected JMenuItem menuItem;
 	protected CorinaCodePanel panel;
 	protected EventListenerList tridasListeners = new EventListenerList();
 	protected String textForSelectPopup = "Search for associated series";
@@ -281,7 +280,90 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);        
         tree.setRootVisible(true);
         tree.setShowsRootHandles(true);
-        tree.addMouseListener(this);
+		System.out.println("Adding mouse listener...");
+
+        tree.addMouseListener(new PopupListener() {
+			
+        	/*
+        	@Override
+        	public void mouseClicked(MouseEvent e) { 
+				
+        		System.out.println("mouseClicked called");
+
+        		int selRow = tree.getRowForLocation(e.getX(), e.getY());
+				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+				tree.setSelectionPath(selPath);
+				
+				if(listenersAreCheap)
+				{
+			        if ( e.getButton()== MouseEvent.BUTTON1)
+			        {
+			        	if(e.getClickCount()>1)
+			            {
+				        	// Double left click event so expand entity
+			        		expandEntity((DefaultMutableTreeNode) selPath.getLastPathComponent());
+			            }
+			        	else
+			        	{
+				        	// Listeners are cheap so do select on single left click
+				        	DefaultMutableTreeNode node1 = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
+				        	doSelectEntity(node1);
+			        	}
+			        }
+		        }
+				else
+				{
+	        		if ( e.getButton()== MouseEvent.BUTTON1)
+	                {
+	                	if(e.getClickCount()>1)
+	                    {
+	                		// Select on double left click
+	        	        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
+	        	        	doSelectEntity(node); 	
+	                    }
+	                	else
+	                	{
+	                		// Listeners are expensive so don't do anything on single left click
+	                	}
+	                }
+				}
+        	}*/
+        	
+        	@Override
+			public void showPopup(MouseEvent e) 
+			{
+				System.out.println("showPopup called");
+				int selRow = tree.getRowForLocation(e.getX(), e.getY());
+				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+				tree.setSelectionPath(selPath);
+				
+				if(selRow==-1) return;
+
+	    		// Right click event so show menu
+	        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath.getLastPathComponent();
+	        	
+	        	// Only enabled the expand option if we're not too deep.
+	        	if( ((node.getUserObject() instanceof TridasObject)  && (depth.getDepth()<= TreeDepth.OBJECT .getDepth())) || 
+	        		((node.getUserObject() instanceof TridasElement) && (depth.getDepth()<= TreeDepth.ELEMENT.getDepth())) ||
+	        		((node.getUserObject() instanceof TridasSample)  && (depth.getDepth()<= TreeDepth.SAMPLE .getDepth())) ||
+	        		((node.getUserObject() instanceof TridasRadius)  && (depth.getDepth()<= TreeDepth.RADIUS .getDepth())) ||
+	        		((node.getUserObject() instanceof TridasElement) && (depth.getDepth()<= TreeDepth.ELEMENT.getDepth())) 
+	        	   )
+	        	{
+	        			showPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), node.getUserObject().getClass(), false);
+	        	}
+	        	else
+	        	{
+	        		// Show menu with expand branch enabled
+	        		showPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), node.getUserObject().getClass(), true);
+	        	}
+		        
+
+				
+				
+			}
+        });
+        
         ToolTipManager.sharedInstance().registerComponent(tree);
     	treeScrollPane.setViewportView(tree);
 	}
@@ -290,8 +372,9 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	/**
 	 * Set up the popup menu 
 	 */
-	protected void initPopupMenu(boolean expandEnabled, Class<?> clazz)
+	protected JPopupMenu initPopupMenu(boolean expandEnabled, Class<?> clazz)
 	{
+		
 		String className = this.getFriendlyClassName(clazz);
 		Boolean isTridas = false;
 		if(clazz.getSimpleName().startsWith("Tridas"))
@@ -300,7 +383,8 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 		}
 		
         // define the popup
-        popup = new JPopupMenu();
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem menuItem;
         
         if(isTridas)
         {
@@ -311,24 +395,24 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	       	menuItem.setEnabled(expandEnabled);
 	        menuItem.setIcon(Builder.getIcon("view_tree.png", 16));
 	     
-	        popup.add(menuItem);
+	        popupMenu.add(menuItem);
 	        
 	        // Select
 	        menuItem = new JMenuItem(this.textForSelectPopup);
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("select");
 	        menuItem.setIcon(Builder.getIcon("select.png", 16));
-	        popup.add(menuItem);
-	        popup.addSeparator();
+	        popupMenu.add(menuItem);
+	        popupMenu.addSeparator();
 	        
 	        // Delete
 	        menuItem = new JMenuItem("Delete this "+className.toLowerCase());
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("delete");
 	        menuItem.setIcon(Builder.getIcon("cancel.png", 16));
-	        popup.add(menuItem);
+	        popupMenu.add(menuItem);
 	        	        
-	        popup.addSeparator();   
+	        popupMenu.addSeparator();   
         }
         
         // Refresh
@@ -336,11 +420,12 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
         menuItem.addActionListener(this);
         menuItem.setActionCommand("refresh");
         menuItem.setIcon(Builder.getIcon("reload.png", 16));
-        popup.add(menuItem);
+        popupMenu.add(menuItem);
         
-        popup.setOpaque(true);
-        popup.setLightWeightPopupEnabled(true);
+        popupMenu.setOpaque(true);
+        popupMenu.setLightWeightPopupEnabled(false);
 
+        return popupMenu;
 	}
 	
 	/**
@@ -652,8 +737,10 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	 */
 	private void showPopupMenu(JComponent source, int x, int y, Class<?> clazz, boolean expandEnabled)
 	{
-		this.initPopupMenu(expandEnabled, clazz);
-		popup.show(source, x, y);
+		System.out.println("Go ahead and show popup! as x="+x+", y="+y+", class="+clazz+", expandEnabled="+expandEnabled);
+		JPopupMenu popupMenu = initPopupMenu(expandEnabled, clazz);
+		System.out.println("Popup menu = "+popupMenu.toString());
+		popupMenu.show(source, x, y);
 	}
 	
 	/**
@@ -799,104 +886,6 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	     }
 
 	}
-	
-	/********
-	 * EVENTS
-	 ********/
-	
-	private void mouseClickyEvent(MouseEvent e)
-	{
-		
-		
-		int selRow = tree.getRowForLocation(e.getX(), e.getY());
-		TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-		tree.setSelectionPath(selPath);
-		
-		if(selRow==-1) return;
-
-        if (e.isPopupTrigger()) 
-        {
-    		// Right click event so show menu
-        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath.getLastPathComponent();
-        	
-        	// Only enabled the expand option if we're not too deep.
-        	if( ((node.getUserObject() instanceof TridasObject)  && (depth.getDepth()<= TreeDepth.OBJECT .getDepth())) || 
-        		((node.getUserObject() instanceof TridasElement) && (depth.getDepth()<= TreeDepth.ELEMENT.getDepth())) ||
-        		((node.getUserObject() instanceof TridasSample)  && (depth.getDepth()<= TreeDepth.SAMPLE .getDepth())) ||
-        		((node.getUserObject() instanceof TridasRadius)  && (depth.getDepth()<= TreeDepth.RADIUS .getDepth())) ||
-        		((node.getUserObject() instanceof TridasElement) && (depth.getDepth()<= TreeDepth.ELEMENT.getDepth())) 
-        	   )
-        	{
-        			showPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), node.getUserObject().getClass(), false);
-        	}
-        	else
-        	{
-        		// Show menu with expand branch enabled
-        		showPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), node.getUserObject().getClass(), true);
-        	}
-        }
-		
-		if(this.listenersAreCheap)
-		{
-	        if ( e.getButton()== MouseEvent.BUTTON1)
-	        {
-	        	if(e.getClickCount()>1)
-	            {
-		        	// Double left click event so expand entity
-	        		this.expandEntity((DefaultMutableTreeNode) selPath.getLastPathComponent());
-	            }
-	        	else
-	        	{
-		        	// Listeners are cheap so do select on single left click
-		        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
-		        	doSelectEntity(node);
-	        	}
-	        }
-        }
-        else
-        {
-	        if ( e.getButton()== MouseEvent.BUTTON1)
-	        {
-	        	if(e.getClickCount()>1)
-	            {
-	        		// Select on double left click
-		        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
-		        	doSelectEntity(node); 	
-	            }
-	        	else
-	        	{
-	        		// Listeners are expensive so don't do anything on single left click
-	        	}
-	        }
-        }
-		
-	}
-	
-	
-	@Override
-	public void mouseClicked(MouseEvent e) { 
-	
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) { }
-
-	@Override
-	public void mouseExited(MouseEvent e) {	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) { 
-		
-		this.mouseClickyEvent(e);
-		
-	}
-	
-	@Override
-	public void mousePressed(MouseEvent e) {
-		
-		this.mouseClickyEvent(e);
-	}
-
 	
 
 	@Override

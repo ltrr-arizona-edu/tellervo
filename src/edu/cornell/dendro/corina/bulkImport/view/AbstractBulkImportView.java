@@ -284,6 +284,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		}); 
 		tablePopupMenu.addSeparator();
 		tablePopupMenu.add(deleterow); 
+		tablePopupMenu.setLightWeightPopupEnabled(false);
 	}
 	
 	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 

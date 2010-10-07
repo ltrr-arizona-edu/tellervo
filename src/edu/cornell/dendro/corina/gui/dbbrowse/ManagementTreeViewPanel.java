@@ -81,7 +81,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	 * Set up the popup menu 
 	 */
 	@Override
-	protected void initPopupMenu(boolean expandEnabled, Class<?> clazz)
+	protected JPopupMenu initPopupMenu(boolean expandEnabled, Class<?> clazz)
 	{
 		String className = this.getFriendlyClassName(clazz);
 		Boolean isTridas = false;
@@ -91,7 +91,8 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 		}
 		
         // define the popup
-        popup = new JPopupMenu();
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem menuItem;
         
         if(isTridas)
         {
@@ -137,6 +138,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	        popup.add(menuItem);
 
 	        popup.addSeparator();   
+	        
         }
         
         // Refresh
@@ -147,7 +149,8 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
         popup.add(menuItem);
         
         popup.setOpaque(true);
-        popup.setLightWeightPopupEnabled(true);
+        popup.setLightWeightPopupEnabled(false);
+		return popup;
 
 	}
 
