@@ -151,10 +151,28 @@ public abstract class AbstractBulkImportView extends JPanel{
 		table.addMouseListener(new MouseListener(){
 
 			@Override
-			public void mouseClicked(MouseEvent evt) {
-				
+			public void mousePressed(MouseEvent arg0) {
+				mousePopupHandler(arg0);
+			}
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				mousePopupHandler(arg0);
+			}
+			@Override
+			public void mouseClicked(MouseEvent evt) {}
+			@Override
+			public void mouseEntered(MouseEvent arg0) {}
+			@Override
+			public void mouseExited(MouseEvent arg0) {}
+
+			/**
+			 * Handles windows and mac style popup events
+			 * @param evt
+			 */
+			private void mousePopupHandler(MouseEvent evt)
+			{
 				// Right click
-			    if (evt.getButton()==MouseEvent.BUTTON3)
+			    if (evt.isPopupTrigger())
 				{		    	
 			    	// Select the whole row
 			    	table.setRowSelectionInterval(table.rowAtPoint(evt.getPoint()), table.rowAtPoint(evt.getPoint()));
@@ -164,15 +182,6 @@ public abstract class AbstractBulkImportView extends JPanel{
 					tablePopupMenu.show(evt.getComponent(), evt.getX(), evt.getY()); 
 				}
 			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {}
-			@Override
-			public void mouseExited(MouseEvent arg0) {}
-			@Override
-			public void mousePressed(MouseEvent arg0) {}
-			@Override
-			public void mouseReleased(MouseEvent arg0) {}
 			
 		});
 		
