@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -483,6 +484,7 @@ public class LoginDialog extends JDialog {
 			return;
 		}
 		
+		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		// first off, we're busy now.
 		enableDialogButtons(false);
 		
@@ -493,6 +495,7 @@ public class LoginDialog extends JDialog {
 			authenticator.addResourceEventListener(new ResourceEventListener() {
 				public void resourceChanged(ResourceEvent re) {
 					if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
+						setCursor(Cursor.getDefaultCursor());
 						// ok, so we have a nonce
 						setNonce(authenticator.getServerNonce(), authenticator.getServerNonceSeq());
 						
@@ -501,7 +504,8 @@ public class LoginDialog extends JDialog {
 					}
 					else if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) {
 						Exception e = re.getAttachedException();
-												
+						setCursor(Cursor.getDefaultCursor());
+						
 						// failure. what type?
 						JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
 								"Error: " + e.toString(),
@@ -528,6 +532,7 @@ public class LoginDialog extends JDialog {
 				public void resourceChanged(ResourceEvent re) {
 					if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
 						// yay! we've authenticated!
+						setCursor(Cursor.getDefaultCursor());
 						if(authenticationNotifier != null) {
 							authenticationNotifier.setSuccess(true);
 							authenticationNotifier.stop();
@@ -537,6 +542,7 @@ public class LoginDialog extends JDialog {
 						dispose();
 					}
 					else if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) {
+						setCursor(Cursor.getDefaultCursor());
 						Exception e = re.getAttachedException();
 						
 						// bad server nonce?
