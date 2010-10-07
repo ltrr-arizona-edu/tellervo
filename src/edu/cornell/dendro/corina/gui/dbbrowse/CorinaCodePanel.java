@@ -4,6 +4,7 @@ import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -319,7 +320,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	 * @param b
 	 */
 	private void setGuiSearching(Boolean b)
-	{
+	{		
 		if(showProgress)
 		{
 			progressBar.setIndeterminate(true);

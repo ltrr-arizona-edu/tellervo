@@ -98,7 +98,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
     public void setupGui()
     {
     	// Set up tree panel
-    	treepanel = new ManagementTreeViewPanel(TreeDepth.SERIES, true, "View metadata");
+    	treepanel = new ManagementTreeViewPanel(this, TreeDepth.SERIES, true, "View metadata");
     	//treepanel.setObjectList(ObjectListMode.TOP_LEVEL_ONLY);
     	treepanel.addTridasSelectListener(this);
     	leftPane.add(treepanel, BorderLayout.CENTER);

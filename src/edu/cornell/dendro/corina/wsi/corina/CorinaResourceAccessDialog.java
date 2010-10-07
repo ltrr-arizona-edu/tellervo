@@ -2,6 +2,8 @@ package edu.cornell.dendro.corina.wsi.corina;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
@@ -10,12 +12,18 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.JWindow;
+
+import com.sun.xml.internal.ws.api.server.Container;
 
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.wsi.ResourceEvent;
 import edu.cornell.dendro.corina.wsi.ResourceEventListener;
@@ -30,6 +38,7 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 	private Exception failException = null;
 	private JProgressBar progressBar;
 	private Boolean runInBackground = false;
+	private Component parent;
 	
 	/**
 	 * Construct an access dialog with no owner parent (not preferable)
@@ -48,7 +57,7 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 	 */
 	public CorinaResourceAccessDialog(Dialog dialog, CorinaResource resource) {
 		super(dialog);
-		
+		parent = dialog;
 		initialize(resource);
 	}
 
@@ -60,7 +69,7 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 	 */
 	public CorinaResourceAccessDialog(Frame frame, CorinaResource resource) {
 		super(frame);
-		
+		parent = frame;
 		initialize(resource);
 	}
 
@@ -224,6 +233,14 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 	
 	@Override
 	public void setVisible(boolean visible) {
+		if(parent != null)
+		{
+			parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		}
+
+		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		
+		
 		if(visible) {
 			synchronized(completed) {
 				if(completed)
@@ -236,6 +253,12 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 	
 	public void dispose() {
 		myResource.removeResourceEventListener(this);
+		if(parent != null)
+		{
+			parent.setCursor(Cursor.getDefaultCursor());
+		}
+
+		this.setCursor(Cursor.getDefaultCursor());
 		
 		super.dispose();
 	}

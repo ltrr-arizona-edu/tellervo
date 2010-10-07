@@ -1,6 +1,7 @@
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
 import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -57,6 +58,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
+import edu.cornell.dendro.corina.ui.Builder;
 
 public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements MouseListener, ActionListener, TridasSelectListener {
 
@@ -71,6 +73,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	protected TreeDepth depth = TreeDepth.RADIUS;
 	protected ObjectListMode baseObjectListMode = ObjectListMode.TOP_LEVEL_ONLY;
 	protected Boolean derivedVisible = false;
+	private Window parent = null;
 	
 	/**
 	 * Basic constructor for tree view panel used in the context of searching
@@ -106,9 +109,10 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	 * @param listenersAreCheap - @see #setListenersAreCheap(Boolean)
 	 * @param textForSelectPopup - @see #setTextForSelectPopup(String)
 	 */
-	public TridasTreeViewPanel(TreeDepth depth, Boolean listenersAreCheap, 
+	public TridasTreeViewPanel(Window parent, TreeDepth depth, Boolean listenersAreCheap, 
 			String textForSelectPopup)
 	{
+		this.parent = parent;
 		setupGui();
 		setupTree(null);
 		setTreeDepth(depth);
@@ -305,12 +309,15 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("expand");
 	       	menuItem.setEnabled(expandEnabled);
+	        menuItem.setIcon(Builder.getIcon("view_tree.png", 16));
+	     
 	        popup.add(menuItem);
 	        
 	        // Select
 	        menuItem = new JMenuItem(this.textForSelectPopup);
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("select");
+	        menuItem.setIcon(Builder.getIcon("select.png", 16));
 	        popup.add(menuItem);
 	        popup.addSeparator();
 	        
@@ -318,6 +325,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	        menuItem = new JMenuItem("Delete this "+className.toLowerCase());
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("delete");
+	        menuItem.setIcon(Builder.getIcon("cancel.png", 16));
 	        popup.add(menuItem);
 	        	        
 	        popup.addSeparator();   
@@ -327,6 +335,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
         menuItem = new JMenuItem("Refresh");
         menuItem.addActionListener(this);
         menuItem.setActionCommand("refresh");
+        menuItem.setIcon(Builder.getIcon("reload.png", 16));
         popup.add(menuItem);
         
         popup.setOpaque(true);
@@ -473,7 +482,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
     		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
     		
         	// Do Search     	
-    		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+    		CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parent, resource);
     		resource.query();	
     		dialog.setVisible(true);
     		if(!dialog.isSuccessful()) 
@@ -795,27 +804,17 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
 	 * EVENTS
 	 ********/
 	
-	@Override
-	public void mouseClicked(MouseEvent e) { }
-
-	@Override
-	public void mouseEntered(MouseEvent e) { }
-
-	@Override
-	public void mouseExited(MouseEvent e) {	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) { }
-	
-	@Override
-	public void mousePressed(MouseEvent e) {
+	private void mouseClickyEvent(MouseEvent e)
+	{
+		
 		
 		int selRow = tree.getRowForLocation(e.getX(), e.getY());
 		TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-
-		if(selRow==-1) return;
+		tree.setSelectionPath(selPath);
 		
-        if (e.getButton()== MouseEvent.BUTTON3 || e.getButton()== MouseEvent.BUTTON2) 
+		if(selRow==-1) return;
+
+        if (e.isPopupTrigger()) 
         {
     		// Right click event so show menu
         	DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath.getLastPathComponent();
@@ -872,6 +871,33 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Mouse
         }
 		
 	}
+	
+	
+	@Override
+	public void mouseClicked(MouseEvent e) { 
+	
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) { }
+
+	@Override
+	public void mouseExited(MouseEvent e) {	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) { 
+		
+		this.mouseClickyEvent(e);
+		
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e) {
+		
+		this.mouseClickyEvent(e);
+	}
+
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JMenuItem;
@@ -22,6 +23,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 
 /**
@@ -68,10 +70,10 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	 * @param listenersAreCheap - @see #setListenersAreCheap(Boolean)
 	 * @param textForSelectPopup - @see #setTextForSelectPopup(String)
 	 */
-	public ManagementTreeViewPanel(TreeDepth depth, Boolean listenersAreCheap, 
+	public ManagementTreeViewPanel(Window parent, TreeDepth depth, Boolean listenersAreCheap, 
 			String textForSelectPopup)
 	{
-		super(depth, listenersAreCheap, textForSelectPopup);
+		super(parent, depth, listenersAreCheap, textForSelectPopup);
 	}
 	
 	
@@ -98,12 +100,14 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("expand");
 	       	menuItem.setEnabled(expandEnabled);
+	        menuItem.setIcon(Builder.getIcon("view_tree.png", 16));
 	        popup.add(menuItem);
 	        
 	        // Select
 	        menuItem = new JMenuItem(this.textForSelectPopup);
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("select");
+	        menuItem.setIcon(Builder.getIcon("select.png", 16));
 	        popup.add(menuItem);
 	        popup.addSeparator();
 	        
@@ -111,6 +115,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	        menuItem = new JMenuItem("Delete this "+className.toLowerCase());
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("delete");
+	        menuItem.setIcon(Builder.getIcon("cancel.png", 16));
 	        popup.add(menuItem);
 	        
 		  	Boolean adm = App.isAdmin;
@@ -120,6 +125,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("reassign");
 	        menuItem.setEnabled(adm);
+	        menuItem.setIcon(Builder.getIcon("newparent.png", 16));
 	        popup.add(menuItem);
 	        
 	        // Merge
@@ -127,6 +133,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("merge");
 	        menuItem.setEnabled(adm);
+	        menuItem.setIcon(Builder.getIcon("merge.png", 16));
 	        popup.add(menuItem);
 
 	        popup.addSeparator();   
@@ -136,6 +143,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
         menuItem = new JMenuItem("Refresh");
         menuItem.addActionListener(this);
         menuItem.setActionCommand("refresh");
+        menuItem.setIcon(Builder.getIcon("reload.png", 16));
         popup.add(menuItem);
         
         popup.setOpaque(true);
