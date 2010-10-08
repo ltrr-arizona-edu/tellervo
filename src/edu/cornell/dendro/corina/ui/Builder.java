@@ -68,12 +68,14 @@ public class Builder {
 
 	public static JMenuItem makeMenuItem(String key, boolean enabled) {
 		JMenuItem m = makeMenuItem(key);
+		setupMnemonics(m, key);
 		m.setEnabled(enabled);
 		return m;
 	}
 	
 	public static JMenuItem makeMenuItem(String key, boolean enabled, String iconfilename) {
 		JMenuItem m = makeMenuItem(key, null, iconfilename);
+		setupMnemonics(m, key);
 		m.setEnabled(enabled);
 		return m;
 	}
@@ -81,6 +83,7 @@ public class Builder {
 
 	public static JMenuItem makeMenuItem(String key, String action) {
 		JMenuItem m = makeMenuItem(key);
+		setupMnemonics(m, key);
 		addAction(m, action);
 		return m;
 	}

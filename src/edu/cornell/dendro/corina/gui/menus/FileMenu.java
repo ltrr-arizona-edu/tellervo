@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -53,6 +54,7 @@ import edu.cornell.dendro.corina.io.DendroReaderFileFilter;
 import edu.cornell.dendro.corina.io.ExportDialog;
 import edu.cornell.dendro.corina.io.WrongFiletypeException;
 import edu.cornell.dendro.corina.manip.Sum;
+import edu.cornell.dendro.corina.print.SeriesReport;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
@@ -148,13 +150,23 @@ public class FileMenu extends JMenu {
 	
 	public void addIOMenus(){
 		
-		add(Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png"));		
+		add(Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png"));
+		
 	}
 	
 	public void addNewOpenMenus() {
 		
 		//add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()", "filenew.png"));
-		add(Builder.makeMenuItem("menus.file.new", "edu.cornell.dendro.corina.editor.EditorFactory.newSeries()", "filenew.png"));
+		//add(Builder.makeMenuItem("menus.file.new", "edu.cornell.dendro.corina.editor.EditorFactory.newSeries()", "filenew.png"));
+		
+		JMenuItem filenew = Builder.makeMenuItem("menus.file.new", true, "filenew.png");
+		filenew.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				edu.cornell.dendro.corina.editor.EditorFactory.newSeries();
+			}
+		});
+		add(filenew);
+		
 		add(Builder.makeMenuItem("menus.file.open", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
 		add(Builder.makeMenuItem("menus.file.openmulti", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png"));	
 		add(OpenRecent.makeOpenRecentMenu());

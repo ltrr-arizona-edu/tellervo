@@ -222,7 +222,7 @@ private JFrame frame;
 	    
 	 	add(curationmenu);
 	 	addSeparator();
-		add(Builder.makeMenuItem("menus.file.metadatabrowser", "edu.cornell.dendro.corina.gui.menus.AdminMenu.metadataBrowser()", "database.png"));
+		add(Builder.makeMenuItem("menus.admin.metadatabrowser", "edu.cornell.dendro.corina.gui.menus.AdminMenu.metadataBrowser()", "database.png"));
 		add(Builder.makeMenuItem("general.sitemap", "edu.cornell.dendro.corina.gui.menus.AdminMenu.showMap()", "globe.png"));
 
 
