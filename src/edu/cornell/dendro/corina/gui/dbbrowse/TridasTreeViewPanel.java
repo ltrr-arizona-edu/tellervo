@@ -284,7 +284,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 
         tree.addMouseListener(new PopupListener() {
 			
-        	/*
+        	
         	@Override
         	public void mouseClicked(MouseEvent e) { 
 				
@@ -327,7 +327,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	                	}
 	                }
 				}
-        	}*/
+        	}
         	
         	@Override
 			public void showPopup(MouseEvent e) 
