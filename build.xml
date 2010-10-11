@@ -289,6 +289,15 @@
   	classname="com.googlecode.ant_deb_task.DesktopEntry" 
   	classpathref="ant-deb.classpath"/>
 	
+  <!-- Time stamp -->
+  <macrodef  name="set.timestamp">
+	<sequential>
+	  <tstamp>
+	    <format property="current.time" pattern="MM/dd/yyyy hh:mm"/>
+	  </tstamp>
+	</sequential>
+  </macrodef>	
+	
 <!-- ==================== All Target ====================================== -->
 
 <!--
@@ -568,16 +577,36 @@
     		</fileset>
 	    </javadoc>-->
 	</target>
-		
+	
+	<!-- Create executable Jar file-->
     <target name="create_run_jar">
-        <jar destfile="target/Corina.jar">
+    	
+    	<!-- Set timestamp -->
+    	<set.timestamp/>
+    	<echo file="target/Timestamp">${current.time}</echo>
+
+    	<!-- Set SVN revision number -->
+    	<loadfile property="dist.revision" srcFile=".svn/entries">
+    	<filterchain>
+	    	<headfilter lines="1" skip="3"/>
+	    	<deletecharacters chars="\n"/>
+    	</filterchain>
+    	</loadfile>
+    	<echo file="target/Revision">${dist.revision}</echo>
+    	
+    	
+    	<jar destfile="target/Corina.jar">
             <manifest>
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
                 <attribute name="Rsrc-Main-Class" value="edu.cornell.dendro.corina.gui.Startup"/>
                 <attribute name="Class-Path" value="."/>
             	<attribute name="Rsrc-Class-Path" value="./ commons-lang-2.4.jar TridasJLib-0.0.1-SNAPSHOT-jar-with-dependencies.jar batik.jar RXTXcomm.jar jdom.jar swing-layout-1.0.3.jar log4j-1.2.15.jar jna.jar apache-mime4j-0.5.jar commons-codec-1.3.jar httpclient-4.0-beta2.jar httpcore-4.0-beta3.jar httpmime-4.0-beta2.jar jsyntaxpane-0.9.5-b17.jar l2fprod-common-shared.jar l2fprod-common-sheet.jar jaxen-1.1.1.jar l2fprod-common-buttonbar.jar iText-2.1.6.jar coll-prop.0.1-1.5.jar PDFRenderer.jar DendroFileIO-0.0.1-SNAPSHOT.jar java-simple-mvc-1.3.4-SNAPSHOT.jar JGoogleAnalyticsTracker-1.1.0.jar gluegen-rt.jar jogl.jar worldwind-0.6.570.13645.jar JFontChooser.jar jfontchooser-1.0.5.jar miglayout15-swing.jar jh.jar pljava.jar postgresql-8.2-506.jdbc3.jar"/>
+            	<attribute name="Built-Date" value="${current.time}"/>
+           		<attribute name="Created-By" value="Peter Brewer"/>            	
             </manifest>
-            <zipfileset src="Libraries/jar-in-jar-loader.zip"/>
+            <zipfileset src="Libraries/jar-in-jar-loader.zip"/>	
+    		<zipfileset dir="target" includes="Timestamp"/> 
+    		<zipfileset dir="target" includes="Revision"/> 
             <fileset dir="build"/>
             <zipfileset dir="Libraries" includes="commons-lang-2.4.jar"/>
             <zipfileset dir="Libraries" includes="TridasJLib-0.0.1-SNAPSHOT-jar-with-dependencies.jar"/>

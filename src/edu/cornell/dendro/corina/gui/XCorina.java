@@ -136,7 +136,7 @@ public class XCorina extends JFrame {
 		_self = this;
 
 		// boilerplate
-		setTitle("Corina - " + Build.VERSION + " " + Build.TIMESTAMP);
+		setTitle("Corina");
 
 		// set application icon
 		setIconImage(Builder.getApplicationIcon());

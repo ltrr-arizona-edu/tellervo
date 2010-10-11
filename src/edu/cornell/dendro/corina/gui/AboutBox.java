@@ -29,6 +29,10 @@ import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.DefaultResourceBundle;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import java.awt.Font;
 
 /*
  * AboutBox2.java
@@ -88,17 +92,22 @@ public class AboutBox extends javax.swing.JDialog {
         String strVersion = MessageFormat.format(I18n.getText("about.version"),
                 new Object[] { Build.VERSION });
         String strTimestamp = MessageFormat.format(I18n.getText("about.timestamp"),
-                new Object[] { Build.TIMESTAMP });       
+                new Object[] { Build.TIMESTAMP });
+        String strRevision = MessageFormat.format(I18n.getText("about.revision"),
+                    new Object[] { Build.REVISION_NUMBER }); 
         String strCopyright = MessageFormat.format(I18n.getText("about.copyright"),
         		new Object[] { Build.YEAR,
               Build.AUTHOR });
+        
         String strDescription = I18n.getText("about.description");
         String strLicense = fileResourceToString("Licenses/CorinaLicense.txt");
         
         // Set text in dialog
         txtCopyright.setText(strCopyright);
         lblVersion.setText(strVersion);
-        lblCompiledAt.setText(strTimestamp);     
+        lblCompiledAt.setText(strTimestamp);   
+        lblRevision.setText(strRevision);
+
         txtDescription.setText(strDescription);        
         txtLicense.setText(strLicense);
         txtLicense.setCaretPosition(0);
@@ -170,30 +179,36 @@ public class AboutBox extends javax.swing.JDialog {
 
         lblCompiledAt.setFont(new java.awt.Font("Lucida Grande", 0, 10));
         lblCompiledAt.setText("Compiled at: 1231231");
+        
+        lblRevision = new JLabel("Revision:");
+        lblRevision.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
 
-        org.jdesktop.layout.GroupLayout panelSummaryLayout = new org.jdesktop.layout.GroupLayout(panelSummary);
-        panelSummary.setLayout(panelSummaryLayout);
-        panelSummaryLayout.setHorizontalGroup(
-            panelSummaryLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelSummaryLayout.createSequentialGroup()
-                .add(51, 51, 51)
-                .add(panelSummaryLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(lblCompiledAt)
-                    .add(lblVersion)
-                    .add(lblCorina))
-                .addContainerGap(88, Short.MAX_VALUE))
+        GroupLayout gl_panelSummary = new GroupLayout(panelSummary);
+        gl_panelSummary.setVerticalGroup(
+        	gl_panelSummary.createParallelGroup(Alignment.LEADING)
+        		.addGroup(gl_panelSummary.createSequentialGroup()
+        			.addGap(24)
+        			.addComponent(lblCorina)
+        			.addGap(18)
+        			.addComponent(lblVersion)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(lblCompiledAt, GroupLayout.PREFERRED_SIZE, 13, GroupLayout.PREFERRED_SIZE)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(lblRevision)
+        			.addContainerGap(10, Short.MAX_VALUE))
         );
-        panelSummaryLayout.setVerticalGroup(
-            panelSummaryLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelSummaryLayout.createSequentialGroup()
-                .add(24, 24, 24)
-                .add(lblCorina)
-                .add(18, 18, 18)
-                .add(lblVersion)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(lblCompiledAt, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 13, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+        gl_panelSummary.setHorizontalGroup(
+        	gl_panelSummary.createParallelGroup(Alignment.LEADING)
+        		.addGroup(gl_panelSummary.createSequentialGroup()
+        			.addGap(51)
+        			.addGroup(gl_panelSummary.createParallelGroup(Alignment.LEADING)
+        				.addComponent(lblRevision)
+        				.addComponent(lblCompiledAt)
+        				.addComponent(lblVersion)
+        				.addComponent(lblCorina))
+        			.addContainerGap(164, Short.MAX_VALUE))
         );
+        panelSummary.setLayout(gl_panelSummary);
 
         txtDescription.setBorder(null);
         txtDescription.setEditable(false);
@@ -207,29 +222,29 @@ public class AboutBox extends javax.swing.JDialog {
 
         seperator.setBackground(new java.awt.Color(255, 255, 255));
 
-        org.jdesktop.layout.GroupLayout panelAboutLayout = new org.jdesktop.layout.GroupLayout(panelAbout);
-        panelAbout.setLayout(panelAboutLayout);
-        panelAboutLayout.setHorizontalGroup(
-            panelAboutLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelAboutLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelAbout = new org.jdesktop.layout.GroupLayout(panelAbout);
+        panelAbout.setLayout(gl_panelAbout);
+        gl_panelAbout.setHorizontalGroup(
+            gl_panelAbout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, gl_panelAbout.createSequentialGroup()
                 .addContainerGap()
-                .add(panelAboutLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                .add(gl_panelAbout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, seperator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
-                    .add(panelAboutLayout.createSequentialGroup()
+                    .add(gl_panelAbout.createSequentialGroup()
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(txtCopyright, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelAboutLayout.createSequentialGroup()
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, gl_panelAbout.createSequentialGroup()
                         .add(lblIcon, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 128, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(panelSummary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .add(org.jdesktop.layout.GroupLayout.LEADING, txtDescription, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        panelAboutLayout.setVerticalGroup(
-            panelAboutLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelAboutLayout.createSequentialGroup()
+        gl_panelAbout.setVerticalGroup(
+            gl_panelAbout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelAbout.createSequentialGroup()
                 .addContainerGap()
-                .add(panelAboutLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                .add(gl_panelAbout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                     .add(panelSummary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(lblIcon, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE))
                 .add(43, 43, 43)
@@ -252,18 +267,18 @@ public class AboutBox extends javax.swing.JDialog {
         txtLicense.setOpaque(false);
         scrollPane.setViewportView(txtLicense);
 
-        org.jdesktop.layout.GroupLayout panelLicenseLayout = new org.jdesktop.layout.GroupLayout(panelLicense);
-        panelLicense.setLayout(panelLicenseLayout);
-        panelLicenseLayout.setHorizontalGroup(
-            panelLicenseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelLicenseLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout gl_panelLicense = new org.jdesktop.layout.GroupLayout(panelLicense);
+        panelLicense.setLayout(gl_panelLicense);
+        gl_panelLicense.setHorizontalGroup(
+            gl_panelLicense.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelLicense.createSequentialGroup()
                 .addContainerGap()
                 .add(scrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        panelLicenseLayout.setVerticalGroup(
-            panelLicenseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelLicenseLayout.createSequentialGroup()
+        gl_panelLicense.setVerticalGroup(
+            gl_panelLicense.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(gl_panelLicense.createSequentialGroup()
                 .addContainerGap()
                 .add(scrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
                 .addContainerGap())
@@ -307,6 +322,7 @@ public class AboutBox extends javax.swing.JDialog {
     protected javax.swing.JLabel lblCorina;
     protected javax.swing.JLabel lblIcon;
     protected javax.swing.JLabel lblVersion;
+    protected javax.swing.JLabel lblRevision;
     protected javax.swing.JPanel panelAbout;
     protected javax.swing.JPanel panelLicense;
     protected javax.swing.JPanel panelSummary;
@@ -316,6 +332,4 @@ public class AboutBox extends javax.swing.JDialog {
     protected javax.swing.JTextPane txtCopyright;
     protected javax.swing.JTextPane txtDescription;
     protected javax.swing.JTextPane txtLicense;
-    // End of variables declaration//GEN-END:variables
-    
 }

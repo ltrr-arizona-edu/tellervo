@@ -42,6 +42,15 @@ public class Build {
        Timestamp, which is added to the final Corina.jar file.</p>
     */
     public final static String TIMESTAMP = loadTimestamp();
+    
+    
+    /**
+     * The current SVN revision number stored in a file in Corina.jar 
+     */
+    public final static String REVISION_NUMBER = loadRevisionNumber();
+
+    public final static String COMPLETE_VERSION_NUMBER = loadCompleteVersionNumber();
+
 
     // read the first line of the text file "Timestamp", included in
     // this jar, and return it
@@ -61,7 +70,42 @@ public class Build {
 	    new edu.cornell.dendro.corina.gui.Bug(ioe);
 	}
 
-	return "";
+	return "Unknown";
+    }
+    
+      
+    // read the first line of the text file "Revision", included in
+    // this jar, and return it
+    private static String loadRevisionNumber() {
+	try {
+	    ClassLoader cl = edu.cornell.dendro.corina.Build.class.getClassLoader();
+	    InputStream is = cl.getResourceAsStream("Revision");
+      if (is != null) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+	      try {
+   	      return br.readLine();
+        } finally {
+          br.close();
+        }
+      }
+	} catch (IOException ioe) {
+	    new edu.cornell.dendro.corina.gui.Bug(ioe);
+	}
+
+	return "Unknown";
+    }
+    
+    private static String loadCompleteVersionNumber(){
+    	
+    	if(Build.REVISION_NUMBER!="Unknown")
+    	{
+    		return Build.VERSION+"."+Build.REVISION_NUMBER;
+    	}
+    	else
+    	{
+    		return Build.VERSION;
+    	}
+
     }
 
     /** Version string. */
