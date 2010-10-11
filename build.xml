@@ -704,6 +704,7 @@
             toFile="target/Corina.desktop"
             name="Corina"
             comment="Dendrochronology Software"
+        	description="Dendrochronology Software"
             exec="java -jar /usr/share/corina/Corina.jar"
             path="/usr/share/corina/"
             icon="/usr/share/corina/corina-application.png"
