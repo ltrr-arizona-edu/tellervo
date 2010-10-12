@@ -1,7 +1,10 @@
 package edu.cornell.dendro.corina.platform;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -57,7 +60,16 @@ public class Platform extends AbstractSubsystem {
 
 		if (slafclassname != null)
 			try {
-				UIManager.setLookAndFeel(slafclassname);
+				if(isUnix)
+				{
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+
+				}
+				else
+				{
+					UIManager.setLookAndFeel(slafclassname);
+				}	
+				
 			} catch (Exception e) {
 				log.error("Error setting system look and feel class", e);
 			}
@@ -132,9 +144,8 @@ public class Platform extends AbstractSubsystem {
 			// note: in my old SiteInfo.java, i used
 			// ("/usr/bin/open" folder)
 		} else {
-			// what to do on unix?  gmc, konqueror, xterm?
-			new Bug(new IllegalArgumentException(
-					"Platform.open() not implemented on unix yet!"));
+			File file = new File(folder);
+			openLinuxFile(file, null);
 			return;
 		}
 
@@ -150,8 +161,12 @@ public class Platform extends AbstractSubsystem {
 			Windows.openFile(file);
 		else if(isMac)
 			Macintosh.openFile(file);
-		else
-			new Bug(new IllegalArgumentException("Platform.openFile() not implemented on this platform"));
+		else{
+			
+	    	String filetype = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf(".")+1);
+    		openLinuxFile(file, filetype);
+	    	return;
+		}
 	}
 
 	// get the name of the trash folder
@@ -184,4 +199,163 @@ public class Platform extends AbstractSubsystem {
 			return "control";
 		// i have no idea what it is on generic unix.  does motif specify?
 	}
+	
+	  /**
+	   * Open a file on a Linux machine 
+	   * 
+	   * @param file
+	   * @param filetype
+	   */
+	  public void openLinuxFile(File file, String filetype)
+	  {
+		  if(!isUnix) return;
+		  
+		  String app = getLinuxApplicationFilename(filetype);
+		  if(app==null || app.equals(""))
+		  {
+			  return;
+		  }
+		  
+	      String[] command = new String[] { app, file.getAbsolutePath() };
+	            
+		  try {
+		    Runtime.getRuntime().exec(command);
+		  } catch (IOException ioe) {
+		    new Bug(ioe);
+		  }
+	  }
+	  
+	  /**
+	   * Check whether a file exists
+	   * 
+	   * @param filename
+	   * @return
+	   */
+	  private Boolean checkFileExists(String filename)
+	  {
+		  File f = new File(filename);
+		  return f.exists();
+	  }
+	  
+	  /**
+	   * Locate an application on a Linux machine by file type. This
+	   * is a bit of a kluding function that hunts for popular programs
+	   * based on file extensions.  This would be better done by reading
+	   * the .desktop files.
+	   *   
+	   * Supported types includes pdf, doc, txt, htm, html.
+	   * 
+	   * The funcion will return the filename for a file manager
+	   * application if an unsupported file type is provided.  
+	   * 
+	   * Function assumes executables are location in /usr/bin.
+	   * 
+	   * @param filetype
+	   * @return
+	   */
+	  private String getLinuxApplicationFilename(String filetype)
+	  {
+		  if(!isUnix) return null;
+		  
+		  if(filetype.toLowerCase().equals("pdf"))
+		  {
+			  String[] appNames = {"acroread", "okular", "evince", "gv", "kpdf", "gpdf", "xpdf"};
+			  for(String app : appNames)
+			  {
+				  if(checkFileExists("/usr/bin/"+app))
+				  {
+					  return "/usr/bin/"+app;
+				  }
+			  }
+			  new Bug(new IOException("Unable to find a PDF viewing application"));
+		  }
+		  else if ( (filetype.toLowerCase().equals("doc")) || 
+				    (filetype.toLowerCase().equals("txt")) 
+				  )
+		  {
+			  String[] appNames = {"oowriter", "ooffice", "abiword", "kword"};
+			  for(String app : appNames)
+			  {
+				  if(checkFileExists("/usr/bin/"+app))
+				  {
+					  return "/usr/bin/"+app;
+				  }
+			  }
+			  new Bug(new IOException("Unable to find an office application"));
+		  }
+		  else if ( (filetype.toLowerCase().equals("htm")) || 
+				    (filetype.toLowerCase().equals("html")) 
+				  )
+		  {
+			  String[] appNames = {"firefox", "mozilla-firefox", "rekonq", "konqueror", 
+					  "iceweasel", "opera", "seamonkey", "chromium", "galeon", "epiphany", "amaya"};
+			  for(String app : appNames)
+			  {
+				  if(checkFileExists("/usr/bin/"+app))
+				  {
+					  return "/usr/bin/"+app;
+				  }
+			  }
+			  new Bug(new IOException("Unable to find a web browser"));
+		  }
+		  else 
+		  {
+			  // Null filetype means folder
+			  String[] appNames = {"dolphin", "nautilus", "thunar", "xfe", "krusader"};
+			  for(String app : appNames)
+			  {
+				  if(checkFileExists("/usr/bin/"+app))
+				  {
+					  return "/usr/bin/"+app;
+				  }
+			  }
+			  new Bug(new IOException("Unable to find a file manager application"));
+		  }
+		  	
+		  		  
+		 
+		  return null;
+	  }
+	  
+	  
+	  /**
+	   * Get the .desktop file for the document filetype specified.
+	   * Until .desktop files are a little more uniform this isn't a practical
+	   * way of doing things.  Use getLinuxApplicationFilename() instead.
+	   * 
+	   * @param filetype
+	   * @return
+	   */
+	  private String getLinuxPreferredApplication(String filetype)
+	  {	  
+	/*	    if(!isUnix) return null;
+		  
+			Scanner scanner = null;
+			try {
+				scanner = new Scanner(new FileInputStream("/usr/share/applications/defaults.list"));
+			} catch (FileNotFoundException e) {
+		    	new Bug(new IOException("Unabled to determine the preferred application for the filetype: "+filetype));
+		    	return null;
+			}
+			try {
+			  while (scanner.hasNextLine())
+			  {
+				  
+				  String line = scanner.nextLine();
+				  if(line.startsWith("application/"+filetype))
+				  {
+					  return "/usr/share/applications/"+line.substring(line.indexOf("=")+1);
+				  }
+			  }
+			}
+			finally{
+				scanner.close();
+				
+			}
+	    	new Bug(new IOException("Unabled to determine the preferred application for the filetype: "+filetype));
+	    	
+	    	*/
+	    	return null;
+	  }
+	  
 }

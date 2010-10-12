@@ -288,8 +288,6 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         	@Override
         	public void mouseClicked(MouseEvent e) { 
 				
-        		System.out.println("mouseClicked called");
-
         		int selRow = tree.getRowForLocation(e.getX(), e.getY());
 				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
 				tree.setSelectionPath(selPath);

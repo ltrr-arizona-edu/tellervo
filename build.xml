@@ -704,11 +704,11 @@
             toFile="target/Corina.desktop"
             name="Corina"
             comment="Dendrochronology Software"
-        	description="Dendrochronology Software"
-            exec="java -jar /usr/share/corina/Corina.jar"
+        	GenericName="Dendrochronology Software"
+            exec="/usr/bin/corina"
             path="/usr/share/corina/"
             icon="/usr/share/corina/corina-application.png"
-            categories="Education"
+            categories="Education;Science"
         />
 		
 		<deb todir="${dist.home}" package="corina" section="utils" depends="sun-java6-jre">
@@ -723,6 +723,7 @@
 				<include name="*.so"/>
 			</tarfileset>
 			<tarfileset file="src/edu/cornell/dendro/corina_resources/Icons/128x128/corina-application.png" prefix="usr/share/corina"/>
+			<tarfileset file="native/LinBuild/corina" prefix="usr/bin" filemode="755"/>
 			<tarfileset file="${dist.home}/Corina.desktop" prefix="usr/share/applications"/>
 		</deb>
 		

@@ -497,7 +497,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		
 		if(!(evt.getPropertyName().equals("Frame.active")))
 		{
-			System.out.println("Property changed");
+			//System.out.println("Property changed");
 		}
 		else
 		{

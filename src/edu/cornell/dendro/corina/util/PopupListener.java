@@ -89,7 +89,7 @@ public class PopupListener extends MouseAdapter {
        showPopup() method -- otherwise this adapter won't do anything.
      */
     public PopupListener() {
-		System.out.println("PopupListener constructed");
+		//System.out.println("PopupListener constructed");
 
     	
     }
@@ -102,7 +102,7 @@ public class PopupListener extends MouseAdapter {
        @param popup the popup to show
     */
     public PopupListener(JPopupMenu popup) {
-		System.out.println("PopupListener constructed");
+		//System.out.println("PopupListener constructed");
 
 	this.popup = popup;
     }
