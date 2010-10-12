@@ -21,6 +21,9 @@
 package edu.cornell.dendro.corina.gui.menus;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -72,7 +75,7 @@ public class HelpMenu extends JMenu {
     public HelpMenu() {
 	super(I18n.getText("menus.help"));
 
-	//addHelpMenu();
+	    addHelpMenu();
 
         addSeparator();
 
@@ -89,29 +92,26 @@ public class HelpMenu extends JMenu {
        Add the "Corina Help" menuitem.
     */
     protected void addHelpMenu() {
-/*    	
-	// See if we have access to mozilla libs
-	try {
-		// this loads the DLL...
-		Class.forName("org.mozilla.browser");
-	}
-	catch (Exception e) {
-		// driver not installed...
-		System.out.println("No mozilla - no help");
-		System.out.println(e.toString());
-		return;
-	}
-	catch (Error e) {
-		// native interface not installed...
-		System.out.println("No mozilla - no help");
-		System.out.println(e.toString());
-		return;
-	}
-	
-	// Mozilla present so add help menu
-	add(Builder.makeMenuItem("menus.help.corina_help",
-				 "edu.cornell.dendro.corina.gui.HelpWiki.showHelp()", "help.png"));
-				 */
+
+		JMenuItem helpwiki = Builder.makeMenuItem("menus.help.corina_help", true, "help.png");
+
+		helpwiki.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					URI uri = new URI("http://dendro.cornell.edu/corina-manual/UserGuideContents");
+			    	App.platform.openURL(uri);
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    	
+			}
+		});
+		
+		add(helpwiki);
+		
+
+    	
     }
     
 
