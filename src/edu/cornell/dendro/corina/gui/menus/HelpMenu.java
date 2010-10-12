@@ -30,62 +30,36 @@ import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.AboutBox;
-import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
 
-// TODO: move all menus to corina.gui.menus or even corina.menus (i'm tending towards the latter)
-// TODO: error-log should be a singleton-window, and centered
-// TODO: system-info should be a singleton-window, and centered
-// TODO: perhaps also provide a menuitem which takes you to the corina web page?
-// TODO: the error log should be just a text dump window, perhaps
-// TODO: need a complaint menu item; perhaps "Submit Complaint..."
-
 /**
    A Help menu.
-
-   <p>Standard menuitems are:</p>
-
-   <ul>
-     <li>Corina Help</li>
-     <br>
-     <li>System Properties...</li>
-     <li>Error Log...</li>
-     <br>
-     <li>About Corina... (except on Mac)</li>
-   </ul>
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
 public class HelpMenu extends JMenu {
-  public static final CorinaAction ABOUT_ACTION = new CorinaAction("menus.about") {
-    public void actionPerformed(ActionEvent ae) {
-      AboutBox.getInstance().setVisible(true);
-   
-    }
-  };
-    // FIXME: do i need(want) to set font here for 1.3?  do i inherit that from my parents?
 
-    /**
-       Make a new standard Help menu.
-    */
+	private static final long serialVersionUID = -1495245171423158200L;
+	
+	/**
+	 * Create a help menu
+	 */
     public HelpMenu() {
 	super(I18n.getText("menus.help"));
 
 	    addHelpMenu();
-
         addSeparator();
-
         addSystemInfoMenu();
         addErrorLogMenu();
         
-	if (!Platform.isMac()) {
-	    addSeparator();
-	    addAboutMenu();
-	}
+		if (!Platform.isMac()) {
+		    addSeparator();
+		    addAboutMenu();
+		}
     }
 
     /**
@@ -109,9 +83,6 @@ public class HelpMenu extends JMenu {
 		});
 		
 		add(helpwiki);
-		
-
-    	
     }
     
 
@@ -145,4 +116,11 @@ public class HelpMenu extends JMenu {
       menuitem.setAction(ABOUT_ACTION);
       add(menuitem);
     }
+    
+	public static final CorinaAction ABOUT_ACTION = new CorinaAction("menus.about") {
+		private static final long serialVersionUID = -6930373548175605620L;
+		public void actionPerformed(ActionEvent ae) {
+	      AboutBox.getInstance().setVisible(true);
+	    }
+	  };
 }

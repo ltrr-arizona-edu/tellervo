@@ -20,12 +20,10 @@
 
 package edu.cornell.dendro.corina.platform;
 
-import java.io.File;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.XCorina;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
@@ -58,7 +56,7 @@ public class Macintosh {
 	   <p>If this system is not a Mac, does nothing.</p>
 	 */
 	public static void configureMenus() {
-		if (App.platform.isMac()) {
+		if (Platform.isMac()) {
 			// register "about" menuitem
 			Macintosh.registerAboutHandler(HelpMenu.ABOUT_ACTION);/*new Runnable() {
 			                public void run() {
@@ -208,22 +206,6 @@ public class Macintosh {
 		} catch (Exception e) {
 			// can't happen <=> bug!
 			new Bug(e);
-		}
-	}
-
-	/**
-	 * Open a file using rundll32's fileprotocol handler
-	 * @param file
-	 */
-	public static void openFile(File file) {
-		String[] cmdArray = {
-				"open",
-				file.getAbsolutePath()
-		};
-		
-		try {
-			Runtime.getRuntime().exec(cmdArray);
-		} catch (Exception e) {
 		}
 	}
 	

@@ -2,21 +2,14 @@ package edu.cornell.dendro.corina.platform;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import edu.cornell.dendro.corina.core.AbstractSubsystem;
-import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.logging.CorinaLog;
-import java.net.URISyntaxException;
 
 /**
  * Platform subsystem that takes care of platform-specific things.
@@ -39,7 +32,15 @@ public class Platform extends AbstractSubsystem {
 	public void init() {
 		super.init();
 		
-		desktop = Desktop.getDesktop();
+		if(Desktop.isDesktopSupported())
+		{
+			desktop = Desktop.getDesktop();
+		}
+		else
+		{
+			System.out.println("This OS is not supported by the Java6 Desktop API!");
+		}
+		
 		//method from TN2042, http://developer.apple.com/technotes/tn/tn2042.html
 		isMac = System.getProperty("mrj.version") != null;
 		String osname = System.getProperty("os.name");
@@ -82,20 +83,6 @@ public class Platform extends AbstractSubsystem {
 				log.error("Error setting system look and feel class", e);
 			}
 		
-		// using windows with netware, netware doesn't tell windows the real
-		// username
-		// and home directory. here's an ugly workaround to set user.* properties,
-		// if they're there. (old way: always call with "java -Duser.home=...",
-		// and have the user type in her name -- ugh.) by doing this after the
-		// prefs
-		// loading, i override anything the user set in the prefs (unless they
-		// set it again -- hence it should be removed).
-		// try {
-		Netware.workaround();
-		// } catch (IOException ioe) {
-		// Bug.bug(ioe);
-		// }
-
 		// set up mac menubar
 		Macintosh.configureMenus();
 
