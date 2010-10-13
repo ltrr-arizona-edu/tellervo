@@ -20,115 +20,151 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import java.net.URL;
-import javax.help.HelpSet;
-import javax.help.HelpBroker;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JButton;
 import javax.swing.AbstractAction;
+
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.Alert;
+
 import java.awt.event.ActionEvent;
 
-/**
-   A class for adding <a href="http://java.sun.com/products/javahelp/">JavaHelp</a>
-   to components.
 
-   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
-   @version $Id$
-*/
 public class Help {
 
-    /*
-        disclaimer: i only barely figured out how to make javahelp work.
-        it's not very well documented, and its error-handling/reporting
-        is miserable.  (i plan to abandon javahelp in the future for
-        these and other reasons.)  so no, i don't really understand how
-        this code works.  i copied it straight from the javahelp examples.
-    */
 
-    private Help() {
-        // don't instantiate me
-    }
-
-    private static HelpSet hs=null;
-    private static HelpBroker hb=null;
-
-    private static void createHelpSet() {
-	try {
-	    // Corina help, in the corina/manual/ folder of Corina.jar
-	    ClassLoader loader = edu.cornell.dendro.corina.gui.Help.class.getClassLoader();
-            // URL url = loader.getResource("javahelp/jhelpset.hs");
-            URL url = loader.getResource("corina/manual/jhelpset.hs");
-	    hs = new HelpSet(null, url);
-	} catch (Exception e) {
-	    // (im)possible exceptions:
-	    // MalformedURLException, ClassNotFoundException, HelpSetException
-	    Bug.bug(e);
+	/**
+	 * The base url of the help pages
+	 */
+	public static String baseURI = "http://dendro.cornell.edu/corina-manual/";
+	
+	/**
+	 * Open the help page index
+	 */
+	public static void showHelpIndex() 
+	{
+		Help.showHelpPage("UserGuideContents");	
 	}
-    }
-
-    /**
-       Shows the help window.  It opens to the page the user was last
-       looking at, or the table of contents, if the user hasn't used
-       the help browser yet.
-    */
-    public static void showHelp() {
-	/*
-	if (hs == null) {
-	    createHelpSet();
-	    hb = hs.createHelpBroker();
-	}
-
-	hb.setDisplayed(true);
-	*/
-
-	// pure java way
-	HelpBrowser.showHelpBrowser();
-    }
-
-    /**
-       Attaches a listener to the specified button, so that clicking
-       on the button shows the help window.  Instead of simply opening
-       a help window, it jumps to a specified page of the manual, as
-       specified by the <code>id</code> argument.  This corresponds to
-       the "id" attribute of the DocBook source, so a chapter
-       specified by
-
-       <pre>
-         &lt;chapter id="crossdating"&gt;
-       </pre>
-
-       will get opened by a button defined by
-
-       <pre>
-         Help.addToButton(helpButton, "crossdating");
-       </pre>
-
-       <p>Use this method whenever possible, instead of simply adding an
-       action to call <code>showHelp()</code>, because it's much more
-       helpful to show help that's most relevant to what the user is
-       doing right now.</p>
-       
-       <p>Note: if you see a line in the error log that says simply
-       "trouble in HelpActionListener", that's straight out of JavaHelp.
-       JavaHelp printed that message (instead of throwing an exception),
-       not Corina.  It usually means it was asked to go to a section of
-       the manual by an ID that doesn't exist.</p>
-
-       @param button the button to add help to; it's almost always
-       called "Help" (or some localization of that)
-       @param id the id string in the manual that clicking this button
-       should jump to
-    */
-    public static void assignHelpPageToButton(JButton button, final String page) {
-
-	button.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		//	HelpWiki.showHelp("http://dendro.cornell.edu/corina-manual/" + page);
+	
+	/**
+	 * Open a specific help page 
+	 * 
+	 * @param pagename
+	 */
+	public static void showHelpPage(String pagename)
+	{
+		try {
+			URI uri = new URI(baseURI+pagename);
+			Help.openPage(uri);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Alert.error("Error", "Help page cannot be found.");
 		}
-	    });
+	}
+	
+	/**
+	 * Open an external webpage
+	 * 
+	 * @param pagename
+	 */
+	public static void showExternalPage(String pagename)
+	{
+		try {
+			URI uri = new URI(pagename);
+			Help.openPage(uri);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Alert.error("Error", "Help page cannot be found.");
+		}
+	}
+	
+	
+	/**
+	 * Actually open the page
+	 * 
+	 * @param uri
+	 */
+	private static void openPage(URI uri)
+	{
+		if(Help.exists(uri))
+		{
+			App.platform.openURL(uri);
+		}
+		else
+		{
+			Alert.error("Error", "Help page cannot be found.");
+		}
+
+	}
+
+	/**
+	 * Check whether the specified URI exists
+	 * 
+	 * @param uri
+	 * @return
+	 */
+	private static boolean exists(URI uri){
+	    try {
+	      HttpURLConnection.setFollowRedirects(false);
+	      // note : you may also need
+	      //        HttpURLConnection.setInstanceFollowRedirects(false)
+	      HttpURLConnection con =
+	    	  (HttpURLConnection) uri.toURL().openConnection();
+	      con.setRequestMethod("HEAD");
+	      	return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+	    }
+	    catch (Exception e) {
+	       e.printStackTrace();
+	       return false;
+	    }
+	}
+    
+	/**
+	 * Wires up a button to open a specific help page
+	 * 
+	 * @param button
+	 * @param page
+	 */
+	public static void assignHelpPageToButton(JButton button, final String page) 
+	{
+		assignHelpPageToButton(button, page, false);
+    }
+	
+	/**
+	 * Wires up a button to open a specific page.  If external is true, then
+	 * then 'page' should be the name of the help page in the Corina wiki.  Otherwise
+	 * 'page' should be a complete URL.
+	 * 
+	 * @param button
+	 * @param page
+	 * @param external
+	 */
+	public static void assignHelpPageToButton(JButton button, final String page, Boolean external) 
+	{
+		if(external)
+		{
+			button.addActionListener(new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+				public void actionPerformed(ActionEvent e) {
+						Help.showExternalPage(page);
+					}
+			    });
+		}
+		else
+		{
+			button.addActionListener(new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+				public void actionPerformed(ActionEvent e) {
+						Help.showHelpPage(page);
+					}
+			    });
+		}
     }
 
-    public static void main(String args[]) {
-	showHelp();
-    }
+
 }

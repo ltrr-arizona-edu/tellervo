@@ -22,14 +22,12 @@ package edu.cornell.dendro.corina.gui.menus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.AboutBox;
+import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
@@ -71,14 +69,7 @@ public class HelpMenu extends JMenu {
 
 		helpwiki.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				try {
-					URI uri = new URI("http://dendro.cornell.edu/corina-manual/UserGuideContents");
-			    	App.platform.openURL(uri);
-				} catch (URISyntaxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		    	
+				Help.showHelpIndex();
 			}
 		});
 		
