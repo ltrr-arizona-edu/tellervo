@@ -14,6 +14,8 @@ public class SerialSampleIOEvent extends EventObject {
 	// value is ignored
 	public final static int BAD_SAMPLE_EVENT = 2;
 	
+	public final static int UPDATED_CURRENT_VALUE_EVENT =5;
+	
 	// initializing stuff.
 	// int argument, value is try #
 	public final static int INITIALIZING_EVENT = 3;

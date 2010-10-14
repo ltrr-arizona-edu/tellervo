@@ -16,6 +16,17 @@ import java.applet.*;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
+
+import javax.swing.BoxLayout;
+
+
+import java.awt.BorderLayout;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import java.awt.Font;
 
 /**
  * @author Lucas Madar
@@ -32,25 +43,53 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 	private AudioClip measure_dec;
 	private AudioClip measure_error;
 	
-	public EditorMeasurePanel(Editor myeditor, AbstractSerialMeasuringDevice device) {
-		super(new FlowLayout(FlowLayout.RIGHT));
+	private JButton btnReset;
+	private JButton btnRecord;
+	private JButton btnQuit;
+	private JLabel txtCurrentValue;
+	
+	public EditorMeasurePanel(Editor myeditor, final AbstractSerialMeasuringDevice device) {
 		
 		editor = myeditor;
 		
-		lastMeasurement = new JLabel("[No last measurement]");
-		add(lastMeasurement);
-				
-		JButton leave = Builder.makeButton("menus.edit.stop_measuring");
-		add(leave);
-		leave.addActionListener(new AbstractAction() {
+
+		
+
+		setLayout(new MigLayout("", "[][][][][644.00px,grow][]", "[][][32px][][][][][]"));
+		
+		btnQuit = new JButton(I18n.getText("menus.edit.stop_measuring"));
+		btnQuit.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				editor.stopMeasuring();
 			}
 		});
+		
+				JLabel text = new JLabel("<html><i>Currently in measure mode</i>. Table will not be manually editable.");
+				add(text, "cell 0 0 5 1,alignx left,aligny center");		
+		add(btnQuit, "cell 0 2,alignx left,aligny center");
 
-		JLabel text = new JLabel("<html><i>Currently in measure mode</i>.<br>Table will not be manually editable.");
-		add(text);		
-
+		
+		btnReset = new JButton("Reset");
+		btnReset.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				device.zeroMeasurement();
+				
+			}
+		});
+		add(btnReset, "cell 1 2,alignx left,aligny center");
+		
+		btnRecord = new JButton("Record");
+		btnRecord.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				device.requestMeasurement();	
+			}
+		});
+		add(btnRecord, "cell 2 2,alignx left,aligny center");
+		
 		AudioClip measInit;
 		try {
 			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/meas1.wav"));
@@ -71,6 +110,27 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 		// now, watch for info!
 		dev = device;
 		dev.setMeasurementReceiver(this);
+				
+		txtCurrentValue = new JLabel();
+		txtCurrentValue.setFont(new Font("Synchro LET", Font.BOLD, 20));
+		txtCurrentValue.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtCurrentValue.setText("0"+" \u03bc"+"m");
+		add(txtCurrentValue, "cell 4 2,growx");
+		
+		
+		lastMeasurement = new JLabel("[No last measurement]");
+		add(lastMeasurement, "cell 0 3 5 1,alignx right,aligny center");
+				
+		// Show/hide data request buttons depending on platform abilities
+		btnReset.setVisible(device.isRequestDataCapable());
+		btnRecord.setVisible(device.isRequestDataCapable());
+		txtCurrentValue.setVisible(device.isCurrentValueCapable());
+		
+		// Set the device to zero to start with
+		if(device.isRequestDataCapable())
+		{
+			device.zeroMeasurement();
+		}
 	}
 		
 	public void receiverUpdateStatus(String status) {
@@ -97,7 +157,20 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 			
 			Alert.message("Warning", "This measurement was over 5cm so it will be disregarded!");
 			
-			lastMeasurement.setText("Error: measurement was too big: " + value +"\ucebc"+"m");
+			lastMeasurement.setText("Error: measurement was too big: " + value +"\u03bc"+"m");
+
+			return;
+			
+		}
+		else if (value.intValue() < 0)
+		{
+			// Value was negative so warn user
+			if(measure_error != null)
+				measure_error.play();
+			
+			Alert.message("Warning", "This measurement was negative so it will be disregarded!");
+			
+			lastMeasurement.setText("Error: measurement was negative: " + value +"\u03bc"+"m");
 
 			return;
 			
@@ -120,4 +193,12 @@ public class EditorMeasurePanel extends JPanel implements MeasurementReceiver {
 	public void cleanup() {
 		dev.close();
 	}
+
+	@Override
+	public void receiverUpdateCurrentValue(Integer value) {
+		txtCurrentValue.setText(String.valueOf(value)+" \u03bc"+"m");
+		
+	}
+	
+
 }

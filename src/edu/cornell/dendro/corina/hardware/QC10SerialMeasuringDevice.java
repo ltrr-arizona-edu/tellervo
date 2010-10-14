@@ -138,7 +138,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 					System.out.println("Error reading from serial port: " + ioe.toString());
 			}   	
 			    	
-			zeroVelmex();
+			zeroMeasurement();
 	
 		}
 	}
@@ -146,17 +146,36 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	/**
 	 * Send zero command to Quadra-check QC10
 	 */
-	private void zeroVelmex()
+	@Override
+	public void zeroMeasurement()
+	{
+		String strZeroDataCommand = "@3\r\n";
+		sendRequest(strZeroDataCommand);
+	}
+
+	@Override
+	public Boolean isRequestDataCapable() {
+		return true;
+	}
+
+	@Override
+	public void requestMeasurement() {
+		String strZeroDataCommand = "@33\r\n";
+		sendRequest(strZeroDataCommand);
+		
+	}
+	
+	private void sendRequest(String strCommand)
 	{
 		OutputStream output;
 
-    	//zero the data with "@3"
+
     	try {
     		
 	    output = getPort().getOutputStream();
 	    OutputStream outToPort=new DataOutputStream(output); 
-	    String strZeroDataCommand = "@3\r\n";
-	    byte[] command = strZeroDataCommand.getBytes();
+	    
+	    byte[] command = strCommand.getBytes();
 	    outToPort.write(command);
 	    
     	}
@@ -164,4 +183,11 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 			System.out.println("Error sending zero command to serial port: " + ioe.toString());
     	}	
 	}
+
+	@Override
+	public Boolean isCurrentValueCapable() {
+		return false;
+	}
+
+
 }

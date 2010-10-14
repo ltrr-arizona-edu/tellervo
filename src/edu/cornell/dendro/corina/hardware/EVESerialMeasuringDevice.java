@@ -148,4 +148,26 @@ public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 			
 		}		
 	}
+
+	@Override
+	public Boolean isRequestDataCapable() {
+		return false;
+	}
+
+	@Override
+	public void requestMeasurement() {
+		System.out.println(getMeasuringDeviceName()+ " does not listen for measurement requests.");
+		
+	}
+
+	@Override
+	public void zeroMeasurement() {
+		System.out.println(getMeasuringDeviceName()+ " does not listen for zero requests.");
+		
+	}
+
+	@Override
+	public Boolean isCurrentValueCapable() {
+		return false;
+	}
 }

@@ -498,4 +498,10 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 	private javax.swing.JButton okBtn;
 	// End of variables declaration
 
+	@Override
+	public void receiverUpdateCurrentValue(Integer value) {
+		// Ignore
+		
+	}
+
 }

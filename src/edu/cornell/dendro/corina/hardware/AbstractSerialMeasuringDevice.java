@@ -72,6 +72,15 @@ public abstract class AbstractSerialMeasuringDevice
 		addSerialSampleIOListener(this);
 	}
 	
+	public AbstractSerialMeasuringDevice(String portName, int baud) throws IOException {
+		setBaudRate(baud);
+		port = openPort(portName);
+		state = PortState.NORMAL;
+		
+		addSerialSampleIOListener(this);
+	}
+	
+	
 	/**
 	 * Create a new serial measuring device, but for informational uses only.
 	 * (starts out 'dead,' as if it had been closed)
@@ -298,6 +307,31 @@ public abstract class AbstractSerialMeasuringDevice
 	
 	public abstract String getMeasuringDeviceName();
 	
+	/**
+	 * Ask platforms for a measurement
+	 */
+	public abstract void requestMeasurement();
+		
+	/**
+	 * Ask platform to zero its measurements
+	 */
+	public abstract void zeroMeasurement();
+	
+	/**
+	 * Can this platform accept requests for data?
+	 * 
+	 * @return
+	 */
+	public abstract Boolean isRequestDataCapable();
+	
+	/**
+	 * Does the platform provide current measurement values?
+	 * 
+	 * @return
+	 */
+	public abstract Boolean isCurrentValueCapable();
+	
+	
 	// mess around for a few seconds, perhaps searching other libraries?
 	// Let's only do this once.
 	private static boolean hscChecked = false;
@@ -344,9 +378,13 @@ public abstract class AbstractSerialMeasuringDevice
 		}
 		else if(sse.getType() == SerialSampleIOEvent.NEW_SAMPLE_EVENT) {
 			Integer value = (Integer) sse.getValue();
-			
 			receiver.receiverNewMeasurement(value);
 		}
+		else if(sse.getType() == SerialSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT) {
+			Integer value = (Integer) sse.getValue();
+			receiver.receiverUpdateCurrentValue(value);
+		}
+		
 	}
 	
 	public void setMeasurementReceiver(MeasurementReceiver receiver){

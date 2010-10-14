@@ -16,13 +16,15 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	private static final int EVE_ACK = 6;
 	//private static final int EVE_NAK = 7;
 	
+	private Boolean fireOnNextValue = false;
+	
 	/** serial NUMBER of the last data point... */
 	private int lastSerial = -1;
 	
 	public LINTABSerialMeasuringDevice(String portName) throws IOException {
-		super(portName);
+		super(portName, 1200);
 
-		setBaudRate(1200);
+		//setBaudRate(1200);
 		//setDataBits(SerialPort.DATABITS_8);
 		//setStopBits(SerialPort.STOPBITS_1);
 		//setParity(SerialPort.PARITY_NONE);
@@ -84,6 +86,7 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 			
 			try {
 				input = getPort().getInputStream();
+				
 	    
 			    StringBuffer readBuffer = new StringBuffer();
 			    int intReadFromPort;
@@ -96,69 +99,101 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 			    	 */
 			    	//Read from port into buffer while not LF (10)
 			    	while ((intReadFromPort=input.read()) != 10){
+			    		System.out.println(intReadFromPort);
+			    		
 			    		//If a timeout then show bad sample
 						if(intReadFromPort == -1) {
 							fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
 							return;
 						}
-//						//Ignore CR (13)
-//			    		if(intReadFromPort!=13)  {
-//			    			readBuffer.append((char) intReadFromPort);
-//			    		}
+
+			    		readBuffer.append((char) intReadFromPort);
+
 			    	}
 
                 String strReadBuffer = readBuffer.toString();
+            	//Chop the three characters off the right side of the string to leave the number.
+            	String strReadPosition = strReadBuffer.substring(0,(strReadBuffer.length())-3);
+            	// Round up to integer of 1/1000th mm
+            	Float fltValue = new Float(strReadPosition);
+            	Integer intValue = Math.round(fltValue);
+                
 		    	//Only process the data if the add button is set and the reset button is not set.
-                if( strReadBuffer.endsWith(";10")) {
-                	// Raw data is in 1/1000th mm like "140" or "46" to the left of semicolon. 
-                	/*TODO Investigate changing this to allow for 1/1000th resolution
-                	 *Peter had mentioned that Corina can now handle 1/1000th
-                	 *Maybe this could be dynamic here? and even read what the device is set too?
-                	 */
-                	
-                	//Chop the three characters of ";10" off the right side of the string to leave the number.
-                	String strReadPosition = strReadBuffer.substring(0,(strReadBuffer.length())-3);
-                	// Round up to integer of 1/1000th mm
-                	Float fltValue = new Float(strReadPosition)*1000;
-                	Integer intValue = Math.round(fltValue);
-		    	
-                	// Fire event
+                if( strReadBuffer.endsWith(";10") || fireOnNextValue) 
+                {
+                	fireOnNextValue = false;
                 	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
-                	}					
+                	zeroMeasurement();
+                }
+                else if( strReadBuffer.endsWith(";01") || strReadBuffer.endsWith(";11")) 
+                {
+                	zeroMeasurement();
+                }
+                else
+                {
+                	// Not recording this value just updating current value counter
+                	fireSerialSampleEvent(SerialSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT, intValue);
+                }
 							
 			}
 			catch (IOException ioe) {
 					System.out.println("Error reading from or writing to serial port: " + ioe);
 			}   	
-			    	
-			zeroLINTAB();
-	
 		}
 	}
 	
 	/**
 	 * Send zero command to LINTAB 6
 	 */
-	private void zeroLINTAB()
+	@Override
+	public void zeroMeasurement()
 	{
+
+		String strCommand = "RESET";
+		this.sendData(strCommand);
+	}
+	
+	/**
+	 * Send request for data to LINTAB 6
+	 */
+	@Override
+	public void requestMeasurement()
+	{
+		fireOnNextValue=true;
+		String strCommand = "GETDATA";
+		this.sendData(strCommand);
+	}
+	
+	/**
+	 * Send a command to the Lintab 6 platform. Commands
+	 * @param strCommand
+	 */
+	private void sendData(String strCommand)
+	{
+		 //After a command a linefeed (0x0A) or carriage return (0x0D) must be sent to execute the command.	
+		strCommand = strCommand+"\r";
 		OutputStream output;
 
-    	/*zero the data
-    	 *A reset of the counter is done by sending the ASCII-command RESET to the LINTAB 6.
-		 *After a command a linefeed (0x0A) or carriage return (0x0D) must be sent to execute the command.
-    	 */
     	try {
     		
 	    output = getPort().getOutputStream();
 	    OutputStream outToPort=new DataOutputStream(output);
-	    // "RESET" followed by a carriage return
-	    String strZeroDataCommand = "RESET\r";
-	    byte[] command = strZeroDataCommand.getBytes();
+	    byte[] command = strCommand.getBytes();
 	    outToPort.write(command);
 	    
     	}
     	catch (IOException ioe) {
 			System.out.println("Error writing to serial port: " + ioe);
     	}	
+	}
+
+	@Override
+	public Boolean isRequestDataCapable() {
+		return true;
+	}
+
+	@Override
+	public Boolean isCurrentValueCapable() {
+		return true;
 	}
 }
