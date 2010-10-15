@@ -15,6 +15,9 @@ import javax.swing.table.AbstractTableModel;
 
 import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.model.HashModel.PropertyType;
+import com.dmurph.mvc.support.MVCPropertiesAddedEvent;
+import com.dmurph.mvc.support.MVCPropertiesRemovedEvent;
+import com.dmurph.mvc.support.MVCPropertyRemovedEvent;
 
 /**
  * @author Daniel Murphy
@@ -295,21 +298,40 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		String prop = evt.getPropertyName();
 		Object source = evt.getSource();
 		if(source == models){
-			if(prop.equals(MVCArrayList.REMOVED)){
-				if(evt instanceof IndexedPropertyChangeEvent){
-					IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
-					fireTableRowsDeleted(event.getIndex(), event.getIndex());
-				}else{
+			if(prop.equals(MVCArrayList.REMOVED_ALL)){
+				MVCPropertiesRemovedEvent event = (MVCPropertiesRemovedEvent) evt;
+				if(event.isIndexed()){
+					fireTableRowsDeleted(event.getStartIndex(), event.getEndIndex());
+				}
+				else{
 					fireTableDataChanged();
 				}
+				
+				recreateSelected();
+			}
+			else if(prop.equals(MVCArrayList.REMOVED)){
+				MVCPropertyRemovedEvent event = (MVCPropertyRemovedEvent) evt;
+				if(event.isIndexed()){
+					fireTableRowsDeleted(event.getIndex(), event.getIndex());
+				}
+				else{
+					fireTableDataChanged();
+				}
+				
 				recreateSelected();
 			}
 			else if(prop.equals(MVCArrayList.CHANGED)){
 				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
 				fireTableCellUpdated(event.getIndex(), event.getIndex());
 			}
+			else if(prop.equals(MVCArrayList.ADDED_ALL)){
+				MVCPropertiesAddedEvent event = (MVCPropertiesAddedEvent) evt;
+				fireTableRowsInserted(event.getStartIndex(), event.getStartIndex());
+				recreateSelected();
+			}
 			else if(prop.equals(MVCArrayList.ADDED)){
 				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
+				System.out.println(event.getIndex());
 				fireTableRowsInserted(event.getIndex(), event.getIndex());
 				recreateSelected();
 			}

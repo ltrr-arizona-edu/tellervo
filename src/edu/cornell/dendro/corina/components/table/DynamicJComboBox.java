@@ -101,7 +101,8 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 					model.addElement(o);
 				}
 			}
-			if(style == DynamicJComboBoxStyle.ALPHA_SORT){
+			// start with allowing the comparator to be null, in case they intend to set it later. and call refreshData()
+			if(style == DynamicJComboBoxStyle.ALPHA_SORT && comparator != null){
 				model.sort(comparator);
 			}
 		}
@@ -237,6 +238,9 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 		synchronized (lock) {
 			switch(style){
 				case ALPHA_SORT:{
+					if(comparator == null){
+						throw new NullPointerException("DynamicJComboBox style is set to Alpha Sort, but the comparator is null.");
+					}
 					model.addElements(filtered);
 					break;
 				}
@@ -275,6 +279,12 @@ public class DynamicJComboBox<E> extends JComboBox implements PropertyChangeList
 					model.setElementAt(argNew, i);
 					return;
 				}
+			}
+			if(style == DynamicJComboBoxStyle.ALPHA_SORT){
+				if(comparator == null){
+					throw new NullPointerException("DynamicJComboBox style is set to Alpha Sort, but the comparator is null.");
+				}
+				model.sort(comparator);
 			}
 		}
 	}

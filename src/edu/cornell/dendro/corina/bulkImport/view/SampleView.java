@@ -12,19 +12,24 @@ import javax.swing.JButton;
 import javax.swing.JTable;
 
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasObject;
+import org.tridas.util.TridasObjectEx;
+
+import com.dmurph.mvc.gui.combo.MVCJComboBox;
 
 import edu.cornell.dendro.corina.bulkImport.control.BulkImportController;
 import edu.cornell.dendro.corina.bulkImport.control.ImportSelectedEvent;
 import edu.cornell.dendro.corina.bulkImport.control.PrintSampleBarcodesEvent;
 import edu.cornell.dendro.corina.bulkImport.model.BulkImportModel;
-import edu.cornell.dendro.corina.bulkImport.model.ElementModel;
 import edu.cornell.dendro.corina.bulkImport.model.SampleModel;
 import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicKeySelectionManager;
 import edu.cornell.dendro.corina.components.table.TridasElementRenderer;
+import edu.cornell.dendro.corina.components.table.TridasObjectExRenderer;
 import edu.cornell.dendro.corina.components.table.WSIBoxRenderer;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.schema.WSIBoxDictionary;
@@ -57,8 +62,7 @@ public class SampleView  extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSISampleTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 
-		ElementModel m = BulkImportModel.getInstance().getElementModel();
-		DynamicJComboBox<TridasElement> cboElement = new DynamicJComboBox<TridasElement>(m.getImportedList(), new Comparator<TridasElement>(){
+		MVCJComboBox<TridasElement> cboElement = new MVCJComboBox<TridasElement>(null, new Comparator<TridasElement>(){
 			public int compare(TridasElement argO1, TridasElement argO2) {
 				if(argO1 == null){
 					return -1;
@@ -79,8 +83,8 @@ public class SampleView  extends AbstractBulkImportView{
 				return ((TridasElement)argO).getTitle();
 			}
 		});
-		
-		argTable.setDefaultEditor(TridasElement.class, new ComboBoxCellEditor(cboElement));
+		// specific editor for this, options have to be unique per column
+		argTable.setDefaultEditor(TridasElement.class, new ChosenElementEditor(cboElement));
 		argTable.setDefaultRenderer(TridasElement.class, new TridasElementRenderer());
 		
 		DynamicJComboBox<WSIBox> cboBox = new DynamicJComboBox<WSIBox>(Dictionary.getMutableDictionary("boxDictionary"), 
@@ -113,24 +117,53 @@ public class SampleView  extends AbstractBulkImportView{
 		
 		argTable.setDefaultEditor(WSIBoxDictionary.class, new ComboBoxCellEditor(cboBox));
 		argTable.setDefaultRenderer(WSIBoxDictionary.class, new WSIBoxRenderer());
+		
+		
+		MVCJComboBox<TridasObjectEx> box = new MVCJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(),
+				new Comparator<TridasObjectEx>() {
+			public int compare(TridasObjectEx argO1, TridasObjectEx argO2) {
+				if(argO1 == null){
+					return -1;
+				}
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.getLabCode().compareToIgnoreCase(argO2.getLabCode());
+			}
+		});
+		box.setKeySelectionManager(new DynamicKeySelectionManager() {
+			@Override
+			public String convertToString(Object argO) {
+				if(argO == null){
+					return "";
+				}
+				TridasObjectEx o = (TridasObjectEx) argO;
+				return o.getLabCode();
+			}
+		});
+		
+		box.setRenderer(new TridasObjectExRenderer());
+		
+		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(box));
+		argTable.setDefaultRenderer(TridasObject.class, new TridasObjectExRenderer());
 	}
 
 	@Override
 	protected Box setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
 			JButton argCopyRow, JButton argShowHideColumnButton){
-	Box box = Box.createHorizontalBox();
-	box.add(argAddRowButton);
-	box.add(argDeleteRowButton);
-	box.add(argCopyRow);
-	box.add( Box.createHorizontalGlue());
-	printBarcodes = new JButton();
-	printBarcodes.setIcon(Builder.getIcon("barcode.png", 22));
-	printBarcodes.setToolTipText(I18n.getText("bulkimport.printBarcodes"));
-	box.add(printBarcodes);
-	box.add(argShowHideColumnButton);
-	
-	return box;
-}
+		Box box = Box.createHorizontalBox();
+		box.add(argAddRowButton);
+		box.add(argDeleteRowButton);
+		box.add(argCopyRow);
+		box.add( Box.createHorizontalGlue());
+		printBarcodes = new JButton();
+		printBarcodes.setIcon(Builder.getIcon("barcode.png", 22));
+		printBarcodes.setToolTipText(I18n.getText("bulkimport.printBarcodes"));
+		box.add(printBarcodes);
+		box.add(argShowHideColumnButton);
+		
+		return box;
+	}
 	
 	@Override
 	protected void addListeners() {

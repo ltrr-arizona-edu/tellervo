@@ -5,6 +5,7 @@ package edu.cornell.dendro.corina.bulkImport.model;
 
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasSample;
@@ -19,9 +20,11 @@ import edu.cornell.dendro.corina.schema.WSIBox;
  * @author Daniel Murphy
  *
  */
+@SuppressWarnings("unchecked")
 public class SingleSampleModel extends HashModel implements IBulkImportSingleRowModel {
 	private static final long serialVersionUID = 1L;
 
+	public static final String OBJECT = "Parent Object";
 	public static final String ELEMENT = "Parent Element";
 	public static final String TITLE = "Sample Code";
 	public static final String COMMENTS = "Comments";
@@ -36,11 +39,15 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	
 	// radius stuff
 	public static final String RADIUS_MODEL = "RADIUS_MODEL";
+	
+	// list of possible elements from the chosen parent object
+	public static final String POSSIBLE_ELEMENTS = "POSSIBLE_ELEMENTS";
 
 	public static final String[] TABLE_PROPERTIES = {
-		ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION,
+		OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION,
 		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, IMPORTED
 	};
+	
 	
 	public SingleSampleModel(){
 		for(String s : TABLE_PROPERTIES){
@@ -48,6 +55,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		}
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
 		registerProperty(RADIUS_MODEL, PropertyType.READ_ONLY, null);
+		registerProperty(POSSIBLE_ELEMENTS, PropertyType.FINAL, new MVCArrayList<TridasElement>());
 	}
 	
 	/**
@@ -109,6 +117,10 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	
 	public void setRadiusModel(SingleRadiusModel argModel){
 		registerProperty(RADIUS_MODEL, PropertyType.READ_ONLY, argModel);
+	}
+	
+	public MVCArrayList<TridasElement> getPossibleElements(){
+		return (MVCArrayList<TridasElement>) getProperty(POSSIBLE_ELEMENTS);
 	}
 	
 	public void populateToTridasSample(TridasSample argSample){
