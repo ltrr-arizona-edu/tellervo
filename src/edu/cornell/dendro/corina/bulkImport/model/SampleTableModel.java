@@ -81,7 +81,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 						EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
 						resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
 						
-						CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+						CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(BulkImportModel.getInstance().getMainView(), resource);
 						resource.query();	
 						dialog.setVisible(true);
 						
