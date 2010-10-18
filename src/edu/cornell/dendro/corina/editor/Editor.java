@@ -947,27 +947,45 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		}
 		
 		// ok, start measuring, if we can!
-		//LegacySerialSampleIO dataPort;
-		AbstractSerialMeasuringDevice dataPort;
+		
+		// Set up the measuring device
+		AbstractSerialMeasuringDevice device;
 		try {
-			dataPort = new SerialDeviceSelector ().getDevice();
-			dataPort.initialize();
+			device = new SerialDeviceSelector ().getDevice();	
 		}
 		catch (Exception ioe) {
 			Alert.error(I18n.getText("error"), 
-					I18n.getText("error.initExtComms") + ": " +
-					ioe.toString());
+					I18n.getText("error.initExtComms"));
 			return;
 		} 
+		
+		// initialize 
+		try{
+			if(device!=null)
+			{
+				device.initialize();
+			}
+			else
+			{
+				return;
+			}
+		} catch (Exception ioe)
+		{
+			Alert.error(I18n.getText("error"), 
+					I18n.getText("error.initExtComms")+".\n"+
+					I18n.getText("error.possWrongComPort"));
+			return;
+		}
 		
 		editorEditMenu.setMeasuring(true);
 		dataView.enableEditing(false);
 		
 		// add the measure panel...
-		measurePanel = new EditorMeasurePanel(this, dataPort);
+		measurePanel = new EditorMeasurePanel(this, device);
 		add(measurePanel, BorderLayout.SOUTH);
 		getContentPane().validate();
 		getContentPane().repaint();
+		measurePanel.setDefaultFocus();
 	}
 	
 	public void stopMeasuring() {

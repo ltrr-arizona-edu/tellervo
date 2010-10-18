@@ -6,27 +6,24 @@
 
 package edu.cornell.dendro.corina.manip;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.tridas.schema.NormalTridasUnit;
-
+import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.editor.UnitAwareDecadalModel;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
-import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
 import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -36,31 +33,21 @@ import edu.cornell.dendro.corina.ui.I18n;
  *
  * @author  Lucas Madar
  */
-public class ReconcileMeasureDialog extends javax.swing.JDialog implements MeasurementReceiver {   
+public class ReconcileMeasureDialog extends javax.swing.JDialog {   
 	private static final long serialVersionUID = 1L;
-	private NormalTridasUnit displayUnits;
 	private Sample src, ref;
-	//private Year year;
 	private int yearIndex;
-
-	private Integer finalValue;
-
-	private AbstractSerialMeasuringDevice dev;
 	private ArrayList<AMeasurement> measurements;
-
-	/* audioclips to play... */
-	private AudioClip measure_one;
-	private AudioClip measure_error;
-
+	private Integer finalValue;
+	private AbstractSerialMeasuringDevice dev;
+	
 	/** Creates new form ReconcileMeasureDialog */
 	public ReconcileMeasureDialog(java.awt.Frame parent, boolean modal, Sample src, Sample ref, Year year) {
 		super(parent, modal);
-	
-		displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
 
-		
 		initComponents();
-
+		initMeasuringDevice();
+		initMeasuringPanel();
 
 		this.src = src;
 		this.ref = ref;
@@ -70,17 +57,30 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 
 		setTitle("Remeasuring for " + year + " (index " + yearIndex + ")");
 		initialize();
+		this.setPreferredSize(new Dimension(600,220));
+		pack();
+		panelMeasure.setDefaultFocus();
+		
+	}
+
+	private void initMeasuringPanel()
+	{
+		panelMeasure = new ReconcileMeasurePanel(this, dev);
+		panelMeasureHolder.add(panelMeasure, BorderLayout.CENTER);
+
+		pack();
 	}
 
 	private void initMeasuringDevice()
 	{
 		try {
-			dev = new SerialDeviceSelector ().getDevice();
+			dev = new SerialDeviceSelector().getDevice();
 			dev.initialize();
-			dev.setMeasurementReceiver(this);
-		
+			dev.setMeasurementReceiver(this.panelMeasure);
+			devStatus.setText("Initialized");
 		}
 		catch (Exception ioe) {
+			
 			Alert.error(I18n.getText("error"), 
 					I18n.getText("error.initExtComms") + ": " +
 					ioe.toString());
@@ -88,42 +88,15 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 			return;
 		} 
 	}
+	
 	public Integer getFinalValue() {
 		return finalValue;
 	}
 
-	public void receiverUpdateStatus(String status) {
-		devStatus.setText(status);
-	}
 
-	public void receiverNewMeasurement(Integer value) {
-		if(value.intValue() == 0 || value.intValue() > 9900) {
-			if(measure_error != null)
-				measure_error.play();
-
-			devStatus.setText("active, bad previous measurement.");
-
-			return;
-		}
-
-		// nice! play a sound.
-		if(measure_one != null)
-			measure_one.play();
-
-		// make a new measurement!
-		AMeasurement nm = new AMeasurement(true, value.intValue(), "meas");
-		measurements.add(nm);
-
-		// notify our table
-		((MeasurementsTableModel) measurementsTable.getModel()).fireTableDataChanged();
-	}
 
 	private void initialize() { 
-		// audio clips :)
-		try {
-			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/meas1.wav"));
-			measure_error = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/measerr.wav"));
-		} catch (Exception ae) { /* ignore this... */ }
+
 
 		// now, stuff that really matters
 		measurements = new ArrayList<AMeasurement>();
@@ -184,8 +157,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 			}
 		});
 
-		// initialize our measuring device
-		initMeasuringDevice();
+
 	}
 
 	private void calculateFinal() {
@@ -213,39 +185,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 		newValue.setText("" + (int) Math.round(avg));
 	}
 
-	// lame holder for a measurement to be listed in our table...
-	private class AMeasurement {	
-		public AMeasurement(boolean enabled, Integer value, String source) {
-		
-			if(!source.equals("manual"))
-			{
-				if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
-				{
-					this.value = value;
-				}
-				else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
-				{
-					this.value = value/10;
-				}
-				else
-				{
-					this.value = null;
-				}
-			}
-			else
-			{
-				this.value = value;
-			}
-			
 
-			this.enabled = enabled;
-			this.source = source;
-		}
-
-		public boolean enabled;
-		public Integer value;
-		public String source;
-	}
 
 	public class RightTextRenderer extends DefaultTableCellRenderer {
 		private static final long serialVersionUID = 1L;
@@ -365,12 +305,11 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 	@SuppressWarnings({ "unchecked", "serial" })
 	// <editor-fold defaultstate="collapsed" desc="Generated Code">
 	private void initComponents() {
-
-		jTextArea1 = new javax.swing.JTextArea();
 		jScrollPane1 = new javax.swing.JScrollPane();
 		measurementsTable = new javax.swing.JTable();
 		jLabel1 = new javax.swing.JLabel();
 		newValue = new javax.swing.JTextField();
+		newValue.setHorizontalAlignment(SwingConstants.RIGHT);
 		okBtn = new javax.swing.JButton();
 		cancelBtn = new javax.swing.JButton();
 		jLabel2 = new javax.swing.JLabel();
@@ -382,18 +321,6 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 				formWindowClosed(evt);
 			}
 		});
-
-		jTextArea1.setColumns(20);
-		jTextArea1.setEditable(false);
-		jTextArea1.setFont(new java.awt.Font("Dialog", 0, 13));
-		jTextArea1.setLineWrap(true);
-		jTextArea1.setRows(5);
-		jTextArea1.setText("The average of the checked values is presented below. New values may be created by manually entering them into the table or by using the measuring device, if enabled. Alternatively, you can enter a final value manually. Pressing \"apply\" will change the value in both measurements.");
-		jTextArea1.setWrapStyleWord(true);
-		jTextArea1.setAutoscrolls(false);
-		jTextArea1.setBorder(null);
-		jTextArea1.setFocusable(false);
-		jTextArea1.setOpaque(false);
 
 		measurementsTable.setModel(new javax.swing.table.DefaultTableModel(
 				new Object [][] {
@@ -426,6 +353,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 		measurementsTable.getColumnModel().getColumn(0).setResizable(false);
 		measurementsTable.getColumnModel().getColumn(1).setResizable(false);
 		measurementsTable.getColumnModel().getColumn(2).setResizable(false);
+		measurementsTable.setMinimumSize(new Dimension(100,300));
 
 		jLabel1.setLabelFor(newValue);
 		jLabel1.setText("Final value:");
@@ -437,53 +365,23 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 		jLabel2.setText("Device status:");
 
 		devStatus.setText("unknown");
+		
+		panelMeasureHolder = new JPanel();
+		panelMeasureHolder.setBorder(null);
+		panelMeasureHolder.setLayout(new BorderLayout());
 
-		org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-		getContentPane().setLayout(layout);
-		layout.setHorizontalGroup(
-				layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-				.add(layout.createSequentialGroup()
-						.addContainerGap()
-						.add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 137, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-						.add(18, 18, 18)
-						.add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-								.add(jTextArea1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE)
-								.add(layout.createSequentialGroup()
-										.add(jLabel1)
-										.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(newValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 50, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 116, Short.MAX_VALUE)
-										.add(okBtn, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 66, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(cancelBtn))
-										.add(layout.createSequentialGroup()
-												.add(jLabel2)
-												.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-												.add(devStatus)))
-												.addContainerGap())
-		);
-		layout.setVerticalGroup(
-				layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-				.add(layout.createSequentialGroup()
-						.addContainerGap()
-						.add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-								.add(layout.createSequentialGroup()
-										.add(jTextArea1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 121, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-												.add(jLabel2)
-												.add(devStatus))
-												.addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 27, Short.MAX_VALUE)
-												.add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-														.add(jLabel1)
-														.add(newValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-														.add(cancelBtn)
-														.add(okBtn)))
-														.add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE))
-														.addContainerGap())
-		);
+		
+		
+		getContentPane().setLayout(new MigLayout("", "[137px:137px,fill][59px][80px:80px:80px,right][][][28.00,grow][][66px][6px][80px]", "[101px][][6px][140.00px,grow][6.00px][14px][29px]"));
+		getContentPane().add(jScrollPane1, "cell 0 0 1 7,grow");
+		getContentPane().add(jLabel2, "cell 1 5,alignx left,aligny top");
+		getContentPane().add(devStatus, "cell 2 5 7 1,alignx left,aligny top");
+		getContentPane().add(jLabel1, "cell 1 6,alignx left,aligny center");
+		getContentPane().add(newValue, "cell 2 6 2 1,growx,aligny top");
+		getContentPane().add(okBtn, "cell 7 6,growx,aligny top");
+		getContentPane().add(cancelBtn, "cell 9 6,alignx left,aligny top");
+		getContentPane().add(panelMeasureHolder, "cell 1 0 9 4,grow");
 
-		pack();
 	}// </editor-fold>
 
 	// Variables declaration - do not modify
@@ -492,16 +390,22 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog implements Measu
 	private javax.swing.JLabel jLabel1;
 	private javax.swing.JLabel jLabel2;
 	private javax.swing.JScrollPane jScrollPane1;
-	private javax.swing.JTextArea jTextArea1;
 	private javax.swing.JTable measurementsTable;
 	private javax.swing.JTextField newValue;
 	private javax.swing.JButton okBtn;
+	private JPanel panelMeasureHolder;
+	private ReconcileMeasurePanel panelMeasure;
 	// End of variables declaration
-
-	@Override
-	public void receiverUpdateCurrentValue(Integer value) {
-		// Ignore
+	
+	
+	/**
+	 * Add a measurement to the table
+	 */
+	public void addMeasurementValue(AMeasurement value)
+	{
+		measurements.add(value);
 		
+		// notify our table
+		((MeasurementsTableModel)measurementsTable.getModel()).fireTableDataChanged();
 	}
-
 }

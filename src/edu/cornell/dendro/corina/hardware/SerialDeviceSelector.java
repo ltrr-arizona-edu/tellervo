@@ -35,6 +35,11 @@ public class SerialDeviceSelector {
 	}
 
 	public AbstractSerialMeasuringDevice getDevice(){
+		
+		if(device==null)
+		{
+			edu.cornell.dendro.corina.ui.Alert.error("Error", "You have not yet set up your measuring device in the preferences dialog");
+		}
 		return device;
 	}
 }

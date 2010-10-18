@@ -80,7 +80,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		addSeparator();		
 		
 		// reconcile
-		JMenuItem reconcile = Builder.makeMenuItem("menus.tools.new_reconcile", true, "reconcile.png");
+		JMenuItem reconcile = Builder.makeMenuItem("menus.tools.reconcile", true, "reconcile.png");
 		reconcile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DBBrowser browser = new DBBrowser(editor, true, false);
@@ -117,7 +117,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		});
 		
 		// now, make this remember the last things we reconciled against!
-		JMenu reconcileMenu = Builder.makeMenu("menus.tools.reconcile");
+		/*JMenu reconcileMenu = Builder.makeMenu("menus.tools.reconcile");
 		reconcileMenu.putClientProperty("corina.open_recent_action", new OpenRecent.SampleOpener("reconcile") {
 			@Override
 			public void performOpen(Sample s) {
@@ -129,8 +129,8 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		});
 		reconcileMenu.add(reconcile);
 		reconcileMenu.addSeparator();
-		OpenRecent.makeOpenRecentMenu("menus.tools.reconcile", reconcileMenu, 2);
-		add(reconcileMenu);		
+		OpenRecent.makeOpenRecentMenu("menus.tools.reconcile", reconcileMenu, 2);*/
+		add(reconcile);		
 	
 		// index
 		indexMenu = Builder.makeMenuItem("menus.tools.index", true, "index.png");

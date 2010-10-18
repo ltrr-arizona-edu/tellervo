@@ -63,7 +63,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     			Prefs.SERIAL_DEVICE, 
     			App.prefs.getPref(Prefs.SERIAL_DEVICE, SerialMeasuringDeviceConstants.NONE), 
     			SerialMeasuringDeviceConstants.ALL_DEVICES);
-
+    	
     }
     
     @SuppressWarnings("unchecked")
@@ -489,7 +489,6 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         cboPort.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "COM1", "COM2", "COM3", "COM4" }));
 
         cboPlatformUnits.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1/100th mm ", "1/1000th mm" }));
-        cboPlatformUnits.setEnabled(false);
 
         lblPlatformUnits.setText("Units:");
 
@@ -502,16 +501,12 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         lblParity.setText("Parity:");
 
         cboBaud.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "9600", "4800", "2400", "1200", "300", "110" }));
-        cboBaud.setEnabled(false);
 
         cboDatabits.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8" }));
-        cboDatabits.setEnabled(false);
 
         cboStopbits.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2" }));
-        cboStopbits.setEnabled(false);
 
         cboParity.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None" }));
-        cboParity.setEnabled(false);
 
         org.jdesktop.layout.GroupLayout gl_panelPlatform = new org.jdesktop.layout.GroupLayout(panelPlatform);
         panelPlatform.setLayout(gl_panelPlatform);

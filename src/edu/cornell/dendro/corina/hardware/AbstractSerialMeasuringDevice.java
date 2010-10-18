@@ -31,6 +31,31 @@ public abstract class AbstractSerialMeasuringDevice
 		POST_INIT,
 		DIE
 	}
+	
+	public enum BaudRate{
+		B_9600(9600),
+		B_4800(4800),
+		B_2400(2400),
+		B_1200(1200);		
+
+		private int br;
+		
+		private BaudRate(int n)
+		{
+			br = n; 
+		}
+		public int getBaud()
+		{
+			return br;
+		}
+		
+		public String toString()
+		{
+			return String.valueOf(br);
+		}
+		
+		
+	}
 
 	/** The actual serial port we're operating on */
 	private SerialPort port;
@@ -48,7 +73,7 @@ public abstract class AbstractSerialMeasuringDevice
 	 * The following are standard serial connection settings.
 	 * They default to 9600 baud N81.  They can be overridden using the setter methods.
 	 */
-	private int baudRate = 9600;
+	private BaudRate baudRate = BaudRate.B_9600;
 
 	private int dataBits = SerialPort.DATABITS_8;
 	
@@ -72,8 +97,8 @@ public abstract class AbstractSerialMeasuringDevice
 		addSerialSampleIOListener(this);
 	}
 	
-	public AbstractSerialMeasuringDevice(String portName, int baud) throws IOException {
-		setBaudRate(baud);
+	public AbstractSerialMeasuringDevice(String portName, BaudRate baud) throws IOException {
+		baudRate = baud;
 		port = openPort(portName);
 		state = PortState.NORMAL;
 		
@@ -138,7 +163,7 @@ public abstract class AbstractSerialMeasuringDevice
 			port = (SerialPort) basePort;
 			
 			// defaults to 9600 8N1, no flow control...
-			port.setSerialPortParams(getBaudRate(),
+			port.setSerialPortParams(getBaud(),
 								     getDataBits(),
 								     getStopBits(),
 								     getParity());
@@ -265,7 +290,11 @@ public abstract class AbstractSerialMeasuringDevice
 	////
 	//// Informational overrides
     ////
-	protected int getBaudRate() {
+	protected int getBaud() {
+		return baudRate.getBaud();
+	}
+	
+	protected BaudRate getBaudRate(){
 		return baudRate;
 	}
 	
@@ -285,24 +314,59 @@ public abstract class AbstractSerialMeasuringDevice
 		return flowControl;
 	}
 	
-	protected void setBaudRate(int baudRate) {
+	protected void setBaudRate(BaudRate baudRate) {
+		close();
 		this.baudRate = baudRate;
+		try {
+			this.openPort(port.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void setDataBits(int dataBits) {
+		close();
 		this.dataBits = dataBits;
+		try {
+			this.openPort(port.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void setStopBits(int stopBits) {
+		close();
 		this.stopBits = stopBits;
+		try {
+			this.openPort(port.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void setParity(int parity) {
+		close();
 		this.parity = parity;
+		try {
+			this.openPort(port.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void setFlowControl(int flowControl) {
+		close();
 		this.flowControl = flowControl;
+		try {
+			this.openPort(port.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public abstract String getMeasuringDeviceName();
@@ -377,7 +441,7 @@ public abstract class AbstractSerialMeasuringDevice
 			receiver.receiverUpdateStatus("Initialized; ready to read measurements.");
 		}
 		else if(sse.getType() == SerialSampleIOEvent.NEW_SAMPLE_EVENT) {
-			Integer value = (Integer) sse.getValue();
+ 			Integer value = (Integer) sse.getValue();
 			receiver.receiverNewMeasurement(value);
 		}
 		else if(sse.getType() == SerialSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT) {

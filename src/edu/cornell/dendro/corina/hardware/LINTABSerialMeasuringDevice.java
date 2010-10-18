@@ -22,14 +22,7 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	private int lastSerial = -1;
 	
 	public LINTABSerialMeasuringDevice(String portName) throws IOException {
-		super(portName, 1200);
-
-		//setBaudRate(1200);
-		//setDataBits(SerialPort.DATABITS_8);
-		//setStopBits(SerialPort.STOPBITS_1);
-		//setParity(SerialPort.PARITY_NONE);
-		//setFlowControl(SerialPort.FLOWCONTROL_NONE);
-
+		super(portName, BaudRate.B_1200);
 	}
 
 	public LINTABSerialMeasuringDevice() {
