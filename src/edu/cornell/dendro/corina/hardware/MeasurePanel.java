@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.hardware;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,8 +17,11 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import javax.swing.BoxLayout;
+import javax.swing.border.Border;
 
 import org.tridas.schema.NormalTridasUnit;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.BevelBorder;
 
 
 public abstract class MeasurePanel extends JPanel implements MeasurementReceiver {
@@ -38,11 +42,12 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	private JPanel panel;
 	
 	public MeasurePanel(final AbstractSerialMeasuringDevice device) {
-				
+		setBorder(null);
+			
 		dev = device;
 
 		
-		setLayout(new MigLayout("", "[][][grow][grow][][][][644.00px,grow][]", "[][32px][][][16.00,grow][]"));
+		setLayout(new MigLayout("insets 0", "[grow][87.00,grow][146.00px][20.00]", "[][]"));
 		
 		AudioClip measInit;
 		try {
@@ -62,8 +67,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		}
 		
 		panel = new JPanel();
-		panel.setBorder(null);
-		add(panel, "cell 3 1,grow");
+		add(panel, "cell 0 0,grow");
 		
 		btnQuit = new JButton(I18n.getText("menus.edit.stop_measuring"));
 		panel.add(btnQuit);
@@ -93,12 +97,15 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		txtCurrentValue = new JLabel();
 		txtCurrentValue.setFont(new Font("Synchro LET", Font.BOLD, 20));
 		txtCurrentValue.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtCurrentValue.setText("0"+" \u03bc"+"m");
-		add(txtCurrentValue, "cell 7 1,growx");
+		txtCurrentValue.setText("-");
+		txtCurrentValue.setBackground(Color.WHITE);
+		txtCurrentValue.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		
+		add(txtCurrentValue, "cell 2 0,growx");
 		
 		
 		lastMeasurement = new JLabel("[Last measurement: ]");
-		add(lastMeasurement, "cell 3 2 5 1,alignx right,aligny center");
+		add(lastMeasurement, "cell 0 1 3 1,alignx right,aligny center");
 				
 				
 

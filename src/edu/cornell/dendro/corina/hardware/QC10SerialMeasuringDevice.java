@@ -163,7 +163,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 
 	@Override
 	public void requestMeasurement() {
-		String strZeroDataCommand = "@33\r\n";
+		String strZeroDataCommand = "@16\r\n";
 		sendRequest(strZeroDataCommand);
 		
 	}

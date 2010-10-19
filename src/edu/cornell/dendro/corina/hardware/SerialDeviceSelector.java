@@ -31,10 +31,13 @@ public class SerialDeviceSelector {
 		try{
 			if(selectedDevice.equals(SerialMeasuringDeviceConstants.NONE)){
 				device = null;
-				Alert.error("Error", "You have not yet set up your measuring device.");
-				PreferencesDialog.showPreferencesAtTabIndex(1);
+				if(init)
+				{
+					Alert.error("Error", "You have not yet set up your measuring device.");
+					PreferencesDialog.showPreferencesAtTabIndex(1);
+				}
 			}
-			if(selectedDevice.equals(SerialMeasuringDeviceConstants.EVE)){
+			else if(selectedDevice.equals(SerialMeasuringDeviceConstants.EVE)){
 				if(init)
 				{	
 					device = new EVESerialMeasuringDevice(portName);
@@ -63,13 +66,11 @@ public class SerialDeviceSelector {
 				}
 			}
 			else{
-				device = null;
-				Alert.error("Error", "You have not yet set up your measuring device.");
-				PreferencesDialog.showPreferencesAtTabIndex(1);
+				Alert.error("Error", "Unknown device type!");
 			}
 		}catch(IOException ioe){
 			ioe.printStackTrace();
-			Alert.error("Error", "Error connecting to platform.  Is it switched on and plugged in?");
+			Alert.error("Error", "Error connecting to platform.  Is it switched on and plugged in?\n"+ioe);
 		}
 	}
 	

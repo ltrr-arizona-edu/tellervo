@@ -35,7 +35,9 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 public class PreferencesDialog extends Ui_PreferencesPanel {
 	// it's really important to only show one prefs dialog! :)
 	private static JFrame dialog;
-
+	private static PreferencesDialog pfdialog;
+	
+	
 	public synchronized static void showPreferences() {
 
 		showPreferencesAtTabIndex(0);
@@ -63,7 +65,7 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		// steal the content pane from an instance of PreferencesDialog
-		PreferencesDialog pfdialog = new PreferencesDialog();
+		pfdialog = new PreferencesDialog();
 		pfdialog.setSelectedTabIndex(i);
 		dialog.setContentPane(pfdialog);
 		dialog.pack();
@@ -76,6 +78,10 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 			@Override
 			public void windowClosing(WindowEvent we) {
 				synchronized(dialog) {
+					try{
+						// Release hold of device
+						pfdialog.device.close();
+					} catch (Exception e){};
 					dialog = null;
 				}
 			}
@@ -150,7 +156,11 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		btnCancel.setText("Ok");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// Make sure the port is released
+				try{pfdialog.device.close();
+				} catch (Exception e1){}
 				dialog.dispose();
+			
 			}
 		});
 		

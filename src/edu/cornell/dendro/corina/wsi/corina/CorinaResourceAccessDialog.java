@@ -233,13 +233,13 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 	
 	@Override
 	public void setVisible(boolean visible) {
-		if(parent != null)
+		/*if(parent != null)
 		{
 			parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		}
 
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		
+		*/
 		
 		if(visible) {
 			synchronized(completed) {

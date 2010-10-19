@@ -4,7 +4,6 @@
 package edu.cornell.dendro.corina.prefs;
 
 import javax.swing.JLabel;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;

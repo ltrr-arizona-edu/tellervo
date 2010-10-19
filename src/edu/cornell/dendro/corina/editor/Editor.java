@@ -952,7 +952,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// Set up the measuring device
 		AbstractSerialMeasuringDevice device;
 		try {
-			device = new SerialDeviceSelector ().getDevice();	
+			device = new SerialDeviceSelector().getDevice();	
 		}
 		catch (Exception ioe) {
 			Alert.error(I18n.getText("error"), 

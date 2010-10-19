@@ -263,8 +263,6 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 			device = new SerialDeviceSelector ().getDevice();	
 		}
 		catch (Exception ioe) {
-			Alert.error(I18n.getText("error"), 
-					I18n.getText("error.initExtComms"));
 			return;
 		} 
 		
