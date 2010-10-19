@@ -12,16 +12,34 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gis.GrfxWarning;
 import edu.cornell.dendro.corina.gis.WMSTableModel;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
+import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import edu.cornell.dendro.corina.hardware.SerialMeasuringDeviceConstants;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.JTextPane;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import java.awt.Font;
 
 /**
  *
@@ -33,21 +51,20 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 	final JFileChooser fc = new JFileChooser();
 	WMSTableModel wmsModel = new WMSTableModel();
 	GrfxWarning warn = new GrfxWarning();
+	AbstractSerialMeasuringDevice device;
 	
     /** Creates new form Ui_PreferencesPanel */
     public Ui_PreferencesPanel() {
         
         setupGUI();
-        panelTestComms.setEnabled(false);
-        this.btnStartMeasuring.setEnabled(false);
-        this.txtComCheckLog.setEnabled(false);
+
         
     }
 
     private void setupGUI()   
     {
     	initComponents();
-    	internationalizeComponents();
+    	
     
     	// Enable/Disable mapping 
     	setMappingEnabled(!App.prefs.getBooleanPref("opengl.failed", false));
@@ -63,6 +80,118 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     			Prefs.SERIAL_DEVICE, 
     			App.prefs.getPref(Prefs.SERIAL_DEVICE, SerialMeasuringDeviceConstants.NONE), 
     			SerialMeasuringDeviceConstants.ALL_DEVICES);
+    	lblPort = new javax.swing.JLabel();
+    	
+    	        lblPort.setText("Port:");
+    	        panelPlatform.add(lblPort, "2, 3, left, center");
+    	cboPort = new javax.swing.JComboBox();
+    	
+    	        cboPort.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "COM1", "COM2", "COM3", "COM4" }));
+    	        panelPlatform.add(cboPort, "4, 3, 5, 1, left, top");
+    	
+    	lblDatabits = new JLabel("Databits:");
+    	panelPlatform.add(lblDatabits, "6, 5, left, default");
+    	
+    	cboDatabits = new JComboBox();
+    	cboDatabits.setEnabled(false);
+    	cboDatabits.setModel(new DefaultComboBoxModel(new String[] {"8"}));
+    	panelPlatform.add(cboDatabits, "8, 5, left, default");
+    	
+    	JLabel lblParity = new JLabel("Parity:");
+    	panelPlatform.add(lblParity, "2, 7, left, default");
+    	
+    	JComboBox cboParity = new JComboBox();
+    	cboParity.setEnabled(false);
+    	cboParity.setModel(new DefaultComboBoxModel(new String[] {"None"}));
+    	panelPlatform.add(cboParity, "4, 7, left, default");
+    	
+    	lblStopbits = new JLabel("Stopbits:");
+    	panelPlatform.add(lblStopbits, "6, 7, left, default");
+    	
+    	cboStopbits = new JComboBox();
+    	cboStopbits.setEnabled(false);
+    	cboStopbits.setModel(new DefaultComboBoxModel(new String[] {"1", "2"}));
+    	panelPlatform.add(cboStopbits, "8, 7, left, default");
+    	panelPlatform.add(lblBaud, "2, 5, left, center");
+    	panelPlatform.add(cboBaud, "4, 5, left, top");
+    	
+    	lblUnits = new JLabel("Units:");
+    	panelPlatform.add(lblUnits, "2, 9, left, center");
+    	
+    	cboUnits = new JComboBox();
+    	cboUnits.setEnabled(false);
+    	cboUnits.setModel(new DefaultComboBoxModel(new String[] {"N/A"}));
+    	panelPlatform.add(cboUnits, "4, 9, left, default");
+    	
+    	lblLineFeed = new JLabel("Line feed:");
+    	panelPlatform.add(lblLineFeed, "6, 9, left, center");
+    	
+    	cboLineFeed = new JComboBox();
+    	cboLineFeed.setEnabled(false);
+    	cboLineFeed.setModel(new DefaultComboBoxModel(new String[] {"N/A"}));
+    	panelPlatform.add(cboLineFeed, "8, 9, left, default");
+        this.btnStartMeasuring.setEnabled(cboPlatformType.getSelectedIndex()!=0);
+        
+        panelMeasureHolder = new JPanel();
+        
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        GroupLayout gl_panelTestComms = new GroupLayout(panelTestComms);
+        gl_panelTestComms.setHorizontalGroup(
+        	gl_panelTestComms.createParallelGroup(Alignment.LEADING)
+        		.addGroup(gl_panelTestComms.createSequentialGroup()
+        			.addContainerGap()
+        			.addGroup(gl_panelTestComms.createParallelGroup(Alignment.LEADING)
+        				.addComponent(btnStartMeasuring, GroupLayout.PREFERRED_SIZE, 209, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 352, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(panelMeasureHolder, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 703, Short.MAX_VALUE))
+        			.addContainerGap())
+        );
+        gl_panelTestComms.setVerticalGroup(
+        	gl_panelTestComms.createParallelGroup(Alignment.LEADING)
+        		.addGroup(gl_panelTestComms.createSequentialGroup()
+        			.addComponent(btnStartMeasuring)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(panelMeasureHolder, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        			.addContainerGap())
+        );
+        
+        JLabel lblPlatformLogData = new JLabel("Platform log: measurements displayed in microns");
+        lblPlatformLogData.setFont(new Font("Lucida Grande", Font.BOLD | Font.ITALIC, 11));
+        scrollPane.setColumnHeaderView(lblPlatformLogData);
+        
+        txtComCheckLog = new JTextPane();
+        scrollPane.setViewportView(txtComCheckLog);
+        panelTestComms.setLayout(gl_panelTestComms);
+        
+    	cboPlatformType.addActionListener(new ActionListener() {		
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(cboPlatformType.getSelectedIndex()!=0)
+				{
+					btnStartMeasuring.setEnabled(true);
+				}
+				else
+				{
+					btnStartMeasuring.setEnabled(false);
+
+				}
+				
+			}
+		});
+    	
+    	btnStartMeasuring.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				startMeasurementTest();
+			}
+		});
+    	
+    	internationalizeComponents();
     	
     }
     
@@ -77,6 +206,60 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	}
 
     	
+    }
+    
+      
+    private void startMeasurementTest()
+    {
+    	if(device!=null)
+    	{
+    		device.close();
+    	}
+    	
+    	txtComCheckLog.setText("");
+    	
+    	if(measurePanel!=null)
+    	{
+    		measurePanel.cancelCountdown();
+    		measurePanel = null;
+    		panelMeasureHolder.removeAll();
+    	}
+    	
+		// Set up the measuring device
+		try {
+			device = new SerialDeviceSelector ().getDevice();	
+		}
+		catch (Exception ioe) {
+			Alert.error(I18n.getText("error"), 
+					I18n.getText("error.initExtComms"));
+			return;
+		} 
+		
+		// initialize 
+		try{
+			if(device!=null)
+			{
+				device.initialize();
+			}
+			else
+			{
+				return;
+			}
+		} catch (Exception ioe)
+		{
+			Alert.error(I18n.getText("error"), 
+					I18n.getText("error.initExtComms")+".\n"+
+					I18n.getText("error.possWrongComPort"));
+			return;
+		}
+		
+		// add the measure panel...
+		measurePanel = new TestMeasurePanel(txtComCheckLog, device);
+		panelMeasureHolder.setLayout(new BorderLayout());
+		panelMeasureHolder.add(measurePanel, BorderLayout.CENTER);
+		
+		
+	
     }
     
     private void internationalizeComponents()
@@ -110,12 +293,8 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	this.propertiesTabs.setIconAt(1, Builder.getIcon("hardware.png", 22));
         this.lblPlatformType.setText(I18n.getText("general.type")+":");
         this.lblPort.setText(I18n.getText("general.port")+":");
-        this.lblPlatformUnits.setText(I18n.getText("preferences.units")+":");
         this.lblBaud.setText(I18n.getText("preferences.baud")+":");
-        this.lblDatabits.setText(I18n.getText("preferences.databits")+":");
-        this.lblStopbits.setText(I18n.getText("preferences.stopbits")+":");
-        this.lblParity.setText(I18n.getText("preferences.parity")+":");
-        this.btnStartMeasuring.setText(I18n.getText("menus.edit.start_measuring"));
+        this.btnStartMeasuring.setText(I18n.getText("preferences.hardware.testmeasuring"));
         
         // Third tab
     	this.propertiesTabs.setTitleAt(2, I18n.getText("preferences.statistics"));
@@ -220,22 +399,11 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         panelPlatform = new javax.swing.JPanel();
         cboPlatformType = new javax.swing.JComboBox();
         lblPlatformType = new javax.swing.JLabel();
-        lblPort = new javax.swing.JLabel();
-        cboPort = new javax.swing.JComboBox();
-        cboPlatformUnits = new javax.swing.JComboBox();
-        lblPlatformUnits = new javax.swing.JLabel();
         lblBaud = new javax.swing.JLabel();
-        lblDatabits = new javax.swing.JLabel();
-        lblStopbits = new javax.swing.JLabel();
-        lblParity = new javax.swing.JLabel();
         cboBaud = new javax.swing.JComboBox();
-        cboDatabits = new javax.swing.JComboBox();
-        cboStopbits = new javax.swing.JComboBox();
-        cboParity = new javax.swing.JComboBox();
+        cboBaud.setEnabled(false);
         panelTestComms = new javax.swing.JPanel();
         btnStartMeasuring = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtComCheckLog = new javax.swing.JTextArea();
         panelStatistics = new javax.swing.JPanel();
         panelNumberFormats = new javax.swing.JPanel();
         cboTScore = new javax.swing.JComboBox();
@@ -484,143 +652,56 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 
         lblPlatformType.setText("Type:");
 
-        lblPort.setText("Port:");
-
-        cboPort.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "COM1", "COM2", "COM3", "COM4" }));
-
-        cboPlatformUnits.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1/100th mm ", "1/1000th mm" }));
-
-        lblPlatformUnits.setText("Units:");
-
         lblBaud.setText("Baud:");
 
-        lblDatabits.setText("Databits:");
-
-        lblStopbits.setText("Stopbits:");
-
-        lblParity.setText("Parity:");
-
         cboBaud.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "9600", "4800", "2400", "1200", "300", "110" }));
-
-        cboDatabits.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8" }));
-
-        cboStopbits.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2" }));
-
-        cboParity.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None" }));
-
-        org.jdesktop.layout.GroupLayout gl_panelPlatform = new org.jdesktop.layout.GroupLayout(panelPlatform);
-        panelPlatform.setLayout(gl_panelPlatform);
-        gl_panelPlatform.setHorizontalGroup(
-            gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(gl_panelPlatform.createSequentialGroup()
-                .addContainerGap()
-                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(gl_panelPlatform.createSequentialGroup()
-                        .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblPlatformType)
-                            .add(lblPort)
-                            .add(lblPlatformUnits))
-                        .add(59, 59, 59)
-                        .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboPlatformType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 313, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboPlatformUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                    .add(gl_panelPlatform.createSequentialGroup()
-                        .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblStopbits)
-                            .add(lblParity)
-                            .add(lblBaud)
-                            .add(lblDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 91, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboParity, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboStopbits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(134, Short.MAX_VALUE))
-        );
-        gl_panelPlatform.setVerticalGroup(
-            gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(gl_panelPlatform.createSequentialGroup()
-                .addContainerGap()
-                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblPlatformType)
-                    .add(cboPlatformType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblPort)
-                    .add(cboPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblPlatformUnits)
-                    .add(cboPlatformUnits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(18, 18, 18)
-                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblBaud)
-                    .add(cboBaud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cboDatabits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblDatabits))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblStopbits)
-                    .add(cboStopbits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(gl_panelPlatform.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblParity)
-                    .add(cboParity, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
 
         panelTestComms.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Test Connection"));
 
         btnStartMeasuring.setText("Test measuring");
 
-        txtComCheckLog.setColumns(20);
-        txtComCheckLog.setRows(5);
-        jScrollPane1.setViewportView(txtComCheckLog);
-
-        org.jdesktop.layout.GroupLayout gl_panelTestComms = new org.jdesktop.layout.GroupLayout(panelTestComms);
-        panelTestComms.setLayout(gl_panelTestComms);
-        gl_panelTestComms.setHorizontalGroup(
-            gl_panelTestComms.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(gl_panelTestComms.createSequentialGroup()
-                .addContainerGap()
-                .add(gl_panelTestComms.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
-                    .add(btnStartMeasuring))
-                .addContainerGap())
-        );
-        gl_panelTestComms.setVerticalGroup(
-            gl_panelTestComms.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(gl_panelTestComms.createSequentialGroup()
-                .add(btnStartMeasuring)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        org.jdesktop.layout.GroupLayout gl_panelHardware = new org.jdesktop.layout.GroupLayout(panelHardware);
-        panelHardware.setLayout(gl_panelHardware);
+        GroupLayout gl_panelHardware = new GroupLayout(panelHardware);
         gl_panelHardware.setHorizontalGroup(
-            gl_panelHardware.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, gl_panelHardware.createSequentialGroup()
-                .addContainerGap()
-                .add(gl_panelHardware.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelTestComms, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, panelPlatform, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+        	gl_panelHardware.createParallelGroup(Alignment.LEADING)
+        		.addGroup(gl_panelHardware.createSequentialGroup()
+        			.addContainerGap()
+        			.addGroup(gl_panelHardware.createParallelGroup(Alignment.LEADING)
+        				.addGroup(gl_panelHardware.createSequentialGroup()
+        					.addComponent(panelPlatform, GroupLayout.DEFAULT_SIZE, 733, Short.MAX_VALUE)
+        					.addContainerGap())
+        				.addComponent(panelTestComms, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 745, Short.MAX_VALUE)))
         );
         gl_panelHardware.setVerticalGroup(
-            gl_panelHardware.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(gl_panelHardware.createSequentialGroup()
-                .addContainerGap()
-                .add(panelPlatform, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(panelTestComms, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+        	gl_panelHardware.createParallelGroup(Alignment.LEADING)
+        		.addGroup(gl_panelHardware.createSequentialGroup()
+        			.addContainerGap()
+        			.addComponent(panelPlatform, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addComponent(panelTestComms, GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
+        			.addContainerGap())
         );
+        panelHardware.setLayout(gl_panelHardware);
+        panelPlatform.setLayout(new FormLayout(new ColumnSpec[] {
+        		FormFactory.RELATED_GAP_COLSPEC,
+        		ColumnSpec.decode("75px"),
+        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+        		ColumnSpec.decode("max(174px;pref)"),
+        		FormFactory.RELATED_GAP_COLSPEC,
+        		ColumnSpec.decode("left:75px"),
+        		FormFactory.RELATED_GAP_COLSPEC,
+        		ColumnSpec.decode("max(86dlu;default)"),},
+        	new RowSpec[] {
+        		RowSpec.decode("27px"),
+        		FormFactory.RELATED_GAP_ROWSPEC,
+        		FormFactory.DEFAULT_ROWSPEC,
+        		FormFactory.PARAGRAPH_GAP_ROWSPEC,
+        		RowSpec.decode("27px"),
+        		FormFactory.RELATED_GAP_ROWSPEC,
+        		RowSpec.decode("27px"),
+        		FormFactory.RELATED_GAP_ROWSPEC,
+        		FormFactory.DEFAULT_ROWSPEC,}));
+        panelPlatform.add(lblPlatformType, "2, 1, fill, center");
+        panelPlatform.add(cboPlatformType, "4, 1, 5, 1, left, top");
 
         propertiesTabs.addTab("Hardware", panelHardware);
 
@@ -1129,17 +1210,13 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JComboBox cboBaud;
     protected javax.swing.JComboBox cboChartBGColor;
     protected javax.swing.JComboBox cboDScore;
-    protected javax.swing.JComboBox cboDatabits;
     protected javax.swing.JComboBox cboDisplayUnits;
     protected javax.swing.JComboBox cboEditorBGColor;
     protected javax.swing.JComboBox cboGridColor;
     protected javax.swing.JComboBox cboHighlightColor;
-    protected javax.swing.JComboBox cboParity;
     protected javax.swing.JComboBox cboPlatformType;
-    protected javax.swing.JComboBox cboPlatformUnits;
     protected javax.swing.JComboBox cboPort;
     protected javax.swing.JComboBox cboRValue;
-    protected javax.swing.JComboBox cboStopbits;
     protected javax.swing.JComboBox cboTScore;
     protected javax.swing.JComboBox cboTextColor;
     protected javax.swing.JComboBox cboTrend;
@@ -1147,13 +1224,11 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JCheckBox chkHighlightSig;
     protected javax.swing.JCheckBox chkShowChartGrid;
     protected javax.swing.JCheckBox chkShowEditorGrid;
-    protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JScrollPane jScrollPane2;
     protected javax.swing.JLabel lblAxisCursorColor;
     protected javax.swing.JLabel lblBaud;
     protected javax.swing.JLabel lblChartBGColor;
     protected javax.swing.JLabel lblDScore;
-    protected javax.swing.JLabel lblDatabits;
     protected javax.swing.JLabel lblDisplayUnits;
     protected javax.swing.JLabel lblEditorBGColor;
     protected javax.swing.JLabel lblFont;
@@ -1161,9 +1236,7 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JLabel lblHighlightColor;
     protected javax.swing.JLabel lblMinOverlap;
     protected javax.swing.JLabel lblMinOverlapDScore;
-    protected javax.swing.JLabel lblParity;
     protected javax.swing.JLabel lblPlatformType;
-    protected javax.swing.JLabel lblPlatformUnits;
     protected javax.swing.JLabel lblPort;
     protected javax.swing.JLabel lblProxyPort;
     protected javax.swing.JLabel lblProxyPort1;
@@ -1173,7 +1246,6 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JLabel lblSMTPServer;
     protected javax.swing.JLabel lblShowChartGrid;
     protected javax.swing.JLabel lblShowEditorGrid;
-    protected javax.swing.JLabel lblStopbits;
     protected javax.swing.JLabel lblTScore;
     protected javax.swing.JLabel lblTextColor;
     protected javax.swing.JLabel lblTrend;
@@ -1206,18 +1278,36 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JSpinner spnProxyPort;
     protected javax.swing.JSpinner spnProxyPort1;
     protected javax.swing.JTable tblWMS;
-    protected javax.swing.JTextArea txtComCheckLog;
     protected javax.swing.JTextField txtProxyURL;
     protected javax.swing.JTextField txtProxyURL1;
     protected javax.swing.JTextField txtSMTPServer;
     protected javax.swing.JTextField txtWSURL;
+    protected TestMeasurePanel measurePanel;
+    protected JPanel panelMeasureHolder;
+    private JLabel lblDatabits;
+    private JLabel lblStopbits;
+    private JComboBox cboDatabits;
+    private JComboBox cboStopbits;
+    private JLabel lblUnits;
+    private JLabel lblLineFeed;
+    private JComboBox cboUnits;
+    private JComboBox cboLineFeed;
+    private JTextPane txtComCheckLog;
     // End of variables declaration//GEN-END:variables
 	
     
     @Override
 	public void actionPerformed(ActionEvent e) {
 
-		
+    	
 	}
 
+    public void setSelectedTabIndex(int i)
+    {
+    	if(i>=propertiesTabs.getTabCount() || i <0)
+    	{
+    		System.out.println("Invalid tab index");
+    	}
+    	propertiesTabs.setSelectedIndex(i);
+    }
 }

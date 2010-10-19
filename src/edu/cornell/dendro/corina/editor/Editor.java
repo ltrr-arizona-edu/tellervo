@@ -89,6 +89,7 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.prefs.PreferencesDialog;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
@@ -974,6 +975,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			Alert.error(I18n.getText("error"), 
 					I18n.getText("error.initExtComms")+".\n"+
 					I18n.getText("error.possWrongComPort"));
+			
+			PreferencesDialog.showPreferencesAtTabIndex(1);
 			return;
 		}
 		

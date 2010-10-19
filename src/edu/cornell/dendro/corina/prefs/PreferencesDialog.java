@@ -38,6 +38,16 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 
 	public synchronized static void showPreferences() {
 
+		showPreferencesAtTabIndex(0);
+	}
+	
+	public static JFrame getDialog()
+	{
+		return dialog;
+	}
+	
+	public synchronized static void showPreferencesAtTabIndex(int i) {
+		
 		// does it already exist? just bring it to the front
 		if(dialog != null) {
 			dialog.setVisible(true);
@@ -53,7 +63,9 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		// steal the content pane from an instance of PreferencesDialog
-		dialog.setContentPane(new PreferencesDialog());
+		PreferencesDialog pfdialog = new PreferencesDialog();
+		pfdialog.setSelectedTabIndex(i);
+		dialog.setContentPane(pfdialog);
 		dialog.pack();
 		
 		Center.center(dialog);

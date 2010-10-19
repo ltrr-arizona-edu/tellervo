@@ -2,8 +2,13 @@ package edu.cornell.dendro.corina.hardware;
 
 import java.io.IOException;
 
+import javax.swing.JFrame;
+
+
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.PreferencesDialog;
+import edu.cornell.dendro.corina.ui.Alert;
 
 public class SerialDeviceSelector {
 
@@ -18,6 +23,8 @@ public class SerialDeviceSelector {
 		try{
 			if(selectedDevice.equals(SerialMeasuringDeviceConstants.NONE)){
 				device = null;
+				Alert.error("Error", "You have not yet set up your measuring device.");
+				PreferencesDialog.showPreferencesAtTabIndex(1);
 			}
 			if(selectedDevice.equals(SerialMeasuringDeviceConstants.EVE)){
 				device = new EVESerialMeasuringDevice(portName);
@@ -28,18 +35,17 @@ public class SerialDeviceSelector {
 			}
 			else{
 				device = null;
+				Alert.error("Error", "You have not yet set up your measuring device.");
+				PreferencesDialog.showPreferencesAtTabIndex(1);
 			}
 		}catch(IOException ioe){
 			ioe.printStackTrace();
+			Alert.error("Error", "Error connecting to platform.  Is it switched on and plugged in?");
 		}
 	}
 
 	public AbstractSerialMeasuringDevice getDevice(){
 		
-		if(device==null)
-		{
-			edu.cornell.dendro.corina.ui.Alert.error("Error", "You have not yet set up your measuring device in the preferences dialog");
-		}
 		return device;
 	}
 }

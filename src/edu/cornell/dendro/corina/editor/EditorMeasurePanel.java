@@ -9,8 +9,8 @@ import javax.swing.AbstractAction;
 
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
+import edu.cornell.dendro.corina.hardware.MeasurePanel;
 import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
-import edu.cornell.dendro.corina.manip.MeasurePanel;
 
 /**
  * @author Lucas Madar

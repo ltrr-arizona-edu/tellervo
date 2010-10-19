@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.manip;
+package edu.cornell.dendro.corina.hardware;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
@@ -13,11 +13,8 @@ import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
-import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import javax.swing.BoxLayout;
 
 import org.tridas.schema.NormalTridasUnit;

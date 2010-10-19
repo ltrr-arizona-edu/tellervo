@@ -4,6 +4,7 @@
 package edu.cornell.dendro.corina.manip;
 
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
+import edu.cornell.dendro.corina.hardware.MeasurePanel;
 import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
 
 
