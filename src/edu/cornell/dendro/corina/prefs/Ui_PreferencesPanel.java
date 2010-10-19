@@ -61,6 +61,33 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         
     }
 
+    private void showHidePortOptions()
+    {
+    	AbstractSerialMeasuringDevice dev = null;
+		try {
+			 dev = new SerialDeviceSelector().getDeviceWithoutInit();	
+		}
+		catch (Exception ioe) {	} 
+    	
+    	if(device==null)
+    	{
+    		cboBaud.setEnabled(false);
+    		//cboParity.setEnabled(false);
+    		cboUnits.setEnabled(false);
+    		cboDatabits.setEnabled(false);
+    		cboStopbits.setEnabled(false);
+    		cboLineFeed.setEnabled(false);
+    		return;
+    	}
+    	
+    	cboBaud.setEnabled(dev.isBaudEditable());
+    	cboParity.setEnabled(dev.isParityEditable());
+    	cboUnits.setEnabled(dev.isUnitsEditable());
+    	cboDatabits.setEnabled(dev.isDatabitsEditable());
+    	cboStopbits.setEnabled(dev.isStopbitsEditable());
+    	cboLineFeed.setEnabled(dev.isLineFeedEditable());
+    }
+    
     private void setupGUI()   
     {
     	initComponents();
@@ -80,6 +107,9 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     			Prefs.SERIAL_DEVICE, 
     			App.prefs.getPref(Prefs.SERIAL_DEVICE, SerialMeasuringDeviceConstants.NONE), 
     			SerialMeasuringDeviceConstants.ALL_DEVICES);
+    	
+
+    	
     	lblPort = new javax.swing.JLabel();
     	
     	        lblPort.setText("Port:");
@@ -100,7 +130,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	JLabel lblParity = new JLabel("Parity:");
     	panelPlatform.add(lblParity, "2, 7, left, default");
     	
-    	JComboBox cboParity = new JComboBox();
+    	cboParity = new JComboBox();
     	cboParity.setEnabled(false);
     	cboParity.setModel(new DefaultComboBoxModel(new String[] {"None"}));
     	panelPlatform.add(cboParity, "4, 7, left, default");
@@ -172,7 +202,9 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 			public void actionPerformed(ActionEvent e) {
 				if(cboPlatformType.getSelectedIndex()!=0)
 				{
+					showHidePortOptions();
 					btnStartMeasuring.setEnabled(true);
+					
 				}
 				else
 				{
@@ -192,6 +224,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 		});
     	
     	internationalizeComponents();
+		showHidePortOptions();
     	
     }
     
@@ -1284,15 +1317,16 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JTextField txtWSURL;
     protected TestMeasurePanel measurePanel;
     protected JPanel panelMeasureHolder;
-    private JLabel lblDatabits;
-    private JLabel lblStopbits;
-    private JComboBox cboDatabits;
-    private JComboBox cboStopbits;
-    private JLabel lblUnits;
-    private JLabel lblLineFeed;
-    private JComboBox cboUnits;
-    private JComboBox cboLineFeed;
-    private JTextPane txtComCheckLog;
+    protected JLabel lblDatabits;
+    protected JLabel lblStopbits;
+    protected JComboBox cboDatabits;
+    protected JComboBox cboStopbits;
+    protected JLabel lblUnits;
+    protected JLabel lblLineFeed;
+    protected JComboBox cboUnits;
+    protected JComboBox cboLineFeed;
+    protected JComboBox cboParity;
+    protected JTextPane txtComCheckLog;
     // End of variables declaration//GEN-END:variables
 	
     

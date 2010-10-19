@@ -13,14 +13,13 @@ public class SerialSampleIOEvent extends EventObject {
 	// sent when something timed out while reading the sample
 	// value is ignored
 	public final static int BAD_SAMPLE_EVENT = 2;
-	
-	public final static int UPDATED_CURRENT_VALUE_EVENT =5;
-	
+		
 	// initializing stuff.
 	// int argument, value is try #
 	public final static int INITIALIZING_EVENT = 3;
 	// no arguments
 	public final static int INITIALIZED_EVENT = 4;
+	public final static int UPDATED_CURRENT_VALUE_EVENT =5;
 	
 	// generic error. string argument.
 	public final static int ERROR = 100;

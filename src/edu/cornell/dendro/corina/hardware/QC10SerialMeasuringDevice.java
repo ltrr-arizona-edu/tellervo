@@ -30,6 +30,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	}
 
 	public QC10SerialMeasuringDevice() {
+		super();
 	}
 
 	@Override
@@ -113,7 +114,8 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 				}
 				else
 				{
-					System.out.println("invalid value received from device");
+					fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Invalid value from device");
+
 				}
                 
                 
@@ -135,7 +137,8 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 
 			}
 			catch (Exception ioe) {
-					System.out.println("Error reading from serial port: " + ioe.toString());
+				fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Error reading from serial port");
+
 			}   	
 			    	
 			zeroMeasurement();
@@ -180,7 +183,8 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	    
     	}
     	catch (Exception ioe) {
-			System.out.println("Error sending zero command to serial port: " + ioe.toString());
+			fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Error sending command to serial port");
+
     	}	
 	}
 
@@ -189,5 +193,34 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 		return false;
 	}
 
+	@Override
+	public Boolean isBaudEditable() {
+		return true;
+	}
+
+	@Override
+	public Boolean isDatabitsEditable() {
+		return true;
+	}
+
+	@Override
+	public Boolean isLineFeedEditable() {
+		return true;
+	}
+
+	@Override
+	public Boolean isParityEditable() {
+		return true;
+	}
+
+	@Override
+	public Boolean isStopbitsEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isUnitsEditable() {
+		return false;
+	}
 
 }

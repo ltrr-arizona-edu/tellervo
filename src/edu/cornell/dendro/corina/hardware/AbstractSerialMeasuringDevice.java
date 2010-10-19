@@ -105,6 +105,13 @@ public abstract class AbstractSerialMeasuringDevice
 		addSerialSampleIOListener(this);
 	}
 	
+	public abstract Boolean isBaudEditable();
+	public abstract Boolean isParityEditable();
+	public abstract Boolean isDatabitsEditable();
+	public abstract Boolean isStopbitsEditable();
+	public abstract Boolean isUnitsEditable();
+	public abstract Boolean isLineFeedEditable();
+	
 	
 	/**
 	 * Create a new serial measuring device, but for informational uses only.

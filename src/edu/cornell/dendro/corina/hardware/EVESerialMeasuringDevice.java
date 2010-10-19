@@ -19,6 +19,7 @@ public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 	}
 
 	public EVESerialMeasuringDevice() {
+		super();
 	}
 
 	@Override
@@ -49,6 +50,7 @@ public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 					try {
 						System.out.println("Initializing reader, try " + tryCount + "...");
 						fireSerialSampleEvent(SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
+						
 						getPort().getOutputStream().write(EVE_ENQ);
 					}
 					catch (IOException e) {	}
@@ -74,7 +76,8 @@ public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 			}
 			catch (IOException ioe) {
 				// uh.. ?
-				System.out.println("Error getting serial port input stream: " + ioe);
+				fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Error getting serial port input stream");
+
 				return;
 			}
 			
@@ -143,7 +146,7 @@ public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 				}
 			}
 			catch (IOException ioe) {
-				System.out.println("Error reading from serial port: " + ioe);
+				fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Error reading from serial port");
 			}
 			
 		}		
@@ -168,6 +171,36 @@ public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 
 	@Override
 	public Boolean isCurrentValueCapable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isBaudEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isDatabitsEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isLineFeedEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isParityEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isStopbitsEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isUnitsEditable() {
 		return false;
 	}
 }

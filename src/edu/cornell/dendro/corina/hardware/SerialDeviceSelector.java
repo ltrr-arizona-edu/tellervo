@@ -2,12 +2,9 @@ package edu.cornell.dendro.corina.hardware;
 
 import java.io.IOException;
 
-import javax.swing.JFrame;
-
-
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PreferencesDialog;
+import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.ui.Alert;
 
 public class SerialDeviceSelector {
@@ -16,6 +13,17 @@ public class SerialDeviceSelector {
 	//private Prefs prefs = new Prefs();
 
 	public SerialDeviceSelector(){
+
+	}
+
+	public AbstractSerialMeasuringDevice getDevice(){
+		init(true);		
+		return device;
+	}
+	
+	
+	private void init(Boolean init)
+	{
 		//prefs.
 		String selectedDevice = App.prefs.getPref(Prefs.SERIAL_DEVICE, null);
 		String portName = App.prefs.getPref("corina.serialsampleio.port", "COM1");
@@ -27,11 +35,32 @@ public class SerialDeviceSelector {
 				PreferencesDialog.showPreferencesAtTabIndex(1);
 			}
 			if(selectedDevice.equals(SerialMeasuringDeviceConstants.EVE)){
-				device = new EVESerialMeasuringDevice(portName);
+				if(init)
+				{	
+					device = new EVESerialMeasuringDevice(portName);
+				}
+				else
+				{
+					device = new EVESerialMeasuringDevice();
+				}
 			}else if(selectedDevice.equals(SerialMeasuringDeviceConstants.VELMEX)){
-				device = new QC10SerialMeasuringDevice(portName);
+				if(init)
+				{	
+					device = new QC10SerialMeasuringDevice(portName);
+				}
+				else
+				{
+					device = new QC10SerialMeasuringDevice();
+				}
 			}else if(selectedDevice.equals(SerialMeasuringDeviceConstants.LINTAB)){
-				device = new LINTABSerialMeasuringDevice(portName);
+				if(init)
+				{
+					device = new LINTABSerialMeasuringDevice(portName);
+				}
+				else
+				{
+					device = new LINTABSerialMeasuringDevice();
+				}
 			}
 			else{
 				device = null;
@@ -43,9 +72,11 @@ public class SerialDeviceSelector {
 			Alert.error("Error", "Error connecting to platform.  Is it switched on and plugged in?");
 		}
 	}
-
-	public AbstractSerialMeasuringDevice getDevice(){
-		
-		return device;
+	
+	
+	public AbstractSerialMeasuringDevice getDeviceWithoutInit()
+	{
+		init(false);		
+		return device;	
 	}
 }

@@ -26,6 +26,7 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	}
 
 	public LINTABSerialMeasuringDevice() {
+		super();
 	}
 
 	@Override
@@ -130,7 +131,8 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 							
 			}
 			catch (IOException ioe) {
-					System.out.println("Error reading from or writing to serial port: " + ioe);
+				fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Error reading from serial port");
+
 			}   	
 		}
 	}
@@ -176,7 +178,7 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	    
     	}
     	catch (IOException ioe) {
-			System.out.println("Error writing to serial port: " + ioe);
+			fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Error writing to serial port");
     	}	
 	}
 
@@ -188,5 +190,35 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	@Override
 	public Boolean isCurrentValueCapable() {
 		return true;
+	}
+
+	@Override
+	public Boolean isBaudEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isDatabitsEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isLineFeedEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isParityEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isStopbitsEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isUnitsEditable() {
+		return false;
 	}
 }
