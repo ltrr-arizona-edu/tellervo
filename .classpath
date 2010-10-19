@@ -40,6 +40,6 @@
 	<classpathentry kind="lib" path="Libraries/jh.jar"/>
 	<classpathentry kind="lib" path="Libraries/pljava.jar"/>
 	<classpathentry kind="lib" path="Libraries/postgresql-8.2-506.jdbc3.jar"/>
-	<classpathentry kind="lib" path="forms-1.2.1.jar" sourcepath="forms-1.2.1-src.zip"/>
+	<classpathentry kind="lib" path="Libraries/forms-1.2.1.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

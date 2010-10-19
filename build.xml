@@ -641,6 +641,8 @@
             <zipfileset dir="Libraries" includes="jh.jar"/>
             <zipfileset dir="Libraries" includes="pljava.jar"/>
             <zipfileset dir="Libraries" includes="postgresql-8.2-506.jdbc3.jar"/>
+            <zipfileset dir="Libraries" includes="forms-1.2.1.jar"/>
+
         </jar>
     	
 
