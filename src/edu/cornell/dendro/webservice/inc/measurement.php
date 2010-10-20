@@ -1076,12 +1076,17 @@ class measurement extends measurementEntity implements IDBAccessor
 	 *
 	 * @return String
 	 */
-	private function getSummaryXMLTags()
+	private function getSummaryXMLTags($includeKeycode=false)
 	{
 		$tags = "";
 		$i = 1;
+		$keycode ="UNKNOWN";
 		foreach($this->summaryObjectArray as $object)
 		{
+			if($i==1)
+			{
+				$keycode=dbHelper::escapeXMLChars($object->getCode());
+			}
 			$tags .= "<tridas:genericField name=\"corina.objectTitle.$i\" type=\"xs:string\">".dbHelper::escapeXMLChars($object->getTitle())."</tridas:genericField>\n";
 			$tags .= "<tridas:genericField name=\"corina.objectCode.$i\" type=\"xs:string\">".dbHelper::escapeXMLChars($object->getCode())."</tridas:genericField>\n";
 			$i++;
@@ -1092,6 +1097,15 @@ class measurement extends measurementEntity implements IDBAccessor
 		$tags.= "<tridas:genericField name=\"corina.seriesCount\" type=\"xs:int\">".dbHelper::escapeXMLChars($this->getMeasurementCount())."</tridas:genericField>\n";
 		$tags.= "<tridas:genericField name=\"corina.summaryTaxonName\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryTaxonName())."</tridas:genericField>\n";
 		$tags.= "<tridas:genericField name=\"corina.summaryTaxonCount\" type=\"xs:int\">".dbHelper::escapeXMLChars($this->getSummaryTaxonCount())."</tridas:genericField>\n";
+		
+		if($includeKeycode===TRUE)
+		{
+			$keycode .= dbHelper::escapeXMLChars($this->getSummaryElementTitle()).
+			dbHelper::escapeXMLChars($this->getSummarySampleTitle()).
+			dbHelper::escapeXMLChars($this->getSummaryRadiusTitle()).
+			dbHelper::escapeXMLChars($this->getTitle());
+			$tags.= "<tridas:genericField name=\"keycode\" type=\"xs:string\">".$keycode."</tridas:genericField>\n";
+		}
 		return $tags;
 	}
 
@@ -1135,13 +1149,12 @@ class measurement extends measurementEntity implements IDBAccessor
 		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
 		$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
 
-
+		$xml.= $this->getSummaryXMLTags();
 
 
 		// Using 'summary' format so just give minimal XML for all references and nothing else
 		if($format=="summary")
 		{
-			$xml.= $this->getSummaryXMLTags()."\n";
 			$xml.= "</tridas:".$this->getTridasSeriesType().">";
 			return $xml;
 		}
@@ -1206,10 +1219,11 @@ class measurement extends measurementEntity implements IDBAccessor
 			}*/
 		}
 
+		$xml.= $this->getSummaryXMLTags(TRUE)."\n";
+		
 		// Using 'summary' format so just give minimal XML for all references and nothing else
 		if($format=="summary" || $format=="minimal")
 		{
-			$xml.= $this->getSummaryXMLTags()."\n";
 			$xml.= "</tridas:".$this->getTridasSeriesType().">";
 			return $xml;
 		}
