@@ -81,21 +81,24 @@ public class ExportUI extends javax.swing.JPanel{
     	
 		rememberExportDirectory = true;
 
-		// load the last export directory. If it doesn't exist, make a nice default.
-		exportDirectory = App.prefs.getPref("corina.dir.export");
-		if(exportDirectory == null)
-			exportDirectory = App.prefs.getPref("corina.dir.data");
-		if(exportDirectory == null)
-			exportDirectory = "";
+		try{
+			// load the last export directory. If it doesn't exist, use the users home folder
+			exportDirectory = App.prefs.getPref("corina.dir.export", System.getProperty("user.home"));
+			
+			// now, keep going back until it exists and is a directory.
+			File exdf = new File(exportDirectory).getAbsoluteFile();
+			
+			while(!exdf.isDirectory() && exdf.toString().length() > 0)
+			{
+				exdf = exdf.getParentFile();
+			}
+			
+			exportDirectory = exdf.getAbsolutePath();
+		} catch (Exception e)
+		{
+			exportDirectory = System.getProperty("user.home");
+		}
 		
-		// now, keep going back until it exists and is a directory.
-		File exdf = new File(exportDirectory).getAbsoluteFile();
-		
-		while(!exdf.isDirectory() && exdf.toString().length() > 0)
-			exdf = exdf.getParentFile();
-		
-		exportDirectory = exdf.getAbsolutePath();
-    	
     	
         initComponents();
         setupGui();
