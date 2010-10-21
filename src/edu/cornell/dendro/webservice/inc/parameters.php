@@ -1174,10 +1174,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   			case "corina.mapLink":				break;
 		   			case "corina.isPublished":			break;
 		   			case "corina.readingCount":			break;		   			
-		   			
-		   			default:
-		   				trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; with name attribute '".$name."' in the series entity of the XML request. Tag is being ignored", E_USER_NOTICE);
-	
+		   				
 		   		}
 		   		break;
 		   			   		
