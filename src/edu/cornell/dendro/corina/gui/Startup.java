@@ -37,6 +37,7 @@ import javax.security.auth.login.LoginException;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.Logging;
@@ -166,6 +167,9 @@ public class Startup implements PrivilegedAction {
 			new Startup(args).run();
 			return;
 		}
+		
+		UIManager.put("wizard.sidebar.image", Builder.getImage("background3.png"));
+
 
 		// Obtain a LoginContext, needed for authentication. Tell it
 		// to use the LoginModule implementation specified by the

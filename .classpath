@@ -43,5 +43,6 @@
 	<classpathentry kind="lib" path="Libraries/forms-1.2.1.jar"/>
 	<classpathentry kind="lib" path="Libraries/simple-log-2.0.1.jar"/>
 	<classpathentry kind="lib" path="Libraries/jxl-2.6.10.jar"/>
+	<classpathentry kind="lib" path="Libraries/wizard.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
