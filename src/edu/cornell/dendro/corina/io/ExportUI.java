@@ -31,6 +31,7 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.FileDialog;
@@ -366,7 +367,7 @@ public class ExportUI extends javax.swing.JPanel{
 				project = defaults.getDefaultTridasProject();
 			}
 			
-			TridasObject tobj = s.getMeta(Metadata.OBJECT, TridasObject.class);
+			TridasObject tobj = (TridasObject) s.getMeta(Metadata.OBJECT, TridasObject.class);
 			TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
 			TridasSample tsamp = s.getMeta(Metadata.SAMPLE, TridasSample.class);
 			TridasRadius trad = s.getMeta(Metadata.RADIUS, TridasRadius.class);
@@ -395,9 +396,10 @@ public class ExportUI extends javax.swing.JPanel{
 				labCodeList.add(code);
 			}		
 		}
+		
 		if(this.cboGrouping.getSelectedIndex()==0)
 		{
-			// Add project to list as there is just one project
+			// Add project to list as there user wants seperate files for each series
 			projList.add(project);
 			
 			if (samples.size()==1)
@@ -442,15 +444,6 @@ public class ExportUI extends javax.swing.JPanel{
 	
 			}
 			
-			// Add any warnings to our warning message cache
-			if(writer.getWarnings().length>0)
-			{
-				messages += "Warning for file blah\n";
-			}
-			for(ConversionWarning warning : writer.getWarnings())
-			{
-				messages += "- "+warning.getMessage()+"\n";
-			}
 				
 			// Get output folder
 			String outputFolder = this.txtOutput.getText();			
@@ -511,6 +504,22 @@ public class ExportUI extends javax.swing.JPanel{
 				}*/
 				writer.saveFileToDisk(outputFolder, dof);
 				//model.setSavingPercent(currFile * 100 / totalFiles);
+				
+				// Add any warnings to our warning message cache
+				if(writer.getWarnings().length>0)
+				{
+					messages += "Warning for file blah\n";
+				}
+
+				for(ConversionWarning warning : dof.getDefaults().getWarnings())
+				{
+					messages += "- "+warning.getMessage()+"\n";
+				}
+				
+				for(ConversionWarning warning : writer.getWarnings())
+				{
+					messages += "- "+warning.getMessage()+"\n";
+				}
 			}
     	}
 	
