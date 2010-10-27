@@ -74,8 +74,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog {
 	private void initMeasuringDevice()
 	{
 		try {
-			dev = new SerialDeviceSelector().getDevice();
-			dev.initialize();
+			dev = SerialDeviceSelector.getSelectedDevice(true);
 			dev.setMeasurementReceiver(this.panelMeasure);
 			devStatus.setText("Initialized");
 		}

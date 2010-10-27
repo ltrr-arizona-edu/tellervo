@@ -1,10 +1,32 @@
-package edu.cornell.dendro.corina.hardware;
-
-import gnu.io.SerialPortEvent;
+package edu.cornell.dendro.corina.hardware.device;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
+import edu.cornell.dendro.corina.hardware.SerialSampleIOEvent;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.BaudRate;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataBits;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.FlowControl;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortState;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMultiplier;
+
+import gnu.io.SerialPortEvent;
+
+/**
+ * This is the implementation of the Cornell EveIO measuring device.  It is an open source device
+ * the circuit diagram for which can be obtained from the Cornell lab.  
+ * 
+ * EveIO is a simple device with no user definable parameters.  It does not listen for
+ * requests for data or 'zero' requests.  Data can only be sent via a hardware button attached
+ * to the device.
+ * 
+ * @author peterbrewer
+ *
+ */
 public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 
 	private static final int EVE_ENQ = 5;
@@ -14,26 +36,21 @@ public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 	/** serial NUMBER of the last data point... */
 	private int lastSerial = -1;
 	
-	public EVESerialMeasuringDevice(String portName) throws IOException {
-		super(portName);
-	}
-
-	public EVESerialMeasuringDevice() {
-		super();
-	}
-
 	@Override
-	protected boolean doesInitialization() {
-		return true;
+	public void setDefaultPortParams(){
+		baudRate = BaudRate.B_9600;
+		dataBits = DataBits.DATABITS_8;
+		stopBits = StopBits.STOPBITS_1;
+		parity = PortParity.NONE;
+		flowControl = FlowControl.NONE;
+		lineFeed = LineFeed.NONE;
+		unitMultiplier = UnitMultiplier.TIMES_10;
+		
 	}
-
+	
 	@Override
-	public String getMeasuringDeviceName() {
-		return "EVE IO device";
-	}
-
-	@Override
-	protected void doInitialize() {
+	protected void doInitialize() throws IOException {
+		openPort();
 		boolean waiting_for_init = true;
 		int tryCount = 0;
 		
@@ -151,23 +168,34 @@ public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 			
 		}		
 	}
+	
+	@Override
+	public void requestMeasurement() {
+		System.out.println(toString()+ " does not listen for measurement requests.");
+		
+	}
+
+	@Override
+	public void zeroMeasurement() {
+		System.out.println(toString()+ " does not listen for zero requests.");
+		
+	}
+	
+	/**
+	 *   INFORMATIONAL METHODS
+	 */
+	
+	@Override
+	public String toString() {
+		return "EVE IO";
+	}
 
 	@Override
 	public Boolean isRequestDataCapable() {
 		return false;
 	}
 
-	@Override
-	public void requestMeasurement() {
-		System.out.println(getMeasuringDeviceName()+ " does not listen for measurement requests.");
-		
-	}
 
-	@Override
-	public void zeroMeasurement() {
-		System.out.println(getMeasuringDeviceName()+ " does not listen for zero requests.");
-		
-	}
 
 	@Override
 	public Boolean isCurrentValueCapable() {
@@ -201,6 +229,11 @@ public class EVESerialMeasuringDevice extends AbstractSerialMeasuringDevice {
 
 	@Override
 	public Boolean isUnitsEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isFlowControlEditable() {
 		return false;
 	}
 }

@@ -952,26 +952,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// Set up the measuring device
 		AbstractSerialMeasuringDevice device;
 		try {
-			device = new SerialDeviceSelector().getDevice();	
+			device = SerialDeviceSelector.getSelectedDevice(true);	
 		}
 		catch (Exception ioe) {
-			Alert.error(I18n.getText("error"), 
-					I18n.getText("error.initExtComms"));
-			return;
-		} 
-		
-		// initialize 
-		try{
-			if(device!=null)
-			{
-				device.initialize();
-			}
-			else
-			{
-				return;
-			}
-		} catch (Exception ioe)
-		{
 			Alert.error(I18n.getText("error"), 
 					I18n.getText("error.initExtComms")+".\n"+
 					I18n.getText("error.possWrongComPort"));

@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.hardware;
+package edu.cornell.dendro.corina.hardware.device;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -9,10 +9,21 @@ import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
+import edu.cornell.dendro.corina.hardware.SerialSampleIOEvent;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.BaudRate;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataBits;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.FlowControl;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortState;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMultiplier;
+
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 
-public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
+public class MetronicsMeasuringDevice extends AbstractSerialMeasuringDevice{
 
 	private static final int EVE_ENQ = 5;
 	private static final int EVE_ACK = 6;
@@ -21,7 +32,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	/** serial NUMBER of the last data point... */
 	private int lastSerial = -1;
 	
-	public QC10SerialMeasuringDevice(String portName) throws IOException {
+	public MetronicsMeasuringDevice(String portName) throws IOException {
 		super(portName);
 		//MeasureJ2X defaults to using 2 stop bits but Corina/Java/something bombs if you 
 		//try to write to the port with 2 stop bits set.  So lets stick with 1 stop bit for now!
@@ -29,22 +40,36 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 		//setFlowControl(SerialPort.FLOWCONTROL_RTSCTS_OUT);
 	}
 
-	public QC10SerialMeasuringDevice() {
+	public MetronicsMeasuringDevice() {
 		super();
 	}
-
-	@Override
-	protected boolean doesInitialization() {
-		return true;
+	
+	public MetronicsMeasuringDevice(String portName, BaudRate baudRate, PortParity parity,
+			DataBits dataBits, StopBits stopBits, LineFeed lineFeed, FlowControl flowControl)
+			throws IOException
+	{
+		super(portName, baudRate, parity, dataBits, stopBits, lineFeed, flowControl);
 	}
 
 	@Override
-	public String getMeasuringDeviceName() {
-		return "Quadra-Chek QC-10 IO device";
+	public void setDefaultPortParams(){
+		baudRate = BaudRate.B_9600;
+		dataBits = DataBits.DATABITS_8;
+		stopBits = StopBits.STOPBITS_1;
+		parity = PortParity.NONE;
+		flowControl = FlowControl.NONE;
+		lineFeed = LineFeed.CRLF;
+		unitMultiplier = UnitMultiplier.TIMES_1000;
+	}
+	
+	@Override
+	public String toString() {
+		return "Metronics - Generic";
 	}
 
 	@Override
-	protected void doInitialize() {
+	protected void doInitialize() throws IOException {
+		openPort();
 		boolean waiting_for_init = true;
 		int tryCount = 0;
 		
@@ -87,7 +112,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	    
 			    StringBuffer readBuffer = new StringBuffer();
 			    int intReadFromPort;
-			    	//Read from port into buffer while not LF (10)
+			    	//Read from port into buffer while not line feed
 			    	while ((intReadFromPort=input.read()) != 10){
 			    		//If a timeout then show bad sample
 						if(intReadFromPort == -1) {
@@ -120,7 +145,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
                 
                 
              	// Round up to micron integers
-		    	Float fltValue = new Float(strReadBuffer)*1000;
+		    	Float fltValue = new Float(strReadBuffer) * unitMultiplier.toFloat();
 		    	Integer intValue = Math.round(fltValue);
 		    	
 		    	if(intValue>0)
@@ -152,7 +177,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	@Override
 	public void zeroMeasurement()
 	{
-		String strZeroDataCommand = "@3\r\n";
+		String strZeroDataCommand = "@3";
 		sendRequest(strZeroDataCommand);
 	}
 
@@ -163,7 +188,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 
 	@Override
 	public void requestMeasurement() {
-		String strZeroDataCommand = "@16\r\n";
+		String strZeroDataCommand = "@16";
 		sendRequest(strZeroDataCommand);
 		
 	}
@@ -178,7 +203,7 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	    output = getPort().getOutputStream();
 	    OutputStream outToPort=new DataOutputStream(output); 
 	    
-	    byte[] command = strCommand.getBytes();
+	    byte[] command = (strCommand+lineFeed.toCommandString()).getBytes();
 	    outToPort.write(command);
 	    
     	}
@@ -215,12 +240,17 @@ public class QC10SerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 
 	@Override
 	public Boolean isStopbitsEditable() {
-		return false;
+		return true;
+	}
+	
+	@Override
+	public Boolean isFlowControlEditable(){
+		return true;
 	}
 
 	@Override
 	public Boolean isUnitsEditable() {
-		return false;
+		return true;
 	}
 
 }

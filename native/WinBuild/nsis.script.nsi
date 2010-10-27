@@ -38,7 +38,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "c:\corina-setup.exe"
+OutFile "c:\Users\aps03pwb\Desktop\corina-setup.exe"
 InstallDir "$PROGRAMFILES\Corina"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show

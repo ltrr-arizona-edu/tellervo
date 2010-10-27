@@ -13,6 +13,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TooManyListenersException;
 
+import org.apache.commons.lang.StringUtils;
+
+import sun.management.counter.Units;
+
 /**
  * Abstract base class for a serial port measuring device
  * Defaults to 9600,8,N,1, no flow control
@@ -24,66 +28,32 @@ public abstract class AbstractSerialMeasuringDevice
 	implements 
 		SerialPortEventListener, SerialSampleIOListener
 {
-	/** A list of states our port can be in */
-	protected enum PortState {
-		WAITING_FOR_ACK,
-		NORMAL,
-		POST_INIT,
-		DIE
-	}
-	
-	public enum BaudRate{
-		B_9600(9600),
-		B_4800(4800),
-		B_2400(2400),
-		B_1200(1200);		
-
-		private int br;
-		
-		private BaudRate(int n)
-		{
-			br = n; 
-		}
-		public int getBaud()
-		{
-			return br;
-		}
-		
-		public String toString()
-		{
-			return String.valueOf(br);
-		}
-		
-		
-	}
 
 	/** The actual serial port we're operating on */
 	private SerialPort port;
 	
 	/** The state our serial port is in */
 	private PortState state;	
+		
+	/** Port settings */
+	protected BaudRate baudRate = BaudRate.B_9600;
+	protected DataBits dataBits = DataBits.DATABITS_8;
+	protected StopBits stopBits = StopBits.STOPBITS_1;
+	protected PortParity parity = PortParity.NONE;
+	protected LineFeed lineFeed = LineFeed.NONE;
+	protected FlowControl flowControl = FlowControl.NONE;
+	protected UnitMultiplier unitMultiplier = UnitMultiplier.ZERO;
 	
-	/** A thread used to do initialization, if necessary */
-	private Thread initializeThread;
+	/** Class that receives the measurements */
+	private MeasurementReceiver receiver;
 	
 	/** A set of listeners */
 	private Set<SerialSampleIOListener> listeners = new HashSet<SerialSampleIOListener>();
 	
-	/**
-	 * The following are standard serial connection settings.
-	 * They default to 9600 baud N81.  They can be overridden using the setter methods.
-	 */
-	private BaudRate baudRate = BaudRate.B_9600;
-
-	private int dataBits = SerialPort.DATABITS_8;
+	/** A thread used to do initialization, if necessary */
+	private Thread initializeThread;
 	
-	private int stopBits = SerialPort.STOPBITS_1;
 	
-	private int parity = SerialPort.PARITY_NONE;
-	
-	private int flowControl = SerialPort.FLOWCONTROL_NONE;
-	
-	private MeasurementReceiver receiver;
 	/**
 	 * Create a new serial measuring device
 	 * 
@@ -91,34 +61,46 @@ public abstract class AbstractSerialMeasuringDevice
 	 * @throws IOException
 	 */
 	public AbstractSerialMeasuringDevice(String portName) throws IOException {
-		port = openPort(portName);
-		state = PortState.NORMAL;
-		
+		setDefaultPortParams();
+		port = openPort(portName);		
 		addSerialSampleIOListener(this);
 	}
-	
-	public AbstractSerialMeasuringDevice(String portName, BaudRate baud) throws IOException {
-		baudRate = baud;
-		port = openPort(portName);
-		state = PortState.NORMAL;
 		
-		addSerialSampleIOListener(this);
-	}
-	
-	public abstract Boolean isBaudEditable();
-	public abstract Boolean isParityEditable();
-	public abstract Boolean isDatabitsEditable();
-	public abstract Boolean isStopbitsEditable();
-	public abstract Boolean isUnitsEditable();
-	public abstract Boolean isLineFeedEditable();
-	
-	
 	/**
-	 * Create a new serial measuring device, but for informational uses only.
-	 * (starts out 'dead,' as if it had been closed)
+	 * Create a new serial measuring device, but do not open. Typically for 
+	 * informational uses only. Port state is set to 'DIE' as if it had 
+	 * been closed.
 	 */
 	public AbstractSerialMeasuringDevice() {
+		setDefaultPortParams();
 		state = PortState.DIE;
+	}
+	
+	/**
+	 * Constructor for when you'd like to override the default port settings at run time.
+	 * If you want to leave any parameter as default, just pass it null.
+	 * 
+	 * @param portName
+	 * @param baudRate
+	 * @param parity
+	 * @param dataBits
+	 * @param stopBits
+	 * @param lineFeed
+	 * @throws IOException
+	 */
+	public AbstractSerialMeasuringDevice(String portName, BaudRate baudRate, PortParity parity,
+			DataBits dataBits, StopBits stopBits, LineFeed lineFeed, FlowControl flowControl) 
+			throws IOException
+	{
+		if(baudRate!=null)    this.baudRate = baudRate;
+		if(parity!=null)      this.parity = parity;
+		if(dataBits!=null)    this.dataBits = dataBits;
+		if(stopBits!=null)    this.stopBits = stopBits;
+		if(lineFeed!=null)    this.lineFeed = lineFeed;
+		if(flowControl!=null) this.flowControl = flowControl;
+		
+		port = openPort(portName);		
+		addSerialSampleIOListener(this);
 	}
 	
 	/**
@@ -128,30 +110,115 @@ public abstract class AbstractSerialMeasuringDevice
 		if(state != PortState.NORMAL)
 			throw new IOException("Initializing in an invalid state!");
 		
-		if(doesInitialization()) {
-			initializeThread = new Thread( new Runnable() {
-				public void run() {
+
+		initializeThread = new Thread( new Runnable() {
+			public void run() {
+				try {
 					doInitialize();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} );
-			initializeThread.start();
-		}
+			}
+		} );
+		initializeThread.start();
+	
 		
 	}
 
+	/** Abstract methods used for identifying which port settings can be edited */
+	public abstract Boolean isBaudEditable();
+	public abstract Boolean isParityEditable();
+	public abstract Boolean isDatabitsEditable();
+	public abstract Boolean isStopbitsEditable();
+	public abstract Boolean isUnitsEditable();
+	public abstract Boolean isLineFeedEditable();	
+	public abstract Boolean isFlowControlEditable();
+	
+	/**
+	 * Are one or more of the port settings editable?
+	 * 
+	 * @return
+	 */
+	public Boolean arePortSettingsEditable()
+	{
+		if (isBaudEditable() ||
+			isParityEditable() ||
+			isDatabitsEditable() ||
+			isStopbitsEditable() ||
+			isUnitsEditable() ||
+			isLineFeedEditable()||
+			isFlowControlEditable())
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Default port settings.  This should be overridden by sub-classes if default
+	 * settings are different.
+	 */
+	public void setDefaultPortParams(){
+		baudRate = BaudRate.B_9600;
+		dataBits = DataBits.DATABITS_8;
+		stopBits = StopBits.STOPBITS_1;
+		parity = PortParity.NONE;
+		flowControl = FlowControl.NONE;
+		lineFeed = LineFeed.NONE;
+		unitMultiplier = UnitMultiplier.ZERO;
+		
+	}
+	
+	/**
+	 * Get the actual port
+	 * 
+	 * @return
+	 */
 	protected final SerialPort getPort() {
 		return port;
 	}
 	
+	/**
+	 * Get the state of the port
+	 * 
+	 * @return
+	 */
 	protected final PortState getState() {
 		return state;
 	}
 	
+	
+	/**
+	 * Set the state of the port
+	 * 
+	 * @param state
+	 */
 	protected final void setState(PortState state) {
 		this.state = state;
 	}
-		
-	private SerialPort openPort(String portName) throws IOException {
+	
+	/**
+	 * Open the port with the previously set name.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public SerialPort openPort() throws IOException{
+		return this.openPort(port.getName());
+	}
+	
+	/**
+	 * Open the port with the specified name.
+	 * 
+	 * @param portName
+	 * @return
+	 * @throws IOException
+	 */
+	protected SerialPort openPort(String portName) throws IOException {
 		SerialPort port;
 		CommPortIdentifier portId;
 		
@@ -171,11 +238,11 @@ public abstract class AbstractSerialMeasuringDevice
 			
 			// defaults to 9600 8N1, no flow control...
 			port.setSerialPortParams(getBaud(),
-								     getDataBits(),
-								     getStopBits(),
-								     getParity());
+								     getDataBits().toInt(),
+								     getStopBits().toInt(),
+								     getParity().toInt());
 			
-			port.setFlowControlMode(getFlowControl());
+			port.setFlowControlMode(getFlowControl().toInt());
 
 			// set up our event listener
 			port.addEventListener(this);
@@ -200,12 +267,14 @@ public abstract class AbstractSerialMeasuringDevice
 			// uh... we just made it. and set the listener.  something is broken.
 			throw new IOException("Unable to open port: unknown error 2. help me.");
 		}
-				
+			
+		state = PortState.NORMAL;
+		
 		return port;
 	}
 	
 	/**
-	 * on shutdown, make sure we closed the port.
+	 * On shutdown, make sure we closed the port.
 	 */
 	@Override
 	protected void finalize() throws Throwable {
@@ -221,7 +290,9 @@ public abstract class AbstractSerialMeasuringDevice
 		}
 	}
 
-	// clean up!
+	/**
+	 * Close the port
+	 */
 	public void close() {
 		if(port == null) {
 			System.out.println("dataport already closed; ignoring close call?");
@@ -237,18 +308,13 @@ public abstract class AbstractSerialMeasuringDevice
 		port = null;
 	}
 	
-	////
-	//// Initialization process
-	////
 	/**
-	 * returns true if a thread should be started to run
-	 * doInitialize()
+	 * By default nothing happens during initialization.  If a sub-class
+	 * needs to do something, then this should be overridden.
+	 * @throws IOException 
 	 */
-	protected abstract boolean doesInitialization();
-	
-	protected void doInitialize() {
-		// do nothing, by default
-		// override me for actual initialization, runs in its own thread
+	protected void doInitialize() throws IOException {
+		openPort();
 	}
 	
 	protected void finishInitialize() {
@@ -294,67 +360,120 @@ public abstract class AbstractSerialMeasuringDevice
 		}
 	}
 	
-	////
-	//// Informational overrides
-    ////
-	protected int getBaud() {
-		return baudRate.getBaud();
-	}
-	
-	protected BaudRate getBaudRate(){
+	/**
+	 * Get the baud rate
+	 * @return
+	 */
+	public BaudRate getBaudRate(){
 		return baudRate;
 	}
 	
-	protected int getDataBits() {
+	/**
+	 * Get the Baud rate as an int
+	 * 
+	 * @return
+	 */
+	public int getBaud() {
+		return baudRate.toInt();
+	}
+	
+	/**
+	 * Get the line feed
+	 * @return
+	 */
+	public LineFeed getLineFeed(){
+		return lineFeed;
+	}
+	
+	/**
+	 * Get the data bits
+	 * @return
+	 */
+	public DataBits getDataBits() {
 		return dataBits;
 	}
 	
-	protected int getStopBits() {
+	/**
+	 * Get the stop bits
+	 * @return
+	 */
+	public StopBits getStopBits() {
 		return stopBits;
 	}
 	
-	protected int getParity() {
+	/**
+	 * Get the parity
+	 * @return
+	 */
+	public PortParity getParity() {
 		return parity;
 	}
 	
-	protected int getFlowControl() {
+	/**
+	 * Get the flow control
+	 * @return
+	 */
+	public FlowControl getFlowControl() {
 		return flowControl;
 	}
 	
+	/**
+	 * Get unit multiplier
+	 * @return
+	 */
+	public UnitMultiplier getUnitMultiplier(){
+		return unitMultiplier;
+	}
+	
+	/**
+	 * Set the baud rate
+	 * @param baudRate
+	 */
 	protected void setBaudRate(BaudRate baudRate) {
 		close();
 		this.baudRate = baudRate;
 		try {
-			this.openPort(port.getName());
+			openPort();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	protected void setDataBits(int dataBits) {
+	/**
+	 * Set the data bits
+	 * @param dataBits
+	 */
+	protected void setDataBits(DataBits dataBits) {
 		close();
 		this.dataBits = dataBits;
 		try {
-			this.openPort(port.getName());
+			openPort();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	protected void setStopBits(int stopBits) {
+	/**
+	 * Set the stop bits
+	 * @param stopBits
+	 */
+	protected void setStopBits(StopBits stopBits) {
 		close();
 		this.stopBits = stopBits;
 		try {
-			this.openPort(port.getName());
+			openPort();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	protected void setParity(int parity) {
+	/**
+	 * Set the parity
+	 * @param parity
+	 */
+	protected void setParity(PortParity parity) {
 		close();
 		this.parity = parity;
 		try {
@@ -365,7 +484,11 @@ public abstract class AbstractSerialMeasuringDevice
 		}
 	}
 
-	protected void setFlowControl(int flowControl) {
+	/**
+	 * Set the flow control
+	 * @param flowControl
+	 */
+	protected void setFlowControl(FlowControl flowControl) {
 		close();
 		this.flowControl = flowControl;
 		try {
@@ -376,7 +499,11 @@ public abstract class AbstractSerialMeasuringDevice
 		}
 	}
 	
-	public abstract String getMeasuringDeviceName();
+	/**
+	 * Get the name of the measuring device
+	 * @return
+	 */
+	public abstract String toString();
 	
 	/**
 	 * Ask platforms for a measurement
@@ -396,20 +523,21 @@ public abstract class AbstractSerialMeasuringDevice
 	public abstract Boolean isRequestDataCapable();
 	
 	/**
-	 * Does the platform provide current measurement values?
+	 * Does the platform provide current measurement values?  
+	 * If so then make sure that the SerialSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT
+	 * is dispatched.
 	 * 
 	 * @return
 	 */
 	public abstract Boolean isCurrentValueCapable();
 	
-	
-	// mess around for a few seconds, perhaps searching other libraries?
-	// Let's only do this once.
 	private static boolean hscChecked = false;
 	private static boolean hscResult = false;
 	
 	/**
-	 * @return TRUE if serial package is capable on this platform...
+	 * Check whether this OS has serial capablities
+	 * 
+	 * @return 
 	 */
 	public static boolean hasSerialCapability() {		
 		// stupid.
@@ -434,6 +562,9 @@ public abstract class AbstractSerialMeasuringDevice
 		return hscResult;
 	}
 	
+	/**
+	 * Notify the receiver of an event
+	 */
 	public void SerialSampleIONotify(SerialSampleIOEvent sse) {
 		if(sse.getType() == SerialSampleIOEvent.BAD_SAMPLE_EVENT) {
 			receiver.receiverUpdateStatus("Error reading the previous sample!");
@@ -458,7 +589,271 @@ public abstract class AbstractSerialMeasuringDevice
 		
 	}
 	
+	/**
+	 * Set the class that will receive the measurement events
+	 * 
+	 * @param receiver
+	 */
 	public void setMeasurementReceiver(MeasurementReceiver receiver){
 		this.receiver = receiver;
 	}
+	
+	
+	
+	
+	/** A list of states our port can be in */
+	public enum PortState {
+		WAITING_FOR_ACK,
+		NORMAL,
+		POST_INIT,
+		DIE
+	}
+	
+	/**
+	 * Port parity enum
+	 * 
+	 * @author peterbrewer
+	 *
+	 */
+	public enum PortParity{
+		NONE(SerialPort.PARITY_NONE),
+		EVEN(SerialPort.PARITY_EVEN),
+		MARK(SerialPort.PARITY_MARK),
+		ODD(SerialPort.PARITY_ODD),
+		SPACE(SerialPort.PARITY_SPACE);
+		
+		private int br;
+		
+		private PortParity(int n)
+		{
+			br = n; 
+		}
+		public int toInt()
+		{
+			return br;
+		}
+		
+		public String toString()
+		{
+			return StringUtils.capitalize(this.name().toLowerCase());
+		}	
+	}
+	
+	/**
+	 * Line feed enum
+	 * @author peterbrewer
+	 *
+	 */
+	public enum LineFeed{
+		NONE(0),
+		CR(1),
+		CRLF(2);
+		
+		private int br;
+		
+		private LineFeed(int n)
+		{
+			br = n; 
+		}
+		public int toInt()
+		{
+			return br;
+		}
+		
+		public String toCommandString()
+		{
+			if(this.equals(LineFeed.CR))
+			{
+				return "\r";
+			}
+			else if (this.equals(LineFeed.CRLF))
+			{
+				return "\r\n";			
+			}
+			else 
+			{
+				return "";
+			}		
+		}
+	}
+	
+	/**
+	 * Baud rate enum
+	 * @author peterbrewer
+	 *
+	 */
+	public enum BaudRate{
+		B_115200(115200),
+		B_57600(57600),
+		B_38400(38400),
+		B_19200(19200),
+		B_9600(9600),
+		B_4800(4800),
+		B_2400(2400),
+		B_1200(1200);		
+
+		private int br;
+		
+		private BaudRate(int n)
+		{
+			br = n; 
+		}
+		public int toInt()
+		{
+			return br;
+		}
+		
+		public String toString()
+		{
+			return String.valueOf(br);
+		}	
+		
+
+	}
+
+	/**
+	 * Stop bits enum
+	 * @author peterbrewer
+	 *
+	 */
+	public enum StopBits{
+		STOPBITS_1(SerialPort.STOPBITS_1),
+		STOPBITS_2(SerialPort.STOPBITS_2);		
+
+		private int br;
+		
+		private StopBits(int n)
+		{
+			br = n; 
+		}
+		public int toInt()
+		{
+			return br;
+		}
+		
+		public String toString()
+		{
+			if(this.equals(StopBits.STOPBITS_1))
+			{	
+				return "1";
+			}
+			else
+			{
+				return "2";
+			}			
+		}	
+	}
+	
+	public enum UnitMultiplier{
+		ZERO(0.0f),
+		TIMES_10(10.0f),
+		TIMES_100(100.0f),
+		TIMES_1000(1000.0f),
+		DIVIDE_10(0.1f),
+		DIVIDE_100(0.01f),
+		DIVIDE_1000(0.001f);
+
+		private float br;
+		
+		private UnitMultiplier(float n)
+		{
+			br = n; 
+		}
+		
+		public float toFloat()
+		{
+			return br;
+		}
+		
+		public String toString()
+		{
+			if(this.equals(UnitMultiplier.ZERO))
+			{	
+				return "\u00D70";
+			}
+			else if(this.equals(UnitMultiplier.TIMES_10))
+			{
+				return "\u00D710";
+			}	
+			else if(this.equals(UnitMultiplier.TIMES_100))
+			{
+				return "\u00D7100";
+			}
+			else if(this.equals(UnitMultiplier.TIMES_1000))
+			{
+				return "\u00D71000";
+			}
+			else if(this.equals(UnitMultiplier.DIVIDE_10))
+			{
+				return "\u00F710";
+			}
+			else if(this.equals(UnitMultiplier.DIVIDE_100))
+			{
+				return "\u00F7100";
+			}
+			else if(this.equals(UnitMultiplier.DIVIDE_1000))
+			{
+				return "\u00F71000";
+			}
+			return "";
+		}	
+	}
+	
+	/**
+	 * Flow control enum
+	 * @author peterbrewer
+	 *
+	 */
+	public enum FlowControl{
+		NONE(SerialPort.FLOWCONTROL_NONE),
+		RTSCTS_IN(SerialPort.FLOWCONTROL_RTSCTS_IN),
+		RTSCTS_OUT(SerialPort.FLOWCONTROL_RTSCTS_OUT),
+		XONXOFF_IN(SerialPort.FLOWCONTROL_XONXOFF_IN),
+		XONXOFF_OUT(SerialPort.FLOWCONTROL_XONXOFF_OUT);
+
+		private int br;
+		
+		private FlowControl(int n)
+		{
+			br = n; 
+		}
+		public int toInt()
+		{
+			return br;
+		}
+
+	}
+	
+	/**
+	 * Data bits enum
+	 * 
+	 * @author peterbrewer
+	 *
+	 */
+	public enum DataBits{
+		DATABITS_5(SerialPort.DATABITS_5),
+		DATABITS_6(SerialPort.DATABITS_6),
+		DATABITS_7(SerialPort.DATABITS_7),
+		DATABITS_8(SerialPort.DATABITS_8);		
+
+		private int br;
+		
+		private DataBits(int n)
+		{
+			br = n; 
+		}
+		public int toInt()
+		{
+			return br;
+		}
+		
+		public String toString()
+		{
+			return String.valueOf(br);
+		}	
+		
+	}
+	
+
+	
 }

@@ -20,7 +20,7 @@ import edu.cornell.dendro.corina.gis.GrfxWarning;
 import edu.cornell.dendro.corina.gis.WMSTableModel;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
-import edu.cornell.dendro.corina.hardware.SerialMeasuringDeviceConstants;
+import edu.cornell.dendro.corina.prefs.panels.HardwarePrefsPanel;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -40,6 +40,8 @@ import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import java.awt.Font;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.EtchedBorder;
 
 /**
  *
@@ -52,6 +54,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 	WMSTableModel wmsModel = new WMSTableModel();
 	GrfxWarning warn = new GrfxWarning();
 	AbstractSerialMeasuringDevice device;
+	protected HardwarePrefsPanel hpp;
 	
     /** Creates new form Ui_PreferencesPanel */
     public Ui_PreferencesPanel() {
@@ -61,32 +64,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         
     }
 
-    private void showHidePortOptions()
-    {
-    	AbstractSerialMeasuringDevice dev = null;
-		try {
-			 dev = new SerialDeviceSelector().getDeviceWithoutInit();	
-		}
-		catch (Exception ioe) {	} 
-    	
-    	if(device==null)
-    	{
-    		cboBaud.setEnabled(false);
-    		//cboParity.setEnabled(false);
-    		cboUnits.setEnabled(false);
-    		cboDatabits.setEnabled(false);
-    		cboStopbits.setEnabled(false);
-    		cboLineFeed.setEnabled(false);
-    		return;
-    	}
-    	
-    	cboBaud.setEnabled(dev.isBaudEditable());
-    	cboParity.setEnabled(dev.isParityEditable());
-    	cboUnits.setEnabled(dev.isUnitsEditable());
-    	cboDatabits.setEnabled(dev.isDatabitsEditable());
-    	cboStopbits.setEnabled(dev.isStopbitsEditable());
-    	cboLineFeed.setEnabled(dev.isLineFeedEditable());
-    }
+
     
     private void setupGUI()   
     {
@@ -103,64 +81,10 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	this.btnWMSRemove.setEnabled(false);
     	
     	// Set up platform types
-    	new FormatWrapper(cboPlatformType, 
+    	new FormatWrapper(hpp.getCboPlatformType(), 
     			Prefs.SERIAL_DEVICE, 
-    			App.prefs.getPref(Prefs.SERIAL_DEVICE, SerialMeasuringDeviceConstants.NONE), 
-    			SerialMeasuringDeviceConstants.ALL_DEVICES);
-    	
-
-    	
-    	lblPort = new javax.swing.JLabel();
-    	
-    	        lblPort.setText("Port:");
-    	        panelPlatform.add(lblPort, "2, 3, left, center");
-    	cboPort = new javax.swing.JComboBox();
-    	
-    	        cboPort.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "COM1", "COM2", "COM3", "COM4" }));
-    	        panelPlatform.add(cboPort, "4, 3, 5, 1, left, top");
-    	
-    	lblDatabits = new JLabel("Databits:");
-    	panelPlatform.add(lblDatabits, "6, 5, left, default");
-    	
-    	cboDatabits = new JComboBox();
-    	cboDatabits.setEnabled(false);
-    	cboDatabits.setModel(new DefaultComboBoxModel(new String[] {"8"}));
-    	panelPlatform.add(cboDatabits, "8, 5, left, default");
-    	
-    	JLabel lblParity = new JLabel("Parity:");
-    	panelPlatform.add(lblParity, "2, 7, left, default");
-    	
-    	cboParity = new JComboBox();
-    	cboParity.setEnabled(false);
-    	cboParity.setModel(new DefaultComboBoxModel(new String[] {"None"}));
-    	panelPlatform.add(cboParity, "4, 7, left, default");
-    	
-    	lblStopbits = new JLabel("Stopbits:");
-    	panelPlatform.add(lblStopbits, "6, 7, left, default");
-    	
-    	cboStopbits = new JComboBox();
-    	cboStopbits.setEnabled(false);
-    	cboStopbits.setModel(new DefaultComboBoxModel(new String[] {"1", "2"}));
-    	panelPlatform.add(cboStopbits, "8, 7, left, default");
-    	panelPlatform.add(lblBaud, "2, 5, left, center");
-    	panelPlatform.add(cboBaud, "4, 5, left, top");
-    	
-    	lblUnits = new JLabel("Units:");
-    	panelPlatform.add(lblUnits, "2, 9, left, center");
-    	
-    	cboUnits = new JComboBox();
-    	cboUnits.setEnabled(false);
-    	cboUnits.setModel(new DefaultComboBoxModel(new String[] {"N/A"}));
-    	panelPlatform.add(cboUnits, "4, 9, left, default");
-    	
-    	lblLineFeed = new JLabel("Line feed:");
-    	panelPlatform.add(lblLineFeed, "6, 9, left, center");
-    	
-    	cboLineFeed = new JComboBox();
-    	cboLineFeed.setEnabled(false);
-    	cboLineFeed.setModel(new DefaultComboBoxModel(new String[] {"N/A"}));
-    	panelPlatform.add(cboLineFeed, "8, 9, left, default");
-        this.btnStartMeasuring.setEnabled(cboPlatformType.getSelectedIndex()!=0);
+    			App.prefs.getPref(Prefs.SERIAL_DEVICE, "[none]"), 
+    			SerialDeviceSelector.getAvailableDevicesNames());
         
         panelMeasureHolder = new JPanel();
         
@@ -193,27 +117,10 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         lblPlatformLogData.setFont(new Font("Lucida Grande", Font.BOLD | Font.ITALIC, 11));
         scrollPane.setColumnHeaderView(lblPlatformLogData);
         
+        
         txtComCheckLog = new JTextPane();
         scrollPane.setViewportView(txtComCheckLog);
         panelTestComms.setLayout(gl_panelTestComms);
-        
-    	cboPlatformType.addActionListener(new ActionListener() {		
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(cboPlatformType.getSelectedIndex()!=0)
-				{
-					showHidePortOptions();
-					btnStartMeasuring.setEnabled(true);
-					
-				}
-				else
-				{
-					btnStartMeasuring.setEnabled(false);
-
-				}
-				
-			}
-		});
     	
     	btnStartMeasuring.addActionListener(new ActionListener() {
 			@Override
@@ -224,7 +131,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 		});
     	
     	internationalizeComponents();
-		showHidePortOptions();
+		hpp.showHidePortOptions();
     	
     }
     
@@ -257,40 +164,22 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     		measurePanel = null;
     		panelMeasureHolder.removeAll();
     	}
-    	
+
 		// Set up the measuring device
-		try {
-			device = new SerialDeviceSelector ().getDevice();	
-		}
-		catch (Exception ioe) {
-			return;
-		} 
-		
-		// initialize 
 		try{
-			if(device!=null)
-			{
-				device.initialize();
-			}
-			else
-			{
-				return;
-			}
+			device = SerialDeviceSelector.getSelectedDevice(true);	
 		} catch (Exception ioe)
 		{
 			Alert.error(I18n.getText("error"), 
 					I18n.getText("error.initExtComms")+".\n"+
 					I18n.getText("error.possWrongComPort"));
 			return;
-		}
+		} 
 		
 		// add the measure panel...
 		measurePanel = new TestMeasurePanel(txtComCheckLog, device);
 		panelMeasureHolder.setLayout(new BorderLayout());
 		panelMeasureHolder.add(measurePanel, BorderLayout.CENTER);
-		
-		
-	
     }
     
     private void internationalizeComponents()
@@ -304,7 +193,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	this.propertiesTabs.setTitleAt(0, I18n.getText("preferences.network"));
     	this.propertiesTabs.setIconAt(0, Builder.getIcon("networksettings.png", 22));
     	this.panelWebservice.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.webservice")));
-        this.panelNetworkConnections.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.networkConnection")));
+        this.panelNetworkConnections.setBorder(null);
         this.panelEmail.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.email")));   	
         this.lblWSURL.setText(I18n.getText("general.url")+":");
         this.lblSMTPServer.setText(I18n.getText("preferences.smtpServer")+":");
@@ -318,14 +207,12 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         this.btnReloadDictionary.setText(I18n.getText("preferences.reloadDictionary"));
         
         // Second tab
-        this.panelHardware.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.measuringPlatform")));
+        this.panelHardware.setBorder(null);
         this.panelTestComms.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), I18n.getText("preferences.checkConnection")));        
     	this.propertiesTabs.setTitleAt(1, I18n.getText("preferences.hardware"));
     	this.propertiesTabs.setIconAt(1, Builder.getIcon("hardware.png", 22));
-        this.lblPlatformType.setText(I18n.getText("general.type")+":");
-        this.lblPort.setText(I18n.getText("general.port")+":");
-        this.lblBaud.setText(I18n.getText("preferences.baud")+":");
         this.btnStartMeasuring.setText(I18n.getText("preferences.hardware.testmeasuring"));
+        
         
         // Third tab
     	this.propertiesTabs.setTitleAt(2, I18n.getText("preferences.statistics"));
@@ -427,12 +314,6 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         btnNoProxy = new javax.swing.JRadioButton();
         btnManualProxy = new javax.swing.JRadioButton();
         panelHardware = new javax.swing.JPanel();
-        panelPlatform = new javax.swing.JPanel();
-        cboPlatformType = new javax.swing.JComboBox();
-        lblPlatformType = new javax.swing.JLabel();
-        lblBaud = new javax.swing.JLabel();
-        cboBaud = new javax.swing.JComboBox();
-        cboBaud.setEnabled(false);
         panelTestComms = new javax.swing.JPanel();
         btnStartMeasuring = new javax.swing.JButton();
         panelStatistics = new javax.swing.JPanel();
@@ -677,19 +558,12 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 
         propertiesTabs.addTab("Network", panelNetworkConnections);
 
-        panelPlatform.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Measuring Platform"));
-
-        cboPlatformType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "EveIO", "Velmex TA UniSlide with QC10 Encoder", "Lintab", "Generic serial platform" }));
-
-        lblPlatformType.setText("Type:");
-
-        lblBaud.setText("Baud:");
-
-        cboBaud.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "9600", "4800", "2400", "1200", "300", "110" }));
-
         panelTestComms.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Test Connection"));
 
         btnStartMeasuring.setText("Test measuring");
+        
+        JPanel panelHardwarePrefsHolder = new JPanel();
+        panelHardwarePrefsHolder.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Platform", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
         GroupLayout gl_panelHardware = new GroupLayout(panelHardware);
         gl_panelHardware.setHorizontalGroup(
@@ -698,41 +572,24 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         			.addContainerGap()
         			.addGroup(gl_panelHardware.createParallelGroup(Alignment.LEADING)
         				.addGroup(gl_panelHardware.createSequentialGroup()
-        					.addComponent(panelPlatform, GroupLayout.DEFAULT_SIZE, 733, Short.MAX_VALUE)
-        					.addContainerGap())
-        				.addComponent(panelTestComms, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 745, Short.MAX_VALUE)))
+        					.addComponent(panelHardwarePrefsHolder, GroupLayout.DEFAULT_SIZE, 745, Short.MAX_VALUE)
+        					.addGap(6))
+        				.addComponent(panelTestComms, GroupLayout.DEFAULT_SIZE, 739, Short.MAX_VALUE)))
         );
         gl_panelHardware.setVerticalGroup(
         	gl_panelHardware.createParallelGroup(Alignment.LEADING)
         		.addGroup(gl_panelHardware.createSequentialGroup()
         			.addContainerGap()
-        			.addComponent(panelPlatform, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addComponent(panelHardwarePrefsHolder, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE)
+        			.addPreferredGap(ComponentPlacement.RELATED)
         			.addComponent(panelTestComms, GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
         			.addContainerGap())
         );
+        panelHardwarePrefsHolder.setLayout(new BorderLayout(0, 0));
+        
+        hpp = new HardwarePrefsPanel();
+        panelHardwarePrefsHolder.add(hpp);
         panelHardware.setLayout(gl_panelHardware);
-        panelPlatform.setLayout(new FormLayout(new ColumnSpec[] {
-        		FormFactory.RELATED_GAP_COLSPEC,
-        		ColumnSpec.decode("75px"),
-        		FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-        		ColumnSpec.decode("max(174px;pref)"),
-        		FormFactory.RELATED_GAP_COLSPEC,
-        		ColumnSpec.decode("left:75px"),
-        		FormFactory.RELATED_GAP_COLSPEC,
-        		ColumnSpec.decode("max(86dlu;default)"),},
-        	new RowSpec[] {
-        		RowSpec.decode("27px"),
-        		FormFactory.RELATED_GAP_ROWSPEC,
-        		FormFactory.DEFAULT_ROWSPEC,
-        		FormFactory.PARAGRAPH_GAP_ROWSPEC,
-        		RowSpec.decode("27px"),
-        		FormFactory.RELATED_GAP_ROWSPEC,
-        		RowSpec.decode("27px"),
-        		FormFactory.RELATED_GAP_ROWSPEC,
-        		FormFactory.DEFAULT_ROWSPEC,}));
-        panelPlatform.add(lblPlatformType, "2, 1, fill, center");
-        panelPlatform.add(cboPlatformType, "4, 1, 5, 1, left, top");
 
         propertiesTabs.addTab("Hardware", panelHardware);
 
@@ -1238,15 +1095,12 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JButton btnWMSAdd;
     protected javax.swing.JButton btnWMSRemove;
     protected javax.swing.JComboBox cboAxisCursorColor;
-    protected javax.swing.JComboBox cboBaud;
     protected javax.swing.JComboBox cboChartBGColor;
     protected javax.swing.JComboBox cboDScore;
     protected javax.swing.JComboBox cboDisplayUnits;
     protected javax.swing.JComboBox cboEditorBGColor;
     protected javax.swing.JComboBox cboGridColor;
     protected javax.swing.JComboBox cboHighlightColor;
-    protected javax.swing.JComboBox cboPlatformType;
-    protected javax.swing.JComboBox cboPort;
     protected javax.swing.JComboBox cboRValue;
     protected javax.swing.JComboBox cboTScore;
     protected javax.swing.JComboBox cboTextColor;
@@ -1257,7 +1111,6 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JCheckBox chkShowEditorGrid;
     protected javax.swing.JScrollPane jScrollPane2;
     protected javax.swing.JLabel lblAxisCursorColor;
-    protected javax.swing.JLabel lblBaud;
     protected javax.swing.JLabel lblChartBGColor;
     protected javax.swing.JLabel lblDScore;
     protected javax.swing.JLabel lblDisplayUnits;
@@ -1267,8 +1120,6 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JLabel lblHighlightColor;
     protected javax.swing.JLabel lblMinOverlap;
     protected javax.swing.JLabel lblMinOverlapDScore;
-    protected javax.swing.JLabel lblPlatformType;
-    protected javax.swing.JLabel lblPort;
     protected javax.swing.JLabel lblProxyPort;
     protected javax.swing.JLabel lblProxyPort1;
     protected javax.swing.JLabel lblProxyServer;
@@ -1292,7 +1143,6 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JPanel panelMapping;
     protected javax.swing.JPanel panelNetworkConnections;
     protected javax.swing.JPanel panelNumberFormats;
-    protected javax.swing.JPanel panelPlatform;
     protected javax.swing.JPanel panelProxy;
     protected javax.swing.JPanel panelSigScores;
     protected javax.swing.JPanel panelStatistics;
@@ -1315,15 +1165,6 @@ private void btnDefaultProxyActionPerformed(java.awt.event.ActionEvent evt) {//G
     protected javax.swing.JTextField txtWSURL;
     protected TestMeasurePanel measurePanel;
     protected JPanel panelMeasureHolder;
-    protected JLabel lblDatabits;
-    protected JLabel lblStopbits;
-    protected JComboBox cboDatabits;
-    protected JComboBox cboStopbits;
-    protected JLabel lblUnits;
-    protected JLabel lblLineFeed;
-    protected JComboBox cboUnits;
-    protected JComboBox cboLineFeed;
-    protected JComboBox cboParity;
     protected JTextPane txtComCheckLog;
     // End of variables declaration//GEN-END:variables
 	

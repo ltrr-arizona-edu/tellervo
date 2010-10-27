@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.hardware;
+package edu.cornell.dendro.corina.hardware.device;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -6,6 +6,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
+import edu.cornell.dendro.corina.hardware.SerialSampleIOEvent;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.BaudRate;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataBits;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.FlowControl;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortState;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMultiplier;
 
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
@@ -22,7 +33,7 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	private int lastSerial = -1;
 	
 	public LINTABSerialMeasuringDevice(String portName) throws IOException {
-		super(portName, BaudRate.B_1200);
+		super(portName);
 	}
 
 	public LINTABSerialMeasuringDevice() {
@@ -30,17 +41,25 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	}
 
 	@Override
-	protected boolean doesInitialization() {
-		return true;
+	public void setDefaultPortParams()
+	{
+		baudRate = BaudRate.B_1200;
+		dataBits = DataBits.DATABITS_8;
+		stopBits = StopBits.STOPBITS_1;
+		parity = PortParity.NONE;
+		flowControl = FlowControl.NONE;
+		lineFeed = LineFeed.NONE;
+		unitMultiplier = UnitMultiplier.ZERO;
+	}
+	
+	@Override
+	public String toString() {
+		return "LINTAB 5/6 with ASCII adapter";
 	}
 
 	@Override
-	public String getMeasuringDeviceName() {
-		return "LINTAB 6 IO device";
-	}
-
-	@Override
-	protected void doInitialize() {
+	protected void doInitialize() throws IOException {
+		openPort();
 		boolean waiting_for_init = true;
 		int tryCount = 0;
 		
@@ -217,6 +236,11 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 		return false;
 	}
 
+	@Override
+	public Boolean isFlowControlEditable(){
+		return false;
+	}
+	
 	@Override
 	public Boolean isUnitsEditable() {
 		return false;

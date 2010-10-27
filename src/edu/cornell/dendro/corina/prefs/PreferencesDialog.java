@@ -33,6 +33,8 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 
 
 public class PreferencesDialog extends Ui_PreferencesPanel {
+
+	private static final long serialVersionUID = -4079890077696526465L;
 	// it's really important to only show one prefs dialog! :)
 	private static JFrame dialog;
 	private static PreferencesDialog pfdialog;
@@ -132,17 +134,17 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 			ArrayListModel<String> portmodel = new ArrayListModel<String>();
 			
 			portmodel.addAll(comportlist);
-			cboPort.setModel(portmodel);
+			hpp.getCboPort().setModel(portmodel);
 			
 			if (curport != null)
-				cboPort.setSelectedItem(curport);
+				hpp.getCboPort().setSelectedItem(curport);
 	
 				
 			
-			this.cboPort.addActionListener(new ActionListener() {
+			this.hpp.getCboPort().addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					App.prefs.setPref("corina.serialsampleio.port",
-							(String) cboPort.getSelectedItem());
+							(String) hpp.getCboPort().getSelectedItem());
 				}
 			});
 		}
