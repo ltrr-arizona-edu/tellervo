@@ -162,7 +162,7 @@ public class FileMenu extends JMenu {
 		JMenuItem filenew = Builder.makeMenuItem("menus.file.new", true, "filenew.png");
 		filenew.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				edu.cornell.dendro.corina.editor.EditorFactory.newSeries();
+				edu.cornell.dendro.corina.editor.EditorFactory.newSeries(f);
 			}
 		});
 		add(filenew);

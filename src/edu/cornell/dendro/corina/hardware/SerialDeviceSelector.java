@@ -26,6 +26,8 @@ public class SerialDeviceSelector {
 	private static final HashMap<String, Class<?extends AbstractSerialMeasuringDevice>> deviceMap = 
 		new HashMap<String, Class<?extends AbstractSerialMeasuringDevice>>();
 
+	private static final String none = "[none]";
+	
 	/** Register measuring devices */
 	static {
 		registerDevice(EveIODevice.class);
@@ -98,9 +100,14 @@ public class SerialDeviceSelector {
 		String portName = App.prefs.getPref("corina.serialsampleio.port", "COM1");
 		AbstractSerialMeasuringDevice device = null;
 
+		if(selectedDevice==null || selectedDevice.equals(SerialDeviceSelector.none))
+		{
+			throw new IOException("You haven't set up your measuring platform yet!");
+		}
+		
 		if(!deviceMap.containsKey(selectedDevice))
 		{
-			return null;
+			throw new IOException("Unknown platform set in preferences");
 		}
 		
 		// Try to grab a basic instantiation of the device

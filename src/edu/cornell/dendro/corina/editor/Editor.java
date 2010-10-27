@@ -682,6 +682,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	// setup common to both constructors
 	private void setup() {
 		
+		
+		
 		// first, make sure we stop measuring if the window is closed.
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -955,6 +957,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			device = SerialDeviceSelector.getSelectedDevice(true);	
 		}
 		catch (Exception ioe) {
+			
 			Alert.error(I18n.getText("error"), 
 					I18n.getText("error.initExtComms")+".\n"+
 					I18n.getText("error.possWrongComPort"));

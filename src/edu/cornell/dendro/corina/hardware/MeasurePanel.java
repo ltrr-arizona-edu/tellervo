@@ -11,17 +11,16 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 
 import net.miginfocom.swing.MigLayout;
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.ui.I18n;
-import javax.swing.BoxLayout;
-import javax.swing.border.Border;
 
 import org.tridas.schema.NormalTridasUnit;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.BevelBorder;
+
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.ui.I18n;
 
 
 public abstract class MeasurePanel extends JPanel implements MeasurementReceiver {
@@ -70,13 +69,16 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		add(panel, "cell 0 0,grow");
 		
 		btnQuit = new JButton(I18n.getText("menus.edit.stop_measuring"));
+		btnQuit.setIcon(Builder.getIcon("stop.png", 22));
 		panel.add(btnQuit);
 		
 				
-				btnReset = new JButton("Reset");
+				btnReset = new JButton("Zero");
+				btnReset.setIcon(Builder.getIcon("zero.png", 22));
 				panel.add(btnReset);
 				
 				btnRecord = new JButton("Record");
+				btnRecord.setIcon(Builder.getIcon("record.png", 22));
 				panel.add(btnRecord);
 				btnRecord.addActionListener(new ActionListener() {
 					

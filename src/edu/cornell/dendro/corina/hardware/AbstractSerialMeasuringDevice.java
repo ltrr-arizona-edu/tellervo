@@ -16,8 +16,8 @@ import java.util.TooManyListenersException;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import edu.cornell.dendro.corina.ui.I18n;
 
-import sun.management.counter.Units;
 import edu.cornell.dendro.corina.ui.Alert;
 
 /**
@@ -256,7 +256,7 @@ public abstract class AbstractSerialMeasuringDevice
 			
 			// it's a serial port. If it's not, something's fubar.
 			if(!(basePort instanceof SerialPort)) {
-				throw new IOException("Unable to open port: Port type is unsupported.");
+				throw new IOException(I18n.getText("preferences.hardware.unsupportedporttype"));
 			}
 			
 			port = (SerialPort) basePort;
@@ -279,18 +279,18 @@ public abstract class AbstractSerialMeasuringDevice
 			//dataOutStream = new BufferedOutputStream((port.getOutputStream()));
 		}
 		catch (NoSuchPortException e) {
-			throw new IOException("Unable to open port: it does not exist!");
+			throw new IOException(I18n.getText("preferences.hardware.portdoesntexist"));
 		}
 		catch (PortInUseException e) {
-			throw new IOException("Unable to open port: it is in use by the application '"+portId.getCurrentOwner()+"'");
+			throw new IOException(I18n.getText("preferences.hardware.portinuse", portId.getCurrentOwner()));
 		}
 		catch (UnsupportedCommOperationException e) {
 			// something is broken??
-			throw new IOException("Unable to open port: unknown error 1. help me.");
+			throw new IOException("Unable to open port: UnsupportedCommOperationException\n"+e.getLocalizedMessage());
 		}
 		catch (TooManyListenersException e) {
 			// uh... we just made it. and set the listener.  something is broken.
-			throw new IOException("Unable to open port: unknown error 2. help me.");
+			throw new IOException("Unable to open port: TooManyListenersException\n"+e.getLocalizedMessage());
 		}
 			
 		state = PortState.NORMAL;

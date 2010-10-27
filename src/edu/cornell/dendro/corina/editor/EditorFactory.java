@@ -3,6 +3,9 @@
  */
 package edu.cornell.dendro.corina.editor;
 
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Window;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.tridas.schema.NormalTridasMeasuringMethod;
@@ -289,7 +293,10 @@ public class EditorFactory {
 		}
 	}
 	
-	public static void newSeries() {
+	public static void newSeries(Container container) {
+		
+		container.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		
 		// should we get this elsewhere?
 		String title = "["+I18n.getText("editor.newSeries")+ "]";
 
@@ -308,6 +315,7 @@ public class EditorFactory {
 
 		// no success, so just ignore..
 		if(!result.success){
+			container.setCursor(Cursor.getDefaultCursor());
 			return;
 		}
 
@@ -346,6 +354,8 @@ public class EditorFactory {
 
 		// start the editor
 		new Editor(sample).setVisible(true);
+		
+		container.setCursor(Cursor.getDefaultCursor());
 	}
 	
 

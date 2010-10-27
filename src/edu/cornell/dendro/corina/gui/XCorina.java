@@ -232,7 +232,7 @@ public class XCorina extends JFrame {
 		button.setContentAreaFilled(false);
 	}
 
-	private JPanel addQuickLinkButtons(JPanel btnPanel, Dimension d) {		
+	private JPanel addQuickLinkButtons(final JPanel btnPanel, Dimension d) {		
 		// no layout
 		btnPanel.setLayout(null);
 
@@ -263,7 +263,7 @@ public class XCorina extends JFrame {
 		
 		newSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				EditorFactory.newSeries();
+				EditorFactory.newSeries(btnPanel.getParent());
 			}
 		});
 		

@@ -274,4 +274,22 @@ public class I18n {
 		}
 		msg = bundle;
 	}
+	
+	/**
+	 * Created by Daniel, easier way of using an arbitrary number of replacing
+	 * strings.
+	 * 
+	 * @param argKey
+	 * @param argReplacing
+	 * @return
+	 */
+	public static String getText(String argKey, String... argReplacing) {
+		String text = getText(argKey);
+		
+		for (int i = 0; i < argReplacing.length; i++) {
+			text = text.replace("{" + i + "}", argReplacing[i]);
+		}
+		
+		return text;
+	}
 }
