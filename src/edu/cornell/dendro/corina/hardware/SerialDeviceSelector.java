@@ -122,13 +122,68 @@ public class SerialDeviceSelector {
 			if(device.arePortSettingsEditable())
 			{
 				// Device has settable port parameters so set them
-				BaudRate baudRate = BaudRate.valueOf(App.prefs.getPref("corina.port.baudrate", null));
-				PortParity parity = PortParity.valueOf(App.prefs.getPref("corina.port.parity", null));
-				UnitMultiplier units = UnitMultiplier.valueOf(App.prefs.getPref("corina.port.unitmultiplier", null));
-				FlowControl fc = FlowControl.valueOf(App.prefs.getPref("corina.port.flowcontrol", null));
-				DataBits db = DataBits.valueOf(App.prefs.getPref("corina.port.databits", null));
-				StopBits sb = StopBits.valueOf(App.prefs.getPref("corina.port.stopbits", null));
-				LineFeed lf = LineFeed.valueOf(App.prefs.getPref("corina.port.linefeed", null));
+				BaudRate baudRate = null;
+				if(App.prefs.getPref("corina.port.baudrate", null)!=null &&
+					device.isBaudEditable())
+				{
+					 try{
+						 baudRate = BaudRate.valueOf(App.prefs.getPref("corina.port.baudrate", null));
+					 } catch (Exception e) {}
+				}
+				
+				PortParity parity = null;
+				if (App.prefs.getPref("corina.port.parity", null)!=null &&
+					device.isParityEditable())
+				{
+					try{
+						parity = PortParity.valueOf(App.prefs.getPref("corina.port.parity", null));
+					} catch (Exception e) {}
+				}
+
+				UnitMultiplier units = null;
+				if(App.prefs.getPref("corina.port.unitmultiplier", null)!=null &&
+					device.isUnitsEditable())
+				{
+					try{
+						units = UnitMultiplier.valueOf(App.prefs.getPref("corina.port.unitmultiplier", null));
+					} catch (Exception e) {}
+				}
+				
+				FlowControl fc = null;
+				if(App.prefs.getPref("corina.port.flowcontrol", null)!=null &&
+					device.isFlowControlEditable())
+				{
+					try{
+						fc = FlowControl.valueOf(App.prefs.getPref("corina.port.flowcontrol", null));
+					} catch (Exception e){}
+				}
+				
+				DataBits db = null;
+				if(App.prefs.getPref("corina.port.databits", null)!=null &&
+					device.isDatabitsEditable())
+				{
+					try{
+						db = DataBits.valueOf(App.prefs.getPref("corina.port.databits", null));
+					} catch (Exception e){}
+				}
+				
+				StopBits sb = null;
+				if(App.prefs.getPref("corina.port.stopbits", null)!=null &&
+					device.isStopbitsEditable())
+				{
+					try{
+						sb = StopBits.valueOf(App.prefs.getPref("corina.port.stopbits", null));
+					} catch (Exception e){}
+				}
+				
+				LineFeed lf = null;
+				if(App.prefs.getPref("corina.port.linefeed", null)!=null &&
+					device.isLineFeedEditable())
+				{
+					try{
+						lf = LineFeed.valueOf(App.prefs.getPref("corina.port.linefeed", null));
+					} catch (Exception e){}
+				}
 				
 				device.setPortParams(portName, baudRate, parity, db, sb, lf, fc);
 				System.out.println("Overriding default port parameters");
