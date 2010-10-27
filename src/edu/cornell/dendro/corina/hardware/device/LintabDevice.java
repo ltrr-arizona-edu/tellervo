@@ -21,25 +21,47 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMult
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 
-public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
+/**
+ * The LINTAB platform is made by RINNTECH.  The original platform uses a protocol
+ * that RINNTECH claim is proprietary.  An agreement was made whereby RINNTECH 
+ * would produce and supply new boxes that would attach to LINTAB platforms that 
+ * communicate with a non-proprietary ASCII-based protocol. Users must purchase
+ * such an adapter to use LINTAB platforms with Corina (or any other software 
+ * other than TSAP-Win). 
+ * 
+ * These new boxes include a serial and USB connection.  The USB connection is 
+ * provided by an internal USB-to-serial adapter (driver from www.ftdichip.com).
+ * 
+ * Both serial and virtual-serial connections use the following parameters:
+ * - Baud: 1200
+ * - Data bits : 8
+ * - Stop bits : 1
+ * - Parity : none
+ * - Flow control : none
+ * 
+ * There is no way for the user to alter these settings.
+ * 
+ * Data is transmitted by LINTAB whenever the platform is moved.  The data is
+ * as follows:
+ * [integer position in 1/1000mm];[add button state Ô0Õ or Õ1Õ][reset button state Ô0Õ or Ô1Õ][LF]
+ * 
+ * LINTAB also accepts commands. To force a manual data record output the ASCII-command 
+ * GETDATA should be sent to LINTAB. A reset of the counter is done by sending the 
+ * ASCII-command RESET to LINTAB. After a command a linefeed (0x0A) or carriage return 
+ * (0x0D) must sent to execute the command.
+ *  
+ * @author peterbrewer
+ *
+ */
+public class LintabDevice extends AbstractSerialMeasuringDevice{
 
 	private static final int EVE_ENQ = 5;
-	private static final int EVE_ACK = 6;
-	//private static final int EVE_NAK = 7;
-	
+	private static final int EVE_ACK = 6;	
 	private Boolean fireOnNextValue = false;
 	
 	/** serial NUMBER of the last data point... */
 	private int lastSerial = -1;
 	
-	public LINTABSerialMeasuringDevice(String portName) throws IOException {
-		super(portName);
-	}
-
-	public LINTABSerialMeasuringDevice() {
-		super();
-	}
-
 	@Override
 	public void setDefaultPortParams()
 	{
@@ -54,7 +76,7 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	
 	@Override
 	public String toString() {
-		return "LINTAB 5/6 with ASCII adapter";
+		return "LINTAB 6 with ASCII adapter";
 	}
 
 	@Override
@@ -68,14 +90,14 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 				if(getState() == PortState.WAITING_FOR_ACK) {
 					
 					if(tryCount++ == 25) {
-						fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
+						fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
 						System.out.println("init tries exhausted; giving up.");
 						break;
 					}
 					
 					try {
 						System.out.println("Initializing reader, try " + tryCount + "...");
-						fireSerialSampleEvent(SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
+						fireSerialSampleEvent(this, SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
 						getPort().getOutputStream().write(EVE_ENQ);
 					}
 					catch (IOException e) {	}
@@ -92,6 +114,7 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 		}				
 	}
 	
+	@Override
 	public void serialEvent(SerialPortEvent e) {
 		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			InputStream input;
@@ -116,7 +139,7 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 			    		
 			    		//If a timeout then show bad sample
 						if(intReadFromPort == -1) {
-							fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+							fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
 							return;
 						}
 
@@ -135,7 +158,7 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
                 if( strReadBuffer.endsWith(";10") || fireOnNextValue) 
                 {
                 	fireOnNextValue = false;
-                	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+                	fireSerialSampleEvent(this, SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
                 	zeroMeasurement();
                 }
                 else if( strReadBuffer.endsWith(";01") || strReadBuffer.endsWith(";11")) 
@@ -145,12 +168,12 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
                 else
                 {
                 	// Not recording this value just updating current value counter
-                	fireSerialSampleEvent(SerialSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT, intValue);
+                	fireSerialSampleEvent(this, SerialSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT, intValue);
                 }
 							
 			}
 			catch (IOException ioe) {
-				fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Error reading from serial port");
+				fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error reading from serial port");
 
 			}   	
 		}
@@ -179,7 +202,8 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	}
 	
 	/**
-	 * Send a command to the Lintab 6 platform. Commands
+	 * Send a command to the LINTAB 6 platform. 
+	 * 
 	 * @param strCommand
 	 */
 	private void sendData(String strCommand)
@@ -197,7 +221,7 @@ public class LINTABSerialMeasuringDevice extends AbstractSerialMeasuringDevice{
 	    
     	}
     	catch (IOException ioe) {
-			fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Error writing to serial port");
+			fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error writing to serial port");
     	}	
 	}
 

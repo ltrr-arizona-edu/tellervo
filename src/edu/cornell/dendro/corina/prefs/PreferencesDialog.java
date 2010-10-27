@@ -7,16 +7,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.Vector;
 
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.hardware.LegacySerialSampleIO;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
@@ -111,12 +108,12 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 	
 	private void setupCOMPort()
 	{
-		if (LegacySerialSampleIO.hasSerialCapability()) {
+		if (AbstractSerialMeasuringDevice.hasSerialCapability()) {
 
 			boolean addedPort = false;
 	
 			// first, enumerate all the ports.
-			Vector<String> comportlist = LegacySerialSampleIO.enumeratePorts();
+			Vector<String> comportlist = AbstractSerialMeasuringDevice.enumeratePorts();
 	
 			// do we have a COM port selected that's not in the list? (ugh!)
 			String curport = App.prefs.getPref("corina.serialsampleio.port", null);

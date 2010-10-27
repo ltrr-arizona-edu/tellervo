@@ -20,43 +20,41 @@
 
 package edu.cornell.dendro.corina.editor;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+
+import javax.swing.AbstractAction;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.gui.menus.EditMenu;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
+import edu.cornell.dendro.corina.io.TwoColumn;
+import edu.cornell.dendro.corina.io.WrongFiletypeException;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.AskNumber;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.util.TextClipboard;
 import edu.cornell.dendro.corina.util.PureStringWriter;
-import edu.cornell.dendro.corina.gui.menus.EditMenu;
-import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.UserCancelledException;
-import edu.cornell.dendro.corina.hardware.LegacySerialSampleIO;
-import edu.cornell.dendro.corina.io.TwoColumn;
-import edu.cornell.dendro.corina.io.WrongFiletypeException;
-import edu.cornell.dendro.corina.core.App;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-
-import javax.swing.JMenuItem;
-import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
-
-import java.awt.event.ActionEvent;
-import java.awt.Toolkit;
-
-import java.util.List;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import edu.cornell.dendro.corina.util.TextClipboard;
 
 /**
  The Edit menu for editor windows.
@@ -195,8 +193,8 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		addDelete();
 		addInsertYears();
 
-		if (LegacySerialSampleIO.hasSerialCapability()
-				&& App.prefs.getPref("corina.serialsampleio.port") != null) {
+		if (AbstractSerialMeasuringDevice.hasSerialCapability()
+				&& App.prefs.getPref("corina.serialsampleio.port", null) != null) {
 			addSeparator();
 			addMeasure();
 		}

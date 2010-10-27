@@ -7,12 +7,23 @@
 package edu.cornell.dendro.corina.prefs;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.GroupLayout;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
@@ -26,22 +37,6 @@ import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.RowSpec;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JTextPane;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import java.awt.Font;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EtchedBorder;
 
 /**
  *
@@ -151,6 +146,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
       
     private void startMeasurementTest()
     {
+    	// Make sure the device is closed
     	if(device!=null)
     	{
     		device.close();
@@ -158,6 +154,8 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	
     	txtComCheckLog.setText("");
     	
+    	// Is the measuring panel is already open, cancel countdown
+    	// and shut it down
     	if(measurePanel!=null)
     	{
     		measurePanel.cancelCountdown();
@@ -168,12 +166,18 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 		// Set up the measuring device
 		try{
 			device = SerialDeviceSelector.getSelectedDevice(true);	
-		} catch (Exception ioe)
+		} catch (IOException e)
 		{
+			
 			Alert.error(I18n.getText("error"), 
-					I18n.getText("error.initExtComms")+".\n"+
-					I18n.getText("error.possWrongComPort"));
+					e.getLocalizedMessage());
 			return;
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} 
 		
 		// add the measure panel...

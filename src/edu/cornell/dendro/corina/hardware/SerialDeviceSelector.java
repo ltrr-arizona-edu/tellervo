@@ -13,10 +13,10 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMultiplier;
-import edu.cornell.dendro.corina.hardware.device.EVESerialMeasuringDevice;
-import edu.cornell.dendro.corina.hardware.device.LINTABSerialMeasuringDevice;
-import edu.cornell.dendro.corina.hardware.device.MetronicsMeasuringDevice;
-import edu.cornell.dendro.corina.hardware.device.QC10MeasuringDevice;
+import edu.cornell.dendro.corina.hardware.device.EveIODevice;
+import edu.cornell.dendro.corina.hardware.device.LintabDevice;
+import edu.cornell.dendro.corina.hardware.device.MetronicsGenericDevice;
+import edu.cornell.dendro.corina.hardware.device.QC10Device;
 import edu.cornell.dendro.corina.prefs.Prefs;
 
 
@@ -28,10 +28,10 @@ public class SerialDeviceSelector {
 
 	/** Register measuring devices */
 	static {
-		registerDevice(EVESerialMeasuringDevice.class);
-		registerDevice(LINTABSerialMeasuringDevice.class);
-		registerDevice(QC10MeasuringDevice.class);
-		registerDevice(MetronicsMeasuringDevice.class);
+		registerDevice(EveIODevice.class);
+		registerDevice(LintabDevice.class);
+		registerDevice(QC10Device.class);
+		registerDevice(MetronicsGenericDevice.class);
 	}
 	
 	/**
@@ -88,8 +88,11 @@ public class SerialDeviceSelector {
 	 * 
 	 * @param doInitialize
 	 * @return
+	 * @throws IOException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public static AbstractSerialMeasuringDevice getSelectedDevice(Boolean doInitialize)
+	public static AbstractSerialMeasuringDevice getSelectedDevice(Boolean doInitialize) throws IOException, InstantiationException, IllegalAccessException
 	{
 		String selectedDevice = App.prefs.getPref(Prefs.SERIAL_DEVICE, null);
 		String portName = App.prefs.getPref("corina.serialsampleio.port", "COM1");
@@ -101,17 +104,9 @@ public class SerialDeviceSelector {
 		}
 		
 		// Try to grab a basic instantiation of the device
-		try {
-			device = deviceMap.get(selectedDevice).newInstance();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+
+		device = deviceMap.get(selectedDevice).newInstance();
+		System.out.println("Successfully instantiated device: "+selectedDevice);
 		
 		if(doInitialize)
 		{
@@ -119,7 +114,7 @@ public class SerialDeviceSelector {
 			
 			if(device.arePortSettingsEditable())
 			{
-				// Device has settable port parameters so use complex constructor
+				// Device has settable port parameters so set them
 				BaudRate baudRate = BaudRate.valueOf(App.prefs.getPref("corina.port.baudrate", null));
 				PortParity parity = PortParity.valueOf(App.prefs.getPref("corina.port.parity", null));
 				UnitMultiplier units = UnitMultiplier.valueOf(App.prefs.getPref("corina.port.unitmultiplier", null));
@@ -127,24 +122,16 @@ public class SerialDeviceSelector {
 				DataBits db = DataBits.valueOf(App.prefs.getPref("corina.port.databits", null));
 				StopBits sb = StopBits.valueOf(App.prefs.getPref("corina.port.stopbits", null));
 				LineFeed lf = LineFeed.valueOf(App.prefs.getPref("corina.port.linefeed", null));
-				try {
-					device = new MetronicsMeasuringDevice(portName, baudRate, parity, db, sb, lf, fc);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return null;
-				}
+				
+				device.setPortParams(portName, baudRate, parity, db, sb, lf, fc);
+				System.out.println("Overriding default port parameters");
 			}
 			else
 			{
-				// Device has no settable parameters so use simple portName constructor
-				try {
-					device = new MetronicsMeasuringDevice(portName);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return null;
-				}
+				// Device has no settable parameters so just open the named port
+				device.openPort(portName);
+				System.out.println("Opened port");
+
 			}
 		}
 

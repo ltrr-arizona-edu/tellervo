@@ -23,7 +23,7 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMult
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 
-public class MetronicsMeasuringDevice extends AbstractSerialMeasuringDevice{
+public class MetronicsGenericDevice extends AbstractSerialMeasuringDevice{
 
 	private static final int EVE_ENQ = 5;
 	private static final int EVE_ACK = 6;
@@ -32,27 +32,9 @@ public class MetronicsMeasuringDevice extends AbstractSerialMeasuringDevice{
 	/** serial NUMBER of the last data point... */
 	private int lastSerial = -1;
 	
-	public MetronicsMeasuringDevice(String portName) throws IOException {
-		super(portName);
-		//MeasureJ2X defaults to using 2 stop bits but Corina/Java/something bombs if you 
-		//try to write to the port with 2 stop bits set.  So lets stick with 1 stop bit for now!
-		//setStopBits(SerialPort.STOPBITS_2);
-		//setFlowControl(SerialPort.FLOWCONTROL_RTSCTS_OUT);
-	}
-
-	public MetronicsMeasuringDevice() {
-		super();
-	}
-	
-	public MetronicsMeasuringDevice(String portName, BaudRate baudRate, PortParity parity,
-			DataBits dataBits, StopBits stopBits, LineFeed lineFeed, FlowControl flowControl)
-			throws IOException
-	{
-		super(portName, baudRate, parity, dataBits, stopBits, lineFeed, flowControl);
-	}
-
 	@Override
 	public void setDefaultPortParams(){
+		
 		baudRate = BaudRate.B_9600;
 		dataBits = DataBits.DATABITS_8;
 		stopBits = StopBits.STOPBITS_1;
@@ -78,14 +60,14 @@ public class MetronicsMeasuringDevice extends AbstractSerialMeasuringDevice{
 				if(getState() == PortState.WAITING_FOR_ACK) {
 					
 					if(tryCount++ == 25) {
-						fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
+						fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
 						System.out.println("init tries exhausted; giving up.");
 						break;
 					}
 					
 					try {
 						System.out.println("Initializing reader, try " + tryCount + "...");
-						fireSerialSampleEvent(SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
+						fireSerialSampleEvent(this, SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
 						getPort().getOutputStream().write(EVE_ENQ);
 					}
 					catch (IOException e) {	}
@@ -116,7 +98,7 @@ public class MetronicsMeasuringDevice extends AbstractSerialMeasuringDevice{
 			    	while ((intReadFromPort=input.read()) != 10){
 			    		//If a timeout then show bad sample
 						if(intReadFromPort == -1) {
-							fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+							fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
 							return;
 
 						}
@@ -139,7 +121,7 @@ public class MetronicsMeasuringDevice extends AbstractSerialMeasuringDevice{
 				}
 				else
 				{
-					fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Invalid value from device");
+					fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Invalid value from device");
 
 				}
                 
@@ -151,18 +133,18 @@ public class MetronicsMeasuringDevice extends AbstractSerialMeasuringDevice{
 		    	if(intValue>0)
 		    	{	    	
 			    	// Fire event
-			    	fireSerialSampleEvent(SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+			    	fireSerialSampleEvent(this, SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
 		    	}
 		    	else
 		    	{
 		    		// Fire bad event as value is a negative number
-		    		fireSerialSampleEvent(SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+		    		fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
 		    	}
 			    							
 
 			}
 			catch (Exception ioe) {
-				fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Error reading from serial port");
+				fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error reading from serial port");
 
 			}   	
 			    	
@@ -208,7 +190,7 @@ public class MetronicsMeasuringDevice extends AbstractSerialMeasuringDevice{
 	    
     	}
     	catch (Exception ioe) {
-			fireSerialSampleEvent(SerialSampleIOEvent.ERROR, "Error sending command to serial port");
+			fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error sending command to serial port");
 
     	}	
 	}

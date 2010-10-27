@@ -9,13 +9,16 @@ import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TooManyListenersException;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
 import sun.management.counter.Units;
+import edu.cornell.dendro.corina.ui.Alert;
 
 /**
  * Abstract base class for a serial port measuring device
@@ -36,6 +39,7 @@ public abstract class AbstractSerialMeasuringDevice
 	private PortState state;	
 		
 	/** Port settings */
+	protected String portName;
 	protected BaudRate baudRate = BaudRate.B_9600;
 	protected DataBits dataBits = DataBits.DATABITS_8;
 	protected StopBits stopBits = StopBits.STOPBITS_1;
@@ -55,7 +59,18 @@ public abstract class AbstractSerialMeasuringDevice
 	
 	
 	/**
-	 * Create a new serial measuring device
+	 * Create a new serial measuring device, but do not open. Typically for 
+	 * informational uses only. Port state is set to 'DIE' as if it had 
+	 * been closed.
+	 */
+	public AbstractSerialMeasuringDevice() {
+		setDefaultPortParams();
+		addSerialSampleIOListener(this);
+		state = PortState.DIE;
+	}
+	
+	/**
+	 * Create a new serial measuring device on 'portName'
 	 * 
 	 * @param portName the port name ("COM1" on windows, etc)
 	 * @throws IOException
@@ -65,20 +80,9 @@ public abstract class AbstractSerialMeasuringDevice
 		port = openPort(portName);		
 		addSerialSampleIOListener(this);
 	}
-		
-	/**
-	 * Create a new serial measuring device, but do not open. Typically for 
-	 * informational uses only. Port state is set to 'DIE' as if it had 
-	 * been closed.
-	 */
-	public AbstractSerialMeasuringDevice() {
-		setDefaultPortParams();
-		state = PortState.DIE;
-	}
 	
 	/**
-	 * Constructor for when you'd like to override the default port settings at run time.
-	 * If you want to leave any parameter as default, just pass it null.
+	 * Helper function for setting port params in one go.
 	 * 
 	 * @param portName
 	 * @param baudRate
@@ -86,11 +90,13 @@ public abstract class AbstractSerialMeasuringDevice
 	 * @param dataBits
 	 * @param stopBits
 	 * @param lineFeed
+	 * @param flowControl
 	 * @throws IOException
 	 */
-	public AbstractSerialMeasuringDevice(String portName, BaudRate baudRate, PortParity parity,
-			DataBits dataBits, StopBits stopBits, LineFeed lineFeed, FlowControl flowControl) 
-			throws IOException
+	public void setPortParams(String portName, BaudRate baudRate, PortParity parity,
+			DataBits dataBits, StopBits stopBits, LineFeed lineFeed, FlowControl flowControl)
+		throws IOException
+	
 	{
 		if(baudRate!=null)    this.baudRate = baudRate;
 		if(parity!=null)      this.parity = parity;
@@ -98,11 +104,9 @@ public abstract class AbstractSerialMeasuringDevice
 		if(stopBits!=null)    this.stopBits = stopBits;
 		if(lineFeed!=null)    this.lineFeed = lineFeed;
 		if(flowControl!=null) this.flowControl = flowControl;
-		
 		port = openPort(portName);		
 		addSerialSampleIOListener(this);
 	}
-	
 	/**
 	 * If doesInitialization() returns true, starts a new thread and calls doInitialize
 	 */
@@ -179,7 +183,15 @@ public abstract class AbstractSerialMeasuringDevice
 	 * @return
 	 */
 	protected final SerialPort getPort() {
-		return port;
+		if(port!=null)
+		{
+			return port;
+		}
+		else
+		{
+			System.out.println("Port is null!");
+			return null;
+		}
 	}
 	
 	/**
@@ -208,7 +220,16 @@ public abstract class AbstractSerialMeasuringDevice
 	 * @throws IOException
 	 */
 	public SerialPort openPort() throws IOException{
-		return this.openPort(port.getName());
+		if(portName!=null)
+		{
+			return openPort(portName);
+		}
+		else
+		{
+			Alert.error("Error", "Port name not specified");
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -219,8 +240,12 @@ public abstract class AbstractSerialMeasuringDevice
 	 * @throws IOException
 	 */
 	protected SerialPort openPort(String portName) throws IOException {
-		SerialPort port;
-		CommPortIdentifier portId;
+		
+		// Make sure the port is closed
+		try	{port.close();}catch( Exception e){};
+		
+		this.portName = portName;
+		CommPortIdentifier portId = null;
 		
 		try {
 			// get the port by name.
@@ -257,7 +282,7 @@ public abstract class AbstractSerialMeasuringDevice
 			throw new IOException("Unable to open port: it does not exist!");
 		}
 		catch (PortInUseException e) {
-			throw new IOException("Unable to open port: it is in use by another application.");
+			throw new IOException("Unable to open port: it is in use by the application '"+portId.getCurrentOwner()+"'");
 		}
 		catch (UnsupportedCommOperationException e) {
 			// something is broken??
@@ -339,7 +364,7 @@ public abstract class AbstractSerialMeasuringDevice
 		listeners.remove(l);
 	}
 	
-	protected synchronized void fireSerialSampleEvent(int type, Object value) {
+	protected synchronized void fireSerialSampleEvent(Object source, int type, Object value) {
 		// alert all listeners
 		SerialSampleIOListener[] l;
 		synchronized (listeners) {
@@ -352,8 +377,7 @@ public abstract class AbstractSerialMeasuringDevice
 		if (size == 0)
 			return;
 
-		SerialSampleIOEvent e = new SerialSampleIOEvent(LegacySerialSampleIO.class,
-				type, value);
+		SerialSampleIOEvent e = new SerialSampleIOEvent(source, type, value);
 
 		for (int i = 0; i < size; i++) {
 			l[i].SerialSampleIONotify(e);
@@ -560,6 +584,27 @@ public abstract class AbstractSerialMeasuringDevice
 			System.err.println(e.toString());
 		}
 		return hscResult;
+	}
+	
+	/**
+	 * Get a vector of all the ports identified on this computer
+	 * 
+	 * @return
+	 */
+	public static Vector enumeratePorts() {
+		Enumeration ports = CommPortIdentifier.getPortIdentifiers();
+		Vector portStrings = new Vector();
+				
+		while(ports.hasMoreElements()) {
+			CommPortIdentifier currentPort = (CommPortIdentifier)ports.nextElement();
+			
+			if(currentPort.getPortType() != CommPortIdentifier.PORT_SERIAL)
+				continue;
+			
+			portStrings.add(new String(currentPort.getName()));
+		}
+		
+		return portStrings;
 	}
 	
 	/**

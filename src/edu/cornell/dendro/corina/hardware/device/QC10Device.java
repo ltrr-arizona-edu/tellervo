@@ -12,23 +12,8 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMultiplier;
 
 
-public class QC10MeasuringDevice extends MetronicsMeasuringDevice {
+public class QC10Device extends MetronicsGenericDevice {
 
-	public QC10MeasuringDevice(String portName) throws IOException {
-		super(portName);
-	}
-
-	public QC10MeasuringDevice() {
-		super();
-	}
-	
-	public QC10MeasuringDevice(String portName, BaudRate baudRate, PortParity parity,
-			DataBits dataBits, StopBits stopBits, LineFeed lineFeed, FlowControl flowControl)
-			throws IOException
-	{
-		super(portName, baudRate, parity, dataBits, stopBits, lineFeed, flowControl);
-	}
-	
 	@Override
 	public String toString() {
 		return "Metronics Quadra-Chek 10";
@@ -36,6 +21,10 @@ public class QC10MeasuringDevice extends MetronicsMeasuringDevice {
 
 	@Override
 	public void setDefaultPortParams(){
+		
+		//MeasureJ2X defaults to using 2 stop bits but Corina/Java/something bombs if you 
+		//try to write to the port with 2 stop bits set.  So lets stick with 1 stop bit for now!
+		
 		baudRate = BaudRate.B_9600;
 		dataBits = DataBits.DATABITS_8;
 		stopBits = StopBits.STOPBITS_1;
