@@ -122,6 +122,7 @@ public class BulkImportController extends FrontController {
 	}
 	
 	private void populateSampleDefaults(ColumnChooserModel ccmodel){
+		ccmodel.add(SingleSampleModel.OBJECT);
 		ccmodel.add(SingleSampleModel.ELEMENT);
 		ccmodel.add(SingleSampleModel.TITLE);
 		ccmodel.add(SingleSampleModel.TYPE);
