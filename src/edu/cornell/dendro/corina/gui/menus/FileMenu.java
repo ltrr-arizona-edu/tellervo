@@ -27,6 +27,8 @@ import javax.swing.filechooser.FileFilter;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.InvalidDendroFileException;
+import org.tridas.io.gui.control.TricycleController;
+import org.tridas.io.gui.model.TricycleModelLocator;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasProject;
 import org.tridas.io.util.SafeIntYear;
@@ -34,6 +36,7 @@ import org.tridas.io.util.TridasUtils;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.bulkImport.control.BulkImportController;
 import edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
@@ -125,8 +128,14 @@ public class FileMenu extends JMenu {
 		addExportMenus();
 		addSeparator();
 		addDataEntryMenus();
+		
+		// make sure the controllers are created
+		TricycleModelLocator.getInstance();
+		add(Builder.makeMVCMenuItem("menus.file.tricycle", TricycleController.STARTUP, "bulkDataEntry.png"));
+
 		addSeparator();
 		addCloseSaveMenus();
+		
 		addSeparator();
 		addPrintingMenus();
 		// TODO: each one of these should either be:
@@ -160,7 +169,7 @@ public class FileMenu extends JMenu {
 		//add(Builder.makeMenuItem("menus.file.new", "edu.cornell.dendro.corina.editor.EditorFactory.newSeries()", "filenew.png"));
 		
 		JMenuItem filenew = Builder.makeMenuItem("menus.file.new", true, "filenew.png");
-		filenew.addActionListener(new AbstractAction() {
+		filenew.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				edu.cornell.dendro.corina.editor.EditorFactory.newSeries(f);
 			}
@@ -178,7 +187,7 @@ public class FileMenu extends JMenu {
 	}
 	
 	public void addDataEntryMenus(){
-		add(Builder.makeMenuItem("menus.file.bulkimport", "edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow.main()", "bulkDataEntry.png"));
+		add(Builder.makeMVCMenuItem("menus.file.bulkimport", BulkImportController.DISPLAY_BULK_IMPORT, "bulkDataEntry.png"));
 
 	}
 

@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -22,6 +23,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.KeyStroke;
 
+import com.dmurph.mvc.MVCEvent;
 import com.lowagie.text.BadElementException;
 
 import edu.cornell.dendro.corina.core.App;
@@ -53,6 +55,26 @@ public class Builder {
 		
 		setupMnemonics(m, key);
 
+		return m;
+	}
+	
+	/**
+	 * Creates a menu item that dispatches an mvc event with the given key what it's pressed
+	 * @param key
+	 * @param argMVCKey
+	 * @param iconfilename
+	 * @return
+	 */
+	public static JMenuItem makeMVCMenuItem(String argTextKey, final String argMVCKey, String argIconFilename) {
+		JMenuItem m = new JMenuItem(argTextKey, getIcon(argIconFilename, ICONS, 22));
+		setupMnemonics(m, argTextKey);
+		m.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent argE) {
+				MVCEvent event = new MVCEvent(argMVCKey);
+				event.dispatch();
+			}
+		});
 		return m;
 	}
 

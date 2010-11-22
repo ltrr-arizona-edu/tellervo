@@ -3,12 +3,12 @@
  */
 package edu.cornell.dendro.corina.tridasv2.doc;
 
+import java.util.Enumeration;
 import java.util.MissingResourceException;
+import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 
 import org.apache.commons.lang.StringUtils;
-
-import edu.cornell.dendro.corina.ui.DefaultResourceBundle;
 
 /**
  * @author lucasm
@@ -58,7 +58,26 @@ public class Documentation {
 			bundle = ResourceBundle.getBundle("edu/cornell/dendro/corina/tridasv2/doc/DocsBundle");
 		} catch (MissingResourceException mre) {
 			mre.printStackTrace();
-			bundle = new DefaultResourceBundle();
+			bundle = new ResourceBundle() {
+				
+				protected Object handleGetObject(String key) {
+					return key;
+				}
+				
+				public Enumeration<String> getKeys() {
+					return EMPTY_ENUMERATION;
+				}
+				
+				private final Enumeration<String> EMPTY_ENUMERATION = new Enumeration<String>() {
+					public boolean hasMoreElements() {
+						return false;
+					}
+					
+					public String nextElement() {
+						throw new NoSuchElementException();
+					}
+				};
+			};
 		}
 		msg = bundle;
 	}

@@ -132,10 +132,4 @@ public class BulkImportController extends FrontController {
 	private void populateRadiusDefaults(ColumnChooserModel ccmodel){
 		ccmodel.add(SingleElementModel.IMPORTED);
 	}
-	
-	public static void main() {
-		CorinaModelLocator.getInstance();
-		MVCEvent event = new MVCEvent(DISPLAY_BULK_IMPORT);
-		event.dispatch();
-	}
 }

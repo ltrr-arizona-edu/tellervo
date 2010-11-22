@@ -41,6 +41,7 @@ import javax.swing.UIManager;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.Logging;
+import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 
@@ -159,6 +160,9 @@ public class Startup implements PrivilegedAction {
 	 *            command-line arguments; ignored
 	 */
 	public static void main(String args[]) {
+		// initialize controllers
+		CorinaModelLocator.getInstance();
+		
 		// the Java Web Start security manager is by default horribly
 		// restrictive.
 		System.setSecurityManager(null);

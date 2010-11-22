@@ -26,7 +26,6 @@ import javax.swing.SwingConstants;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.ui.DefaultResourceBundle;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
 import javax.swing.GroupLayout;

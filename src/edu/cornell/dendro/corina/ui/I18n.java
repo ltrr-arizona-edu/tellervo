@@ -20,7 +20,9 @@
 
 package edu.cornell.dendro.corina.ui;
 
+import java.util.Enumeration;
 import java.util.MissingResourceException;
+import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 
 import javax.swing.KeyStroke;
@@ -194,7 +196,12 @@ public class I18n {
 	 * @return the keystroke
 	 */
 	public static KeyStroke getKeyStroke(String key) {
-		String value = msg.getString(key);
+		String value;
+		try {
+			value = msg.getString(key);
+		} catch (MissingResourceException e) {
+			return null;
+		}
 
 		int left = value.indexOf('[');
 		int right = value.indexOf(']');
@@ -262,14 +269,35 @@ public class I18n {
 	static {
 		ResourceBundle bundle;
 		try {
-			bundle = ResourceBundle
-					.getBundle("edu/cornell/dendro/corina_resources/Translations/TextBundle");
+			bundle = ResourceBundle.getBundle("edu/cornell/dendro/corina_resources/Translations/TextBundle");
 		} catch (MissingResourceException mre) {
 			try {
-				bundle = ResourceBundle.getBundle("TextBundle");
+				bundle = ResourceBundle.getBundle("edu/cornell/dendro/corina_resources/Translations/TextBundle");
 			} catch (MissingResourceException mre2) {
+				System.out.println("Could not find locale file.");
 				mre2.printStackTrace();
-				bundle = new DefaultResourceBundle();
+				bundle = new ResourceBundle() {
+					
+					@Override
+					protected Object handleGetObject(String key) {
+						return key;
+					}
+					
+					@Override
+					public Enumeration<String> getKeys() {
+						return EMPTY_ENUMERATION;
+					}
+					
+					private final Enumeration<String> EMPTY_ENUMERATION = new Enumeration<String>() {
+						public boolean hasMoreElements() {
+							return false;
+						}
+						
+						public String nextElement() {
+							throw new NoSuchElementException();
+						}
+					};
+				};
 			}
 		}
 		msg = bundle;
