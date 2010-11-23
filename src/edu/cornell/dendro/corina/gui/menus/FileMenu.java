@@ -55,8 +55,12 @@ import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
 import edu.cornell.dendro.corina.io.AbstractDendroReaderFileFilter;
 import edu.cornell.dendro.corina.io.DendroReaderFileFilter;
 import edu.cornell.dendro.corina.io.ExportDialog;
+import edu.cornell.dendro.corina.io.ImportDialog;
 import edu.cornell.dendro.corina.io.WrongFiletypeException;
+import edu.cornell.dendro.corina.io.model.ImportModel;
+import edu.cornell.dendro.corina.io.view.ImportView;
 import edu.cornell.dendro.corina.manip.Sum;
+import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.print.SeriesReport;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
@@ -159,7 +163,7 @@ public class FileMenu extends JMenu {
 	
 	public void addIOMenus(){
 		
-		add(Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png"));
+		add(Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithtricycle()", "fileimport.png"));
 		
 	}
 	
@@ -327,6 +331,49 @@ public class FileMenu extends JMenu {
 		} 
 			
 			
+	}
+	
+	public static void importdbwithtricycle()
+	{
+		// Set up file chooser and filters
+		JFileChooser fc = new JFileChooser();
+		for (String readername : TridasIO.getSupportedReadingFormats())
+		{
+			AbstractDendroReaderFileFilter filter = new DendroReaderFileFilter(readername);
+			fc.addChoosableFileFilter(filter);
+		}
+		int returnVal = fc.showOpenDialog(null);
+			
+		// Get details from user
+		String fullFilename = null;
+		String filename = null;
+		String type = null;
+	    if (returnVal == JFileChooser.APPROVE_OPTION) {
+	        File file = fc.getSelectedFile();
+	        type = fc.getFileFilter().getDescription();
+	        
+	        fullFilename = file.getPath();
+	        filename = file.getName();
+	        
+	        ImportView importDialog = new ImportView(file);
+	        
+			
+			importDialog.setVisible(true);
+	        
+	        
+			// Set up reader
+		   /* AbstractDendroFileReader reader;
+			reader = TridasIO.getFileReader(type);
+	        
+		    ImportDialog importdialog = new ImportDialog(file, reader);
+		    importdialog.setVisible(true);*/
+		    
+	    } else {
+	    	return;
+	    }
+
+
+	    
 	}
 	
 	public static void importdbwithbarcode(){
