@@ -12,6 +12,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -26,37 +27,50 @@ import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import jsyntaxpane.DefaultSyntaxKit;
 
+import org.apache.commons.lang.WordUtils;
+import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
+import org.netbeans.swing.outline.OutlineModel;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.exceptions.ConversionWarning;
+import org.tridas.io.exceptions.InvalidDendroFileException;
+import org.tridas.io.exceptions.InvalidDendroFileException.PointerType;
 import org.tridas.schema.TridasProject;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVC;
+import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectEvent;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectListener;
 import edu.cornell.dendro.corina.io.ConversionWarningTableModel;
+import edu.cornell.dendro.corina.io.LineHighlighter;
 import edu.cornell.dendro.corina.io.TridasFileImportPanel;
+import edu.cornell.dendro.corina.io.TridasTreeRowModel;
 import edu.cornell.dendro.corina.io.control.FileSelectedEvent;
 import edu.cornell.dendro.corina.io.control.ImportEntitySelectedEvent;
 import edu.cornell.dendro.corina.io.model.ImportModel;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
-import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportAction;
+import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyRendererFactory;
+import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
+import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
 import edu.cornell.dendro.corina.ui.Alert;
 
 import javax.swing.BoxLayout;
+import javax.swing.JEditorPane;
+import javax.swing.JTextPane;
 
 public class ImportView extends JDialog{
 
@@ -74,7 +88,7 @@ public class ImportView extends JDialog{
 
 	/** Panel and text area for displaying original legacy file **/
 	private JPanel panelOrigFile;
-	private JTextArea originalFilePane;
+	private JTextArea txtOriginalFile;
 	
 	/** Panel and table for displaying conversion warnings **/
 	private JPanel panelWarnings;
@@ -116,6 +130,7 @@ public class ImportView extends JDialog{
 		
 	private JButton btnFinish;
 	private JButton btnSetFromDB;
+	private JTextPane txtErrorMessage;
 	
 	
 	/**
@@ -135,7 +150,7 @@ public class ImportView extends JDialog{
 	 * Constructor with file already specified
 	 * @param file
 	 */
-	public ImportView(File file)
+	public ImportView(File file, String fileType)
 	{
 		model = CorinaModelLocator.getInstance().getImportModel();
 		MVC.showEventMonitor();
@@ -143,7 +158,7 @@ public class ImportView extends JDialog{
 		linkModel();
 		initListeners();
 		initLocale();
-		FileSelectedEvent event = new FileSelectedEvent(file, model);
+		FileSelectedEvent event = new FileSelectedEvent(model, file, fileType);
 		event.dispatch();
 	}
 	
@@ -195,7 +210,7 @@ public class ImportView extends JDialog{
 			vertSplitPane.setLeftComponent(horizSplitPane);
 			horizSplitPane.setOneTouchExpandable(true);
 			horizSplitPane.setBorder(null);
-			horizSplitPane.setDividerLocation(0.4);
+			horizSplitPane.setDividerLocation(0.5);
 			tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 			tabbedPane.setBorder(null);
 			horizSplitPane.setRightComponent(tabbedPane);
@@ -228,16 +243,21 @@ public class ImportView extends JDialog{
 			}
 			panelOrigFile = new JPanel();
 			tabbedPane.insertTab("Original file", null, panelOrigFile, null, 0);
-			panelOrigFile.setLayout(new BorderLayout(0, 0));
+			panelOrigFile.setLayout(new BorderLayout(10, 10));
 			{
 				JScrollPane scrollPane = new JScrollPane();
 				panelOrigFile.add(scrollPane, BorderLayout.CENTER);
 					
-					originalFilePane = new JTextArea();
-					scrollPane.setViewportView(originalFilePane);
-					originalFilePane.setEditable(false);
-					originalFilePane.setFont(new java.awt.Font("Courier", 0, 12));
+					txtOriginalFile = new JTextArea();
+					scrollPane.setViewportView(txtOriginalFile);
+					txtOriginalFile.setEditable(false);
+					txtOriginalFile.setFont(new java.awt.Font("Courier", 0, 12));
 			}
+			
+			txtErrorMessage = new JTextPane();
+			txtErrorMessage.setForeground(Color.RED);
+			txtErrorMessage.setVisible(false);
+			panelOrigFile.add(txtErrorMessage, BorderLayout.NORTH);
 			{
 				panelTreeTable = new JPanel();
 				panelTreeTable.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -276,7 +296,8 @@ public class ImportView extends JDialog{
 
 		pack();
 		//this.setSize(new Dimension(800,600));
-		vertSplitPane.setDividerLocation(0.6);
+		vertSplitPane.setDividerLocation(0.8);
+		pack();
 	}
 	
 	/**
@@ -293,7 +314,7 @@ public class ImportView extends JDialog{
 				if(name.equals(ImportModel.ORIGINAL_FILE))
 				{
 					// Original file has changed so GUI to show its contents
-                    originalFilePane.setText(model.getFileToImportContents());
+                    txtOriginalFile.setText(model.getFileToImportContents());
 				}
 				else if (name.equals(ImportModel.CONVERSION_WARNINGS))
 				{
@@ -311,8 +332,13 @@ public class ImportView extends JDialog{
 					// Tree model has changed so update the tree-table
 					updateTreeTable(model.getTreeModel());
 				}
+				else if (name.equals(ImportModel.INVALID_FILE_EXCEPTION))
+				{
+					setGUIForInvalidFile(model.getFileException());
+				}
+
 				
-			}	
+			}
 		});
 		
 
@@ -343,21 +369,21 @@ public class ImportView extends JDialog{
 				
 				int selRow = treeTable.getSelectedRow();
 				Object selectedEntity = treeTable.getValueAt(selRow, 0);	
-				ImportAction selectedAction = (ImportAction) treeTable.getValueAt(selRow, 1);
+				ImportStatus selectedAction = (ImportStatus) treeTable.getValueAt(selRow, 1);
 
 				if(selectedEntity instanceof TridasProject)
 				{
 					// We don't import Projects so override action to 'Ignore'
 					TridasRepresentationTableTreeRow row = 
-						new TridasRepresentationTableTreeRow((ITridas)selectedEntity, ImportAction.IGNORE);
-                    ImportEntitySelectedEvent event = new ImportEntitySelectedEvent(row, model);
+						new TridasRepresentationTableTreeRow((ITridas)selectedEntity, ImportStatus.IGNORE);
+                    ImportEntitySelectedEvent event = new ImportEntitySelectedEvent(model, row);
                     event.dispatch();
 				}
 				else if (selectedEntity instanceof ITridas)
 				{
 					TridasRepresentationTableTreeRow row = 
 						new TridasRepresentationTableTreeRow((ITridas)selectedEntity, selectedAction);
-                    ImportEntitySelectedEvent event = new ImportEntitySelectedEvent(row, model);
+                    ImportEntitySelectedEvent event = new ImportEntitySelectedEvent(model, row);
                     event.dispatch();
 				}
 				
@@ -404,6 +430,17 @@ public class ImportView extends JDialog{
 	{
 		ConversionWarningTableModel cwModel = new ConversionWarningTableModel(warnings);
 		tblWarnings.setModel(cwModel);
+		lblConversionWarnings.setText("Conversion warnings ("+warnings.length+"):");
+		TableColumn col = tblWarnings.getColumnModel().getColumn(0);
+		int width = 70;
+		col.setMinWidth(width); 
+		col.setPreferredWidth(width);
+		col = tblWarnings.getColumnModel().getColumn(1);
+		col.setMinWidth(width); 
+		col.setPreferredWidth(width);
+		col = tblWarnings.getColumnModel().getColumn(2);
+		col.setMinWidth(width); 
+		col.setPreferredWidth(5000);
 	}
 	
 	/**
@@ -411,7 +448,43 @@ public class ImportView extends JDialog{
 	 * @param entity
 	 */
 	private void updateMetadataPanel(ITridas entity) {
-		// TODO Auto-generated method stub
+		/*if(!silent)
+		{
+			if(!warnLosingChanges())
+			{
+				
+			}
+		}*/
+
+		boolean hasChanged = false;
+		
+		Class<? extends ITridas> currentEntityType = entity.getClass();
+		ITridas currentEntity = entity;
+		
+		// Swapping entities so disable editing
+		//enableEditing(false);	
+		
+		// derive a property list
+        List<TridasEntityProperty> properties = TridasEntityDeriver.buildDerivationList(currentEntityType);
+        Property[] propArray = properties.toArray(new Property[properties.size()]);
+        
+        // set properties and load from entity
+		propertiesPanel.setProperties(propArray);
+		propertiesTable.expandAllBranches(true);
+		
+		// Add data to table from entity
+		if(entity!=null)
+		{
+			propertiesPanel.readFromObject(entity);
+			propertiesPanel.setEnabled(true);
+			editEntity.setVisible(true);
+		}
+		else
+		{
+			propertiesPanel.setEnabled(false);
+			editEntity.setVisible(false);
+		}
+		
 		
 	}
 	
@@ -421,8 +494,45 @@ public class ImportView extends JDialog{
 	 * @param treeModel
 	 */
 	private void updateTreeTable(TridasRepresentationTreeModel treeModel) {
-		// TODO Auto-generated method stub
 		
+		OutlineModel mdl = DefaultOutlineModel.createOutlineModel(
+	    		treeModel, treeModel, true, "TRiDaS Entities");
+		
+		this.treeTable.setModel(mdl);
 	}
 	
+	/**
+	 * Set the GUI to illustrate an invalid file
+	 * @param fileException
+	 */
+	private void setGUIForInvalidFile(InvalidDendroFileException e) {
+		
+		String error = e.getLocalizedMessage();
+		// Try and highlight the line in the input file that is to blame if poss
+		if(	e.getPointerType().equals(PointerType.LINE) 
+				&& e.getPointerNumber()!=null 
+				&& e.getPointerNumber()!=0)
+		{
+			txtOriginalFile.addCaretListener(new LineHighlighter(Color.red, e.getPointerNumber()));
+			this.tabbedPane.setSelectedIndex(0);
+			int pos=1;
+			for(int i=0; i<e.getPointerNumber(); i++)
+			{
+				 pos = txtOriginalFile.getText().indexOf("\n", pos+1);
+			}
+			
+			txtOriginalFile.setCaretPosition(pos);
+			tabbedPane.setEnabledAt(1, false);
+			this.horizSplitPane.setDividerLocation(0);
+			this.panelTreeTable.setVisible(false);
+			this.panelWarnings.setVisible(false);	
+			error+="\n\n"+"The file is shown below with the problematic line highlighted.";
+			
+		}
+		
+		txtErrorMessage.setVisible(true);
+		txtErrorMessage.setText(error);
+		pack();
+		
+	}	
 }

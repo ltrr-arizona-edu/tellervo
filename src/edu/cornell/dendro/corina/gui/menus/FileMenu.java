@@ -12,32 +12,26 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
 
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.gui.control.TricycleController;
 import org.tridas.io.gui.model.TricycleModelLocator;
-import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasProject;
 import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasProject;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.bulkImport.control.BulkImportController;
-import edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.editor.ScanBarcodeUI;
@@ -51,17 +45,11 @@ import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.XFrame;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
-import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
 import edu.cornell.dendro.corina.io.AbstractDendroReaderFileFilter;
 import edu.cornell.dendro.corina.io.DendroReaderFileFilter;
 import edu.cornell.dendro.corina.io.ExportDialog;
-import edu.cornell.dendro.corina.io.ImportDialog;
 import edu.cornell.dendro.corina.io.WrongFiletypeException;
-import edu.cornell.dendro.corina.io.model.ImportModel;
 import edu.cornell.dendro.corina.io.view.ImportView;
-import edu.cornell.dendro.corina.manip.Sum;
-import edu.cornell.dendro.corina.model.CorinaModelLocator;
-import edu.cornell.dendro.corina.print.SeriesReport;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
@@ -355,7 +343,7 @@ public class FileMenu extends JMenu {
 	        fullFilename = file.getPath();
 	        filename = file.getName();
 	        
-	        ImportView importDialog = new ImportView(file);
+	        ImportView importDialog = new ImportView(file, type);
 	        
 			
 			importDialog.setVisible(true);

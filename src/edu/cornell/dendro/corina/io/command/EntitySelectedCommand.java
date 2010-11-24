@@ -10,7 +10,7 @@ public class EntitySelectedCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		ImportEntitySelectedEvent event = (ImportEntitySelectedEvent) argEvent;
-		event.model.setSelectedNode(event.row);
+		event.model.setSelectedNode(event.getValue());
 	}
 
 }

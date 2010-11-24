@@ -5,15 +5,27 @@ import org.tridas.interfaces.ITridas;
 public class TridasRepresentationTableTreeRow {
 
 	public ITridas entity;
-	public ImportAction action;
+	public ImportStatus action;
 	
-	public enum ImportAction{
-		IGNORE,
-		STORED_IN_DATABASE,
-		PENDING;
+	public enum ImportStatus{
+		IGNORE("Ignored"),
+		STORED_IN_DATABASE("Stored in database"),
+		PENDING("Attention required"),
+		UNSUPPORTED("Unsupported - ignored");
+		
+		String name;
+		ImportStatus(String name)
+		{
+			this.name = name;
+		}
+		
+		public String toString()
+		{
+			return this.name;
+		}
 	}
 	
-	public TridasRepresentationTableTreeRow(ITridas entity, ImportAction action)
+	public TridasRepresentationTableTreeRow(ITridas entity, ImportStatus action)
 	{
 		this.entity = entity;
 		this.action = action;
