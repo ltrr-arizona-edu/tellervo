@@ -4,16 +4,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 
 import com.dmurph.mvc.model.HashModel;
-import com.dmurph.mvc.model.MVCArrayList;
-
-import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 
 public class ImportModel extends HashModel {
 
@@ -21,16 +19,16 @@ public class ImportModel extends HashModel {
 	public static final String TREE_MODEL = "treeModel";
 	public static final String CONVERSION_WARNINGS = "conversionWarnings";
 	public static final String SELECTED_NODE = "selectedNode";
+	public static final String SELECTED_ENTITY = "selectedEntity";
 	public static final String ORIGINAL_FILE = "originalFile";
 	public static final String INVALID_FILE_EXCEPTION = "invalidFileException";
-			
-	private File legacyFile;
-	
+		
 	public ImportModel()
 	{
 		registerProperty(ImportModel.TREE_MODEL, PropertyType.READ_WRITE, new TridasRepresentationTreeModel(null));
 		registerProperty(ImportModel.CONVERSION_WARNINGS, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.SELECTED_NODE, PropertyType.READ_WRITE, new TridasRepresentationTableTreeRow());
+		registerProperty(ImportModel.SELECTED_ENTITY, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.ORIGINAL_FILE, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.INVALID_FILE_EXCEPTION, PropertyType.READ_WRITE);
 	}
@@ -80,16 +78,7 @@ public class ImportModel extends HashModel {
 	public void setFileToImport(File file) throws IOException
 	{
 
-		getFileContents(file);
-				
-		// Set up reader
-		/*AbstractDendroFileReader reader;
-		reader = TridasIO.getFileReader(type);
-	        
-		    ImportDialog importdialog = new ImportDialog(file, reader);
-		    importdialog.setVisible(true);
-		*/
-		
+		getFileContents(file);	
 		setProperty(ImportModel.ORIGINAL_FILE, file);
 
 	}
@@ -118,11 +107,11 @@ public class ImportModel extends HashModel {
 	
 	/**
 	 * Set the selected node
-	 * @param node
+	 * @param defaultMutableTreeNode
 	 */
-	public void setSelectedNode(TridasRepresentationTableTreeRow node)
+	public void setSelectedNode(TridasRepresentationTableTreeRow row)
 	{
-		setProperty(ImportModel.SELECTED_NODE, node);
+		setProperty(ImportModel.SELECTED_NODE, row);
 	}
 	
 	/**
@@ -155,6 +144,27 @@ public class ImportModel extends HashModel {
 		setProperty(ImportModel.CONVERSION_WARNINGS, warnings);
 	}
 	
+	/**
+	 * Set the current TRiDaS entity being viewed/edited
+	 * 
+	 * @param entity
+	 */
+	public void setSelectedEntity(ITridas entity)
+	{
+		setProperty(ImportModel.SELECTED_ENTITY, entity);
+	}
+	
+	/**
+	 * Get the currently selected TRiDaS entity that is being viewed
+	 * @return
+	 */
+	public ITridas getSelectedEntity()
+	{
+		return (ITridas) getProperty(ImportModel.SELECTED_ENTITY);
+
+	}
+	
+	
 	
 	private String getFileContents(File file) throws IOException
 	{
@@ -185,6 +195,7 @@ public class ImportModel extends HashModel {
 	    return contents.toString();
 	  
 	}
+
 	
 	
 }

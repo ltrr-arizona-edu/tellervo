@@ -1,10 +1,10 @@
 package edu.cornell.dendro.corina.io.model;
 
-import org.tridas.interfaces.ITridas;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public class TridasRepresentationTableTreeRow {
 
-	public ITridas entity;
+	public DefaultMutableTreeNode node;
 	public ImportStatus action;
 	
 	public enum ImportStatus{
@@ -25,9 +25,9 @@ public class TridasRepresentationTableTreeRow {
 		}
 	}
 	
-	public TridasRepresentationTableTreeRow(ITridas entity, ImportStatus action)
+	public TridasRepresentationTableTreeRow(DefaultMutableTreeNode node, ImportStatus action)
 	{
-		this.entity = entity;
+		this.node = node;
 		this.action = action;
 	}
 

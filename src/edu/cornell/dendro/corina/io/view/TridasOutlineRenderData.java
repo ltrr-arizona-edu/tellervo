@@ -2,16 +2,19 @@ package edu.cornell.dendro.corina.io.view;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.netbeans.swing.outline.RenderDataProvider;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.ui.Builder;
 
@@ -49,7 +52,29 @@ public class TridasOutlineRenderData implements RenderDataProvider {
 
     @Override
     public String getDisplayName(Object o) {
-        return ((ITridas) o).getTitle();
+        DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) o;
+        ITridas entity = (ITridas) dmtn.getUserObject();
+		if(entity instanceof TridasObject)
+		{
+			TridasObject obj = ((TridasObject)entity);
+			for(TridasGenericField gf : obj.getGenericFields())
+			{
+				if (gf.getName().equals("corina.objectLabCode"))
+				{
+					return gf.getValue() + " - "+obj.getTitle();
+				}
+			}
+			return obj.getTitle();
+		}
+		else if(entity instanceof ITridas)
+		{
+		    return ((ITridas)entity).getTitle();
+		}
+		else 
+		{
+			return entity.toString();
+		}
+        
     }
 
     @Override
@@ -60,31 +85,33 @@ public class TridasOutlineRenderData implements RenderDataProvider {
     @Override
     public javax.swing.Icon getIcon(Object o) {
         
-        if(o instanceof TridasProject)
+    	ITridas entity = (ITridas) ((DefaultMutableTreeNode)o).getUserObject();
+    	
+        if(entity instanceof TridasProject)
         {
         	return databaseIcon;
         }
-        else if(o instanceof TridasObject)
+        else if(entity instanceof TridasObject)
         {
         	return objectIcon;
         }
-        else if(o instanceof TridasElement)
+        else if(entity instanceof TridasElement)
         {
         	return elementIcon;
         }
-        else if(o instanceof TridasSample)
+        else if(entity instanceof TridasSample)
         {
         	return sampleIcon;
         }
-        else if(o instanceof TridasRadius)
+        else if(entity instanceof TridasRadius)
         {
         	return radiusIcon;
         }
-        else if(o instanceof TridasMeasurementSeries)
+        else if(entity instanceof TridasMeasurementSeries)
         {
         	return mseriesIcon;
         }
-        else if(o instanceof TridasDerivedSeries)
+        else if(entity instanceof TridasDerivedSeries)
         {
         	return dseriesIcon;
         }
@@ -96,7 +123,8 @@ public class TridasOutlineRenderData implements RenderDataProvider {
 
     @Override
     public String getTooltipText(Object o) {
-    	return ((ITridas) o).getTitle();
+        DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) o;
+    	return ((ITridas)dmtn.getUserObject()).getTitle();
     }
 
     @Override

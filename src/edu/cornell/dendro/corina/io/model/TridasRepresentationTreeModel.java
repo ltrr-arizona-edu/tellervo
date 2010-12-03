@@ -12,6 +12,8 @@ import javax.swing.tree.TreePath;
 import org.netbeans.swing.outline.RowModel;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
@@ -20,14 +22,80 @@ import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 
-public class TridasRepresentationTreeModel implements TreeModel, RowModel{
+public class TridasRepresentationTreeModel extends DefaultTreeModel implements TreeModel, RowModel{
 
 	private static final long serialVersionUID = 1L;
-	private final ITridas root;
+	//private DefaultMutableTreeNode root;
 	
-	public TridasRepresentationTreeModel(ITridas root) {
-		this.root = root;
+	public TridasRepresentationTreeModel(TridasProject project) {
+		super(new DefaultMutableTreeNode(project));
+		
+		if(project!=null)
+		{
+			if(project.isSetObjects())
+			{
+				for(TridasObject obj : project.getObjects())
+				{
+					addEntityToTree(root, obj);
+				}
+			}
+		}
+		
 	}
+	
+	/**
+	 * Recursively add entities to parent 
+	 * 
+	 * @param parent
+	 * @param entity
+	 */
+	private void addEntityToTree(TreeNode parent, ITridas entity)
+	{
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(entity);
+		((DefaultMutableTreeNode) parent).add(newNode);
+		
+		if(entity instanceof TridasObject)
+		{
+			if(((TridasObject)entity).isSetElements())
+			{
+				for(TridasElement element : ((TridasObject) entity).getElements())
+				{
+					addEntityToTree(newNode, element);
+				}
+			}
+		}
+		else if(entity instanceof TridasElement)
+		{
+			if(((TridasElement)entity).isSetSamples())
+			{
+				for(TridasSample sample : ((TridasElement) entity).getSamples())
+				{
+					addEntityToTree(newNode, sample);
+				}
+			}
+		}
+		else if(entity instanceof TridasSample)
+		{
+			if(((TridasSample)entity).isSetRadiuses())
+			{
+				for(TridasRadius radius : ((TridasSample) entity).getRadiuses())
+				{
+					addEntityToTree(newNode, radius);
+				}
+			}
+		}
+		else if(entity instanceof TridasRadius)
+		{
+			if(((TridasRadius)entity).isSetMeasurementSeries())
+			{
+				for(TridasMeasurementSeries ms : ((TridasRadius) entity).getMeasurementSeries())
+				{
+					addEntityToTree(newNode, ms);
+				}
+			}
+		}
+	}
+
 
     @Override
     public Class getColumnClass(int column) {
@@ -57,18 +125,26 @@ public class TridasRepresentationTreeModel implements TreeModel, RowModel{
 
     @Override
     public Object getValueFor(Object node, int column) {
-        ITridas f = (ITridas) node;
+    	DefaultMutableTreeNode dmtnode = (DefaultMutableTreeNode) node; 
+        ITridas entity = (ITridas) dmtnode.getUserObject();
+                
+        
         switch (column) {
             case 0:
-            	if(f instanceof TridasProject)
+            	if(entity instanceof TridasProject)
             	{
             		return ImportStatus.UNSUPPORTED;
             	}
-            	else if (f instanceof TridasObject)
+            	else if (entity instanceof ITridas)
             	{
+            		TridasIdentifier id = entity.getIdentifier();
+            		if(id==null) return ImportStatus.PENDING;
+            		if(!id.isSetDomain()) return ImportStatus.PENDING;
+            		if(!id.isSetValue()) return ImportStatus.PENDING;
+            		if(!id.getDomain().equals("dendro.cornell.edu/live/")) return ImportStatus.PENDING;            		
             		return ImportStatus.STORED_IN_DATABASE;
             	}
-                return ImportStatus.PENDING;
+                return ImportStatus.UNSUPPORTED;
             default:
                 assert false;
         }
@@ -82,127 +158,6 @@ public class TridasRepresentationTreeModel implements TreeModel, RowModel{
 	}
 
 	@Override
-	public void setValueFor(Object arg0, int arg1, Object arg2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addTreeModelListener(TreeModelListener arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-    @SuppressWarnings("unchecked")
-	@Override
-    public Object getChild(Object parent, int index) {
-        if(parent instanceof TridasProject)
-        {
-        	ArrayList<ITridas> childlist = new ArrayList<ITridas>();
-        	childlist.addAll((ArrayList<? extends ITridas>) ((TridasProject)parent).getObjects());
-        	childlist.addAll((ArrayList<? extends ITridas>) ((TridasProject)parent).getDerivedSeries());
-        	return ((TridasProject)parent).getObjects().get(index);
-        }
-        else if(parent instanceof TridasObject)
-        {
-        	return ((TridasObject)parent).getElements().get(index);
-        }
-        else if(parent instanceof TridasElement)
-        {
-        	return ((TridasElement)parent).getSamples().get(index);
-        }
-        else if(parent instanceof TridasSample)
-        {
-        	return ((TridasSample)parent).getRadiuses().get(index);
-        }
-        else if(parent instanceof TridasRadius)
-        {
-        	return ((TridasRadius)parent).getMeasurementSeries().get(index);
-        }
-        System.out.println("getChild failing on index " + index +" of parent "+parent);
-        return null;
-    }
-
-    @Override
-    public int getChildCount(Object parent) {
-        if(parent instanceof TridasProject)
-        {
-        	return ((TridasProject)parent).getObjects().size();
-        }
-        else if(parent instanceof TridasObject)
-        {
-        	return ((TridasObject)parent).getElements().size();
-        }
-        else if(parent instanceof TridasElement)
-        {
-        	return ((TridasElement)parent).getSamples().size();
-        }
-        else if(parent instanceof TridasSample)
-        {
-        	return ((TridasSample)parent).getRadiuses().size();
-        }
-        else if(parent instanceof TridasRadius)
-        {
-        	return ((TridasRadius)parent).getMeasurementSeries().size();
-        }
-        return 0;
-    }
-
-    @Override
-    public int getIndexOfChild(Object parent, Object child) {
-    	
-    	if(parent==null || child==null) return -1;
-    	
-    	ArrayList<? extends ITridas> childlist = null;
-        if(parent instanceof TridasProject)
-        {
-        	childlist = (ArrayList<? extends ITridas>) ((TridasProject)parent).getObjects();
-        }
-        else if(parent instanceof TridasObject || (parent instanceof TridasObjectEx))
-        {
-        	childlist = (ArrayList<? extends ITridas>) ((TridasObject)parent).getElements();
-        }
-        else if(parent instanceof TridasElement)
-        {
-        	childlist = (ArrayList<? extends ITridas>) ((TridasElement)parent).getSamples();
-        }
-        else if(parent instanceof TridasSample)
-        {
-        	childlist = (ArrayList<? extends ITridas>) ((TridasSample)parent).getRadiuses();
-        }
-        else if(parent instanceof TridasRadius)
-        {
-        	childlist = (ArrayList<? extends ITridas>) ((TridasRadius)parent).getMeasurementSeries();
-        }
-        
-        if(childlist==null || childlist.size()==0) return -1;
-    	
-        for(int i=0; i<childlist.size(); i++)
-        {
-        	if(childlist.get(i).equals(child)) return i;
-        }
-        
-    	return -1;
-    }
-
-    @Override
-    public Object getRoot() {
-        return root;
-    }
-
-    @Override
-    public boolean isLeaf(Object node) {
-        if(getChildCount(node)>0)
-        {
-        	return false;
-        }
-        else
-        {
-        	return true;
-        }
-    }
-
-	@Override
 	public void removeTreeModelListener(TreeModelListener arg0) {
 		// TODO Auto-generated method stub
 		
@@ -210,6 +165,12 @@ public class TridasRepresentationTreeModel implements TreeModel, RowModel{
 
 	@Override
 	public void valueForPathChanged(TreePath arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setValueFor(Object arg0, int arg1, Object arg2) {
 		// TODO Auto-generated method stub
 		
 	}
