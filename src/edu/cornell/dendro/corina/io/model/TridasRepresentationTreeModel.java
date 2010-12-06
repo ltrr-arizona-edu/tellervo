@@ -20,6 +20,7 @@ import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 
 public class TridasRepresentationTreeModel extends DefaultTreeModel implements TreeModel, RowModel{
@@ -96,7 +97,24 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
 		}
 	}
 
-
+	@Override
+	public boolean isLeaf(Object o)
+	{
+		if(o instanceof TridasMeasurementSeries)
+		{
+			return true;
+		}
+		else if (o instanceof ITridas)
+		{
+			return false;
+		}
+		else 
+		{
+			return false;
+		}
+		
+	}
+	
     @Override
     public Class getColumnClass(int column) {
         switch (column) {
@@ -141,7 +159,7 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
             		if(id==null) return ImportStatus.PENDING;
             		if(!id.isSetDomain()) return ImportStatus.PENDING;
             		if(!id.isSetValue()) return ImportStatus.PENDING;
-            		if(!id.getDomain().equals("dendro.cornell.edu/live/")) return ImportStatus.PENDING;            		
+            		if(!id.getDomain().equals(App.domain)) return ImportStatus.PENDING;            		
             		return ImportStatus.STORED_IN_DATABASE;
             	}
                 return ImportStatus.UNSUPPORTED;

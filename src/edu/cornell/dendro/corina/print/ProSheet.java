@@ -361,7 +361,7 @@ public class ProSheet extends ReportBase {
 	 */
 	private static void getReport(Boolean printReport, String objid)
 	{
-	/*	String domain = "dendro.cornell.edu/dev/";
+	/*	String domain = App.domain;
 		TridasObject obj = null;
 		
 		obj = PrintReportFramework.getCorinaObjectFromID(domain, objid);

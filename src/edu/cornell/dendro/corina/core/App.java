@@ -3,6 +3,9 @@
 
 package edu.cornell.dendro.corina.core;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +39,7 @@ public class App {
   public static TridasObjectList tridasObjects;
   public static WSISecurityUser currentUser;
   public static Boolean isAdmin;
+  public static String domain;
   private static String username;
     
   
@@ -179,6 +183,24 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 		meter.setProgress(9);
 
     initialized = true;   
+    
+    // Get the domain of the WS used
+    String wsurl = App.prefs.getPref("corina.webservice.url");
+    try {
+	
+		String path = wsurl.substring(wsurl.indexOf("://")+3);
+		path = path.substring(0, path.lastIndexOf("/")+1);
+		
+		domain = path;
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		System.out.println("Error determining domain base from webservice URL");
+		e.printStackTrace();
+	}
+    
+    
+    
+    
   }
 
   public static boolean isInitialized() {

@@ -111,6 +111,8 @@ public class EntitySearchResource<T extends ITridas> extends
 			return SearchReturnObject.SAMPLE;
 		if(parent instanceof TridasSample)
 			return SearchReturnObject.RADIUS;
+		if(parent instanceof TridasRadius)
+			return SearchReturnObject.MEASUREMENT_SERIES;
 		
 		throw new IllegalArgumentException("Unknown/invalid parent entity type for Entity Search: " + parent.getClass());
 	}
@@ -127,7 +129,8 @@ public class EntitySearchResource<T extends ITridas> extends
 			return SearchParameterName.ELEMENTID;
 		if(parent instanceof TridasSample)
 			return SearchParameterName.SAMPLEID;
-		
+		if(parent instanceof TridasRadius)
+			return SearchParameterName.RADIUSID;
 		throw new IllegalArgumentException("Unknown/invalid parent entity type for Entity Search: " + parent.getClass());		
 	}
 		

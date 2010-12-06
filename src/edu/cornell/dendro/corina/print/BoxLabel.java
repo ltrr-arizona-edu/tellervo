@@ -651,7 +651,7 @@ public class BoxLabel extends ReportBase{
 	public static void getLabel(Boolean printReport, String vmid)
 	{
 		
-		String domain = "dendro.cornell.edu/dev/";
+		String domain = App.domain;
 		Sample samp = null;
 		
 		try {

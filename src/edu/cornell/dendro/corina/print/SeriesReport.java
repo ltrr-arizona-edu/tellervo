@@ -1306,7 +1306,7 @@ public class SeriesReport extends ReportBase {
 	 */
 	private static void getReport(Boolean printReport, String vmid)
 	{
-		String domain = "dendro.cornell.edu/dev/";
+		String domain = App.domain;
 		Sample samp = null;
 		
 		try {

@@ -56,6 +56,8 @@ import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.Editor;
+import edu.cornell.dendro.corina.editor.SampleDataView;
 import edu.cornell.dendro.corina.io.ConversionWarningTableModel;
 import edu.cornell.dendro.corina.io.LineHighlighter;
 import edu.cornell.dendro.corina.io.control.FileSelectedEvent;
@@ -67,6 +69,7 @@ import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyRendererFactory;
@@ -95,6 +98,7 @@ public class ImportView extends JDialog{
 	/** Panel and text area for displaying original legacy file **/
 	private JPanel panelOrigFile;
 	private JTextArea txtOriginalFile;
+	private JPanel panelData;
 	
 	/** Panel and table for displaying conversion warnings **/
 	private JPanel panelWarnings;
@@ -292,7 +296,7 @@ public class ImportView extends JDialog{
 				
 			}
 			{
-				JPanel panelData = new JPanel();
+				panelData = new JPanel();
 				tabbedPane.addTab("Extracted Data", null, panelData, null);
 				tabbedPane.setEnabledAt(1, false);
 			}
@@ -395,7 +399,7 @@ public class ImportView extends JDialog{
 					}
 					
 					// Update the metadata panel
-					updateMetadataPanel(model.getSelectedNode(), (DefaultMutableTreeNode) model.getSelectedNode().node.getParent());
+					updateMetadataPanel(model.getSelectedNode(), (DefaultMutableTreeNode) model.getSelectedNode().node.getParent());			
 
 				}
 				else if (name.equals(ImportModel.TREE_MODEL))
@@ -410,6 +414,8 @@ public class ImportView extends JDialog{
 
 				
 			}
+
+
 		});
 		
 
@@ -540,6 +546,36 @@ public class ImportView extends JDialog{
 		lblTopBarSummaryTitle.setText("");
 	}
 	
+	private void updateDataPanel(
+			TridasRepresentationTableTreeRow row) {
+	
+		ITridas entity = (ITridas) row.node.getUserObject();
+		
+		if(!(entity instanceof TridasMeasurementSeries))
+		{
+			// Not a series
+			
+			if(tabbedPane.getSelectedIndex()==2)
+			{
+				// Select the metadata tab if currently on the data tab
+				tabbedPane.setSelectedIndex(1);
+			}
+			
+			// Disable the data tab 
+			tabbedPane.setEnabledAt(2, false);
+			return;
+		}
+		
+		TridasMeasurementSeries series = (TridasMeasurementSeries) entity;
+		Sample s = new Sample(series);
+		
+		SampleDataView dataPanel = new SampleDataView(s);
+		
+		panelData.setLayout(new BorderLayout());
+		panelData.add(dataPanel, BorderLayout.CENTER);
+		tabbedPane.setEnabledAt(2, true);
+	}
+	
 	/**
 	 * Set the metadata panel to show the provided entity
 	 * @param parentNode 
@@ -554,6 +590,9 @@ public class ImportView extends JDialog{
 				
 			}
 		}*/
+		
+		// Enable or disable the data page depending on current entity type
+		updateDataPanel(row);	
 		
 		boolean hasChanged = false;
 		
@@ -571,7 +610,6 @@ public class ImportView extends JDialog{
 			System.out.println("Set parent entity successfully to: " + parentEntity.getTitle());
 		} catch (Exception e){
 			System.out.println("Unable to set parent entity");
-			e.printStackTrace();
 		}
 		
 		// Swapping entities so disable editing
@@ -620,15 +658,8 @@ public class ImportView extends JDialog{
 		// Set the top chooser to the correct current value
 		selectInTopChooser(entity);
 		
-		// Enable or disable the data page depending on current entity type
-		if(entity instanceof TridasMeasurementSeries)
-		{
-			//this.tabbedPane.getTabComponentAt(2).setEnabled(true);
-		}
-		else
-		{
-			//this.tabbedPane.getTabComponentAt(2).setEnabled(false);
-		}
+		
+
 		
 	}
 	
@@ -654,38 +685,61 @@ public class ImportView extends JDialog{
 	{
 		List<? extends ITridas> entities = null;
 		
-		if(thisEntity instanceof TridasObject)
-		{
-			// This entity is an object so grab object dictionary
-			entities = App.tridasObjects.getObjectList();
-			topChooser.setList(entities);
-			return;
-
-		}
-		else if (thisEntity instanceof TridasProject)
+		
+		if (thisEntity instanceof TridasProject)
 		{
 			// This entity is a project so set list to null as 
 			// projects aren't supported
 			topChooser.setList(null);
+			setTopChooserEnabled(false, "Projects are not supported in Corina");
 			return;
+		}
+		else if(thisEntity instanceof TridasObject)
+		{
+			// This entity is an object so grab object dictionary
+			entities = App.tridasObjects.getObjectList();
+			topChooser.setList(entities);
+			setTopChooserEnabled(true, null);
+			return;
+
 		}
 		
 		// Otherwise, check that the parent is already in db by checking
 		// the identifier domain and set list accordingly 
 		try{
-			if (parent.getIdentifier().getDomain().equals("dendro.cornell.edu/dev/"))
+			if (parent.getIdentifier().getDomain().equals(App.domain))
 			{
 				entities = lists.getChildList(parent, true);
 				topChooser.setList(entities);
+				if(thisEntity instanceof TridasMeasurementSeries)
+				{
+					setTopChooserEnabled(false, null);
+					return;
+				}
+				else
+				{
+					setTopChooserEnabled(true, null);
+					return;
+				}
 			}
 		} catch (Exception e)
 		{
-			Alert.message("Fix", "You need to fix this entities parent before proceeding");
-			e.printStackTrace();
+			setTopChooserEnabled(false, "Fix parent entity first");
 			return;
 		}	
 		
 	}
+	
+	private void setTopChooserEnabled(Boolean b, String message)
+	{
+
+		topChooser.setVisible(b);
+		changeButton.setVisible(b);
+		if(message !=null) lblTopBarSummaryTitle.setText(message);
+
+	}
+	
+	
 	
 	/**
 	 * Set the tree-table panel to show the data specified in the 
@@ -767,7 +821,7 @@ public class ImportView extends JDialog{
 				topChooser.setSelectedItem(ImportEntityListComboBox.NEW_ITEM);
 				return;
 			}
-			else if (!entity.getIdentifier().getDomain().equals("dendro.cornell.edu/dev/"))
+			else if (!entity.getIdentifier().getDomain().equals(App.domain))
 			{
 				System.out.println("Different domain - this one is: "+entity.getIdentifier().getDomain());
 				topChooser.setSelectedItem(ImportEntityListComboBox.NEW_ITEM);

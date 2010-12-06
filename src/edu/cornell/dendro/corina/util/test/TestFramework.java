@@ -37,7 +37,7 @@ public class TestFramework {
 		
 		XMLDebugView.showDialog();
 		
-		String domain = "dendro.cornell.edu/dev/";
+		String domain = App.domain;
 		String measurementID = "02189be5-b19c-5dbd-9035-73ae8827dc7a";
 		Sample s;
 		
