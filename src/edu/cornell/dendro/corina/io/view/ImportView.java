@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -22,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -30,6 +32,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -42,26 +45,34 @@ import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
 import org.netbeans.swing.outline.OutlineModel;
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.exceptions.InvalidDendroFileException.PointerType;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVC;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
+import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.editor.SampleDataView;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.io.ConversionWarningTableModel;
 import edu.cornell.dendro.corina.io.LineHighlighter;
 import edu.cornell.dendro.corina.io.control.FileSelectedEvent;
-import edu.cornell.dendro.corina.io.control.ImportEntitySelectedEvent;
+import edu.cornell.dendro.corina.io.control.ImportEntityListChangedEvent;
+import edu.cornell.dendro.corina.io.control.ImportNodeSelectedEvent;
 import edu.cornell.dendro.corina.io.control.ImportSwapEntityEvent;
 import edu.cornell.dendro.corina.io.model.ImportEntityListComboBox;
 import edu.cornell.dendro.corina.io.model.ImportModel;
@@ -70,9 +81,14 @@ import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.tridasv2.TridasCloner;
+import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
+import edu.cornell.dendro.corina.tridasv2.ui.EntityListComboBox;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyRendererFactory;
+import edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel.EditType;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityListHolder;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
@@ -80,6 +96,8 @@ import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 
 public class ImportView extends JDialog{
 
@@ -98,13 +116,15 @@ public class ImportView extends JDialog{
 	/** Panel and text area for displaying original legacy file **/
 	private JPanel panelOrigFile;
 	private JTextArea txtOriginalFile;
+	
+	/** Panel for displaying ring with data**/
 	private JPanel panelData;
 	
 	/** Panel and table for displaying conversion warnings **/
 	private JPanel panelWarnings;
 	private JTable tblWarnings;
 	
-	/** Tabbed pane for **/
+	/** Tabbed pane for original file, metadata and data tabs**/
 	private JTabbedPane tabbedPane;
 	
 	/** Left/Right split pane**/
@@ -121,6 +141,8 @@ public class ImportView extends JDialog{
 	
 	/** Panel containing the edit/save changes/cancel buttons for the current entity */
 	private JPanel bottombar;
+	
+	/** Panel containing combo box and buttons for selecting entities from db*/
 	private JPanel topbar;
 	
 	/** The lock/unlock button for making changes to the currently selected entity */
@@ -134,28 +156,36 @@ public class ImportView extends JDialog{
 	
 	/** Text associated with lock/unlock button */
 	private JLabel editEntityText;
-	
-	/** Panel for ok/cancel/finish buttons **/
+
+	/** Labels **/
 	private JLabel lblConversionWarnings;
 	private JLabel lblTridasRepresentationOf;
-		
-	private JButton btnFinish;
-	private JButton btnSetFromDB;
-	private JTextPane txtErrorMessage;
 	private JLabel lblTopBarSummaryTitle;
+
+	/** Finish button **/
+	private JButton btnFinish;
+	
+	/** Set from db button **/
+	private JButton btnSetFromDB;
+	
+	private JTextPane txtErrorMessage;
 	private ImportEntityListComboBox topChooser;
 	private JButton changeButton;
 	private JButton cancelChangeButton;
-	private static final String CHANGE_STATE = I18n.getText("general.change");
-	private static final String CHOOSE_STATE = I18n.getText("general.choose");
-	private boolean changingTop;
-	private ChoiceComboBoxActionListener topChooserListener;
 	
 	/** A copy of the entity that we're currently editing */
 	private ITridas temporaryEditingEntity;
 	/** A copy of the entity that we're currently selecting */
 	private ITridas temporarySelectingEntity;
+	private ITridas currentEntity;
+	private ITridas parentEntity;
+	private Class<? extends ITridas> currentEntityType;
+	
 	private TridasEntityListHolder lists = new TridasEntityListHolder();
+	private static final String CHANGE_STATE = I18n.getText("general.change");
+	private static final String CHOOSE_STATE = I18n.getText("general.choose");
+	private boolean changingTop;
+	private ChoiceComboBoxActionListener topChooserListener;
 	
 	/**
 	 * Standard constructor for Import Dialog with no file provided
@@ -275,12 +305,32 @@ public class ImportView extends JDialog{
 				editEntity.setBorderPainted(false);
 				editEntity.setContentAreaFilled(false);
 				editEntity.setFocusable(false);
+				
+				bottombar.add(editEntity);
+			
+				editEntityText = new JLabel(I18n.getText("general.initializing").toLowerCase());
+				editEntityText.setLabelFor(editEntity);
+				
+				editEntitySave = new JButton(I18n.getText("general.saveChanges"));
+				editEntityCancel = new JButton(I18n.getText("general.cancel"));
+				
+				// don't let an errant enter key fire these buttons!
+				editEntitySave.setDefaultCapable(false);
+				editEntityCancel.setDefaultCapable(false);
+				
+				bottombar.add(editEntityText);
+				bottombar.add(Box.createHorizontalGlue());
+				bottombar.add(editEntitySave);
+				bottombar.add(Box.createHorizontalStrut(6));
+				bottombar.add(editEntityCancel);
+				bottombar.add(Box.createHorizontalStrut(6));
+				
 				panelMetadata.add(bottombar, BorderLayout.SOUTH);
 				
-				// Create table and panel to hold it
+				// Create metadata table and panel to hold it
 				propertiesTable = new CorinaPropertySheetTable();
 				propertiesPanel = new PropertySheetPanel(propertiesTable);
-				propertiesPanel.getTable().setEnabled(false);
+				//propertiesPanel.getTable().setEnabled(false);
 
 				// Set various properties of the properties panel!
 				propertiesPanel.setRestoreToggleStates(true);
@@ -359,6 +409,7 @@ public class ImportView extends JDialog{
 		horizSplitPane.setDividerLocation(0.5);
 		pack();
 		chooseOrCancelUIUpdate();
+		enableEditing(false);
 	}
 	
 	/**
@@ -386,7 +437,7 @@ public class ImportView extends JDialog{
 				{
 					// An entity in the tree-table has been selected so 
 					// update the metadata panel
-									
+														
 					// Check that the tree table is expanded to show the selected node
 					int selRow = treeTable.getSelectedRow();
 					DefaultMutableTreeNode guiSelectedEntity = 
@@ -410,6 +461,10 @@ public class ImportView extends JDialog{
 				else if (name.equals(ImportModel.INVALID_FILE_EXCEPTION))
 				{
 					setGUIForInvalidFile(model.getFileException());
+				}
+				else if (name.equals(ImportModel.ENTITY_CHOOSER_LIST))
+				{
+					updateEntityChooser(model.getEntityChooserList());
 				}
 
 				
@@ -444,12 +499,21 @@ public class ImportView extends JDialog{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
+				// Check the user isn't part way through changing this entity
+				if(!isUserOkWithLoosingAnyChanges()) return;
+
+				if(changingTop)
+				{
+					changingTop =false;
+					chooseOrCancelUIUpdate();
+				}
+				
 				int selRow = treeTable.getSelectedRow();
 				DefaultMutableTreeNode selectedEntity = 
 					(DefaultMutableTreeNode) treeTable.getValueAt(selRow, 0);	
 				ImportStatus status = (ImportStatus) treeTable.getValueAt(selRow, 1);
 				TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow(selectedEntity, status);		
-                ImportEntitySelectedEvent event = new ImportEntitySelectedEvent(model, row);
+                ImportNodeSelectedEvent event = new ImportNodeSelectedEvent(model, row);
                 event.dispatch();
 				
 			}
@@ -487,6 +551,7 @@ public class ImportView extends JDialog{
 				else if (changeButton.getText().equals(CHOOSE_STATE))
 				{
 					changingTop = false;
+					propertiesTable.setHasWatermark(false);
 					TridasRepresentationTableTreeRow oldrow = model.getSelectedNode();	
 					DefaultMutableTreeNode node = new DefaultMutableTreeNode((ITridas) topChooser.getSelectedItem());
 					TridasRepresentationTableTreeRow newrow = 
@@ -505,12 +570,42 @@ public class ImportView extends JDialog{
 			public void actionPerformed(ActionEvent e) {
 				changingTop = false;
 				chooseOrCancelUIUpdate();
-				
-				
+
+			}
+		});
+		
+		editEntity.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			/*	if(!editEntity.isSelected() && currentMode.hasChanged()) {
+					if(!warnLosingChanges()) {
+						editEntity.setSelected(true);
+						return;
+					}
+					else {
+						currentMode.clearChanged();
+					}
+				}*/
+				enableEditing(editEntity.isSelected());
+			}			
+		});
+		
+		editEntitySave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				doSave();
+			}
+		});
+
+		editEntityCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//currentMode.clearChanged();
+				editEntity.setSelected(false);
+				enableEditing(false);				
 			}
 		});
 		
 	}
+	
+	
 	
 	/**
 	 * Localise the GUI components
@@ -546,6 +641,12 @@ public class ImportView extends JDialog{
 		lblTopBarSummaryTitle.setText("");
 	}
 	
+	
+	/**
+	 * Update the data panel to show the ring width values
+	 * 
+	 * @param row
+	 */
 	private void updateDataPanel(
 			TridasRepresentationTableTreeRow row) {
 	
@@ -599,19 +700,18 @@ public class ImportView extends JDialog{
 		// Set the text in the top bar
 		setTopBarSummaryTitle(parentNode);
 		
-		// Extract the entity and entity typefrom the select table tree row
-		ITridas entity = (ITridas) row.node.getUserObject();
-		Class<? extends ITridas> currentEntityType = (Class<? extends ITridas>) row.node.getUserObject().getClass();
+		// Extract the entity and entity type from the select table tree row
+		currentEntity = (ITridas) row.node.getUserObject();
+		currentEntityType = (Class<? extends ITridas>) row.node.getUserObject().getClass();
 		
 		// Extract the parent entity 
-		ITridas parentEntity = null;
 		try{
 			parentEntity = (ITridas) parentNode.getUserObject();
 			System.out.println("Set parent entity successfully to: " + parentEntity.getTitle());
 		} catch (Exception e){
 			System.out.println("Unable to set parent entity");
 		}
-		
+			
 		// Swapping entities so disable editing
 		//enableEditing(false);	
 		
@@ -624,9 +724,9 @@ public class ImportView extends JDialog{
 		propertiesTable.expandAllBranches(true);
 		
 		// Add data to table from entity
-		if(entity!=null)
+		if(currentEntity!=null)
 		{
-			propertiesPanel.readFromObject(entity);
+			propertiesPanel.readFromObject(currentEntity);
 			propertiesPanel.setEnabled(true);
 			editEntity.setVisible(true);
 		}
@@ -637,29 +737,27 @@ public class ImportView extends JDialog{
 		}
 		
 		// Set the watermark text across metadata panel
-		if(model.getSelectedNode().action.equals(ImportStatus.PENDING))
+		if(row.action.equals(ImportStatus.PENDING))
 		{
-			propertiesTable.setPreviewing(true);
-			propertiesTable.setPreviewText(I18n.getText("general.preview").toUpperCase());
+			propertiesTable.setHasWatermark(true);
+			propertiesTable.setWatermarkText(I18n.getText("general.preview").toUpperCase());
 		}
-		else if(model.getSelectedNode().action.equals(ImportStatus.IGNORE))
+		else if(row.action.equals(ImportStatus.IGNORE))
 		{
-			propertiesTable.setPreviewing(true);
-			propertiesTable.setPreviewText("IGNORED");
+			propertiesTable.setHasWatermark(true);
+			propertiesTable.setWatermarkText("IGNORED");
 		}
 		else
 		{
-			propertiesTable.setPreviewing(false);
+			propertiesTable.setHasWatermark(false);
 		}
-		
-		// Update the top chooser to contain the correct options
-		updateEntityChooser(entity, parentEntity);
+			
+		// Update the combo box list
+		ImportEntityListChangedEvent ev = new ImportEntityListChangedEvent(model, currentEntity, parentEntity);
+		ev.dispatch();
 		
 		// Set the top chooser to the correct current value
-		selectInTopChooser(entity);
-		
-		
-
+		selectInTopChooser();
 		
 	}
 	
@@ -671,7 +769,9 @@ public class ImportView extends JDialog{
 		editEntity.setEnabled(!changingTop);
 		topChooser.setEnabled(changingTop);
 		changeButton.setText(changingTop ? CHOOSE_STATE : CHANGE_STATE);
-		cancelChangeButton.setVisible(changingTop);		
+		cancelChangeButton.setVisible(changingTop);	
+		//propertiesTable.setEditable(changingTop);
+		
 	}
 	
 	/**
@@ -679,39 +779,31 @@ public class ImportView extends JDialog{
 	 * and its parent
 	 * 
 	 * @param thisEntity
-	 * @param parent
+	 * @param parentEntity
 	 */
-	private void updateEntityChooser(ITridas thisEntity, ITridas parent)
+	private void updateEntityChooser(List<? extends ITridas> entities)
 	{
-		List<? extends ITridas> entities = null;
-		
-		
-		if (thisEntity instanceof TridasProject)
+		topChooser.setList(entities);
+		if (currentEntity instanceof TridasProject)
 		{
 			// This entity is a project so set list to null as 
 			// projects aren't supported
-			topChooser.setList(null);
 			setTopChooserEnabled(false, "Projects are not supported in Corina");
 			return;
 		}
-		else if(thisEntity instanceof TridasObject)
+		else if(currentEntity instanceof TridasObject)
 		{
 			// This entity is an object so grab object dictionary
-			entities = App.tridasObjects.getObjectList();
-			topChooser.setList(entities);
 			setTopChooserEnabled(true, null);
 			return;
-
 		}
 		
 		// Otherwise, check that the parent is already in db by checking
 		// the identifier domain and set list accordingly 
 		try{
-			if (parent.getIdentifier().getDomain().equals(App.domain))
+			if (parentEntity.getIdentifier().getDomain().equals(App.domain))
 			{
-				entities = lists.getChildList(parent, true);
-				topChooser.setList(entities);
-				if(thisEntity instanceof TridasMeasurementSeries)
+				if(currentEntity instanceof TridasMeasurementSeries)
 				{
 					setTopChooserEnabled(false, null);
 					return;
@@ -730,6 +822,12 @@ public class ImportView extends JDialog{
 		
 	}
 	
+	/**
+	 * Set whether the top chooser combo box panel is enabled or not
+	 * 
+	 * @param b
+	 * @param message
+	 */
 	private void setTopChooserEnabled(Boolean b, String message)
 	{
 
@@ -795,41 +893,66 @@ public class ImportView extends JDialog{
 	}
 	
 	/**
+	 * Determine in currentEntity is new by checking to see if it has a valid
+	 * identifier for this domain.
+	 * 
+	 * @return
+	 */
+	private boolean isCurrentEntityNew()
+	{
+		if (!currentEntity.isSetIdentifier())
+		{
+			return true;
+		}
+		else if (!currentEntity.getIdentifier().isSetDomain())
+		{
+			System.out.println("No domain");
+			return true;
+		}
+		else if (!currentEntity.getIdentifier().getDomain().equals(App.domain))
+		{
+			System.out.println("Different domain - this one is: "+currentEntity.getIdentifier().getDomain());
+			return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * Select an item in the combo box
 	 * Use because TridasEntity.equals compares things we don't care about
 	 * 
-	 * @param entity
+	 * @param thisEntity
 	 */
-	private void selectInTopChooser(ITridas entity) {
+	private void selectInTopChooser() {
 		// disable actionListener firing when we change combobox selection
 		topChooserListener.setEnabled(false);
 		
 		try {
-			if (entity == null) {
+			if (currentEntity == null) {
 				topChooser.setSelectedItem(ImportEntityListComboBox.NEW_ITEM);
 				return;
 			}
-			else if (!entity.isSetIdentifier())
+			else if (!currentEntity.isSetIdentifier())
 			{
 				System.out.println("No identifier");
 				topChooser.setSelectedItem(ImportEntityListComboBox.NEW_ITEM);
 				return;
 			}
-			else if (!entity.getIdentifier().isSetDomain())
+			else if (!currentEntity.getIdentifier().isSetDomain())
 			{
 				System.out.println("No domain");
 				topChooser.setSelectedItem(ImportEntityListComboBox.NEW_ITEM);
 				return;
 			}
-			else if (!entity.getIdentifier().getDomain().equals(App.domain))
+			else if (!currentEntity.getIdentifier().getDomain().equals(App.domain))
 			{
-				System.out.println("Different domain - this one is: "+entity.getIdentifier().getDomain());
+				System.out.println("Different domain - this one is: "+currentEntity.getIdentifier().getDomain());
 				topChooser.setSelectedItem(ImportEntityListComboBox.NEW_ITEM);
 				return;
 			}
 			else
 			{
-				System.out.println("Correct domain: "+entity.getIdentifier().getDomain());
+				System.out.println("Correct domain: "+currentEntity.getIdentifier().getDomain());
 				
 			}
 				
@@ -838,14 +961,14 @@ public class ImportView extends JDialog{
 
 			// find it in the list...
 			ITridas listEntity;
-			if ((listEntity = entityInList(entity, model.getElements())) != null) {
+			if ((listEntity = entityInList(currentEntity, model.getElements())) != null) {
 				topChooser.setSelectedItem(listEntity);
 				return;
 			}
 
 			// blech, it wasn't in the list -> add it
-			model.insertElementAt(entity, 2);
-			topChooser.setSelectedItem(entity);
+			model.insertElementAt(currentEntity, 2);
+			topChooser.setSelectedItem(currentEntity);
 		} finally {
 			// deal with the selection
 			handleComboSelection(false);
@@ -913,8 +1036,8 @@ public class ImportView extends JDialog{
 		if(obj instanceof ITridas) {
 			temporarySelectingEntity = (ITridas) obj;
 			
-			if(propertiesTable.isPreviewing()){
-					propertiesTable.setPreviewText(I18n.getText("general.preview"));
+			if(propertiesTable.hasWatermark()){
+					propertiesTable.setWatermarkText(I18n.getText("general.preview"));
 			}				
 
 			// start loading the list of children right away
@@ -962,7 +1085,12 @@ public class ImportView extends JDialog{
 		return false;
 	}
 	
-	
+	/**
+	 * Get the tree path for a node
+	 * 
+	 * @param node
+	 * @return
+	 */
 	private TreePath getPath(TreeNode node) { 
 		List list = new ArrayList(); 
 		// Add all nodes to list 
@@ -975,4 +1103,249 @@ public class ImportView extends JDialog{
 		// Convert array of nodes to TreePath 
 		return new TreePath(list.toArray());  
 	}
+	
+	/**
+	 * Called to enable editing
+	 * Responsible for loading the duplicate copy into the editor
+	 * 
+	 * @param enabled
+	 */
+	protected void enableEditing(boolean enabled) {
+		propertiesTable.setEditable(enabled);
+		editEntityText.setFont(editEntityText.getFont().deriveFont(Font.BOLD));
+		editEntityText.setText(enabled ? I18n.getText("metadata.currentlyEditingThis") + " " + "entity" 
+				: I18n.getText("metadata.clickLockToEdit") + " " + "entity");
+		
+		if(enabled) {
+			propertiesTable.setHasWatermark(false);
+			if(currentEntity instanceof ITridasSeries)
+				temporaryEditingEntity = TridasCloner.cloneSeriesRefValues((ITridasSeries) currentEntity, (Class<? extends ITridasSeries>) currentEntity.getClass());
+			else
+				temporaryEditingEntity = TridasCloner.clone(currentEntity, currentEntity.getClass());
+
+			// user chose to edit without choosing 'new', so be nice and make a new one for them
+			/*if(temporaryEditingEntity == null && topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
+				temporaryEditingEntity = thisEntity;
+				populateNewEntity(currentMode, temporaryEditingEntity);
+			}*/
+
+			if(temporaryEditingEntity != null)
+				propertiesPanel.readFromObject(temporaryEditingEntity);
+		}
+		else {
+			temporaryEditingEntity = null;
+						
+			// don't display anything if we have nothingk!
+			if(currentEntity != null)
+				propertiesPanel.readFromObject(currentEntity);
+		}
+
+		// disable choosing other stuff while we're editing
+		// but only if something else doesn't disable it first
+		if(topChooser.isEnabled())
+			topChooser.setEnabled(!enabled);
+		changeButton.setEnabled(!enabled);
+		
+		// show/hide our buttons
+		editEntitySave.setEnabled(true);
+		editEntityCancel.setEnabled(true);
+		editEntitySave.setVisible(enabled);
+		editEntityCancel.setVisible(enabled);
+	}
+	
+	
+	/**
+	 * @return true if the user wants to lose changes, false otherwise
+	 */
+	private boolean isUserOkWithLoosingAnyChanges() {
+
+		if(changingTop)
+		{
+			int ret = JOptionPane.showConfirmDialog(this, 
+					I18n.getText("question.confirmChangeForm"), 
+					I18n.getText("question.continue"), 
+					JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+			
+			return (ret == JOptionPane.YES_OPTION);
+		}
+		else
+		{
+			return true;
+		}
+		
+	}
+	
+	/**
+	 * @return true if the user wants to lose the new selection, false otherwise
+	 */
+	private boolean isUserOkWithLoosingSelection() {
+		
+		// nothing new has been selected, nothing to lose
+		if(temporarySelectingEntity == null || temporarySelectingEntity.equals(currentEntityType))
+			return true;
+		
+		int ret = JOptionPane.showConfirmDialog(this, 
+				I18n.getText("question.confirmChangeForm"), 
+				I18n.getText("question.continue"), 
+				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		
+		return (ret == JOptionPane.YES_OPTION);
+	}
+	
+	
+	/**
+	 * Remove any children from an entity ready for sending to the webservice
+	 *  
+	 * @param entity
+	 * @return
+	 */
+	private ITridas removeChildren(ITridas entity)
+	{
+		System.out.println("removing children from "+entity.getTitle());
+		if(entity instanceof TridasProject)
+		{
+			((TridasProject) entity).setDerivedSeries(null);
+			((TridasProject) entity).setObjects(null);
+		}
+		else if (entity instanceof TridasObject)
+		{
+			((TridasObject) entity).setElements(null);
+			((TridasObject) entity).setObjects(null);
+		}
+		else if (entity instanceof TridasElement)
+		{
+			((TridasElement) entity).setSamples(null);
+		}
+		else if (entity instanceof TridasSample)
+		{
+			((TridasSample) entity).setRadiuses(null);
+		}
+		else if (entity instanceof TridasRadius)
+		{
+			((TridasRadius) entity).setMeasurementSeries(null);
+		}		
+		return entity;
+	}
+	
+	/**
+	 * Do the actual save
+	 */
+	private void doSave() {
+		if(temporaryEditingEntity == null)
+			throw new IllegalStateException();
+		
+		// if nothing actually changed, just ignore it like a cancel
+		/*if(!currentMode.hasChanged()) {			
+			editEntityCancel.doClick();
+			return;
+		}*/
+		
+		propertiesPanel.writeToObject(temporaryEditingEntity);
+
+		temporaryEditingEntity = removeChildren(temporaryEditingEntity);
+		
+		// are we saving something new?
+		boolean isNew = isCurrentEntityNew();
+		
+		// Logic for saving to the server
+		
+		// sanity check to ensure parent entity being null means we're an object
+		if(parentEntity == null && !currentEntityType.equals(TridasObject.class)) {
+			new Bug(new IllegalStateException("parentEntity is null, but not an object"));
+			return;
+		}
+				
+		// the resource we'll use
+		EntityResource<? extends ITridas> resource;
+		
+		if(isNew)
+			resource = getNewAccessorResource(temporaryEditingEntity, parentEntity, 
+					currentEntityType);
+		else
+			resource = getUpdateAccessorResource(temporaryEditingEntity, currentEntityType);
+
+		// set up a dialog...
+		Window parentWindow = SwingUtilities.getWindowAncestor(this);
+		CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
+
+		// query the resource
+		resource.query();
+		dialog.setVisible(true);
+		
+		// on failure, just return
+		if(!dialog.isSuccessful()) {
+			JOptionPane.showMessageDialog(this, I18n.getText("error.savingChanges") + "\r\n" +
+					I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
+					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		// replace the saved result
+		temporaryEditingEntity = resource.getAssociatedResult();
+		
+		// sanity check the result
+		if(temporaryEditingEntity == null) {
+			new Bug(new IllegalStateException("CREATE or UPDATE entity returned null"));
+			return;
+		}
+		
+		// take the return value and save it
+		currentEntity = temporaryEditingEntity;
+		TridasRepresentationTableTreeRow oldrow = model.getSelectedNode();	
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode((ITridas) temporaryEditingEntity);
+		TridasRepresentationTableTreeRow newrow = 
+			new TridasRepresentationTableTreeRow(node, ImportStatus.STORED_IN_DATABASE);
+		ImportSwapEntityEvent event = new ImportSwapEntityEvent(model, newrow, oldrow);
+        event.dispatch();
+
+		// if it was new, re-enable our editing
+		if(isNew) {
+			// stick it in the combo box list
+			if(parentEntity == null) {
+				// it's an object...
+				// TODO: Fix new objects?
+			}
+			else
+				lists.appendChildToList(parentEntity, temporaryEditingEntity);
+			
+			// repopulate the combo box...
+			selectInTopChooser();
+		
+		}
+		
+		// on success...
+		//currentMode.clearChanged();
+		editEntity.setSelected(false);
+		enableEditing(false);
+		//populateComboAndSelect(false);
+		//temporaryEditingEntity = null;
+
+	}
+
+	/**
+	 * For creating a new entity on the server
+	 * 
+	 * @param <T>
+	 * @param entity
+	 * @param parent
+	 * @param type
+	 * @return
+	 */
+	private <T extends ITridas> EntityResource<T> getNewAccessorResource(ITridas entity, ITridas parent, Class<T> type) {
+		return new EntityResource<T>(entity, parent, type);
+	}
+
+	/**
+	 * For updating an existing entity on the server
+	 * 
+	 * @param <T>
+	 * @param entity
+	 * @param type
+	 * @return
+	 */
+	private <T extends ITridas> EntityResource<T> getUpdateAccessorResource(ITridas entity, Class<T> type) {
+		return new EntityResource<T>(entity, CorinaRequestType.UPDATE, type);
+	}
+	
+
 }

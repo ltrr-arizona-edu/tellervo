@@ -27,15 +27,15 @@ public class CorinaPropertySheetTable extends PropertySheetTable {
 
 	private boolean isEditable;
 	
-	/** If true, we put some text over the top that says 'PREVIEW' */
-	private boolean isPreviewing;
+	/** If true, we put some text over the top that says 'PREVIEW' or similar */
+	private boolean hasWatermark;
 	
-	/** The text we want to show for a preview */
-	private String previewText;
+	/** The text we want to show in the watermark */
+	private String watermarkText;
 	
 	public CorinaPropertySheetTable() {
 		isEditable = true;
-		isPreviewing = false;
+		hasWatermark = false;
 		setColumnWidths();
 	}
 	
@@ -48,22 +48,22 @@ public class CorinaPropertySheetTable extends PropertySheetTable {
 		repaint();
 	}
 	
-	public boolean isPreviewing() {
-		return isPreviewing;
+	public boolean hasWatermark() {
+		return hasWatermark;
 	}
 	
-	public void setPreviewing(boolean isPreviewing) {
-		if(this.isPreviewing == isPreviewing)
+	public void setHasWatermark(boolean b) {
+		if(this.hasWatermark == b)
 			return;
 		
-		this.isPreviewing = isPreviewing;
+		this.hasWatermark = b;
 		repaint();
 	}
 	
-	public void setPreviewText(String text) {		
-		this.previewText = text;
+	public void setWatermarkText(String text) {		
+		this.watermarkText = text;
 		
-		if(isPreviewing)
+		if(hasWatermark)
 			repaint();
 	}
 	
@@ -93,7 +93,7 @@ public class CorinaPropertySheetTable extends PropertySheetTable {
 		super.paintComponent(g);
 		
 		// mark it as a preview...
-		if(isPreviewing) {
+		if(hasWatermark) {
 			Graphics2D g2 = (Graphics2D) g;
 			Composite oldComposite = g2.getComposite();
 			int h = getHeight();
@@ -105,9 +105,9 @@ public class CorinaPropertySheetTable extends PropertySheetTable {
 			g2.fillRect(0, 0, w, h);
 			
 			// now, draw the word "PREVIEW" over it all
-			if(previewText != null && previewText.length() > 0) {
+			if(watermarkText != null && watermarkText.length() > 0) {
 				g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .5f));
-				String preview = previewText;
+				String preview = watermarkText;
 			
 				Font font = new Font("Arial", Font.BOLD, 72);
 				g2.setFont(font);

@@ -9,7 +9,7 @@ import org.tridas.interfaces.ITridas;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-import edu.cornell.dendro.corina.io.control.ImportEntitySelectedEvent;
+import edu.cornell.dendro.corina.io.control.ImportNodeSelectedEvent;
 import edu.cornell.dendro.corina.io.control.ImportSwapEntityEvent;
 import edu.cornell.dendro.corina.io.model.ImportModel;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow;
@@ -54,7 +54,7 @@ public class EntitySwappedCommand implements ICommand {
 		// Select the new node
 		TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow();
 		row.node = newNode;		
-		ImportEntitySelectedEvent event2 = new ImportEntitySelectedEvent(event.model, row);
+		ImportNodeSelectedEvent event2 = new ImportNodeSelectedEvent(event.model, row);
 		event2.dispatch();
 	}
 

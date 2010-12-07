@@ -11,6 +11,7 @@ import javax.swing.tree.TreePath;
 
 import org.netbeans.swing.outline.RowModel;
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
@@ -100,19 +101,20 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
 	@Override
 	public boolean isLeaf(Object o)
 	{
-		if(o instanceof TridasMeasurementSeries)
-		{
-			return true;
-		}
-		else if (o instanceof ITridas)
-		{
-			return false;
-		}
-		else 
-		{
-			return false;
-		}
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
+		ITridas entity = (ITridas) node.getUserObject();
 		
+		if(!(entity instanceof ITridas))         return true;
+		/*else if(entity instanceof TridasProject) return !((TridasProject) entity).isSetObjects();
+		else if(entity instanceof TridasObject)  return !((TridasObject) entity).isSetElements();
+		else if(entity instanceof TridasElement) return !((TridasElement) entity).isSetSamples();
+		else if(entity instanceof TridasSample)  return !((TridasSample) entity).isSetRadiuses();
+		else if(entity instanceof TridasRadius)  return !((TridasRadius) entity).isSetMeasurementSeries();
+		else if(entity instanceof ITridasSeries) return true;		
+		return false;*/
+		
+		if(entity instanceof ITridasSeries) return true;
+		return false;
 	}
 	
     @Override

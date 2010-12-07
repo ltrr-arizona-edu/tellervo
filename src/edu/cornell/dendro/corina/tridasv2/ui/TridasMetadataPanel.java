@@ -364,10 +364,10 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		populateComboAndSelect(true);
 		
 		if(topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM)
-			propertiesTable.setPreviewText(I18n.getText("general.choose").toUpperCase());
+			propertiesTable.setWatermarkText(I18n.getText("general.choose").toUpperCase());
 		else
-			propertiesTable.setPreviewText(I18n.getText("general.preview").toUpperCase());
-		propertiesTable.setPreviewing(true);
+			propertiesTable.setWatermarkText(I18n.getText("general.preview").toUpperCase());
+		propertiesTable.setHasWatermark(true);
 		
 		// we're starting to change...
 		changingTop = true;
@@ -400,8 +400,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// END HACK
 		//
 		
-		propertiesTable.setPreviewing(false);
-		propertiesTable.setPreviewText(null);
+		propertiesTable.setHasWatermark(false);
+		propertiesTable.setWatermarkText(null);
 		
 		// the user is changing away...
 		if(temporarySelectingEntity != null && !temporarySelectingEntity.equals(currentMode.getEntity(s))) {
@@ -787,8 +787,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			temporarySelectingEntity = currentMode.newInstance(s);
 			populateNewEntity(currentMode, temporarySelectingEntity);
 			
-			if(propertiesTable.isPreviewing())
-				propertiesTable.setPreviewText("NEW...");
+			if(propertiesTable.hasWatermark())
+				propertiesTable.setWatermarkText("NEW...");
 		}
 		else if(obj instanceof ITridas) {
 			temporarySelectingEntity = (ITridas) obj;
@@ -799,13 +799,13 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			//
 			if(temporarySelectingEntity.getTitle().contains("(") &&
 					!(temporarySelectingEntity instanceof TridasObject)) {
-				if(propertiesTable.isPreviewing())
-					propertiesTable.setPreviewText(I18n.getText("general.legacy"));				
+				if(propertiesTable.hasWatermark())
+					propertiesTable.setWatermarkText(I18n.getText("general.legacy"));				
 			}
 			else {
 				// this part isn't a hack...
-				if(propertiesTable.isPreviewing())
-					propertiesTable.setPreviewText(I18n.getText("general.preview"));
+				if(propertiesTable.hasWatermark())
+					propertiesTable.setWatermarkText(I18n.getText("general.preview"));
 			}				
 			//
 			// END HACK
@@ -939,8 +939,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		}
 		
 		// clear off any overlay text we might have
-		propertiesTable.setPreviewing(false);
-		propertiesTable.setPreviewText(null);
+		propertiesTable.setHasWatermark(false);
+		propertiesTable.setWatermarkText(null);
 		
 		// load the new current entity
 		currentMode = type;

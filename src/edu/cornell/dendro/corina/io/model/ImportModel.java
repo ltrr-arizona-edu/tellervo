@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
-import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.exceptions.ConversionWarning;
@@ -19,18 +19,21 @@ public class ImportModel extends HashModel {
 	public static final String TREE_MODEL = "treeModel";
 	public static final String CONVERSION_WARNINGS = "conversionWarnings";
 	public static final String SELECTED_NODE = "selectedNode";
-	public static final String SELECTED_ENTITY = "selectedEntity";
 	public static final String ORIGINAL_FILE = "originalFile";
 	public static final String INVALID_FILE_EXCEPTION = "invalidFileException";
-		
+	public static final String ENTITY_CHOOSER_LIST = "entityChooserList";
+	public static final String CURRENT_ENTITY = "currentEntity";
+	public static final String TEMPORARY_CURRENT_ENTITY = "tempCurrentEntity";
+	
+	
 	public ImportModel()
 	{
 		registerProperty(ImportModel.TREE_MODEL, PropertyType.READ_WRITE, new TridasRepresentationTreeModel(null));
 		registerProperty(ImportModel.CONVERSION_WARNINGS, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.SELECTED_NODE, PropertyType.READ_WRITE, new TridasRepresentationTableTreeRow());
-		registerProperty(ImportModel.SELECTED_ENTITY, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.ORIGINAL_FILE, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.INVALID_FILE_EXCEPTION, PropertyType.READ_WRITE);
+		registerProperty(ImportModel.ENTITY_CHOOSER_LIST, PropertyType.READ_WRITE);
 	}
 	
 	/**
@@ -49,6 +52,26 @@ public class ImportModel extends HashModel {
 	public void setFileException(InvalidDendroFileException e)
 	{
 		setProperty(ImportModel.INVALID_FILE_EXCEPTION, e);
+	}
+	
+	/**
+	 * Set the possible list of entities that this entity could be
+	 * 
+	 * @param entities
+	 */
+	public void setEntityChooserList(List<? extends ITridas> entities)
+	{
+		setProperty(ImportModel.ENTITY_CHOOSER_LIST, entities);
+	}
+	
+	/**
+	 * Get a list of possible entities in the database that this entity could be
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<? extends ITridas> getEntityChooserList()
+	{
+		return (List<? extends ITridas>) getProperty(ImportModel.ENTITY_CHOOSER_LIST);
 	}
 	
 	/**
@@ -128,9 +151,8 @@ public class ImportModel extends HashModel {
 	 * Get array of conversion warnings
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public ConversionWarning[] getConversionWarnings()
-	{		
+	{			
 		return (ConversionWarning[]) getProperty(ImportModel.CONVERSION_WARNINGS);
 	}
 	
@@ -145,22 +167,29 @@ public class ImportModel extends HashModel {
 	}
 	
 	/**
-	 * Set the current TRiDaS entity being viewed/edited
-	 * 
-	 * @param entity
+	 * Manually add a conversion warning to the list
+	 * @param warning
 	 */
-	public void setSelectedEntity(ITridas entity)
-	{
-		setProperty(ImportModel.SELECTED_ENTITY, entity);
+	@SuppressWarnings("unchecked")
+	public void appendConversionWarning(ConversionWarning warning)
+	{	
+		ArrayList<ConversionWarning> warnings = (ArrayList<ConversionWarning>) getProperty(ImportModel.CONVERSION_WARNINGS);
+		warnings.add(warning);
+		
+		setProperty(ImportModel.CONVERSION_WARNINGS, warnings.toArray(new String[0]));
+
 	}
 	
 	/**
-	 * Get the currently selected TRiDaS entity that is being viewed
-	 * @return
+	 * Manually add an array of conversion warnings to the list
+	 * @param warnings
 	 */
-	public ITridas getSelectedEntity()
-	{
-		return (ITridas) getProperty(ImportModel.SELECTED_ENTITY);
+	public void appendConversionWarning(ArrayList<ConversionWarning> warnings)
+	{	
+		for(ConversionWarning warning : warnings)
+		{
+			appendConversionWarning(warning);
+		}
 
 	}
 	
