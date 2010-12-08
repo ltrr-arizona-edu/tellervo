@@ -3,6 +3,8 @@
  */
 package edu.cornell.dendro.corina.tridasv2.ui;
 
+import java.util.ArrayList;
+
 import org.tridas.schema.ControlledVoc;
 
 import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
@@ -47,7 +49,21 @@ public class ControlledVocRenderer extends DefaultCellRenderer {
 
 	@Override
 	protected String convertToString(Object value) {
-		ControlledVoc voc = (ControlledVoc) value;
+		
+		if(value instanceof ArrayList)
+		{
+			return ((ArrayList)value).get(0).toString();
+		}
+		
+		ControlledVoc voc = null;
+		try{
+		 voc = (ControlledVoc) value;
+		} catch (Exception e)
+		{
+			System.out.println("Unable to convert value" + value);
+			System.out.println("Class " + value.getClass());
+			return value.toString();
+		}
 		
 		if(value == null){
 			return "";

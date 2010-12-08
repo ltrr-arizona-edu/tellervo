@@ -73,7 +73,11 @@ public class ImportEntityListComboBox extends ComboBoxFilterable {
 		model.clearElements();
 		model.addElement(NEW_ITEM);
 		model.addElement(SEPARATOR_ITEM);
-		model.addElements(entities);
+		
+		if(entities!=null)
+		{
+			model.addElements(entities);
+		}
 		
 		finishInit();
 	}

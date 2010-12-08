@@ -21,10 +21,6 @@ public class ImportModel extends HashModel {
 	public static final String SELECTED_NODE = "selectedNode";
 	public static final String ORIGINAL_FILE = "originalFile";
 	public static final String INVALID_FILE_EXCEPTION = "invalidFileException";
-	public static final String ENTITY_CHOOSER_LIST = "entityChooserList";
-	public static final String CURRENT_ENTITY = "currentEntity";
-	public static final String TEMPORARY_CURRENT_ENTITY = "tempCurrentEntity";
-	
 	
 	public ImportModel()
 	{
@@ -33,7 +29,6 @@ public class ImportModel extends HashModel {
 		registerProperty(ImportModel.SELECTED_NODE, PropertyType.READ_WRITE, new TridasRepresentationTableTreeRow());
 		registerProperty(ImportModel.ORIGINAL_FILE, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.INVALID_FILE_EXCEPTION, PropertyType.READ_WRITE);
-		registerProperty(ImportModel.ENTITY_CHOOSER_LIST, PropertyType.READ_WRITE);
 	}
 	
 	/**
@@ -53,27 +48,7 @@ public class ImportModel extends HashModel {
 	{
 		setProperty(ImportModel.INVALID_FILE_EXCEPTION, e);
 	}
-	
-	/**
-	 * Set the possible list of entities that this entity could be
-	 * 
-	 * @param entities
-	 */
-	public void setEntityChooserList(List<? extends ITridas> entities)
-	{
-		setProperty(ImportModel.ENTITY_CHOOSER_LIST, entities);
-	}
-	
-	/**
-	 * Get a list of possible entities in the database that this entity could be
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<? extends ITridas> getEntityChooserList()
-	{
-		return (List<? extends ITridas>) getProperty(ImportModel.ENTITY_CHOOSER_LIST);
-	}
-	
+		
 	/**
 	 * Get the TRiDaS tree model representing the legacy file 
 	 * @return
@@ -134,7 +109,7 @@ public class ImportModel extends HashModel {
 	 */
 	public void setSelectedNode(TridasRepresentationTableTreeRow row)
 	{
-		setProperty(ImportModel.SELECTED_NODE, row);
+		setProperty(ImportModel.SELECTED_NODE, row);		
 	}
 	
 	/**
@@ -192,9 +167,7 @@ public class ImportModel extends HashModel {
 		}
 
 	}
-	
-	
-	
+		
 	private String getFileContents(File file) throws IOException
 	{
 	    //...checks on aFile are elided

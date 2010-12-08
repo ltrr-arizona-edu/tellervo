@@ -18,7 +18,8 @@ public class NodeSelectedCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		ImportNodeSelectedEvent event = (ImportNodeSelectedEvent) argEvent;
-		event.model.setSelectedNode(event.getValue());
+		
+		if(event.getValue()!=null) event.model.setSelectedNode(event.getValue());
 		
 	}
 

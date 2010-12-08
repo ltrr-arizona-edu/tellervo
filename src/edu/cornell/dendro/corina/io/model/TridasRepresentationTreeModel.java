@@ -101,6 +101,8 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
 	@Override
 	public boolean isLeaf(Object o)
 	{
+		if(o==null) return true;
+		
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
 		ITridas entity = (ITridas) node.getUserObject();
 		

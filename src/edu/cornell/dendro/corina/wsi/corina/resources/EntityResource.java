@@ -2,18 +2,16 @@ package edu.cornell.dendro.corina.wsi.corina.resources;
 
 import java.util.List;
 
+import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasIdentifier;
+
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
+import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaEntityAssociatedResource;
-
-import edu.cornell.dendro.corina.util.ListUtil;
-
-import org.tridas.interfaces.ITridas;
-import org.tridas.schema.TridasIdentifier;
-import org.tridas.schema.TridasMeasurementSeries;
 
 /**
  * @author Lucas Madar
