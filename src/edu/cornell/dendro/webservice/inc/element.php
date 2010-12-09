@@ -512,8 +512,6 @@ class element extends elementEntity implements IDBAccessor
                 
                 $xml.= $this->taxon->asXML();
 
-                if($format!="minimal")
-                {                
                     if($this->getShape()!=NULL)             $xml.= "<tridas:shape normalTridas=\"".dbhelper::escapeXMLChars($this->getShape())."\" normalId=\"".$this->getShape(TRUE)."\" />\n";
                     if($this->hasDimensions())
                     {
@@ -599,7 +597,6 @@ class element extends elementEntity implements IDBAccessor
                         }
                     }
                 }
-            }
 
             if(($parts=="all") || ($parts=="end"))
             {

@@ -1132,7 +1132,7 @@ class elementEntity extends dbEntity
 	
 	function setAltitude($altitude)
 	{
-		$this->altitude = (int) $altitude;
+		$this->altitude = $altitude;
 	}
 	
 	function setSlope($angle, $azimuth)
