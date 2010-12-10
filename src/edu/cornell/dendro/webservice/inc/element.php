@@ -517,7 +517,7 @@ class element extends elementEntity implements IDBAccessor
                     {
                     	$xml.="<tridas:dimensions>";
                     	/* @todo Units needs completing properly */
-                    	$xml.="<tridas:unit>meter</tridas:unit>";
+                    	$xml.="<tridas:unit normalTridas=\"".$this->getDimensionUnits()."\" />";
                     	if($this->getDimension('width')!=NULL)
                     	{
                     		// Doing height, width, depth

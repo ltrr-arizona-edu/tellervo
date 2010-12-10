@@ -574,8 +574,8 @@ class elementParameters extends elementEntity implements IParams
 		   	case "shape": $this->setShape(null, $child->getAttribute("normalTridas")); break; 
 		   	case "dimensions":
 		   		
-		   		//$unitTag = $child->getElementsByTagName("unit")->item(0);
-		   		//$this->setDimensionUnits($unitTag->nodeValue.$child->getAttribute("power"));
+		   		$unitTag = $child->getElementsByTagName("unit")->item(0);
+		   		$this->setDimensionUnits($unitTag->getAttribute("normalTridas"));
 		   		//$dimensionTags = $unitTag->childNodes;
 		   		$dimensionTags = $child->childNodes;
 		   		
