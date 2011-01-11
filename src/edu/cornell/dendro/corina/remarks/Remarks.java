@@ -62,7 +62,7 @@ public class Remarks {
 		List<Remark> remarks = getRemarks();
 		
 		for(final Remark remark : remarks) {
-			String displayName = remark.getDisplayName();
+			String displayName = remark.getDisplayName().substring(0,1).toUpperCase()+remark.getDisplayName().substring(1);
 			Icon icon = remark.getIcon();
 			
 			final JCheckBoxMenuItem item = new JCheckBoxMenuItem(displayName, icon, remark.isRemarkSet(value));
@@ -117,22 +117,24 @@ public class Remarks {
 		tridasRemarkIconMap.put(NormalTridasRemark.UNSPECIFIED_INJURY, "injury.png");		
 		tridasRemarkIconMap.put(NormalTridasRemark.TRAUMATIC_DUCTS, "Burn.png");
 		tridasRemarkIconMap.put(NormalTridasRemark.CRACK, "crack.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.SINGLE_PINNED, "singlepin.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.DOUBLE_PINNED, "doublepin.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.TRIPLE_PINNED, "triplepin.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.MISSING_RING, "missingring.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.RADIUS_SHIFT_UP, "up.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.RADIUS_SHIFT_DOWN, "down.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.MOON_RINGS, "moon.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.DIFFUSE_LATEWOOD, "note.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.DENSITY_FLUCTUATION, "densityfluctuation.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.WIDE_LATE_WOOD, "wide-late-wood.png");
+		tridasRemarkIconMap.put(NormalTridasRemark.WIDE_EARLY_WOOD, "wide-early-wood.png");
 		
 	};
 	
 	private final static Map<String, String> corinaRemarkIconMap = new HashMap<String, String>();
 	static {
-		corinaRemarkIconMap.put("Single pinned", "singlepin.png");
-		corinaRemarkIconMap.put("Double pinned", "doublepin.png");
-		corinaRemarkIconMap.put("Triple pinned", "triplepin.png");
-		corinaRemarkIconMap.put("Missing ring", "missingring.png");
-		corinaRemarkIconMap.put("Radius shift up", "up.png");
-		corinaRemarkIconMap.put("Radius shift down", "down.png");
-		corinaRemarkIconMap.put("Moon ring(s)", "moon.png");
-		corinaRemarkIconMap.put("Diffuse latewood", "note.png");
-		corinaRemarkIconMap.put("Density fluctuation", "densityfluctuation.png");
-		corinaRemarkIconMap.put("Wide late wood", "wide-late-wood.png");
-		corinaRemarkIconMap.put("Wide early wood", "wide-early-wood.png");
+		//corinaRemarkIconMap.put("Single pinned", "singlepin.png");
+
 
 	}
 	
