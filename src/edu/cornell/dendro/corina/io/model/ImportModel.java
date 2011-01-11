@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.tridas.interfaces.ITridas;
@@ -148,11 +149,9 @@ public class ImportModel extends HashModel {
 	@SuppressWarnings("unchecked")
 	public void appendConversionWarning(ConversionWarning warning)
 	{	
-		ArrayList<ConversionWarning> warnings = (ArrayList<ConversionWarning>) getProperty(ImportModel.CONVERSION_WARNINGS);
+		ArrayList<ConversionWarning> warnings = new ArrayList<ConversionWarning>(Arrays.asList((ConversionWarning[]) getProperty(ImportModel.CONVERSION_WARNINGS))); 
 		warnings.add(warning);
-		
-		setProperty(ImportModel.CONVERSION_WARNINGS, warnings.toArray(new String[0]));
-
+		setProperty(ImportModel.CONVERSION_WARNINGS, warnings.toArray(new ConversionWarning[0]));
 	}
 	
 	/**
@@ -161,10 +160,9 @@ public class ImportModel extends HashModel {
 	 */
 	public void appendConversionWarning(ArrayList<ConversionWarning> warnings)
 	{	
-		for(ConversionWarning warning : warnings)
-		{
-			appendConversionWarning(warning);
-		}
+		ArrayList<ConversionWarning> thewarnings = new ArrayList<ConversionWarning>(Arrays.asList((ConversionWarning[]) getProperty(ImportModel.CONVERSION_WARNINGS))); 
+		warnings.addAll(warnings);
+		setProperty(ImportModel.CONVERSION_WARNINGS, thewarnings.toArray(new ConversionWarning[0]));
 
 	}
 		

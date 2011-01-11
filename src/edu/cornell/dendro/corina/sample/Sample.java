@@ -650,7 +650,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		
 		switch(series.getInterpretation().getDating().getType()) {
 		case ABSOLUTE:
-		case DATED___WITH___UNCERTAINTY:
+		case DATED_WITH_UNCERTAINTY:
 		case RADIOCARBON:
 			return true;
 			

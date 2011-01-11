@@ -32,8 +32,6 @@ public class TridasEntityDeriver {
 		ignoreClasses.add(TridasMeasurementSeries.class);
 		ignoreClasses.add(TridasDerivedSeries.class);
 		ignoreClasses.add(BaseSeries.class);
-		
-		ignoreClasses.add(TridasRadiusPlaceholder.class);
 	}
 	
 	/**

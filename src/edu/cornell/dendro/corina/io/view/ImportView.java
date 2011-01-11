@@ -834,6 +834,10 @@ public class ImportView extends JDialog{
 					return;
 				}
 			}
+			else
+			{
+				setTopChooserEnabled(false, "Fix parent entity first");
+			}
 		} catch (Exception e)
 		{
 			setTopChooserEnabled(false, "Fix parent entity first");

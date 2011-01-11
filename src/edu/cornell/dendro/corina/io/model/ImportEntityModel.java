@@ -142,6 +142,13 @@ public class ImportEntityModel extends HashModel {
 	{
 		ITridas currentEntity = getCurrentEntity();
 		
+		if(currentEntity==null)
+		{
+			System.out.println("No entity");
+			return false;
+
+		}
+		
 		if (!currentEntity.isSetIdentifier())
 		{
 			return true;

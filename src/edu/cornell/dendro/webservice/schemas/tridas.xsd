@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-TRiDaS 1.2.1: Tree-Ring Data Standard for dendrochronology
+TRiDaS 1.2.2: Tree-Ring Data Standard for dendrochronology
 See http://www.tridas.org/ for:
 - more information
 - contact information  
 - latest version
 
-Version date: 2010-02-18
+Version date: 2010-11-12
 
 This XML Schema is available under LGPLv3 
 more information on http://www.gnu.org/licenses/lgpl.html
 
 ***********************************************-->
-<xs:schema xmlns="http://www.tridas.org/1.2.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.tridas.org/1.2.1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns="http://www.tridas.org/1.2.2" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.tridas.org/1.2.2" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!--
 %%%%%%%%%%%%%%
 %		EXTERNAL SCHEMAS	
 %%%%%%%%%%%%%% -->
 	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlinks.xsd"/>
-	<!-- download-location: http://www.tridas.org/1.2.1/xlinks.xsd -->
+	<!-- download-location: http://www.tridas.org/1.1/xlinks.xsd -->
 	<!-- original location: http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd -->
 	<xs:import namespace="http://www.opengis.net/gml" schemaLocation="gmlsf.xsd"/>
-	<!-- download-location: http://www.tridas.org/1.2.1/gmlsf.xsd -->
+	<!-- download-location: http://www.tridas.org/1.1/gmlsf.xsd -->
 	<!-- original location: http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf.xsd -->
 
 <!--
@@ -36,10 +36,10 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="Absolute"/>
-			<xs:enumeration value="Dated with uncertainty"/>
-			<xs:enumeration value="Relative"/>
-			<xs:enumeration value="Radiocarbon"/>
+			<xs:enumeration value="absolute"/>
+			<xs:enumeration value="dated with uncertainty"/>
+			<xs:enumeration value="relative"/>
+			<xs:enumeration value="radiocarbon"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- TRiDaS controlledVoc for measuringMethod-->
@@ -50,8 +50,11 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="Measuring platform"/>
-			<xs:enumeration value="Hand lens and graticule"/>
+			<xs:enumeration value="measuring platform"/>
+			<xs:enumeration value="hand lens and graticule"/>
+			<xs:enumeration value="onscreen measuring"/>
+			<xs:enumeration value="visual estimate"/>
+			<xs:enumeration value="other"/>
 		</xs:restriction>
 	</xs:simpleType>	
 	<!-- TRiDaS controlledVoc for shape-->
@@ -62,25 +65,25 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="Whole section"/>
-			<xs:enumeration value="Half section"/>
-			<xs:enumeration value="Third section"/>
-			<xs:enumeration value="Quarter section"/>
-			<xs:enumeration value="Wedge where radius is smaller than circumference"/>
-			<xs:enumeration value="Wedge where radius equals the circumference"/>
-			<xs:enumeration value="Wedge where radius is bigger than the circumference"/>
-			<xs:enumeration value="Beam straightened on one side"/>
-			<xs:enumeration value="Squared beam from whole section"/>
-			<xs:enumeration value="Squared beam from half section"/>
-			<xs:enumeration value="Squared beam from quarter section"/>
-			<xs:enumeration value="Plank cut on one side"/>
-			<xs:enumeration value="Radial plank through pith"/>
-			<xs:enumeration value="Radial plank up to pith"/>
-			<xs:enumeration value="Tangential plank not including pith with breadth larger than a quarter section"/>
-			<xs:enumeration value="Plank not including pith with breadth smaller than a quarter section"/>
-			<xs:enumeration value="Small part of section"/>
-			<xs:enumeration value="Part of undetermined section"/>
-			<xs:enumeration value="Unknown"/>
+			<xs:enumeration value="whole section"/>
+			<xs:enumeration value="half section"/>
+			<xs:enumeration value="third section"/>
+			<xs:enumeration value="quarter section"/>
+			<xs:enumeration value="wedge where radius is smaller than circumference"/>
+			<xs:enumeration value="wedge where radius equals the circumference"/>
+			<xs:enumeration value="wedge where radius is bigger than the circumference"/>
+			<xs:enumeration value="beam straightened on one side"/>
+			<xs:enumeration value="squared beam from whole section"/>
+			<xs:enumeration value="squared beam from half section"/>
+			<xs:enumeration value="squared beam from quarter section"/>
+			<xs:enumeration value="plank cut on one side"/>
+			<xs:enumeration value="radial plank through pith"/>
+			<xs:enumeration value="radial plank up to pith"/>
+			<xs:enumeration value="tangential plank not including pith with breadth larger than a quarter section"/>
+			<xs:enumeration value="plank not including pith with breadth smaller than a quarter section"/>
+			<xs:enumeration value="small part of section"/>
+			<xs:enumeration value="part of undetermined section"/>
+			<xs:enumeration value="unknown"/>
 		</xs:restriction>
 	</xs:simpleType>
 <!-- TRiDaS controlledVoc for LocationType-->
@@ -91,11 +94,13 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="Growth location"/>
-			<xs:enumeration value="Location of use (static)"/>
-			<xs:enumeration value="Location of use (mobile)"/>
-			<xs:enumeration value="Current location"/>
-			<xs:enumeration value="Manufacture location"/>
+			<xs:enumeration value="growth location"/>
+			<xs:enumeration value="location of use (static)"/>
+			<xs:enumeration value="location of use (mobile)"/>
+			<xs:enumeration value="current location"/>
+			<xs:enumeration value="manufacture location"/>
+			<xs:enumeration value="find location"/>
+			<xs:enumeration value="other"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- TRiDaS controlledVoc for Variable-->
@@ -104,14 +109,16 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			<xs:documentation xml:lang="EN">TRiDaS specified controlled vocabulary for the measurementSeries variable</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="Ring width"/>
-			<xs:enumeration value="Earlywood width"/>
-			<xs:enumeration value="Latewood width"/>
-			<xs:enumeration value="Ring density"/>
-			<xs:enumeration value="Earlywood density"/>
-			<xs:enumeration value="Latewood density"/>
-			<xs:enumeration value="Maximum density"/>
-			<xs:enumeration value="Latewood percent"/>
+			<xs:enumeration value="ring width"/>
+			<xs:enumeration value="earlywood width"/>
+			<xs:enumeration value="latewood width"/>
+			<xs:enumeration value="ring density"/>
+			<xs:enumeration value="earlywood density"/>
+			<xs:enumeration value="latewood density"/>
+			<xs:enumeration value="maximum density"/>
+			<xs:enumeration value="latewood percent"/>
+			<xs:enumeration value="vessel size"/>
+			<xs:enumeration value="other"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- TRiDaS controlledVoc for Units-->
@@ -122,6 +129,8 @@ more information on http://www.gnu.org/licenses/lgpl.html
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="micrometres"/>
 			<xs:enumeration value="1/100th millimetres"/>
+			<xs:enumeration value="1/50th millimetres"/>
+			<xs:enumeration value="1/20th millimetres"/>
 			<xs:enumeration value="1/10th millimetres"/>
 			<xs:enumeration value="millimetres"/>
 			<xs:enumeration value="centimetres"/>
@@ -134,26 +143,27 @@ more information on http://www.gnu.org/licenses/lgpl.html
 			<xs:documentation xml:lang="EN">TRiDaS specified controlled vocabulary for remarks attached to rings</xs:documentation>
 		</xs:annotation>		
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="Fire damage"/>
-			<xs:enumeration value="Frost damage"/>
-			<xs:enumeration value="Crack"/>
-			<xs:enumeration value="False ring(s)"/>
-			<xs:enumeration value="Compression wood"/>
-			<xs:enumeration value="Tension wood"/>
-			<xs:enumeration value="Traumatic ducts"/>
-			<xs:enumeration value="Unspecified injury"/>
+			<xs:enumeration value="fire damage"/>
+			<xs:enumeration value="frost damage"/>
+			<xs:enumeration value="crack"/>
+			<xs:enumeration value="false ring(s)"/>
+			<xs:enumeration value="compression wood"/>
+			<xs:enumeration value="tension wood"/>
+			<xs:enumeration value="traumatic ducts"/>
+			<xs:enumeration value="unspecified injury"/>
+			<xs:enumeration value="single pinned"/>
+			<xs:enumeration value="double pinned"/>
+			<xs:enumeration value="triple pinned"/>
+			<xs:enumeration value="missing ring"/>
+			<xs:enumeration value="radius shift up"/>
+			<xs:enumeration value="radius shift down"/>
+			<xs:enumeration value="moon ring(s)"/>
+			<xs:enumeration value="diffuse latewood"/>
+			<xs:enumeration value="density fluctuation"/>
+			<xs:enumeration value="wide late wood"/>
+			<xs:enumeration value="wide early wood"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<!-- TRiDaS controlledVoc for project categories-->
-	<xs:simpleType name="normalTridasCategory">
-		<xs:annotation>
-			<xs:documentation xml:lang="EN">Enumeration of TRiDaS recognised project categories</xs:documentation>
-		</xs:annotation>		
-		<xs:restriction base="xs:string">
-			<xs:enumeration value=""/>
-		</xs:restriction>
-	</xs:simpleType>
-
 
 <!--
 %%%%%%%%%%%%%%
@@ -164,10 +174,13 @@ more information on http://www.gnu.org/licenses/lgpl.html
 	<xs:complexType name="controlledVoc">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
-				A controlled vocabulary is used to limit users to a pick list of values
+				A controlled vocabulary is used to limit users to a pick list of values.
 			</xs:documentation>
+			<xs:appinfo>Programmers note that if using controlled vocabularies, then normal, normalId and normalStd should all be 
+			present.  There is no way to describe optionality of attribute groups in xsd schemas so this must be done by you!</xs:appinfo>
 		</xs:annotation>
 		<xs:simpleContent>
+			
 			<xs:extension base="xs:string">
 				<xs:attribute name="normalStd">
 					<xs:annotation>
@@ -184,7 +197,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 						<xs:documentation xml:lang="EN">The normalised name for this entry</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="lang" type="xs:language">
+				<xs:attribute name="lang" type="xs:language" use="optional">
 					<xs:annotation>
 						<xs:documentation xml:lang="EN">The language this term is in.  Default is EN if not specified.</xs:documentation>
 					</xs:annotation>
@@ -212,6 +225,7 @@ more information on http://www.gnu.org/licenses/lgpl.html
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="present"/>
 			<xs:enumeration value="absent"/>
+			<xs:enumeration value="unknown"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- Complex presence enumeration-->
@@ -377,7 +391,7 @@ name of the organisation as long as it is not ambiguous.
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="locationGeometry"/>
+				<xs:element ref="locationGeometry" minOccurs="0"/>
 				<xs:element ref="locationType" minOccurs="0"/>
 				<xs:element ref="locationPrecision" minOccurs="0"/>
 				<xs:element ref="locationComment" minOccurs="0"/>
@@ -585,25 +599,12 @@ Therefore, a project can have one or more objects associated with it.
 	</xs:element>
 	<!-- PROJECT.type (global type) -->
 	<!-- PROJECT.category -->
-	<xs:element name="category">
+	<xs:element name="category" type="controlledVoc">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
 				Category of research this project falls into.  Preferably from a controlled vocabulary.
 			</xs:documentation>
 		</xs:annotation>
-		<xs:complexType>
-			<xs:complexContent>
-				<xs:extension base="controlledVoc">
-					<xs:attribute name="normalTridas" type="normalTridasCategory">
-						<xs:annotation>
-							<xs:documentation>
-								TRiDaS controlled vocabulary of research categories.
-							</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
 	</xs:element>
 	<!-- PROJECT.investigator -->
 	<xs:element name="investigator" type="xs:string">
@@ -1013,10 +1014,7 @@ from exactly one element and can be represented by one or more radii.
 						<xs:element ref="state" minOccurs="0"/>
 						<xs:element ref="knots" minOccurs="0"/>
 						<xs:element ref="genericField" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:choice>
-							<xs:element ref="radius" minOccurs="0" maxOccurs="unbounded"/>
-							<xs:element ref="radiusPlaceholder" minOccurs="0"/>
-						</xs:choice>
+						<xs:element ref="radius" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 				</xs:extension>
 			</xs:complexContent>
@@ -1267,19 +1265,6 @@ resulting in multiple measurementSeries.
 		</xs:annotation>
 	</xs:element>
 	<!-- RADIUS.genericField (global type) -->
-	<!-- RADIUS-PLACEHOLDER -->
-	<xs:element name="radiusPlaceholder">
-		<xs:annotation>
-			<xs:documentation xml:lang="EN">
-				This entity is used instead of a standard 'radius' when radius details are not known.
-			</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="measurementSeriesPlaceholder"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<!--
 		%%%%%%%%%%%%%%
 		%        SERIES
@@ -1545,19 +1530,6 @@ Container for fields that describe the statistical method used for crossdating
 	<xs:element name="interpretationUnsolved">
 		<xs:complexType/>
 	</xs:element>
-	<!-- MEASUREMENTSSERIES-PLACEHOLDER -->
-	<xs:element name="measurementSeriesPlaceholder">
-		<xs:annotation>
-			<xs:documentation xml:lang="EN">
-If no measurementSeries information is known (e.g. if describing a 
-derivedSeries where no measurementSeries data is available) this 
-placeholder is used instead of a standard measurementSeries entity.
-			</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:attribute name="id" type="xs:ID" use="required"/>
-		</xs:complexType>
-	</xs:element>
 	<!--
 %%%%%%%%%%%%%%
 %		DERIVEDSERIES
@@ -1666,7 +1638,7 @@ are unitless, then the special &lt;unitless&gt; field is used.
 					<xs:element ref="unitless"/>	
 					<xs:element ref="unit"/>
 				</xs:choice>
-				<xs:element ref="value" maxOccurs="unbounded"/>
+				<xs:element ref="value" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

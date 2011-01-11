@@ -35,7 +35,7 @@ import org.tridas.schema.ControlledVoc;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="elementShape" type="{http://www.tridas.org/1.2.1}controlledVoc" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="elementShape" type="{http://www.tridas.org/1.2.2}controlledVoc" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

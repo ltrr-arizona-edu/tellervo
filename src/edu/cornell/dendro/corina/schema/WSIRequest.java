@@ -50,13 +50,13 @@ import org.tridas.util.TridasObjectEx;
  *         &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}authenticate" minOccurs="0"/>
  *         &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}entity" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;sequence>
- *           &lt;element ref="{http://www.tridas.org/1.2.1}project" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2.1}object" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2.1}element" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2.1}sample" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2.1}radius" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2.1}measurementSeries" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tridas.org/1.2.1}derivedSeries" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.2.2}project" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.2.2}object" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.2.2}element" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.2.2}sample" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.2.2}radius" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.2.2}measurementSeries" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tridas.org/1.2.2}derivedSeries" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://dendro.cornell.edu/schema/corina/1.0}box" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;/sequence>
@@ -107,19 +107,19 @@ public class WSIRequest
 
     private final static long serialVersionUID = 1001L;
     protected WSIRequest.Dictionaries dictionaries;
-    @XmlElement(name = "project", namespace = "http://www.tridas.org/1.2.1")
+    @XmlElement(name = "project", namespace = "http://www.tridas.org/1.2.2")
     protected List<TridasProject> projects;
-    @XmlElement(name = "object", namespace = "http://www.tridas.org/1.2.1", type = TridasObjectEx.class)
+    @XmlElement(name = "object", namespace = "http://www.tridas.org/1.2.2", type = TridasObjectEx.class)
     protected List<TridasObject> objects;
-    @XmlElement(name = "element", namespace = "http://www.tridas.org/1.2.1")
+    @XmlElement(name = "element", namespace = "http://www.tridas.org/1.2.2")
     protected List<TridasElement> elements;
-    @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.2.1")
+    @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.2.2")
     protected List<TridasSample> samples;
-    @XmlElement(name = "radius", namespace = "http://www.tridas.org/1.2.1")
+    @XmlElement(name = "radius", namespace = "http://www.tridas.org/1.2.2")
     protected List<TridasRadius> radiuses;
-    @XmlElement(namespace = "http://www.tridas.org/1.2.1")
+    @XmlElement(namespace = "http://www.tridas.org/1.2.2")
     protected List<TridasMeasurementSeries> measurementSeries;
-    @XmlElement(namespace = "http://www.tridas.org/1.2.1")
+    @XmlElement(namespace = "http://www.tridas.org/1.2.2")
     protected List<TridasDerivedSeries> derivedSeries;
     @XmlElement(name = "securityUser")
     protected List<WSISecurityUser> securityUsers;

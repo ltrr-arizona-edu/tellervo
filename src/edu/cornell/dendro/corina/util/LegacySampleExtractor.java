@@ -353,7 +353,7 @@ public class LegacySampleExtractor {
 		
 		// measuring method...
 		TridasMeasuringMethod method = new TridasMeasuringMethod();
-		method.setNormalTridas(NormalTridasMeasuringMethod.MEASURING___PLATFORM);
+		method.setNormalTridas(NormalTridasMeasuringMethod.MEASURING_PLATFORM);
 		series.setMeasuringMethod(method);
 		
 		// interpretation
