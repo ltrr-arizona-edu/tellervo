@@ -17,7 +17,7 @@ public class FileSelectedEvent extends ObjectEvent<File> {
 	
 
 	public FileSelectedEvent(ImportModel model, File file, String fileType) {
-		super(ImportController.FILE_SELECTED, file);
+		super(IOController.FILE_SELECTED, file);
 		this.model = model;
 		this.file = file;
 		this.fileType = fileType;

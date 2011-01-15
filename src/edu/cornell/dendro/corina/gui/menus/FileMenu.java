@@ -175,7 +175,13 @@ public class FileMenu extends JMenu {
 	}
 	
 	public void addExportMenus(){
-		add(Builder.makeMenuItem("menus.file.export", "edu.cornell.dendro.corina.gui.menus.FileMenu.exportMultiDB()", "fileexport.png"));		
+		JMenuItem export = Builder.makeMenuItem("menus.file.export",true, "fileexport.png");
+		export.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent argArg0) {
+				exportMultiDB();
+			}
+		});
+		add(export);
 	}
 	
 	public void addDataEntryMenus(){
@@ -316,9 +322,7 @@ public class FileMenu extends JMenu {
 			
 			new ExportDialog(toOpen);
 
-		} 
-			
-			
+		}
 	}
 	
 	public static void importdbwithtricycle()

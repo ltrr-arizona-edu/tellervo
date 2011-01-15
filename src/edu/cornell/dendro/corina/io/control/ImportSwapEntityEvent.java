@@ -11,7 +11,7 @@ public class ImportSwapEntityEvent extends ObjectEvent<TridasRepresentationTable
 	public final ImportModel model;
 	public final TridasRepresentationTableTreeRow oldRow;
 	public ImportSwapEntityEvent(ImportModel model, TridasRepresentationTableTreeRow newRow, TridasRepresentationTableTreeRow oldRow) {
-		super(ImportController.ENTITY_SWAPPED, newRow);
+		super(IOController.ENTITY_SWAPPED, newRow);
 		this.model = model;
 		this.oldRow = oldRow;
 	}

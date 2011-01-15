@@ -14,7 +14,7 @@ public class ImportMergeEntitiesEvent extends ObjectEvent<Class<? extends ITrida
 	
 
 	public ImportMergeEntitiesEvent(ImportModel model, Class<? extends ITridas> clazz) {
-		super(ImportController.MERGE_ENTITIES, clazz);
+		super(IOController.MERGE_ENTITIES, clazz);
 		this.model = model;
 	}
 

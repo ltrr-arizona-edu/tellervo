@@ -12,7 +12,7 @@ public class ImportNodeSelectedEvent extends ObjectEvent<TridasRepresentationTab
 	
 
 	public ImportNodeSelectedEvent(ImportModel model, TridasRepresentationTableTreeRow row) {
-		super(ImportController.ENTITY_SELECTED, row);
+		super(IOController.ENTITY_SELECTED, row);
 		this.model = model;
 	}
 

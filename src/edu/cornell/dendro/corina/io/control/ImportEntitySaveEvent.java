@@ -17,7 +17,7 @@ public class ImportEntitySaveEvent extends MVCEvent {
 	public final Window window;
 
 	public ImportEntitySaveEvent(ImportModel model, Window window) {
-		super(ImportController.ENTITY_SAVE);
+		super(IOController.ENTITY_SAVE);
 		this.model = model;
 		this.window = window;
 	}

@@ -47,6 +47,7 @@ public class ExportDialog extends JDialog {
 
 	public void setupGui(ElementList elements)
 	{
+		
 		mainPanel = new ExportUI(this, elements);
 		this.setContentPane(mainPanel);
 		
@@ -62,10 +63,6 @@ public class ExportDialog extends JDialog {
 		
 		this.setVisible(true);
 	}
-	
-	
-
-	
 
 
 }

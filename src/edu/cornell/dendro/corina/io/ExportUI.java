@@ -17,6 +17,7 @@ import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.IDendroFile;
 import org.tridas.io.TridasIO;
+import org.tridas.io.defaults.TridasMetadataFieldSet;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.IncompleteTridasDataException;
@@ -329,7 +330,7 @@ public class ExportUI extends javax.swing.JPanel{
     	App.prefs.setPref("corina.export.format", this.cboExportFormat.getSelectedItem().toString());
     	    	
     	// Get defaults for creating project
-    	BesanconToTridasDefaults defaults = new BesanconToTridasDefaults();
+    	TridasMetadataFieldSet defaults = new TridasMetadataFieldSet();
 		
     	// Create sample list from elements
 		List<Sample> samples = new ArrayList<Sample>();
@@ -358,13 +359,13 @@ public class ExportUI extends javax.swing.JPanel{
 		// Create a list of projects 
 		ArrayList<TridasProject> projList = new ArrayList<TridasProject>();
 		ArrayList<LabCode> labCodeList = new ArrayList<LabCode>();
-		TridasProject project = defaults.getDefaultTridasProject();
+		TridasProject project = defaults.getProjectWithDefaults();
 		for (Sample s : samples)
 		{
 			if(this.cboGrouping.getSelectedIndex()==1)
 			{
 				// User wants separate files so create a new project for each sample
-				project = defaults.getDefaultTridasProject();
+				project = defaults.getProjectWithDefaults();
 			}
 			
 			TridasObject tobj = (TridasObject) s.getMeta(Metadata.OBJECT, TridasObject.class);
