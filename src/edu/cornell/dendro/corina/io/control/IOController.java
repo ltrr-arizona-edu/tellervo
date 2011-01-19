@@ -19,6 +19,7 @@ public class IOController extends FrontController {
     public static final String ENTITY_SAVE = "IMPORT_ENTITY_SAVE";
     
     public static final String CONVERT_PROJECTS = "IO_CONVERT_PROJECTS";
+    public static final String EXPORT = "IO_EXPORT";
 
     public IOController()
     {

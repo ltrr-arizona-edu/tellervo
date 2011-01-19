@@ -9,7 +9,6 @@ import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.schema.TridasProject;
 
 import com.dmurph.mvc.model.HashModel;
-import com.dmurph.mvc.model.MVCArrayList;
 
 /**
  * @author Daniel
@@ -20,12 +19,12 @@ public class ConvertModel extends HashModel {
 	
 	public static final String TRIDAS_PROJECTS = "tridasProjects";
 	public static final String WRITER_OBJECTS = "writersObjects";
-	public static final String TREE_NODES = "treeNodes";
+	public static final String TREE_NODE = "treeNode";
 
 	public ConvertModel(){
 		registerProperty(TRIDAS_PROJECTS, PropertyType.READ_WRITE);
 		registerProperty(WRITER_OBJECTS, PropertyType.READ_WRITE);
-		registerProperty(TREE_NODES, PropertyType.FINAL, new MVCArrayList<DefaultMutableTreeNode>());
+		registerProperty(TREE_NODE, PropertyType.READ_WRITE);
 	}
 	
 	public void setTridasProjects(TridasProject[] argProjects){
@@ -44,9 +43,12 @@ public class ConvertModel extends HashModel {
 		return (WriterObject[])getProperty(WRITER_OBJECTS);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public MVCArrayList<DefaultMutableTreeNode> getNodes(){
-		return (MVCArrayList<DefaultMutableTreeNode>) getProperty(TREE_NODES);
+	public DefaultMutableTreeNode getRootNode(){
+		return (DefaultMutableTreeNode) getProperty(TREE_NODE);
+	}
+	
+	public void setRootNode(DefaultMutableTreeNode argNode){
+		setProperty(TREE_NODE, argNode);
 	}
 	
 	public static class WriterObject {
