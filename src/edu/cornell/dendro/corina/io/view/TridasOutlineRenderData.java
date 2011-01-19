@@ -53,7 +53,15 @@ public class TridasOutlineRenderData implements RenderDataProvider {
     @Override
     public String getDisplayName(Object o) {
         DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) o;
-        ITridas entity = (ITridas) dmtn.getUserObject();
+        ITridas entity = null;
+        try{
+           entity = (ITridas) dmtn.getUserObject();
+        } catch (Exception e)
+        {
+        	System.out.println("Error getting display name in TridasOutlineRenderData - getUserObject is null");
+        	return "";
+        }
+        
 		if(entity instanceof TridasObject)
 		{
 			TridasObject obj = ((TridasObject)entity);
