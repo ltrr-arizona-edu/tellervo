@@ -33,7 +33,6 @@
 	<classpathentry kind="lib" path="Libraries/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="Libraries/jogl.jar"/>
 	<classpathentry kind="lib" path="Libraries/worldwind-0.6.570.13645.jar" sourcepath="/worldwind-0.6.570.13645/src"/>
-	<classpathentry kind="lib" path="Libraries/TRiCYCLE-0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="Libraries/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="Libraries/JFontChooser.jar"/>

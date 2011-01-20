@@ -8,6 +8,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.schema.TridasProject;
 
+import edu.cornell.dendro.corina.tridasv2.LabCode;
+
 import com.dmurph.mvc.model.HashModel;
 
 /**
@@ -20,6 +22,7 @@ public class ConvertModel extends HashModel {
 	public static final String TRIDAS_PROJECTS = "tridasProjects";
 	public static final String WRITER_OBJECTS = "writersObjects";
 	public static final String TREE_NODE = "treeNode";
+	public static final String LAB_CODES = "labCodes";
 
 	public ConvertModel(){
 		registerProperty(TRIDAS_PROJECTS, PropertyType.READ_WRITE);
@@ -49,6 +52,14 @@ public class ConvertModel extends HashModel {
 	
 	public void setRootNode(DefaultMutableTreeNode argNode){
 		setProperty(TREE_NODE, argNode);
+	}
+	
+	public LabCode[] getLabCodes(){
+		return (LabCode[]) getProperty(LAB_CODES);
+	}
+	
+	public void setLabCodes(LabCode[] argCodes){
+		setProperty(LAB_CODES, argCodes);
 	}
 	
 	public static class WriterObject {

@@ -76,8 +76,6 @@ public class ExportUI extends javax.swing.JPanel{
 	
     /** Creates new form ExportUI */
     public ExportUI(ExportDialog p, ElementList els) {
-    	
-
     	parent = p;
     	elements = els;
     	
@@ -213,17 +211,12 @@ public class ExportUI extends javax.swing.JPanel{
 			}
 		});
 		
-		
 		cboExportFormat.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				
 
 			}
 		});
-        
-
-
-
     }
 
     /**

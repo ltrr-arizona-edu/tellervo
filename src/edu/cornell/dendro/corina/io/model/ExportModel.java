@@ -3,8 +3,10 @@
  */
 package edu.cornell.dendro.corina.io.model;
 
+import java.awt.Frame;
 import java.nio.charset.Charset;
 
+import javax.swing.JFrame;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
@@ -26,6 +28,7 @@ public class ExportModel extends AbstractModel {
 	private String format = null;
 	private ElementList elements = null;
 	private final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+	private JFrame exportView;
 
 	/**
 	 * @return the rootNode
@@ -34,6 +37,22 @@ public class ExportModel extends AbstractModel {
 		return rootNode;
 	}
 	
+	/**
+	 * @return the exportView
+	 */
+	public JFrame getExportView() {
+		return exportView;
+	}
+
+	/**
+	 * @param argExportView the exportView to set
+	 */
+	public void setExportView(JFrame argExportView) {
+		JFrame old = exportView;
+		exportView = argExportView;
+		firePropertyChange("exportView", old, exportView);
+	}
+
 	/**
 	 * @return the directory
 	 */

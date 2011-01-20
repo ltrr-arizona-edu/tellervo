@@ -125,6 +125,12 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
         
         initialize(openMulti);
     }
+    
+    public DBBrowser(boolean modal, boolean openMulti){
+    	super((java.awt.Frame)null, modal);
+    	doInitComponents();
+        initialize(openMulti);
+    }
 
     /**
      * Initilize the gui components

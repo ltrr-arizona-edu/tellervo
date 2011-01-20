@@ -22,8 +22,6 @@ import javax.swing.JMenuItem;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.InvalidDendroFileException;
-import org.tridas.io.gui.control.TricycleController;
-import org.tridas.io.gui.model.TricycleModelLocator;
 import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasMeasurementSeries;
@@ -122,8 +120,6 @@ public class FileMenu extends JMenu {
 		addDataEntryMenus();
 		
 		// make sure the controllers are created
-		TricycleModelLocator.getInstance();
-		add(Builder.makeMVCMenuItem("menus.file.tricycle", TricycleController.STARTUP, "bulkDataEntry.png"));
 
 		addSeparator();
 		addCloseSaveMenus();

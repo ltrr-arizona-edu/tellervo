@@ -37,6 +37,8 @@ import edu.cornell.dendro.corina.components.popup.ProgressPopupModel;
 import edu.cornell.dendro.corina.io.control.ConvertEvent;
 import edu.cornell.dendro.corina.io.model.ConvertModel;
 import edu.cornell.dendro.corina.io.model.ConvertModel.WriterObject;
+import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
+
 
 /**
  * @author Daniel
@@ -73,22 +75,7 @@ public class ConvertCommand implements ICommand {
 			return;
 		}
 		
-		if (event.namingConvention.equals("UUID")) {
-			naming = new UUIDNamingConvention();
-		}
-		else if (event.namingConvention.equals("Hierarchical")) {
-			naming = new HierarchicalNamingConvention();
-		}
-		else if (event.namingConvention.equals("Numerical")) {
-			naming = new NumericalNamingConvention();
-		}
-		else {
-			JOptionPane.showMessageDialog(null,"Error with finding naming convention: "+ event.namingConvention,
-					"Error", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
-		convertFiles(model, naming, outputFormat, event.modal);
+		convertFiles(model, event.namingConvention, outputFormat, event.modal);
 	}
 	
 	private void convertFiles(ConvertModel model, INamingConvention argNaming, String argFormat, JFrame argModal) {
@@ -127,15 +114,7 @@ public class ConvertCommand implements ICommand {
 				AbstractDendroCollectionWriter writer = TridasIO.getFileWriter(argFormat);
 				
 				if (argNaming instanceof NumericalNamingConvention) {
-					((NumericalNamingConvention) argNaming).setBaseFilename(argFormat+"-Export");
-//					if (.contains(".")) {
-//						String justFile = file.substring(file.lastIndexOf(File.separatorChar) + 1,
-//								file.lastIndexOf('.'));
-//						((NumericalNamingConvention) argNaming).setBaseFilename(justFile);
-//					}
-//					else {
-//						((NumericalNamingConvention) argNaming).setBaseFilename(file);
-//					}
+					((NumericalNamingConvention) argNaming).setBaseFilename(LabCodeFormatter.getDefaultFormatter().format(model.getLabCodes()[i]).toString());
 				}
 				writer.setNamingConvention(argNaming);
 				
