@@ -47,6 +47,7 @@ import edu.cornell.dendro.corina.io.AbstractDendroReaderFileFilter;
 import edu.cornell.dendro.corina.io.DendroReaderFileFilter;
 import edu.cornell.dendro.corina.io.ExportDialog;
 import edu.cornell.dendro.corina.io.WrongFiletypeException;
+import edu.cornell.dendro.corina.io.control.IOController;
 import edu.cornell.dendro.corina.io.view.ImportView;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
@@ -171,12 +172,13 @@ public class FileMenu extends JMenu {
 	}
 	
 	public void addExportMenus(){
-		JMenuItem export = Builder.makeMenuItem("menus.file.export",true, "fileexport.png");
-		export.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent argArg0) {
-				exportMultiDB();
-			}
-		});
+		//JMenuItem export = Builder.makeMenuItem("menus.file.export",true, "fileexport.png");
+		JMenuItem export = Builder.makeMVCMenuItem("menus.file.export", IOController.OPEN_EXPORT_WINDOW, "fileexport.png");
+//		export.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent argArg0) {
+//				exportMultiDB();
+//			}
+//		});
 		add(export);
 	}
 	

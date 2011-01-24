@@ -1,6 +1,7 @@
 package edu.cornell.dendro.corina.editor;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
@@ -9,6 +10,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.GISPanel;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.io.ExportDialog;
+import edu.cornell.dendro.corina.io.control.OpenExportEvent;
 import edu.cornell.dendro.corina.print.SeriesReport;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -42,7 +44,7 @@ public class EditorFileMenu extends FileMenu {
 	public void addPrintMenu() {
 		// Add report printing entry
 		JMenuItem reportPrint = Builder.makeMenuItem("menus.file.print", true, "printer.png");
-		reportPrint.addActionListener(new AbstractAction() {
+		reportPrint.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SeriesReport.printReport(sample);
 			}
@@ -51,7 +53,7 @@ public class EditorFileMenu extends FileMenu {
 
 		// Add preview printing entry
 		JMenuItem reportPreview = Builder.makeMenuItem("menus.file.printpreview", true);
-		reportPreview.addActionListener(new AbstractAction() {
+		reportPreview.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {				
 				SeriesReport.viewReport(sample);
 			}
@@ -64,9 +66,10 @@ public class EditorFileMenu extends FileMenu {
 	public void addExportMenus() {
 		// add "Export..." menuitem
 		JMenuItem export = Builder.makeMenuItem("menus.file.export", true, "fileexport.png");
-		export.addActionListener(new AbstractAction() {
+		export.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				new ExportDialog(sample);
+				OpenExportEvent event = new OpenExportEvent(sample);
+				event.dispatch();
 			}
 		});
 		add(export);

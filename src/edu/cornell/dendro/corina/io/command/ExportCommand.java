@@ -22,13 +22,11 @@ import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.tridasv2.LabCode;
-import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.ui.Alert;
 
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
-import com.sun.xml.internal.rngom.xml.util.Naming;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.io.control.ConvertEvent;
@@ -146,7 +144,7 @@ public class ExportCommand implements ICommand {
 		ConvertModel cmodel = new ConvertModel();
 		cmodel.setTridasProjects(projList.toArray(new TridasProject[0]));
 		cmodel.setLabCodes(labCodeList.toArray(new LabCode[0]));
-		
+		cmodel.setRootNode(event.model.getRootNode());
 		
 		ConvertEvent cevent = new ConvertEvent(event.format, naming, cmodel, event.model.getExportView());
 		cevent.dispatch();

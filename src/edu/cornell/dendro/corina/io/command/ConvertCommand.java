@@ -95,6 +95,9 @@ public class ConvertCommand implements ICommand {
 					convertProgress.setVisible(true);
 				}
 			});
+			while(!convertProgress.isVisible()){
+				Thread.sleep(100);
+			}
 			
 			TridasProject[] projects = model.getTridasProjects();
 			
