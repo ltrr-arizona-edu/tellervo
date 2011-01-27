@@ -161,8 +161,8 @@ public class ConvertCommand implements ICommand {
 	private void constructNodes(ConvertModel argModel, ArrayList<WriterObject> list, INamingConvention argNaming) {
 		ArrayList<DefaultMutableTreeNode> nodes = new ArrayList<DefaultMutableTreeNode>();
 		
-		argModel.getRootNode().removeAllChildren();
 		argModel.setWriterObjects(list.toArray(new WriterObject[0]));
+		argModel.getNodes().clear();
 		
 		// we need to set processed/failed/convertedWithWarnings
 		int processed = 0;
@@ -229,9 +229,7 @@ public class ConvertCommand implements ICommand {
 			}
 		}
 		
-		for(DefaultMutableTreeNode node : nodes){
-			argModel.getRootNode().add(node);
-		}
+		argModel.getNodes().addAll(nodes);
 	}
 //	
 //	

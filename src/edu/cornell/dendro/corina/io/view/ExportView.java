@@ -7,6 +7,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -34,6 +36,8 @@ import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.naming.UUIDNamingConvention;
 import org.tridas.io.util.IOUtils;
 
+import com.dmurph.mvc.model.MVCArrayList;
+
 import edu.cornell.dendro.corina.ui.Builder;
 
 import edu.cornell.dendro.corina.components.table.CustomTreeCellRenderer;
@@ -43,6 +47,8 @@ import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import javax.swing.JPanel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  * @author Daniel
@@ -70,6 +76,8 @@ public class ExportView extends JFrame {
 	private JButton btnBrowse;
 	private JTextField destFolder;
 	
+	private final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Conversion Results");
+	
 	private String exportDirectory = null;
 	final JFileChooser fc = new JFileChooser();
 	
@@ -77,6 +85,7 @@ public class ExportView extends JFrame {
 		model = argModel;
 		initComponents();
 		addListeners();
+		linkModel();
 	}
 	
 	private void initComponents() {
@@ -111,7 +120,7 @@ public class ExportView extends JFrame {
 		CustomTreeCellRenderer renderer = new CustomTreeCellRenderer(sicon, wicon, ficon, filesicon, filewicon,
 				infoicon);
 		
-		tree = new JTree(model.getRootNode(), false);
+		tree = new JTree(rootNode, false);
 		tree.setCellRenderer(renderer);
 		tree.setRootVisible(false);
 		tree.setShowsRootHandles(true);
@@ -252,5 +261,33 @@ public class ExportView extends JFrame {
 				}
 			}
 		});
+	}
+	
+	private void linkModel(){
+		model.getNodes().addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent argEvt) {
+				if(argEvt.getPropertyName().equals(MVCArrayList.ADDED_ALL)){
+					DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
+					rootNode.removeAllChildren();
+					for (DefaultMutableTreeNode node : model.getNodes()) {
+						rootNode.add(node);
+					}
+					treeModel.setRoot(rootNode);
+					expandToFiles();
+				}
+			}
+		});
+	}
+	
+	private void expandToFiles() {
+		int row = 0;
+		while (row < tree.getRowCount()) {
+			if (tree.getPathForRow(row).getPathCount() < 3) {
+				tree.expandRow(row);
+			}
+			row++;
+		}
 	}
 }

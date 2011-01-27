@@ -11,6 +11,7 @@ import org.tridas.schema.TridasProject;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 
 import com.dmurph.mvc.model.HashModel;
+import com.dmurph.mvc.model.MVCArrayList;
 
 /**
  * @author Daniel
@@ -21,13 +22,19 @@ public class ConvertModel extends HashModel {
 	
 	public static final String TRIDAS_PROJECTS = "tridasProjects";
 	public static final String WRITER_OBJECTS = "writersObjects";
-	public static final String TREE_NODE = "treeNode";
+	public static final String TREE_NODES = "treeNodes";
 	public static final String LAB_CODES = "labCodes";
 
 	public ConvertModel(){
 		registerProperty(TRIDAS_PROJECTS, PropertyType.READ_WRITE);
 		registerProperty(WRITER_OBJECTS, PropertyType.READ_WRITE);
-		registerProperty(TREE_NODE, PropertyType.READ_WRITE);
+		registerProperty(TREE_NODES, PropertyType.FINAL, new MVCArrayList<DefaultMutableTreeNode>());
+	}
+	
+	public ConvertModel(MVCArrayList<DefaultMutableTreeNode> argNodes){
+		registerProperty(TRIDAS_PROJECTS, PropertyType.READ_WRITE);
+		registerProperty(WRITER_OBJECTS, PropertyType.READ_WRITE);
+		registerProperty(TREE_NODES, PropertyType.FINAL, argNodes);
 	}
 	
 	public void setTridasProjects(TridasProject[] argProjects){
@@ -46,14 +53,10 @@ public class ConvertModel extends HashModel {
 		return (WriterObject[])getProperty(WRITER_OBJECTS);
 	}
 	
-	public DefaultMutableTreeNode getRootNode(){
-		return (DefaultMutableTreeNode) getProperty(TREE_NODE);
+	@SuppressWarnings("unchecked")
+	public MVCArrayList<DefaultMutableTreeNode> getNodes(){
+		return (MVCArrayList<DefaultMutableTreeNode>) getProperty(TREE_NODES);
 	}
-	
-	public void setRootNode(DefaultMutableTreeNode argNode){
-		setProperty(TREE_NODE, argNode);
-	}
-	
 	public LabCode[] getLabCodes(){
 		return (LabCode[]) getProperty(LAB_CODES);
 	}

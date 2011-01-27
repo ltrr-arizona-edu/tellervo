@@ -3,14 +3,12 @@
  */
 package edu.cornell.dendro.corina.io.model;
 
-import java.awt.Frame;
-import java.nio.charset.Charset;
-
 import javax.swing.JFrame;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 import com.dmurph.mvc.model.AbstractModel;
+import com.dmurph.mvc.model.MVCArrayList;
+
 import edu.cornell.dendro.corina.sample.ElementList;
 
 
@@ -27,14 +25,14 @@ public class ExportModel extends AbstractModel {
 	private String directory = null;
 	private String format = null;
 	private ElementList elements = null;
-	private final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+	private final MVCArrayList<DefaultMutableTreeNode> nodes = new MVCArrayList<DefaultMutableTreeNode>();
 	private JFrame exportView;
 
 	/**
 	 * @return the rootNode
 	 */
-	public DefaultMutableTreeNode getRootNode() {
-		return rootNode;
+	public MVCArrayList<DefaultMutableTreeNode> getNodes() {
+		return nodes;
 	}
 	
 	/**

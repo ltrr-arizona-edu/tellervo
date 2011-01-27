@@ -141,10 +141,9 @@ public class ExportCommand implements ICommand {
 			naming = new HierarchicalNamingConvention();
 		}
 		
-		ConvertModel cmodel = new ConvertModel();
+		ConvertModel cmodel = new ConvertModel(event.model.getNodes());
 		cmodel.setTridasProjects(projList.toArray(new TridasProject[0]));
 		cmodel.setLabCodes(labCodeList.toArray(new LabCode[0]));
-		cmodel.setRootNode(event.model.getRootNode());
 		
 		ConvertEvent cevent = new ConvertEvent(event.format, naming, cmodel, event.model.getExportView());
 		cevent.dispatch();
