@@ -16,7 +16,7 @@
 /**
  * Created at Jun 13, 2010, 1:13:41 PM
  */
-package edu.cornell.dendro.corina.components.table;
+package edu.cornell.dendro.corina.io.view;
 
 import java.awt.Component;
 
@@ -79,8 +79,6 @@ public class CustomTreeCellRenderer extends DefaultTreeCellRenderer {
 			}else{
 				setIcon(fileSuccessIcon);
 			}
-		}else if(userObject.toString().equals("Writer Warnings")){
-			setIcon(warningIcon);
 		}
 		else{
 			// warning

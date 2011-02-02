@@ -81,7 +81,7 @@ public class ExportCommand implements ICommand {
 		
 		// no samples => don't bother doing anything
 		if (samples.isEmpty()) {
-			log.info("No samples to export");
+			log.error("No samples to export");
 			return;
 		}
     	

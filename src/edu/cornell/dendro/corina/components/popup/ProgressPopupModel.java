@@ -20,7 +20,6 @@ public class ProgressPopupModel extends AbstractModel {
 	private String statusString = "";
 	private String cancelString = "";
 
-
 	private boolean canceled = false;
 	
 	/**

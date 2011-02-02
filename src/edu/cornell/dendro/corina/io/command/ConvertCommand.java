@@ -19,11 +19,8 @@ import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.IncompleteTridasDataException;
-import org.tridas.io.exceptions.IncorrectDefaultFieldsException;
-import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.INamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
-import org.tridas.io.naming.UUIDNamingConvention;
 import org.tridas.schema.TridasProject;
 
 import com.dmurph.mvc.IllegalThreadException;
@@ -38,6 +35,7 @@ import edu.cornell.dendro.corina.io.control.ConvertEvent;
 import edu.cornell.dendro.corina.io.model.ConvertModel;
 import edu.cornell.dendro.corina.io.model.ConvertModel.WriterObject;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
+import edu.cornell.dendro.corina.ui.I18n;
 
 
 /**
@@ -51,7 +49,6 @@ public class ConvertCommand implements ICommand {
 		ConvertEvent event = (ConvertEvent) argEvent;
 		String outputFormat = event.outputFormat;
 		ConvertModel model = event.model;
-		INamingConvention naming;
 		
 		try {
 			MVC.splitOff();
@@ -84,7 +81,7 @@ public class ConvertCommand implements ICommand {
 		try {
 			
 			ProgressPopupModel dialogModel = new ProgressPopupModel();
-			dialogModel.setCancelString("Cancel");
+			dialogModel.setCancelString(I18n.getText("io.convert.cancel"));
 			
 			final ProgressPopup convertProgress = new ProgressPopup(argModal, true, dialogModel);
 			storedConvertProgress = convertProgress;
@@ -112,15 +109,16 @@ public class ConvertCommand implements ICommand {
 				WriterObject struct = new WriterObject();
 				structs.add(struct);
 				
-				dialogModel.setStatusString("Converting project '"+project.getTitle()+"'");
+				dialogModel.setStatusString(I18n.getText("io.convert.dialogStatus",project.getTitle()));
 				
 				AbstractDendroCollectionWriter writer = TridasIO.getFileWriter(argFormat);
+				String labCode = LabCodeFormatter.getDefaultFormatter().format(model.getLabCodes()[i]).toString();
 				
 				if (argNaming instanceof NumericalNamingConvention) {
-					((NumericalNamingConvention) argNaming).setBaseFilename(LabCodeFormatter.getDefaultFormatter().format(model.getLabCodes()[i]).toString());
+					((NumericalNamingConvention) argNaming).setBaseFilename(labCode);
 				}
 				writer.setNamingConvention(argNaming);
-				
+				struct.file = labCode;
 				
 				if (struct.errorMessage != null) {
 					continue;
@@ -137,7 +135,7 @@ public class ConvertCommand implements ICommand {
 				
 				
 				if (struct.errorMessage==null && writer.getFiles().length == 0) {
-					struct.errorMessage = "No files to write";
+					struct.errorMessage = I18n.getText("io.convert.noFiles");
 				}
 				
 				if(writer.getWarnings().length != 0){
@@ -207,7 +205,7 @@ public class ConvertCommand implements ICommand {
 			
 			
 			if (s.writer != null && s.writer.getWarnings().length != 0) {
-				DefaultMutableTreeNode writerWarnings = new DefaultMutableTreeNode("Writer Warnings");
+				DefaultMutableTreeNode writerWarnings = new DefaultMutableTreeNode(I18n.getText("io.convert.writerWarnings"));
 				
 				// put them all in a hash set first so no duplicates.
 				HashSet<String> set = new HashSet<String>();

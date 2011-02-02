@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -34,15 +34,16 @@ import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.INamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.naming.UUIDNamingConvention;
-import org.tridas.io.util.IOUtils;
 
 import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.ui.Builder;
 
-import edu.cornell.dendro.corina.components.table.CustomTreeCellRenderer;
+import edu.cornell.dendro.corina.io.command.ConvertCommand.StructWrapper;
 import edu.cornell.dendro.corina.io.control.ExportEvent;
+import edu.cornell.dendro.corina.io.control.SaveEvent;
 import edu.cornell.dendro.corina.io.model.ExportModel;
+import edu.cornell.dendro.corina.io.model.ConvertModel.WriterObject;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -53,6 +54,7 @@ import javax.swing.tree.DefaultTreeModel;
 /**
  * @author Daniel
  */
+@SuppressWarnings("serial")
 public class ExportView extends JFrame {
 	
 	// probably change how this is populated
@@ -74,11 +76,11 @@ public class ExportView extends JFrame {
 	private JButton btnConvert;
 	private JButton btnHelp;
 	private JButton btnBrowse;
+	private JButton btnSave;
 	private JTextField destFolder;
 	
 	private final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Conversion Results");
-	
-	private String exportDirectory = null;
+
 	final JFileChooser fc = new JFileChooser();
 	
 	public ExportView(ExportModel argModel) {
@@ -86,6 +88,7 @@ public class ExportView extends JFrame {
 		initComponents();
 		addListeners();
 		linkModel();
+		pack();
 	}
 	
 	private void initComponents() {
@@ -136,53 +139,57 @@ public class ExportView extends JFrame {
 		panel.add(panel_1, BorderLayout.SOUTH);
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 		
-		btnHelp = new JButton("Help");
+		btnHelp = new JButton(I18n.getText("io.convert.btnHelp"));
 		panel_1.add(btnHelp);
 		
 		Component horizontalGlue = Box.createHorizontalGlue();
 		panel_1.add(horizontalGlue);
 		
-		btnConvert = new JButton("Convert");
+		btnConvert = new JButton(I18n.getText("io.convert.btnConvert"));
 		panel_1.add(btnConvert);
+		
+		btnSave = new JButton(I18n.getText("io.convert.btnSave"));
+		btnSave.setEnabled(false);
+		panel_1.add(btnSave);
 		
 		JPanel panel_2 = new JPanel();
 		panel.add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new MigLayout("", "[97px,grow][103px,grow]", "[27px][27px][][][][][][]"));
 		
-		JLabel lblWhatToExport = new JLabel("What to export:");
+		JLabel lblWhatToExport = new JLabel(I18n.getText("io.convert.whatExport"));
 		panel_2.add(lblWhatToExport, "cell 0 0,alignx trailing");
 		
 		selection = new JComboBox(new String[] { model.getElements().size() <= 1 ? "The selected sample" : "The group of "+model.getElements().size()+" samples." });
 		panel_2.add(selection, "cell 1 0,growx");
 		
-		JLabel lblGrouping = new JLabel("Grouping:");
+		JLabel lblGrouping = new JLabel(I18n.getText("io.convert.lblGrouping"));
 		panel_2.add(lblGrouping, "cell 0 1,alignx trailing");
 		
 		groupings = new JComboBox(groupingNames);
 		panel_2.add(groupings, "cell 1 1,growx");
 		
-		JLabel lblFormat = new JLabel("Format:");
+		JLabel lblFormat = new JLabel(I18n.getText("io.convert.lblFormat"));
 		panel_2.add(lblFormat, "cell 0 3,alignx trailing");
 		
 		format = new JComboBox(TridasIO.getSupportedWritingFormats());
 		panel_2.add(format, "cell 1 3,growx");
 		
-		JLabel lblNaming = new JLabel("Naming:");
+		JLabel lblNaming = new JLabel(I18n.getText("io.convert.lblNaming"));
 		panel_2.add(lblNaming, "cell 0 4,alignx trailing");
 		
 		naming = new JComboBox(namings);
 		panel_2.add(naming, "cell 1 4,growx");
 		
-		JLabel lblEncoding = new JLabel("Encoding:");
+		JLabel lblEncoding = new JLabel(I18n.getText("io.convert.lblEncoding"));
 		panel_2.add(lblEncoding, "cell 0 5,alignx trailing");
 		
 		charset = new JComboBox(charsets.toArray(new String[0]));
 		panel_2.add(charset, "cell 1 5,growx");
 		
-		JLabel lblOutputFolder = new JLabel("Output folder:");
+		JLabel lblOutputFolder = new JLabel(I18n.getText("io.convert.lblOutput"));
 		panel_2.add(lblOutputFolder, "cell 0 6,alignx trailing");
 		
-		btnBrowse = new JButton("Browse");
+		btnBrowse = new JButton(I18n.getText("io.convert.btnBrowse"));
 		panel_2.add(btnBrowse, "cell 1 6");
 		
 		destFolder = new JTextField();
@@ -205,8 +212,7 @@ public class ExportView extends JFrame {
 				else {
 					name = new UUIDNamingConvention();
 				}
-				ExportEvent evt = new ExportEvent(model, charset.getSelectedItem().toString(), format.getSelectedItem()
-						.toString(), name, groupings.getSelectedIndex() == 0);
+				ExportEvent evt = new ExportEvent(model, charset.getSelectedItem().toString(), format.getSelectedItem().toString(), name, groupings.getSelectedIndex() == 0);
 				evt.dispatch();
 			}
 		});
@@ -222,8 +228,8 @@ public class ExportView extends JFrame {
 				fc.setDialogTitle(I18n.getText("export.selectAFolder"));
 				
 				// Open at last used directory
-				if (exportDirectory != null) {
-					fc.setCurrentDirectory(new File(exportDirectory));
+				if (model.getExportDirectory() != null) {
+					fc.setCurrentDirectory(new File(model.getExportDirectory()));
 				}
 				
 				// Show dialog
@@ -234,7 +240,7 @@ public class ExportView extends JFrame {
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
 					destFolder.setText(file.getAbsoluteFile().toString());
-					exportDirectory = file.getAbsoluteFile().toString();
+					model.setExportDirectory(file.getAbsoluteFile().toString());
 				}
 				else {
 					System.out.println("Save command cancelled by user.");
@@ -253,12 +259,33 @@ public class ExportView extends JFrame {
 		destFolder.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent argE) {
-				if (destFolder.getText() == null || destFolder.getText().equals("")) {
-					btnConvert.setEnabled(false);
+				model.setExportDirectory(destFolder.getText());
+			}
+		});
+		
+		
+		btnSave.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent argE) {
+				ArrayList<WriterObject> writers = new ArrayList<WriterObject>();
+				for(DefaultMutableTreeNode node : model.getNodes()){
+					try{
+						StructWrapper w = (StructWrapper) node.getUserObject();
+						writers.add(w.struct);
+					}catch(Exception e){}
 				}
-				else {
-					btnConvert.setEnabled(true);
+				if(writers.size() == 0){
+					JOptionPane.showConfirmDialog(ExportView.this, "Could not find converted files.  Please report bug.", "Error", JOptionPane.OK_OPTION);
+					return;
 				}
+				
+				File folder = new File(model.getExportDirectory());
+				if(!folder.exists()){
+					JOptionPane.showConfirmDialog(ExportView.this, "Could not find the given export directory.", "Error", JOptionPane.OK_OPTION);
+					return;
+				}
+				SaveEvent event = new SaveEvent(writers.toArray(new WriterObject[0]), folder, ExportView.this);
+				event.dispatch();
 			}
 		});
 	}
@@ -275,7 +302,29 @@ public class ExportView extends JFrame {
 						rootNode.add(node);
 					}
 					treeModel.setRoot(rootNode);
+					
+					if(model.getExportDirectory() != null){
+						btnSave.setEnabled(true);
+					}
 					expandToFiles();
+				}
+				else if(argEvt.getPropertyName().equals(MVCArrayList.REMOVED_ALL)){
+					rootNode.removeAllChildren();
+					DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
+					treeModel.setRoot(rootNode);
+				}
+			}
+		});
+		
+		model.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent argEvt) {
+				if(argEvt.getPropertyName().equals("exportDirectory")){
+					if(model.getExportDirectory() != null && model.getNodes().size() > 0){
+						btnSave.setEnabled(true);
+					}else{
+						btnSave.setEnabled(false);
+					}
 				}
 			}
 		});

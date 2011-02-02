@@ -21,12 +21,27 @@ public class ExportModel extends AbstractModel {
 	public static enum Grouping {
 		PACKED, SEPARATE
 	}
-	
-	private String directory = null;
 	private String format = null;
 	private ElementList elements = null;
 	private final MVCArrayList<DefaultMutableTreeNode> nodes = new MVCArrayList<DefaultMutableTreeNode>();
 	private JFrame exportView;
+	private String exportDirectory = null;
+
+	/**
+	 * @return the exportDirectory
+	 */
+	public String getExportDirectory() {
+		return exportDirectory;
+	}
+
+	/**
+	 * @param argExportDirectory the exportDirectory to set
+	 */
+	public void setExportDirectory(String argExportDirectory) {
+		String old = exportDirectory;
+		exportDirectory = argExportDirectory;
+		firePropertyChange("exportDirectory", old, exportDirectory);
+	}
 
 	/**
 	 * @return the rootNode
@@ -49,21 +64,6 @@ public class ExportModel extends AbstractModel {
 		JFrame old = exportView;
 		exportView = argExportView;
 		firePropertyChange("exportView", old, exportView);
-	}
-
-	/**
-	 * @return the directory
-	 */
-	public String getDirectory() {
-		return directory;
-	}
-	/**
-	 * @param argDirectory the directory to set
-	 */
-	public void setDirectory(String argDirectory) {
-		String old = directory;
-		directory = argDirectory;
-		firePropertyChange("directory", old, directory);
 	}
 	
 	/**

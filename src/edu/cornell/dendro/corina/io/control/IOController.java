@@ -10,6 +10,7 @@ import edu.cornell.dendro.corina.io.command.MergeEntitiesCommand;
 import edu.cornell.dendro.corina.io.command.ExportCommand;
 import edu.cornell.dendro.corina.io.command.NodeSelectedCommand;
 import edu.cornell.dendro.corina.io.command.OpenExportCommand;
+import edu.cornell.dendro.corina.io.command.SaveCommand;
 
 
 public class IOController extends FrontController {
@@ -25,6 +26,8 @@ public class IOController extends FrontController {
     public static final String EXPORT = "IO_EXPORT";
     
     public static final String OPEN_EXPORT_WINDOW = "IO_OPEN_EXPORT";
+    
+    public static final String SAVE = "IO_SAVE";
 
     public IOController()
     {
@@ -39,6 +42,8 @@ public class IOController extends FrontController {
     	registerCommand(EXPORT, ExportCommand.class);
     	
     	registerCommand(OPEN_EXPORT_WINDOW, OpenExportCommand.class);
+    	
+    	registerCommand(SAVE, SaveCommand.class);
     }
 
 	

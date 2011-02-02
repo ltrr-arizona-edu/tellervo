@@ -261,5 +261,4 @@ class SplitOutput extends OutputStream {
 		o1.write(argB);
 		o2.write(argB);
 	}
-	
 }
