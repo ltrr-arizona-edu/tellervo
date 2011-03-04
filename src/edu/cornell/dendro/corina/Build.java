@@ -112,7 +112,7 @@ public class Build {
     public final static String VERSION = "2.12"; // beta
 
     /** Year (for copyright). */
-    public final static String YEAR = "2001-2010";
+    public final static String YEAR = "2001-2011";
 
     /** Author's name (for copyright). */
     public final static String AUTHOR = "Peter Brewer, Chris Dunham, Aaron Hamid, Ken Harris, Drew Kalina, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl and Kit Sturgeon";

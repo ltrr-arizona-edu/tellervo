@@ -744,21 +744,22 @@
 	<target name="server-package" description="Build Ubuntu deb package for all Corina server components">
 		<delete file="${dist.home}/corina-server_2.11-1_all.deb" />
 		<deb todir="${dist.home}" package="corina-server" section="utils" 
-			depends="postgresql-8.4, postgis, postgresql-8.4-postgis, postgresql-contrib-8.4, postgresql-8.4-pljava, sun-java6-jre, apache2, php5, php5-pgsql, php5-curl, php5-mhash" 
+			depends="postgresql-8.4, postgis, postgresql-contrib-8.4, postgresql-8.4-pljava, sun-java6-jre, apache2, php5, php5-pgsql, php5-curl, php5-mhash" 
 			suggests="pgadmin3, openssl"
-			postinst="native/LinBuild/server_post_install.sh">
+			postinst="native/LinBuild/corina-server">
 			<version upstream="2.11"/>
 			<maintainer email="p.brewer@cornell.edu" name="Peter Brewer"/>
 			<description synopsis="Dendrochronology server">TRiDaS enabled dendrochronology server</description>
 			
 			<!-- Database -->
-			<tarfileset file="databases/corina_template.sql" prefix="usr/share/corina-server"/>
-			<tarfileset file="databases/set_database_permission.sql" prefix="usr/share/corina-server"/>
+			<tarfileset file="databases/corina_database_template.sql" prefix="usr/share/corina-server"/>
+			<tarfileset file="databases/set_database_permission.template" prefix="usr/share/corina-server"/>
+			<tarfileset file="src/edu/cornell/dendro/webservice/config.php.template" prefix="usr/share/corina-server"/>
 
 			<tarfileset file="native/LinBuild/corina-apache" prefix="usr/share/corina-server"/>
 			<tarfileset file="native/LinBuild/corina_server_credentials" prefix="usr/share/corina-server"/>
 
-			<tarfileset file="native/LinBuild/server_post_install.sh" prefix="usr/share/corina-server" filemode="755"/>
+			<tarfileset file="native/LinBuild/corina-server" prefix="usr/bin" filemode="755"/>
 
 			
 			<!-- Webservice -->

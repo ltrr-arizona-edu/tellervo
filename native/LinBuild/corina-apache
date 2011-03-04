@@ -1,13 +1,6 @@
-NameVirtualHost *:80
-
-<VirtualHost *:80>
-	DocumentRoot /var/www/corina-webservice/
-	ServerAdmin webmaster@localhost
-  
-	<Directory /var/www/corina-webservice/>
-		Options Indexes FollowSymLinks MultiViews
-		AllowOverride None
-		Order allow,deny
-		allow from all
-    </Directory>
- </VirtualHost>
+<Directory /var/www/corina-webservice/>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+</Directory>                                                                                        
