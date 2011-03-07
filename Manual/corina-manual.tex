@@ -1,0 +1,82 @@
+\documentclass[10pt,letter, twopage headsepline]{book}
+\usepackage[utf8x]{inputenc}
+\usepackage{arev}
+\usepackage{booktabs}
+\usepackage{parskip}
+\usepackage{setspace} 
+\usepackage{multicol}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{mdwlist}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+
+%\setlength{\parindent}{0cm}
+%\setlength{\parskip}{2em}
+%\linespread{1.3}
+
+\definecolor{lgrey}{gray}{0.98}
+\definecolor{dgrey}{gray}{0.6}
+\hypersetup{pdfborder=0 0 0, colorlinks=true, linkcolor=black, anchorcolor=black, citecolor=black, urlcolor=blue}
+\widowpenalty=10000
+\clubpenalty=10000
+
+
+\renewcommand{\bibname}{References}
+
+
+\begin{document}
+
+\begin{titlepage}
+{\centering --\\[4cm] \Huge \bfseries CORINA USERS MANUAL
+\\[0.5cm]
+\large{Version 2.12}
+\\[2cm]
+\includegraphics[width=6cm]{Images/logo.png}\\[1cm]
+}
+
+{\centering 
+\normalsize
+\textbf{BY PETER W.\ BREWER}\\[0.6cm]
+}
+
+\vfill
+
+{\footnotesize
+Corina was developed by Peter Brewer, Chris Dunham, Aaron Hamid, Ken Harris, Drew Kalina, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl and Kit Sturgeon
+}
+%{\normalsize Cornell Tree-Ring Laboratory\\B48 Goldwin Smith Hall\\Cornell University\\Ithaca NY 14853. USA}
+
+\end{titlepage}
+\tableofcontents
+
+\chapter{Installation}
+
+
+\section{Desktop client}
+
+
+
+The only requirement for running Corina is Java 1.6 (aka Java 6) or later. If you don't have this installed already you can download Java for your particular operating systems from \url{http://www.java.com}.
+
+Corina includes advanced 3D mapping for visualization of sampling locations. Although this is not necessary for most tasks, to make use of the mapping within Corina you will require a OpenGL 3D capable graphics card. Most computers made since 2006 support OpenGL, however, this does require proper drivers to be installed. If you are having trouble with the mapping in Corina make sure you have installed the most recent drivers for your graphics card.
+
+As Corina is written in Java, it can be run on any Java enabled operating system. However, most users are more comfortable using the installation methods common on their particular OS, so we also provide native installers for Windows, MacOSX and (Ubuntu) Linux. For other operating systems see the generic Java installation details below.
+
+To install Corina, download the installation file for your operating system from \url{http://dendro.cornell.edu/corina/download.php}. The website should provide you with a link to the installer for your current operating system:
+
+\begin{description}
+\item[Windows]- run the setup.exe and follow the instructions. If you do not have Java installed the installer will direct you to the Java website where you can get the latest version. Once installed, Corina can be launched via the Start menu.
+\item[MacOSX] - As mentioned above, Corina requires Java 6. Although MacOSX ships with Java installed, unfortunately Apple have been very slow to provide Java 6. Although it was released in 2006, it was not until August 2009 that Apple made Java 6 available as part of v10.6 (snow leopard). Corina can therefore only be run on Snow Leopard or later. To do so, download the dmg disk image file and mount it by double clicking on it. Drag the Corina.app into your applications folder and copy the manual and license files to somewhere convenient in your documents folder.
+\item[Linux] -  A deb file is available which was designed for use on Ubuntu (and variant) distributions but should work on any Debian based system. Install using your favorite package management system e.g. \verb|sudo dpkg --install corina\_2.xx-1\_all.deb|. On Ubuntu and similar distributions, the package should add a Corina shortcut to your applications menu. Alternatively you can start Corina from the command line by typing corina.
+\item[Other] - Download the jar file and save it to your hard disk. You can run Corina by typing on a command line java -jar corina.jar.
+\end{description}
+
+
+
+\chapter{Server installation}
+
+
+\end{document}
