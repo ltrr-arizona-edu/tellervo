@@ -1,12 +1,15 @@
 
-\chapter{Running the server}
+\chapter{The Corina server}
 \label{txt:servermaintenance}
 
 For basic day-to-day running of the Corina server, you simply need to make sure that the server is running.  All other interaction and managment (creating users, granting permissions, accessing data) is done through the Corina desktop application.  This section, however, outlines a number of aspects of the server that advanced users may find useful.
 
 \section{Extending the Virtual Appliance}
 
-For those of you that are unfamiliar with Linux, the basic command line prompt is not likely to be very comfortable.  If you are interesting in looking at the server in more detail you may therefore prefer to install a full graphical interface.  Unlike Windows, there are a number of different graphical interfaces (or desktops) to choose from in Linux, the most popular being Gnome and KDE.  To install one (or both) of these you need to type \verb|sudo apt-get install ubuntu-desktop| (for Gnome) or \verb|sudo apt-get install kubuntu-desktop| for KDE.  Windows users that are new to Linux may find KDE more familiar than Gnome.
+For those of you that are unfamiliar with Linux, the basic command line prompt is not likely to be very comfortable.  If you are interesting in looking at the server in more detail you may therefore prefer to install a full graphical interface.  Unlike Windows, there are a number of different graphical interfaces (or desktops) to choose from in Linux, the most popular being Gnome and KDE.  To install one of these you need to type one commands listed below.  The first line installs Gnome and the second KDE. Windows users that are new to Linux may find KDE more familiar than Gnome.
+
+ \code{sudo apt-get install ubuntu-desktop}
+ \code{sudo apt-get install kubuntu-desktop}
 
 \section{Security}
 
@@ -35,7 +38,7 @@ The default Corina server setup, however, uses standard HTTP protocol to communi
 
 Although the Corina database is designed to only be accessed by the Corina desktop application via the Corina server's webservice, you may decide that you'd like to directly access the database yourself.  For instance, you may like to write complicated SQL queries to probe your database in ways not currently supported by the Corina desktop client. 
 
-\warning{Any changes made to the database may have drastic consequences.  We strongly recommend that you never write changes directly to the database as this can cause loss of data and corrupt future upgrades to Corina.}
+\warn{Any changes made to the database may have drastic consequences.  We strongly recommend that you never write changes directly to the database as this can cause loss of data and corrupt future upgrades to Corina.}
 
 \subsection{PGAdmin3}
 One of the easiest ways to access the PostgreSQL database is through the application PGAdmin3.  This is a cross-platform open source application for communicating with PostgreSQL databases.  You can install PGAdmin3 on your desktop computer and access the remotely running database using your database user credentials.  By default, PostgreSQL runs on port 5432.

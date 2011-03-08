@@ -1,0 +1,46 @@
+\chapter{Crossdating and chronology building}
+\label{txt:crossdating}
+
+All algorithms work in pretty much the same way. There's a ``fixed'' sample, and there's a ``moving'' sample. Imagine you have printouts of their graphs on translucent paper. The fixed graph is taped to a table, and you can slide the moving sample left and right. This is actually how it was originally done, on graph paper, with one inch per decade. Start with the moving sample to the left of the fixed sample, overlapping it by 10 years. Look at how well the graphs match: this is the first score that's computed. Slide the moving sample to the right one year and so on until you reach the end.
+
+You could do it all simply by moving graphs and eyeballing the crossdates like this but there are hundreds of sites and millennia of chronologies you'll want to crossdate your samples against, so that would take a while. Corina has a few algorithms to find likely crossdates almost instantaneously. They aren't perfect, though, and all crossdates should be inspected visually to ensure they are a good fit. 
+
+\section{Algorithms}
+Corina includes a total of five different algorithms for crossdating:
+
+
+\subsection{T-Score}
+	
+The t-score is the classic crossdate. Everybody quotes t-scores: if you want to brag about how good a cross is, you tell them your t-score. Unfortunately, every dendro program seems to have a slightly different implementation of tscore, so the numbers you get from Corina might not be exactly comparable to the numbers from other programs. 
+
+The version Corina uses is based on the algorithms given in \citet{Baillie73}, though with some apparent bugs corrected. In the following equations, $x_{0}, x_{1}, x_{2}, \dots$ are the data of the fixed sample in the overlap, $y_{0}, y_{1}, y_{2}, \dots$ are the data of the moving sample in the overlap, and N is the length of the overlap.
+
+\subsection{Trend}
+Trend is another popular crossdate statistic.  It computes the percentage of years with the same trend (going-up- or going-down-ness). Scores greater than 60\%-70\% are good. Trend is also referred to as ufigkeitsko-Gleichläeffizient, Gleichläufigkeit and Eckstein's W.
+
+The trend is the simplest crossdate. For each sample, it computes the trend of each 2-year interval (1001-1002, 1002-1003, and so on). The trend of a 2-year interval is simply whether the next ring is larger, smaller, or the same. The trend score is the percentage of intervals in the overlap which are the same. For example, a 75\% trend (a very good score, by the way) means that for 75\% of the intervals in the overlap, both samples went up in the same years and down in the same years.
+
+If one sample stays the same, and the other increases or decreases, Corina considers that to be halfway between a same-trend and different-trend, and gives it half a point. Trend is a ``non-parametric'' algorithm, because it only takes into account if a given ring is bigger or smaller than the previous one, not by how much. To the trend, a drop of ``100 1'' looks exactly the same as a drop of ``100 99''. Two completely random samples will have a trend of 50\%, on average. So you'd expect a trend must be greater than 50\% to be significant.
+
+According to \citet{Huber70}, a trend is significant if:
+
+\begin{enumerate}
+  \item \textbf{$tr > 50\% + {50 \over \sqrt{N}}$} - For example a pair of samples with a 50-year overlap needs a $50+50\sqrt{50} = 57.1\%$ trend to be significant, but at a 400-year overlap need only a $50 + 50\sqrt{400} = 52.5\%$ trend. In practice, however, this doesn't tend to work terribly well. Using this scheme, there are typically about three times as many ``significant'' trend scores as t-scores, and users want this narrowed down a bit more. So take $\sigma=3$ and use:
+  \item $tr > 50\% + {50\sigma \over \sqrt{N}}$ - This gives about the same number of significant trend scores as t-scores. 
+
+\end{enumerate}
+
+Trends are also used in reconciliation. After they've been reconciled, both readings of a sample should have 100\% trend. 
+
+\subsection{Weiserjahre}
+	
+
+An algorithm for crossdating summed samples (masters) against single samples; kind of like a trend-for-Weiserjahre-data.
+
+\subsection{R-Value}
+	
+
+A score which statisticians might ask you for. You'll probably never use it on your own (though it's used by Corina when computing the t-score, so you already are, in a sense).
+
+ 
+\subsection{D-Score }

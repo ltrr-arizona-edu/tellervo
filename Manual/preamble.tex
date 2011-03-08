@@ -1,54 +1,35 @@
 
-\begin{titlepage}
-\AddToShipoutPicture*{\BackgroundPic}
-
-{ --\\[4cm] 
-\hrule 
-\vspace{5mm}
-\Huge \bfseries CORINA USERS MANUAL
-\\[0.5cm]
-\large{Version 2.12}
-\vspace{5mm}
-\hrule
-\vspace{3cm}
-
-}
-
-{
-\normalsize
-\textbf{BY Peter W.\ Brewer}\\[0.6cm]
-
-Corina was developed by Peter Brewer, Chris Dunham, Aaron Hamid, Ken Harris, Drew Kalina, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl and Kit Sturgeon
-
-}
-
-\vfill
-
-{\footnotesize
-
-}
-%{\normalsize Cornell Tree-Ring Laboratory\\B48 Goldwin Smith Hall\\Cornell University\\Ithaca NY 14853. USA}
-
-\end{titlepage}
+%\include{titlepage}
 
 \thispagestyle{empty} 
--
+\includegraphics{Images/pixel.png}
 \vfill
-\parbox[b]{8cm}{\copyright 2011 Peter W. Brewer.  Cornell University, \\ Ithaca, New York 14853. USA.}
+\parbox[b]{11cm}{\raggedright
+\includegraphics[width=2cm]{Images/by-nc-sa.png}\\
+This manual is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License. To view a copy of this license, visit \url{http://creativecommons.org/licenses/by-nc-sa/3.0/} \\or send a letter to:\\
+Creative Commons\\ 171 Second Street, Suite 300\\ San Francisco\\ California, 94105, USA.\\[1cm]
+
+
+\textcopyleft 2011 Peter W. Brewer\\ Malcolm and Carolyn Wiener Laboratory for Aegean\\ and Near Eastern Dendrochronology \\
+B48 Goldwin Smith Hall\\ Cornell University, \\ Ithaca, New York 14853. USA.\\[0.5cm] \Telefon\hspace{3mm}+1 607 255 8650 \\ \Letter\hspace{3mm}p.brewer@cornell.edu}
 
 \newpage
 \pagenumbering{roman}
 \setcounter{page}{1}
 \thispagestyle{empty} 
-{ --\\[4cm] 
+{ \includegraphics{Images/pixel.png}\\[4cm] 
 \hrule 
 \vspace{5mm}
-\Huge \bfseries CORINA USERS MANUAL
-\\[0.5cm]
-\large{Version 2.12}
+\Huge \bfseries CORINA MANUAL\\[3mm] 
+\large{For users and developers}
 \vspace{5mm}
 \hrule
 \vspace{3cm}
+}
+{
+\normalsize
+\textbf{By Peter W.\ Brewer, Ken Harris, and Robert Pohl}\\[0.6cm]
+
 
 }
 
@@ -58,5 +39,21 @@ Corina was developed by Peter Brewer, Chris Dunham, Aaron Hamid, Ken Harris, Dre
 \tableofcontents
 
 
-\clearpage
+\cleardoublepage
 \pagenumbering{arabic} 
+
+\phantomsection
+\section*{Preface}
+\thispagestyle{empty} 
+\addcontentsline{toc}{section}{Preface}
+
+Corina is the tree ring measuring and analysis program developed at the Cornell Tree-Ring Laboratory. It is focused primarily on the measurement of tree ring widths and the organization and curation of the data, metadata and physical samples. It is cross-platform (running on all Java 6 enabled operating systems including Windows, MacOSX and Linux) and open-source. It includes support for Velmex, Lintab and Hensen measuring platforms.
+
+Corina has been developed since 2000 as a desktop Java application. Earlier iterations (version 0.x and 1.x) were built around a standard file-based data management system. In 2007, work began on a major rewrite of the software whereby this file-based data management was replaced with a true relational database and server/client webservice infrastructure. This series of releases (versions 2.x) are what are described in this manual.
+
+This manual is divided into two main sections, the first for users, the second for developers.  Corina is open source software (see the details of the license on page \pageref{txt:license}) so you are welcome to inspect and edit the code.  The second part of this manual should help you do that.
+
+Over the years Corina has been developed by a number of people: Peter Brewer, Chris Dunham, Aaron Hamid, Ken Harris, Drew Kalina, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl and Kit Sturgeon.  We hope that you find Corina useful and look forward to hearing your feedback.
+
+
+

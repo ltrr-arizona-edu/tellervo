@@ -1,62 +1,46 @@
 \documentclass[10pt,letter, twopage headsepline]{book}
-\usepackage[utf8x]{inputenc}
-\usepackage{sans}
-\usepackage{booktabs}
-\usepackage{parskip}
-\usepackage{setspace} 
-\usepackage{multicol}
-\usepackage{natbib}
-\usepackage{hyperref}
-\usepackage{graphicx}
-\usepackage{xcolor}
-\usepackage{listings}
-\usepackage{mdwlist}
-\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
-
-\definecolor{lgrey}{gray}{0.98}
-\definecolor{dgrey}{gray}{0.6}
-\hypersetup{pdfborder=0 0 0, colorlinks=true, linkcolor=black, anchorcolor=black, citecolor=black, urlcolor=blue}
-\widowpenalty=10000
-\clubpenalty=10000
-
-
-\renewcommand{\bibname}{References}
-\newcommand{\warning}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/warning.png} \emph{#1}}}}\end{center}}
-                                                                                                                                              
-
-\newcommand{\info}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/info.png} #1}}}\end{center}}
-\newcommand{\tip}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/idea.png} #1}}}\end{center}}
-
-\usepackage{eso-pic}
-\newcommand\BackgroundPic{
-\put(0,0){
-\parbox[b][\paperheight]{\paperwidth}{%
-\vfill
-\centering
-\includegraphics[width=\paperwidth,height=\paperheight,
-keepaspectratio]{Images/logo.png}%
-\vfill
-}}}
-
+\include{setup}
 
 \begin{document}
 
-\include{preamble}
+  \include{preamble}
 
-%%%%%%%%%%%%
-\part{User Guide}
-%%%%%%%%%%%%
-  \include{installation}
-  \include{gettingstarted}
-  \include{runningtheserver}
-  \include{mapping}
+  %%%%%%%%%%%%
+  \part{User Guide}
+  %%%%%%%%%%%%
+    \include{installation}
+    %\include{gettingstarted}
+    \include{runningtheserver}
+    \include{measuring}
+    \include{metadata}
+    \include{mapping}
+    \include{graphing}
+    \include{importexport}
+    \include{curation}
+    \include{indexing}
+    \include{crossdating}
+    \include{help}
 
+  %%%%%%%%%%%%%%%%%%
+  \part{Developers guide}
+  %%%%%%%%%%%%%%%%%%
+    \include{systemsarchitecture}
 
-%%%%%%%%%%%%%%%%%%
-\part{Developers guide}
-%%%%%%%%%%%%%%%%%%
-  \include{systemsarchitecture}
+  %%%%%%%%%%%%%%%%%%
+  \part{Appendices}
+  %%%%%%%%%%%%%%%%%%
+    \appendix
+    \include{format-descriptions}
+    \include{license}
 
+    \cleardoublepage
+    \addcontentsline{toc}{chapter}{References}
+    %\begin{multicols}{2}
+    \bibliographystyle{model2-names}
+    \bibliography{corina}
+    %\end{multicols}
 
-
+    \cleardoublepage
+    \addcontentsline{toc}{chapter}{Index}
+    \printindex
 \end{document}
