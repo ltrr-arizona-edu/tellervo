@@ -15,6 +15,28 @@ The t-score is the classic crossdate. Everybody quotes t-scores: if you want to 
 
 The version Corina uses is based on the algorithms given in \citet{Baillie73}, though with some apparent bugs corrected. In the following equations, $x_{0}, x_{1}, x_{2}, \dots$ are the data of the fixed sample in the overlap, $y_{0}, y_{1}, y_{2}, \dots$ are the data of the moving sample in the overlap, and N is the length of the overlap.
 
+The first step is to make each dataset bivariate normal by replacing each value with the mean of the values around it, and then taking its natural logarithm.  The preparation for the T-Score is therefore done as follows and is done to both the fixed and moving series:
+
+\begin{itemize}
+ \item $x_{i} \leftarrow {x_{i-2} + x_{i} + x_{i+1} + x_{i+2} \over 5}$
+ \item $x_{i} \leftarrow ln(_{xi})$
+\end{itemize}
+
+The student's T computation is then done as follows:
+
+\begin{itemize}
+ \item $s_{xy} = \Sigma x_{i} y_{i} - N (x_{i} - x_{avg}) (y_{i} - y_{avg})$
+ \item $s_{xx} = \Sigma x_{i}^{2} - N (x_{i} - x_{avg})^{2}$
+ \item $s_{yy} = \Sigma y_{i}^{2} - N (y_{i} - y_{avg})^{2}$
+ \item $r = {s_{xy} \over \sqrt{(s_{xx} s_{yy})}}$
+ \item $t = r \sqrt{{N-2\over 1-r^{2}}}$
+\end{itemize}
+
+The t-score is called a ``parametric'' algorithm, because it takes into account the magnitudes of the samples.
+
+A t-score is considered statistically significant if it's greater than a certain value. Just what this value is varies with the length of the overlap between the samples: a 500 year overlap can have a t-score of 2.6 and pass, but an overlap of only 15 years would have to be higher, like 3.0.  In reality most dendrochronologists require t-scores to be much higher than this, and would also insist on overlaps of many decades.
+
+
 \subsection{Trend}
 Trend is another popular crossdate statistic.  It computes the percentage of years with the same trend (going-up- or going-down-ness). Scores greater than 60\%-70\% are good. Trend is also referred to as ufigkeitsko-Gleichläeffizient, Gleichläufigkeit and Eckstein's W.
 
@@ -33,14 +55,35 @@ According to \citet{Huber70}, a trend is significant if:
 Trends are also used in reconciliation. After they've been reconciled, both readings of a sample should have 100\% trend. 
 
 \subsection{Weiserjahre}
-	
+The Weiserjahre algorithm is used for crossdating summed samples (chronologies) against single samples. All of the algorithms that have been mentioned so far only compare the ring widths. This works fine for raw samples, but when crossdating summed samples, there's a lot more information available, namely, the Weiserjahre data. Wouldn't it make sense to count a [20] $19\times1$ ring more heavily than a [1] $1\div0$ ring? 19 out of 20 samples think it's an increasing year, not just 1. 
 
-An algorithm for crossdating summed samples (masters) against single samples; kind of like a trend-for-Weiserjahre-data.
+This is what the Weiserjahre cross does: for each possible overlap, it starts by counting the number of significant intervals of the master for that overlap. A significant interval is one with at least 3 samples, where at least 75\% of them have the same trend. Then it computes the percent agreement (like the trend) between the master and the raw sample for only those significant years of the overlap. Of course, for the trend of the master, it doesn't use the trend of the master; it uses the trend of the majority of its elements. They're usually the same, but not necessarily.
+
+Another way to think about the Weiserjahre crossdate is: it's like a trend, but ignoring years where the sum has only 1 or 2 samples, or where there isn't an overwhelming trend in the sum. Also like the trend, the results are given as a percentage.
+
 
 \subsection{R-Value}
-	
+The R-value, or correlation coefficient, is a crossdate which you'll almost never use. It's not terribly useful to dendrochronologists, but statisticians might want to know its value, so Corina makes it available.
 
-A score which statisticians might ask you for. You'll probably never use it on your own (though it's used by Corina when computing the t-score, so you already are, in a sense).
+The R-value is used in the T-Score, the T-score being defined in terms of the r-value and the overlap, N. If you look at the equations for calculating a T-Score you will see on the penultimate line: 
 
+\begin{itemize*}
+ \item $r = {s_{xy} \over \sqrt{(s_{xx} s_{yy})}}$
+\end{itemize*}
+
+An r-value can range from 0.0 (no correlation) to 1.0 (perfect correlation). 
  
 \subsection{D-Score }
+
+The D-score (AXE), is a combination of the T-Score and Trend.
+
+\begin{itemize*}
+ \item $D = (tr - 50\%) \times t $
+\end{itemize*}
+
+Corina considers 40 to be the threshold for significant AXE. 
+
+\section{Crossdating series}
+
+
+\section{Managing chronologies}

@@ -22,7 +22,7 @@ You can navigate around your maps using both your mouse and keyboard.
 
 \subsection{Mouse with scroll wheel}
 
-\begin{description}
+\begin{description*}
       \item[Pan] Left mouse button click and drag -- all directions
       \item[Zoom] Use the scroll wheel on the mouse or Left and Right mouse (both buttons) click and drag up and down
       \item[Tilt] Right mouse button click and drag -- up and down or use `Page Up' and `Page Down' on the keyboard.
@@ -30,11 +30,11 @@ You can navigate around your maps using both your mouse and keyboard.
       \item[Stop] Spacebar
       \item[Reset Heading] N
       \item[Reset all] R 
-\end{description}
+\end{description*}
 
 
 \subsection{Single button mouse}
-\begin{description}
+\begin{description*}
      \item[Pan] Left mouse button click and drag - all directions. L left mouse button click once to center view.
      \item[Zoom] Hold `Ctrl' on the keyboard and Left mouse button click and drag - up and down
      \item[Tilt] Hold `Shift' on the keyboard and Left mouse button click and drag - up and down or use "Page Up" and "Page Down" on the keyboard.
@@ -42,7 +42,7 @@ You can navigate around your maps using both your mouse and keyboard.
      \item[Stop] Spacebar
      \item[Reset Heading] N
      \item[Reset all] R 
-\end{description}
+\end{description*}
 
 
 These controls enable you to explore your location information in 3D such as the example of Mount Vesuvius in figure \ref{fig:3dmap}.
@@ -62,31 +62,38 @@ Another method of navigating around the map is by using the built in gazetteer. 
 Each marker on the map represents either a TRiDaS object or element in your Corina database. By clicking on these pins you can get more information from the database (see figure \ref{fig:mappin}).
 
 \begin{figure}[hbtp]
-  \caption{Screenshot of a map with information pin expanded}
   \label{fig:mappin}
   \centering
     \includegraphics[width=0.8\textwidth]{Images/mappinexample.png}
+    \caption{Screenshot of a map with information pin expanded}
 \end{figure}
 
 The example above shows the ring marker is of a site in Napoli called Poggiomarino (code name POG). You can see the option for searching for all series in the database associated with this site, and also the option for viewing all the metadata. 
 
 \section{Background map layers}
 
-Corina comes ready configured with basic map layers, including high resolution satellite imagery and basic political features. You can turn background layers on and off by going to View > Layers.
+Corina comes ready configured with basic map layers, including high resolution satellite imagery and basic political features. You can turn background layers on and off by going to View \MVRightarrow Layers.
 
 Map layers are downloaded on-the-fly so there is likely to be a delay when you initially visit to a new region. However, up to 2Gb of map data can be cache locally to your hard disk, so on future visits, maps should load quickly.
 
-The mapping system in Corina includes support for remote map servers that use the OGC Web Mapping Service (WMS) standard. If you go to View > Layers > Add remote layers you will get a dialog with a tab for each WMS server configured for your system. By default this includes the NASA Earth Observation and Jet Propulsion Lab servers, but your Corina administrator can add others. By ticking layers in this list you can add data layers to your map. Your system administrator may host a map server specifically for your lab, for instance, containing high resolution plans of an archaeological site that you are working on. Figure \ref{fig:wms} shows an example overlay of sea surfaces temperatures loaded dynamically from the NASA EO server.
+The mapping system in Corina includes support for remote map servers that use the OGC Web Mapping Service (WMS) standard. If you go to View \MVRightarrow Layers \MVRightarrow Add remote layers, you will get a dialog with a tab for each WMS server configured for your system. By default this includes the NASA Earth Observation and Jet Propulsion Lab servers.  By ticking layers in this list you can add data layers to your map.
+
+You can add map data from other WMS servers by clicking the `+' tab and entering the URL of the server you would like to use.  This will give an additional tab with all the available map layers.  This server will only be available for the duration of your current session so will need to be added each time you start Corina.  If you would like a particular WMS server to be made permanently available, your Corina administrator can do this (see `Managing map services', on page \pageref{txt:managingmaps} for further details).  Additional WMS servers added in this way will be available to all users the next time they connect to your Corina server.
+
+Your system administrator may host a map server specifically for your lab, for instance, containing high resolution plans of an archaeological site that you are working on, or environmental data for your study region. Figure \ref{fig:wms} shows an example overlay of sea surfaces temperatures loaded dynamically from the NASA EO server.
 
 \begin{figure}[hbtp]
-  \caption{Map screenshot with a NASA sea surface temperature overlay dynamically loaded from the NASA WMS server.}
   \label{fig:wms}
   \centering
     \includegraphics[width=0.8\textwidth]{Images/sst.png}
+    \caption{Map screenshot with a NASA sea surface temperature overlay dynamically loaded from the NASA WMS server.}
 \end{figure}
 
+
+
+
 \section{Data map layers}
-Data map layers are controlled with the layer list in the bottom left of the screen. When viewing series, you will have the option of adding layers containing points for all the other series at the current site, and showing all the sites in the database. 
+Data map layers (i.e.\ site and sample locations) are controlled with the layer list in the bottom left of the screen. When viewing series, you will have the option of adding layers containing points for all the other series at the current site, and showing all the sites in the database. 
 
 
 \section{Exporting maps}
