@@ -3,3 +3,9 @@
 
 \section{Authentication design}
 \label{txt:authentication}
+
+The centralised nature of the Cornell Tree-Ring Lab data required a server-client architecture of some type. In the original Corina v1 this was achieved simply by having users save their data in a network folder saved on a central server. Whilst this method was adequate, it has many data storage issues that can be largely solved by moving the data storage infrastructure to a relational database management system.  
+
+Although it would be possible (and arguably simpler) to refactor Corina to talk directly to one central database server it was decided to go a step further and implement a Web Services orientated server-client architecture for Corina v2.  
+
+A web services approach decouples the desktop client from the server so that the server can work on its 

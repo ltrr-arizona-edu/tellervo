@@ -1,0 +1,28 @@
+\chapter{Development environment}
+
+Corina is open source software and we actively encourage collaboration and assistance from others in the community.  There is always lots to do, even for people with little or no programming experience.  Please get in touch with the development team as we'd love to hear from you.
+
+\section{Developing Corina Desktop}
+
+The IDE of choice of the main Corina developers is Eclipse (\url{http://www.eclipse.org}. There are many other IDEs around and there is no reason you can't use them instead.  Either way, the following instructions will hopefully be of use.
+
+We have successfully developed Corina on Mac, Windows and Linux computers over the years.  The methods for setting up are almost identical.  
+
+The first step is to install eclipse, sun-java6-jdk and subversion.  These are all readily available from their respective websites.  On Ubuntu they can be install from the command line easily as follows:
+
+\code{sudo apt-get install eclipse subversion sun-java6-jdk}
+
+Once installed, you can then launch Eclipse.  To access the Corina source code you will need to install the Subversive plugin to Eclipse.  As of Eclipse v3.5 this can be done by going to Help \MVRightarrow Install new software.  Select the main Update site in the `Work with' box, then locate the `Subversive SVN Team Provider' plugin under `Collaboration'.  If you are using an earlier version of Eclipse you may need to add a specific Subversive update site.  See the Subversive website (\url{http://www.eclipse.org/subversive/}) for more details.  Once installed you will need to restart Eclipse.
+
+Next you need to get the Corina source code.  Go to File \MVRightarrow New \MVRightarrow Project, then in the dialog select SVN \MVRightarrow Project from SVN.  There are two methods of accessing the Corina repository: anonymously, in which case you will have read only access; or with a username provided by the Corina development team.  Anonymous users will need to add a repository in the form: \url{http://dendro.cornell.edu/svn/corina/} and full users will need to use \url{svn+ssh://dendro.cornell.edu/home/svn/corina/}.
+
+Once the project has downloaded to your workspace, you may need to set the compliance level.  This can be done by going to Project \MVRightarrow Properties \MVRightarrow Java compiler and choosing compliance level of 6.0.  Corina uses a handful of Java 6 specific functions, particularly with regards JAXB, so will not run successfully with Java 5.
+
+To launch Corina, you will need to Run \MVRightarrow Run \MVRightarrow Java application.  Create a new run configuration with the main class `set to edu.cornell.dendro.corina.gui.Startup'.     
+
+
+\section{Developing the webservice}
+
+The Corina webservice is written entirely in PHP.  Eclipse is used for this development too so most of the setup steps are identical to setting up Eclipse for developing the Corina desktop client.  You will, however, probably want to install the PHP development plugin so that you get syntax highlighting etc.  See the Eclipse PDT website (\url{http://www.eclipse.org/pdt/}) for further information.
+
+  
