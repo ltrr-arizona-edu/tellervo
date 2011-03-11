@@ -1,4 +1,19 @@
 \chapter{Curation}
 
-\section{Barcodes}
+Corina includes a number of functions to assist you with the curation of your physical sample collection.  These allow you to keep track of what samples you have, where they are stored.  To do this, Corina makes extensive use of barcodes.  Although it is not essential to use the barcode functions, we strongly suggest you do because they save time and money, but most importantly they greatly reduce the scope for erroneous data entry.  For instance, when measuring a sample a user simply scans its barcode and all the relevant metadata is retrieved from the database.
+
+\section{Introduction to barcodes}
 \label{txt:barcodes}
+
+Corina creates and reads barcodes for samples, measurement series and `boxes'.  Each barcode encodes the unique identification code stored in the Corina database for each of these entities.  Due to Corina use of universally unique identifiers (UUIDs), these codes a garanteed to be unique opening the opportunity of labs to loan samples, much like libraries do with books.  There are many styles of barcodes in use today, but Corina uses one of the most common (Code 128) which is support by the vast majority of barcode readers.  For a detailed discussion on the specifications of the Corina barcode see section \ref{txt:barcodeSpecs}.
+
+Basic barcode readers are now cheap and widely available, with basic devices retailing for a few tens of dollars.  Most are characterised as `keyboard interface devices' and work like an automated keyboard, typing in a string of characters when a label is scanned.  
+
+Within the Corina application, whenever the user is required to specify a box, sample or series, they have the option of typing the human readable lab code or scanning the barcode. By using the barcode, the user can be sure they are not entering typographic errors so we recommend using barcodes whenever possible. 
+
+\section{Creating barcodes}
+
+
+
+\section{Storing samples}
+
