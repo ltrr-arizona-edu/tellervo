@@ -5,7 +5,7 @@ Corina is made up of two packages; the Corina desktop application and the Corina
 
 
 \section{Desktop application}
-
+\index{Installation!Desktop application}
 Installation packages for the Corina desktop application are available for Windows, MacOSX and Ubuntu Linux.  Corina can also be run on other operating systems as long as they support Java 6.
 
 To install Corina, download the installation file for your operating system from \url{http://dendro.cornell.edu/corina/download.php}. The website should provide you with a link to the installer for your current operating system:
@@ -29,7 +29,7 @@ All MacOSX computers should automatically support OpenGL.  Most Windows and Linu
 The mapping component of Corina makes use of NASA's open source World Wind Java.  NASA's website \url{http://worldwind.arc.nasa.gov/} contains further information and instructions that you may find helpful if you are having problems getting the mapping to work.  
 
 \section{Server installation}
-
+\index{Installation!Server}
 For the Corina desktop application to be useful you will also require access to a Corina server.  If you are running Corina in a lab where the Corina server has already been set up by your systems administrator, you can skip this section.
 
 The Corina server is made up of a number of components, which unlike the desktop client, can not be easily combined together into cross-platform packages.  Although all the constituent components are open-source and available for all major platforms, building and maintaining separate packages for each platform is too large a task for a small development team.  To conserve resources, we therefore made the decision to utilize Virtual Machine technology to ensure that the Corina server could still be run on all major operating systems.  This means that we can package the Corina server for a single operating system (Ubuntu Linux) and then distribute it as a Virtual Appliance that can be run as a program on your normal operating system. 
@@ -38,6 +38,7 @@ The Corina server is therefore available via two main methods.  The first is as 
 
 \subsection{Virtual Appliance - all operating systems}
 \label{txt:virtualAppliance}
+\index{Virtual appliance}
 To run the Corina server Virtual Appliance, you will first need to download and install VirtualBox from \url{http://www.virtualbox.org}.  Installation packages are available for Windows, MacOSX, OpenSolaris and many Linux distributions.
 
 Once you have VirtualBox installed, you will then need to download the Corina server from the Cornell website \url{http://dendro.cornell.edu/corina}.  This package contains a bare-bones Ubuntu Linux server with everything required to run the Corina server installed and ready to use.  As VirtualBox, the entire Ubuntu operating system and Corina server components are all open source there are no license fees to pay.
@@ -60,6 +61,7 @@ The package will automatically run a configuration script to assist with creatin
 
 As mentioned previously, the limited resources available for Corina development means that we have been unable to produce native installers for platforms other that Ubuntu.  If you are an experience systems administrator though, it should not be too difficult to set up the Corina server manually.  
 
+\index{Dependencies!Server}
 The Corina server is essentially a PostgreSQL database accessed via a PHP webservice running on Apache 2.  The following dependencies are therefore required: postgresql-8.4; postgis; postgresql-contrib-8.4; postgresql-8.4-pljava; sun-java6-jre; apache2; php5; php5-pgsql; php5-curl; php5-mhash.
 
 The basic procedure for installation is as follows:

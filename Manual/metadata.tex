@@ -1,12 +1,12 @@
 \chapter{Metadata}
 \label{txt:metadata}
-
+\index{Metadata|(}
 Metadata is `data about data'. In Corina this means all the information associated with your physical samples and measurement series e.g. species, location, who measured it, dimensions, slope, soil type etc.
 
 The metadata in Corina, and in fact the entire Corina data model, is based on the Tree Ring Data Standard (TRiDaS). Before you use Corina you may find it useful to read \citet{tridas} so that you get a better understanding of the principles of TRiDaS, but a summary is also provided here.
 
 \section{Tree Ring Data Standard - TRiDaS}
-
+\index{TRiDaS|textbf}
 TRiDaS is an XML-based data standard for recording dendrochronological data and metadata. More than 80 dendrochronologists, computer scientists and specialists from research disciplines that rely on dendrochronology have so far contributed to its development, including dendroarchaeologists, art and architecture historians, ecologists, geologists and climatologists.  The standard is therefore capable of recording the wide variety of metadata required by these different fields. TRiDaS builds upon other established standards, such as GML for the recording of locality information.  The extensible nature of XML also means that TRiDaS can evolve to accommodate the changing needs of dendrochronologists over time.  
 
 TRiDaS includes a total of eight data entities: project; object; element; sample; radius; measurementSeries; derivedSeries; and value.  Detailed descriptions of each of these entities are given below and their relationships are illustrated in figure \ref{fig:datamodel}.
@@ -43,7 +43,8 @@ Working top to bottom, the TRiDaS entities are nested within each other.  For in
 Keeping data consistent is also difficult.  For instance, if it was determined that a tree species was identified incorrectly, in existing file-based software, the user would need to locate all data series from this tree and manally update the metdata.  This is not the case in Corina.  A tree is represented just once in Corina and samples of this tree, and the subsequent measurement series reference this one entry.  If metadata for this tree needs to be changed, the tree record is updated in just this one place.  Because the measurement series obtain this information by reference, then all associated series are automatically kept up to date.
 
 \section{Entering sample metadata}
-
+\index{Sample!Metadata, editing}
+\index{Metadata!Editing}
 The metadata for a series is viewed and edited on the `Metadata' tab of the main window such as that shown in figure \ref{fig:metadata}.  You can see the interface is organized according to the TRiDaS data model with separate screens for object, through to series.  
 
 \begin{figure}
@@ -67,7 +68,8 @@ A number of the metadata fields are restricted with regards the values that you 
 
 
 \section{Entering bulk metadata}
-
+\index{Metadata!Bulk entry}
+\label{txt:bulkentry}
 Entering metadata on a sample-by-sample basis works perfectly well, but does not necessarily fit best with the typical workflow of a laboratory.  Samples do not typically arrive in a lab in ones and twos, rather in large quantities following a field excursion.  In this case it is most efficient to enter all the metadata for the samples as they arrive.  This is often best in terms of data accuracy as the metadata can be entered while the field notes are still fresh in the mind.
 
 To enable the efficient entry of lots of metadata Corina includes the bulk data entry interface.  This can be access from the file menu and is illustrated in figure \ref{fig:bulkentry}.  There are three pages, one each for objects, elements and samples.
@@ -88,7 +90,7 @@ It is common for many of the metadata fields to be same in a single field collec
 When you have entered all the data you want, you can press the `Import selected' button to write the records to the database.  
 
 \section{Metadata browser}
-
+\index{Metadata!Browsing}
 The metadata browser interface provides a convenient way to view all the metadata within your Corina database.  It can be accessed through the `Administration' menu.
 
 The metadata browser contains two parts: a hierarchical representation of all TRiDaS entities in your database on the left; and a metadata viewer for the selected entry on the right.  This interface is also the best method for fixing mistakes in your database.  
@@ -97,6 +99,7 @@ Although Corina's database architecture maintains integrity within your data, it
 
 The reorganization of data in this way is achieved by right clicking on items in the hierarchical tree and choosing with `merge' or `reassign'.
 
+\index{Metadata|)}
 %% TODO - Finish
 
 
