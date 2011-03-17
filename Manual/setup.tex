@@ -1,24 +1,21 @@
-\usepackage[utf8x]{inputenc}
-\usepackage{sans}
-\usepackage{booktabs}
-\usepackage{parskip}
-\usepackage{setspace} 
-\usepackage{multicol}
-\usepackage{natbib}
-\usepackage{graphicx}
-\usepackage{xcolor}
-\usepackage{listings}
-\usepackage{mdwlist}
-\usepackage{textcomp}
-\usepackage{marvosym}
-\usepackage{hyperref}
-\usepackage[twoside, bindingoffset=1.5cm, inner=2cm, outer=2cm, top=2cm, bottom=2cm]{geometry}
-\usepackage{eso-pic}
-\usepackage[titles]{tocloft}
-\usepackage{makeidx}
-\usepackage{wrapfig}
-\usepackage[small,it]{caption}
+\ProvidesPackage{computer-manual}
 
+\usepackage[utf8x]{inputenc}
+\usepackage[twoside, bindingoffset=1.5cm, inner=2cm, outer=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{natbib}
+\usepackage{mdwlist}
+\usepackage[titles]{tocloft}
+\RequirePackage{multicol}
+\RequirePackage{graphicx}
+\RequirePackage{textcomp}
+\RequirePackage{makeidx}
+\RequirePackage{wrapfig}
+\RequirePackage{setspace} 
+\RequirePackage[small,it]{caption}
+\RequirePackage{hyperref}
+\RequirePackage{parskip}
+\RequirePackage{eso-pic}
+\RequirePackage{listings}
 
 %% Restyle the Table of Contents
 \setlength{\cftbeforechapskip}{2ex}
@@ -30,6 +27,11 @@
 \renewcommand{\cftpartfont}{%
  \hfill\Large\scshape\bfseries
 }
+
+
+\newcommand{\version}[1]{\def\@versionnumber{#1}}
+
+
 
 \makeindex
 
@@ -51,29 +53,9 @@
     urlcolor=black
 }
 
-%% Define colours
-\definecolor{lgrey}{gray}{0.98}
-\definecolor{dgrey}{gray}{0.6}
 
 
-%% Define new commands for typesetting boxes
-\newcommand{\warn}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/warning.png} \emph{#1}}}}\end{center}}
-\newcommand{\info}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/info.png} #1}}}\end{center}}
-\newcommand{\tip}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/idea.png} #1}}}\end{center}}
-\newcommand{\code}[1]{\begin{center}{\colorbox{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/code.png}\texttt{#1}}}}\end{center}}
 
-%% Define commands for typesetting menu entries
-\newcommand{\menutwo}[2]{\emph{#1 {\MVRightarrow} #2}}
-\newcommand{\menuthree}[3]{\emph{#1 {\MVRightarrow} #2 {\MVRightarrow} #3}}
-\newcommand{\menufour}[4]{\emph{#1 {\MVRightarrow} #2 {\MVRightarrow} #3 {\MVRightarrow} #4}}
-
-
-%% Define a new 'leo' URL style 
-\makeatletter
-\def\url@leostyle{%
-  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\slshape}}}
-\makeatother
-\urlstyle{leo}
 
 
 %% Enable background picture for title page
@@ -88,15 +70,16 @@ keepaspectratio]{Images/background2.png}%
 }}}
 
 
+
 %% Set up headers
 \usepackage{fancyhdr}
 \setlength{\headheight}{15pt}
 \pagestyle{fancyplain}
-\renewcommand{\chaptermark}[1]{\markboth{\MakeUppercase{#1}}{}}
-\renewcommand{\sectionmark}[1]{\markright{\MakeUppercase{#1}}{}}
+\renewcommand{\chaptermark}[1]{\markboth{{#1}}{}}
+\renewcommand{\sectionmark}[1]{\markright{{Corina: a guide for users and developers}}{}}
 \fancyhf{}
 \lhead[\fancyplain{}{\thepage}]{}
-\chead[\fancyplain{}{\leftmark}]{\fancyplain{}{\leftmark}}
+\chead[\fancyplain{}{\rightmark}]{\fancyplain{}{\leftmark}}
 \rhead[]{\fancyplain{}{\thepage}}
 \lfoot{}
 \cfoot{}
@@ -111,12 +94,6 @@ keepaspectratio]{Images/background2.png}%
     \if@twocolumn\hbox{}\newpage\fi\fi\fi}
 \makeatother \clearpage{\pagestyle{plain}\cleardoublepage}
 
-
-%% Override some defaults
-\renewcommand{\bibname}{References}
-\widowpenalty=10000
-\clubpenalty=10000
-\setcounter{tocdepth}{1}
 
 
 %% Set up code listings

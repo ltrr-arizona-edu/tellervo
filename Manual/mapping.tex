@@ -1,16 +1,14 @@
 \chapter{Mapping}
 \index{Mapping|(}
-Corina includes an integrated open source 3D mapping system (based on NASA's award winning World Wind Java SDK) similar to the program Google Earth which you're no doubt familiar with. As mentioned in the installation chapter, this mapping system requires an OpenGL 3D capable graphics card. 
+Corina includes an integrated open source 3D mapping system (based on NASA's award winning World Wind Java SDK) similar to the program Google Earth which you're no doubt familiar with. As mentioned in the installation chapter, this mapping system requires an OpenGL 3D capable graphics card. Before you can use the mapping in Corina, you must also have something to map! See the chapter on Metadata (page \pageref{txt:metadata}) for information about adding coordinates to your system.
 
-Before you can use the mapping in Corina, it must have something to map! See the chapter on Metadata (page \pageref{txt:metadata}) for information about adding coordinates to your system.
-
-There are two ways to map data from your database. First of all, you can see a map of all the sites (i.e. TRiDaS objects) by going to Administration, then Site map. This will give you a screen like this:
+There are two ways to map data from your database. First of all, you can see a map of all the sites (i.e. TRiDaS objects) by going to \menutwo{Administration}{Site map}. This will give you a screen like this:
 
 \begin{figure}[hbtp]
-  \caption{Screenshot showing an example of a site map.}
   \label{fig:map}
   \centering
-    \includegraphics[width=0.8\textwidth]{Images/sitemap.png}
+  \includegraphics[width=0.8\textwidth]{Images/sitemap.png}
+  \caption{Screenshot showing an example of a site map.}
 \end{figure}
 
 
@@ -49,7 +47,7 @@ These controls enable you to explore your location information in 3D such as the
 
 \begin{figure}[hbtp]
   \centering
-    \includegraphics[width=0.8\textwidth]{Images/3dmapexample.png}
+  \includegraphics[width=0.8\textwidth]{Images/3dmapexample.png}
   \caption{Example of 3D mapping in Corina.}
   \label{fig:3dmap}
 \end{figure}
@@ -62,32 +60,33 @@ Another method of navigating around the map is by using the built in gazetteer. 
 Each marker on the map represents either a TRiDaS object or element in your Corina database. By clicking on these pins you can get more information from the database (see figure \ref{fig:mappin}).
 
 \begin{figure}[hbtp]
-  \label{fig:mappin}
   \centering
-    \includegraphics[width=0.8\textwidth]{Images/mappinexample.png}
-    \caption{Screenshot of a map with information pin expanded}
+  \includegraphics[width=0.8\textwidth]{Images/mappinexample.png}
+  \caption{Screenshot of a map with information pin expanded}
+  \label{fig:mappin}
 \end{figure}
 
 The example above shows the ring marker is of a site in Napoli called Poggiomarino (code name POG). You can see the option for searching for all series in the database associated with this site, and also the option for viewing all the metadata. 
 
 \section{Background map layers}
+\label{txt:userAddWMS}
 \index{Web Map Service (WMS)}
 
-Corina comes ready configured with basic map layers, including high resolution satellite imagery and basic political features. You can turn background layers on and off by going to View \MVRightarrow Layers.
+Corina comes ready configured with basic map layers, including high resolution satellite imagery and basic political features. You can turn background layers on and off by going to \menutwo{View}{Layers}.
 
 Map layers are downloaded on-the-fly so there is likely to be a delay when you initially visit to a new region. However, up to 2Gb of map data can be cache locally to your hard disk, so on future visits, maps should load quickly.
 
-The mapping system in Corina includes support for remote map servers that use the OGC Web Mapping Service (WMS) standard. If you go to View \MVRightarrow Layers \MVRightarrow Add remote layers, you will get a dialog with a tab for each WMS server configured for your system. By default this includes the NASA Earth Observation and Jet Propulsion Lab servers.  By ticking layers in this list you can add data layers to your map.
+The mapping system in Corina includes support for remote map servers that use the OGC Web Mapping Service (WMS) standard. If you go to \menuthree{View}{Layers}{Add remote layers}, you will get a dialog with a tab for each WMS server configured for your system. By default this includes the NASA Earth Observation and Jet Propulsion Lab servers.  By ticking layers in this list you can add data layers to your map.
 
 You can add map data from other WMS servers by clicking the `+' tab and entering the URL of the server you would like to use.  This will give an additional tab with all the available map layers.  This server will only be available for the duration of your current session so will need to be added each time you start Corina.  If you would like a particular WMS server to be made permanently available, your Corina administrator can do this (see `Managing map services', on page \pageref{txt:managingmaps} for further details).  Additional WMS servers added in this way will be available to all users the next time they connect to your Corina server.
 
 Your system administrator may host a map server specifically for your lab, for instance, containing high resolution plans of an archaeological site that you are working on, or environmental data for your study region. Figure \ref{fig:wms} shows an example overlay of sea surfaces temperatures loaded dynamically from the NASA EO server.
 
 \begin{figure}[hbtp]
-  \label{fig:wms}
   \centering
-    \includegraphics[width=0.8\textwidth]{Images/sst.png}
-    \caption{Map screenshot with a NASA sea surface temperature overlay dynamically loaded from the NASA WMS server.}
+  \includegraphics[width=0.8\textwidth]{Images/sst.png}
+  \caption{Map screenshot with a NASA sea surface temperature overlay dynamically loaded from the NASA WMS server.}
+  \label{fig:wms}
 \end{figure}
 
 
@@ -99,7 +98,7 @@ Data map layers (i.e.\ site and sample locations) are controlled with the layer 
 
 \section{Exporting maps}
 \index{Export!Maps}
-You can export maps by going to File > Export map as image. For best results, maximize your map window first. You may also like to turn off various map widgets by going to the View menu. The exported image will include everything you can see on your map screen. 
+You can export maps by going to \menutwo{File}{Export map as image}. For best results, maximize your map window first. You may also like to turn off various map widgets by going to the View menu. The exported image will include everything you can see on your map screen. 
 
 
 \index{Mapping|)}

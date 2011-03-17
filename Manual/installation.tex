@@ -6,7 +6,7 @@ Corina is made up of two packages; the Corina desktop application and the Corina
 
 \section{Desktop application}
 \index{Installation!Desktop application}
-Installation packages for the Corina desktop application are available for Windows, MacOSX and Ubuntu Linux.  Corina can also be run on other operating systems as long as they support Java 6.
+Installation packages for the Corina desktop application are available for Windows, MacOSX and Ubuntu Linux.  Corina can also be run on other operating systems as long as they support Java 6\footnote{Corina was designed to run using the Sun Java 6 JRE, however, it should be possible to use a pure open source equivalent such as OpenJDK.  See section \ref{txt:java}, page \pageref{txt:java} for more information.}.
 
 To install Corina, download the installation file for your operating system from \url{http://dendro.cornell.edu/corina/download.php}. The website should provide you with a link to the installer for your current operating system:
 
@@ -75,4 +75,26 @@ The basic procedure for installation is as follows:
  \item Set up Apache to see this folder by creating an entry in the sites-enabled folder
  \item Restart PostgreSQL and Apache and check you can access the webservice from a web browser
 \end{itemize*}
+
+
+\section{Uninstalling}
+
+We understand that Corina will never suit the requirements of all users, but as an open source product, we would really appreciate feedback as to why it didn't work for you.  Without this feedback it is difficult to prioritize future development.
+
+\subsection{Corina desktop application}
+For Windows users, Corina desktop can be uninstalled using the standard add/remove programs feature in control panel, or via the item in the Corina start menu.  Mac users should simply delete the application from their applications folder.  Linux users should use their prefered package management tool e.g.\ from the command line:
+\code{sudo dpkg --remove corina}
+
+\subsection{Corina server}
+
+\warn{Please note that uninstalling the Corina server will delete your Corina database and all the data it contains.  Make sure that you export any data you need before doing uninstalling.}
+
+If you are running the Corina server as a virtual appliance simply follow the uninstall instructions for VirtualBox.  If you are running Corina server as a native Linux server, you should use your preferred package mangement tool e.g.\ from the command line:
+\code{sudo dpkg --remove corina-server}
+
+
+
+
+
+
 

@@ -43,9 +43,23 @@ Although the Corina database is designed to only be accessed by the Corina deskt
 
 \subsection{PGAdminIII}
 \index{PGAdminIII}
-One of the easiest ways to access the PostgreSQL database is through the application PGAdmin3.  This is a cross-platform open source application for communicating with PostgreSQL databases.  You can install PGAdmin3 on your desktop computer and access the remotely running database using your database user credentials.  By default, PostgreSQL runs on port 5432.
+One of the easiest ways to access the PostgreSQL database is through the application PGAdminIII.  This is a cross-platform open source application for communicating with PostgreSQL databases.  You can install PGAdminIII on your desktop computer and access the remotely running database using your database user credentials.  
 
-%% TODO check pg_hba.conf settings and finish this section
+For security reasons by default the Corina database cannot be accessed from computers outside of the Corina server.  The may sound peculiar because the webservice can be accessed from computers anywhere on the web, but the database is actually accessed by the webservice, which is essentially a user running on the same computer as the database.  To access the database \emph{directly} from a remote computer you must therefore open access first.  This is done by adding an entry to the file `/etc/postgresql/8.4/main/pg\_hba.conf'.  My personal command line text editor of choice is vim, but it is a little confusing to the uninitiated.  If you are unfamiliar with command line text editing you are probably best to use pico:
+
+\code{sudo pico /etc/postgresql/8.4/main/pg\_hba.conf}
+
+Scroll down passed all the comments, to the bottom of the file.  Add the following line:
+
+%%TODO Check this is the best to suggest
+\code{host  all  all   IPADDRESS/32       md5}
+
+Make sure you replace IPADDRESS with the IP address of the computer you are trying to connect \emph{from}. This is just one style of pg\_hba.conf entry.  There are many others which allow you to restrict to specific users, computers, networks etc.  See the online PostgreSQL documentation for more details.  Save your changes and exit by doing CTRL+X, then restart the Corina server:
+
+\code{sudo corina-server --restart}
+
+You should now be able to access your database through PGAdminIII. To do this open the application and go to \menutwo{File}{Add server}.  Specify your server's IP address is the host field, and your database username and password.
+
 
 \subsection{ODBC}
 \index{ODBC}
@@ -57,7 +71,39 @@ Once you've installed the driver you can then open a blank database in Access an
 \index{PSQL}
 The final, and most advanced method is to use the psql client on your server.  This is a command line client which can be used to interrogate the database.  If you're not already familiar with psql it is unlikely that this is a good method for you to use!
 
+
+\section{Corina server configuration}
+\label{txt:serverConfig}
+
+The Corina server can be configured using the command line tool that is installed on both the Virtual Appliance and native server installs.  It is the same tool that is run at the end of the native server install, but can be run at any time to reconfigure or test your system.  It must be run with superuser privileges therefore \verb|sudo| is required before the command.  For instance to get help on usage type:
+
+\code{sudo corina-server --help}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \begin{center}
+    \includegraphics[width=0.48\textwidth]{Images/corina-server-terminal.png}
+  \end{center}
+  \caption{Example of the output from the corina-server test.}
+  \label{fig:serverTerminal}
+\end{wrapfigure}
+
+Possible options to pass the server are:
+
+\begin{itemize*}
+ \item `\verb|--help|' -- Display a list of the possible options
+ \item \verb|`--test'| -- Run tests on the current configuration
+ \item \verb|`--configure'| -- Configure the Corina server from scratch.  
+ \item \verb|`--reconfigure'| -- Reconfigure the Corina server.  This should be done if the database name or user credentials change, or if the IP address of the machine is altered.
+ \item \verb|`--start'| -- Start the Corina server
+ \item \verb|`--stop'| -- Stop the Corina server
+ \item \verb|`--restart'| -- Restart the Corina server
+\end{itemize*} 
+
+Figure \ref{fig:serverTerminal} shows an example of asking the server to test the configuration, with all tests passed successfully.
+
 \section{Managing map services}
 \label{txt:managingmaps}
 \index{Web Map Service (WMS)}
 \index{Mapping!Adding layers|see{Web Map Service(WMS)}}
+
+There is currently no interface in Corina that lets you specify the WMS mapping services that should automatically be available to your Corina users.  Each user can add servers temporarily (see section \ref{txt:userAddWMS}) but these will disappear at the end of each session.  

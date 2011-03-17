@@ -1,0 +1,30 @@
+\chapter{Developing Corina Server}
+\index{Developing|(}
+\index{Developing!Webservice}
+\index{Webservice!Developing}
+
+The Corina server is made up of a PHP webservice run by Apache, connecting to a PostGreSQL database.  
+
+The Corina webservice is written entirely in PHP.  Like the Desktop Client, the server is developed with Eclipse so most of the setup steps are identical (see chapter \ref{txt:devDesktop}).  You will, however, probably want to install the PHP development plugin so that you get syntax highlighting etc.  See the Eclipse PDT website (\url{http://www.eclipse.org/pdt/}) for further information.
+
+
+\section{Server package}
+\label{txt:serverPackage}
+\index{Packaging!Server}
+The Ubuntu server package can be built using the server-package Ant target described in section \ref{txt:buildScript}.  This script is considerably more complicated than the desktop packager so is worth describing further here in case alterations are required.
+
+The script makes use of Ubuntu's excellent package management system to handle the dependencies.  Adding or editing dependencies is simply a matter of changing the `depends' attribute in the build.xml file.  
+
+The database files are installed to `/usr/share/corina-server' and the webservices files to `/var/www/corina-webservice'.  The bulk of the complicated work is done by the script specified in the postinst attribute in the build.xml file (i.e.\ native/LinBuild/corina-server).  This is an interactive PHP command line script that can also be run by users at a later date.  After the server package has been installed this script is automatically run and asks the users questions to assist with setting up the server.  The configuration steps are:
+
+\begin{itemize*}
+ \item Generated scripts from templates
+ \item Configure PostgreSQL database, creating users and/or database if requested otherwise obtaining details if they already exist
+ \item Configure PostgreSQL to allow access to the specified database user
+ \item Configure Apache to access the webservice
+ \item Verify setup by checking Apache and PostgreSQL are running, that the webservice is accessible, the database is accessible and that various configuration files can be read
+\end{itemize*}
+
+This configuration script is therefore where the majority of alterations are made to the way the server is packaged.  
+
+\index{Developing|)}

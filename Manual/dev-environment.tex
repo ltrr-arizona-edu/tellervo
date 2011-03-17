@@ -1,10 +1,27 @@
-\chapter{Development environment}
+\chapter{Developing Corina Desktop}
+\label{txt:devDesktop}
 \index{Developing|(}
+\index{Developing!Desktop client}
 Corina is open source software and we actively encourage collaboration and assistance from others in the community.  There is always lots to do, even for people with little or no programming experience.  Please get in touch with the development team as we'd love to hear from you.
 
-\section{Developing Corina Desktop}
-\index{Developing!Desktop client}
-\index{Webservice!Developing}
+\section{Source code}
+\index{Source code}
+This section describes how to access the Corina source code, but as you are no doubt aware it is normal (if not essential) to use a integrated development environment for developing any more than the most simplistic applications.  If you plan to do any development work, it is probably best to skip this section and move straight on to the `Development environment' section which includes instructions for accessing the source code directly from your IDE.  If, however, you just want to browse the source code please continue reading.
+
+The Corina source code is maintained in a Subversion repository at Cornell.  The simplest way to see the source code is via the web viewer on the Cornell website: \url{http://dendro.cornell.edu/svn/corina/}.  You can also examine the Javadoc documentation of the code here \url{http://dendro.cornell.edu/corina/developers.php}
+
+If you have Subversion installed you can do an anonymous checkout of the code as follows:
+
+\code{svn co http://dendro.cornell.edu/svn/corina/}
+
+An overview of the development can be seen through the Corina Ohloh pages at \url{http://www.ohloh.net/p/corina/}.  Ohloh provides graphics summarizing the code over time, including timelines of commits by user.
+
+
+
+\section{Development environment}
+\index{Eclipse}
+\index{Development environment}
+\index{Integrated Development Environment (IDE)}
 The IDE of choice of the main Corina developers is Eclipse (\url{http://www.eclipse.org}. There are many other IDEs around and there is no reason you can't use them instead.  Either way, the following instructions will hopefully be of use.
 
 We have successfully developed Corina on Mac, Windows and Linux computers over the years.  The methods for setting up are almost identical.  
@@ -19,52 +36,194 @@ Next you need to get the Corina source code.  Go to File \menutwo{New}{Project},
 
 Once the project has downloaded to your workspace, you may need to set the compliance level.  This can be done by going to \menuthree{Project}{Properties}{Java compiler} and choosing compliance level of 6.0.  Corina uses a handful of Java 6 specific functions, particularly with regards JAXB, so will not run successfully with Java 5.
 
-To launch Corina, you will need to \menutwo{Run}{Run Java application}.  Create a new run configuration with the main class `set to edu.cornell.dendro.corina.gui.Startup'.     
-
-
-\section{Developing the webservice}
-\index{Developing!Webservice}
-\index{Webservice!Developing}
-The Corina webservice is written entirely in PHP.  Eclipse is used for this development too so most of the setup steps are identical to setting up Eclipse for developing the Corina desktop client.  You will, however, probably want to install the PHP development plugin so that you get syntax highlighting etc.  See the Eclipse PDT website (\url{http://www.eclipse.org/pdt/}) for further information.
-
+To launch Corina, you will need to \menutwo{Run}{Run Java application}.  Create a new run configuration with the main class set to `edu.cornell.dendro.corina.gui.Startup'.     
 
 
 \section{Dependencies}
 \index{Dependencies!Desktop client}
-Apache commons lang	Apache 2.0
-TridasJLib	Apache 2.0
-Batik	Apache 2.0
-RXTXcomm	LGPL
-JDOM	Apache 2.0
-Swing layout	LGPL
-Log4J	Apache 2.0
-JNA	LGPL
-Apache mime 4J	Apache 2.0
-Commons codec	Apache 2.0
-http Client	LGPL
-Http core	Apache 2.0
-Http mime	Apache 2.0
-Jsyntaxpane	Apache 2.0
-L2prod-common-shared	Apache 2.0
-L2prod-common-sheet	Apache 2.0
-l2fprod common buttonbar	Apache 2.0
-itext	GAPL
-PDFRenderer	LGPL
-DendroFileio	Apache 2.0
-java simple mvc	MIT
-JgoogleAnalyticsTracker	MIT
-gluegen	BSD
-jogl	BSD+ nuclear clause
-worldwind	NASA 
-slf4j	MIT
-jfontchooser	LGPL
-miglayout	BSD
-pljava	BSD
-postgresql	PostgreSQL License (BSD/MIT)
-forms	BSD
-simplelog	GPLv3
-jxl	LGPL
-wizard	GPLv2
-netbeans swing outline	GPLv2
+
+All the libraries that Corina depends upon are included in the source code and the Ant build script should handle compilation.  For the record, Corina currently depends upon the libraries listed in table \ref{tbl:desktopDependencies}.  The table also specifies the licenses that these libraries are made available under.
+
+
+\begin{table*}[htbp]
+\centering
+\index{File formats}
+\begin{tabular*}{0.6\textwidth}{ll}
+\toprule
+Library & License \\
+\midrule
+Apache commons lang & Apache 2.0 \\
+TridasJLib & Apache 2.0 \\
+Batik & Apache 2.0 \\ 
+RXTXcomm & LGPL\\
+JDOM & Apache 2.0\\
+Swing layout & LGPL\\
+Log4J & Apache 2.0\\
+JNA & LGPL\\
+Apache mime 4J & Apache 2.0\\
+Commons codec & Apache 2.0\\
+Http Client &LGPL\\
+Http core & Apache 2.0\\
+Http mime &Apache 2.0\\
+Jsyntaxpane & Apache 2.0\\
+L2prod-common-shared &Apache 2.0\\
+L2prod-common-sheet &Apache 2.0\\
+l2fprod common buttonbar &Apache 2.0\\
+itext &GAPL\\
+PDFRenderer & LGPL\\
+DendroFileIO & Apache 2.0\\
+Java Simple MVC & MIT\\
+JGoogleAnalyticsTracker & MIT\\
+gluegen & BSD\\
+JOGL & BSD+ nuclear clause\\
+WorldWindJava & NASA \\
+SLF4J & MIT\\
+JFontChooser & LGPL\\
+MigLayout & BSD\\
+PLJava & BSD\\
+PostgreSQL & PostgreSQL License (BSD/MIT)\\
+Forms & BSD\\
+Simplelog & GPLv3\\
+JXL & LGPL\\
+Wizard & GPLv2\\
+Netbeans Swing Outline & GPLv2\\
+\bottomrule
+\end{tabular*}
+\captionsetup{width=0.6\textwidth}
+\caption{Libraries that Corina depends upon and the licenses under which they are used.}
+\label{tbl:desktopDependencies}
+\end{table*}
+
+
+\begin{table*}[htbp]
+\centering
+\label{tbl:developDependencies}
+\index{File formats}
+\begin{tabular*}{0.6\textwidth}{ll}
+\toprule
+Library & License \\
+\midrule
+Apache commons lang & Apache 2.0 \\
+Launch4J & BSD/MIT \\
+NSIS & zlib/libpng \\
+Ant & Apache 2.0 \\
+Eclipse & Eclipse Public License - v1.0\\
+ResourceBundle Editor & LGPL \\
+M2Eclipse & Eclipse Public License - v1.0\\
+Subversive & Eclipse Public License - v1.0\\
+\bottomrule
+\end{tabular*}
+\captionsetup{width=0.6\textwidth}
+\caption{Additional tools/libraries typically used in the development of Corina.}
+\end{table*}
+
+
+
+\section{Code layout}
+\index{Developing!Code layout}
+Corina has been actively developed since 2000, so has seen contributions by many different developers.  Coding practices have also changed in this time so inevitably there are some inconsistencies with how the source code is organized.  For instance, the most recent interfaces have been implemented using the Model-View-Controller (MVC) architecture whereas earlier interfaces contain both domain and user logic in single monolithic classes.  
+
+Perhaps the most important inconsistency to understand is due to the transistion to the TRiDaS data model.  In earlier versions of Corina used the concept of a `Sample\footnote{To avoid confusing the original Corina class named `Sample' will be referred to as `Corina Sample' throughout this documentation.  Within the code all TRiDaS data model classes are prefixed with `Tridas' to help avoid confusion.  The `Sample' class is therefore not at all associated with the `TridasSample' class.}' to represent each data file.  Although large portions of Corina have been refactored to use the TRiDaS data model classes, there are still some places where the Corina Sample remain.  
+
+\section{Multimedia resources}
+\index{Icons}
+Corina includes infrastructure for multimedia resources such as icons, images and sounds within the package `edu.cornell.dendro.corina\_resources'.  The most extensive is the Icons subpackage which contains many icons at various sizes ranging from $16\times16$ to $512\times512$ as PNG format files.  The icons are accessed via the static Builder class.  This has various accessor functions which take the filename and the size required, and return the icon itself or a URI of the icon from within the Jar.
+
+\section{Translations}
+\index{Translations}
+There is internationalization infrastructure in place to enable Corina to be offered in multiple languages.  This is done through the use of Resource Bundles, one for each language.  Within the code, whenever a string is required, it is provided using the \verb|I18n.getText()| function which then retrieves the correct string for the current locale.  If no string is found, then the default language (English) string is returned.  There is an Eclipse plugin to assist with this task called ResourceBundle Editor and it can be downloaded from \url{http://eclipse-rbe.sourceforge.net}.  Once installed it provides a GUI that allows you to simultaneously update all languages at once.
+
+There are currently minimal translations for UK English, German, French, Dutch, Polish and Turkish.  These are by no means complete, and there are number of interfaces that are not internationalized at all.  Further assistance is required from native speakers to complete this task.
+
+\section{Build script}
+\label{txt:buildScript}
+\index{Developing!Build script}
+\index{Ant build script}
+\index{Packaging}
+Corina is built using an Ant build.xml script.  Earlier versions used Java WebStart technology to deploy Corina, but this has since been replaced with native installers for the major platforms due to various complications arising from the more advanced features being added to Corina.  The build targets of interest are as follows:
+
+\begin{description*}
+ \item[create\_run\_jar] -- This target is used by most other targets to produce an executable jar.  It uses jar-in-jar-loader to create a single jar containing on the dependencies along with the class-path and manifest to make them accessible.  It should not be necessary to run this target directly as you should be using one or more of the native targets below.
+ \item[native-win] -- This creates a native Windows executable using Launch4J.  Note that this creates the exe application file not an installer, so does not include the native libraries required to run the 3D graphics and serial port features of Corina.  See section \ref{txt:windowsInstaller} for instructions on using NSIS to do this.
+ \item[native-mac] -- This creates native Mac app file.  An application stub is included so this can be run on any development platform, not just MacOSX.
+ \item[native-mac-dmg] -- This transforms the .app file from native-mac into a disk image that Mac users are familiar with.  Unfortunately this requires the utility `hdiutil' which is not part of Apple's open source Darwin code, so can only be run on MacOSX development platforms.
+ \item[native-linux]  -- This creates a native Ubuntu .deb package with native libraries.  It includes a .desktop specification so will add menu entries on most modern distributions. It is quite a simple package so is likely to work with other distributions and perhaps even RPM systems, with the use of Alien.  These have not been tested though.
+ \item[native-all-platforms] -- This is a convenience target that runs native-win, native-mac and native-linux.
+ \item[native-clean] -- Cleans the target folder ready for a new build.
+ \item[server-package] -- Creates a native Ubuntu deb package for the Corina server.  See section \ref{txt:serverPackage} for more details.
+ \item[buildschema] -- Runs JAXB to autogenerate the Corina classes based upon the Corina webservice schema.  See section \ref{txt:jaxb} for more details. 
+ \item[cleanschema] -- Deletes the autogenerated JAXB classes.
+\end{description*}
+
+To run any of these targets simple right click on the build.xml file at the root of your project and select \menutwo{Run as}{Ant build\ldots} and select the target(s) that you require.
+
+Note that depending on the platform you are using, different settings are required to be passed to Ant, e.g. the location of the Launch4J executable.  These settings are included in properties files in the base of the project called Linux.properties, MacOSX.properties and Windows.properties respectively.  They should already contain the settings required to make the build work on each of these platforms, but if not, this is where they are located.
+
+\section{Windows installer}
+\label{txt:windowsInstaller}
+\index{Packaging!Windows}
+The Ant build script generates the Windows executable for the Corina application.  Windows users, however, expect an installer that will create menu entries and add uninstall options to the control panel.  An installer is also required to install the user manual and the native libraries required for the serial-port and 3D graphics features in Corina.  
+
+The best open source tool for creating Windows installer scripts is NSIS (see \url{http://nsis.sourceforge.net}).  This is an extremely flexible scripting system that does all we need, although unfortunately it is only officially released for Windows development platforms.  It is possible to install on Linux/MacOSX but this requires a lot of hoop jumping.  
+
+Once installed NSIS can be run using the script `native/WinBuild/nsis.script.nsi'.
+
+
+\section{Native libraries}
+
+Although Corina is written in Java, it requires a number of native libraries to make use of OpenGL 3D graphics capabilities and to access the serial port of the computer.  This libraries are different for Windows compared to POSIX systems like Linux and MacOSX.  The correct libraries must be installed to OS specific locations therefore they must be included as part of native installers.
+
+On Windows these libraries take the form of Dynamic Link Libraries (DLL) files which need to be installed in the same folder as the Corina executable:
+
+\begin{itemize*}
+ \item gluegen-rt.dll
+ \item jogl\_awt.dll
+ \item jogl\_cg.dll
+ \item jogl.dll
+ \item rxtxSerial.dll
+\end{itemize*}
+
+On POSIX systems the libraries come as pairs of JNILIB and SO files:
+
+\begin{itemize*}
+ \item libgluegen-rt.jnilib and libgluegen-rt.so
+ \item libjogl\_awt.jnilib and libjogl\_awt.so
+ \item libjogl\_cg.jnilib and libjogl\_cg.so
+ \item libjogl.jnilib and libjogl.so
+ \item librxtxSerial.jnilib and librxtxSerial.so
+\end{itemize*}
+
+On Linux systems this are installed into the /usr/lib folder and on MacOSX they are included within the .app file.
+
+\section{Java Architecture for XML Binding - JAXB}
+\label{txt:jaxb}
+\index{JAXB}
+
+Java Architecture for XML Binding (JAXB) is a technology that automatically maps Java classes to XML schemas and vice versa.  It includes the ability to \emph{marshall} data from Java classes to XML files and \emph{unmarshall} data from XML files into Java class representations.  
+
+JAXB is used by TridasJLib to create Java class representations of the TRiDaS data model.  It is also used directly in Corina to create classes for the Corina web service.  Although the Corina webservice is based heavily on TRiDaS (the two were developed in parallel), the Corina schema extends TRiDaS by including classes such as dictionaries and the `box' concept which are required for a lab data management application.  
+
+If changes are made to the Corina schema the JAXB classes must be regenerated.  This is done using the cleanschema and buildschema Ant targets.
+
+
+
+\section{Java version}
+\label{txt:java}
+\index{Java}
+Although we would like Corina to run on older versions of Java (specifically Java 5), there are a number of features of Java 6 such as JAXB that we really need.  This isn't really a problem on Linux and Windows as Java 6 has been around for a long time now, but it is a bit problematic for MacOSX users.  For reasons unknown Apple was extremely slow bringing Java 6 to MacOSX, only releasing it with 10.6 (Snow Leopard) several years after Windows and Linux.  Corina will therefore not run on older Mac machine.  This will gradually become less of an issue as machines age and ``Snow Leopard or later'' becomes less difficult for users to fulfill.  
+
+Corina has been developed against the Sun JDK.  Although Sun re-released much of its JDK under the GPL license there are still portions that are only available under  proprietary licenses due to various plugins being the copyright of third parties.  Although it is still distributed at no cost, it is not `free' under the terms required by the Free Software Foundation.  Corina can still legally be used with the Sun JDK even though it is regarded as proprietary software due to the `Major components' exception of the GPL license.  However, open source purists find this undesirable and so you may prefer to use open equivalents such as OpenJDK, IcedTea or Apache Harmony.   Basic tests have been performed using OpenJDK and it appears to work well, but a full assessment of the implications has not been carried out.  As Sun continues to open source the JDK, differences between it an OpenJDK will become less and the potential for issues reduced.
+
+
+\section{Developing graphical interfaces}
+\index{Developing!Graphical interfaces}
+Like the rest of the code, a number of different styles and methods have been used for the creation of interfaces in Corina.  Many of the earlier interfaces were hand coded, but in recent years WYSIWYG graphical designers have been used to enable the creation of more complex designs.  Most interfaces are now Swing-based although AWT widgets are used in places.
+
+Some interfaces were created using the graphical designed in Netbeans IDE.  These can be identified by the presence of companion .form files and warning comments in the code indicating which sections are autogenerated.  The major drawback with the Netbeans form designer is that it cannot cope with externally made changes.  These generated classes are typically used by a subclass via inheritance so that any changes can be external to the form designer generated files.  
+
+More recently the Google WindowBuilder Pro tool has been used for interface design.  This has the benefit of (usually) being able to parse existing code enabling the modification of existing dialogs.
+
+
+
 
 \index{Developing|)}

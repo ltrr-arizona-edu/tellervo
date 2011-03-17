@@ -1,5 +1,10 @@
-\documentclass[10pt,letter, twopage headsepline]{book}
-\include{setup}
+\documentclass[10pt,letter, twopage headsepline]{manual}
+\usepackage{computer-manual}
+
+\title{Corina}
+\subtitle{a user and developer guide}
+\authors{Peter W.\ Brewer and Ken Harris}
+\version{2.12}
 
 \begin{document}
 
@@ -10,8 +15,8 @@
   \part{User Guide}
   %%%%%%%%%%%%
     \include{installation}
-    %\include{gettingstarted}
-    \include{measuring}
+    \include{gettingstarted}
+    %\include{measuring}
     \include{metadata}
     \include{mapping}
     \include{graphing}
@@ -26,6 +31,7 @@
   \part{Developers guide}
   %%%%%%%%%%%%%%%%%%
     \include{dev-environment}
+    \include{dev-server}
     \include{systemsarchitecture}
 
   %%%%%%%%%%%%%%%%%%
@@ -41,6 +47,9 @@
     \bibliography{corina}
 
     \cleardoublepage
+    \phantomsection
     \addcontentsline{toc}{chapter}{Index}
     \printindex
+
+    \include{backcover}
 \end{document}

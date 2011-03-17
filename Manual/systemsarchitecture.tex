@@ -16,12 +16,12 @@ The authentication mechanism is loosely based around http digest authentication 
 The first time a client attempts to retrieve data from the webservice (or when the client's credentials are incorrect or have expired) the following events occur:
 
 
-\begin{itemize}
+\begin{itemize*}
  \item Server returns an message requesting authentication. This message includes a nonce (a hash of the current date and time to the nearest minute) which we will call `server nonce'.
  \item The client creates a second nonce (client nonce) which is a random hash of it's choosing, and a response which is a hash of ``username:hashofpassword:servernonce:clientnonc''. It sends this response, along with the username and client nonce back to the server but does not send the original server nonce.
  \item The server computes the same ``username:hashofpassword:servernonce:clientnonce'' hash using the information it has stored in the database. As the server nonce is constant for a minute the two response should match. If not the server recomputes the server nonce for one minute ago and tries again. This ensures that the server nonce sent to the client is valid for between 1 and 2 minutes.
  \item Once the server authenticates the user a session cookie is sent to the client. On subsequent requests the server recognises the session id and doesn't request authentication again. 
-\end{itemize}
+\end{itemize*}
 
 As the user's password is hashed at all points, even if the communication is hijacked the attacker will not be able to derive the users password. The user's password is also stored in hash form within the database. This also means that system administrators do not have access to the passwords either.
 

@@ -14,28 +14,29 @@ TRiDaS includes a total of eight data entities: project; object; element; sample
 \begin{figure}
 \centering
 \includegraphics[height=0.9\textheight]{Images/datamodel.pdf}
-\caption{TRiDaS data model showing the relationships between data entities.} 
+\caption{TRiDaS data model showing the relationships between data entities.  Most of the entities having a simple hierarchical relationship (a project has one or more objects, an element has one or more samples.} 
 \label{fig:datamodel}
 \end{figure}
 
-\begin{description*}
-\item[A project] is defined by a laboratory and encompasses dendrochronological research of a particular object or group of objects.  Examples include: the dating of a building; the research of forest dynamics in a stand of living trees; the dating of all Rembrandt paintings in a museum. What is considered a ``project'' is up to the laboratory performing the research. It could be the dating of a group of objects, but the laboratory can also decide to define a separate project for each object. Therefore, a project can have one or more objects associated with it.  Due to the way research is conducted at the Cornell Tree-Ring Lab, TRiDaS projects are not currently supported within Corina, although future plans include adding project support.
+\begin{description}
 
-\item[An object] is the item to be investigated.  Examples include: violin; excavation site; painting on a wooden panel; water well; church; carving; ship; forest. An object could also be more specific, for example: mast of a ship; roof of a church. Depending on the object type various descriptions are made possible. An object can have one or more elements and can also refer to another (sub) object.  For instance a single file may contain three objects: an archaeological site object, within which there is a building object, within which there is a beam object.  The list of possible object types is extensible and is thus flexible enough to incorporate the diversity of data required by the dendro community.  Only information that is essential for dendrochronological research is recorded here. Other related data may be provided in the form of a link to an external database such as a museum catalogue. 
+\item \includegraphics[width=5mm]{Images/pixel.png}  \textbf{A project} -- is defined by a laboratory and encompasses dendrochronological research of a particular object or group of objects.  Examples include: the dating of a building; the research of forest dynamics in a stand of living trees; the dating of all Rembrandt paintings in a museum. What is considered a ``project'' is up to the laboratory performing the research. It could be the dating of a group of objects, but the laboratory can also decide to define a separate project for each object. Therefore, a project can have one or more objects associated with it.  Due to the way research is conducted at the Cornell Tree-Ring Lab, TRiDaS projects are not currently supported within Corina, although future plans include adding project support.
 
-\item[An element] is a piece of wood originating from a single tree. Examples include: one plank of a water well; a single wooden panel in a painting; the left-hand back plate of a violin; one beam in a roof; a tree trunk preserved in the soil; a living tree. The element is a specific part of exactly one object or sub object.  An object will often consist of more than one element, e.g., when dealing with the staves (elements) of a barrel (object).  One or more samples can be taken from an element and an element may be dated using one or more derivedSeries.
+\item \includegraphics[width=5mm]{../src/edu/cornell/dendro/corina_resources/Icons/128x128/object.png} \textbf{An object} -- is the item to be investigated.  Examples include: violin; excavation site; painting on a wooden panel; water well; church; carving; ship; forest. An object could also be more specific, for example: mast of a ship; roof of a church. Depending on the object type various descriptions are made possible. An object can have one or more elements and can also refer to another (sub) object.  For instance a single file may contain three objects: an archaeological site object, within which there is a building object, within which there is a beam object.  The list of possible object types is extensible and is thus flexible enough to incorporate the diversity of data required by the dendro community.  Only information that is essential for dendrochronological research is recorded here. Other related data may be provided in the form of a link to an external database such as a museum catalogue. 
 
-\item[A sample] is a physical specimen or non-physical representation of an element. Examples include: core from a living tree; core from a rafter in a church roof; piece of charcoal from an archaeological trench; slice from a pile used in a pile foundation; wax imprint of the outer end of a plank; photo of a back plate of a string instrument. Note that a sample always exists and that it can either be physical (e.g.\ a core) or representative (e.g.\ a picture). A sample is taken from exactly one element and can be represented by one or more radii.
+\item \includegraphics[width=5mm]{../src/edu/cornell/dendro/corina_resources/Icons/48x48/element.png} \textbf{An element} -- is a piece of wood originating from a single tree. Examples include: one plank of a water well; a single wooden panel in a painting; the left-hand back plate of a violin; one beam in a roof; a tree trunk preserved in the soil; a living tree. The element is a specific part of exactly one object or sub object.  An object will often consist of more than one element, e.g., when dealing with the staves (elements) of a barrel (object).  One or more samples can be taken from an element and an element may be dated using one or more derivedSeries.
 
-\item[A radius] is a line from pith to bark along which the measurements are taken. A radius is derived from exactly one sample. It can be measured more than once resulting in multiple measurementSeries.
+\item \includegraphics[width=5mm]{../src/edu/cornell/dendro/corina_resources/Icons/48x48/sample.png} \textbf{A sample} -- is a physical specimen or non-physical representation of an element. Examples include: core from a living tree; core from a rafter in a church roof; piece of charcoal from an archaeological trench; slice from a pile used in a pile foundation; wax imprint of the outer end of a plank; photo of a back plate of a string instrument. Note that a sample always exists and that it can either be physical (e.g.\ a core) or representative (e.g.\ a picture). A sample is taken from exactly one element and can be represented by one or more radii.
 
-\item[A measurementSeries] is a series of direct, raw measurements along a radius. A single measurementSeries can be standardised or a collection of measurementSeries can be combined into a derivedSeries.  The measurements themselves are stored separately as values.
+\item \includegraphics[width=5mm]{../src/edu/cornell/dendro/corina_resources/Icons/48x48/radius.png} \textbf{A radius} --  is a line from pith to bark along which the measurements are taken. A radius is derived from exactly one sample. It can be measured more than once resulting in multiple measurementSeries.
 
-\item[A derivedSeries] is a calculated series of values and is a minor modification of the ``v-series'' concept proposed by \cite{corina}.  Examples include: index; average of a collection of measurementSeries such as a chronology. A derivedSeries is derived from one or more measurementSeries and has multiple values associated with it.
+\item \includegraphics[width=5mm]{../src/edu/cornell/dendro/corina_resources/Icons/48x48/measurementseries.png} \textbf{A measurementSeries} -- is a series of direct, raw measurements along a radius. A single measurementSeries can be standardised or a collection of measurementSeries can be combined into a derivedSeries.  The measurements themselves are stored separately as values.
 
-\item[A value] is the result of a single ring measurement. Examples include: total ring width; earlywood width; latewood width. The values are related to a measurementSeries or a derivedSeries. In case of a measurementSeries the variable and its measurement unit (e.g.\ microns, 1/100th mm etc) are recorded as well.
+\item \includegraphics[width=5mm]{../src/edu/cornell/dendro/corina_resources/Icons/48x48/derivedseries.png} \textbf{A derivedSeries} -- is a calculated series of values and is a minor modification of the ``v-series'' concept proposed by \cite{corina}.  Examples include: index; average of a collection of measurementSeries such as a chronology. A derivedSeries is derived from one or more measurementSeries and has multiple values associated with it.
 
-\end{description*}
+\item \includegraphics[width=5mm]{Images/pixel.png} \textbf{A value} --  is the result of a single ring measurement. Examples include: total ring width; earlywood width; latewood width. The values are related to a measurementSeries or a derivedSeries. In case of a measurementSeries the variable and its measurement unit (e.g.\ microns, 1/100th mm etc) are recorded as well.  Corina currently only supports total ring width values.  Support for other variables is planned for a future version.
+
+\end{description}
 
 
 Working top to bottom, the TRiDaS entities are nested within each other.  For instance a project contains one or more objects, which in turn contains one or more elements, and so on.  The benefit of this is that you record data once and once only.  In standard file-based dendrochronological software, when creating measurement series you are typically required to type the name of the site, the species of tree etc over and over again.  This is not only time consuming, but very error prone.  
@@ -98,8 +99,25 @@ The metadata browser contains two parts: a hierarchical representation of all TR
 Although Corina's database architecture maintains integrity within your data, it does come at the price of being a little more complicated to fix mislabelled series.  For instance, what if you were to measure a series 'B' and assign it to sample ABC-138-A only later to realize you misread the label and it was in fact ABC-188-A.  In a traditional file-based system, you would probably just need to rename the file you'd just created.  In Corina however, you need to redefine the relationship of the series within the database and reassign it to the create sample.  This is best understood when looking at the hierarchical tree in the metadata browser.  Hopefully you will see that you what you need to do is to move the series from its current position in the database to the correct one.  
 
 The reorganization of data in this way is achieved by right clicking on items in the hierarchical tree and choosing with `merge' or `reassign'.
+%% TODO - Finish
+
+
+\section{Laboratory codes}
+\index{Laboratory codes}
+\index{Sample codes|see{Laboratory codes}}
+Corina uses lab codes to refer to the hierarchical nature of the TRiDaS entities in the database.  The separate parts of the code a delimited by hyphens and depending on the level of the entity you are referring to, will have a different number of parts.  For instance, if you are referring to a tree (an `element' in TRiDaS terminology) then the lab code will consist of just two parts: the object code and the element code.  See figure \ref{fig:labcodes} for an illustrated example.
+
+\begin{figure}
+\centering
+\includegraphics[trim = 1in 1.5in 1in 0.5in, clip, width=0.9\textwidth]{Images/CorinaSampleCodes.pdf}
+\caption{Illustration of the how lab codes are built in Corina.  Figure courtesy of Charlotte Pearson.} 
+\label{fig:labcodes}
+\end{figure}
+
+Lab codes are used throughout Corina to describe TRiDaS entities.  They can also be used in many places to specify entities that the user would like to choose.  For instance, in the database browser, you can type the lab code for an object, element, sample, radius or series to search the system for all the series that match the specified entity.  For instance entering `ABC-5' would search for all series associated with element `5' from object `ABC'.
+
+
 
 \index{Metadata|)}
-%% TODO - Finish
 
 
