@@ -473,10 +473,19 @@ public class Prefs extends AbstractSubsystem {
 		
 		// support removing via set(null)
 		if(value == null)
+		{
 			prefs.remove(pref);
+		}
+		// Trim spaces from webservice URL
+		else if(pref.equals("corina.webservice.url"))
+		{
+			prefs.setProperty(pref, value.trim());
+		}
 		else
+		{
 			prefs.setProperty(pref, value);
-		
+		}
+
 		save();
 		firePrefChanged(pref);
 	}
@@ -513,6 +522,7 @@ public class Prefs extends AbstractSubsystem {
 		String value = prefs.getProperty(pref);
 		if (value == null)
 			value = deflt;
+				
 		return value;
 	}
 	

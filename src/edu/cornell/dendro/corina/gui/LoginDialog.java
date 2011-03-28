@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.gui;
 
+
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -16,7 +18,6 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -25,28 +26,30 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.border.EmptyBorder;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.Center;
-import edu.cornell.dendro.corina.wsi.corina.resources.AuthenticateResource;
 import edu.cornell.dendro.corina.wsi.ResourceEvent;
 import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.WebInterfaceCode;
 import edu.cornell.dendro.corina.wsi.corina.WebInterfaceException;
-import edu.cornell.dendro.corina.wsi.corina.WebPermissionsException;
-import edu.cornell.dendro.corina.core.App;
-
+import edu.cornell.dendro.corina.wsi.corina.resources.AuthenticateResource;
 
 public class LoginDialog extends JDialog {
 
+	private static final long serialVersionUID = 1L;
+	private final JPanel contentPanel = new JPanel();
 	private JTextField username;
 	private JPasswordField password;
 	private JTextField serverUrl;
 	private JCheckBox rememberUsername;
 	private JCheckBox rememberPassword;
 	private JCheckBox autoLogin;
+	private JToggleButton wsurlLock;
 	private JLabel subtitle;	
 	private JButton loginButton;
 	private JButton cancelButton;
@@ -56,6 +59,7 @@ public class LoginDialog extends JDialog {
 	private JLabel lblTitle;
 	private boolean cancelled = true;
 	private boolean ignoreSavedInfo = false;
+
 	
 	public LoginDialog(Frame frame) {
 		super(frame, true);
@@ -73,51 +77,8 @@ public class LoginDialog extends JDialog {
 		super((Frame)null, true);
 		
 		initialize();
-	}
-	
-	
-	/**
-	 * Make the GUI minimalistic for confirming credentials
-	 */
-	public void setGuiForConfirmation()
-	{
-		this.autoLogin.setVisible(false);
-		this.rememberPassword.setVisible(false);
-		this.rememberUsername.setVisible(false);
-		this.autoLogin.setSelected(true);
-		this.serverUrl.setVisible(false);
-		this.password.setText("");
-		this.lblLoginTo.setVisible(false);
-		this.loginButton.setText("Confirm");
-		this.btnWorkOffline.setVisible(false);
-		this.lblTitle.setText("Confirm credentials");
-		this.ignoreSavedInfo = true;
-		pack();
-	}
-	
-	public void setInstructionText(String instr)
-	{
-		this.lblTitle.setText(instr);
-	}
-	
-	/**
-	 * Programmayically set the username.  Useful for headless use.
-	 * 
-	 * @param usr
-	 */
-	public void setUsername(String usr)
-	{
-		username.setText(usr);
-	}
-	
-	/**
-	 * Programmatically set the password. Useful for headless use.
-	 * 
-	 * @param pwd
-	 */
-	public void setPassword(String pwd)
-	{
-		password.setText(pwd);
+		setLocationRelativeTo(null);
+
 	}
 	
 	/**
@@ -125,171 +86,188 @@ public class LoginDialog extends JDialog {
 	 */
 	private void initialize() {
 		
-		setResizable(false);
-
-		getContentPane().setLayout(new GridBagLayout());
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setTitle(I18n.getText("login.Authentication"));
-        setIconImage(Builder.getApplicationIcon());
-
-		GridBagConstraints ogbc = new GridBagConstraints();
-
-		username = new JTextField();
-		username.setColumns(20);
-		
-		password = new JPasswordField();
-		password.setColumns(20);
-		
-		serverUrl = new JTextField();
-		serverUrl.setColumns(20);
-		serverUrl.setEditable(true);
-		new TextComponentWrapper(serverUrl, "corina.webservice.url", null);
-		serverUrl.setEnabled(false);
-		
-		
-		lockIcon = new JLabel(Builder.getIcon("lock.png", 128));
-		//lockIcon.setBorder(BorderFactory.createEtchedBorder());
-	
-		
-		ogbc.gridx = 0;
-		ogbc.gridy = 0;
-		ogbc.insets = new Insets(20, 0, 0, 0);
-		ogbc.anchor = GridBagConstraints.NORTHWEST;		
-		getContentPane().add(lockIcon, ogbc);
-		ogbc.gridx++;
-		
-		
-		
-		// create an 'inside panel'
-		JPanel insidePanel = new JPanel(new GridBagLayout());
-		JLabel tmp;
-		GridBagConstraints igbc = new GridBagConstraints();
-
-		igbc.gridx = 1;
-		igbc.gridy = 0;
-		
-		// title for login
-		lblTitle = new JLabel(I18n.getText("login.requestLogin"));
-		igbc.anchor = GridBagConstraints.WEST;
-		igbc.insets = new Insets(0, 10, 0, 80);
-		igbc.gridwidth = 2;
-		
-		insidePanel.add(lblTitle, igbc);
-		
-		//igbc.gridy++;
-		//igbc.insets = new Insets(5, 0, 10, 0);
-		//subtitle = new JLabel("Please provide your credentials.");
-		//insidePanel.add(subtitle, igbc);
-		subtitle = new JLabel();
-		
-		igbc.anchor = GridBagConstraints.WEST;
-		igbc.gridwidth = 1;
-
-		// username label and field
-		igbc.gridx = 0;
-		igbc.gridy++;
-		igbc.insets = new Insets(12, 10, 0, 0);
-		tmp = new JLabel(I18n.getText("login.username")+":");
-		tmp.setLabelFor(username);
-		
-		igbc.insets = new Insets(12, 10, 0, 20);
-		insidePanel.add(tmp, igbc);
-		
-		igbc.ipady = 0;
-		igbc.gridx++;
-		insidePanel.add(username, igbc);
-
-		// password label and field
-		igbc.gridx = 0;
-		igbc.gridy++;
-		
-		tmp = new JLabel(I18n.getText("login.password")+":");
-		tmp.setLabelFor(password);
-		
-		igbc.ipady = 0;
-		igbc.ipadx = 0;
-		insidePanel.add(tmp, igbc);
-		
-		igbc.ipady = 0;
-		igbc.gridx++;
-		insidePanel.add(password, igbc);
-		
-		// server label and field
-		igbc.gridx = 0;
-		igbc.gridy++;	
-		
-		
-		lblLoginTo.setLabelFor(serverUrl);
-		
-		igbc.ipady = 0;
-		igbc.ipadx = 0;
-		insidePanel.add(lblLoginTo, igbc);		
-		
-		igbc.ipady = 0;
-		igbc.gridx++;
-		insidePanel.add(serverUrl, igbc);		
-		
-		// checkboxes
-		igbc.gridwidth = 2;
-		igbc.anchor = GridBagConstraints.WEST;
-		igbc.insets = new Insets(10, 8, 0, 0);
-		igbc.gridx = 1;
-		
-		igbc.gridy++;
-		rememberUsername = new JCheckBox(I18n.getText("login.rememberMyUsername"));
-		insidePanel.add(rememberUsername, igbc);
-		
-		igbc.gridy++;
-		igbc.insets = new Insets(0, 8, 0, 0);
-		rememberPassword = new JCheckBox(I18n.getText("login.rememberMyPassword"));
-		insidePanel.add(rememberPassword, igbc);
-		
-		igbc.gridy++;		
-		autoLogin = new JCheckBox(I18n.getText("login.automatically"));
-		insidePanel.add(autoLogin, igbc);
-		
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		
-		final JDialog glue = this;
-		loginButton = new JButton(I18n.getText("login"));
-		loginButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				performAuthentication(0);
+		setIconImage(Builder.getApplicationIcon());
+		setBounds(100, 100, 599, 272);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		GridBagLayout gbl_contentPanel = new GridBagLayout();
+		gbl_contentPanel.columnWidths = new int[]{107, 87, 16, 0, 0, 0};
+		gbl_contentPanel.rowHeights = new int[]{0, 0, 0, 26, 0, 0, 0, 0};
+		gbl_contentPanel.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		contentPanel.setLayout(gbl_contentPanel);
+		{
+			JLabel lblNewLabel = new JLabel(I18n.getText("login.requestLogin"));
+			GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+			gbc_lblNewLabel.fill = GridBagConstraints.HORIZONTAL;
+			gbc_lblNewLabel.gridwidth = 3;
+			gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
+			gbc_lblNewLabel.gridx = 2;
+			gbc_lblNewLabel.gridy = 0;
+			contentPanel.add(lblNewLabel, gbc_lblNewLabel);
+		}
+		{
+			lockIcon = new JLabel(Builder.getIcon("key.png", 128));
+			GridBagConstraints gbc_lockIcon = new GridBagConstraints();
+			gbc_lockIcon.anchor = GridBagConstraints.NORTH;
+			gbc_lockIcon.gridheight = 6;
+			gbc_lockIcon.insets = new Insets(0, 0, 0, 5);
+			gbc_lockIcon.gridx = 0;
+			gbc_lockIcon.gridy = 1;
+			contentPanel.add(lockIcon, gbc_lockIcon);
+		}
+		{
+			JLabel lblUserName = new JLabel(I18n.getText("login.username")+":");
+			GridBagConstraints gbc_lblUserName = new GridBagConstraints();
+			gbc_lblUserName.insets = new Insets(0, 0, 5, 5);
+			gbc_lblUserName.anchor = GridBagConstraints.EAST;
+			gbc_lblUserName.gridx = 1;
+			gbc_lblUserName.gridy = 1;
+			contentPanel.add(lblUserName, gbc_lblUserName);
+		}
+		{
+			username = new JTextField();
+			GridBagConstraints gbc_username = new GridBagConstraints();
+			gbc_username.fill = GridBagConstraints.HORIZONTAL;
+			gbc_username.gridwidth = 3;
+			gbc_username.insets = new Insets(0, 0, 5, 0);
+			gbc_username.gridx = 2;
+			gbc_username.gridy = 1;
+			contentPanel.add(username, gbc_username);
+			username.setColumns(10);
+		}
+		{
+			JLabel lblNewLabel_1 = new JLabel(I18n.getText("login.password")+":");
+			GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
+			gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
+			gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
+			gbc_lblNewLabel_1.gridx = 1;
+			gbc_lblNewLabel_1.gridy = 2;
+			contentPanel.add(lblNewLabel_1, gbc_lblNewLabel_1);
+		}
+		{
+			password = new JPasswordField();
+			GridBagConstraints gbc_password = new GridBagConstraints();
+			gbc_password.gridwidth = 3;
+			gbc_password.fill = GridBagConstraints.HORIZONTAL;
+			gbc_password.insets = new Insets(0, 0, 5, 0);
+			gbc_password.gridx = 2;
+			gbc_password.gridy = 2;
+			contentPanel.add(password, gbc_password);
+		}
+		{
+			JLabel lblLoginTo = new JLabel(I18n.getText("login.serverurl"));
+			GridBagConstraints gbc_lblLoginTo = new GridBagConstraints();
+			gbc_lblLoginTo.insets = new Insets(0, 0, 5, 5);
+			gbc_lblLoginTo.anchor = GridBagConstraints.EAST;
+			gbc_lblLoginTo.gridx = 1;
+			gbc_lblLoginTo.gridy = 3;
+			contentPanel.add(lblLoginTo, gbc_lblLoginTo);
+		}
+		{
+			final JDialog glue = this;
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			{
+				loginButton = new JButton(I18n.getText("login"));
+				loginButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent ae) {
+						performAuthentication(0);
+					}
+				});
+				buttonPane.add(loginButton);
+				getRootPane().setDefaultButton(loginButton);
 			}
-		});
-		buttonPanel.add(loginButton);
-		
-		cancelButton = new JButton(I18n.getText("general.cancel"));
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				glue.dispose();
+			{
+				cancelButton = new JButton(I18n.getText("general.cancel"));
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent ae) {
+						glue.dispose();
+					}
+				});
+				buttonPane.add(cancelButton);
 			}
-		});
-		buttonPanel.add(cancelButton);
-		
-		// TODO: Implement offline mode
-		
-		btnWorkOffline = new JButton(I18n.getText("login.workOffline"));
-		btnWorkOffline.setEnabled(false);
-		buttonPanel.add(btnWorkOffline);
-
-		igbc.gridx = 0;
-		igbc.gridy++;
-		igbc.gridwidth = 2;
-		igbc.anchor = GridBagConstraints.EAST;
-		igbc.insets = new Insets(10, 0, 0, 0);
-		
-		insidePanel.add(buttonPanel, igbc);
-
-		//insidePanel.setBorder(BorderFactory.createEtchedBorder());
-
-		
-		// finish up the UI part
-		getContentPane().add(insidePanel, ogbc);
-		
+		}
+		{
+			serverUrl = new JTextField();
+			GridBagConstraints gbc_serverUrl = new GridBagConstraints();
+			gbc_serverUrl.gridwidth = 2;
+			gbc_serverUrl.fill = GridBagConstraints.HORIZONTAL;
+			gbc_serverUrl.insets = new Insets(0, 0, 5, 5);
+			gbc_serverUrl.gridx = 2;
+			gbc_serverUrl.gridy = 3;
+			contentPanel.add(serverUrl, gbc_serverUrl);
+			serverUrl.setColumns(10);
+			new TextComponentWrapper(serverUrl, "corina.webservice.url", null);
+		}
+		{
+			wsurlLock = new JToggleButton("");
+			wsurlLock.setSize(16,16);
+			GridBagConstraints gbc_btnUnlockUrl = new GridBagConstraints();
+			gbc_btnUnlockUrl.anchor = GridBagConstraints.WEST;
+			gbc_btnUnlockUrl.insets = new Insets(0, 0, 5, 0);
+			gbc_btnUnlockUrl.gridx = 4;
+			gbc_btnUnlockUrl.gridy = 3;
+			contentPanel.add(wsurlLock, gbc_btnUnlockUrl);
 			
-		pack();
-		Center.center(this);
+			wsurlLock.addActionListener(new ActionListener(){
+		
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					setURLEnabled(!wsurlLock.isSelected());	
+				}
+				
+			});
+			wsurlLock.setSelected(true);
+			wsurlLock.setFocusable(false);
+			wsurlLock.setContentAreaFilled(false);
+			wsurlLock.setBorderPainted(false);
+			wsurlLock.setContentAreaFilled(false);
+			
+			// Lock URL if its already filled
+			if(serverUrl.getText().trim().length()>0)
+			{
+				setURLEnabled(false);
+			}
+			else
+			{
+				setURLEnabled(true);
+			}
+		}
+		{
+			rememberUsername = new JCheckBox(I18n.getText("login.rememberMyUsername"));
+			GridBagConstraints gbc_rememberUsername = new GridBagConstraints();
+			gbc_rememberUsername.gridwidth = 3;
+			gbc_rememberUsername.anchor = GridBagConstraints.WEST;
+			gbc_rememberUsername.insets = new Insets(0, 0, 5, 0);
+			gbc_rememberUsername.gridx = 2;
+			gbc_rememberUsername.gridy = 4;
+			contentPanel.add(rememberUsername, gbc_rememberUsername);
+		}
+		{
+			rememberPassword = new JCheckBox(I18n.getText("login.rememberMyPassword"));
+			GridBagConstraints gbc_rememberPassword = new GridBagConstraints();
+			gbc_rememberPassword.gridwidth = 3;
+			gbc_rememberPassword.anchor = GridBagConstraints.WEST;
+			gbc_rememberPassword.insets = new Insets(0, 0, 5, 0);
+			gbc_rememberPassword.gridx = 2;
+			gbc_rememberPassword.gridy = 5;
+			contentPanel.add(rememberPassword, gbc_rememberPassword);
+		}
+		{
+			autoLogin = new JCheckBox(I18n.getText("login.automatically"));
+			GridBagConstraints gbc_autoLogin = new GridBagConstraints();
+			gbc_autoLogin.gridwidth = 3;
+			gbc_autoLogin.anchor = GridBagConstraints.WEST;
+			gbc_autoLogin.gridx = 2;
+			gbc_autoLogin.gridy = 6;
+			contentPanel.add(autoLogin, gbc_autoLogin);
+		}
+
+		
 		
 		// deal with checkbox mnemonic
 		ActionListener checkboxListener = new ActionListener() {
@@ -318,7 +296,7 @@ public class LoginDialog extends JDialog {
 		// finally, make it so when we press enter we choose to log in
 		getRootPane().setDefaultButton(loginButton);
 	}
-
+	
 	/**
 	 * Ensure our checkbox mnemonic makes sense.
 	 */
@@ -338,6 +316,70 @@ public class LoginDialog extends JDialog {
 		} else {
 			rememberUsername.setEnabled(true);
 		}
+	}
+	
+	/**
+	 * Make the GUI minimalistic for confirming credentials
+	 */
+	public void setGuiForConfirmation()
+	{
+		this.autoLogin.setVisible(false);
+		this.rememberPassword.setVisible(false);
+		this.rememberUsername.setVisible(false);
+		this.autoLogin.setSelected(true);
+		this.serverUrl.setVisible(false);
+		this.password.setText("");
+		this.lblLoginTo.setVisible(false);
+		this.loginButton.setText("Confirm");
+		this.btnWorkOffline.setVisible(false);
+		this.lblTitle.setText("Confirm credentials");
+		this.ignoreSavedInfo = true;
+		pack();
+	}
+	
+	/**
+	 * Lock or unlock the WS URL field
+	 * @param b
+	 */
+	private void setURLEnabled(Boolean b)
+	{
+		this.serverUrl.setEnabled(b);
+		this.loginButton.setEnabled(!b);
+		if(b)
+		{
+			this.wsurlLock.setIcon(Builder.getIcon("unlock.png", 16));
+		}
+		else
+		{
+			this.wsurlLock.setIcon(Builder.getIcon("lock.png", 16));
+		}
+		
+
+	}
+	
+	public void setInstructionText(String instr)
+	{
+		this.lblTitle.setText(instr);
+	}
+	
+	/**
+	 * Programmayically set the username.  Useful for headless use.
+	 * 
+	 * @param usr
+	 */
+	public void setUsername(String usr)
+	{
+		username.setText(usr);
+	}
+	
+	/**
+	 * Programmatically set the password. Useful for headless use.
+	 * 
+	 * @param pwd
+	 */
+	public void setPassword(String pwd)
+	{
+		password.setText(pwd);
 	}
 	
 	private void loadSettings() {
@@ -408,6 +450,7 @@ public class LoginDialog extends JDialog {
 		}
 		return out.toString();
 	}
+
 	
 	private void saveSettings() {
 		
@@ -456,7 +499,7 @@ public class LoginDialog extends JDialog {
 	public String getPassword() {
 		return new String(password.getPassword());
 	}
-	
+
 	/**
 	 * Do the actual server authentication
 	 * Danger! this runs in the event thread!
@@ -587,10 +630,10 @@ public class LoginDialog extends JDialog {
 			authenticator.query();
 		}
 	}
-	
+
 	private void enableDialogButtons(boolean enable) {
 		loginButton.setEnabled(enable);
-		cancelButton.setEnabled(enable);
+		//cancelButton.setEnabled(enable);
 	}
 
 	/**
@@ -676,4 +719,5 @@ public class LoginDialog extends JDialog {
 			dialog.setVisible(false);
 		}
 	}
+
 }

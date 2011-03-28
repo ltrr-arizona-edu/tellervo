@@ -87,7 +87,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 		try {
 			String path = App.prefs.getPref("corina.webservice.url", "invalid-url!");
 			
-			url = new URI(path);
+			url = new URI(path.trim());
 		} catch (URISyntaxException e) {
 			new Bug(e);
 		}		

@@ -185,7 +185,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     initialized = true;   
     
     // Get the domain of the WS used
-    String wsurl = App.prefs.getPref("corina.webservice.url");
+    String wsurl = App.prefs.getPref("corina.webservice.url", "");
     try {
 	
 		String path = wsurl.substring(wsurl.indexOf("://")+3);
