@@ -37,8 +37,13 @@ public class GISFileMenu extends FileMenu {
 
 	}
 	
+
 	@Override
-	public void addExportMenus(){
+	public void addIOMenus(){
+		
+		JMenuItem importmenu = Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png");
+		importmenu.setEnabled(false);
+		add(importmenu);
 		
 		GISPanel panel = ((GISFrame)this.f).wwMapPanel;
 		
@@ -47,15 +52,6 @@ public class GISFileMenu extends FileMenu {
         exportmenu.addActionListener(new ScreenShotAction(panel.wwd));
         
         add(exportmenu);
-		
-	}
-	
-	@Override
-	public void addIOMenus(){
-		
-		JMenuItem importmenu = Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png");
-		importmenu.setEnabled(false);
-		add(importmenu);
 	}
 
 }

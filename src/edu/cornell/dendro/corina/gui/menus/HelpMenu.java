@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.platform.Platform;
@@ -43,6 +44,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 public class HelpMenu extends JMenu {
 
 	private static final long serialVersionUID = -1495245171423158200L;
+	private JMenuItem debugMenu;
 	
 	/**
 	 * Create a help menu
@@ -51,7 +53,7 @@ public class HelpMenu extends JMenu {
 	super(I18n.getText("menus.help"));
 
 	    addHelpMenu();
-	    addSetupWizardMenu();
+	    //addSetupWizardMenu();
         addSeparator();
         addSystemInfoMenu();
         addErrorLogMenu();
@@ -60,8 +62,10 @@ public class HelpMenu extends JMenu {
 		    addSeparator();
 		    addAboutMenu();
 		}
+		
     }
 
+    
     protected void addSetupWizardMenu()
     {
 		JMenuItem setupWiz = Builder.makeMenuItem("menus.help.setupWizard", true, "wizard.png");
@@ -106,10 +110,11 @@ public class HelpMenu extends JMenu {
      */
     protected void addErrorLogMenu() {
         add(Builder.makeMenuItem("menus.help.error_log", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()", "log.png"));
-        add(Builder.makeMenuItem("menus.help.xml_debug", "edu.cornell.dendro.corina.gui.XMLDebugView.showDialog()", "networksettings.png"));
+        debugMenu = Builder.makeMenuItem("menus.help.xml_debug", "edu.cornell.dendro.corina.gui.XMLDebugView.showDialog()", "networksettings.png");
+        add(debugMenu);
         addSeparator();
         add(Builder.makeMenuItem("menus.help.error_ws", "edu.cornell.dendro.corina.wsi.TransactionDebug.forceGenerateWSBug()", "mail_send.png"));
-
+        
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.DebugInstantiator.showMe()"));
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.newui.NewJFrame1.main()"));
     }

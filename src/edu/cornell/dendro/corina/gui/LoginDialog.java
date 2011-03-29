@@ -30,6 +30,7 @@ import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -53,8 +54,7 @@ public class LoginDialog extends JDialog {
 	private JLabel subtitle;	
 	private JButton loginButton;
 	private JButton cancelButton;
-	private JButton btnWorkOffline;
-	private JLabel lblLoginTo = new JLabel(I18n.getText("login.serverurl"));
+	private JLabel lblLoginTo;
 	private JLabel lockIcon;
 	private JLabel lblTitle;
 	private boolean cancelled = true;
@@ -99,14 +99,14 @@ public class LoginDialog extends JDialog {
 		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		contentPanel.setLayout(gbl_contentPanel);
 		{
-			JLabel lblNewLabel = new JLabel(I18n.getText("login.requestLogin"));
+			lblTitle = new JLabel(I18n.getText("login.requestLogin"));
 			GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 			gbc_lblNewLabel.fill = GridBagConstraints.HORIZONTAL;
 			gbc_lblNewLabel.gridwidth = 3;
 			gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
 			gbc_lblNewLabel.gridx = 2;
 			gbc_lblNewLabel.gridy = 0;
-			contentPanel.add(lblNewLabel, gbc_lblNewLabel);
+			contentPanel.add(lblTitle, gbc_lblNewLabel);
 		}
 		{
 			lockIcon = new JLabel(Builder.getIcon("key.png", 128));
@@ -158,7 +158,7 @@ public class LoginDialog extends JDialog {
 			contentPanel.add(password, gbc_password);
 		}
 		{
-			JLabel lblLoginTo = new JLabel(I18n.getText("login.serverurl"));
+			lblLoginTo = new JLabel(I18n.getText("login.serverurl"));
 			GridBagConstraints gbc_lblLoginTo = new GridBagConstraints();
 			gbc_lblLoginTo.insets = new Insets(0, 0, 5, 5);
 			gbc_lblLoginTo.anchor = GridBagConstraints.EAST;
@@ -331,9 +331,11 @@ public class LoginDialog extends JDialog {
 		this.password.setText("");
 		this.lblLoginTo.setVisible(false);
 		this.loginButton.setText("Confirm");
-		this.btnWorkOffline.setVisible(false);
+
 		this.lblTitle.setText("Confirm credentials");
 		this.ignoreSavedInfo = true;
+		this.wsurlLock.setVisible(false);
+		this.lblLoginTo.setVisible(false);
 		pack();
 	}
 	
@@ -647,6 +649,7 @@ public class LoginDialog extends JDialog {
 	
 	private String serverNonce;
 	private String serverNonceSeq;
+
 	
 	public void doLogin(String subtitle, boolean forced) throws UserCancelledException {
 		if(subtitle != null) {
@@ -685,7 +688,9 @@ public class LoginDialog extends JDialog {
 		
 		if(cancelled)
 			throw new UserCancelledException();
-		
+		else
+			App.appmodel.setNetworkStatus(NetworkStatus.ONLINE);
+			
 		saveSettings();		
 	}
 	
@@ -699,6 +704,17 @@ public class LoginDialog extends JDialog {
 		}
 
 		public void setSuccess(boolean success) {
+			
+			if(success)
+			{
+				App.appmodel.setNetworkStatus(NetworkStatus.ONLINE);
+			}
+			else
+			{
+				App.appmodel.setNetworkStatus(NetworkStatus.OFFLINE);
+			}
+
+			
 			this.success = success;
 		}
 

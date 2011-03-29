@@ -70,4 +70,12 @@ public class WSCookieStore implements Serializable {
 		
 		return cs;
 	}
+	
+	/**
+	 * Empty the cookie store (i.e. logout)
+	 */
+	public void emptyCookieJar()
+	{
+		cookies = new HashMap<String, WSCookieWrapper>();
+	}
 }

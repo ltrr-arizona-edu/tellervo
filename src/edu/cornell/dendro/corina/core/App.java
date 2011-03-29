@@ -3,12 +3,10 @@
 
 package edu.cornell.dendro.corina.core;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
+import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.LoginSplash;
 import edu.cornell.dendro.corina.gui.ProgressMeter;
@@ -23,7 +21,6 @@ import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
-import edu.cornell.dendro.corina.dictionary.Dictionary;
 
 /**
  * Contextual state of the app; holds references to all "subsystems".
@@ -31,7 +28,7 @@ import edu.cornell.dendro.corina.dictionary.Dictionary;
  * has to be referenced frequently.
  * @author Aaron Hamid
  */
-public class App {
+public class App{
   public static Prefs prefs;
   public static Platform platform;
   public static Logging logging;
@@ -41,7 +38,11 @@ public class App {
   public static Boolean isAdmin;
   public static String domain;
   private static String username;
-    
+
+  public static AppModel appmodel;
+  
+
+
   
   private final static boolean DEBUGGING = false;
 
@@ -54,9 +55,10 @@ public class App {
 public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // throwing an error instead of simply ignoring it
     // will point out bad design and/or bugs
-    if (initialized) throw new IllegalStateException("AppContext already initialized.");
-
+	if (initialized) throw new IllegalStateException("AppContext already initialized.");
     log.debug("initializing App");
+
+    appmodel = new AppModel();
     
     if (meter != null) {
       meter.setMaximum(9);
@@ -94,7 +96,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     if (meter != null)
     	meter.setProgress(5);
         
-    boolean isLoggedIn = false;
+    
     
     // only do this if we can log in now...
     if (splash != null) {
@@ -111,7 +113,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     			throw new UserCancelledException();
     		dlg.doLogin(null, false);
     		username=dlg.getUsername().toString();
-    		isLoggedIn = true;  		
+    		appmodel.setNetworkStatus(NetworkStatus.ONLINE);  		
     		
        	} catch (UserCancelledException uce) {
     		// we default to not being logged in...
@@ -126,7 +128,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	meter.setNote(I18n.getText("login.initDictionary"));
     }
     dictionary = new Dictionary();
-    if(splash != null && isLoggedIn) { // we have to be logged in for this...
+    if(splash != null && appmodel.isLoggedIn()) { // we have to be logged in for this...
         if (meter != null) {
         	meter.setNote(I18n.getText("login.updateDictionary"));
         }
@@ -140,7 +142,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 
     // Get the current users details from the dictionary
     isAdmin=false;
-    if (isLoggedIn){
+    if (appmodel.isLoggedIn()){
     	List<?> dictionary = (List<?>) Dictionary.getDictionary("securityUserDictionary");
 		List<WSISecurityUser> users = (List<WSISecurityUser>) ListUtil.subListOfType(dictionary, WSISecurityUser.class);
 		
@@ -166,7 +168,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	meter.setNote(I18n.getText("login.initObjectList"));
     }
     tridasObjects = new TridasObjectList();
-    if(splash != null && isLoggedIn) { // must be logged in...
+    if(splash != null && appmodel.isLoggedIn()) { // must be logged in...
     	// don't update the site list in debug mode...
     	if(!DEBUGGING)
     		tridasObjects.query();
@@ -197,12 +199,13 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 		System.out.println("Error determining domain base from webservice URL");
 		e.printStackTrace();
 	}
-    
-    
-    
-    
+  
   }
 
+  public static boolean isLoggedIn(){
+	  return appmodel.isLoggedIn();
+  }
+  
   public static boolean isInitialized() {
     return initialized;
   }
@@ -212,5 +215,8 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // will point out bad design and/or bugs
     if (!initialized) throw new IllegalStateException("AppContext already destroyed.");
   }
-    
+
+
+  
+
 }

@@ -9,6 +9,8 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterAbortException;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.bulkImport.control.BulkImportController;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.core.AppModel;
+import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.editor.ScanBarcodeUI;
 import edu.cornell.dendro.corina.editor.EditorFactory.BarcodeDialogResult;
@@ -38,6 +42,7 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.CanOpener;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.ImportFrame;
+import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.PrintableDocument;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
@@ -49,6 +54,7 @@ import edu.cornell.dendro.corina.io.ExportDialog;
 import edu.cornell.dendro.corina.io.WrongFiletypeException;
 import edu.cornell.dendro.corina.io.control.IOController;
 import edu.cornell.dendro.corina.io.view.ImportView;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
@@ -61,103 +67,63 @@ import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
 import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
+import edu.cornell.dendro.corina.wsi.util.WSCookieStoreHandler;
 
-// TODO:
-// -- refactor so Editor can use it (export)
-// -- use it in Editor
-// -- use it in Map, etc.
-// -- remove all file-menu classes/methods from XMenubar
-// -- (is the font stuff set properly here?)
-// BUG: when you open something from the browser, it doesn't get added to the recent-open list
-// -- and probably also other places.  move that to Editor's c'tor?
-
-// a file menu.  default is:
-// - new
-// -   sample
-// -   sum
-// -   plot
-// -   grid
-// -   map
-// - open...
-// - browse...
-// - open recent...
-// ---
-// - close
-// - save * -- only if the frame is a SaveableDocument
-// - save as...
-// ---
-// - page setup... * -- only if the frame is a PrintableDocument
-// - print...
-// ---
-// - exit * - except on mac os (which has its own)
-
-// (also, add "find..." menuitem?  or should that be part of the browser only?)
-// use: file.add(Builder.makeMenuItem("find...", "new corina.search.SearchDialog()"));
-
-// special file menus:
-// - editor adds "export..."
-// - map adds "export png...", "export svg..." (combine?)
 
 public class FileMenu extends JMenu {
 
 	private static final long serialVersionUID = 1L;
-
 	protected JFrame f;
-
+	private PrinterJob printJob = null;
+	private PageFormat pageFormat = new PageFormat();
+	
+	private JMenuItem logoff;
+	private JMenuItem logon;
+	private JMenuItem filenew;
+	private JMenuItem fileopen;
+	private JMenuItem fileopenmulti;
+	private JMenuItem openrecent;
+	private JMenuItem fileexport;
+	private JMenuItem fileimport;
+	private JMenuItem bulkentry;
+	private JMenuItem save;
+	
 	public FileMenu(JFrame f) {
 		super(I18n.getText("menus.file"));
-		// FIXME: i18n: simply getText() doesn't do _F_ile on win32
-		// TODO: set font here, maybe
-		// QUESTION: does JMenuBar.setFont() affect all menus and menuitems?
-		// -- if so, that makes some things much easier...
 
 		this.f = f;
 
 		addNewOpenMenus();
-		addSeparator();
+			addSeparator();
 		addIOMenus();
-		addExportMenus();
-		addSeparator();
-		addDataEntryMenus();
-		
-		// make sure the controllers are created
-
-		addSeparator();
-		addCloseSaveMenus();
-		
-		addSeparator();
+			addSeparator();
+		addCloseMenu();
+		addSaveMenu();
+			addSeparator();
 		addPrintingMenus();
-		// TODO: each one of these should either be:
-		// (1) addOneSingleMenu(), or
-		// (2) addThisGroupOfMenus(), which adds a clump at a time.
-		// that way, subclasses can override any single menu or any group, as desired.
-		// oh, i should put all these add...() methods in an init() method.
 		addExitMenu();
+		
+		// Link to the app model so we can enable/disable depending on network status
+		linkModel();
 	}
 
-	/*
-	 BETTER: spec needs to only be something like
-
-	 <menuitem text="new" enabled="false"/>
-	 <menuitem text="sample..." indent="true" action="new corina.editor.Editor()"/>
-	 <menuitem text="plot..." indent="true" action="new corina.graph.GraphFrame()"/>
-	 */
-
-	// sample, sum, plot, grid, map
-	// (future: sample, sum, plot, crossdate, map?)
 	
 	public void addIOMenus(){
 		
-		add(Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithtricycle()", "fileimport.png"));
+		fileimport = Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithtricycle()", "fileimport.png");
+		add(fileimport);
 		
+		fileexport = Builder.makeMVCMenuItem("menus.file.export", IOController.OPEN_EXPORT_WINDOW, "fileexport.png");
+		add(fileexport);
+		
+		bulkentry = Builder.makeMVCMenuItem("menus.file.bulkimport", BulkImportController.DISPLAY_BULK_IMPORT, "bulkDataEntry.png");
+		add(bulkentry);
 	}
 	
+
 	public void addNewOpenMenus() {
-		
-		//add(Builder.makeMenuItem("dbnew...", "edu.cornell.dendro.corina.gui.menus.FileMenu.newdb()", "filenew.png"));
-		//add(Builder.makeMenuItem("menus.file.new", "edu.cornell.dendro.corina.editor.EditorFactory.newSeries()", "filenew.png"));
-		
-		JMenuItem filenew = Builder.makeMenuItem("menus.file.new", true, "filenew.png");
+				
+		filenew = Builder.makeMenuItem("menus.file.new", true, "filenew.png");
 		filenew.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				edu.cornell.dendro.corina.editor.EditorFactory.newSeries(f);
@@ -165,29 +131,163 @@ public class FileMenu extends JMenu {
 		});
 		add(filenew);
 		
-		add(Builder.makeMenuItem("menus.file.open", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png"));		
-		add(Builder.makeMenuItem("menus.file.openmulti", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png"));	
-		add(OpenRecent.makeOpenRecentMenu());
+		fileopen = Builder.makeMenuItem("menus.file.open", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png");
+		add(fileopen);
+		
+		fileopenmulti = Builder.makeMenuItem("menus.file.openmulti", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png");
+		add(fileopenmulti);
+		
+		openrecent = OpenRecent.makeOpenRecentMenu();
+		add(openrecent);
 
 	}
 	
-	public void addExportMenus(){
-		//JMenuItem export = Builder.makeMenuItem("menus.file.export",true, "fileexport.png");
-		JMenuItem export = Builder.makeMVCMenuItem("menus.file.export", IOController.OPEN_EXPORT_WINDOW, "fileexport.png");
-//		export.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent argArg0) {
-//				exportMultiDB();
-//			}
-//		});
-		add(export);
+
+	public void addSaveMenu() {
+		save = Builder.makeMenuItem("menus.file.save", true, "filesave.png");
+		
+		// add menuitems, hooked up to |f|
+		save.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// get doc
+				SaveableDocument doc = (SaveableDocument) f;
+
+				// save
+				doc.save();
+
+				// add to the recently opened files list if the user actually saved
+				// also, the user can try to save a document they didn't do anything to. argh.
+				if (doc.isSaved() && doc.getFilename() != null) {
+					if(doc.getSavedDocument() instanceof Sample)
+						OpenRecent.sampleOpened(new SeriesDescriptor((Sample) doc.getSavedDocument()));
+					else
+						OpenRecent.fileOpened(doc.getFilename());
+				}
+			}
+		});
+		
+		add(save);
+	}
+
+	public void addSaveAsMenu() {
+		JMenuItem saveAs = Builder.makeMenuItem("menus.file.saveas");
+
+		if (f instanceof SaveableDocument
+				&& ((SaveableDocument) f).isNameChangeable()) {
+			// add menuitems, hooked up to |f|
+			saveAs.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						// get doc
+						SaveableDocument doc = (SaveableDocument) f;
+
+						// DESIGN: start out in the same folder as the old filename,
+						// if there is one?
+
+						// get new filename
+						String filename = FileDialog.showSingle(I18n
+								.getText("menus.file.save"));
+						Overwrite.overwrite(filename); // (may abort)
+						doc.setFilename(filename);
+
+						// save
+						doc.save();
+						OpenRecent.fileOpened(doc.getFilename());
+					} catch (UserCancelledException uce) {
+						// do nothing
+					}
+				}
+			});
+		} else {
+			// dim menuitems
+			saveAs.setEnabled(false);
+		}
+
+		add(saveAs);
+	}
+
+	public void addCloseMenu() {
+		JMenuItem close = Builder.makeMenuItem("menus.file.close", false, "fileclose.png");
+		close.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// call close() on XFrame (asks for confirmation), else dispose().
+				// -- yeah, it should be able to call dispose() everywhere,
+				// but see XFrame for why i haven't done that yet.
+				if (f instanceof XFrame)
+					((XFrame) f).close();
+				else
+					f.dispose();
+			}
+		});
+		add(close);
+	}
+
+	// add:
+	// - page setup...
+	// - print...
+	// (but only enabled if |f| is a printabledocument)
+	public void addPrintingMenus() {
+		addPageSetupMenu();
+		addPrintMenu();
+	}
+
+	public void addPageSetupMenu() {
+		// menuitem
+		JMenuItem setup = Builder.makeMenuItem("menus.file.pagesetup", true, "pagesetup.png");
+
+		if (f instanceof PrintableDocument) {
+			// page setup
+			setup.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					pageSetup();
+				}
+			});
+		} else {
+			// dim menuitem
+			setup.setEnabled(false);
+		}
+
+		add(setup);
+	}
+	public void addExitMenu() {
+		
+		addSeparator();
+
+		logoff = Builder.makeMenuItem("menus.file.logoff", true, "logoff.png");
+		add(logoff);
+		logoff.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				WSCookieStoreHandler.getCookieStore().emptyCookieJar();
+				App.appmodel.setNetworkStatus(NetworkStatus.OFFLINE);
+			}
+		});
+		
+		
+		logon = Builder.makeMenuItem("menus.file.logon", true, "logon.png");
+		add(logon);
+		logon.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+            	LoginDialog dlg = new LoginDialog(f);
+            	try {
+            		dlg.doLogin(null, false);            		
+               	} catch (UserCancelledException uce) {
+            		return;
+            	}
+			}
+		});
+		
+		// Add exit button if not on Mac
+		if (!Platform.isMac()) {
+			add(Builder.makeMenuItem("menus.file.quit", "edu.cornell.dendro.corina.gui.XCorina.quit()", "exit.png"));
+		}
+		
 	}
 	
-	public void addDataEntryMenus(){
-		add(Builder.makeMVCMenuItem("menus.file.bulkimport", BulkImportController.DISPLAY_BULK_IMPORT, "bulkDataEntry.png"));
 
-	}
+	// COMMANDS FOR DOING THINGS!
 
-	// ask the user for a file to open, and open it
 	public static void open() {
 		String filename = "";
 		
@@ -245,10 +345,7 @@ public class FileMenu extends JMenu {
 	public static void opendbmulti() {
 		opendb(true);
 	}
-	
-	
 
-	
 	public static void opendb() {
 		opendb(false);
 	}
@@ -527,125 +624,8 @@ public class FileMenu extends JMenu {
 	}
 	
 
-	public void addCloseSaveMenus() {
-		addCloseMenu();
-		addSaveMenu();
-		//addSaveAsMenu();
-	}
 
-	public void addSaveMenu() {
-		JMenuItem save = Builder.makeMenuItem("menus.file.save", true, "filesave.png");
 
-		if (f instanceof SaveableDocument) {
-			// add menuitems, hooked up to |f|
-			save.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// get doc
-					SaveableDocument doc = (SaveableDocument) f;
-
-					// save
-					doc.save();
-
-					// add to the recently opened files list if the user actually saved
-					// also, the user can try to save a document they didn't do anything to. argh.
-					if (doc.isSaved() && doc.getFilename() != null) {
-						if(doc.getSavedDocument() instanceof Sample)
-							OpenRecent.sampleOpened(new SeriesDescriptor((Sample) doc.getSavedDocument()));
-						else
-							OpenRecent.fileOpened(doc.getFilename());
-					}
-				}
-			});
-		} else {
-			// dim menuitems
-			save.setEnabled(false);
-		}
-
-		add(save);
-	}
-
-	public void addSaveAsMenu() {
-		JMenuItem saveAs = Builder.makeMenuItem("menus.file.saveas");
-
-		if (f instanceof SaveableDocument
-				&& ((SaveableDocument) f).isNameChangeable()) {
-			// add menuitems, hooked up to |f|
-			saveAs.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					try {
-						// get doc
-						SaveableDocument doc = (SaveableDocument) f;
-
-						// DESIGN: start out in the same folder as the old filename,
-						// if there is one?
-
-						// get new filename
-						String filename = FileDialog.showSingle(I18n
-								.getText("menus.file.save"));
-						Overwrite.overwrite(filename); // (may abort)
-						doc.setFilename(filename);
-
-						// save
-						doc.save();
-						OpenRecent.fileOpened(doc.getFilename());
-					} catch (UserCancelledException uce) {
-						// do nothing
-					}
-				}
-			});
-		} else {
-			// dim menuitems
-			saveAs.setEnabled(false);
-		}
-
-		add(saveAs);
-	}
-
-	public void addCloseMenu() {
-		// close menu
-		// -- DESIGN: don't i need an XFrame for this? ouch, that's a harsh restriction.
-		JMenuItem close = Builder.makeMenuItem("menus.file.close", false, "fileclose.png");
-		close.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// call close() on XFrame (asks for confirmation), else dispose().
-				// -- yeah, it should be able to call dispose() everywhere,
-				// but see XFrame for why i haven't done that yet.
-				if (f instanceof XFrame)
-					((XFrame) f).close();
-				else
-					f.dispose();
-			}
-		});
-		add(close);
-	}
-
-	// add:
-	// - page setup...
-	// - print...
-	// (but only enabled if |f| is a printabledocument)
-	public void addPrintingMenus() {
-		addPageSetupMenu();
-		addPrintMenu();
-	}
-
-	public void addPageSetupMenu() {
-		// menuitem
-		JMenuItem setup = Builder.makeMenuItem("menus.file.pagesetup", true, "pagesetup.png");
-
-		if (f instanceof PrintableDocument) {
-			// page setup
-			setup.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-					pageSetup();
-				}
-			});
-		} else {
-			// dim menuitem
-			setup.setEnabled(false);
-		}
-
-		add(setup);
-	}
 
 	public void pageSetup() {
 		// make printer job, if none exists yet
@@ -724,24 +704,32 @@ public class FileMenu extends JMenu {
 		}).start();
 	}
 
-	// ***: make this friendlier/more useful!
-	// "an error in the print system caused printing to be aborted.  this could indicate
-	// a hardware or system problem, or a bug in Corina."  ( details ) (( ok ))
-	// (details->stacktrace) -- create static String Bug.getStackTrace(ex)
+	  protected void linkModel()
+	  {
+		  App.appmodel.addPropertyChangeListener(new PropertyChangeListener() {
 
-	private PrinterJob printJob = null;
+				@Override
+				public void propertyChange(PropertyChangeEvent argEvt) {
+					if(argEvt.getPropertyName().equals(AppModel.NETWORK_STATUS)){
+						setMenusForNetworkStatus();
+					}	
+				}
+			});
+		  
+		  setMenusForNetworkStatus();
+	  }
+	  
+	  protected void setMenusForNetworkStatus()
+	  {
 
-	private PageFormat pageFormat = new PageFormat();
+		  logoff.setVisible(App.isLoggedIn());  
+		  logon.setVisible(!App.isLoggedIn());  
+		  fileopen.setEnabled(App.isLoggedIn());
+		  fileopenmulti.setEnabled(App.isLoggedIn());
+		  openrecent.setEnabled(App.isLoggedIn());
+		  fileimport.setEnabled(App.isLoggedIn());
+		  bulkentry.setEnabled(App.isLoggedIn());
+		  save.setEnabled(App.isLoggedIn() && f instanceof SaveableDocument);
 
-	// add:
-	// ---
-	// - quit
-	// (unless this is a mac)
-	public void addExitMenu() {
-		if (!App.platform.isMac()) {
-			addSeparator();
-			add(Builder.makeMenuItem("menus.file.quit", "edu.cornell.dendro.corina.gui.XCorina.quit()", "exit.png"));
-		}
-	}
-	
+	  }
 }

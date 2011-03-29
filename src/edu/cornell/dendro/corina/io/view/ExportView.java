@@ -22,10 +22,14 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.border.EtchedBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -37,19 +41,14 @@ import org.tridas.io.naming.UUIDNamingConvention;
 
 import com.dmurph.mvc.model.MVCArrayList;
 
-import edu.cornell.dendro.corina.ui.Builder;
-
+import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.io.command.ConvertCommand.StructWrapper;
 import edu.cornell.dendro.corina.io.control.ExportEvent;
 import edu.cornell.dendro.corina.io.control.SaveEvent;
 import edu.cornell.dendro.corina.io.model.ExportModel;
 import edu.cornell.dendro.corina.io.model.ConvertModel.WriterObject;
-import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-
-import javax.swing.JPanel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 /**
  * @author Daniel
@@ -85,10 +84,15 @@ public class ExportView extends JFrame {
 	
 	public ExportView(ExportModel argModel) {
 		model = argModel;
+		setIconImage(Builder.getApplicationIcon());
+		setTitle(I18n.getText("export.dataFromDatabase"));
+		
 		initComponents();
 		addListeners();
 		linkModel();
 		pack();
+		this.setSize(700, 400);
+		setLocationRelativeTo(null);
 	}
 	
 	private void initComponents() {
@@ -107,21 +111,30 @@ public class ExportView extends JFrame {
 		
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		
+		JPanel panelMain = new JPanel();
+		panelMain.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		getContentPane().add(panelMain, BorderLayout.CENTER);
+		panelMain.setLayout(new BorderLayout(0, 0));
+		
 		JSplitPane splitPane = new JSplitPane();
-		getContentPane().add(splitPane);
+		panelMain.add(splitPane);
+		splitPane.setResizeWeight(0.5);
+		splitPane.setOneTouchExpandable(true);
+		
+		JPanel panelSummary = new JPanel();
+		splitPane.setRightComponent(panelSummary);
+		panelSummary.setLayout(new BorderLayout(0, 0));
 		
 		JScrollPane scrollPane = new JScrollPane();
-		splitPane.setRightComponent(scrollPane);
+		panelSummary.add(scrollPane, BorderLayout.CENTER);
 		
-		Icon ficon = Builder.getIcon("fail.png", iconSize);
-		Icon wicon = Builder.getIcon("warning.png", iconSize);
 		Icon sicon = Builder.getIcon("success.png", iconSize);
-		Icon infoicon = Builder.getIcon("info.png", iconSize);
-		Icon filewicon = Builder.getIcon("filewarning.png", iconSize);
+		Icon wicon = Builder.getIcon("warning.png", iconSize);
+		Icon ficon = Builder.getIcon("fail.png", iconSize);
 		Icon filesicon = Builder.getIcon("filesuccess.png", iconSize);
-		
-		CustomTreeCellRenderer renderer = new CustomTreeCellRenderer(sicon, wicon, ficon, filesicon, filewicon,
-				infoicon);
+		Icon filewicon = Builder.getIcon("filewarning.png", iconSize);
+		Icon infoicon = Builder.getIcon("info.png", iconSize);
+		CustomTreeCellRenderer renderer = new CustomTreeCellRenderer(sicon, wicon, ficon, filesicon, filewicon,infoicon);
 		
 		tree = new JTree(rootNode, false);
 		tree.setCellRenderer(renderer);
@@ -131,69 +144,69 @@ public class ExportView extends JFrame {
 		
 		scrollPane.setViewportView(tree);
 		
-		JPanel panel = new JPanel();
-		splitPane.setLeftComponent(panel);
-		panel.setLayout(new BorderLayout(0, 0));
+		JLabel lblNewLabel = new JLabel("Summary of export:");
+		panelSummary.add(lblNewLabel, BorderLayout.NORTH);
 		
-		JPanel panel_1 = new JPanel();
-		panel.add(panel_1, BorderLayout.SOUTH);
-		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+		JPanel panelOptions = new JPanel();
+		splitPane.setLeftComponent(panelOptions);
+		panelOptions.setLayout(new MigLayout("", "[97px][176.00px,grow][][grow]", "[27px][27px][][][][]"));
+		
+		JLabel lblWhatToExport = new JLabel(I18n.getText("io.convert.whatExport"));
+		panelOptions.add(lblWhatToExport, "cell 0 0,alignx trailing");
+		
+		selection = new JComboBox(new String[] { model.getElements().size() <= 1 ? "The selected sample" : "The group of "+model.getElements().size()+" samples." });
+		panelOptions.add(selection, "cell 1 0 2 1,growx");
+		
+		JLabel lblGrouping = new JLabel(I18n.getText("io.convert.lblGrouping"));
+		panelOptions.add(lblGrouping, "cell 0 1,alignx trailing");
+		
+		groupings = new JComboBox(groupingNames);
+		panelOptions.add(groupings, "cell 1 1 2 1,growx");
+		
+		JLabel lblFormat = new JLabel(I18n.getText("io.convert.lblFormat"));
+		panelOptions.add(lblFormat, "cell 0 2,alignx trailing");
+		
+		format = new JComboBox(TridasIO.getSupportedWritingFormats());
+		panelOptions.add(format, "cell 1 2 2 1,growx");
+		
+		JLabel lblNaming = new JLabel(I18n.getText("io.convert.lblNaming"));
+		panelOptions.add(lblNaming, "cell 0 3,alignx trailing");
+		
+		naming = new JComboBox(namings);
+		panelOptions.add(naming, "cell 1 3 2 1,growx");
+		
+		JLabel lblEncoding = new JLabel(I18n.getText("io.convert.lblEncoding"));
+		panelOptions.add(lblEncoding, "cell 0 4,alignx trailing");
+		
+		charset = new JComboBox(charsets.toArray(new String[0]));
+		panelOptions.add(charset, "cell 1 4 2 1,growx");
+		
+		JLabel lblOutputFolder = new JLabel(I18n.getText("io.convert.lblOutput"));
+		panelOptions.add(lblOutputFolder, "cell 0 5,alignx trailing");
+		
+		destFolder = new JTextField();
+		panelOptions.add(destFolder, "cell 1 5,growx");
+		
+		btnBrowse = new JButton(I18n.getText("io.convert.btnBrowse"));
+		panelOptions.add(btnBrowse, "cell 2 5,alignx center");
+
+		
+		JPanel panelButtons = new JPanel();
+		getContentPane().add(panelButtons, BorderLayout.SOUTH);
+		panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
 		
 		btnHelp = new JButton(I18n.getText("io.convert.btnHelp"));
-		panel_1.add(btnHelp);
+		panelButtons.add(btnHelp);
 		
 		Component horizontalGlue = Box.createHorizontalGlue();
-		panel_1.add(horizontalGlue);
+		panelButtons.add(horizontalGlue);
 		
 		btnConvert = new JButton(I18n.getText("io.convert.btnConvert"));
-		panel_1.add(btnConvert);
+		panelButtons.add(btnConvert);
 		
 		btnSave = new JButton(I18n.getText("io.convert.btnSave"));
 		btnSave.setEnabled(false);
-		panel_1.add(btnSave);
-		
-		JPanel panel_2 = new JPanel();
-		panel.add(panel_2, BorderLayout.CENTER);
-		panel_2.setLayout(new MigLayout("", "[97px,grow][103px,grow]", "[27px][27px][][][][][][]"));
-		
-		JLabel lblWhatToExport = new JLabel(I18n.getText("io.convert.whatExport"));
-		panel_2.add(lblWhatToExport, "cell 0 0,alignx trailing");
-		
-		selection = new JComboBox(new String[] { model.getElements().size() <= 1 ? "The selected sample" : "The group of "+model.getElements().size()+" samples." });
-		panel_2.add(selection, "cell 1 0,growx");
-		
-		JLabel lblGrouping = new JLabel(I18n.getText("io.convert.lblGrouping"));
-		panel_2.add(lblGrouping, "cell 0 1,alignx trailing");
-		
-		groupings = new JComboBox(groupingNames);
-		panel_2.add(groupings, "cell 1 1,growx");
-		
-		JLabel lblFormat = new JLabel(I18n.getText("io.convert.lblFormat"));
-		panel_2.add(lblFormat, "cell 0 3,alignx trailing");
-		
-		format = new JComboBox(TridasIO.getSupportedWritingFormats());
-		panel_2.add(format, "cell 1 3,growx");
-		
-		JLabel lblNaming = new JLabel(I18n.getText("io.convert.lblNaming"));
-		panel_2.add(lblNaming, "cell 0 4,alignx trailing");
-		
-		naming = new JComboBox(namings);
-		panel_2.add(naming, "cell 1 4,growx");
-		
-		JLabel lblEncoding = new JLabel(I18n.getText("io.convert.lblEncoding"));
-		panel_2.add(lblEncoding, "cell 0 5,alignx trailing");
-		
-		charset = new JComboBox(charsets.toArray(new String[0]));
-		panel_2.add(charset, "cell 1 5,growx");
-		
-		JLabel lblOutputFolder = new JLabel(I18n.getText("io.convert.lblOutput"));
-		panel_2.add(lblOutputFolder, "cell 0 6,alignx trailing");
-		
-		btnBrowse = new JButton(I18n.getText("io.convert.btnBrowse"));
-		panel_2.add(btnBrowse, "cell 1 6");
-		
-		destFolder = new JTextField();
-		panel_2.add(destFolder, "cell 0 7 2 1,growx");
+		panelButtons.add(btnSave);
 	}
 	
 	private void addListeners() {

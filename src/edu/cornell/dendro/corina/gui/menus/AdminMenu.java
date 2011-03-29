@@ -23,6 +23,8 @@ package edu.cornell.dendro.corina.gui.menus;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +40,7 @@ import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.core.AppModel;
 import edu.cornell.dendro.corina.gis.CorinaGazetteerPanel;
 import edu.cornell.dendro.corina.gis.GISFrame;
 import edu.cornell.dendro.corina.gis.GISPanel;
@@ -79,6 +82,9 @@ import gov.nasa.worldwind.poi.PointOfInterest;
    @version $Id: HelpMenu.java 2163 2009-09-15 19:39:09Z Peter Brewer $
 */
 public class AdminMenu extends JMenu {
+	
+	
+	
   public static final CorinaAction ABOUT_ACTION = new CorinaAction("menus.about") {
     public void actionPerformed(ActionEvent ae) {
       AboutBox.getInstance().show();
@@ -95,20 +101,35 @@ private JFrame frame;
       this.frame = frame;
       
       init();
+      linkModel();  
   }
+  
+  protected void linkModel()
+  {
+	  App.appmodel.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent argEvt) {
+				if(argEvt.getPropertyName().equals(AppModel.NETWORK_STATUS)){
+					setEnabled(App.isLoggedIn());
+				}	
+			}
+		});
+	  
+	  setEnabled(App.isLoggedIn());
+  }
+  
   
   protected void init() {
 
 	  addUserGroupMenu();
 	  addPasswordMenu();
-      addSeparator();
+      	addSeparator();
 	  addReportsMenu();
 	  addLabelMenu();
-	  addSeparator();
+	  	addSeparator();
 	  addCurationMenu();
-
-     
-
+	  
   }
 
 

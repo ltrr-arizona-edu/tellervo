@@ -1,5 +1,7 @@
 package edu.cornell.dendro.corina.gis;
 
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.core.AppModel;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import gov.nasa.worldwind.WorldWindow;
@@ -11,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
@@ -57,7 +61,7 @@ public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 		addSeparator();
 		addControlMenuItems();
 
-		
+		linkModel();
 	}
 	
 	protected void launchWMSLayerManager()
@@ -270,7 +274,20 @@ public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 	}
     
     
-	
+	protected void linkModel()
+	{
+		  App.appmodel.addPropertyChangeListener(new PropertyChangeListener() {
+
+				@Override
+				public void propertyChange(PropertyChangeEvent argEvt) {
+					if(argEvt.getPropertyName().equals(AppModel.NETWORK_STATUS)){
+						setEnabled(App.isLoggedIn());
+					}	
+				}
+			});
+		  
+	}
+	  
 	
 	
 }

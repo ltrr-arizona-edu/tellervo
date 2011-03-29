@@ -43,6 +43,9 @@ public class DBBrowser_UI extends javax.swing.JDialog {
      * Initilize components of the gui
      */
     protected void doInitComponents(){
+    	
+    	setIconImage(Builder.getApplicationIcon());
+    	
     	// Dynamic components
 	    btnAdd = new javax.swing.JButton();
 	    btnRemove = new javax.swing.JButton();
