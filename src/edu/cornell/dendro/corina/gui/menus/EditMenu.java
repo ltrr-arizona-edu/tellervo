@@ -20,6 +20,9 @@
 
 package edu.cornell.dendro.corina.gui.menus;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -142,7 +145,19 @@ public class EditMenu extends JMenu {
             JMenuItem prefs = Builder.makeMenuItem("menus.preferences",
                                                    "edu.cornell.dendro.corina.prefs.PreferencesDialog.showPreferences()", "advancedsettings.png");
             add(prefs);
-                       
+            
+            JMenuItem prefs2 = Builder.makeMenuItem("menus.preferences", true, "advancedsettings.png");
+            prefs2.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+					App.showPreferencesDialog();
+				}
+            	
+            });
+            add(prefs2);
+                 
         }
         
 

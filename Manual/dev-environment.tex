@@ -133,6 +133,18 @@ Corina includes infrastructure for multimedia resources such as icons, images an
 \index{Translations}
 There is internationalization infrastructure in place to enable Corina to be offered in multiple languages.  This is done through the use of Resource Bundles, one for each language.  Within the code, whenever a string is required, it is provided using the \verb|I18n.getText()| function which then retrieves the correct string for the current locale.  If no string is found, then the default language (English) string is returned.  There is an Eclipse plugin to assist with this task called ResourceBundle Editor and it can be downloaded from \url{http://eclipse-rbe.sourceforge.net}.  Once installed it provides a GUI that allows you to simultaneously update all languages at once.
 
+The \verb|I18n.getText()| function can be passed variables for insertion into the translation next e.g.\ file name, data value, line number etc.  These can be passed either as a string array, or as one or more strings.  The values are inserted into the translation string at the points marked {0}, {1} etc.  For instance, the translation string ``File {0} exists.  Rename to {1}?'' would accept two strings the first being the original filename and the second being the filename to rename to.  For obvious reasons, only non-translateable strings should be passed in this way as they will be inserted indentically in all languages.
+
+The Resource Bundle also includes support for menu mnemonics (to enable navigation of the menus with the keyboard) and accelerator keys (to enable keyboard shortcuts to bypass menus).  Mnemonic are set by adding an ampersand before the letter of interest (e.g.\ {\&}File for \underline{F}ile) in the resource bundle.  Accelerators are set by adding the keyword `accel' with the key of interest inside square brackets after the resource bundle entry.  Some examples include:
+
+\begin{itemize*}
+ \item {\&}Graph active series [accel G]
+ \item Graph {\&}component series [accel shift G]
+\end{itemize*}
+
+What key the `accel' keyword refers to depends on the operating system Corina is being run on.  In Windows and Linux it is normally `ALT' wheras on a Mac it is usually the Apple ⌘ command key. 
+
+
 There are currently minimal translations for UK English, German, French, Dutch, Polish and Turkish.  These are by no means complete, and there are number of interfaces that are not internationalized at all.  Further assistance is required from native speakers to complete this task.
 
 \section{Build script}

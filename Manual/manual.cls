@@ -60,6 +60,7 @@
 \RequirePackage{booktabs}
 \RequirePackage{xcolor}
 \RequirePackage{marvosym}
+
 \RequirePackage{amssymb}
 
 

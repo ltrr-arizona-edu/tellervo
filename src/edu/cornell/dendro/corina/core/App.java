@@ -14,6 +14,7 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.prefs.ModernPreferences;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
@@ -38,7 +39,7 @@ public class App{
   public static Boolean isAdmin;
   public static String domain;
   private static String username;
-
+  private static ModernPreferences prefsDialog;
   public static AppModel appmodel;
   
 
@@ -59,6 +60,8 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     log.debug("initializing App");
 
     appmodel = new AppModel();
+
+    
     
     if (meter != null) {
       meter.setMaximum(9);
@@ -71,6 +74,8 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     }
     prefs = new Prefs();
     prefs.init();
+    prefsDialog = new ModernPreferences();
+    
     if (meter != null) {
       meter.setProgress(3);
     }
@@ -216,7 +221,10 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     if (!initialized) throw new IllegalStateException("AppContext already destroyed.");
   }
 
-
+	public static void showPreferencesDialog()
+	{
+		prefsDialog.setVisible(true);
+	}
   
 
 }

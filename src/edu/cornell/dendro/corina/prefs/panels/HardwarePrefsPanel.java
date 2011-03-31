@@ -22,133 +22,103 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMult
 
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.EtchedBorder;
+import java.awt.Color;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JButton;
 
 public class HardwarePrefsPanel extends JPanel {
+	private AbstractSerialMeasuringDevice device;
+	private JPanel panel;
+	private JPanel panel_1;
+	private JCheckBox chkDisableBarcodes;
+	private JLabel lblPlatformType;
+	private JLabel lblNewLabel;
+	private JLabel lblBaud;
+	private JLabel lblParity;
+	private JLabel lblFlowControl;
+	private JLabel lblDataBits;
+	private JLabel lblStopBits;
 	private JComboBox cboPlatformType;
 	private JComboBox cboPort;
 	private JComboBox cboBaud;
 	private JComboBox cboParity;
-	private JComboBox cboUnits;
+	private JComboBox comboBox_4;
 	private JComboBox cboDatabits;
 	private JComboBox cboStopbits;
-	private JComboBox cboLineFeed;
-	private JComboBox cboFlowControl;
-	private AbstractSerialMeasuringDevice device;
-	private JLabel lblFlowControl;
+	private JButton btnTestConnection;
 
 	/**
 	 * Create the panel.
 	 */
 	public HardwarePrefsPanel() {
+		setLayout(new MigLayout("", "[grow]", "[][][grow]"));
+		
+		panel = new JPanel();
+		panel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Measuring Platform", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+		add(panel, "cell 0 0,grow");
+		panel.setLayout(new MigLayout("", "[][grow][][grow]", "[][][][][][]"));
+		
+		lblPlatformType = new JLabel("Type:");
+		panel.add(lblPlatformType, "cell 0 0,alignx trailing");
+		
+		cboPlatformType = new JComboBox();
+		panel.add(cboPlatformType, "cell 1 0 2 1,alignx left");
+		
+		lblNewLabel = new JLabel("Port:");
+		panel.add(lblNewLabel, "cell 0 1,alignx trailing");
+		
+		cboPort = new JComboBox();
+		panel.add(cboPort, "cell 1 1,alignx left");
+		
+		lblFlowControl = new JLabel("Flow control:");
+		panel.add(lblFlowControl, "cell 2 1,alignx trailing");
+		
+		comboBox_4 = new JComboBox();
+		panel.add(comboBox_4, "cell 3 1,alignx left");
+		
+		lblBaud = new JLabel("Baud:");
+		panel.add(lblBaud, "cell 0 2,alignx trailing");
+		
+		cboBaud = new JComboBox();
+		panel.add(cboBaud, "cell 1 2,alignx left");
+		
+		lblDataBits = new JLabel("Data bits:");
+		panel.add(lblDataBits, "cell 2 2,alignx trailing");
+		
+		cboDatabits = new JComboBox();
+		panel.add(cboDatabits, "cell 3 2,alignx left");
+		
+		lblParity = new JLabel("Parity:");
+		panel.add(lblParity, "cell 0 3,alignx trailing");
+		
+		cboParity = new JComboBox();
+		panel.add(cboParity, "cell 1 3,alignx left");
+		
+		lblStopBits = new JLabel("Stop bits:");
+		panel.add(lblStopBits, "cell 2 3,alignx trailing");
+		
+		cboStopbits = new JComboBox();
+		panel.add(cboStopbits, "cell 3 3,alignx left");
+		
+		btnTestConnection = new JButton("Test connection");
+		panel.add(btnTestConnection, "cell 0 4 2 1,alignx left");
+		
+		panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Barcode scanner", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(panel_1, "cell 0 1,grow");
+		panel_1.setLayout(new MigLayout("", "[]", "[]"));
+		
+		chkDisableBarcodes = new JCheckBox("Disable support for barcode scanner");
+		panel_1.add(chkDisableBarcodes, "cell 0 0");
 
 		setupGui();
-
-		cboPlatformType.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				showHidePortOptions();
-
-				
-			}
-		});
 	}
 
 	
 	private void setupGui(){
-		setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("left:54px"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(76dlu;default):grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(48dlu;default)"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("25px"),
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,}));
-		
-		JLabel lblPlatformType = new JLabel();
-		lblPlatformType.setText("Type:");
-		add(lblPlatformType, "1, 2, left, center");
-		
-		cboPlatformType = new JComboBox();
-		cboPlatformType.setModel(new DefaultComboBoxModel(SerialDeviceSelector.getAvailableDevicesNames()));
-		add(cboPlatformType, "3, 2, 5, 1, left, default");
-		
-		JLabel lblPort = new JLabel();
-		lblPort.setText("Port:");
-		add(lblPort, "1, 4, left, default");
-		
-		cboPort = new JComboBox();
-		cboPort.setModel(new DefaultComboBoxModel(new String[] {"COM1", "COM2"}));
-		add(cboPort, "3, 4, left, center");
-		
-		lblFlowControl = new JLabel("Flow control:");
-		add(lblFlowControl, "5, 4, left, default");
-		
-		cboFlowControl = new JComboBox();
-		cboFlowControl.setEnabled(false);
-		cboFlowControl.setModel(new DefaultComboBoxModel(FlowControl.values()));
-		add(cboFlowControl, "7, 4, fill, default");
-		
-		JLabel label_2 = new JLabel();
-		label_2.setText("Baud:");
-		add(label_2, "1, 6, left, default");
-		
-		cboBaud = new JComboBox();
-		cboBaud.setModel(new DefaultComboBoxModel(BaudRate.values()));
-		cboBaud.setEnabled(false);
-		add(cboBaud, "3, 6, left, default");
-		
-		JLabel label_5 = new JLabel("Databits:");
-		add(label_5, "5, 6, left, default");
-		
-		cboDatabits = new JComboBox();
-		cboDatabits.setModel(new DefaultComboBoxModel(DataBits.values()));
-		cboDatabits.setEnabled(false);
-		add(cboDatabits, "7, 6, left, default");
-		
-		JLabel label_3 = new JLabel("Parity:");
-		add(label_3, "1, 8, left, default");
-		
-		cboParity = new JComboBox();
-		cboParity.setModel(new DefaultComboBoxModel(PortParity.values()));
-		cboParity.setEnabled(false);
-		add(cboParity, "3, 8, left, default");
-		
-		JLabel label_6 = new JLabel("Stopbits:");
-		add(label_6, "5, 8, left, default");
-		
-		cboStopbits = new JComboBox();
-		cboStopbits.setModel(new DefaultComboBoxModel(StopBits.values()));
-		cboStopbits.setEnabled(false);
-		add(cboStopbits, "7, 8, left, default");
-		
-		JLabel lblFactor = new JLabel("Factor:");
-		add(lblFactor, "1, 10, left, default");
-		
-		cboUnits = new JComboBox();
-		cboUnits.setModel(new DefaultComboBoxModel(UnitMultiplier.values()));
-		cboUnits.setEnabled(false);
-		add(cboUnits, "3, 10, left, default");
-		
-		JLabel lblLineFeed = new JLabel("Line feed:");
-		add(lblLineFeed, "5, 10, left, default");
-		
-		cboLineFeed = new JComboBox();
-		cboLineFeed.setModel(new DefaultComboBoxModel(LineFeed.values()));
-		cboLineFeed.setEnabled(false);
-		add(cboLineFeed, "7, 10, left, default");
 	}
 
 	public JComboBox getCboPlatformType() {
@@ -163,59 +133,13 @@ public class HardwarePrefsPanel extends JPanel {
 	public JComboBox getCboParity() {
 		return cboParity;
 	}
-	public JComboBox getCboUnits() {
-		return cboUnits;
-	}
+
 	public JComboBox getCboDatabits() {
 		return cboDatabits;
 	}
 	public JComboBox getCboStopbits() {
 		return cboStopbits;
 	}
-	public JComboBox getCboLineFeed() {
-		return cboLineFeed;
-	}
-	
-	
-    public void showHidePortOptions()
-    {
-    	device = null;
-		try {
-			device = SerialDeviceSelector.getSelectedDevice(false);	
-		}
-		catch (Exception ioe) {	} 
-    
-    	if(device!=null)
-    	{
-    		cboBaud.setEnabled(device.isBaudEditable());
-    		cboParity.setEnabled(device.isParityEditable());
-    		cboUnits.setEnabled(device.isUnitsEditable());
-    		cboDatabits.setEnabled(device.isDatabitsEditable());
-    		cboStopbits.setEnabled(device.isStopbitsEditable());
-    		cboLineFeed.setEnabled(device.isLineFeedEditable());
-    		cboFlowControl.setEnabled(device.isFlowControlEditable());
-    		  		
-    		cboBaud.setSelectedItem(device.getBaudRate());
-    		cboParity.setSelectedItem(device.getParity());
-    		cboUnits.setSelectedItem(device.getUnitMultiplier());
-    		cboDatabits.setSelectedItem(device.getDataBits());
-    		cboStopbits.setSelectedItem(device.getStopBits());
-    		cboLineFeed.setSelectedItem(device.getLineFeed());
-    		cboFlowControl.setSelectedItem(device.getFlowControl());
-    		
-    		return;
-    	}
-    	else
-    	{
-    		cboBaud.setEnabled(false);
-    		cboParity.setEnabled(false);
-    		cboUnits.setEnabled(false);
-    		cboDatabits.setEnabled(false);
-    		cboStopbits.setEnabled(false);
-    		cboLineFeed.setEnabled(false);
-    		cboFlowControl.setEnabled(false);
-    		
-    	}
-    }
+
 	
 }

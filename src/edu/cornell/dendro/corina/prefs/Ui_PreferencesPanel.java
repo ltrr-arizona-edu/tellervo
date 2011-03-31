@@ -126,7 +126,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 		});
     	
     	internationalizeComponents();
-		hpp.showHidePortOptions();
+		//hpp.showHidePortOptions();
     	
     }
     
