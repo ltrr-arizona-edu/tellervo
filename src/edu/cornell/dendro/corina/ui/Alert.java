@@ -29,8 +29,7 @@ public class Alert {
 	JOptionPane.showMessageDialog(null, // ??  no parent -- is this ok?
 				      text,
 				      maybeTitle(title),
-				      JOptionPane.INFORMATION_MESSAGE,
-				      treeIcon);
+				      JOptionPane.INFORMATION_MESSAGE);
     }
     /*
       uses of Alert.error():
@@ -78,4 +77,5 @@ public class Alert {
 
     // icon for dialogs
     private final static Icon treeIcon = Builder.getIcon("treeicon.png", 64); // WAS: Tree-64x64.png
+ 
 }

@@ -8,6 +8,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -53,5 +55,21 @@ public class GISFileMenu extends FileMenu {
         
         add(exportmenu);
 	}
+	
+	
+	  protected void setMenusForNetworkStatus()
+	  {
+
+		  logoff.setVisible(App.isLoggedIn());  
+		  logon.setVisible(!App.isLoggedIn());  
+		  fileopen.setEnabled(App.isLoggedIn());
+		  fileopenmulti.setEnabled(App.isLoggedIn());
+		  openrecent.setEnabled(App.isLoggedIn());
+		  //fileimport.setEnabled(App.isLoggedIn());
+		  //fileexport.setEnabled(App.isLoggedIn());
+		  //bulkentry.setEnabled(App.isLoggedIn());
+		  //save.setEnabled(App.isLoggedIn() && f instanceof SaveableDocument);
+
+	  }
 
 }

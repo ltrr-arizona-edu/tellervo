@@ -5,15 +5,16 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
@@ -25,11 +26,15 @@ import net.miginfocom.swing.MigLayout;
 import com.l2fprod.common.swing.JButtonBar;
 import com.l2fprod.common.swing.plaf.blue.BlueishButtonBarUI;
 
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.panels.AppearancePrefsPanel;
 import edu.cornell.dendro.corina.prefs.panels.HardwarePrefsPanel;
+import edu.cornell.dendro.corina.prefs.panels.MappingPrefsPanel;
 import edu.cornell.dendro.corina.prefs.panels.NetworkPrefsPanel;
+import edu.cornell.dendro.corina.prefs.panels.AbstractPreferencesPanel;
 import edu.cornell.dendro.corina.prefs.panels.StatsPrefsPanel;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.ui.I18n;
 
 public class ModernPreferences extends JDialog {
 	
@@ -41,36 +46,26 @@ public class ModernPreferences extends JDialog {
 	private JLabel lblTitle;
 	private JLabel lblSubtitle;
 	private ButtonGroup pageButtons = new ButtonGroup();
-	private JToggleButton hardwareButton;
-	private HardwarePrefsPanel hardwarePrefsPanel;
-	private JToggleButton networkButton;
-	private NetworkPrefsPanel networkPrefsPanel;
-	private JToggleButton statsButton;
-	private StatsPrefsPanel statsPrefsPanel;
-	private JToggleButton appearanceButton;
-	private JToggleButton mappingButton;
 	private JButton btnResetAllPreferences;
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			ModernPreferences dialog = new ModernPreferences();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
+	private ArrayList<AbstractPreferencesPanel> pageList = new ArrayList<AbstractPreferencesPanel>();
+	
 	/**
 	 * Create the dialog.
 	 */
 	public ModernPreferences() {
-		this.setIconImage(Builder.getApplicationIcon());
-		this.setTitle("Preferences");
+	
+		// Define the pages of the preferences panels
+		registerPreferencesPage(new HardwarePrefsPanel());
+		registerPreferencesPage(new NetworkPrefsPanel());
+		registerPreferencesPage(new StatsPrefsPanel());
+		registerPreferencesPage(new AppearancePrefsPanel());
+		registerPreferencesPage(new MappingPrefsPanel());
+
 		
-		setBounds(100, 100, 663, 550);
+		setIconImage(Builder.getApplicationIcon());
+		setTitle("Preferences");
+		
+		setBounds(100, 100, 765, 556);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -136,6 +131,35 @@ public class ModernPreferences extends JDialog {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						
+						NetworkPrefsPanel networkPrefsPanel = (NetworkPrefsPanel) getPreferencesPage(NetworkPrefsPanel.class);
+						if(networkPrefsPanel==null) return;						
+						
+						if(networkPrefsPanel.hasWSURLChanged())
+						{
+							int n = JOptionPane.showConfirmDialog(
+								    null,
+								    "You will need to restart Corina for the new web service URL to take effect.\n" +
+								    "Would you like to restart now?  Any unsaved changes will be lost.",
+								    "Restart required",
+								    JOptionPane.YES_NO_CANCEL_OPTION);
+
+							if(n == JOptionPane.YES_OPTION)
+							{
+								Boolean success = App.restartApplication();
+								if(success==false)
+								{
+									Alert.message("Manual restart required", 
+											"Unable to restart Corina automatically.  Please restart manually!");
+								}
+							}
+							else if (n == JOptionPane.CANCEL_OPTION)
+							{
+								return;
+							}	
+						}
+							
+						// Hide the dialog (don't close it)
 						setVisible(false);						
 					}
 					
@@ -150,132 +174,74 @@ public class ModernPreferences extends JDialog {
 	
 	private void hideAllPages()
 	{
-		hardwarePrefsPanel.setVisible(false);
-		networkPrefsPanel.setVisible(false);
-		statsPrefsPanel.setVisible(false);
+		for(AbstractPreferencesPanel page : pageList)
+		{
+			page.setVisible(false);
+		}
+	}
+	
+	private void registerPreferencesPage(AbstractPreferencesPanel page)
+	{
+		pageList.add((AbstractPreferencesPanel) page);
 	}
 	
 	private void setupPages()
 	{
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		
 		buttonBar = new JButtonBar();
 		buttonBar.setOrientation(JButtonBar.VERTICAL);
 		
 		buttonBar.setUI(new BlueishButtonBarUI());
 		buttonBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
 		
-		
-		// Hardware Page
-		hardwareButton = new JToggleButton();
-		hardwareButton.setFont(new Font("Dialog", Font.PLAIN, 10));
-		hardwareButton.setText("Hardware");
-		hardwareButton.setIcon(Builder.getIcon("hardware.png", 48));
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		hardwarePrefsPanel = new HardwarePrefsPanel();
-		mainPanel.add(hardwarePrefsPanel);
-		hardwareButton.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				hideAllPages();
-				hardwarePrefsPanel.setVisible(true);
-				lblTitle.setText(I18n.getText("preferences.hardware")+ " Preferences");
-				lblSubtitle.setText("Set measuring platform and barcode scanner preferences");
-				
-			}
+		for(final AbstractPreferencesPanel page: pageList)
+		{
+			mainPanel.add(page);
+			JToggleButton button = page.getTabButton();
+			button.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					hideAllPages();
+					page.setVisible(true);
+					lblTitle.setText(page.getPageTitle());
+					lblSubtitle.setText(page.getSubTitle());
+				}
+			});
 			
-		});
-		pageButtons.add(hardwareButton);
-		buttonBar.add(hardwareButton);
-		
-		// Network Page
-		networkButton = new JToggleButton();
-		networkButton.setFont(new Font("Dialog", Font.PLAIN, 10));
-		networkButton.setText(I18n.getText("preferences.network"));
-		networkButton.setIcon(Builder.getIcon("networksettings.png", 48));
-		networkPrefsPanel = new NetworkPrefsPanel();
-		mainPanel.add(networkPrefsPanel);
-		networkButton.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				hideAllPages();
-				networkPrefsPanel.setVisible(true);
-				lblTitle.setText(I18n.getText("preferences.network")+ " Preferences");
-				lblSubtitle.setText("Webservice network connection preferences");
-			}
-			
-		});
-		pageButtons.add(networkButton);
-		buttonBar.add(networkButton);
-		
-		// Stats Page
-		statsButton = new JToggleButton();
-		statsButton.setFont(new Font("Dialog", Font.PLAIN, 10));
-		statsButton.setText(I18n.getText("preferences.statistics"));
-		statsButton.setIcon(Builder.getIcon("chart.png", 48));
-		statsPrefsPanel = new StatsPrefsPanel();
-		mainPanel.add(statsPrefsPanel);
-		statsButton.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				hideAllPages();
-				statsPrefsPanel.setVisible(true);
-				
-			}
-			
-		});
-		pageButtons.add(statsButton);
-		buttonBar.add(statsButton);
-		
-		// Appearance Page
-		appearanceButton = new JToggleButton();
-		appearanceButton.setFont(new Font("Dialog", Font.PLAIN, 10));
-		appearanceButton.setText(I18n.getText("preferences.appearance"));
-		appearanceButton.setIcon(Builder.getIcon("appearance.png", 48));
-		HardwarePrefsPanel hardwarePrefsPanel4 = new HardwarePrefsPanel();
-		//mainPanel.add(hardwarePrefsPanel, 1);
-		appearanceButton.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
-		pageButtons.add(appearanceButton);
-		buttonBar.add(appearanceButton);
-		
-		// Mapping Page
-		mappingButton = new JToggleButton();
-		mappingButton.setFont(new Font("Dialog", Font.PLAIN, 10));
-		mappingButton.setText(I18n.getText("preferences.mapping"));
-		mappingButton.setIcon(Builder.getIcon("map.png", 48));
-		HardwarePrefsPanel hardwarePrefsPanel5 = new HardwarePrefsPanel();
-		//mainPanel.add(hardwarePrefsPanel, 1);
-		mappingButton.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
-		pageButtons.add(mappingButton);
-		buttonBar.add(mappingButton);
-		
-		
+			pageButtons.add(button);
+			buttonBar.add(button);
+		}	
 		
 		// Add button bar to toolbar panel
 		toolbarPanel.add(buttonBar);
 		
-		
-		hardwareButton.doClick();
+		// Click the first tab
+		pageList.get(0).getTabButton().doClick();
 	}
 	
 
+	/**
+	 * Get the prefs panel by class
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	private AbstractPreferencesPanel getPreferencesPage(Class <? extends AbstractPreferencesPanel> clazz)
+	{
+		if(pageList.size()==0) return null;
+		
+		for(AbstractPreferencesPanel page : pageList)
+		{
+			if(page.getClass().equals(clazz))
+			{
+				return page;
+			}
+		}
+
+		return null;
+		
+	}
 	
 
 

@@ -17,9 +17,11 @@ import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.SpinnerWrapper;
+import edu.cornell.dendro.corina.ui.I18n;
+
 import javax.swing.SpinnerNumberModel;
 
-public class StatsPrefsPanel extends JPanel {
+public class StatsPrefsPanel extends AbstractPreferencesPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JComboBox cboWJ;
@@ -36,6 +38,10 @@ public class StatsPrefsPanel extends JPanel {
 	 * Create the panel.
 	 */
 	public StatsPrefsPanel() {
+		super(I18n.getText("preferences.statistics"), 
+				"chart.png", 
+				"Set preferences for the display and handling of statistics");
+		
 		setLayout(new MigLayout("", "[225.00,grow][grow]", "[][grow]"));
 		
 		JPanel panel = new JPanel();

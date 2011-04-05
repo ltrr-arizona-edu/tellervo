@@ -180,7 +180,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 		} 
 		
 		// add the measure panel...
-		measurePanel = new TestMeasurePanel(txtComCheckLog, device);
+		//measurePanel = new TestMeasurePanel(txtComCheckLog, device);
 		panelMeasureHolder.setLayout(new BorderLayout());
 		panelMeasureHolder.add(measurePanel, BorderLayout.CENTER);
     }

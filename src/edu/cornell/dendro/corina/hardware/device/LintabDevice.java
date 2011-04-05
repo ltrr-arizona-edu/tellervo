@@ -43,7 +43,7 @@ import gnu.io.SerialPortEvent;
  * 
  * Data is transmitted by LINTAB whenever the platform is moved.  The data is
  * as follows:
- * [integer position in 1/1000mm];[add button state Ô0Õ or Õ1Õ][reset button state Ô0Õ or Ô1Õ][LF]
+ * [integer position in 1/1000mm];[add button state ï¿½0ï¿½ or ï¿½1ï¿½][reset button state ï¿½0ï¿½ or ï¿½1ï¿½][LF]
  * 
  * LINTAB also accepts commands. To force a manual data record output the ASCII-command 
  * GETDATA should be sent to LINTAB. A reset of the counter is done by sending the 
@@ -126,6 +126,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	    
 			    StringBuffer readBuffer = new StringBuffer();
 			    int intReadFromPort;
+			    
 			    	/*LINTAB data appears in the following format:
 					 *[integer position in 1/1000mm];[add button state â€˜0â€™ or â€™1â€™][reset button state â€˜0â€™ or â€˜1â€™][LF]
 					 *It should look like "140;10" or "46;10"with a LF. 
@@ -135,6 +136,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 			    	 */
 			    	//Read from port into buffer while not LF (10)
 			    	while ((intReadFromPort=input.read()) != 10){
+			    		fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, String.valueOf(intReadFromPort));
 			    		System.out.println(intReadFromPort);
 			    		
 			    		//If a timeout then show bad sample
@@ -218,6 +220,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	    OutputStream outToPort=new DataOutputStream(output);
 	    byte[] command = strCommand.getBytes();
 	    outToPort.write(command);
+	    fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, command.toString());
 	    
     	}
     	catch (IOException ioe) {

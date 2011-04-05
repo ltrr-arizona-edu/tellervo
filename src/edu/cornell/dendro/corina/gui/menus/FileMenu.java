@@ -77,16 +77,16 @@ public class FileMenu extends JMenu {
 	private PrinterJob printJob = null;
 	private PageFormat pageFormat = new PageFormat();
 	
-	private JMenuItem logoff;
-	private JMenuItem logon;
-	private JMenuItem filenew;
-	private JMenuItem fileopen;
-	private JMenuItem fileopenmulti;
-	private JMenuItem openrecent;
-	private JMenuItem fileexport;
-	private JMenuItem fileimport;
-	private JMenuItem bulkentry;
-	private JMenuItem save;
+	protected JMenuItem logoff;
+	protected JMenuItem logon;
+	protected JMenuItem filenew;
+	protected JMenuItem fileopen;
+	protected JMenuItem fileopenmulti;
+	protected JMenuItem openrecent;
+	protected JMenuItem fileexport;
+	protected JMenuItem fileimport;
+	protected JMenuItem bulkentry;
+	protected JMenuItem save;
 	
 	public FileMenu(JFrame f) {
 		super(I18n.getText("menus.file"));
@@ -728,6 +728,7 @@ public class FileMenu extends JMenu {
 		  fileopenmulti.setEnabled(App.isLoggedIn());
 		  openrecent.setEnabled(App.isLoggedIn());
 		  fileimport.setEnabled(App.isLoggedIn());
+		  fileexport.setEnabled(App.isLoggedIn());
 		  bulkentry.setEnabled(App.isLoggedIn());
 		  save.setEnabled(App.isLoggedIn() && f instanceof SaveableDocument);
 

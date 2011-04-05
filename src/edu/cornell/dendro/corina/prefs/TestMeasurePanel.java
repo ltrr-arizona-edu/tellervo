@@ -20,13 +20,20 @@ import edu.cornell.dendro.corina.ui.I18n;
 public class TestMeasurePanel extends MeasurePanel implements MeasurementReceiver {
 
 	private static final long serialVersionUID = 1L;
-	private JTextPane txt;
+	private final JTextPane txt;
+	private final JTextPane log;
 	private TimeoutTask task;
-	public TestMeasurePanel(JTextPane txtComCheckLog, final AbstractSerialMeasuringDevice device) 
+	private final JLabel infoLabel;
+	
+	
+	public TestMeasurePanel(JLabel infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractSerialMeasuringDevice device) 
 	{
 		super(device);
+		
 		this.txt = txtComCheckLog;
-			
+		this.log = txtLog;
+		this.infoLabel = infoLabel;
+		
 		// Hide extra widgets
 		btnQuit.setVisible(false);
 		
@@ -37,7 +44,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	private void startCountdown()
 	{
 		java.util.Timer timer = new java.util.Timer();
-		task = new TimeoutTask(this.lastMeasurement, this);
+		task = new TimeoutTask(infoLabel, this.lastMeasurement, this);
 		timer.scheduleAtFixedRate(task, 0, 1000);
 	}
 	
@@ -66,18 +73,34 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		}
 				
 		txt.setText(txt.getText()+"["+I18n.getText("preferences.hardware.datareceived")+"] : "+value+"\n");
+		infoLabel.setText("Success!  Data recieved from platform");
 	}
 		
+	@Override
+	public void receiverRawData(String value) {
+		
+		if(value==null) return;
+		if(log==null) return;
+		
+		log.setText(log.getText()+value+"\n");
+	}
+	
+	
+
+	
+	
 	class TimeoutTask extends java.util.TimerTask
 	{
 		private JLabel label;
-		private Integer countdown =11; 
+		private Integer countdown =11;
+		private final JLabel infoLabel;
 		TestMeasurePanel parent;
 		
-		TimeoutTask(JLabel label, TestMeasurePanel parent)
+		TimeoutTask(JLabel infoLabel, JLabel label, TestMeasurePanel parent)
 		{
 			this.label = label;
 			this.parent = parent;
+			this.infoLabel = infoLabel;
 		}
 		
 		@Override
@@ -85,9 +108,9 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 			if(countdown==1)
 			{
 				lastMeasurement.setText("");
-				Alert.message(I18n.getText("error"), I18n.getText("preferences.hardware.nodatareceived"));
+				infoLabel.setText(I18n.getText("preferences.hardware.nodatareceived"));
 				this.cancel();
-				parent.setVisible(false);
+				//parent.setVisible(false);
 				return;
 			}
 			
@@ -99,6 +122,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		}
 		
 	}
+
 
 
 }

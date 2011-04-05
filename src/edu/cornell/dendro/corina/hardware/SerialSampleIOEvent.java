@@ -24,6 +24,8 @@ public class SerialSampleIOEvent extends EventObject {
 	// generic error. string argument.
 	public final static int ERROR = 100;
 	
+	public final static int RAW_DATA = 99;
+	
 	private int type;
 	private Object value;
 	

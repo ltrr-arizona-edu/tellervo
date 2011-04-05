@@ -17,8 +17,14 @@ import javax.swing.event.TableModelListener;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.CorinaLog;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import javax.swing.SwingConstants;
 
 public class UIDefaultsComponent extends JComponent implements TableModelListener, ActionListener {
+
+  private static final long serialVersionUID = 1L;
+
   private static final CorinaLog log = new CorinaLog("UIDefaultsComponent");
   
   private UIDefaultsTableModel model = new UIDefaultsTableModel();
@@ -27,12 +33,12 @@ public class UIDefaultsComponent extends JComponent implements TableModelListene
     setLayout(new BorderLayout());
     
     Container c = new Container();
-    c.setLayout(new FlowLayout());
-    
-    JButton reset = new JButton("Reset UI fonts and colors");
-    reset.addActionListener(this);
-    
-    c.add(reset);
+    GridBagLayout gbl_c = new GridBagLayout();
+    gbl_c.columnWidths = new int[]{212, 0};
+    gbl_c.rowHeights = new int[]{25, 0};
+    gbl_c.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+    gbl_c.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+    c.setLayout(gbl_c);
     
     model.addTableModelListener(this);
     
@@ -43,7 +49,19 @@ public class UIDefaultsComponent extends JComponent implements TableModelListene
     table.setDefaultEditor(UIDefaultsTableModel.class, new UIDefaultsEditor());
     
     add(c, BorderLayout.NORTH);
-    add(new JScrollPane(table), BorderLayout.CENTER);
+    
+    JButton reset = new JButton("Reset fonts and colors to default");
+    reset.setHorizontalAlignment(SwingConstants.LEFT);
+    reset.addActionListener(this);
+    
+    GridBagConstraints gbc_reset = new GridBagConstraints();
+    gbc_reset.anchor = GridBagConstraints.NORTHWEST;
+    gbc_reset.gridx = 0;
+    gbc_reset.gridy = 0;
+    c.add(reset, gbc_reset);
+    JScrollPane scrollPane = new JScrollPane(table);
+    scrollPane.setEnabled(false);
+    add(scrollPane, BorderLayout.CENTER);
   }
   
   public synchronized void reset() {

@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,9 +15,12 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import gov.nasa.worldwind.event.RenderingExceptionListener;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JButton;
 
 /**
  *
@@ -43,7 +48,7 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
     {
     	this.txtGrfxWarning.setContentType("text/html");
     	this.txtGrfxWarning.setEditable(false);
-    	this.txtGrfxWarning.setText(I18n.getText("preferences.mapping.grfxwarning"));
+    	this.txtGrfxWarning.setText("<html><font color=\"red\"><center><b>Mapping disabled</b></center></font><p>The 3D globe mapping in Corina requires an OpenGL 3D capable graphics card.  Either your graphics card is not supported or you do not have the proper graphics drivers installed.  Most graphics cards manufactured since 2006 are supported. </p></html>");
     	
     	this.btnRetry.addActionListener(this);
     }
@@ -61,7 +66,7 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
         btnRetry = new javax.swing.JButton();
 
         setAlignmentX(1.0F);
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
+        setLayout(new MigLayout("", "[390px,grow]", "[153.00px,top][25px][grow]"));
 
         jScrollPane1.setAlignmentY(1.0F);
         jScrollPane1.setAutoscrolls(true);
@@ -69,12 +74,30 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
         jScrollPane1.setMaximumSize(new java.awt.Dimension(390, 180));
         jScrollPane1.setViewportView(txtGrfxWarning);
 
-        add(jScrollPane1);
+        add(jScrollPane1, "cell 0 0,alignx center,aligny bottom");
+        
+        btnMoreInformation = new JButton("More Information");
+        add(btnMoreInformation, "flowx,cell 0 1,alignx center");
+        btnMoreInformation.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					URI uri = new URI("http://worldwindcentral.com/wiki/Video_Card_Compatibility");
+					Help.openPage(uri);
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					Alert.error("Error", "Help page cannot be found.");
+				}
+			}
+        	
+        });
 
         btnRetry.setText("Re-test 3D Graphics");
         btnRetry.setAlignmentX(0.5F);
         btnRetry.setAlignmentY(1.0F);
-        add(btnRetry);
+        add(btnRetry, "cell 0 1,alignx center,aligny bottom");
     }// </editor-fold>//GEN-END:initComponents
     
     
@@ -82,6 +105,7 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
     protected javax.swing.JButton btnRetry;
     protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JTextPane txtGrfxWarning;
+    private JButton btnMoreInformation;
     // End of variables declaration//GEN-END:variables
 	
     

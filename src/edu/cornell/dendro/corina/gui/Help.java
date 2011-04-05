@@ -89,7 +89,7 @@ public class Help {
 	 * 
 	 * @param uri
 	 */
-	private static void openPage(URI uri)
+	public static void openPage(URI uri)
 	{
 		if(Help.exists(uri))
 		{
@@ -108,7 +108,7 @@ public class Help {
 	 * @param uri
 	 * @return
 	 */
-	private static boolean exists(URI uri){
+	public static boolean exists(URI uri){
 	    try {
 	      HttpURLConnection.setFollowRedirects(false);
 	      // note : you may also need

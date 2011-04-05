@@ -1,33 +1,35 @@
 package edu.cornell.dendro.corina.prefs.panels;
 
-import javax.swing.JPanel;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import java.awt.FlowLayout;
-import javax.swing.BoxLayout;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EtchedBorder;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
+import net.miginfocom.swing.MigLayout;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.RadioButtonWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.SpinnerWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
-import javax.swing.SpinnerNumberModel;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.ArrayListModel;
 
-public class NetworkPrefsPanel extends JPanel {
+public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField txtWSURL;
@@ -44,12 +46,15 @@ public class NetworkPrefsPanel extends JPanel {
 	private JLabel lblHttpProxy;
 	private JCheckBox chkDisableWS;
 	private JButton btnForceDictionaryReload;
-	
+	private String originalURL;
 	/**
 	 * Create the panel.
 	 */
 	public NetworkPrefsPanel() {
-	
+		super(I18n.getText("preferences.network"), 
+				"networksettings.png", 
+				"Webservice network connection preferences");
+		
 		setLayout(new MigLayout("", "[grow]", "[115.00px][188.00px][grow]"));
 		
 		JPanel panel = new JPanel();
@@ -69,7 +74,7 @@ public class NetworkPrefsPanel extends JPanel {
 		});
 		
 		JLabel lblWebservice = new JLabel("URL:");
-		panel.add(lblWebservice, "cell 0 1,alignx trailing,aligny top");
+		panel.add(lblWebservice, "cell 0 1,alignx trailing,aligny center");
 		
 		txtWSURL = new JTextField();
 		panel.add(txtWSURL, "cell 1 1,growx");
@@ -149,7 +154,7 @@ public class NetworkPrefsPanel extends JPanel {
 		new RadioButtonWrapper(new JRadioButton[] { btnDefaultProxy, btnManualProxy, btnNoProxy }, 
 				"corina.proxy.type", "default");
 		new CheckBoxWrapper(chkDisableWS, "corina.webservice.disable", false );
-				
+	
 		// manual proxy button behavior
 		setEnableProxy(btnManualProxy.isSelected());
 		btnManualProxy.addItemListener(new ItemListener() {
@@ -160,6 +165,7 @@ public class NetworkPrefsPanel extends JPanel {
 		
 		// networking - server & smtp
 		new TextComponentWrapper(txtWSURL, "corina.webservice.url", null);
+		originalURL = txtWSURL.getText();
 	}
 	
 	private void setEnableProxy(boolean isEnabled) {
@@ -172,5 +178,19 @@ public class NetworkPrefsPanel extends JPanel {
 		lblHTTPPort.setEnabled(isEnabled);
 		lblHTTPSPort.setEnabled(isEnabled);
 	}
+	
+	public Boolean hasWSURLChanged()
+	{
+		if(!originalURL.equalsIgnoreCase(txtWSURL.getText()))
+		{
+			originalURL = txtWSURL.getText();
+			return true;
+		}
+		
+		return false;
+	}
+	
+
+
 	
 }

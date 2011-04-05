@@ -54,6 +54,13 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 		
 		lastMeasurement.setText("[Last measurement was " + value +"\u03bc"+"m in year " + y.toString() + "]");		
 	}
+
+
+	@Override
+	public void receiverRawData(String value) {
+		//IGNORE
+		
+	}
 	
 
 

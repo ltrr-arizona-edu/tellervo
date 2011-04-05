@@ -9,6 +9,7 @@ import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -631,6 +632,10 @@ public abstract class AbstractSerialMeasuringDevice
 			Integer value = (Integer) sse.getValue();
 			receiver.receiverUpdateCurrentValue(value);
 		}
+		else if(sse.getType() == SerialSampleIOEvent.RAW_DATA){
+			String value = (String) sse.getValue();
+			receiver.receiverRawData(value);
+		}
 		
 	}
 	
@@ -682,6 +687,18 @@ public abstract class AbstractSerialMeasuringDevice
 		{
 			return StringUtils.capitalize(this.name().toLowerCase());
 		}	
+		
+		public static String[] allValuesAsArray()
+		{
+			ArrayList<String> arr = new ArrayList<String>();
+			for(PortParity val : PortParity.values())
+			{
+				arr.add(val.toString());
+			}
+			
+			return arr.toArray(new String[0]);
+			
+		}
 	}
 	
 	/**
@@ -720,6 +737,17 @@ public abstract class AbstractSerialMeasuringDevice
 				return "";
 			}		
 		}
+		
+		public static String[] allValuesAsArray()
+		{
+			ArrayList<String> arr = new ArrayList<String>();
+			for(LineFeed val : LineFeed.values())
+			{
+				arr.add(val.toString());
+			}
+			
+			return arr.toArray(new String[0]);
+		}
 	}
 	
 	/**
@@ -735,7 +763,9 @@ public abstract class AbstractSerialMeasuringDevice
 		B_9600(9600),
 		B_4800(4800),
 		B_2400(2400),
-		B_1200(1200);		
+		B_1200(1200),
+		B_600(600),
+		B_300(300);
 
 		private int br;
 		
@@ -753,6 +783,16 @@ public abstract class AbstractSerialMeasuringDevice
 			return String.valueOf(br);
 		}	
 		
+		public static String[] allValuesAsArray()
+		{
+			ArrayList<String> arr = new ArrayList<String>();
+			for(BaudRate val : BaudRate.values())
+			{
+				arr.add(val.toString());
+			}
+			
+			return arr.toArray(new String[0]);
+		}
 
 	}
 
@@ -787,6 +827,17 @@ public abstract class AbstractSerialMeasuringDevice
 				return "2";
 			}			
 		}	
+		
+		public static String[] allValuesAsArray()
+		{
+			ArrayList<String> arr = new ArrayList<String>();
+			for(StopBits val : StopBits.values())
+			{
+				arr.add(val.toString());
+			}
+			
+			return arr.toArray(new String[0]);
+		}
 	}
 	
 	public enum UnitMultiplier{
@@ -866,6 +917,17 @@ public abstract class AbstractSerialMeasuringDevice
 		{
 			return br;
 		}
+		
+		public static String[] allValuesAsArray()
+		{
+			ArrayList<String> arr = new ArrayList<String>();
+			for(FlowControl val : FlowControl.values())
+			{
+				arr.add(val.toString());
+			}
+			
+			return arr.toArray(new String[0]);
+		}
 
 	}
 	
@@ -896,6 +958,17 @@ public abstract class AbstractSerialMeasuringDevice
 		{
 			return String.valueOf(br);
 		}	
+		
+		public static String[] allValuesAsArray()
+		{
+			ArrayList<String> arr = new ArrayList<String>();
+			for(DataBits val : DataBits.values())
+			{
+				arr.add(val.toString());
+			}
+			
+			return arr.toArray(new String[0]);
+		}
 		
 	}
 	

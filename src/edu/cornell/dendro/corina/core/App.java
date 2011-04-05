@@ -3,10 +3,12 @@
 
 package edu.cornell.dendro.corina.core;
 
+import java.io.File;
 import java.util.List;
 
 import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.LoginSplash;
 import edu.cornell.dendro.corina.gui.ProgressMeter;
@@ -16,6 +18,7 @@ import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.ModernPreferences;
 import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
@@ -226,5 +229,36 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 		prefsDialog.setVisible(true);
 	}
   
+	
+	public static boolean restartApplication()
+	{
+	    String javaBin = System.getProperty("java.home") + "/bin/java";
+	    File jarFile;
+	    Sample sample = new Sample();
+	    try{
+	        jarFile = new File
+	        (sample.getClass().getProtectionDomain()
+	        .getCodeSource().getLocation().toURI());
+	    } catch(Exception e) {
+	        return false;
+	    }
+
+	    /* is it a jar file? */
+	    if ( !jarFile.getName().endsWith(".jar") )
+	    return false;   //no, it's a .class probably
+
+	    String  toExec[] = new String[] { javaBin, "-jar", jarFile.getPath() };
+	    try{
+	        Process p = Runtime.getRuntime().exec( toExec );
+	    } catch(Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+
+	    System.exit(0);
+
+	    return true;
+	}
+
 
 }

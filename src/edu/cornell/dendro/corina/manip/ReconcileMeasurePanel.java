@@ -40,6 +40,13 @@ public class ReconcileMeasurePanel extends MeasurePanel implements MeasurementRe
 		AMeasurement nm = new AMeasurement(true, value.intValue(), "meas");
 		rmd.addMeasurementValue(nm);	
 	}
+
+
+	@Override
+	public void receiverRawData(String value) {
+		// IGNORE
+		
+	}
 	
 
 
