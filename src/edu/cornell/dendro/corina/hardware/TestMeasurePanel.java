@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.cornell.dendro.corina.prefs;
+package edu.cornell.dendro.corina.hardware;
 
 import javax.swing.JLabel;
 import javax.swing.JTextPane;

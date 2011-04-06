@@ -31,6 +31,7 @@ import edu.cornell.dendro.corina.gis.GrfxWarning;
 import edu.cornell.dendro.corina.gis.WMSTableModel;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
+import edu.cornell.dendro.corina.hardware.TestMeasurePanel;
 import edu.cornell.dendro.corina.prefs.panels.HardwarePrefsPanel;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;

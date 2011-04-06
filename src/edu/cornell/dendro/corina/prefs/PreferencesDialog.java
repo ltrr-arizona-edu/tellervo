@@ -1,232 +1,253 @@
 package edu.cornell.dendro.corina.prefs;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.Vector;
+import java.util.ArrayList;
 
-import javax.swing.JFrame;
-import javax.swing.JRadioButton;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.JToggleButton;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+
+import net.miginfocom.swing.MigLayout;
+
+import com.l2fprod.common.swing.JButtonBar;
+import com.l2fprod.common.swing.plaf.blue.BlueishButtonBarUI;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
-import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
-import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
-import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
-import edu.cornell.dendro.corina.prefs.wrappers.FontButtonWrapper;
-import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
-import edu.cornell.dendro.corina.prefs.wrappers.RadioButtonWrapper;
-import edu.cornell.dendro.corina.prefs.wrappers.SpinnerWrapper;
-import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
+import edu.cornell.dendro.corina.prefs.panels.AppearancePrefsPanel;
+import edu.cornell.dendro.corina.prefs.panels.HardwarePrefsPanel;
+import edu.cornell.dendro.corina.prefs.panels.MappingPrefsPanel;
+import edu.cornell.dendro.corina.prefs.panels.NetworkPrefsPanel;
+import edu.cornell.dendro.corina.prefs.panels.AbstractPreferencesPanel;
+import edu.cornell.dendro.corina.prefs.panels.StatsPrefsPanel;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.util.ArrayListModel;
-import edu.cornell.dendro.corina.util.Center;
-import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 
-
-
-public class PreferencesDialog extends Ui_PreferencesPanel {
-
-	private static final long serialVersionUID = -4079890077696526465L;
-	// it's really important to only show one prefs dialog! :)
-	private static JFrame dialog;
-	private static PreferencesDialog pfdialog;
+public class PreferencesDialog extends JDialog {
+	
+	private static final long serialVersionUID = 1L;
+	private final JPanel contentPanel = new JPanel();
+	private JButtonBar buttonBar;
+	private JPanel toolbarPanel;
+	private JLayeredPane mainPanel;
+	private JLabel lblTitle;
+	private JLabel lblSubtitle;
+	private ButtonGroup pageButtons = new ButtonGroup();
+	private JButton btnResetAllPreferences;
+	private ArrayList<AbstractPreferencesPanel> pageList = new ArrayList<AbstractPreferencesPanel>();
 	
 	
-	public synchronized static void showPreferences() {
+	
+	
+	/**
+	 * Create the dialog.
+	 */
+	public PreferencesDialog() {
+	
+		// Define the pages of the preferences panels
+		registerPreferencesPage(new HardwarePrefsPanel());
+		registerPreferencesPage(new NetworkPrefsPanel());
+		registerPreferencesPage(new StatsPrefsPanel());
+		registerPreferencesPage(new AppearancePrefsPanel());
+		registerPreferencesPage(new MappingPrefsPanel());
 
-		showPreferencesAtTabIndex(0);
-	}
-	
-	public static JFrame getDialog()
-	{
-		return dialog;
-	}
-	
-	public synchronized static void showPreferencesAtTabIndex(int i) {
 		
-		// does it already exist? just bring it to the front
-		if(dialog != null) {
-			dialog.setVisible(true);
-			dialog.setExtendedState(JFrame.NORMAL);
-			dialog.toFront();
-			
-			return;
+		setIconImage(Builder.getApplicationIcon());
+		setTitle("Preferences");
+		
+		setBounds(100, 100, 765, 556);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new BorderLayout(0, 0));
+		{
+			toolbarPanel = new JPanel();
+			toolbarPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+			toolbarPanel.setBackground(Color.WHITE);
+			contentPanel.add(toolbarPanel, BorderLayout.WEST);
 		}
-		
-		// construct a new dialog!
-		dialog = new JFrame("Preferences");
-		dialog.setIconImage(Builder.getApplicationIcon());
-		dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
-		// steal the content pane from an instance of PreferencesDialog
-		pfdialog = new PreferencesDialog();
-		pfdialog.setSelectedTabIndex(i);
-		dialog.setContentPane(pfdialog);
-		dialog.pack();
-		
-		Center.center(dialog);
-		dialog.setVisible(true);
-		
-		// on close, set our internal static thingy to null
-		dialog.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent we) {
-				synchronized(dialog) {
-					try{
-						// Release hold of device
-						pfdialog.device.close();
-					} catch (Exception e){};
-					dialog = null;
+		{
+			JPanel panel = new JPanel();
+			contentPanel.add(panel, BorderLayout.CENTER);
+			panel.setLayout(new BorderLayout(10, 10));
+			{
+				mainPanel = new JLayeredPane();
+				mainPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+				panel.add(mainPanel);
+			}
+
+		}
+		{
+			JPanel titlePanel = new JPanel();
+			titlePanel.setBackground(Color.WHITE);
+			contentPanel.add(titlePanel, BorderLayout.NORTH);
+			titlePanel.setLayout(new MigLayout("", "[65px,grow][]", "[15px][]"));
+			{
+				lblTitle = new JLabel("Corina Preferences");
+				lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
+				titlePanel.add(lblTitle, "cell 0 0,alignx left,aligny top");
+			}
+			{
+				JPanel panel = new JPanel();
+				panel.setBackground(Color.WHITE);
+				titlePanel.add(panel, "cell 1 0 1 2,grow");
+				{
+					JLabel lblIcon = new JLabel();
+					lblIcon.setIcon(Builder.getIcon("advancedsettings.png", 48));
+					panel.add(lblIcon);
 				}
 			}
-		});
-	}
-	
-	/// begin actual, non-static code!
-	private void initPrefsDialog() {
-
-		
-		// populate everything
-		populateDialog();		
-	}
-	
-	private void setEnableProxy(boolean isEnabled) {
-		txtProxyURL.setEnabled(isEnabled);
-		txtProxyURL1.setEnabled(isEnabled);
-		spnProxyPort.setEnabled(isEnabled);
-		spnProxyPort1.setEnabled(isEnabled);
-		lblProxyServer.setEnabled(isEnabled);
-		lblProxyServer1.setEnabled(isEnabled);
-		lblProxyPort.setEnabled(isEnabled);
-		lblProxyPort1.setEnabled(isEnabled);
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void setupCOMPort()
-	{
-		if (AbstractSerialMeasuringDevice.hasSerialCapability()) {
-	
-			// first, enumerate all the ports.
-			Vector<String> comportlist = AbstractSerialMeasuringDevice.enumeratePorts();
-	
-			// do we have a COM port selected that's not in the list? (ugh!)
-			String curport = App.prefs.getPref("corina.serialsampleio.port", null);
-			if (curport != null && !comportlist.contains(curport)) {
-				comportlist.add(curport);
-			} else if (curport == null) {
-				curport = "<choose a serial port>";
-				comportlist.add(curport);
+			{
+				lblSubtitle = new JLabel("Select the preferences category to edit");
+				lblSubtitle.setFont(new Font("Dialog", Font.PLAIN, 10));
+				titlePanel.add(lblSubtitle, "cell 0 1,aligny top");
 			}
+		}
+		{
+			JPanel buttonPane = new JPanel();
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			buttonPane.setLayout(new MigLayout("", "[][54px,grow][81px]", "[3:3:3][25px]"));
+			{
+				JSeparator separator = new JSeparator();
+				buttonPane.add(separator, "cell 0 0 3 1");
+			}
+			{
+				btnResetAllPreferences = new JButton("Reset all to default");
+				buttonPane.add(btnResetAllPreferences, "cell 0 1");
+			}
+			{
+				JButton okButton = new JButton("OK");
+				okButton.addActionListener(new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						
+						NetworkPrefsPanel networkPrefsPanel = (NetworkPrefsPanel) getPreferencesPage(NetworkPrefsPanel.class);
+						if(networkPrefsPanel==null) return;						
+						
+						if(networkPrefsPanel.hasWSURLChanged())
+						{
+							int n = JOptionPane.showConfirmDialog(
+								    null,
+								    "You will need to restart Corina for the new web service URL to take effect.\n" +
+								    "Would you like to restart now?  Any unsaved changes will be lost.",
+								    "Restart required",
+								    JOptionPane.YES_NO_CANCEL_OPTION);
+
+							if(n == JOptionPane.YES_OPTION)
+							{
+								Boolean success = App.restartApplication();
+								if(success==false)
+								{
+									Alert.message("Manual restart required", 
+											"Unable to restart Corina automatically.  Please restart manually!");
+								}
+							}
+							else if (n == JOptionPane.CANCEL_OPTION)
+							{
+								return;
+							}	
+						}
+							
+						// Hide the dialog (don't close it)
+						setVisible(false);						
+					}
+					
+				});
+				buttonPane.add(okButton, "cell 2 1,growx,aligny top");
+				getRootPane().setDefaultButton(okButton);
+			}
+		}
+		
+		setupPages();
+	}
 	
-			// make the combobox, and select the current port...
-			//final JComboBox comports = new JComboBox(comportlist);
-			
-			ArrayListModel<String> portmodel = new ArrayListModel<String>();
-			
-			portmodel.addAll(comportlist);
-			hpp.getCboPort().setModel(portmodel);
-			
-			if (curport != null)
-				hpp.getCboPort().setSelectedItem(curport);
+	private void hideAllPages()
+	{
+		for(AbstractPreferencesPanel page : pageList)
+		{
+			page.setVisible(false);
+		}
+	}
 	
-				
-			
-			this.hpp.getCboPort().addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-					App.prefs.setPref("corina.serialsampleio.port",
-							(String) hpp.getCboPort().getSelectedItem());
+	private void registerPreferencesPage(AbstractPreferencesPanel page)
+	{
+		pageList.add((AbstractPreferencesPanel) page);
+	}
+	
+	private void setupPages()
+	{
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		
+		buttonBar = new JButtonBar();
+		buttonBar.setOrientation(JButtonBar.VERTICAL);
+		
+		buttonBar.setUI(new BlueishButtonBarUI());
+		buttonBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+		
+		for(final AbstractPreferencesPanel page: pageList)
+		{
+			mainPanel.add(page);
+			JToggleButton button = page.getTabButton();
+			button.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					hideAllPages();
+					page.setVisible(true);
+					lblTitle.setText(page.getPageTitle());
+					lblSubtitle.setText(page.getSubTitle());
 				}
 			});
+			
+			pageButtons.add(button);
+			buttonBar.add(button);
+		}	
+		
+		// Add button bar to toolbar panel
+		toolbarPanel.add(buttonBar);
+		
+		// Click the first tab
+		pageList.get(0).getTabButton().doClick();
+	}
+	
+
+	/**
+	 * Get the prefs panel by class
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	private AbstractPreferencesPanel getPreferencesPage(Class <? extends AbstractPreferencesPanel> clazz)
+	{
+		if(pageList.size()==0) return null;
+		
+		for(AbstractPreferencesPanel page : pageList)
+		{
+			if(page.getClass().equals(clazz))
+			{
+				return page;
+			}
 		}
 
+		return null;
+		
 	}
 	
-	private void populateDialog() {
-		// general
-		// TODO: implement cancel?
-		btnOk.setVisible(false); // no 'cancel' - prefs are automatically applied!
-		btnCancel.setText("Ok");
-		btnCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Make sure the port is released
-				try{pfdialog.device.close();
-				} catch (Exception e1){}
-				dialog.dispose();
-			
-			}
-		});
-		
-		// sample editor
-		// TODO: display units
-		new ColorComboBoxWrapper(cboTextColor, Prefs.EDIT_FOREGROUND, Color.black);
-		new ColorComboBoxWrapper(cboEditorBGColor, Prefs.EDIT_BACKGROUND, Color.white);
-		new FontButtonWrapper(btnFont, Prefs.EDIT_FONT, getFont());
-		new CheckBoxWrapper(chkShowEditorGrid, Prefs.EDIT_GRIDLINES, true);
-		scrollPaneUIDefaults.setViewportView(new UIDefaultsComponent());
-		
-		// graph
-		new ColorComboBoxWrapper(cboAxisCursorColor, Prefs.GRAPH_AXISCURSORCOLOR, Color.white);
-		new ColorComboBoxWrapper(cboChartBGColor, Prefs.GRAPH_BACKGROUND, Color.black);
-		new ColorComboBoxWrapper(cboGridColor, Prefs.GRAPH_GRIDLINES_COLOR, Color.darkGray);
-		new CheckBoxWrapper(chkShowChartGrid, Prefs.GRAPH_GRIDLINES, true);
-		
-		// networking - proxy
-		btnDefaultProxy.setActionCommand("default");
-		btnManualProxy.setActionCommand("manual");
-		btnNoProxy.setActionCommand("direct");
-		new TextComponentWrapper(txtProxyURL, "corina.proxy.http", null);
-		new SpinnerWrapper(spnProxyPort, "corina.proxy.http_port", 80);
-		new TextComponentWrapper(txtProxyURL1, "corina.proxy.https", null);
-		new SpinnerWrapper(spnProxyPort1, "corina.proxy.https_port", 443);
-		new RadioButtonWrapper(new JRadioButton[] { btnDefaultProxy, btnManualProxy, btnNoProxy }, 
-				"corina.proxy.type", "default");
-				
-		// manual proxy button behavior
-		setEnableProxy(btnManualProxy.isSelected());
-		btnManualProxy.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				setEnableProxy(btnManualProxy.isSelected());
-			}
-		});
-		
-		// networking - server & smtp
-		new TextComponentWrapper(txtWSURL, "corina.webservice.url", null);
-		new TextComponentWrapper(txtSMTPServer, "corina.mail.mailhost", null);
-		
-		// Measuring platform stuff
-		setupCOMPort();
-		
-		// force dictionary reload
-		btnReloadDictionary.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(App.dictionary);
-				
-				App.dictionary.query();
-				dlg.setVisible(true);
-			}
-		});
-		
-		// statistics
-		// TODO: Cofecha (does anyone use this?)
-		new FormatWrapper(cboTScore, "corina.cross.tscore.format", "0.00");
-		new FormatWrapper(cboRValue, "corina.cross.rvalue.format", "0.00");
-		new FormatWrapper(cboTrend, "corina.cross.trend.format", "0.0%");
-		new FormatWrapper(cboDScore, "corina.cross.dscore.format", "0.00");
-		new FormatWrapper(cboWJ, "corina.cross.weiserjahre.format", "0.0%");
-		new SpinnerWrapper(spnMinOverlap, "corina.cross.overlap", 15);
-		new SpinnerWrapper(spnMinOverlapDScore, "corina.cross.d-overlap", 100);
-		new CheckBoxWrapper(chkHighlightSig, Prefs.GRID_HIGHLIGHT, true);
-		new ColorComboBoxWrapper(cboHighlightColor, Prefs.GRID_HIGHLIGHTCOLOR, Color.green);
-	}
+
+
 	
-	private PreferencesDialog() {
-		super();
-		
-		initPrefsDialog();
-	}
 }
+	

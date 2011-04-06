@@ -19,8 +19,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
-import edu.cornell.dendro.corina.prefs.TestMeasurePanel;
 import edu.cornell.dendro.corina.ui.Builder;
+import javax.swing.border.BevelBorder;
 
 public class PlatformTestDialog extends JDialog {
 
@@ -31,6 +31,7 @@ public class PlatformTestDialog extends JDialog {
 	private final AbstractSerialMeasuringDevice device;
 	private TestMeasurePanel panelControls;
 	private JLabel lblInfo;
+	private String startupMessage = "Please attempt to measure a few rings...";
 	
 	
 	public void finish()
@@ -61,23 +62,25 @@ public class PlatformTestDialog extends JDialog {
 		setIconImage(Builder.getApplicationIcon());
 		setTitle("Test Platform Connection");
 		
-		setBounds(100, 100, 516, 258);
+		setBounds(100, 100, 569, 355);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new BorderLayout(0, 0));
+		contentPanel.setLayout(new MigLayout("", "[428.00px,grow]", "[50.00px,fill][247.00px,grow][74.00px:74.00px:74.00px]"));
 		{
 			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-			contentPanel.add(tabbedPane);
+			contentPanel.add(tabbedPane, "cell 0 1,grow");
 			{
 				JPanel panelTitle = new JPanel();
+				panelTitle.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 				panelTitle.setBackground(Color.WHITE);
-				contentPanel.add(panelTitle, BorderLayout.NORTH);
+				contentPanel.add(panelTitle, "cell 0 0,growx,aligny top");
 				panelTitle.setLayout(new MigLayout("", "[grow]", "[]"));
 				{
-					lblInfo = new JLabel("Please attempt to measure a few rings...");
+					lblInfo = new JLabel(startupMessage);
 					lblInfo.setFont(new Font("Dialog", Font.PLAIN, 11));
 					panelTitle.add(lblInfo, "cell 0 0");
+					lblInfo.setIcon(Builder.getIcon("documentinfo.png", 22));
 				}
 			}
 			
@@ -178,7 +181,7 @@ public class PlatformTestDialog extends JDialog {
 		}
 		{
 			panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device);
-			contentPanel.add(panelControls, BorderLayout.SOUTH);
+			contentPanel.add(panelControls, "cell 0 2,alignx left,aligny top");
 		}
 
 		{
@@ -192,8 +195,9 @@ public class PlatformTestDialog extends JDialog {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
-						
+						lblInfo.setText(startupMessage);
+						txtLog.setText("");
+						txtDataReceived.setText("");
 						panelControls.startCountdown();
 					}
 					

@@ -140,12 +140,9 @@ public class EditMenu extends JMenu {
     protected void addPreferences() {
         if (!Platform.isMac()) {
             addSeparator();
-            JMenuItem prefs = Builder.makeMenuItem("menus.preferences",
-                                                   "edu.cornell.dendro.corina.prefs.PreferencesDialog.showPreferences()", "advancedsettings.png");
-            add(prefs);
             
-            JMenuItem prefs2 = Builder.makeMenuItem("menus.preferences", true, "advancedsettings.png");
-            prefs2.addActionListener(new ActionListener(){
+            JMenuItem prefs = Builder.makeMenuItem("menus.preferences", true, "advancedsettings.png");
+            prefs.addActionListener(new ActionListener(){
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -154,7 +151,7 @@ public class EditMenu extends JMenu {
 				}
             	
             });
-            add(prefs2);
+            add(prefs);
                  
         }
         

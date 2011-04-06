@@ -24,10 +24,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.XCorina;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
-import edu.cornell.dendro.corina.prefs.PreferencesDialog;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 
 // TODO: refactor.  lots of duplicate code in here.
@@ -67,7 +67,7 @@ public class Macintosh {
 			// and "preferences"
 			Macintosh.registerPrefsHandler(new Runnable() {
 				public void run() {
-					PreferencesDialog.showPreferences();
+					App.showPreferencesDialog();
 				}
 			});
 
