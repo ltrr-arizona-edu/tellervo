@@ -1,8 +1,6 @@
 package edu.cornell.dendro.corina.ui;
 
 import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -15,20 +13,19 @@ import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.KeyStroke;
 
 import com.dmurph.mvc.MVCEvent;
 import com.lowagie.text.BadElementException;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
-import java.awt.Cursor;
+import edu.cornell.dendro.corina.platform.Platform;
 
 // TODO: if on 1.4, use setDisplayedMnemonicIndex() so "Save &As..."
 // underlines the correct 'A'
@@ -175,7 +172,7 @@ public class Builder {
 		
 		// set button mnemonic
 		// WHY don't we do this on mac?
-		if (!App.platform.isMac()) {
+		if (!Platform.isMac()) {
 			Integer mnemonic = I18n.getMnemonic(key);
 			if (mnemonic != null) {
 				b.setMnemonic(mnemonic);

@@ -5,7 +5,8 @@ import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.tracking.ITrackable;
 
 public class GPXBrowse extends MVCEvent implements ITrackable{
-
+	
+	private static final long serialVersionUID = 1L;
 	public final HashModel model;
 	
 	public GPXBrowse(HashModel model)

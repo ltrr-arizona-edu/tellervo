@@ -20,42 +20,22 @@
 
 package edu.cornell.dendro.corina.gui.menus;
 
-import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.TridasLocationGeometry;
-import org.tridas.util.TridasObjectEx;
-
-import edu.cornell.dendro.corina.bulkImport.view.BulkImportWindow;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.core.AppModel;
-import edu.cornell.dendro.corina.gis.CorinaGazetteerPanel;
 import edu.cornell.dendro.corina.gis.GISFrame;
-import edu.cornell.dendro.corina.gis.GISPanel;
-import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
 import edu.cornell.dendro.corina.gui.AboutBox;
-import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
-import gov.nasa.worldwind.examples.ApplicationTemplate;
-import gov.nasa.worldwind.examples.ApplicationTemplate.AppFrame;
-import gov.nasa.worldwind.examples.util.ScreenShotAction;
-import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.poi.PointOfInterest;
 
 // TODO: move all menus to corina.gui.menus or even corina.menus (i'm tending towards the latter)
 // TODO: error-log should be a singleton-window, and centered
@@ -81,24 +61,20 @@ import gov.nasa.worldwind.poi.PointOfInterest;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id: HelpMenu.java 2163 2009-09-15 19:39:09Z Peter Brewer $
 */
+@SuppressWarnings("serial")
 public class AdminMenu extends JMenu {
 	
 	
 	
   public static final CorinaAction ABOUT_ACTION = new CorinaAction("menus.about") {
     public void actionPerformed(ActionEvent ae) {
-      AboutBox.getInstance().show();
+      AboutBox.getInstance().setVisible(true);
    
     }
   };
-private JFrame frame;
-    // FIXME: do i need(want) to set font here for 1.3?  do i inherit that from my parents?
-
-	/** Make a new Admin menu. */
+/** Make a new Admin menu. */
   public AdminMenu(JFrame frame) {
       super(I18n.getText("menus.admin"));
-      
-      this.frame = frame;
       
       init();
       linkModel();  
@@ -131,9 +107,7 @@ private JFrame frame;
 	  addCurationMenu();
 	  
   }
-
-
-  	@SuppressWarnings("deprecation")
+  
 	protected void addPasswordMenu()
   	{
   	  JMenuItem changepwd = Builder.makeMenuItem("menus.admin.changepwd",

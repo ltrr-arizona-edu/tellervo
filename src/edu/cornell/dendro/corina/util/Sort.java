@@ -122,7 +122,8 @@ public class Sort {
        @param data a list to sort
        @param field the field of the Objects in data to sort by
     */
-    public static void sort(List data, String field) throws IllegalArgumentException {
+    @SuppressWarnings("unchecked")
+	public static void sort(List data, String field) throws IllegalArgumentException {
         sort(data, field, false);
     }
 
@@ -131,7 +132,8 @@ public class Sort {
        @param field the field of the Objects in data to sort by
        @param decreasing if true, sort highest-to-lowest; else, lowest-to-highest
     */
-    public static void sort(List data, String field, boolean decreasing) throws IllegalArgumentException {
+    @SuppressWarnings("unchecked")
+	public static void sort(List data, String field, boolean decreasing) throws IllegalArgumentException {
         // no data -> no need to sort (and also no way to try,
         // since i don't even know what type it would be)
         if (data.size() == 0)
@@ -188,7 +190,8 @@ public class Sort {
     }
 
     // sort |data| by |field|, high-to-low iff |decreasing|.
-    private static void sortByField(List data, Field field, boolean decreasing) throws IllegalArgumentException {
+    @SuppressWarnings("unchecked")
+	private static void sortByField(List data, Field field, boolean decreasing) throws IllegalArgumentException {
 	final boolean reverse = decreasing;
 	final Field f = field;
 
@@ -215,7 +218,8 @@ public class Sort {
     }
 
     // sort |data| by result of |method|, high-to-low iff |decreasing|
-    private static void sortByMethod(List data, Method method, boolean decreasing) throws IllegalArgumentException {
+    @SuppressWarnings("unchecked")
+	private static void sortByMethod(List data, Method method, boolean decreasing) throws IllegalArgumentException {
 	final boolean reverse = decreasing;
 	final Method m = method;
 

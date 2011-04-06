@@ -1,15 +1,10 @@
 package edu.cornell.dendro.corina.core;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.tridas.io.exceptions.InvalidDendroFileException;
-
 import com.dmurph.mvc.model.HashModel;
 
-import edu.cornell.dendro.corina.io.model.ImportModel;
-
 public class AppModel extends HashModel {
+
+	private static final long serialVersionUID = 1L;
 	public static final String NETWORK_STATUS = "networkStatus";
 	
 	public enum NetworkStatus{

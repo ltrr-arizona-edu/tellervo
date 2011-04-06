@@ -20,6 +20,7 @@ import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
  */
 
 public class LabCodeFormatter {
+	@SuppressWarnings("unused")
 	private String siteDelimiter;
 	private String unavailableValue;
 	private String codeFormat;

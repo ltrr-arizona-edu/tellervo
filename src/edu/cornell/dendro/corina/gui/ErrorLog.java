@@ -48,6 +48,7 @@ import edu.cornell.dendro.corina.util.Center;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+@SuppressWarnings("serial")
 public class ErrorLog extends JDialog {
   private static ErrorLog singleton = null;
 
@@ -76,6 +77,6 @@ public class ErrorLog extends JDialog {
       singleton = new ErrorLog();
     }
     Center.center(singleton);
-    singleton.show();
+    singleton.setVisible(true);
   }
 }

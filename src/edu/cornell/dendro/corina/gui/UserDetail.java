@@ -1,13 +1,12 @@
 package edu.cornell.dendro.corina.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 
 /**
  *
  * @author  peterbrewer
  */
+@SuppressWarnings("serial")
 public class UserDetail extends javax.swing.JDialog {
     
     /** Creates new form UserDetail */

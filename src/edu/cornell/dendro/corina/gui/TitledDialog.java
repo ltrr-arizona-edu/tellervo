@@ -1,21 +1,21 @@
 package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.Color;
-import javax.swing.JLabel;
-import java.awt.GridLayout;
-import javax.swing.JTextPane;
-import net.miginfocom.swing.MigLayout;
-import java.awt.Font;
-import javax.swing.ImageIcon;
 
+import net.miginfocom.swing.MigLayout;
+
+@SuppressWarnings("serial")
 public class TitledDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();

@@ -35,6 +35,7 @@ import java.io.File;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+@SuppressWarnings("serial")
 public class UserFriendlyFile extends File {
     /** Create a new UserFriendlyFile from a filename.
 	@param f the filename */

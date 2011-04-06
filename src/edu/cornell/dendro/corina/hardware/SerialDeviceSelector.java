@@ -12,7 +12,6 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.FlowCont
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMultiplier;
 import edu.cornell.dendro.corina.hardware.device.EveIODevice;
 import edu.cornell.dendro.corina.hardware.device.LintabDevice;
 import edu.cornell.dendro.corina.hardware.device.MetronicsGenericDevice;
@@ -140,14 +139,14 @@ public class SerialDeviceSelector {
 					} catch (Exception e) {}
 				}
 
-				UnitMultiplier units = null;
+				/*UnitMultiplier units = null;
 				if(App.prefs.getPref("corina.port.unitmultiplier", null)!=null &&
 					device.isUnitsEditable())
 				{
 					try{
 						units = UnitMultiplier.valueOf(App.prefs.getPref("corina.port.unitmultiplier", null));
 					} catch (Exception e) {}
-				}
+				}*/
 				
 				FlowControl fc = null;
 				if(App.prefs.getPref("corina.port.flowcontrol", null)!=null &&

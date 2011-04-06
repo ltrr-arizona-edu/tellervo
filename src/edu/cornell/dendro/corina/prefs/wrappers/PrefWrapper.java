@@ -84,6 +84,7 @@ public abstract class PrefWrapper<OBJTYPE> {
 	 * Get the value of the pref referenced by this wrapper
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public OBJTYPE getValue() {
 		return (OBJTYPE) prefValue;
 	}

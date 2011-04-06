@@ -56,6 +56,7 @@ public class SampleView  extends AbstractBulkImportView{
 	/**
 	 * @see edu.cornell.dendro.corina.bulkImport.view.AbstractBulkImportView#setupTableCells(javax.swing.JTable)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void setupTableCells(JTable argTable) {
 		argTable.setDefaultEditor(WSISampleTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("sampleTypeDictionary")));

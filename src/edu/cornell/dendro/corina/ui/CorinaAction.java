@@ -13,7 +13,7 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
-import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.platform.Platform;
 
 /**
  * A base Corina action which sets Mnemonic and Accelerator based on I18N settings.
@@ -77,7 +77,7 @@ public abstract class CorinaAction extends AbstractAction {
 	 * @param key
 	 */
 	private final void initialize(String key) {
-		if (!App.platform.isMac()) {			
+		if (!Platform.isMac()) {			
 			Integer mnemonic = I18n.getMnemonic(key);
 			
 			if (mnemonic != null) {

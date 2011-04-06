@@ -1,11 +1,9 @@
 package edu.cornell.dendro.corina.gis;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.markers.BasicMarker;
 import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
 import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 import gov.nasa.worldwind.render.markers.Marker;

@@ -24,7 +24,7 @@ public class WWJUtil {
 		sb.append(location);
 		sb.append("\" create=\"true\"/></writeLocations></dataFileStore>");
 		try {
-			String home = System.getProperty("user.home");
+
 			File file = File.createTempFile("adsc", ".xml");
 			file.deleteOnExit();
 			FileWriter fw = new java.io.FileWriter(file);

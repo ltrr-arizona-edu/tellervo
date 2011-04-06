@@ -104,6 +104,7 @@ public class ColorComboBoxWrapper extends ItemWrapper<Color> {
 
 	// for a given NamedColor, show "[###] Name", where [###] is a box of that
 	// color (ColorIcon)
+	@SuppressWarnings("serial")
 	private class ColorLabelRenderer extends JLabel implements
 			ListCellRenderer {
 		private ColorIcon icon = new ColorIcon();

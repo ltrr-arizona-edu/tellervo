@@ -28,6 +28,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -79,16 +80,13 @@ import edu.cornell.dendro.corina.ui.I18n;
     @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
     @version $Id$
 */
+@SuppressWarnings("serial")
 public class EditMenu extends JMenu {
-
-	private static JFrame frame;
 
 	/** Make a new Edit menu. */
     public EditMenu(JFrame frame) {
         super(I18n.getText("menus.edit"));
-        
-        this.frame = frame;
-        
+                
         init();
     }
 
@@ -140,7 +138,7 @@ public class EditMenu extends JMenu {
     }
     
     protected void addPreferences() {
-        if (!App.platform.isMac()) {
+        if (!Platform.isMac()) {
             addSeparator();
             JMenuItem prefs = Builder.makeMenuItem("menus.preferences",
                                                    "edu.cornell.dendro.corina.prefs.PreferencesDialog.showPreferences()", "advancedsettings.png");

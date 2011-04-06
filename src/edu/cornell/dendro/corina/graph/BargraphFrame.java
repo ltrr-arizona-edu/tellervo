@@ -86,7 +86,6 @@ import javax.swing.event.ChangeListener;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.PrintableDocument;
@@ -96,16 +95,15 @@ import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.FileElement;
-import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ColorUtils;
-import edu.cornell.dendro.corina.util.PopupListener;
 import edu.cornell.dendro.corina.util.Sort;
 
 /*
@@ -139,13 +137,10 @@ import edu.cornell.dendro.corina.util.Sort;
  of v) -- this was apparently a java 1.3.1 bug; it's fixed in 1.4.1.
  */
 
+@SuppressWarnings("serial")
 public class BargraphFrame extends XFrame implements PrintableDocument {
 	// display panel
 	private BargraphPanel bgp = null;
-
-	// the popup
-	private SamplePopupMenu popup;
-	private BaseSample currentBar; // bar under pointer
 
 	// constants used for drawing
 	private static final Font BAR_FONT = new Font("dialog", Font.PLAIN, 12);
@@ -657,9 +652,6 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 	private final static Color juColor = new Color(Color.HSBtoRGB(207f / 360, 0.5f, 0.9f)); // junip => blue
 	private final static Color unColor = new Color(Color.HSBtoRGB(0f / 360, 0.0f, 0.7f)); // unkn => gray
 
-	// title of this bargraph
-	private String title = "double-click here to type a title";
-
 	// the range of this graph (union of bars, extended to centuries)
 	/*private?*/Range range;
 
@@ -681,6 +673,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		public void dropActionChanged(DropTargetDragEvent event) {
 		}
 
+		@SuppressWarnings("unchecked")
 		public void drop(DropTargetDropEvent event) {
 			try {
 				Transferable transferable = event.getTransferable();
@@ -770,7 +763,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 			menubar.add(new FileMenu(this));
 			menubar.add(new EditMenu(this));
 			menubar.add(new BargraphViewMenu(this));
-			if (App.platform.isMac())
+			if (Platform.isMac())
 				menubar.add(new WindowMenu(this));
 			menubar.add(new HelpMenu());
 
@@ -834,8 +827,8 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		});
 		JToolBar tb = new JToolBar();
 		tb.setFloatable(false);
-		tb.add(Layout.flowLayoutL(new JLabel("Scale:"), new JLabel(Builder.getIcon("viewmag-.png")), zoomer, new JLabel(Builder
-				.getIcon("viewmag+.png"))));
+		tb.add(Layout.flowLayoutL(new JLabel("Scale:"), new JLabel(Builder.getIcon("viewmag-.png", 22)), zoomer, new JLabel(Builder
+				.getIcon("viewmag+.png", 22))));
 		getContentPane().add(tb, BorderLayout.NORTH);
 
 		// create popup
@@ -887,7 +880,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 
 		// display
 		setSize(new Dimension(720, 480));
-		show();
+		setVisible(true);
 
 		// scroll to top-right
 		sp.getHorizontalScrollBar().setValue(sp.getHorizontalScrollBar().getMaximum());

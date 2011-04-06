@@ -37,6 +37,7 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
@@ -52,12 +53,10 @@ import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
-import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
-import org.tridas.util.TridasObjectEx;
 import edu.cornell.dendro.corina.tridasv2.ui.support.ScrollableJButtonBar;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityListHolder;
@@ -188,6 +187,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * 
 	 * @param enabled
 	 */
+	@SuppressWarnings("unchecked")
 	protected void enableEditing(boolean enabled) {
 		propertiesTable.setEditable(enabled);
 

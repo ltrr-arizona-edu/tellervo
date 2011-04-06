@@ -1,8 +1,6 @@
 package edu.cornell.dendro.corina.gis;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.ui.Alert;
-import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -12,39 +10,22 @@ import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.examples.ApplicationTemplate;
 import gov.nasa.worldwind.examples.ClickAndGoSelectListener;
-import gov.nasa.worldwind.examples.GazetteerPanel;
-import gov.nasa.worldwind.examples.util.LayerManagerLayer;
-import gov.nasa.worldwind.exception.WWAbsentRequirementException;
-import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.pick.PickedObject;
-import gov.nasa.worldwind.render.WWIcon;
 import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.StatusBar;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSlider;
-import javax.swing.SwingConstants;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.tridas.interfaces.ITridas;
 
@@ -225,14 +206,12 @@ public class GISPanel extends JPanel implements SelectListener{
 
             if (this.selectedMarker != null)
             {
-                this.selectedMarker.setHighlighted(false);
                 this.selectedMarker = null;
             }
 
             if (marker != null)
             {
                 this.selectedMarker = marker;
-                this.selectedMarker.setHighlighted(true);
             }
 
             this.getWwd().redraw();            

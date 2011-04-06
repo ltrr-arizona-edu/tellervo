@@ -31,10 +31,10 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 
+@SuppressWarnings("serial")
 public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	private AbstractSerialMeasuringDevice device;
 	private JPanel panel;

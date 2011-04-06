@@ -678,4 +678,12 @@ public class SampleDataView extends JPanel implements SampleListener,
 		
 		
 	}
+
+	public void setRemarksPanel(RingAnnotations remarksPanel) {
+		this.remarksPanel = remarksPanel;
+	}
+
+	public RingAnnotations getRemarksPanel() {
+		return remarksPanel;
+	}
 }

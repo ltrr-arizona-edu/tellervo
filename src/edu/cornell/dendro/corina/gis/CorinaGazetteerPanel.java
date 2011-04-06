@@ -1,7 +1,6 @@
 package edu.cornell.dendro.corina.gis;
 
 import gov.nasa.worldwind.WorldWindow;
-import gov.nasa.worldwind.examples.GazetteerPanel;
 import gov.nasa.worldwind.exception.NoItemException;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
@@ -138,7 +137,8 @@ public class CorinaGazetteerPanel extends JPanel {
         this.add(resultsPanel, BorderLayout.EAST);
     }
 
-    private Gazetteer constructGazetteer(String className)
+    @SuppressWarnings("unchecked")
+	private Gazetteer constructGazetteer(String className)
         throws ClassNotFoundException, IllegalAccessException, InstantiationException
     {
         if (className == null || className.length() == 0)
@@ -193,7 +193,7 @@ public class CorinaGazetteerPanel extends JPanel {
     Coordinate formats:
     39.53, -119.816  (Reno, NV)
     21 10 14 N, 86 51 0 W (Cancun)
-    -31¡ 59' 43", 115¡ 45' 32" (Perth)
+    -31ï¿½ 59' 43", 115ï¿½ 45' 32" (Perth)
      */
     private java.util.List<PointOfInterest> parseSearchValues(String searchStr)
     {

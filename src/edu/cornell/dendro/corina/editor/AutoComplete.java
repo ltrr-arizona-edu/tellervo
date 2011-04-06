@@ -44,8 +44,11 @@ import javax.swing.event.DocumentEvent;
    @version $Id$
 */
 public class AutoComplete extends JTextField {
-    // the list of words to look for matches in
-    private List dict;
+
+	private static final long serialVersionUID = 1L;
+	// the list of words to look for matches in
+    @SuppressWarnings("unchecked")
+	private List dict;
  
     /**
        Make a new autocompleting text field.
@@ -54,12 +57,14 @@ public class AutoComplete extends JTextField {
        @param columns the number of columns of text to show
        @param dictionary a list of words to autocomplete
     */
-    public AutoComplete(String text, int columns, List dictionary) {
+    @SuppressWarnings("unchecked")
+	public AutoComplete(String text, int columns, List dictionary) {
 	super(text, columns);
 	useDictionary(dictionary);
     }
 
-    private void useDictionary(List dictionary) {
+    @SuppressWarnings("unchecked")
+	private void useDictionary(List dictionary) {
 	// sort the dictionary first?
 	this.dict = dictionary;
 
@@ -101,7 +106,7 @@ public class AutoComplete extends JTextField {
 
     // (or null, if nothing matches)
     private String matchFromDictionary(String text) {
-	String completion = null;
+
 	for (int i=0; i<dict.size(); i++) {
 	    if (((String) dict.get(i)).toUpperCase().startsWith(text.toUpperCase())) {
 		return (String) dict.get(i);

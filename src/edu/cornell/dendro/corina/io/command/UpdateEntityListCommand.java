@@ -53,6 +53,7 @@ public class UpdateEntityListCommand implements ICommand {
 	 * 
 	 * @param list
 	 */
+	@SuppressWarnings("unused")
 	private ArrayList<? extends ITridas> sortList(List<? extends ITridas> list) {
 		// Sort list intelligently
 		ArrayList<ITridas> entities = new ArrayList<ITridas>();

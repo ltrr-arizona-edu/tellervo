@@ -2,6 +2,8 @@ package edu.cornell.dendro.corina.hardware;
 
 import java.util.EventObject;
 
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataDirection;
+
 public class SerialSampleIOEvent extends EventObject {
 	
 	private static final long serialVersionUID = -6055117055932450549L;
@@ -28,12 +30,21 @@ public class SerialSampleIOEvent extends EventObject {
 	
 	private int type;
 	private Object value;
+	private DataDirection dir = DataDirection.RECEIVED;
 	
-	public SerialSampleIOEvent(Object source, int type, Object value) {
+	public SerialSampleIOEvent(Object source, int type, Object value){
 		super(source);
 		
 		this.type = type;
 		this.value = value;
+	}
+	
+	public SerialSampleIOEvent(Object source, int type, Object value, DataDirection dir) {
+		super(source);
+		
+		this.type = type;
+		this.value = value;
+		this.dir = dir;
 	}
 	
 	public Object getValue() {
@@ -42,5 +53,9 @@ public class SerialSampleIOEvent extends EventObject {
 	
 	public int getType() {
 		return type;
+	}
+	
+	public DataDirection getDataDirection(){
+		return dir;
 	}
 }

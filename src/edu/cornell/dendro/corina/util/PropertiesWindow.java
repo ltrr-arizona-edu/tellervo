@@ -1,26 +1,23 @@
 package edu.cornell.dendro.corina.util;
 
-import java.util.Collections;
-import java.util.List;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
-import java.util.Properties;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
 
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JTable;
 import javax.swing.JScrollPane;
-import javax.swing.Box;
-import javax.swing.BorderFactory;
+import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.ui.Builder;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
 
 // a window which displays all of the system properties.
 //
@@ -40,10 +37,12 @@ import java.awt.Component;
 // - i18n?
 // - distinguish between or separate standard properties, extra system properties, and corina properties?
 
+@SuppressWarnings("serial")
 public class PropertiesWindow extends JDialog {
   private static PropertiesWindow instance;
 
-  private static class Property implements Comparable {
+  @SuppressWarnings("unchecked")
+private static class Property implements Comparable {
   	private String key, value;
     private Property(String key, String value) {
 	    this.key = key;
@@ -67,15 +66,18 @@ public class PropertiesWindow extends JDialog {
   }
 
   private static class PropertiesTableModel extends AbstractTableModel {
-	  private List props;
+	  @SuppressWarnings("unchecked")
+	private List props;
     private Properties properties;
-    private PropertiesTableModel(Properties properties) {
+    @SuppressWarnings("unchecked")
+	private PropertiesTableModel(Properties properties) {
 	    // initialize from properties
       this.properties = properties;
       props = new ArrayList();
       init();
 	  }
-    public synchronized void init() {
+    @SuppressWarnings("unchecked")
+	public synchronized void init() {
       props.clear();
       Enumeration e = properties.propertyNames();
       while (e.hasMoreElements()) {
@@ -110,7 +112,7 @@ public class PropertiesWindow extends JDialog {
   public synchronized static void showPropertiesWindow() {
     PropertiesWindow pw = getInstance();
     pw.refresh();
-    pw.show();
+    pw.setVisible(true);
   }
 
   private PropertiesTableModel model;
@@ -130,10 +132,6 @@ public class PropertiesWindow extends JDialog {
 	  JLabel label = new JLabel("Here are your system properties:");
     label.setHorizontalAlignment(SwingConstants.CENTER);
 	  label.setBorder(BorderFactory.createEmptyBorder(14, 0, 14, 0));
-
-    Component leftMargin = Box.createHorizontalStrut(14);
-    Component rightMargin = Box.createHorizontalStrut(14);
-    Component bottomMargin = Box.createVerticalStrut(20);
     
     //setContentPane(Layout.borderLayout(label, leftMargin, sp, rightMargin, bottomMargin));
     

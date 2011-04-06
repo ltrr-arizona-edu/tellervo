@@ -8,6 +8,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.table.TableCellRenderer;
 
+@SuppressWarnings("serial")
 public class TextAreaRenderer extends JTextArea implements TableCellRenderer {
 	
 	  private Color grey = new Color(0.1f, 0.1f, 0.1f);

@@ -48,6 +48,7 @@ import edu.cornell.dendro.corina.core.App;
     @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
     @version $Id$
 */
+@SuppressWarnings("serial")
 public class ColorPrefComponent extends JComboBox {
 
     // a named color: supply these

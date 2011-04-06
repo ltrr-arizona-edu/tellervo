@@ -3,13 +3,10 @@ package edu.cornell.dendro.corina.editor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.GISPanel;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
-import edu.cornell.dendro.corina.io.ExportDialog;
 import edu.cornell.dendro.corina.io.control.OpenExportEvent;
 import edu.cornell.dendro.corina.print.SeriesReport;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -21,17 +18,7 @@ import gov.nasa.worldwind.examples.util.ScreenShotAction;
 // TODO: this doesn't need to be public.
 public class EditorFileMenu extends FileMenu {
 
-	// DESIGN: should this really be its own class?
-	// DESIGN: should ExportDialog really be in corina.io (and not .editor)?
-
-	// TODO: add "print sections..." menuitem?
-	// -- if so, it goes in addPrintingMenus() between
-	// addPageSetupMenu() and addPrintMenu().
-	// old comments:
-	// TODO: this shows a sections-chooser,
-	// (TODO: combine with page-chooser in corina.cross!)
-	// THEN print whatever sections you like.
-
+	private static final long serialVersionUID = 1L;
 	private Sample sample;
 		
 	public EditorFileMenu(Editor e, Sample s){

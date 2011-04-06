@@ -4,7 +4,6 @@
 package edu.cornell.dendro.corina.bulkImport.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,13 +14,11 @@ import java.awt.event.MouseListener;
 
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.TableCellEditor;
 
 import edu.cornell.dendro.corina.bulkImport.control.AddRowEvent;
 import edu.cornell.dendro.corina.bulkImport.control.CopyRowEvent;
@@ -31,7 +28,6 @@ import edu.cornell.dendro.corina.bulkImport.control.DisplayColumnChooserEvent;
 import edu.cornell.dendro.corina.bulkImport.control.RemoveSelectedEvent;
 import edu.cornell.dendro.corina.bulkImport.model.IBulkImportSectionModel;
 import edu.cornell.dendro.corina.bulkImport.model.IBulkImportTableModel;
-import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 

@@ -1,7 +1,6 @@
 package edu.cornell.dendro.corina.gis;
 
 import gov.nasa.worldwind.WorldWindow;
-import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.examples.util.ButtonAnnotation;
@@ -177,7 +176,6 @@ public abstract class AbstractTridasAnnotationController implements ActionListen
         }
     }
     
-    @SuppressWarnings({"StringEquality"})
     protected void updateToolTip(SelectEvent e)
     {
         if (e.getEventAction() != SelectEvent.HOVER)

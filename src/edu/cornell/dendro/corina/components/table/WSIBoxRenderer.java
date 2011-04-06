@@ -13,6 +13,8 @@ import edu.cornell.dendro.corina.schema.WSIBox;
  */
 public class WSIBoxRenderer extends DefaultCellRenderer {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * @see com.l2fprod.common.swing.renderer.DefaultCellRenderer#convertToString(java.lang.Object)
 	 */

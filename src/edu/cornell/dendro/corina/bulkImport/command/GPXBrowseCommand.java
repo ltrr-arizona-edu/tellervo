@@ -15,8 +15,6 @@ import com.dmurph.mvc.control.ICommand;
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 
-import edu.cornell.dendro.corina.bulkImport.control.ColumnChooserController;
-import edu.cornell.dendro.corina.bulkImport.control.ColumnsModifiedEvent;
 import edu.cornell.dendro.corina.bulkImport.control.GPXBrowse;
 import edu.cornell.dendro.corina.bulkImport.model.IBulkImportSectionModel;
 import edu.cornell.dendro.corina.gis.GPXParser;

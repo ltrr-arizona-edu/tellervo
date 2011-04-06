@@ -407,4 +407,12 @@ public class DecadalModel extends AbstractTableModel {
 			}
 		});
 	}
+
+	public void setUnitMultiplier(Double unitMultiplier) {
+		this.unitMultiplier = unitMultiplier;
+	}
+
+	public Double getUnitMultiplier() {
+		return unitMultiplier;
+	}
 }

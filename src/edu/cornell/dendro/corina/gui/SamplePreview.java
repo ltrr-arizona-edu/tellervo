@@ -28,8 +28,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -41,9 +41,9 @@ import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.io.WrongFiletypeException;
 import edu.cornell.dendro.corina.logging.CorinaLog;
-import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 
+@SuppressWarnings("serial")
 public class SamplePreview extends JPanel implements PropertyChangeListener {
   private static final CorinaLog log = new CorinaLog(SamplePreview.class);
 

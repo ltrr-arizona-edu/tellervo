@@ -3,10 +3,8 @@
  */
 package edu.cornell.dendro.corina.gui;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -18,7 +16,6 @@ import java.awt.event.FocusListener;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -27,12 +24,12 @@ import javax.swing.JTextField;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.Center;
 
 /**
  * @author lucasm
  *
  */
+@SuppressWarnings("serial")
 public class LoginPanel extends JPanel {
 
 	private JTextField username;
@@ -42,7 +39,7 @@ public class LoginPanel extends JPanel {
 	private JCheckBox autoLogin;
 	private JLabel subtitle;	
 	private JButton loginButton;
-	private boolean cancelled = true;
+
 	
 	public LoginPanel() {
 		super();
@@ -206,11 +203,7 @@ public class LoginPanel extends JPanel {
 	 * Ensure our checkbox mnemonic makes sense.
 	 */
 	private void checkCheckboxes() {
-		if(false) { //autoLogin.isSelected()) {
-			rememberPassword.setSelected(true);
-			rememberPassword.setEnabled(false);			
-		}
-		else {
+		{
 			rememberUsername.setEnabled(true);
 			rememberPassword.setEnabled(true);
 		}
@@ -223,6 +216,7 @@ public class LoginPanel extends JPanel {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void loadSettings() {
 		String tmp;
 		
@@ -291,6 +285,7 @@ public class LoginPanel extends JPanel {
 		return out.toString();
 	}
 	
+	@SuppressWarnings("unused")
 	private void saveSettings() {
 		if(rememberUsername.isSelected()) {
 			App.prefs.setPref("corina.login.remember_username", "true");
@@ -316,6 +311,7 @@ public class LoginPanel extends JPanel {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void placeCursor() {
 		if(username.getText().length() == 0) {
 			username.requestFocus();

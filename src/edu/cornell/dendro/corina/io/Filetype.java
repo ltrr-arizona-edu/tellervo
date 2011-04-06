@@ -20,12 +20,11 @@
 
 package edu.cornell.dendro.corina.io;
 
-import edu.cornell.dendro.corina.sample.Sample;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+
+import edu.cornell.dendro.corina.sample.Sample;
 
 /**
    This is the interface which all file formats must implement.

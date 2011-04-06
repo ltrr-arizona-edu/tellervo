@@ -13,6 +13,7 @@ public class WMSTableModel implements TableModel {
 	ArrayList<WSIWmsServer> servers = new ArrayList<WSIWmsServer>();
 	ArrayList<WSIWmsServer> systemServers = new ArrayList<WSIWmsServer>();
 	
+	@SuppressWarnings("unchecked")
 	public WMSTableModel()
 	{
 		systemServers = Dictionary.getMutableDictionary("wmsServerDictionary");

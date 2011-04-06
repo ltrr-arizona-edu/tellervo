@@ -4,10 +4,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.core.AppModel;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
-import gov.nasa.worldwind.layers.Layer;
-import gov.nasa.worldwind.layers.LayerList;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,8 +14,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
-import javax.swing.AbstractButton;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -27,9 +22,9 @@ public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 	private static final long serialVersionUID = -6739232540394701181L;
 	private JMenuItem overview, compass, scalebar, layerslist, stars, atmosphere, blueMarble, blueMarbleWMS2004, landsat, 
 	usda, msAerial, boundaries, placenames, wmslayermanager;
-	private  ItemListener iListener;
+
 	private WorldWindowGLCanvas wwd;
-	private ArrayList<String> visibleLayers;
+;
 	private WMSManager layermanager;
 	
 	public enum GISLayers{
@@ -55,7 +50,7 @@ public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
         super(I18n.getText("menus.view"));
         
         this.wwd = wwd;
-        this.visibleLayers = visibleLayers;
+
         
 		addLayersMenu();
 		addSeparator();
@@ -154,8 +149,6 @@ public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 	private void setupMenuButton(GISLayers layer)
 	{
 		try{
-			Layer layers = wwd.getModel().getLayers().getLayerByName(layer.getName());
-
 			setMenuButtonSelected(wwd.getModel().getLayers().getLayerByName(layer.getName()).isEnabled(), layer);
 		} catch (Exception e)
 		{

@@ -21,7 +21,6 @@ import org.tridas.util.TridasObjectEx;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
-import com.lowagie.text.Font;
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
@@ -544,9 +543,6 @@ public class BoxLabel extends ReportBase{
 		// Set up calendar
 		Date createdTimestamp = b.getCreatedTimestamp().getValue()
 				.toGregorianCalendar().getTime();
-		Date lastModifiedTimestamp = b.getLastModifiedTimestamp()
-				.getValue().toGregorianCalendar().getTime();
-		
 		Date nowTimestamp = new Date();
 		
 		DateFormat df1 = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
@@ -567,23 +563,6 @@ public class BoxLabel extends ReportBase{
 	}
 	
 
-	
-	/**
-	 * Get the font style to use in the table based on column number
-	 * @param col column number
-	 * @return Font
-	 */
-	private  Font getTableFont(int col)
-	{
-		
-		if (col==0)	{
-			return tableHeaderFontLarge;
-		}
-		else {
-			return bodyFontLarge;
-		}
-				
-	}
 	
 	private Paragraph getComments(WSIBox b) throws DocumentException
 	{

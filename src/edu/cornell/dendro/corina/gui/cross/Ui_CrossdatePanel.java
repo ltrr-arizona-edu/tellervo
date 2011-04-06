@@ -2,10 +2,7 @@ package edu.cornell.dendro.corina.gui.cross;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
-import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 
 
@@ -21,6 +18,7 @@ import edu.cornell.dendro.corina.ui.I18n;
  *
  * @author  peterbrewer
  */
+@SuppressWarnings("serial")
 public class Ui_CrossdatePanel extends javax.swing.JPanel {
     
     /** Creates new form Ui_CrossdatePanel */

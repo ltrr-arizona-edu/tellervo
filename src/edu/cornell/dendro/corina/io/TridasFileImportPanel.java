@@ -21,6 +21,7 @@ import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectEvent;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectListener;
 import edu.cornell.dendro.corina.io.view.TridasOutlineRenderData;
 
+@SuppressWarnings("serial")
 public class TridasFileImportPanel extends JPanel implements TridasSelectListener{
 
 	private TridasProject proj;

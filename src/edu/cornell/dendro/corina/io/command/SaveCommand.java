@@ -5,7 +5,6 @@ package edu.cornell.dendro.corina.io.command;
 
 import java.io.File;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 

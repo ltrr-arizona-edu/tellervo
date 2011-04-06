@@ -42,20 +42,18 @@ import java.net.URL;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
-import edu.cornell.dendro.corina.Build;
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.EditorFactory;
 import edu.cornell.dendro.corina.gui.menus.AdminMenu;
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
@@ -159,7 +157,7 @@ public class XCorina extends JFrame {
 			menubar.add(new EditMenu(this));
 			menubar.add(new AdminMenu(this));
 			//menubar.add(new OldCrossdateMenu());
-			if (App.platform.isMac())
+			if (Platform.isMac())
 				menubar.add(new WindowMenu(this));
 			menubar.add(new HelpMenu());
 			setJMenuBar(menubar);
@@ -314,7 +312,7 @@ public class XCorina extends JFrame {
 		// for Mac OS: by
 		// http://developer.apple.com/techpubs/macosx/Java/Reference/Java/com/apple/mrj/MRJQuitHandler.html#handleQuit()
 		// throw IllegalStateException to prevent the quit
-		if (App.platform.isMac())
+		if (Platform.isMac())
 			throw new IllegalStateException();
 	}
 

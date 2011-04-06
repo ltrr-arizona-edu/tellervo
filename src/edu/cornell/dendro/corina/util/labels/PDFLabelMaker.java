@@ -34,26 +34,13 @@ import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
 
 public class PDFLabelMaker {
 	private LabelPage margins;
-	
 	private int nAcross;
 	private int nDown;
-
 	private int curX;
-	@SuppressWarnings("unused")
-	private int curY;
-	
 	private Document document;
 	private PdfContentByte contentb;
-	private PdfWriter writer;
-	
 	private PdfPTable table;
-	
-	private int horizontalAlignment = Element.ALIGN_RIGHT;
-	private int verticalAlignment = Element.ALIGN_MIDDLE;
-	
 	private Font labelfont = new Font(Font.HELVETICA, 15f, Font.BOLD);
-	private Font uuidfont = new Font(Font.HELVETICA, 6f);
-	
 	private Integer borderwidth = 1;
 	
 	
@@ -130,7 +117,7 @@ public class PDFLabelMaker {
 		table.setLockedWidth(true);
 		table.getDefaultCell().setPadding(0);
 		
-		curX = curY = 0;
+
 	}
 	
 	public void addCell(PdfPCell cell) {

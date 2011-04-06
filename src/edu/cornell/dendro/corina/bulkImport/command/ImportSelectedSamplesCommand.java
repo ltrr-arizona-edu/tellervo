@@ -19,7 +19,6 @@ import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.bulkImport.model.BulkImportModel;
-import edu.cornell.dendro.corina.bulkImport.model.ElementModel;
 import edu.cornell.dendro.corina.bulkImport.model.IBulkImportSingleRowModel;
 import edu.cornell.dendro.corina.bulkImport.model.SampleModel;
 import edu.cornell.dendro.corina.bulkImport.model.SampleTableModel;

@@ -79,7 +79,6 @@ import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyRendererFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
-import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityListHolder;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -700,7 +699,6 @@ public class ImportView extends JDialog{
 	 * @param parentNode 
 	 * @param entity
 	 */
-	@SuppressWarnings("unchecked")
 	private void updateMetadataPanel() {
 
 		if(!isUserOkWithLoosingAnyChanges())
@@ -710,8 +708,6 @@ public class ImportView extends JDialog{
 		
 		// Enable or disable the data page depending on current entity type
 		updateDataPanel();	
-		
-		boolean hasChanged = false;
 		
 		// Set the text in the top bar
 		//setTopBarSummaryTitle(parentNode);
@@ -1095,6 +1091,7 @@ public class ImportView extends JDialog{
 	 * @param node
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private TreePath getPath(TreeNode node) { 
 		List list = new ArrayList(); 
 		// Add all nodes to list 
@@ -1194,6 +1191,7 @@ public class ImportView extends JDialog{
 	/**
 	 * @return true if the user wants to lose the new selection, false otherwise
 	 */
+	@SuppressWarnings("unused")
 	private boolean isUserOkWithLoosingSelection() {
 		
 		// nothing new has been selected, nothing to lose

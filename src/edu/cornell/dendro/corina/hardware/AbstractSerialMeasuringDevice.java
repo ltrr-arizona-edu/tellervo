@@ -195,6 +195,11 @@ public abstract class AbstractSerialMeasuringDevice
 		}
 	}
 	
+	public String getPortName()
+	{
+		return portName;
+	}
+	
 	/**
 	 * Get the state of the port
 	 * 
@@ -364,8 +369,19 @@ public abstract class AbstractSerialMeasuringDevice
 	public void removeSerialSampleIOListener(SerialSampleIOListener l) {
 		listeners.remove(l);
 	}
+
 	
-	protected synchronized void fireSerialSampleEvent(Object source, int type, Object value) {
+	public enum DataDirection{
+		SENT,
+		RECEIVED;	
+	}
+	
+	protected synchronized void fireSerialSampleEvent(Object source, int type, Object value)
+	{
+		fireSerialSampleEvent(source, type, value, DataDirection.RECEIVED);
+	}
+	
+	protected synchronized void fireSerialSampleEvent(Object source, int type, Object value, DataDirection dir) {
 		// alert all listeners
 		SerialSampleIOListener[] l;
 		synchronized (listeners) {
@@ -378,7 +394,7 @@ public abstract class AbstractSerialMeasuringDevice
 		if (size == 0)
 			return;
 
-		SerialSampleIOEvent e = new SerialSampleIOEvent(source, type, value);
+		SerialSampleIOEvent e = new SerialSampleIOEvent(source, type, value, dir);
 
 		for (int i = 0; i < size; i++) {
 			l[i].SerialSampleIONotify(e);
@@ -592,6 +608,7 @@ public abstract class AbstractSerialMeasuringDevice
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static Vector enumeratePorts() {
 		Enumeration ports = CommPortIdentifier.getPortIdentifiers();
 		Vector portStrings = new Vector();
@@ -634,7 +651,7 @@ public abstract class AbstractSerialMeasuringDevice
 		}
 		else if(sse.getType() == SerialSampleIOEvent.RAW_DATA){
 			String value = (String) sse.getValue();
-			receiver.receiverRawData(value);
+			receiver.receiverRawData(sse.getDataDirection(), value);
 		}
 		
 	}

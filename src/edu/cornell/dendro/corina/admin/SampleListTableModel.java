@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JTable;
-import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 
 import org.tridas.schema.TridasGenericField;

@@ -20,14 +20,13 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import edu.cornell.dendro.corina.ui.Builder;
-
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
+
+import edu.cornell.dendro.corina.ui.Builder;
 
 /**
    A generic frame (window).  All non-transient frames should subclass

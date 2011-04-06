@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 
+@SuppressWarnings("serial")
 class GraphEditMenu extends EditMenu {
 	
 	public GraphEditMenu(JFrame frame) {
@@ -14,7 +15,6 @@ class GraphEditMenu extends EditMenu {
 		// TODO Auto-generated constructor stub
 	}
 
-	private GraphWindow window;
 
 	/*
 	 * -- DISABLED until i'm sure it works: copy svg to clipboard protected

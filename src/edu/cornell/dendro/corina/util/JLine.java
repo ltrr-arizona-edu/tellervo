@@ -9,6 +9,7 @@ import java.awt.Color;
 /** A line, since JSeparator apparently can't be used (reliably, anyway)
 outside of menus. */
 
+@SuppressWarnings("serial")
 public class JLine extends JPanel implements SwingConstants {
     /** Create a new horizontal line. */
     public JLine() {

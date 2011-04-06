@@ -22,25 +22,25 @@ import javax.swing.table.AbstractTableModel;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 
+@SuppressWarnings("serial")
 public class UIDefaultsTableModel extends AbstractTableModel {
   private static final CorinaLog log = new CorinaLog(UIDefaultsTableModel.class);
   
   private Object[][] data;
-  private Component component;
-
   public void setComponent(Component comp) {
-    component = comp;
   }
 
   public UIDefaultsTableModel() {
     this(UIManager.getDefaults());
   }
 
-  public UIDefaultsTableModel(Hashtable defaults) {
+  @SuppressWarnings("unchecked")
+public UIDefaultsTableModel(Hashtable defaults) {
     init(defaults);
   }
   
-  public void init(Hashtable defaults) {
+  @SuppressWarnings("unchecked")
+public void init(Hashtable defaults) {
     ArrayList list = new ArrayList(defaults.size());
     Enumeration e = defaults.keys();
     while (e.hasMoreElements()) {
@@ -114,7 +114,8 @@ public void setValueAt(Object value, int row, int col) {
     });
   }
   
-  public synchronized void reset() {
+  @SuppressWarnings("unchecked")
+public synchronized void reset() {
     UIDefaults uidefaults = UIManager.getDefaults();
     
     CorinaLog.realErr.println("Clearing UIDefaults preferences");
@@ -173,7 +174,8 @@ public String getColumnName(int columnIndex) {
       return "Value";
   }
 
-  @Override
+  @SuppressWarnings("unchecked")
+@Override
 public Class getColumnClass(int c) {
     log.trace("getColumnClass: " + c);
     if (c == 0) return String.class;

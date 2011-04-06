@@ -9,11 +9,9 @@ import java.util.Comparator;
 
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
@@ -27,12 +25,9 @@ import edu.cornell.dendro.corina.bulkImport.model.ObjectModel;
 import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
-import edu.cornell.dendro.corina.components.table.DynamicJComboBox.DynamicJComboBoxStyle;
 import edu.cornell.dendro.corina.components.table.DynamicKeySelectionManager;
-import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxFilter;
 import edu.cornell.dendro.corina.components.table.TridasObjectExRenderer;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gis.GPXParser;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.schema.WSIObjectTypeDictionary;
 import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer;
@@ -56,6 +51,7 @@ public class ObjectView extends AbstractBulkImportView{
 	/**
 	 * @see edu.cornell.dendro.corina.bulkImport.view.AbstractBulkImportView#setupTableCells(javax.swing.JTable)
 	 */
+	@SuppressWarnings("serial")
 	@Override
 	protected void setupTableCells(JTable argTable) {
 		argTable.setDefaultEditor(WSIObjectTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("objectTypeDictionary")));

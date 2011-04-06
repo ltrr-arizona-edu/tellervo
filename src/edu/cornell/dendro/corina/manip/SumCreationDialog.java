@@ -5,17 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasIdentifier;

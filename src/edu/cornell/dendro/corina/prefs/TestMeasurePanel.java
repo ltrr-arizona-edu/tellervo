@@ -6,10 +6,12 @@ package edu.cornell.dendro.corina.prefs;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
+import org.tridas.io.util.StringUtils;
+
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.MeasurePanel;
 import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
-import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataDirection;
 import edu.cornell.dendro.corina.ui.I18n;
 
 
@@ -34,6 +36,9 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		this.log = txtLog;
 		this.infoLabel = infoLabel;
 		
+		
+		
+		
 		// Hide extra widgets
 		btnQuit.setVisible(false);
 		
@@ -41,11 +46,24 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		
 	}
 
-	private void startCountdown()
+	public void startCountdown()
 	{
 		java.util.Timer timer = new java.util.Timer();
 		task = new TimeoutTask(infoLabel, this.lastMeasurement, this);
 		timer.scheduleAtFixedRate(task, 0, 1000);
+		
+		log.setText(log.getText()+"********************************\n");
+		log.setText(log.getText()+"Starting measuring platform test\n");
+		log.setText(log.getText()+"********************************\n");
+		log.setText(log.getText()+"Platform type: "+super.dev.toString()+"\n");
+		log.setText(log.getText()+"Port         : "+super.dev.getPortName()+"\n");
+		log.setText(log.getText()+"Baud rate    : "+super.dev.getBaud()+"\n");
+		log.setText(log.getText()+"Data bits    : "+super.dev.getDataBits()+"\n");
+		log.setText(log.getText()+"Stop bits    : "+super.dev.getStopBits()+"\n");
+		log.setText(log.getText()+"Parity       : "+super.dev.getParity()+"\n");
+		log.setText(log.getText()+"Flow control : "+super.dev.getFlowControl()+"\n");
+		log.setText(log.getText()+"Line feed    : "+super.dev.getLineFeed()+"\n");
+		log.setText(log.getText()+"********************************\n");
 	}
 	
 	public void cancelCountdown()
@@ -72,22 +90,19 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 			return;
 		}
 				
-		txt.setText(txt.getText()+"["+I18n.getText("preferences.hardware.datareceived")+"] : "+value+"\n");
+		txt.setText(txt.getText()+value+"μm\n");
 		infoLabel.setText("Success!  Data recieved from platform");
 	}
 		
 	@Override
-	public void receiverRawData(String value) {
+	public void receiverRawData(DataDirection dir, String value) {
 		
 		if(value==null) return;
 		if(log==null) return;
 		
-		log.setText(log.getText()+value+"\n");
+		log.setText(log.getText()+StringUtils.leftPad("["+dir.toString()+"] ", 11)+value+"\n");
+		try{ log.setCaretPosition(log.getText().length()-1); } catch (Exception e){ }
 	}
-	
-	
-
-	
 	
 	class TimeoutTask extends java.util.TimerTask
 	{

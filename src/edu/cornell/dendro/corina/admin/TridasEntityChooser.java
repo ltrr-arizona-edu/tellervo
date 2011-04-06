@@ -2,38 +2,24 @@ package edu.cornell.dendro.corina.admin;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.HeadlessException;
-import java.awt.Window;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.JColorChooser;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.JRadioButton;
-import javax.swing.JFormattedTextField;
-import javax.swing.JWindow;
+import javax.swing.JPanel;
+import javax.swing.JTextPane;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -43,12 +29,9 @@ import org.tridas.util.TridasObjectEx;
 import edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectEvent;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectListener;
-import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel.TreeDepth;
-import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel;
-import java.awt.Font;
-import javax.swing.JTextPane;
+import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel.TreeDepth;
+import edu.cornell.dendro.corina.ui.Builder;
 
 public class TridasEntityChooser extends JDialog implements ActionListener, TridasSelectListener{
 
@@ -229,6 +212,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void entitySelected(TridasSelectEvent event) {
 		

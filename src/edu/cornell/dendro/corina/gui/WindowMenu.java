@@ -14,11 +14,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.platform.Platform;
 
 // REFACTOR: this is very similar to OpenRecent, a menu shared by all open frames.
 
 // this is the most gloriously fucked up class.  whee...
+@SuppressWarnings("serial")
 public class WindowMenu extends JMenu {
     //
     // class data
@@ -27,13 +28,16 @@ public class WindowMenu extends JMenu {
     // list of windows: just ask Frame for it?
 
     // lists of menus and frames
-    private static List menus = new ArrayList();
-    private static List frames = new ArrayList();
+    @SuppressWarnings("unchecked")
+	private static List menus = new ArrayList();
+    @SuppressWarnings("unchecked")
+	private static List frames = new ArrayList();
 
     //
     // instance data
     //    
-    public WindowMenu(JFrame target) {
+    @SuppressWarnings("unchecked")
+	public WindowMenu(JFrame target) {
         super("Window");
         final JFrame w = target;
         
@@ -56,7 +60,7 @@ public class WindowMenu extends JMenu {
                 // the only reason they'd want wide windows is for element lists,
                 // but that's not terribly common, so let's just maximize-tall.
                 int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
-                if (App.platform.isMac()) // menubar
+                if (Platform.isMac()) // menubar
                     screenHeight -= 22;
                 // take out any from the PC screenHeight?
                 w.setSize(w.getSize().width, w.getSize().height>=screenHeight ? 480 : screenHeight);
@@ -148,7 +152,7 @@ public class WindowMenu extends JMenu {
                             break;
                         }
                     }
-                    if (App.platform.isMac())
+                    if (Platform.isMac())
                         m.updateUI(); // WHOOPS: this swaps the help/windows menus.  but without it, it's worse.  ugh.
                 }
 

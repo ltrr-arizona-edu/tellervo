@@ -23,8 +23,6 @@ package edu.cornell.dendro.corina.gui;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
 
 import javax.swing.JFileChooser;
@@ -36,7 +34,6 @@ import javax.swing.filechooser.FileFilter;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.sample.ElementList;
-import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**
@@ -157,6 +154,7 @@ public class FileDialog {
 	// ie opening/saving files ("general"), 
 	// exporting ("export"), etc.
 	
+	@SuppressWarnings("unchecked")
 	private static HashMap workingDirectories = new HashMap();
 	
 	private static String getWorkingDirectory(String function) {
@@ -168,6 +166,7 @@ public class FileDialog {
 		return wd;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static void setWorkingDirectory(String function, String wd) {
 		System.out.println("Setwd for " + function + ": " + wd);
 		workingDirectories.put(function, wd);
@@ -366,6 +365,7 @@ public class FileDialog {
 		return showMultiReal(prompt, list, "general");
 	}
 
+	@SuppressWarnings("serial")
 	private static ElementList showMultiReal(String prompt, ElementList list, String function)
 			throws UserCancelledException {
 		// big-preview-list-component-thingy ... yeah.
@@ -416,5 +416,9 @@ public class FileDialog {
 
 		// return samples
 		return mp.getElementList();
+	}
+
+	public static CorinaLog getLog() {
+		return log;
 	}
 }

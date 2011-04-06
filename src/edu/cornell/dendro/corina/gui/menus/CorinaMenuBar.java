@@ -3,7 +3,7 @@ package edu.cornell.dendro.corina.gui.menus;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 
-import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.platform.Platform;
 
 // default:
 // - FileMenu
@@ -25,6 +25,7 @@ import edu.cornell.dendro.corina.core.App;
 // --- (manip, sum, graph, etc.)
 // - override addFileMenu() to add a custom file menu (with Export...)
 // - override addEditMenu() to add a custom edit menu (with undo/cut/insert/etc.)
+@SuppressWarnings("serial")
 public class CorinaMenuBar extends JMenuBar {
 
     private JFrame f; // does this need to be protected?
@@ -61,7 +62,7 @@ public class CorinaMenuBar extends JMenuBar {
     }
 
     public void addWindowMenu() {
-	if (App.platform.isMac())
+	if (Platform.isMac())
 	    add(new WindowMenu(f));
     }
 

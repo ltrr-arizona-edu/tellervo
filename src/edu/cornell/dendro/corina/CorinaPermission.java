@@ -6,7 +6,10 @@ import java.security.BasicPermission;
  * Permission class for Corina permissions.
  */
 public class CorinaPermission extends BasicPermission {
-  public CorinaPermission(String name) {
-    super(name);
-  }
+
+	private static final long serialVersionUID = 1L;
+
+	public CorinaPermission(String name) {
+	    super(name);
+	  }
 }

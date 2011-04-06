@@ -5,13 +5,9 @@ package edu.cornell.dendro.corina.components.table;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.TridasShape;
-
-import com.dmurph.mvc.model.MVCArrayList;
 
 /**
  * @author Daniel
@@ -19,6 +15,7 @@ import com.dmurph.mvc.model.MVCArrayList;
  */
 public class TridasShapeComboBox extends DynamicJComboBox<TridasShape>{
 
+	private static final long serialVersionUID = 1L;
 	private ArrayList<TridasShape> data = new ArrayList<TridasShape>();
 	
 	public TridasShapeComboBox(){

@@ -7,7 +7,6 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 
 import edu.cornell.dendro.corina.core.App;
@@ -17,6 +16,7 @@ import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.BugReport.DocumentHolder;
 
 
+@SuppressWarnings("serial")
 public class BugReportDialog extends BugReportInfoPanel_UI implements ActionListener {
 	private BugReport report;
 	private JDialog dialog;

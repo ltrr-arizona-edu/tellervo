@@ -3,7 +3,7 @@
  */
 package edu.cornell.dendro.corina.components.table;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.tridas.schema.TridasShape;
 
 import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
@@ -24,6 +24,6 @@ public class TridasShapeRenderer extends DefaultCellRenderer {
 			return "";
 		}
 		TridasShape shape = (TridasShape) argValue;
-		return StringUtils.capitaliseAllWords(shape.getNormalTridas().toString().replaceAll("___", " ").toLowerCase());
+		return WordUtils.capitalize(shape.getNormalTridas().toString().replaceAll("___", " ").toLowerCase());
 	}
 }

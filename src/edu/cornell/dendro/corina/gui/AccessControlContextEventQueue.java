@@ -8,7 +8,8 @@ import java.security.PrivilegedAction;
 
 // http://forum.java.sun.com/thread.jsp?forum=60&thread=254513
 public class AccessControlContextEventQueue extends EventQueue {
-  private final class PrivilegedActionEvent implements PrivilegedAction {
+  @SuppressWarnings("unchecked")
+private final class PrivilegedActionEvent implements PrivilegedAction {
     private AWTEvent event;
     public Object run() {
       AccessControlContextEventQueue.this.superDispatchEvent(event);
@@ -16,7 +17,8 @@ public class AccessControlContextEventQueue extends EventQueue {
     }
   }
   private final AccessControlContext aContext = AccessController.getContext();
-  private final ThreadLocal threadlocal = new ThreadLocal() {
+  @SuppressWarnings("unchecked")
+private final ThreadLocal threadlocal = new ThreadLocal() {
     @Override
 	protected synchronized Object initialValue() {
       return new PrivilegedActionEvent();
@@ -25,7 +27,8 @@ public class AccessControlContextEventQueue extends EventQueue {
   private void superDispatchEvent(final AWTEvent event) {
     super.dispatchEvent(event);
   }
-  @Override
+  @SuppressWarnings("unchecked")
+@Override
 protected void dispatchEvent(final AWTEvent event){
     PrivilegedActionEvent pae = (PrivilegedActionEvent) threadlocal.get();
     pae.event = event;

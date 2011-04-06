@@ -6,17 +6,14 @@ import java.util.EnumMap;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.schema.SeriesLink;
-import org.tridas.schema.SeriesLinks;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasRemark;
 
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.CachedElement;

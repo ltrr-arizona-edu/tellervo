@@ -19,7 +19,7 @@ import javax.swing.MutableComboBoxModel;
  * @author Daniel Murphy
  *
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings("unchecked")
 public class DynamicJComboBoxModel<E> extends AbstractListModel implements MutableComboBoxModel, Serializable{
 	private static final long serialVersionUID = 1L;
 	

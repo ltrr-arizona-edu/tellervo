@@ -9,17 +9,20 @@ import java.util.List;
 import edu.cornell.dendro.corina.Year;
 
 public class DensityGraph implements Graphable {
+	@SuppressWarnings("unchecked")
 	private List data;
 	private Year start;
 	private String gname;
 	
+	@SuppressWarnings("unchecked")
 	public DensityGraph(List data, Year start, String name) {		
 		this.data = data;
 		this.start = start;
 		this.gname = name;
 	}
 	
-    public List getData() {
+    @SuppressWarnings("unchecked")
+	public List getData() {
         return data;
     }
     

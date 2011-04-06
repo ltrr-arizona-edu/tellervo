@@ -67,16 +67,15 @@ import edu.cornell.dendro.corina.util.Center;
  * @author Lucas
  *
  */
+@SuppressWarnings({"serial", "unchecked"})
 public class GraphPrintDialog extends JPanel {
 	
 	public final static int PRINT_PRINTER = 1;
 	public final static int PRINT_PDF = 2;
 	public final static int PRINT_PNG = 3;
-	
-	// this is what actually does the graphing for us...
-	private GrapherPanel plot;
 	private GraphInfo gInfo;
 	
+
 	public GraphPrintDialog(JFrame parent, List graphs, GrapherPanel plot, int printType) {
 		final JDialog d;
 		final PreviewPanel preview;

@@ -76,9 +76,11 @@ import javax.swing.text.html.HTMLFrameHyperlinkEvent;
       <li>add searching capabilities?
    </ul>
 */
+@SuppressWarnings("serial")
 public class HelpBrowser extends JFrame {
     // history
-    private Stack back=new Stack(), fwd=new Stack();
+    @SuppressWarnings("unchecked")
+	private Stack back=new Stack(), fwd=new Stack();
 
     // forward/back buttons
     private JButton backButton, fwdButton;
@@ -136,6 +138,7 @@ public class HelpBrowser extends JFrame {
 	// back button
 	backButton = new JButton("Back");
 	backButton.addActionListener(new AbstractAction() {
+		@SuppressWarnings("unchecked")
 		public void actionPerformed(ActionEvent e) {
 		    fwd.push(editorPane.getPage());
 		    try {
@@ -153,6 +156,7 @@ public class HelpBrowser extends JFrame {
 	// fwd button
 	fwdButton = new JButton("Forward");
 	fwdButton.addActionListener(new AbstractAction() {
+		@SuppressWarnings("unchecked")
 		public void actionPerformed(ActionEvent e) {
 		    back.push(editorPane.getPage());
 		    try {
@@ -175,11 +179,12 @@ public class HelpBrowser extends JFrame {
 
 	// show it
 	pack();
-	show();
+	setVisible(true);
     }
 
     // listener for hyperlinks
     private class LinkListener implements HyperlinkListener {
+	@SuppressWarnings("unchecked")
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 	    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 		JEditorPane pane = (JEditorPane) e.getSource();

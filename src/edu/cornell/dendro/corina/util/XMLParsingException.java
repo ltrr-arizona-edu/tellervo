@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.jdom.Document;
 
+@SuppressWarnings("serial")
 public class XMLParsingException extends IOException {
 	
 	private Document nonvalidatingDocument;

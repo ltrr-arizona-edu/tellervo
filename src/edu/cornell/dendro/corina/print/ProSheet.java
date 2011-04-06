@@ -352,24 +352,6 @@ public class ProSheet extends ReportBase {
 		return p;
 	}
 	
-
-	
-	/**
-	 * Function for printing or viewing series report
-	 * @param printReport Boolean
-	 * @param vmid String
-	 */
-	private static void getReport(Boolean printReport, String objid)
-	{
-	/*	String domain = App.domain;
-		TridasObject obj = null;
-		
-		obj = PrintReportFramework.getCorinaObjectFromID(domain, objid);
-		
-		getReport(printReport, obj);
-		*/
-		
-	}
 	
 	/**
 	 * Function for printing or viewing series report

@@ -1,8 +1,6 @@
 package edu.cornell.dendro.corina.hardware.device;
 
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,27 +9,12 @@ import java.util.regex.Pattern;
 
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.SerialSampleIOEvent;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.BaudRate;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataBits;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.FlowControl;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortState;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMultiplier;
-
-import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 
 public class MetronicsGenericDevice extends AbstractSerialMeasuringDevice{
 
 	private static final int EVE_ENQ = 5;
-	private static final int EVE_ACK = 6;
-	//private static final int EVE_NAK = 7;
-	
-	/** serial NUMBER of the last data point... */
-	private int lastSerial = -1;
-	
+		
 	@Override
 	public void setDefaultPortParams(){
 		
@@ -87,7 +70,6 @@ public class MetronicsGenericDevice extends AbstractSerialMeasuringDevice{
 	public void serialEvent(SerialPortEvent e) {
 		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			InputStream input;
-			OutputStream output;
 			
 			try {
 				input = getPort().getInputStream();
@@ -110,6 +92,7 @@ public class MetronicsGenericDevice extends AbstractSerialMeasuringDevice{
 			    	}
 
                 String strReadBuffer = readBuffer.toString();
+                fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
  	
 		    	// Raw data is in mm like "2.575"
                 // Strip label or units if present
@@ -187,6 +170,8 @@ public class MetronicsGenericDevice extends AbstractSerialMeasuringDevice{
 	    
 	    byte[] command = (strCommand+lineFeed.toCommandString()).getBytes();
 	    outToPort.write(command);
+        fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
+
 	    
     	}
     	catch (Exception ioe) {

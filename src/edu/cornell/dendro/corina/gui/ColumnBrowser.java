@@ -17,6 +17,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 // the Finder (hey steve, you listening?), but it's good for some things,
 // and i think what we have here is a prime example.
 
+@SuppressWarnings("serial")
 public class ColumnBrowser extends JPanel {
 
     /*
@@ -80,7 +81,8 @@ public class ColumnBrowser extends JPanel {
     // TODO: add click listener -- doesn't really work yet
     // TODO: add key listener(s)?
     // IDEA: use jtable instead of jlist, so i can have a "Folder" header.  (do i really want that?)
-    JList makeList(String folder) {
+    @SuppressWarnings("unchecked")
+	JList makeList(String folder) {
 	File f = new File(folder);
 	File children[] = f.listFiles();
 	final Vector list = new Vector(); // evil evil
@@ -214,7 +216,7 @@ public class ColumnBrowser extends JPanel {
 
 	f.pack();
 	f.setSize(640, 280);
-	f.show();
+	f.setVisible(true);
     }
 
     /*

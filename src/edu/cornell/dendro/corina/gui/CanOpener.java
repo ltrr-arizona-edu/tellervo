@@ -58,7 +58,7 @@ public class CanOpener {
 	*/
 
 	try { // is it a plot?
-	    GraphWindow g = new GraphWindow(filename);
+	    new GraphWindow(filename);
 	    OpenRecent.fileOpened(filename);
 	    return;
 	} catch (WrongFiletypeException wfte) {

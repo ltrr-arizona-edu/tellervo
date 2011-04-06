@@ -20,18 +20,16 @@
 
 package edu.cornell.dendro.corina.manip;
 
-import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.sample.ElementList;
-import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.sample.SampleType;
-
 import java.io.IOException;
-
-import java.util.List;
 import java.util.ArrayList;
 
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.schema.TridasDerivedSeries;
+
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.sample.ElementList;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.sample.SampleType;
 
 /**
  A "sum" of two or more datasets is the average of those datasets.
@@ -134,6 +132,7 @@ public class Sum {
 	// (shouldn't i change this first, so the JSL is in full effect?)
 
 	// an exception that means "there's a gap in the sum"
+	@SuppressWarnings("serial")
 	public static class GapInSumException extends IllegalArgumentException {
 		@Override
 		public String toString() {
@@ -143,6 +142,7 @@ public class Sum {
 	}
 
 	// an exception that means "you're trying to mix raw and indexed files, dork"
+	@SuppressWarnings("serial")
 	public static class InconsistentUnitsException extends IllegalArgumentException {
 		@Override
 		public String toString() {

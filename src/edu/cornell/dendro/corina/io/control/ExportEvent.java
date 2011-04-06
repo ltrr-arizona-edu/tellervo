@@ -14,6 +14,7 @@ import edu.cornell.dendro.corina.io.model.ExportModel;
  * @author Daniel
  *
  */
+@SuppressWarnings("serial")
 public class ExportEvent extends MVCEvent implements ITrackable {
 	
 	public final String encoding;

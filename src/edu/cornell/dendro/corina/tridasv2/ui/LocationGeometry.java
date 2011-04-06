@@ -1,10 +1,8 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
-import java.awt.Dialog.ModalExclusionType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -27,14 +25,12 @@ import org.tridas.schema.TridasLocationGeometry;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.GISFrame;
-import edu.cornell.dendro.corina.gis.GISPanel;
 import edu.cornell.dendro.corina.gis.GPXParser;
 import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.util.Center;
-import gov.nasa.worldwind.layers.MarkerLayer;
 
 public class LocationGeometry extends LocationGeometryUI implements
 		ActionListener, ChangeListener {

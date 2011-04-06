@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -20,14 +19,11 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.RadioButtonWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.SpinnerWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.ArrayListModel;
 
 public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 

@@ -4,6 +4,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.tridas.io.exceptions.ConversionWarning;
 
+@SuppressWarnings("serial")
 public class ConversionWarningTableModel extends AbstractTableModel {
 
 	private ConversionWarning[] warnings;

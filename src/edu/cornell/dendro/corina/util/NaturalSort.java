@@ -187,14 +187,16 @@ public class NaturalSort {
     }
 
     /** A comparator class, using natural ordering. */
-    public static class NaturalComparator implements Comparator {
+    @SuppressWarnings("unchecked")
+	public static class NaturalComparator implements Comparator {
 	public int compare(Object o1, Object o2) {
 	    return NaturalSort.compare((String) o1, (String) o2);
 	}
     }
 
     /** A comparator class, using case-insensitive natural ordering. */
-    public static class CINaturalComparator implements Comparator {
+    @SuppressWarnings("unchecked")
+	public static class CINaturalComparator implements Comparator {
 	public int compare(Object o1, Object o2) {
 	    return NaturalSort.compareIgnoreCase((String) o1, (String) o2);
 	}

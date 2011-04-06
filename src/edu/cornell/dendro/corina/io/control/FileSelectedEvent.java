@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina.io.control;
 
 import java.io.File;
 
-import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.ObjectEvent;
 
 import edu.cornell.dendro.corina.io.model.ImportModel;

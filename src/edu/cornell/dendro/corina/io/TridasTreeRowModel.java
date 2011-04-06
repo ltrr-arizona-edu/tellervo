@@ -1,8 +1,5 @@
 package edu.cornell.dendro.corina.io;
 
-import java.io.File;
-import java.util.Date;
-
 import org.netbeans.swing.outline.RowModel;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
@@ -10,7 +7,8 @@ import org.tridas.schema.TridasProject;
 
 public class TridasTreeRowModel implements RowModel {
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public Class getColumnClass(int column) {
         switch (column) {
             case 0:

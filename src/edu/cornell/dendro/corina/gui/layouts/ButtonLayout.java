@@ -151,7 +151,6 @@ public class ButtonLayout implements LayoutManager {
                     if (beforeGlue) {
                         m.setLocation(border.left + i*(maxwidth + LEADING), border.top);
                     } else {
-                        int x = parent.getWidth() - wholeWidth - border.right + j*(maxwidth + LEADING);
                         m.setLocation(parent.getWidth() - wholeWidth - border.right + j*(maxwidth + LEADING), border.top);
                         j++; // j is like i, but doesn't count the glue
                     }

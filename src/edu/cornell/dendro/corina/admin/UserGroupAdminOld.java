@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.dictionary.SecurityUser;
 
 /**
@@ -30,7 +30,7 @@ public class UserGroupAdminOld extends javax.swing.JDialog {
         initComponents();
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "serial" })
 	private void initComponents() {
 
         accountsTabPane = new javax.swing.JTabbedPane();
@@ -74,7 +74,7 @@ public class UserGroupAdminOld extends javax.swing.JDialog {
         });
         */
         
-        List<SecurityUser> lstofUsers = (List<SecurityUser>) App.dictionary.getDictionary("securityUserDictionary");
+        List<SecurityUser> lstofUsers = (List<SecurityUser>) Dictionary.getDictionary("securityUserDictionary");
         
         utm = new UserTableModel(lstofUsers);
         
@@ -259,7 +259,8 @@ public class UserGroupAdminOld extends javax.swing.JDialog {
         // TODO add your handling code here:
     }
     
-    public class UserTableModel extends AbstractTableModel {
+    @SuppressWarnings("serial")
+	public class UserTableModel extends AbstractTableModel {
         	
     	private List<SecurityUser> userList;
     	    	

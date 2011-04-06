@@ -3,9 +3,9 @@ package edu.cornell.dendro.corina.ui;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -17,6 +17,7 @@ import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.util.Center;
 
+@SuppressWarnings("serial")
 public class AskNumber extends JDialog {
 	private JSpinner spinner;
 	boolean isOk = false;
@@ -26,7 +27,7 @@ public class AskNumber extends JDialog {
 		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 				
-		JPanel top, bottom;
+		JPanel top;
 		
 		spinner = new JSpinner(new SpinnerNumberModel(defaultValue, 0, 9999, 1));
 		spinner.setValue(new Integer(defaultValue));
@@ -65,7 +66,7 @@ public class AskNumber extends JDialog {
 		else
 			Center.center(this, parent);
 		
-		show();
+		setVisible(true);
 	}
 	
 	public static int getNumber(Frame parent, String title, String text, int defaultValue) throws UserCancelledException {
@@ -77,6 +78,4 @@ public class AskNumber extends JDialog {
 		return ((Integer)(a.spinner.getValue())).intValue();
 	}
 
-	// icon for dialogs
-	private final static Icon treeIcon = Builder.getIcon("treeicon.png", 64); // WAS: Tree-64x64.png
 }

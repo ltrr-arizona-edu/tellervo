@@ -6,25 +6,13 @@ package edu.cornell.dendro.corina.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JWindow;
 import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
 
 import edu.cornell.dendro.corina.gui.ProgressMeter.ProgressEvent;
 import edu.cornell.dendro.corina.util.Center;
@@ -32,8 +20,8 @@ import edu.cornell.dendro.corina.util.Center;
 /**
  * @author Aaron
  */
+@SuppressWarnings("serial")
 public class Splash extends JDialog implements ProgressMeter.ProgressListener {
-	private BufferedImage img;
 	private JProgressBar progress = new JProgressBar();
 	private JLabel label = new JLabel();
 	protected Container progressPanel;

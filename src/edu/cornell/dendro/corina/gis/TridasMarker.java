@@ -1,9 +1,5 @@
 package edu.cornell.dendro.corina.gis;
 
-import org.tridas.interfaces.ITridas;
-
-import edu.cornell.dendro.corina.ui.I18n;
-
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
@@ -12,13 +8,15 @@ import gov.nasa.worldwind.render.markers.Marker;
 import gov.nasa.worldwind.render.markers.MarkerAttributes;
 import gov.nasa.worldwind.util.Logging;
 
+import org.tridas.interfaces.ITridas;
+
 public class TridasMarker implements Marker {
 
 	ITridas entity;
 	
     private Position position; // may be null
     private Angle heading; // may be null
-    private Boolean highlighted;
+
 
     // To avoid the memory overhead of creating an attibutes object for every new marker, attributes are
     // required to be specified at construction.
@@ -75,11 +73,6 @@ public class TridasMarker implements Marker {
         this.position = position;
         this.heading = heading;
         this.attributes = attrs;
-    }
-
-    public void setHighlighted(Boolean b)
-    {
-    	highlighted = b;
     }
     
     public Position getPosition()

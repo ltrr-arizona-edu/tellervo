@@ -3,9 +3,6 @@ package edu.cornell.dendro.corina.gui.dbbrowse;
 import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.FocusTraversalPolicy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -14,6 +11,7 @@ import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.event.EventListenerList;
 
@@ -39,7 +37,6 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
-import javax.swing.JProgressBar;
 
 /**
  * CorinaCodePanel is a jpanel containing a text field that accepts and interprets
@@ -116,6 +113,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	/**
 	 * Set up the gui
 	 */
+	@SuppressWarnings("deprecation")
 	private void setup()
 	{	
 		textField = new JTextField();
@@ -205,7 +203,6 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	}
 
 
-	@SuppressWarnings("unchecked")
 	private void fireEventByCorinaCode(String labcodestr)
 	{
 		String [] strarray = null;

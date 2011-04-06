@@ -6,13 +6,10 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import org.tridas.interfaces.ITridas;
-import org.tridas.schema.TridasObject;
-import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
 import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
-import edu.cornell.dendro.corina.manip.ReconcileWindow;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -20,9 +17,7 @@ import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
 import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
-
 import gov.nasa.worldwind.WorldWindow;
-import gov.nasa.worldwind.avlist.AVKey;
 
 public class TridasAnnotationController extends AbstractTridasAnnotationController {
 
@@ -56,7 +51,6 @@ public class TridasAnnotationController extends AbstractTridasAnnotationControll
     //********************  Action Listener  ***********************//
     //**************************************************************//
 
-    @SuppressWarnings({"StringEquality"})
     public void onActionPerformed(ActionEvent e)
     {
         

@@ -6,9 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import org.tridas.interfaces.ITridas;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 
@@ -146,7 +144,6 @@ public class ImportModel extends HashModel {
 	 * Manually add a conversion warning to the list
 	 * @param warning
 	 */
-	@SuppressWarnings("unchecked")
 	public void appendConversionWarning(ConversionWarning warning)
 	{	
 		ArrayList<ConversionWarning> warnings = new ArrayList<ConversionWarning>(Arrays.asList((ConversionWarning[]) getProperty(ImportModel.CONVERSION_WARNINGS))); 

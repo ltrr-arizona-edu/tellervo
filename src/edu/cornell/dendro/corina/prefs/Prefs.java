@@ -39,7 +39,7 @@ import edu.cornell.dendro.corina.core.AbstractSubsystem;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.logging.CorinaLog;
-import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.BugReport;
 import edu.cornell.dendro.corina.util.JDisclosureTriangle;
@@ -105,6 +105,7 @@ public class Prefs extends AbstractSubsystem {
 	 * these defaults to allow the user to "reset" any changes they may have
 	 * made through the Appearance Panel.
 	 */
+	@SuppressWarnings("unchecked")
 	private final Hashtable UIDEFAULTS = new Hashtable(); // (Hashtable)
 															// UIManager.getDefaults().clone();
 
@@ -161,7 +162,7 @@ public class Prefs extends AbstractSubsystem {
 			if (oldprefs.exists()) {
 				oldprefs.renameTo(new File(FILENAME));
 			}
-		} else if (App.platform.isMac()) {
+		} else if (Platform.isMac()) {
 			CORINADIR = home + "Library/Corina/";
 			FILENAME = home + "Library/Corina/Preferences"; // why in prefs?
 															// isn't lib ok?
@@ -208,10 +209,12 @@ public class Prefs extends AbstractSubsystem {
 		super.finalize();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Hashtable getUIDefaults() {
 		return UIDEFAULTS;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initUIDefaults() {
 		// UIDEFAULTS.putAll(UIManager.getDefaults());
 		UIDefaults defaults = UIManager.getDefaults();
@@ -313,6 +316,7 @@ public class Prefs extends AbstractSubsystem {
 	/**
 	 * Loads any saved uidefaults preferences and installs them
 	 */
+	@SuppressWarnings("unchecked")
 	private synchronized void installUIDefaultsPrefs() {
 		Iterator it = prefs.entrySet().iterator();
 		UIDefaults uidefaults = UIManager.getDefaults();
@@ -330,6 +334,7 @@ public class Prefs extends AbstractSubsystem {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void installUIDefault(Class type, String prefskey, String uikey) {
 		Object decoded = null;
 		String pref = prefs.getProperty(prefskey);
@@ -435,6 +440,7 @@ public class Prefs extends AbstractSubsystem {
 		JCheckBox dontWarnCheckbox = new JCheckBox(I18n
 				.getText("bug.dont_warn_again"), false);
 		dontWarnCheckbox.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
 			public void actionPerformed(ActionEvent e) {
 				dontWarn = !dontWarn;
 			}
@@ -446,7 +452,7 @@ public class Prefs extends AbstractSubsystem {
 		// show dialog
 		dialog.pack();
 		dialog.setResizable(false);
-		dialog.show();
+		dialog.setVisible(true);
 
 		// return true iff "try again" is clicked
 		return optionPane.getValue().equals(I18n.getText("try_again"));
@@ -490,9 +496,8 @@ public class Prefs extends AbstractSubsystem {
 		firePrefChanged(pref);
 	}
 
-	// TODO: require default?
 	/**
-	 * @deprecated use getPref(name, default) please!
+	 * Often best to use getPref(name, default) instead
 	 */
 	public String getPref(String pref) {
 		return prefs.getProperty(pref);

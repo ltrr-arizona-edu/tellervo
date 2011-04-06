@@ -9,10 +9,8 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasSample;
 
-import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
-import edu.cornell.dendro.corina.tridasv2.LabCode;
 
 public class TridasListCellRenderer extends DefaultListCellRenderer {
 

@@ -63,6 +63,7 @@ import javax.swing.undo.CannotRedoException;
  undo/redo) else should be handled by a superclass Manipulation.
  */
 
+@SuppressWarnings("serial")
 public class Clean extends AbstractUndoableEdit {
 
 	// sample to clean

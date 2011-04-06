@@ -48,6 +48,7 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.util.TextClipboard;
 //}}}
 
+@SuppressWarnings("serial")
 public class LogViewer extends JPanel
 {
   //{{{ LogViewer constructor

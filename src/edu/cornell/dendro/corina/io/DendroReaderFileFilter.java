@@ -1,6 +1,5 @@
 package edu.cornell.dendro.corina.io;
 
-import javax.swing.filechooser.FileFilter;
 
 public class DendroReaderFileFilter extends AbstractDendroReaderFileFilter
   {

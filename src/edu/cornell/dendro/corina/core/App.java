@@ -8,7 +8,6 @@ import java.util.List;
 
 import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.LoginSplash;
 import edu.cornell.dendro.corina.gui.ProgressMeter;
@@ -55,7 +54,7 @@ public class App{
   
   private static ProxyManager proxies; // for handling our proxies
 
-  @SuppressWarnings("unchecked")
+
 public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // throwing an error instead of simply ignoring it
     // will point out bad design and/or bugs
@@ -93,7 +92,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // set up our proxies before we try to do anything online
     if (meter != null)
     	meter.setNote(I18n.getText("login.setupProxy"));
-    proxies = new ProxyManager();
+    setProxies(new ProxyManager());
     if (meter != null) 
     	meter.setProgress(4);
     
@@ -249,7 +248,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 
 	    String  toExec[] = new String[] { javaBin, "-jar", jarFile.getPath() };
 	    try{
-	        Process p = Runtime.getRuntime().exec( toExec );
+	        Runtime.getRuntime().exec( toExec );
 	    } catch(Exception e) {
 	        e.printStackTrace();
 	        return false;
@@ -258,6 +257,14 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 	    System.exit(0);
 
 	    return true;
+	}
+
+	public static void setProxies(ProxyManager proxies) {
+		App.proxies = proxies;
+	}
+
+	public static ProxyManager getProxies() {
+		return proxies;
 	}
 
 

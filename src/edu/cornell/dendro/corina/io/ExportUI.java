@@ -21,7 +21,6 @@ import org.tridas.io.defaults.TridasMetadataFieldSet;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.IncompleteTridasDataException;
-import org.tridas.io.formats.besancon.BesanconToTridasDefaults;
 import org.tridas.io.naming.AbstractNamingConvention;
 import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
@@ -32,12 +31,9 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
-import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.Help;
-import edu.cornell.dendro.corina.gui.FileDialog.ExtensionFilter;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -60,12 +56,11 @@ import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
  *
  * @author  peterbrewer
  */
+@SuppressWarnings("serial")
 public class ExportUI extends javax.swing.JPanel{
     	
 	private ElementList elements;
 	private String exportDirectory;
-	private boolean rememberExportDirectory;
-	private Boolean exportMulti = true;
 	protected DefaultComboBoxModel howModel = new DefaultComboBoxModel();
 	protected DefaultComboBoxModel whatModel = new DefaultComboBoxModel();
 	protected ArrayListModel<String> formatModel = new ArrayListModel<String>();
@@ -79,8 +74,6 @@ public class ExportUI extends javax.swing.JPanel{
     	parent = p;
     	elements = els;
     	
-		rememberExportDirectory = true;
-
 		try{
 			// load the last export directory. If it doesn't exist, use the users home folder
 			exportDirectory = App.prefs.getPref("corina.dir.export", System.getProperty("user.home"));
@@ -445,59 +438,12 @@ public class ExportUI extends javax.swing.JPanel{
 				outputFolder += File.separator;
 			}
 			
-			int currFile = 0;
-			Response response= null;
+
+
 			IDendroFile[] files = writer.getFiles();
 			for (int j=0; j<files.length; j++) {
 				IDendroFile dof = files[j];
-	
-				currFile++;
-				String filename = writer.getNamingConvention().getFilename(dof);
-				
-				//model.setSavingFilename(filename + "." + dof.getExtension());
-				
-				// check to see if it exists:
-				File file = new File(outputFolder+File.separator+filename + "." + dof.getExtension());
-				/*if(file.exists()){
-					if(response == null){
-						OverwriteModel om = new OverwriteModel();
-						om.setAll(false);
-						om.setMessage(I18n.getText("control.convert.overwrite", filename, filename+"(1)"));
-						popup[0] = new OverwritePopup(om, ModelLocator.getInstance().getMainWindow());
-						// this should hang until the window is closed
-						popup[0].setVisible(true);
-						popup[0] = null; // so the saving dialog knows it's ok to show itself
-						
-						response = om.getResponse();
-						all = om.isAll();
-						if(response == null){
-							log.error("response is null");
-							j--;
-							currFile--;
-							continue;
-						}
-					}
-					
-					switch(response){
-						case IGNORE:
-							response = null;
-							continue;
-						case OVERWRITE:
-							p.writer.saveFileToDisk(outputFolder, dof);
-							break;
-						case RENAME:
-							p.writer.getNamingConvention().setFilename(dof, filename+"(1)");
-							j--;
-							currFile--;
-							response = null;
-							continue;
-					}
-					if(!all){
-						response = null;
-					}
-				}*/
 				writer.saveFileToDisk(outputFolder, dof);
-				//model.setSavingPercent(currFile * 100 / totalFiles);
 				
 				// Add any warnings to our warning message cache
 				if(writer.getWarnings().length>0)

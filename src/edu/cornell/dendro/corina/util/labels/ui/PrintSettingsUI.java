@@ -7,12 +7,6 @@
 
 package edu.cornell.dendro.corina.util.labels.ui;
 
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import edu.cornell.dendro.corina.print.BoxLabel;
-import edu.cornell.dendro.corina.schema.WSIBox;
 
 /**
  *

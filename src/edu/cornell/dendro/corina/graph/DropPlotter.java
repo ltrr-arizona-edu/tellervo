@@ -53,7 +53,8 @@ public final class DropPlotter implements DropTargetListener {
     public void dropActionChanged(DropTargetDragEvent event) {
 	// do nothing
     }
-    public void drop(DropTargetDropEvent event) {
+    @SuppressWarnings("unchecked")
+	public void drop(DropTargetDropEvent event) {
 	try {
 	    Transferable transferable = event.getTransferable();
 

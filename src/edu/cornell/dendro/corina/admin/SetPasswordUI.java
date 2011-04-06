@@ -3,8 +3,6 @@ package edu.cornell.dendro.corina.admin;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.security.MessageDigest;
@@ -24,8 +22,6 @@ import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
-import javax.swing.JPasswordField;
-import javax.swing.JLabel;
 
 /**
  * Dialog for setting users own password, or for user with admin
@@ -159,16 +155,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	this.dispose();
     }
     
-    /**
-     * Setup GUI for normal user changing their
-     * own password
-     * 
-     */
-    private void setupGui()
-    {
-    	setupGui(false);
-    }
-    
+  
     
     /**
      * Check the old or admin password specified is correct

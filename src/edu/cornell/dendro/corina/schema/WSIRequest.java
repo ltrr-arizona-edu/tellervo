@@ -1181,7 +1181,6 @@ public class WSIRequest
             if (this == object) {
                 return ;
             }
-            final WSIRequest.Dictionaries that = ((WSIRequest.Dictionaries) object);
         }
 
         public boolean equals(Object object) {

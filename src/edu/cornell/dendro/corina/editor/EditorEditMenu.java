@@ -86,10 +86,10 @@ import edu.cornell.dendro.corina.util.TextClipboard;
  @version $Id$
  */
 public class EditorEditMenu extends EditMenu implements SampleListener {
+
+	private static final long serialVersionUID = 1L;
 	private Sample sample;
-
 	private Editor editor;
-
 	private SampleDataView dataView;
 
 	/**
@@ -113,6 +113,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	protected void addUndo() {
 		undoMenu = Builder.makeMenuItem("menus.edit.undo", true, "undo.png");
 		undoMenu.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
 			public void actionPerformed(ActionEvent e) {
 				// DISABLED: undoManager.undo();
 				// DISABLED: refreshUndoRedo();
@@ -122,6 +123,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		add(undoMenu);
 	}
 
+	@SuppressWarnings("serial")
 	@Override
 	protected void addRedo() {
 		redoMenu = Builder.makeMenuItem("menus.edit.redo", true, "redo.png");
@@ -139,6 +141,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	 Add a Copy menuitem that copies this Sample to the clipboard
 	 in 2-column format.
 	 */
+	@SuppressWarnings("serial")
 	@Override
 	protected void addCopy() {
 		// copy: put all data unto clipboard in 2-column format
@@ -159,6 +162,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	 Add a Paste menuitem that replaces this data with whatever
 	 is on the clipboard.
 	 */
+	@SuppressWarnings("serial")
 	@Override
 	protected void addPaste() {
 		// paste: replace (insert?) data from clipboard (any format) into this sample
@@ -212,6 +216,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		// TODO: hit listeners to make initial state right
 	}
 
+	@SuppressWarnings("serial")
 	private void addMeasure() {
 		measureMenu = Builder.makeMenuItem("menus.edit.start_measuring", true, "measure.png");
 		measureMenu.addActionListener(new AbstractAction() {
@@ -222,6 +227,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		add(measureMenu);
 	}
 
+	@SuppressWarnings("serial")
 	private void addInsert() {
 		insert = Builder.makeMenuItem("menus.edit.insert_year", true, "insertyear.png");
 		insert.addActionListener(new AbstractAction() {
@@ -232,6 +238,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		add(insert);
 	}
 	
+	@SuppressWarnings("serial")
 	private void addInsertYears() {
 		insert = Builder.makeMenuItem("menus.edit.insert_years");
 		insert.addActionListener(new AbstractAction() {
@@ -270,6 +277,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		add(insert);
 	}
 
+	@SuppressWarnings("serial")
 	private void addInsertMR() {
 		insertMR = Builder.makeMenuItem("menus.edit.insert_mr", true, "insertmissingyear.png");
 		insertMR.addActionListener(new AbstractAction() {
@@ -280,6 +288,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		add(insertMR);
 	}
 
+	@SuppressWarnings("serial")
 	private void addDelete() {
 		delete = Builder.makeMenuItem("menus.edit.delete_year", true, "deleteyear.png");
 		delete.addActionListener(new AbstractAction() {
@@ -391,21 +400,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		 */
 	}
 
-	// return the sample in 2-column format, as a string
-	private String asTwoColumn() {
-		try {
-			int estimatedLength = 10 * sample.getData().size();
-			PureStringWriter w = new PureStringWriter(estimatedLength);
-			BufferedWriter b = new BufferedWriter(w);
-			new TwoColumn().save(sample, b);
-			b.close();
-			return w.toString();
-		} catch (IOException ioe) {
-			// can't happen: i'm just writing to a buffer
-			return "";
-		}
-	}
-
+	@SuppressWarnings("unchecked")
 	private String asTwoColumn(Range range) {
 		try {
 			int inindex = range.getStart().compareTo(sample.getRange().getStart());

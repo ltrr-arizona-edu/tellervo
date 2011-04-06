@@ -21,13 +21,16 @@ import java.awt.BasicStroke;
   -- might be misleading if you have a blue background, etc., like peter does.
 */
 
+@SuppressWarnings("serial")
 public class SlashedIfNullRenderer extends DefaultTableCellRenderer {
     // draw slashes if
     // -- sample.editable==false and value==null
     // OR:
     // -- sample.editable==true and cell.isEditable==true
 
-    public SlashedIfNullRenderer(Sample sample, TableModel model) {
+	private static final long serialVersionUID = 1L;
+
+	public SlashedIfNullRenderer(Sample sample, TableModel model) {
 	this.sample = sample;
 	this.model = model;
     }

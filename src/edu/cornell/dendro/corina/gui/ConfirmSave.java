@@ -36,6 +36,7 @@ import javax.swing.BoxLayout;
 import javax.swing.BorderFactory;
 import javax.swing.AbstractAction;
 
+@SuppressWarnings("serial")
 public class ConfirmSave extends JDialog {
     // don't instantiate me
     private ConfirmSave() { }
@@ -126,6 +127,6 @@ public class ConfirmSave extends JDialog {
         // pack, disable sizing, show
         dlg.pack();
         dlg.setResizable(false);
-        dlg.show();
+        dlg.setVisible(true);
     }
 }

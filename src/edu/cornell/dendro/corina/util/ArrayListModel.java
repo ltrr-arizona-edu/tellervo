@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+@SuppressWarnings("serial")
 public class ArrayListModel<E> extends ArrayList<E> implements ListModel, ComboBoxModel {
 	private Object selectedObject = null;
 	

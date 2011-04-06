@@ -16,6 +16,7 @@ import edu.cornell.dendro.corina.sample.ElementList;
  * @author Daniel
  *
  */
+@SuppressWarnings("serial")
 public class ExportModel extends AbstractModel {
 
 	public static enum Grouping {

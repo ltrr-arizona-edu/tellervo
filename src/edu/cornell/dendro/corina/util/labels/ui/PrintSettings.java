@@ -3,11 +3,9 @@ package edu.cornell.dendro.corina.util.labels.ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.swing.JDialog;
-import javax.swing.JPanel;
 
 import org.tridas.schema.TridasObject;
 
@@ -15,7 +13,6 @@ import com.lowagie.text.DocumentException;
 
 import edu.cornell.dendro.corina.print.BoxLabel;
 import edu.cornell.dendro.corina.print.ProSheet;
-import edu.cornell.dendro.corina.util.labels.CornellSampleLabelPage;
 import edu.cornell.dendro.corina.util.labels.PDFLabelMaker;
 
 public class PrintSettings extends PrintSettingsUI implements ActionListener{

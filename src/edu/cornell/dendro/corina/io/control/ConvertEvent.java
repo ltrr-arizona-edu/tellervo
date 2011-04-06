@@ -15,6 +15,7 @@ import edu.cornell.dendro.corina.io.model.ConvertModel;
  * @author Daniel
  *
  */
+@SuppressWarnings("serial")
 public class ConvertEvent extends MVCEvent {
 	
 	public final String outputFormat;

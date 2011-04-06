@@ -32,9 +32,11 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+@SuppressWarnings("serial")
 public class GraphExportDialog extends JPanel {
 	JDialog myframe;
 	JFrame parent;
+	@SuppressWarnings("unchecked")
 	protected List graphs;
 	protected GraphComponentInfo graphInfo[];
 
@@ -239,6 +241,7 @@ public class GraphExportDialog extends JPanel {
 			}
 		}
 		
+		@SuppressWarnings("unchecked")
 		@Override
 		public Class getColumnClass(int col) {
 			switch(col) {
@@ -254,7 +257,7 @@ public class GraphExportDialog extends JPanel {
 		}
 		
 		public Object getValueAt(int row, int col) {
-			Graph g = (Graph) parent.graphs.get(row);
+			
 			
 			switch(col) {
 			case 0:
@@ -269,6 +272,7 @@ public class GraphExportDialog extends JPanel {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public GraphExportDialog(JFrame parent, List graphs) {
 		this.parent = parent;
 		this.graphs = graphs;
@@ -352,7 +356,7 @@ public class GraphExportDialog extends JPanel {
 		
 		myframe.setPreferredSize(new Dimension(500, 200));
 		myframe.pack();
-		myframe.show();		
+		myframe.setVisible(true);	
 	}
 	
 	boolean success = false;

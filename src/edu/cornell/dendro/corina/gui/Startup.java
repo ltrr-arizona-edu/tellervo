@@ -23,10 +23,10 @@ package edu.cornell.dendro.corina.gui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -34,7 +34,6 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -58,11 +57,9 @@ import edu.cornell.dendro.corina.ui.Builder;
  *         style="color: gray">dot </i> edu&gt;
  * @version $Id$
  */
+@SuppressWarnings("unchecked")
 public class Startup implements PrivilegedAction {
-	private String[] args;
-
 	private Startup(String[] args) {
-		this.args = args;
 	}
 
 	public Object run() {

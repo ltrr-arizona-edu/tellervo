@@ -43,6 +43,7 @@ import javax.swing.undo.CannotRedoException;
 
 // fixme: this is ugly...
 
+@SuppressWarnings("serial")
 public class Reverse extends AbstractUndoableEdit {
 
     private static void reverseSample(Sample s) {

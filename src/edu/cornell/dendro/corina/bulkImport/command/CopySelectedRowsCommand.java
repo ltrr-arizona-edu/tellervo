@@ -21,6 +21,7 @@ public class CopySelectedRowsCommand implements ICommand {
 	/**
 	 * @see com.dmurph.mvc.control.ICommand#execute(com.dmurph.mvc.MVCEvent)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(MVCEvent argEvent) {
 		CopySelectedRowsEvent event = (CopySelectedRowsEvent) argEvent;

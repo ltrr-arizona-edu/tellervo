@@ -6,7 +6,6 @@ package edu.cornell.dendro.corina.logging;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -27,6 +26,7 @@ import org.apache.commons.logging.impl.SimpleLog;
  * 
  * @author Aaron Hamid
  */
+@SuppressWarnings("serial")
 public class CorinaLog extends SimpleLog {
 	/**
 	 * The maximum number of log messages that will be kept in memory.
@@ -100,6 +100,7 @@ public class CorinaLog extends SimpleLog {
 	 * @author Aaron Hamid
 	 */
 	static class LogListModel implements ListModel {
+		@SuppressWarnings("unchecked")
 		ArrayList listeners = new ArrayList();
 		
 		// protected visibility to avoid synthetic accessor
@@ -118,10 +119,12 @@ public class CorinaLog extends SimpleLog {
 			}
 		}
 		
+		@SuppressWarnings("unchecked")
 		public void addListDataListener(ListDataListener listener) {
 			listeners.add(listener);
 		}
 		
+		@SuppressWarnings("unchecked")
 		public void removeListDataListener(ListDataListener listener) {
 			listeners.add(listener);
 		}
@@ -168,6 +171,7 @@ public class CorinaLog extends SimpleLog {
 	
 	private Log chained;
 	
+	@SuppressWarnings("unchecked")
 	public CorinaLog(Class clazz) {
 		super(clazz.toString());
 		this.chained = LogFactory.getLog(clazz);

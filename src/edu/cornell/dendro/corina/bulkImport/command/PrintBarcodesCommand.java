@@ -13,7 +13,6 @@ import com.dmurph.mvc.control.ICommand;
 import com.dmurph.mvc.model.MVCArrayList;
 import com.lowagie.text.DocumentException;
 
-import edu.cornell.dendro.corina.bulkImport.control.AddRowEvent;
 import edu.cornell.dendro.corina.bulkImport.control.PrintSampleBarcodesEvent;
 import edu.cornell.dendro.corina.bulkImport.model.SampleModel;
 import edu.cornell.dendro.corina.bulkImport.model.SingleSampleModel;
@@ -25,7 +24,6 @@ import edu.cornell.dendro.corina.util.labels.PDFLabelMaker;
  * @author daniel
  *
  */
-@SuppressWarnings("unchecked")
 public class PrintBarcodesCommand implements ICommand {
 	
 	/**

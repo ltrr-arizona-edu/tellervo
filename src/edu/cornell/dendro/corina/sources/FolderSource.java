@@ -12,16 +12,14 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 public class FolderSource implements Source {
 
     private String name="Library"; // like "Library"
-    private String folder; // like "G:\\DATA"
 
     public String getName() {
 	return name;
     }
 
-    private static Icon openIcon, closedIcon;
+    private static Icon closedIcon;
     static {
         DefaultTreeCellRenderer dtcr = new DefaultTreeCellRenderer();
-        openIcon = dtcr.getOpenIcon();
         closedIcon = dtcr.getClosedIcon();
     }
     public Icon getIcon() {

@@ -20,43 +20,63 @@
 
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.AbstractAction;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.editor.Editor;
-import edu.cornell.dendro.corina.metadata.*;
+import edu.cornell.dendro.corina.metadata.MetadataField;
+import edu.cornell.dendro.corina.metadata.MetadataTemplate;
 import edu.cornell.dendro.corina.sample.BaseSample;
-import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
-import edu.cornell.dendro.corina.util.Sort;
-import edu.cornell.dendro.corina.util.PopupListener;
 import edu.cornell.dendro.corina.ui.Alert;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Comparator;
-import java.util.Map;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Color;
-import java.awt.event.*;
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.CannotRedoException;
+import edu.cornell.dendro.corina.util.PopupListener;
+import edu.cornell.dendro.corina.util.Sort;
 
 /**
  A JPanel for displaying (and editing) the Elements of a List.
@@ -83,6 +103,7 @@ import javax.swing.undo.CannotRedoException;
  * Urgh!
  */
 
+@SuppressWarnings("serial")
 public class ElementsPanel extends JPanel implements SampleListener {	
 	// data
 	private ElementList elements;
@@ -152,6 +173,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		public void dropActionChanged(DropTargetDragEvent event) {
 		} // do nothing
 
+		@SuppressWarnings("unchecked")
 		public void drop(DropTargetDropEvent event) {
 			try {
 				Transferable transferable = event.getTransferable();
@@ -353,7 +375,9 @@ public class ElementsPanel extends JPanel implements SampleListener {
 
 		// drag-n-drop
 		DropLoader dropLoader = new DropLoader();
+		@SuppressWarnings("unused")
 		DropTarget dt1 = new DropTarget(this, dropLoader);
+		@SuppressWarnings("unused")
 		DropTarget dt2 = new DropTarget(table, dropLoader);
 	}
 
@@ -636,6 +660,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			this.rev = reverse;
 		}
 
+		@SuppressWarnings("unchecked")
 		public int compare(Element o1, Element o2) {
 			BaseSample bs1 = emap.get(o1);
 			BaseSample bs2 = emap.get(o2);
@@ -665,6 +690,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 			this.rev = reverse;
 		}
 
+		@SuppressWarnings("unchecked")
 		public int compare(Element o1, Element o2) {
 			BaseSample bs1 = emap.get(o1);
 			BaseSample bs2 = emap.get(o2);

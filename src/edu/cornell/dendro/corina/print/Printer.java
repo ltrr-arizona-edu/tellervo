@@ -60,7 +60,8 @@ public abstract class Printer implements Printable {
 
     // lines[firstRowOfPage[0]...firstRowOfPage[1]-1]
     // make up the first page, etc.  null = haven't paginated yet.
-    private List firstRowOfPage = null;
+    @SuppressWarnings("unchecked")
+	private List firstRowOfPage = null;
 
     // borders of page
     private float top, left, bottom, right;
@@ -104,7 +105,8 @@ public abstract class Printer implements Printable {
 
     // paginate: go through all the lines, and figure out
     // where to put the page breaks
-    private void paginate(Graphics g) {
+    @SuppressWarnings("unchecked")
+	private void paginate(Graphics g) {
 	// row 0 starts the first page
 	firstRowOfPage = new ArrayList();
 	firstRowOfPage.add(new Integer(0));

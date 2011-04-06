@@ -20,6 +20,7 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
+@SuppressWarnings("serial")
 public class UIDefaultsEditor extends AbstractCellEditor implements TableCellEditor, CellEditorListener {
   private static final CorinaLog log = new CorinaLog(UIDefaultsEditor.class);
   

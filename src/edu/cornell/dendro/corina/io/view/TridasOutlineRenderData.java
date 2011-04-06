@@ -14,7 +14,6 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
-import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.ui.Builder;
 

@@ -102,6 +102,7 @@ public class TabbedLineFactory {
 	private static final String RIGHT = "<";
 
 	// list of BAR/LEFT/CENTER/RIGHT, or Number (meaning "skip this much")
+	@SuppressWarnings("unchecked")
 	private List tabs;
 
 	private Font font = Line.NORMAL;
@@ -117,6 +118,7 @@ public class TabbedLineFactory {
 	/** Create a tabbed-line factory, given a line specification (see
 	 above).
 	 @param spec the line specification */
+	@SuppressWarnings("unchecked")
 	public TabbedLineFactory(String spec) {
 		// parse spec
 		StringTokenizer tok = new StringTokenizer(spec, " <>^|", true);
@@ -177,6 +179,7 @@ public class TabbedLineFactory {
 	 @param values a string containing all of the values for this
 	 line
 	 */
+	@SuppressWarnings("unchecked")
 	public Line makeLine(String values) {
 		final List val = new ArrayList();
 
@@ -202,8 +205,10 @@ public class TabbedLineFactory {
 	}
 
 	private class TabbedLine implements Line {
+		@SuppressWarnings("unchecked")
 		private List val;
 
+		@SuppressWarnings("unchecked")
 		TabbedLine(List val) {
 			this.val = val;
 		}

@@ -54,6 +54,7 @@ import java.text.Collator;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
  */
+@SuppressWarnings("unchecked")
 public class StringComparator implements Comparator {
 
     /**

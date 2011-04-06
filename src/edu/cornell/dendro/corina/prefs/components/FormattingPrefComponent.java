@@ -16,6 +16,7 @@ import edu.cornell.dendro.corina.core.App;
 
 // a prefs component for number formatting: 0.0, 0.00, 0.000, etc.
 // FIXME: extend jcombobox, instead of jpanel?
+@SuppressWarnings("serial")
 public class FormattingPrefComponent extends Container {
     private static String FORMAT_STRINGS[] = new String[] {
         "0.0", "0.00", "0.000", "0.0000", "0.00000",

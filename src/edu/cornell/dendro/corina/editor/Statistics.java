@@ -26,6 +26,7 @@ import edu.cornell.dendro.corina.ui.I18n;
   -- rename: maybe "StatsLabel"?
 */
 
+@SuppressWarnings("serial")
 public class Statistics extends JLabel implements SampleListener {
     private Sample sample;
 

@@ -47,6 +47,7 @@ public class ControlledVocRenderer extends DefaultCellRenderer {
 		this.behavior = behavior;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected String convertToString(Object value) {
 		

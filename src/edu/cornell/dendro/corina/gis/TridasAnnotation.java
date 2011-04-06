@@ -1,7 +1,6 @@
 package edu.cornell.dendro.corina.gis;
 
 import edu.cornell.dendro.corina.admin.BoxCuration;
-import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel;
 import edu.cornell.dendro.corina.ui.Builder;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.examples.util.ButtonAnnotation;
@@ -19,7 +18,6 @@ import gov.nasa.worldwind.render.ScreenAnnotation;
 import gov.nasa.worldwind.render.WWTexture;
 import gov.nasa.worldwind.util.Logging;
 
-import java.awt.Color;
 import java.awt.event.ActionListener;
 
 import javax.media.opengl.GL;
@@ -27,7 +25,6 @@ import javax.media.opengl.GL;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
-import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
 public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
@@ -39,7 +36,7 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
     protected ImageAnnotation busyImage;
 	private ButtonAnnotation searchForSeries;
 	private ButtonAnnotation viewMetadata;
-	private Boolean overrideToEmpty = false;
+
 	
     protected static final String CLOSE_IMAGE_PATH = "images/16x16-button-cancel.png";
     protected static final String SEARCHFORSERIES_IMAGE_PATH = "edu/cornell/dendro/corina_resources/Icons/searchforseries.png";
@@ -251,10 +248,7 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
     		}
     		
     	}
-    	else
-    	{
-    		overrideToEmpty = true;
-    	}
+
     	
     	return content;
     }

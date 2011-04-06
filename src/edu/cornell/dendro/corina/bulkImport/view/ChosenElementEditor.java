@@ -111,6 +111,7 @@ public class ChosenElementEditor extends DefaultCellEditor {
 	// by a KeyEvent - not sure why. It also wont be visible
 	// if this editor was already active when another row is clicked.
 	// The runnable within this method ensures that the popup is made visible.
+	@SuppressWarnings("unchecked")
 	@Override
 	public Component getTableCellEditorComponent(final JTable table,
 			Object value, boolean isSelected, int row, int column) {

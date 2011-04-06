@@ -38,6 +38,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
  *
  * @author  peterbrewer
  */
+@SuppressWarnings("serial")
 public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionListener{
     
 	protected ArrayListModel<TridasSample> selModel = new ArrayListModel<TridasSample>();
@@ -219,7 +220,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 			currentObjects.add(obj);
 			
 			// grar...
-			for(TridasObject obj2 : obj.getObjects()) {
+			for(@SuppressWarnings("unused") TridasObject obj2 : obj.getObjects()) {
 				getSamplesList(obj.getObjects(), currentObjects.toArray(new TridasObject[0]), returns);
 			}
 			

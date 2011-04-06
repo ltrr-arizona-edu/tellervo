@@ -6,14 +6,11 @@ package edu.cornell.dendro.corina.graph;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
 

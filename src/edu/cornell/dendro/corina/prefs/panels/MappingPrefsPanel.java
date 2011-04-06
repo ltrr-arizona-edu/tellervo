@@ -3,12 +3,15 @@ package edu.cornell.dendro.corina.prefs.panels;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gis.GrfxWarning;
@@ -16,12 +19,7 @@ import edu.cornell.dendro.corina.gis.WMSTableModel;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import edu.cornell.dendro.corina.ui.I18n;
 
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JScrollPane;
-import javax.swing.BoxLayout;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.JLabel;
-
+@SuppressWarnings("serial")
 public class MappingPrefsPanel extends AbstractPreferencesPanel {
 	private GrfxWarning panelWarning;
 	private JPanel panelWMS;

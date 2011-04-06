@@ -19,7 +19,8 @@ public class ProgressMeter {
     public void displayProgress(ProgressEvent event);
     public void closeProgress(ProgressEvent event);
   }
-  public static class ProgressEvent extends ChangeEvent {
+  @SuppressWarnings({"serial"})
+public static class ProgressEvent extends ChangeEvent {
     private int min;
     private int max;
     private String note;
@@ -54,7 +55,8 @@ public class ProgressMeter {
   private int v;
   private int lastDisp;
   private int reportDelta;
-  private Set listeners = new HashSet();
+  @SuppressWarnings("unchecked")
+private Set listeners = new HashSet();
   private boolean popped;
 
   public ProgressMeter() {
@@ -72,7 +74,8 @@ public class ProgressMeter {
     T0 = System.currentTimeMillis();
   }
 
-  public void addProgressListener(ProgressListener listener) {
+  @SuppressWarnings("unchecked")
+public void addProgressListener(ProgressListener listener) {
     synchronized (listeners) {
       listeners.add(listener);
     }
@@ -83,7 +86,8 @@ public class ProgressMeter {
     }
   }
 
-  private void notifyDisplay() {
+  @SuppressWarnings("unchecked")
+private void notifyDisplay() {
     ProgressListener[] l;
     synchronized (listeners) {
       l = (ProgressListener[]) listeners.toArray(new ProgressListener[listeners.size()]);
@@ -93,7 +97,8 @@ public class ProgressMeter {
       l[i].displayProgress(e);
     }
   }
-  private void notifyClosed() {
+  @SuppressWarnings("unchecked")
+private void notifyClosed() {
     ProgressListener[] l;
     synchronized (listeners) {
       l = (ProgressListener[]) listeners.toArray(new ProgressListener[listeners.size()]);
@@ -103,7 +108,8 @@ public class ProgressMeter {
       l[i].closeProgress(e);
     }
   }
-  private void notifyStateChanged() {
+  @SuppressWarnings("unchecked")
+private void notifyStateChanged() {
     ProgressListener[] l;
     synchronized (this) {
       l = (ProgressListener[]) listeners.toArray(new ProgressListener[listeners.size()]);

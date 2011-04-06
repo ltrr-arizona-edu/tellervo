@@ -14,7 +14,8 @@ public class UnitTests extends TestCase {
     //
     // testing High-pass filter
     //
-    public void testFilter() {
+    @SuppressWarnings("unchecked")
+	public void testFilter() {
         // make new random list
         List l = new ArrayList();
         for (int i=0; i<50; i++)

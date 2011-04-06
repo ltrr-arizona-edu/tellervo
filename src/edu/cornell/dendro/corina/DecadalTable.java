@@ -5,12 +5,14 @@ import java.util.List;
 // the view of a table
 public class DecadalTable {
 
-    private List data; // List or array?  crap, arrays aren't objects, or ... :P
+    @SuppressWarnings("unchecked")
+	private List data; 
     private Range range;
     
-    DecadalTable(List data, Range range) {
-        this.data = data;
-        this.range = range;
+    @SuppressWarnings("unchecked")
+	DecadalTable(List data, Range range) {
+        this.setData(data);
+        this.setRange(range);
     }
     
     public Object getValue(int x, int y) {
@@ -38,4 +40,22 @@ public class DecadalTable {
     public Object getVoidObject() {
         return voidObject;
     }
+
+	@SuppressWarnings("unchecked")
+	public void setData(List data) {
+		this.data = data;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List getData() {
+		return data;
+	}
+
+	public void setRange(Range range) {
+		this.range = range;
+	}
+
+	public Range getRange() {
+		return range;
+	}
 }

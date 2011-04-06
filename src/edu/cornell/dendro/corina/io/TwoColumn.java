@@ -20,19 +20,17 @@
 
 package edu.cornell.dendro.corina.io;
 
-import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.ui.I18n;
-
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.NoSuchElementException;
-
-import java.io.StreamTokenizer;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
    A simple tab-delimited 2-column data file.
@@ -60,7 +58,6 @@ import java.io.IOException;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-@Deprecated 
 public class TwoColumn implements Filetype {
 
     @Override
@@ -72,18 +69,17 @@ public class TwoColumn implements Filetype {
 	return ".TXT";
     }
 
-    public Sample load(BufferedReader r) throws IOException {
+    @SuppressWarnings("unchecked")
+	public Sample load(BufferedReader r) throws IOException {
         // sample to return
         Sample s = new Sample();
 
         // start/current/end years
-        Year start=null, current=null;
+        Year start=null;
 
         // maybe read a line of crap, up to 120 chars.
         maybeEatCrap(s, r);
 
-        // set up a tokenizer on the file
-        StreamTokenizer t = new StreamTokenizer(r);
 
         // this is the last-chance catch-all for random text data, so
         // don't be too afraid to throw a WrongFiletypeException:

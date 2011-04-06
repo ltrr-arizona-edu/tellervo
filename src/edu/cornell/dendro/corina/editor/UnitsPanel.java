@@ -3,8 +3,6 @@ package edu.cornell.dendro.corina.editor;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JLabel;
@@ -12,17 +10,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 
-import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasUnit;
-import org.tridas.schema.TridasDerivedSeries;
-import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasUnit;
-import org.tridas.schema.TridasUnitless;
-import org.tridas.schema.TridasValue;
-import org.tridas.schema.TridasValues;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.manip.MeanSensitivity;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
@@ -36,6 +26,7 @@ import edu.cornell.dendro.corina.ui.I18n;
   -- rename: maybe "StatsLabel"?
 */
 
+@SuppressWarnings("serial")
 public class UnitsPanel extends JLabel implements SampleListener {
     private Sample sample;
     private  Boolean unitless;
@@ -133,7 +124,7 @@ public class UnitsPanel extends JLabel implements SampleListener {
     
     private String stat_values[];
     {
-		stat_values = new String[unit.length];
+		setStat_values(new String[unit.length]);
 		// don't need to fill, constructor calls computeAllStats()
     }
 
@@ -173,5 +164,20 @@ public class UnitsPanel extends JLabel implements SampleListener {
 	public void sampleDisplayUnitsChanged(SampleEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	public String getNA() {
+		return NA;
+	}
+
+
+	public void setStat_values(String stat_values[]) {
+		this.stat_values = stat_values;
+	}
+
+
+	public String[] getStat_values() {
+		return stat_values;
 	}
 }

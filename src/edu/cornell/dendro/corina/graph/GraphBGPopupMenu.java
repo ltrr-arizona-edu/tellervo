@@ -26,14 +26,9 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import edu.cornell.dendro.corina.editor.Editor;
-import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.ui.Builder;
-
 // used by: GraphWindow, BargraphFrame
+@SuppressWarnings("serial")
 public class GraphBGPopupMenu extends JPopupMenu {
-
-    private JMenuItem titleItem, rangeItem, scaleItem;
 
     public GraphBGPopupMenu() {
         

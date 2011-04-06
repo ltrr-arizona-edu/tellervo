@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
@@ -47,10 +46,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.cornell.dendro.corina.core.App;
-//import edu.cornell.dendro.corina.db.Convert;
-//import edu.cornell.dendro.corina.db.DBBrowser;
 import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
-import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.NoEmptySelection;
 import edu.cornell.dendro.corina.util.OKCancel;
@@ -91,6 +87,7 @@ import edu.cornell.dendro.corina.util.UpdateFolder;
   -- what about dropping on the blank area below the sources?  can that create a new source?
 */
 
+@SuppressWarnings({ "serial", "unchecked" })
 public class SourcesTable extends JTable {
     public static interface Source {
 	Icon getIcon();
@@ -144,64 +141,9 @@ public class SourcesTable extends JTable {
 	public boolean hasBrowser() {
 	    return true;
 	}
-	private Connection connect() throws Exception { // WAS: SQLException
-	    // open a connection
-	    Class.forName("org.postgresql.Driver"); // DESIGN: get the JDBC driver from the URI?
-	    Class.forName("org.hsqldb.jdbcDriver"); // DESIGN: get the JDBC driver from the URI?
-	    Connection con;
-	    try {
-		// PERF: to connect to a local HSQLDB database takes around 9 sec (100 samples, 900KB)
-		// (if it grows linearly and these are representative samples, that's a 400MB database!)
-		con = DriverManager.getConnection(uri, username, password);
-		return con;
-	    } catch (Exception se) { // WAS: SQLException se
-		// DESIGN: if ClassNotFound, error message should say that the driver couldn't be loaded.
-		// (but thiss will do for now)
-
-		// eep, can't connect!  let's not lose our heads, though...
-
-		// get the first line of the error message
-		String message = se.getMessage();
-		if (message.indexOf('\n') != -1)
-		    message = message.substring(0, message.indexOf('\n'));
-
-		// (why extract just the first line?  because if it's really a network
-		// exception, getConnection() has to wrap it in an SQL exception, and
-		// it includes the entire stack trace in its message, and users won't
-		// care about that.)
-
-		// prepend "can't connect..." string
-		//		    message = "Corina can't connect to the database.\n" +
-		//			"The first line of the error message is:\n" +
-		//			message;
-
-		JLabel message3 = new JLabel("Corina can't connect to the database.");
-		message3.setFont(message3.getFont().deriveFont(Font.BOLD));
-		Object message2 = new Object[] {
-		    message3,
-		    Box.createVerticalStrut(6),
-		    "The first line of the error message is:",
-		    message,
-		};
-
-		// show it as an error message
-		Alert.error("Can't Connect to Database", message2.toString());
-
-		// FIXME: this dialog is resizable!
-
-		// examples of exceptions i've gotten:
-		// -- "FATAL 1:  No pg_hba.conf entry for host 128.253.105.30, user kharris, database dendro" (which means i didn't have permissions)
-		// -- "The connection attempt failed because Exception: java.net.UnknownHostException: picea.arts.cornell.edu" (followed by a stack trace) (which means i wasn't connected to the network)
-
-		// well, gotta return some sort of component, still -- throw it again.
-		throw se;
-	    }
-	}
 	public Component makeBrowser() {
 	    try {
 		try {
-		    Connection con = connect();
-
 		    // create a db browser
 		    return null; //new DBBrowser(con);
 		} catch (Exception se) {
@@ -220,6 +162,7 @@ public class SourcesTable extends JTable {
 	public Transferable getDragTransferable() {
 	    return null; // WRITEME
 	}
+	@SuppressWarnings("deprecation")
 	public void drop(File f) { // if you get something dropped
 	    System.out.println("database: adding " + f.getPath() + " to " + uri);
 
@@ -247,7 +190,7 @@ public class SourcesTable extends JTable {
 	    this.folder = folder;
 	}
 	public Icon getIcon() {
-	    return Builder.getIcon("Library-32.png");
+	    return Builder.getIcon("Library-32.png", 22);
 	}
 	public String getName() {
 	    return name;
@@ -339,7 +282,7 @@ public class SourcesTable extends JTable {
 	    nameField.selectAll();
 	    nameField.requestFocus();
 
-	    d.show();
+	    d.setVisible(true);
 	}
 	public Transferable getDragTransferable() {
 	    return new Tree.TransferableFile(folder);
@@ -358,100 +301,6 @@ public class SourcesTable extends JTable {
 	    // TODO: run in thread; show progress / estimated time remaining?
 	}
     }
-    private static class NetworkSource implements Source {
-	// IDEA: if user/pass given, keep summary file in same folder, else store locally.
-	private String name;
-	private String url;
-	public NetworkSource(String name, String url) {
-	    this.name = name;
-	    this.url = url;
-	}
-	public Icon getIcon() {
-	    return Builder.getIcon("ITRDB-32.png");
-	}
-	public String getName() {
-	    return name;
-	}
-	public void setName(String name) {
-	    this.name = name;
-	}
-	public String getTip() {
-	    return url;
-	}
-	public boolean hasBrowser() {
-	    return true;
-	}
-	public Component makeBrowser() {
-	    return null; // WRITEME!
-	}
-	public void showInfo() {
-	    System.out.println("WRITEME: show info for network source");
-	}
-	public Transferable getDragTransferable() {
-	    return null; // WRITEME
-	}
-    }
-    private static class FavoritesSource implements Source {
-	private String name;
-	public FavoritesSource(String name) {
-	    this.name = name;
-	}
-	public Icon getIcon() {
-	    return Builder.getIcon("List.png");
-	}
-	public String getName() {
-	    return name;
-	}
-	public void setName(String name) {
-	    this.name = name;
-	}
-	public String getTip() {
-	    return null;
-	}
-	public boolean hasBrowser() {
-	    return false;
-	}
-	public Component makeBrowser() {
-	    throw new IllegalArgumentException(); // good exception?
-	}
-	public void showInfo() {
-	    System.out.println("WRITEME: show info for favorites source");
-	}
-	public Transferable getDragTransferable() {
-	    return null; // WRITEME
-	}
-    }
-    private static class SmartListSource implements Source {
-	private String name;
-	public SmartListSource(String name) {
-	    this.name = name;
-	}
-	public Icon getIcon() {
-	    return Builder.getIcon("SmartList.png");
-	}
-	public String getName() {
-	    return name;
-	}
-	public void setName(String name) {
-	    this.name = name;
-	}
-	public String getTip() {
-	    return "Length>100, Sapwood=Yes, and Reconciled=Yes";
-	}
-	public boolean hasBrowser() {
-	    return false;
-	}
-	public Component makeBrowser() {
-	    throw new IllegalArgumentException(); // good exception?
-	}
-	public void showInfo() {
-	    System.out.println("WRITEME: show info for smartlist source");
-	}
-	public Transferable getDragTransferable() {
-	    return null; // WRITEME
-	}
-    }
-
     // this should be user-modifyable
     private List sources = new ArrayList();
     {
@@ -522,7 +371,6 @@ public class SourcesTable extends JTable {
     }
 
     private DragSource drag;
-    private DropTarget drop;
     private int hilited=-1;
 
     public SourcesTable() {
@@ -691,8 +539,8 @@ public class SourcesTable extends JTable {
 			    }
 			};
 
-		    drop = new DropTarget(this, // component
-					  dropper); // dropper
+		    new DropTarget(this, // component
+					  dropper);
 
 	final JPopupMenu popup = new JPopupMenu();
 
@@ -702,8 +550,6 @@ public class SourcesTable extends JTable {
 	JMenuItem find = Builder.makeMenuItem("find...");
 	find.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-		    // get selected source
-		    Source s = getSource();
 
 		    // search it
 		    // WRITEME

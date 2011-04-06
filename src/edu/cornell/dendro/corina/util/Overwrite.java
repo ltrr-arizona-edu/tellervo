@@ -24,8 +24,8 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.platform.Platform;
 
 /**
    A helper function for asking "do you really want to overwrite that
@@ -92,7 +92,7 @@ public class Overwrite {
 	                  "already exists; overwrite it with this data?";
 
 	// TODO: (isMac?"":...) construct exists elsewhere (Alert?) -- refactor
-	String title = (App.platform.isMac() ? "" : "Already Exists");
+	String title = (Platform.isMac() ? "" : "Already Exists");
 
 	// good, explicit commands
 	Object choices[] = new Object[] { "Overwrite", "Cancel" };

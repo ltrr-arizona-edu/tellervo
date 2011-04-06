@@ -1,7 +1,5 @@
 package edu.cornell.dendro.corina.io.model;
 
-import java.util.ArrayList;
-
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -19,7 +17,6 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
-import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
@@ -119,7 +116,8 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
 		return false;
 	}
 	
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public Class getColumnClass(int column) {
         switch (column) {
             case 0:

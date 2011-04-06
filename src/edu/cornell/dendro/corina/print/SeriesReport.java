@@ -8,17 +8,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-
-import javax.swing.Icon;
-import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.WordUtils;
 import org.tridas.interfaces.ITridasSeries;
@@ -37,9 +30,7 @@ import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasWoodCompleteness;
 import org.tridas.schema.Year;
 
-import com.lowagie.text.BadElementException;
 import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
@@ -48,7 +39,6 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.ColumnText;
-import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -63,18 +53,12 @@ import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.pdf.PrintablePDF;
-import edu.cornell.dendro.corina.util.test.PrintReportFramework;
 
 public class SeriesReport extends ReportBase {
 	
 	/** A map for the lazy-loading of icons */
 	private HashMap<String, Image> lazyIconMap;
-	
-	/** For showing an icon we don't have */
-	private final String missingIconURL = Builder.getBodgeMissingIconURL(48);
-	
-	/** The list of icons to draw */
-	private List<Icon> icons;
+
 	NormalTridasUnit displayUnits;
 	
 	private Sample s = new Sample();
@@ -220,16 +204,6 @@ public class SeriesReport extends ReportBase {
 		return image;
 	
 	}
-	
-	private Paragraph getDocTypePDF()
-	{
-		Paragraph p = new Paragraph();
-				
-		p.add(new Chunk("Measurement Series Report \n", docTypeFont));
-		return p;
-	
-	}
-	
 		
 	/**
 	 * Get PdfPTable containing the ring width data for this series
@@ -665,87 +639,6 @@ public class SeriesReport extends ReportBase {
 	}
 		
 	
-	private Paragraph getRingRemarks(){
-		
-		Paragraph p = new Paragraph();
-		//p.setLeading(0, 1.2f);
-		
-		DecadalModel model = new DecadalModel(s);
-		float[] widths = {0.1f, 0.75f};
-		PdfPTable tbl = new PdfPTable(widths);
-		Boolean hasRemarks = false;	
-		tbl.setWidthPercentage(100f);
-	
-		// Loop through rows
-		int rows = model.getRowCount();
-		for(int row =0; row < rows; row++)
-		{	
-			// Loop through columns
-			for(int col = 0; col < 11; col++) {
-				
-				edu.cornell.dendro.corina.Year year = model.getYear(row, col);
-				List<TridasRemark> remarks = s.getRemarksForYear(year);
-				
-				PdfPCell yearCell = new PdfPCell();
-				PdfPCell remarkCell = new PdfPCell();
-								
-				// Extract remarks and compile into a string
-				String remarkStr = "";
-				for(TridasRemark remark : remarks) 
-				{
-					
-					if (remark.getNormalTridas()!=null)
-					{
-						remarkStr += remark.getNormalTridas().value() + "\n";		
-					}
-					else if(remark.getNormal()!=null)
-					{
-						remarkStr += remark.getNormal().toString() + "\n";
-					}
-					else
-					{
-						remarkStr += remark.getValue().toString() + "\n";
-					}
-				}
-				
-				// Write to table
-				if(remarks.isEmpty())
-				{
-					// Nothing to write
-				}
-				else
-				{
-					yearCell.setPhrase(new Phrase(year.toString(), tableHeaderFont));   
-					yearCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-					yearCell.setBorderWidthBottom(0);
-					yearCell.setBorderWidthTop(0);
-					yearCell.setBorderWidthLeft(0);
-					yearCell.setBorderWidthRight(lineWidth);
-					tbl.addCell(yearCell);
-					
-					remarkCell.setPhrase(new Phrase(remarkStr, bodyFont));
-					remarkCell.setPaddingLeft(5f);
-					remarkCell.setHorizontalAlignment(Element.ALIGN_JUSTIFIED);
-					remarkCell.setBorderWidthBottom(0);
-					remarkCell.setBorderWidthTop(0);
-					remarkCell.setBorderWidthLeft(lineWidth);
-					remarkCell.setBorderWidthRight(0);
-					tbl.addCell(remarkCell);
-					hasRemarks = true;
-				}
-			}
-		}
-		
-		// Add to document
-		if(hasRemarks){
-			p.add(new Chunk("Ring remarks:", subSubSectionFont));
-			p.add(tbl);
-		}
-		
-		
-		return p;
-		
-	}
 	
 	/**
 	 * iText paragraph containing created and lastmodified timestamps
@@ -1081,7 +974,6 @@ public class SeriesReport extends ReportBase {
 		String missingRingsStr = null;
 		String foundationStr = null;
 		String woodTypeStr = null;
-		String nrSapwoodRingsStr = null;
 		Integer nrSapwoodRings = null;
 		
 		// Extract data from woodcompleteness based on type
@@ -1155,7 +1047,6 @@ public class SeriesReport extends ReportBase {
 				
 				// No. of rings present
 				if(woodCompleteness.getSapwood().getNrOfSapwoodRings()!=null){
-					nrSapwoodRingsStr = woodCompleteness.getSapwood().getNrOfSapwoodRings().toString();
 					nrSapwoodRings = woodCompleteness.getSapwood().getNrOfSapwoodRings();
 				}
 					
@@ -1298,27 +1189,6 @@ public class SeriesReport extends ReportBase {
 	
 
 	
-	
-	/**
-	 * Function for printing or viewing series report
-	 * @param printReport Boolean
-	 * @param vmid String
-	 */
-	private static void getReport(Boolean printReport, String vmid)
-	{
-		String domain = App.domain;
-		Sample samp = null;
-		
-		try {
-			samp = PrintReportFramework.getCorinaSampleFromVMID(domain, vmid);
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-		
-		getReport(printReport, samp);
-		
-	}
 	
 	/**
 	 * Function for printing or viewing series report

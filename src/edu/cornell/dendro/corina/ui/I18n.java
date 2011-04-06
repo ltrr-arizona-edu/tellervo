@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.KeyStroke;
 
-import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.util.StringUtils;
 
 /**
@@ -212,7 +212,7 @@ public class I18n {
 		String stroke = value.substring(left + 1, right).trim();
 
 		// accel = command (in java-ese: "meta") on mac, control on pc
-		String accel = (App.platform.isMac() ? "meta" : "control");
+		String accel = (Platform.isMac() ? "meta" : "control");
 		stroke = StringUtils.substitute(stroke, "accel", accel);
 
 		return KeyStroke.getKeyStroke(stroke);

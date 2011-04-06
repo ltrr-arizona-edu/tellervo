@@ -1,20 +1,9 @@
 package edu.cornell.dendro.corina.gis;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
-import gov.nasa.worldwind.examples.util.LayerManagerLayer;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
@@ -24,6 +13,16 @@ import gov.nasa.worldwind.render.Annotation;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.render.ScreenAnnotation;
 import gov.nasa.worldwind.util.Logging;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.ArrayList;
 
 public class CorinaLayerManagerLayer extends RenderableLayer implements SelectListener{
 
@@ -803,7 +802,6 @@ public class CorinaLayerManagerLayer extends RenderableLayer implements SelectLi
         StringBuilder text = new StringBuilder();
 
         Color color;
-        int p = layers.size();
         
         for(int i = layers.size()-1; i>0; i = i-1 )
         {

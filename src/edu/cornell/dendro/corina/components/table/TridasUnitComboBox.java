@@ -6,7 +6,6 @@ package edu.cornell.dendro.corina.components.table;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import org.apache.commons.lang.StringUtils;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasUnitless;
@@ -15,12 +14,12 @@ import org.tridas.schema.TridasUnitless;
  * @author Daniel
  *
  */
+@SuppressWarnings("unchecked")
 public class TridasUnitComboBox extends DynamicJComboBox{
 	private static final long serialVersionUID = 1L;
 	
 	private final ArrayList data = new ArrayList();
 	
-	@SuppressWarnings("unchecked")
 	public TridasUnitComboBox(){
 		super(null, new Comparator(){
 			public int compare(Object argO1, Object argO2) {

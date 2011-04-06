@@ -30,23 +30,30 @@ import javax.swing.*;
 //    listener = new PopupListener(new DataPopup(myTable), myTable); <-- simplyfiy?  make one an inner class?
 
 public class DataPopup extends JPopupMenu {
-    // constructor MUST GET table (or similar) passed to it!
+
+	private static final long serialVersionUID = 1L;
+
+	// constructor MUST GET table (or similar) passed to it!
     public DataPopup() {
 	// insert year
 	JMenuItem ins = new JMenuItem("Insert");
 	ins.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // insertYear();
-		}
+
+		private static final long serialVersionUID = 1L;
+			public void actionPerformed(ActionEvent ae) {
+			    // insertYear();
+			}
 	    });
 	add(ins);
 
 	// delete year
 	JMenuItem del = new JMenuItem("Delete");
 	del.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent ae) {
-		    // deleteYear();
-		}
+		private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent ae) {
+			    // deleteYear();
+			}
 	    });
 	add(del);
     }

@@ -1,24 +1,12 @@
 package edu.cornell.dendro.corina.hardware.device;
 
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.SerialSampleIOEvent;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.BaudRate;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataBits;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.FlowControl;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortState;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMultiplier;
-
-import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 
 /**
@@ -56,11 +44,8 @@ import gnu.io.SerialPortEvent;
 public class LintabDevice extends AbstractSerialMeasuringDevice{
 
 	private static final int EVE_ENQ = 5;
-	private static final int EVE_ACK = 6;	
 	private Boolean fireOnNextValue = false;
 	
-	/** serial NUMBER of the last data point... */
-	private int lastSerial = -1;
 	
 	@Override
 	public void setDefaultPortParams()
@@ -118,7 +103,6 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	public void serialEvent(SerialPortEvent e) {
 		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			InputStream input;
-			OutputStream output;
 			
 			try {
 				input = getPort().getInputStream();
@@ -136,8 +120,8 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 			    	 */
 			    	//Read from port into buffer while not LF (10)
 			    	while ((intReadFromPort=input.read()) != 10){
-			    		fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, String.valueOf(intReadFromPort));
-			    		System.out.println(intReadFromPort);
+			    		
+			    		//System.out.println(intReadFromPort);
 			    		
 			    		//If a timeout then show bad sample
 						if(intReadFromPort == -1) {
@@ -150,6 +134,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 			    	}
 
                 String strReadBuffer = readBuffer.toString();
+                fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, String.valueOf(strReadBuffer), DataDirection.RECEIVED);
             	//Chop the three characters off the right side of the string to leave the number.
             	String strReadPosition = strReadBuffer.substring(0,(strReadBuffer.length())-3);
             	// Round up to integer of 1/1000th mm
@@ -220,11 +205,11 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	    OutputStream outToPort=new DataOutputStream(output);
 	    byte[] command = strCommand.getBytes();
 	    outToPort.write(command);
-	    fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, command.toString());
+	    fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
 	    
     	}
     	catch (IOException ioe) {
-			fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error writing to serial port");
+			fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error writing to serial port", DataDirection.SENT);
     	}	
 	}
 

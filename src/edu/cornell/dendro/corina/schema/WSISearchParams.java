@@ -457,7 +457,6 @@ public class WSISearchParams
             if (this == object) {
                 return ;
             }
-            final WSISearchParams.All that = ((WSISearchParams.All) object);
         }
 
         public boolean equals(Object object) {

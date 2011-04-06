@@ -31,9 +31,7 @@ import org.tridas.schema.TridasSapwood;
 import org.tridas.schema.TridasWoodCompleteness;
 
 import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.dictionary.Taxon;
 import edu.cornell.dendro.corina.editor.EditorFactory.BarcodeDialogResult;
-import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;

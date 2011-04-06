@@ -48,9 +48,9 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Layout;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.util.Center;
 
 /*
@@ -73,6 +73,7 @@ import edu.cornell.dendro.corina.util.Center;
   -- javadoc!
 */
 
+@SuppressWarnings("serial")
 public class FontChooser extends JDialog {
 
     private String _name;
@@ -155,14 +156,14 @@ public class FontChooser extends JDialog {
 	JScrollPane nameScroller = new JScrollPane(nameList);
 	nameScroller.setAlignmentX(Component.LEFT_ALIGNMENT);
 	JLabel nameLabel = new JLabel("Name:");
-	if (!App.platform.isMac())
+	if (!Platform.isMac())
 	    nameLabel.setDisplayedMnemonic('N');
 	nameLabel.setLabelFor(nameList);
 	nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 	// style components: plain
 	plainCheck = new JCheckBox("Plain", _style == Font.PLAIN);
-	if (!App.platform.isMac())
+	if (!Platform.isMac())
 	    plainCheck.setMnemonic('P');
 	plainCheck.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
@@ -181,7 +182,7 @@ public class FontChooser extends JDialog {
 
 	// style components: bold
 	boldCheck = new JCheckBox("Bold", (_style & Font.BOLD) != 0);
-	if (!App.platform.isMac())
+	if (!Platform.isMac())
 	    boldCheck.setMnemonic('B');
 	boldCheck.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
@@ -200,7 +201,7 @@ public class FontChooser extends JDialog {
 
 	// style components: italic
 	italicCheck = new JCheckBox("Italic", (_style & Font.ITALIC) != 0);
-	if (!App.platform.isMac())
+	if (!Platform.isMac())
 	    italicCheck.setMnemonic('I');
 	italicCheck.addActionListener(new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
@@ -243,7 +244,7 @@ public class FontChooser extends JDialog {
 	    });
 	sizeCombo.setAlignmentX(Component.LEFT_ALIGNMENT);
 	JLabel sizeLabel = new JLabel("Size:");
-	if (!App.platform.isMac())
+	if (!Platform.isMac())
 	    sizeLabel.setDisplayedMnemonic('S');
 	sizeLabel.setLabelFor(sizeCombo);
 	sizeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -328,7 +329,7 @@ public class FontChooser extends JDialog {
 //	setResizable(false);
 	setModal(true);
         Center.center(this, owner);
-	show();
+	setVisible(true);
     }
 
     private String getResult() throws UserCancelledException {

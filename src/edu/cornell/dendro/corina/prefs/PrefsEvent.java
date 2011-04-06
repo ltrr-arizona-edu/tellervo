@@ -37,7 +37,8 @@ import java.util.EventObject;
 */
 public class PrefsEvent extends EventObject {
 
-    private String pref;
+	private static final long serialVersionUID = 1L;
+	private String pref;
 
     /**
         Make a new PrefsEvent.

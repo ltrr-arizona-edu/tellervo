@@ -15,6 +15,7 @@ import edu.cornell.dendro.corina.core.App;
 // TODO: javadoc
 // TODO: rename to Check(Box?)PrefComponent?
 
+@SuppressWarnings("serial")
 public class BoolPrefComponent extends JCheckBox implements ActionListener {
 
     private String pref;
@@ -33,10 +34,12 @@ public class BoolPrefComponent extends JCheckBox implements ActionListener {
     }
 
     // list of widgets which this checkbox also dims/undims
-    private List controlees = new ArrayList();
+    @SuppressWarnings("unchecked")
+	private List controlees = new ArrayList();
 
     // tell the checkbox that it should dim this component when unchecked
-    public void controls(JComponent component) {
+    @SuppressWarnings("unchecked")
+	public void controls(JComponent component) {
 	controlees.add(component);
 
 	if (!isSelected())

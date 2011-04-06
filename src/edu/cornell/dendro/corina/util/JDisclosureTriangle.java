@@ -31,6 +31,7 @@ import javax.swing.UIManager;
 
 // NOTE: can only be used in Windows (i.e., not Applets)
 
+@SuppressWarnings("serial")
 public class JDisclosureTriangle extends JPanel /*implements DropTargetListener*/ {
 
     // disclosure triangle, initially visible by default

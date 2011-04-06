@@ -5,7 +5,6 @@ import org.tridas.interfaces.ITridas;
 import com.dmurph.mvc.ObjectEvent;
 
 import edu.cornell.dendro.corina.io.model.ImportModel;
-import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow;
 
 public class ImportMergeEntitiesEvent extends ObjectEvent<Class<? extends ITridas>> {
 

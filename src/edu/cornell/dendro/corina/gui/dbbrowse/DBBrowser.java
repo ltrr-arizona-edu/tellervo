@@ -37,7 +37,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
 
 import org.tridas.interfaces.ITridas;
-import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -83,7 +82,6 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     
     private SearchPanel searchPanel;
     
-    private TridasObjectEx lastSelectedObjects[] = null;
     
     public DBBrowser(java.awt.Frame parent, boolean modal) {
     	this(parent, modal, false);	
@@ -959,7 +957,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		*/
 	}
     
-	@SuppressWarnings("unchecked")
+
 /*	private void populateSiteList(){
 		populateSiteList(txtFilterInput.getText());
 	}
@@ -1129,6 +1127,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		return isSelectedElement(e);
 	}
 
+	@SuppressWarnings("unused")
 	private enum BrowseListMode {
 		ALL(I18n.getText("dbbrowser.showAllObjects")),
 		POPULATED(I18n.getText("dbbrowser.showPopulatedObjects")),
@@ -1152,6 +1151,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 	 * @param barcode
 	 * @return boolean 
 	 */
+	@SuppressWarnings("unused")
 	private boolean searchByBarcode(LabBarcode.DecodedBarcode barcode)
 	{
 		String reason = null;

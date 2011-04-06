@@ -18,6 +18,8 @@ import edu.cornell.dendro.corina.util.Center;
  *
  */
 public class CopyDialog extends JDialog {
+
+	private static final long serialVersionUID = 1L;
 	boolean cancelled = true;
 	private JTextField start, end;
 	private Range range;
@@ -31,6 +33,7 @@ public class CopyDialog extends JDialog {
 		return !cancelled;
 	}
 	
+	@SuppressWarnings("serial")
 	public CopyDialog(JFrame parent, Range sampleRange) {
 		super(parent, "Copy range...", true);
 		range = sampleRange;

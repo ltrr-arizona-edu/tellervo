@@ -2,29 +2,19 @@ package edu.cornell.dendro.corina.util.labels.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
-import java.util.List;
 
-import org.tridas.schema.BaseSeries;
-import org.tridas.schema.TridasDerivedSeries;
-import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
-import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
-import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
-import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
-import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
-import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 
@@ -32,6 +22,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
  *
  * @author  peterbrewer
  */
+@SuppressWarnings("serial")
 public class ProSheetPrintingUI extends javax.swing.JPanel implements ActionListener{
     
 	

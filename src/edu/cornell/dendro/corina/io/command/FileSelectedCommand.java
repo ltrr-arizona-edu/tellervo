@@ -1,15 +1,12 @@
 package edu.cornell.dendro.corina.io.command;
 
-import java.awt.Color;
 import java.io.IOException;
 
-import org.apache.commons.lang.WordUtils;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.exceptions.ConversionWarning.WarningType;
-import org.tridas.io.exceptions.InvalidDendroFileException.PointerType;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasMeasurementSeries;
@@ -18,11 +15,7 @@ import org.tridas.schema.TridasValues;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-import edu.cornell.dendro.corina.io.LineHighlighter;
-import edu.cornell.dendro.corina.io.TridasFileImportPanel;
-import edu.cornell.dendro.corina.io.TridasTreeModel;
 import edu.cornell.dendro.corina.io.control.FileSelectedEvent;
-import edu.cornell.dendro.corina.io.control.ImportNodeSelectedEvent;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
 import edu.cornell.dendro.corina.ui.Alert;
 

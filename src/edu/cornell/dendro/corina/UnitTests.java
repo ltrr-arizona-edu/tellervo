@@ -95,14 +95,15 @@ public class UnitTests extends TestCase {
     //
     // testing MetadataTemplate.java
     //
-    public void testMetadataLoad() {
-	Iterator i = MetadataTemplate.getFields();
-	assertTrue(i != null);
-	int n = 0;
-	while (i.hasNext()) {
-	    assertTrue(i.next() != null);
-	    n++;
-	}
-	assertTrue(n >= 1);
+    @SuppressWarnings("unchecked")
+	public void testMetadataLoad() {
+		Iterator i = MetadataTemplate.getFields();
+		assertTrue(i != null);
+		int n = 0;
+		while (i.hasNext()) {
+		    assertTrue(i.next() != null);
+		    n++;
+		}
+		assertTrue(n >= 1);
     }
 }

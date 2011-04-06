@@ -10,6 +10,7 @@ import java.io.IOException;
  *
  */
 
+@SuppressWarnings("serial")
 public class InvalidDataException extends IOException {
 
 	public InvalidDataException() {

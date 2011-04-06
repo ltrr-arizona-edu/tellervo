@@ -29,10 +29,12 @@ import edu.cornell.dendro.corina.util.ColorPair;
  * @author Lucas
  *
  */
+@SuppressWarnings("serial")
 public class ElemColorTable extends JScrollPane {
 	
 	boolean isPrinting = true;
 	
+	@SuppressWarnings("unchecked")
 	public ElemColorTable(List graphs, boolean isPrinting) {
 		super();
 
@@ -77,10 +79,12 @@ public class ElemColorTable extends JScrollPane {
 		setViewportView(table);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private List getGraphs() {
 		return graphs;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected List graphs;
 	protected ColorPair graphColors[];
 	
@@ -276,6 +280,7 @@ public class ElemColorTable extends JScrollPane {
 			}
 		}
 		
+		@SuppressWarnings("unchecked")
 		@Override
 		public Class getColumnClass(int col) {
 			switch(col) {
@@ -291,7 +296,6 @@ public class ElemColorTable extends JScrollPane {
 		}
 		
 		public Object getValueAt(int row, int col) {
-			Graph g = (Graph) parent.graphs.get(row);
 			
 			switch(col) {
 			case 0:

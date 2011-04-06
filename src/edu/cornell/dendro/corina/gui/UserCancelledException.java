@@ -54,6 +54,7 @@ package edu.cornell.dendro.corina.gui;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+@SuppressWarnings("serial")
 public class UserCancelledException extends Exception {
     /**
        Construct a new UserCancelledException.

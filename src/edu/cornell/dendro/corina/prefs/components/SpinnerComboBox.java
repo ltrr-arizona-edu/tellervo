@@ -33,6 +33,7 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
  * keep track of whether the spinner model was initialized with an integer or floating point
  * model, and then make sure to make calls to return the correct types in setValue
  */
+@SuppressWarnings("serial")
 public class SpinnerComboBox extends JComboBox {
   private JSpinner spinner;
   private Format inputFormat;
@@ -114,7 +115,7 @@ public class SpinnerComboBox extends JComboBox {
       //System.out.println("setSelectedItem: " + o + " " + o.getClass());
       if (o instanceof String) {
         try {
-          Object p = outputFormat.parseObject((String) o);
+          outputFormat.parseObject((String) o);
           //System.out.println("PARSED OBJECT: " + p + " " + p.getClass());
           internal.setSelectedItem(outputFormat.parseObject((String)o));
         } catch (ParseException pe) {
@@ -213,7 +214,8 @@ public class SpinnerComboBox extends JComboBox {
     initComboBox();
   }
 
-  public SpinnerComboBox(Vector items) {
+  @SuppressWarnings("unchecked")
+public SpinnerComboBox(Vector items) {
     super(items);
     initSpinner();
     initComboBox();

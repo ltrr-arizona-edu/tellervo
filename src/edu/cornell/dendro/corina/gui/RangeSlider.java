@@ -13,6 +13,7 @@ import javax.swing.JSlider;
  * 
  * @author Ernie Yu, LimeWire LLC
  */
+@SuppressWarnings("serial")
 public class RangeSlider extends JSlider {
 
     /**

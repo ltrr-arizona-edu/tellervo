@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 
 import edu.cornell.dendro.corina.logging.CorinaLog;
 
+@SuppressWarnings("serial")
 public class ColorEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
   private static final CorinaLog log = new CorinaLog(ColorEditor.class);
   

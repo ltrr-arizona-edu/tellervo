@@ -30,7 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import edu.cornell.dendro.corina.Preview;
-import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.platform.Platform;
 
 /**
    A component that displays a Preview.  It displays the title in bold
@@ -43,18 +43,20 @@ import edu.cornell.dendro.corina.core.App;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+@SuppressWarnings("serial")
 public class PreviewComponent extends JPanel {
 
     // u2022 is normal bullet, u2023 is an arrow > bullet (which looks
     // cool, but i don't need it)
     // -- java on windows and linux doesn't even support \u2022.
     // so use a hyphen there.
-    private static final String BULLET = (App.platform.isMac() ? "\u2023" : "-");
+    private static final String BULLET = (Platform.isMac() ? "\u2023" : "-");
     // FIXME: check Font.canDisplay()?
 
     /** Given a Preview object, create a component which displays it.
 	@param p the Preview to display */
-    public PreviewComponent(Preview p) {
+    @SuppressWarnings("unchecked")
+	public PreviewComponent(Preview p) {
 	setLayout(new BorderLayout());
 
 	// make a label, bold, with the title.

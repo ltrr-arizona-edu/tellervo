@@ -18,7 +18,6 @@ import javax.swing.text.JTextComponent;
 
 import org.tridas.interfaces.ITridasDerivedSeries;
 
-import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridasv2.LabCode;

@@ -52,6 +52,7 @@ import edu.cornell.dendro.corina.Build;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+@SuppressWarnings("serial")
 public class TextWindow extends JFrame {
 
     /**
@@ -78,7 +79,7 @@ public class TextWindow extends JFrame {
 	setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	setTitle(filename + " - " + Build.VERSION + " " + Build.TIMESTAMP);
 	setSize(640, 480);
-	show();
+	setVisible(true);
     }
 
     // returns the contents of |filename| in a string

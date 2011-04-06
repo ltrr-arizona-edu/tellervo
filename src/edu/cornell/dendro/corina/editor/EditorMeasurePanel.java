@@ -11,6 +11,7 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.MeasurePanel;
 import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataDirection;
 
 /**
  * @author Lucas Madar
@@ -22,6 +23,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 	private Editor editor;
 
 	
+	@SuppressWarnings("serial")
 	public EditorMeasurePanel(Editor myeditor, final AbstractSerialMeasuringDevice device) {
 		super(device);
 		editor = myeditor;
@@ -57,10 +59,13 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 
 
 	@Override
-	public void receiverRawData(String value) {
-		//IGNORE
+	public void receiverRawData(DataDirection dir, String value) {
+		// IGNORE
 		
 	}
+
+
+
 	
 
 

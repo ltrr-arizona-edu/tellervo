@@ -15,6 +15,7 @@ import edu.cornell.dendro.corina.ui.Builder;
  * @author Lucas Madar
  *
  */
+@SuppressWarnings("serial")
 public class GraphFileMenu extends FileMenu {
 	private GraphWindow window;
 	

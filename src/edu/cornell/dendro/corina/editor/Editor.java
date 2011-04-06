@@ -64,7 +64,6 @@ import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 
@@ -89,6 +88,7 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.PreferencesDialog;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
@@ -99,13 +99,9 @@ import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
-import edu.cornell.dendro.corina.schema.CorinaRequestType;
-import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
-import edu.cornell.dendro.corina.schema.WSIBox;
-import edu.cornell.dendro.corina.tridasv2.MapLink;
 import edu.cornell.dendro.corina.tridasv2.ui.ComponentViewer;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -116,72 +112,9 @@ import edu.cornell.dendro.corina.util.OKCancel;
 import edu.cornell.dendro.corina.util.Overwrite;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
-import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 import gov.nasa.worldwind.layers.MarkerLayer;
 
-/*
- left to do:
- -- extract EditorMenuBar as its own class?
- -- javadoc!
- 
-  change around the menus slightly:
-
-  File
-    (usual)
-  Edit
-    Undo
-    Redo
-    ---
-    Cut (dimmed)
-    Copy
-    Paste
-    ---
-    Insert Year
-    Delete Year
-    ---
-    Start Measuring
-    ---
-    (Preferences...)
-  Manipulate
-    Redate...
-    Index...
-    Truncate...
-    Reverse*
-    ---
-    Cross Against...
-    Reconcile*
-  Sum (Master?)
-    Re-Sum
-    Clean
-    ---
-    Add Element...
-    Remove Element --- no, add cut/copy/paste/delete to Edit; Edit->Delete removes element?
-
-  NB: the menu enabler/disabler code is duplicated -- in the init, and also in the event handler.  refactor.
-
-  ----------------------------------------
-
-  this class is the second-biggest (with 64 more lines it would be the
-  biggest), and is in serious need of refactoring.  things that don't
-  belong here:
-
-  -- setEnabled() calls are duplicated: on init, and also in the event-handlers
-
-  -- guts of save() look really familiar ...
-     ... that goes into XFrame, or some other general utility class
-
-  -- WJ panel stuff could go into a wjpanel, perhaps subclassing dataviewpanel
-
-  -- makeMenus is lines 455-868 (n=414).  ouch.  maybe this could be (compiled?) scheme.
-
-  -- the 3 view menuitems can certainly be combined into one Action
-
-  -- since the hold-down-control crap is gone now, those menus don't need object-scope.
-  (what did i mean by this?)
-
-  -- refactor mapframe so it can be simply "new MapFrame(sample)"
-*/
 
 public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		SampleListener, PrintableDocument, FocusListener {
@@ -225,6 +158,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		undoSupport.postEdit(x);
 	}
 
+	@SuppressWarnings("unused")
 	private void refreshUndoRedo(JMenuItem undoMenu, JMenuItem redoMenu) {
 		undoMenu.setText(undoManager.getUndoPresentationName());
 		undoMenu.setEnabled(undoManager.canUndo());
@@ -465,35 +399,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			componentsPanel = new ComponentViewer(sample);
 	}
 
-		
-	private void initMozillaMapPanel() {
-		/*MapLink link = new MapLink(sample.getSeries());
-		
-		
-	
-		// no link? no panel!
-		if(link == null)
-			return;
-		
-		// See if we have access to mozilla libs
-		try {
-			// this loads the DLL...
-			Class.forName("org.mozilla.browser");
-		}
-		catch (Exception e) {
-			// driver not installed...
-			System.out.println("No mozilla - no map");
-			System.out.println(e.getMessage());
-			return;
-		}
-		catch (Error e) {
-			// native interface not installed...
-			System.out.println("No mozilla - no map");
-			System.out.println(e.getMessage());
-			return;
-		}*/
-		
-	}
 
 	private void addCards() {
 		// start fresh
@@ -725,7 +630,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		menubar.add(new EditorToolsMenu(sample, this));
 		menubar.add(new EditorGraphMenu(sample));
 		//menubar.add(new EditorSiteMenu(sample));
-		if (App.platform.isMac())
+		if (Platform.isMac())
 			menubar.add(new WindowMenu(this));
 		menubar.add(new HelpMenu());
 		setJMenuBar(menubar);
@@ -771,24 +676,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		dataView.requestFocus();
 	}
 	
-	/**
-	 * When using heavyweight components, we have to make sure menus extend over them!
-	 */
-	private void makeMenusHeavyweight() {
-		JMenuBar menus = getJMenuBar();
-		
-		for(int i = 0; i < menus.getMenuCount(); i++)
-			menus.getMenu(i).getPopupMenu().setLightWeightPopupEnabled(false);
-	}
-
-	// DESIGN: move all editor menus into corina.editor.menus.ManipulateMenu, etc.
-
-	/*
-	 TODO:
-	 -- resumming used to call Platform.setModified(editor, true) for isMac.
-	 that's bad.  instead, Editor should be a SampleListener which calls
-	 setMod(this,meta.mod?) on metadataChanged() -- or anything, actually.
-	 */
 
 	private void setUIFromPrefs() {
 		if (wjTable == null)
@@ -865,6 +752,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	// TODO: use me!
+	@SuppressWarnings("unused")
 	private static boolean[] askWhichPages(Sample s, int def)
 			throws UserCancelledException {
 		// dialog
@@ -1024,5 +912,25 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	public void focusLost(FocusEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public static CorinaLog getLog() {
+		return log;
+	}
+
+	public void setBargraphPanel(BargraphPanel bargraphPanel) {
+		this.bargraphPanel = bargraphPanel;
+	}
+
+	public BargraphPanel getBargraphPanel() {
+		return bargraphPanel;
+	}
+
+	public void setEditorFileMenu(EditorFileMenu editorFileMenu) {
+		this.editorFileMenu = editorFileMenu;
+	}
+
+	public EditorFileMenu getEditorFileMenu() {
+		return editorFileMenu;
 	}
 }

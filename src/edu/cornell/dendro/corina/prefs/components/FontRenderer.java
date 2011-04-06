@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+@SuppressWarnings("serial")
 public class FontRenderer extends JLabel implements TableCellRenderer {
   Border unselectedBorder = null;
   Border selectedBorder = null;

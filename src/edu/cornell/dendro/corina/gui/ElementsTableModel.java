@@ -42,6 +42,7 @@ import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
 
+@SuppressWarnings("serial")
 public class ElementsTableModel extends AbstractTableModel {
 
 	private ElementList elements; // list of Elements
@@ -76,7 +77,7 @@ public class ElementsTableModel extends AbstractTableModel {
 		private JTable table;
 
 		public FilenameRenderer(JTable table) {
-			this.table = table;
+			this.setTable(table);
 
 			setLayout(new BorderLayout());
 
@@ -117,6 +118,14 @@ public class ElementsTableModel extends AbstractTableModel {
 			label.setBackground(back);
 
 			return this;
+		}
+
+		public void setTable(JTable table) {
+			this.table = table;
+		}
+
+		public JTable getTable() {
+			return table;
 		}
 	}
 
@@ -188,7 +197,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	public boolean isCellEditable(int row, int col) {
 		// get element
 		Element e = elements.get(row);
-		BaseSample bs = elementMap.get(e);
+		
 		
 		// File Elements only!
 		if(!(e.getLoader() instanceof FileElement))
@@ -200,6 +209,7 @@ public class ElementsTableModel extends AbstractTableModel {
 	}
 
 	// column class
+	@SuppressWarnings("unchecked")
 	@Override
 	public Class getColumnClass(int col) {
 		switch (col) {

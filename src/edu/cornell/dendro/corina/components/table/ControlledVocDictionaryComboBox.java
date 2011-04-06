@@ -18,6 +18,7 @@ import edu.cornell.dendro.corina.tridasv2.ui.ControlledVocRenderer;
 public class ControlledVocDictionaryComboBox extends DynamicJComboBox<ControlledVoc>{
 	private static final long serialVersionUID = 1L;
 	
+	@SuppressWarnings("unchecked")
 	public ControlledVocDictionaryComboBox(String argDictionary){
 		super(Dictionary.getMutableDictionary(argDictionary), new Comparator<ControlledVoc>(){
 			@Override

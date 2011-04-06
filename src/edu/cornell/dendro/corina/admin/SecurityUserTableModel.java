@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-import edu.cornell.dendro.corina.sample.Element;
-import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -34,12 +32,12 @@ public class SecurityUserTableModel extends AbstractTableModel {
 	
 	public SecurityUserTableModel(ArrayList<WSISecurityUser> usrLst){
 		userList = usrLst;
-		completeUserList = userList;
+		setCompleteUserList(userList);
 	}
     
     public void setUsers(ArrayList<WSISecurityUser> usrList){
     	userList = usrList;  
-		completeUserList = userList;
+		setCompleteUserList(userList);
 
     }
     
@@ -118,6 +116,22 @@ public class SecurityUserTableModel extends AbstractTableModel {
 		}
 		
 		return null;
+	}
+
+	public void setCompleteUserList(ArrayList<WSISecurityUser> completeUserList) {
+		this.completeUserList = completeUserList;
+	}
+
+	public ArrayList<WSISecurityUser> getCompleteUserList() {
+		return completeUserList;
+	}
+
+	public void setHideDisabled(Boolean hideDisabled) {
+		this.hideDisabled = hideDisabled;
+	}
+
+	public Boolean getHideDisabled() {
+		return hideDisabled;
 	}
 
 

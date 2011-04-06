@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 /**
  * A convenience container that contains both FontPrefComponent components.
  */
+@SuppressWarnings("serial")
 public class FontPrefPanel extends JComponent {
   private FontPrefComponent components;
 

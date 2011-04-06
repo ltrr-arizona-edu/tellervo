@@ -5,7 +5,6 @@ package edu.cornell.dendro.corina.editor;
 
 import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.Window;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.tridas.schema.NormalTridasMeasuringMethod;

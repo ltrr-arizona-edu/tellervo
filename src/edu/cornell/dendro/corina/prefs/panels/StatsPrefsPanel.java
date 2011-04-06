@@ -2,24 +2,22 @@ package edu.cornell.dendro.corina.prefs.panels;
 
 import java.awt.Color;
 
-import javax.swing.JPanel;
-import javax.swing.BoxLayout;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.JSpinner;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
+import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.SpinnerWrapper;
 import edu.cornell.dendro.corina.ui.I18n;
-
-import javax.swing.SpinnerNumberModel;
 
 public class StatsPrefsPanel extends AbstractPreferencesPanel {
 

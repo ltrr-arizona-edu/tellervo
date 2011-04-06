@@ -12,6 +12,7 @@ import com.ozten.font.JFontChooser;
 
 import edu.cornell.dendro.corina.logging.CorinaLog;
 
+@SuppressWarnings("serial")
 public class FontEditor extends AbstractCellEditor implements TableCellEditor {
   private static final CorinaLog log = new CorinaLog(FontEditor.class);
   
@@ -45,4 +46,8 @@ public class FontEditor extends AbstractCellEditor implements TableCellEditor {
     SwingUtilities.invokeLater(showdialog);
     return table.getCellRenderer(row, column).getTableCellRendererComponent(table, value, isSelected, true, row, column);
   }
+
+public static CorinaLog getLog() {
+	return log;
+}
 }

@@ -1,37 +1,23 @@
 package edu.cornell.dendro.corina.gui;
 
 
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.Font;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.text.MessageFormat;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
-import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JViewport;
-import javax.swing.SwingConstants;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Center;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import java.awt.Font;
 
 /*
  * AboutBox2.java
@@ -119,7 +105,6 @@ public class AboutBox extends javax.swing.JDialog {
     
     public String fileResourceToString(String filename){
     	
-        File file = new File(filename);
         StringBuffer contents = new StringBuffer();
         BufferedReader reader = null;
         InputStream is = getClass().getClassLoader().getResourceAsStream("edu/cornell/dendro/corina_resources/Licenses/CorinaLicense.txt"); 

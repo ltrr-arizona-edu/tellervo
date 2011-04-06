@@ -43,7 +43,8 @@ import edu.cornell.dendro.corina.sample.ElementFactory;
 public class LoadSave {
 
     // save the list of graphs under a given name
-    public static void save(String filename, List graphs) throws IOException {
+    @SuppressWarnings("unchecked")
+	public static void save(String filename, List graphs) throws IOException {
         // open for writing
         BufferedWriter w = new BufferedWriter(new FileWriter(filename));
 
@@ -84,7 +85,8 @@ public class LoadSave {
 
     // try to load a plot from disk
     // (synch because temp samples would get overwritten)
-    public static synchronized List load(String filename) throws IOException {
+    @SuppressWarnings("unchecked")
+	public static synchronized List load(String filename) throws IOException {
         // this is load(String) from Grid.java
         // REFACTOR: i should be able to load an xml file in one line.  dunno why
         // sax doesn't let me do that, but i should write a wrapper for this crap.
@@ -112,7 +114,8 @@ public class LoadSave {
         }
 
     // temp storage
-    private static List samples;
+    @SuppressWarnings("unchecked")
+	private static List samples;
 
     // sax2 handler for load()
     private static class GraphHandler extends DefaultHandler {
@@ -120,6 +123,7 @@ public class LoadSave {
 	float scale;
 	int xoffset, yoffset;
 	String filename;
+	@SuppressWarnings("unchecked")
 	@Override
 	public void startDocument() {
 	    // start a fresh list
@@ -143,6 +147,7 @@ public class LoadSave {
 	public void characters(char ch[], int start, int length) {
 	    filename = new String(ch, start, length).trim(); // stringify
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public void endElement(String uri, String name, String qName) {
 	    // it's a <graph/>, right?

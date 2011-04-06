@@ -83,7 +83,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	@Override
 	protected JPopupMenu initPopupMenu(boolean expandEnabled, Class<?> clazz)
 	{
-		String className = this.getFriendlyClassName(clazz);
+		String className = ManagementTreeViewPanel.getFriendlyClassName(clazz);
 		Boolean isTridas = false;
 		if(clazz.getSimpleName().startsWith("Tridas"))
 		{
@@ -275,6 +275,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	 * 
 	 * @param node
 	 */
+	@SuppressWarnings("unchecked")
 	private void reassignEntity(DefaultMutableTreeNode node, ITridas newParent)
 	{	
 		ITridas entity = null;
@@ -348,6 +349,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 		return;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void mergeEntity(DefaultMutableTreeNode node, ITridas correctEntity)
 	{
 		ITridas entity = null;

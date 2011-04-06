@@ -50,6 +50,7 @@ import java.awt.dnd.DragSourceContext; // new
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+@SuppressWarnings("serial")
 public class Tree extends JLabel implements DragGestureListener {
 
     /*
@@ -170,7 +171,9 @@ public class Tree extends JLabel implements DragGestureListener {
     }
     public static class TransferableFileList extends TransferableFile {
 	// this class ignores private String filename -- oh well, a few bytes lost
+	@SuppressWarnings("unchecked")
 	private List files;
+	@SuppressWarnings("unchecked")
 	public TransferableFileList(List files) {
 	    super(null); // HACK, but i need to call something (see previous comment)
 	    this.files = files; // should i copy it?

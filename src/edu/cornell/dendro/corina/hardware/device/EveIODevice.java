@@ -5,15 +5,6 @@ import java.io.InputStream;
 
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.SerialSampleIOEvent;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.BaudRate;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataBits;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.FlowControl;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortState;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMultiplier;
-
 import gnu.io.SerialPortEvent;
 
 /**
@@ -103,7 +94,7 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 				{
 				case WAITING_FOR_ACK: {
 					int val = input.read();
-					
+					fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, String.valueOf(val), DataDirection.RECEIVED);
 					if(val == EVE_ACK) {
 						System.out.println("Received ACK from device, leaving initialize mode");
 						
@@ -141,7 +132,10 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 						fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
 						return;
 					}
-					
+					fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, String.valueOf(counter)+
+							String.valueOf(valuehi)+
+							String.valueOf(valuelo), DataDirection.RECEIVED);
+
 					// this is a duplicate packet. ignore it!
 					if(counter == lastSerial)
 						return;

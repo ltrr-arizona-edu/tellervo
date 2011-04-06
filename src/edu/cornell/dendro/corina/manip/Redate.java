@@ -20,18 +20,17 @@
 
 package edu.cornell.dendro.corina.manip;
 
-import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.sample.Sample;
-import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
-import edu.cornell.dendro.corina.ui.I18n;
-
 import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDating;
 import org.tridas.schema.TridasInterpretation;
+
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.ui.I18n;
 
 public class Redate extends AbstractUndoableEdit {
 	private static final long serialVersionUID = 1L;

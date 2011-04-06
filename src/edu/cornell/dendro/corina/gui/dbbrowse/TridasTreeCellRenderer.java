@@ -12,7 +12,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.tridas.interfaces.ITridas;
-import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
@@ -20,9 +19,8 @@ import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
-import edu.cornell.dendro.corina.ui.Builder;
-
 import sun.swing.DefaultLookup;
+import edu.cornell.dendro.corina.ui.Builder;
 
 public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 

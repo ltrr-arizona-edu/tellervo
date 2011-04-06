@@ -11,19 +11,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.gui.dbbrowse.ElementListTableSorter;
-import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
-import org.tridas.util.TridasObjectEx;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 
 /**
@@ -120,7 +113,8 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionList
     }// </editor-fold>//GEN-END:initComponents
     
 
-    private void populateBoxList(){
+    @SuppressWarnings("unchecked")
+	private void populateBoxList(){
 	
     // Grab box dictionary
     ArrayList<WSIBox> boxlist = (ArrayList<WSIBox>) Dictionary.getMutableDictionary("boxDictionary");

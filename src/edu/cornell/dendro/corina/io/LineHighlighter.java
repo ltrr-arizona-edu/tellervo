@@ -21,7 +21,7 @@ public class LineHighlighter implements CaretListener
 	
 	private Highlighter.HighlightPainter painter;
 	private Object highlight;
-	private int line;
+
 	
 	public LineHighlighter(int line)
 	{
@@ -31,7 +31,6 @@ public class LineHighlighter implements CaretListener
 	public LineHighlighter(Color highlightColor, int line)
 	{
 		Color c = highlightColor != null ? highlightColor : DEFAULT_COLOR;
-		this.line = line;
 		painter = new DefaultHighlighter.DefaultHighlightPainter(c);
 	}
 	

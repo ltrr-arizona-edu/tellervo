@@ -1,31 +1,28 @@
 package edu.cornell.dendro.corina.gis;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.JFrame;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.event.EventListenerList;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 
+import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import gov.nasa.worldwind.event.RenderingExceptionListener;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JButton;
 
 /**
  *
  * @author  peterbrewer
  */
+@SuppressWarnings("serial")
 public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
     
 	JPanel mapPanel;

@@ -20,25 +20,23 @@
 
 package edu.cornell.dendro.corina.editor;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
+
 import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.gui.ElementsPanel;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
-
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Box;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.TableColumnModelListener;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.event.ChangeEvent;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EtchedBorder;
 
 /**
    An emacs-style modeline for an Editor's data table.
@@ -55,6 +53,7 @@ import javax.swing.border.EtchedBorder;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+@SuppressWarnings("serial")
 public class StatusBar extends JPanel
                    implements ListSelectionListener, TableColumnModelListener {
 

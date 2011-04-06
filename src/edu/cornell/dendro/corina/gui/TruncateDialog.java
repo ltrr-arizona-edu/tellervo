@@ -10,16 +10,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-/**
- * Demo application panel to display a range slider.
- * 
- * @author Ernie Yu, LimeWire LLC
- */
+@SuppressWarnings("serial")
 public class TruncateDialog extends JPanel {
 
     private JLabel lowerLabel = new JLabel();
@@ -87,17 +81,4 @@ public class TruncateDialog extends JPanel {
         frame.setVisible(true);
     }
     
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new TruncateDialog().display();
-            }
-        });
-    }
 }

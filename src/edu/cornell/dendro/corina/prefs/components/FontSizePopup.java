@@ -13,9 +13,10 @@ import javax.swing.ListCellRenderer;
 
 import edu.cornell.dendro.corina.core.App;
 
+@SuppressWarnings("serial")
 public class FontSizePopup extends JComboBox {
 
-    static class SizeLabelRenderer extends JLabel implements ListCellRenderer {
+	static class SizeLabelRenderer extends JLabel implements ListCellRenderer {
 	public SizeLabelRenderer() {
 	    setOpaque(true);
 	}

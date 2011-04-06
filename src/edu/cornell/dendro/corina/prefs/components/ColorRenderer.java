@@ -10,6 +10,7 @@ import java.awt.Component;
 
 import edu.cornell.dendro.corina.logging.CorinaLog;
 
+@SuppressWarnings("serial")
 public class ColorRenderer extends JLabel implements TableCellRenderer {
   private static final CorinaLog log = new CorinaLog(ColorRenderer.class);
   

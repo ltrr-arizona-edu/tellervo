@@ -3,19 +3,18 @@
  */
 package edu.cornell.dendro.corina.editor;
 
-import javax.print.*;
-import javax.print.attribute.*;
-import javax.print.attribute.standard.MediaSizeName;
-import java.awt.Rectangle;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.ScrollPaneConstants;
-
 import java.awt.BorderLayout;
-import javax.swing.JTextPane;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,25 +24,46 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.Date;
 
+import javax.print.Doc;
+import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
+import javax.print.PrintException;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.ServiceUI;
+import javax.print.SimpleDoc;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.MediaSizeName;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.text.*;
-
-import java.awt.FlowLayout;
-import java.awt.Shape;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.print.Printable;
-import java.awt.print.PageFormat;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.BoxView;
+import javax.swing.text.ComponentView;
+import javax.swing.text.Element;
+import javax.swing.text.IconView;
+import javax.swing.text.LabelView;
+import javax.swing.text.ParagraphView;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.StyledEditorKit;
+import javax.swing.text.TabSet;
+import javax.swing.text.TabStop;
+import javax.swing.text.View;
+import javax.swing.text.ViewFactory;
 
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.StringUtils;
 
 /**
  * @author Lucas Madar
@@ -51,6 +71,7 @@ import edu.cornell.dendro.corina.util.StringUtils;
  */
 public class SamplePrintEditor extends JPanel {
 
+	private static final long serialVersionUID = 1L;
 	private SPTextPane textpane;
 	private Sample s;
 	private Printable printable;
@@ -66,7 +87,10 @@ public class SamplePrintEditor extends JPanel {
 	 * decimal point tab stops. Makes Weiserjahre data line up nicely.
 	 */
 	private class SPEditorKit extends StyledEditorKit {
-	    @Override
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public ViewFactory getViewFactory() {
 	    	return new SPViewFactory();
 	    }
@@ -257,6 +281,8 @@ public class SamplePrintEditor extends JPanel {
 	private StringBuffer stringDoc = new StringBuffer();
 	
 	private class SPTextPane extends JTextPane implements Printable {
+		
+		private static final long serialVersionUID = 1L;
 		public SPTextPane() {
 			super();
 			this.setEditorKit(new SPEditorKit());
@@ -969,6 +995,7 @@ public class SamplePrintEditor extends JPanel {
 		// write out all elements
 		for (int i = 0; i < s.getElements().size(); i++) {
 			edu.cornell.dendro.corina.sample.Element e = s.getElements().get(i);
+			@SuppressWarnings("unused")
 			BaseSample bs;
 			Exception error = null;
 

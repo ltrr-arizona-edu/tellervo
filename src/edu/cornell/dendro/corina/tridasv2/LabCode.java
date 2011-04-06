@@ -189,7 +189,6 @@ public class LabCode implements Comparable<LabCode> {
 	//
 	
 	public int compareTo(LabCode o) {
-		int i = 0;
 		int v;
 		
 		/* This code uses subobjects in code.  But at Cornell we 

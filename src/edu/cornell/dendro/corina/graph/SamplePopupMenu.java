@@ -25,13 +25,13 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.JToolTip;
 
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
 
 // used by: GraphWindow, BargraphFrame
+@SuppressWarnings("serial")
 public class SamplePopupMenu extends JPopupMenu {
 
     private JMenuItem titleItem, rangeItem, scaleItem;
@@ -100,6 +100,7 @@ public class SamplePopupMenu extends JPopupMenu {
     }
 
     private Sample s;
+	@SuppressWarnings("unused")
 	private GrapherPanel panel;
 
     public void setSample(Sample s) {

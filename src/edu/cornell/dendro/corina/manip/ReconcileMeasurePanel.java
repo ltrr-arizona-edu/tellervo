@@ -6,6 +6,7 @@ package edu.cornell.dendro.corina.manip;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.MeasurePanel;
 import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataDirection;
 
 
 /**
@@ -43,11 +44,11 @@ public class ReconcileMeasurePanel extends MeasurePanel implements MeasurementRe
 
 
 	@Override
-	public void receiverRawData(String value) {
-		// IGNORE
-		
+	public void receiverRawData(DataDirection dir, String value) {
+		//IGNORE
 	}
-	
+
+
 
 
 }

@@ -3,7 +3,7 @@
  */
 package edu.cornell.dendro.corina.components.table;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasUnitless;
 
@@ -29,6 +29,6 @@ public class TridasUnitRenderer extends DefaultCellRenderer {
 			return "Unitless";
 		}
 		TridasUnit unit = (TridasUnit) argValue;
-		return StringUtils.capitaliseAllWords(unit.getNormalTridas().toString().replaceAll("___", " ").toLowerCase());
+		return WordUtils.capitalize(unit.getNormalTridas().toString().replaceAll("___", " ").toLowerCase());
 	}
 }

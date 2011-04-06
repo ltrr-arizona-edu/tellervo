@@ -16,6 +16,7 @@ import javax.swing.*;
     <li>Javadoc
   </ul>
 */
+@SuppressWarnings("serial")
 public class SourcesPanel extends JPanel {
 
     public SourcesPanel() {
@@ -38,7 +39,7 @@ public class SourcesPanel extends JPanel {
         JFrame f = new JFrame("Sources");
 	f.getContentPane().add(new SourcesPanel());
 	f.pack();
-	f.show();
+	f.setVisible(true);
     }
 
     private static class SourceRenderer extends DefaultListCellRenderer {

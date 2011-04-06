@@ -1,13 +1,15 @@
 package edu.cornell.dendro.corina.prefs.panels;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
@@ -21,9 +23,6 @@ import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.FontButtonWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.ui.I18n;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 

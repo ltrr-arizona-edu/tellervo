@@ -19,6 +19,7 @@ import javax.swing.ListCellRenderer;
  * @author Lucas Madar
  * 
  */
+@SuppressWarnings("serial")
 public class ColorComboBox extends JComboBox {
 
 	// a named color: supply these
@@ -129,8 +130,6 @@ public class ColorComboBox extends JComboBox {
 	 *            the preference key that this popup corresponds to
 	 */
 	public ColorComboBox() {
-		// color
-		boolean stdColor = false;
 
 		// add a bunch of standard colors
 		for (int i = 0; i < GraphInfo.screenColors.length; i++) {

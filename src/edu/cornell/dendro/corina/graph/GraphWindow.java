@@ -65,6 +65,7 @@ import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.index.Index;
 import edu.cornell.dendro.corina.io.WrongFiletypeException;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
 import edu.cornell.dendro.corina.sample.Element;
@@ -334,6 +335,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	// copy this graph to the clipboard as SVG -- is this really valuable? does
 	// it work?
+	@SuppressWarnings("unused")
 	private void copyToClipboard() {
 		final String glue = toSVG();
 
@@ -439,7 +441,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 			menubar.add(new GraphFileMenu(this));
 			menubar.add(new GraphEditMenu(this));
 			menubar.add(new GraphViewMenu(this, actions));
-			if (App.platform.isMac())
+			if (Platform.isMac())
 				menubar.add(new WindowMenu(this));
 			menubar.add(new HelpMenu());
 
@@ -448,7 +450,9 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 		// drag-n-drop
 		dtl = new DropPlotter(this);
+		@SuppressWarnings("unused")
 		DropTarget t1 = new DropTarget(getJMenuBar(), dtl); // on the menubar!
+		@SuppressWarnings("unused")
 		DropTarget t3 = new DropTarget(plot, dtl); // on the plot!
 
 		// context menu
@@ -491,7 +495,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		
 		// display the window
 		pack();
-		show();
+		setVisible(true);
 
 		// give it focus, so you don't have to tab to it
 		plot.requestFocus(); // must be after show(), i think
@@ -727,6 +731,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	 * @param filename
 	 *            the filename of the plot to load
 	 */
+	@SuppressWarnings("unchecked")
 	public GraphWindow(String filename) throws WrongFiletypeException {
 		// load
 		try {

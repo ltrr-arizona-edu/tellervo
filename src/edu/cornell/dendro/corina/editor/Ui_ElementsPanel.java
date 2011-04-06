@@ -10,6 +10,7 @@ package edu.cornell.dendro.corina.editor;
  *
  * @author  peterbrewer
  */
+@SuppressWarnings("serial")
 public class Ui_ElementsPanel extends javax.swing.JPanel {
     
     /** Creates new form Ui_ElementsPanel */
@@ -78,11 +79,13 @@ public class Ui_ElementsPanel extends javax.swing.JPanel {
                 "Type", "Site name", "Taxon", "No. of Measurements", "Last modified", "Begin Date", "End Date"
             }
         ) {
-            Class[] types = new Class [] {
+            @SuppressWarnings("unchecked")
+			Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
-            public Class getColumnClass(int columnIndex) {
+            @SuppressWarnings("unchecked")
+			public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });

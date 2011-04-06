@@ -18,6 +18,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 // - graph elements
 // - bargraph elements
 
+@SuppressWarnings("serial")
 public class EditorGraphMenu extends JMenu implements SampleListener {
 
 	private JMenuItem plot, plotElements, plotAll, bargraphAll;

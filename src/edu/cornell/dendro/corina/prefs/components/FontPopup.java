@@ -15,6 +15,7 @@ import javax.swing.ListCellRenderer;
 import edu.cornell.dendro.corina.core.App;
 
 // UNUSED!
+@SuppressWarnings("serial")
 public class FontPopup extends JComboBox {
 
     static class FontLabelRenderer extends JLabel implements ListCellRenderer {

@@ -14,7 +14,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -34,7 +33,6 @@ import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel.ObjectListMode;
 import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel.TreeDepth;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
@@ -397,6 +395,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 	 * 
 	 * @param enable
 	 */
+	@SuppressWarnings("unchecked")
 	protected void enableEditing(boolean enable) {
 		
 		propertiesTable.setEditable(enable);

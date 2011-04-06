@@ -432,28 +432,16 @@ public class FileMenu extends JMenu {
 		int returnVal = fc.showOpenDialog(null);
 			
 		// Get details from user
-		String fullFilename = null;
-		String filename = null;
 		String type = null;
 	    if (returnVal == JFileChooser.APPROVE_OPTION) {
 	        File file = fc.getSelectedFile();
 	        type = fc.getFileFilter().getDescription();
 	        
-	        fullFilename = file.getPath();
-	        filename = file.getName();
-	        
 	        ImportView importDialog = new ImportView(file, type);
-	        
-			
+
 			importDialog.setVisible(true);
 	        
-	        
-			// Set up reader
-		   /* AbstractDendroFileReader reader;
-			reader = TridasIO.getFileReader(type);
-	        
-		    ImportDialog importdialog = new ImportDialog(file, reader);
-		    importdialog.setVisible(true);*/
+	 
 		    
 	    } else {
 	    	return;
@@ -476,14 +464,14 @@ public class FileMenu extends JMenu {
 			
 		// Get details from user
 		String fullFilename = null;
-		String filename = null;
+
 		String type = null;
 	    if (returnVal == JFileChooser.APPROVE_OPTION) {
 	        File file = fc.getSelectedFile();
 	        type = fc.getFileFilter().getDescription();
 	        
 	        fullFilename = file.getPath();
-	        filename = file.getName();
+
 	    } else {
 	    	return;
 	    }

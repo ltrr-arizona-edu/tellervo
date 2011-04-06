@@ -27,7 +27,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
-import javax.swing.JWindow;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -463,6 +462,7 @@ public class ImportDialog extends JDialog implements PropertyChangeListener, Tri
 		
 	}
 	
+	@SuppressWarnings("unused")
 	private static void updateRowHeights(JTable table)
 	{
 	    try
@@ -591,6 +591,7 @@ public class ImportDialog extends JDialog implements PropertyChangeListener, Tri
 	 * 
 	 * @param enable
 	 */
+	@SuppressWarnings("unchecked")
 	protected void enableEditing(boolean enable) {
 		
 		propertiesTable.setEditable(enable);

@@ -35,6 +35,7 @@ import javax.swing.JPanel;
   ---- disposes when cancel is clicked
 */
 
+@SuppressWarnings("serial")
 public abstract class XDialog extends JDialog {
 
     // clients need to override these

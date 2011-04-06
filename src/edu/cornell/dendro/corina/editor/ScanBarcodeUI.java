@@ -22,6 +22,7 @@ import edu.cornell.dendro.corina.ui.I18n;
  */
 public class ScanBarcodeUI extends javax.swing.JPanel {
     
+	private static final long serialVersionUID = 1L;
 	final BarcodeDialogResult result;
 	
     /** Creates new form ScanBarcodeUI */

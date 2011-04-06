@@ -27,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -38,16 +37,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import edu.cornell.dendro.corina.Preview;
-import edu.cornell.dendro.corina.Previewable;
-import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.io.WrongFiletypeException;
-import edu.cornell.dendro.corina.sample.Element;
+import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 import edu.cornell.dendro.corina.sample.ElementList;
-import edu.cornell.dendro.corina.sample.FileElement;
-import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Builder;
 
+@SuppressWarnings("serial")
 public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 	// gui
@@ -111,7 +106,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 		// left: buttons (add)
 		add = Builder.makeButton("add");
-		if (!App.platform.isMac())
+		if (!Platform.isMac())
 			add.setIcon(Builder.getIcon("1downarrow.png", 32));
 		add.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
@@ -130,7 +125,7 @@ public class MultiPreview extends JPanel implements PropertyChangeListener {
 
 		// left: buttons (remove)
 		remove = Builder.makeButton("remove");
-		if (!App.platform.isMac())
+		if (!Platform.isMac())
 			remove.setIcon(Builder.getIcon("1uparrow.png", 32));
 		remove.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {

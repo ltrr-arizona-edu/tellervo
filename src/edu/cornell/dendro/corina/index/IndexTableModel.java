@@ -15,6 +15,7 @@ import edu.cornell.dendro.corina.ui.I18n;
  * @author peterbrewer
  *
  */
+@SuppressWarnings("serial")
 public class IndexTableModel extends AbstractTableModel {
 	// formatting for decimals
 	public static final String CHI2_FORMAT = "#,##0.0";

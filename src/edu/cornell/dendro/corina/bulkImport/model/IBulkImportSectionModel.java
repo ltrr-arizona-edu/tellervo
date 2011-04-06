@@ -71,5 +71,6 @@ public interface IBulkImportSectionModel extends IModel{
 	 * Gets the rows
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public MVCArrayList getRows(); // can't figure out how to get generics to work here, either there's a command error or model errors
 }

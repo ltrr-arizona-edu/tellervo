@@ -71,7 +71,8 @@ public class MeanSensitivity {
        @return the mean sensitivity of the list, or NaN if it can't be
        computed
     */
-    public static float meanSensitivity(List data) {
+    @SuppressWarnings("unchecked")
+	public static float meanSensitivity(List data) {
         List y = data;
         int N = y.size();
 

@@ -103,10 +103,13 @@ import java.util.List;
  * @author Hans Muller
  * @author James Gosling
  */
+@SuppressWarnings("serial")
 public class WeakEventListenerList implements Serializable {
 
-    protected transient List<WeakReference> weakReferences;
-    protected transient List<Class> classes;
+    @SuppressWarnings("unchecked")
+	protected transient List<WeakReference> weakReferences;
+    @SuppressWarnings("unchecked")
+	protected transient List<Class> classes;
     /**
      * Passes back the event listener list as an array
      * of ListenerType-listener pairs.  
@@ -115,7 +118,8 @@ public class WeakEventListenerList implements Serializable {
      * 
      * @return a array of listenerType-listener pairs.
      */
-    public Object[] getListenerList() {
+    @SuppressWarnings("unchecked")
+	public Object[] getListenerList() {
         List listeners = cleanReferences();
         Object[] result = new Object[listeners.size() * 2];
         for (int i = 0; i < listeners.size(); i++) {
@@ -131,7 +135,8 @@ public class WeakEventListenerList implements Serializable {
      * 
      * @return
      */
-    private synchronized <T extends EventListener> List<T> cleanReferences() {
+    @SuppressWarnings("unchecked")
+	private synchronized <T extends EventListener> List<T> cleanReferences() {
         List<T> listeners = new ArrayList<T>();
         for (int i = getReferences().size() - 1; i >= 0; i--) {
             
@@ -146,14 +151,16 @@ public class WeakEventListenerList implements Serializable {
         return listeners;
     }
     
-    private List<WeakReference> getReferences() {
+    @SuppressWarnings("unchecked")
+	private List<WeakReference> getReferences() {
         if (weakReferences == null) {
             weakReferences = new ArrayList<WeakReference>();
         }
         return weakReferences;
     }
     
-    private List<Class> getClasses() {
+    @SuppressWarnings("unchecked")
+	private List<Class> getClasses() {
         if (classes == null) {
             classes = new ArrayList<Class>();
             
@@ -170,7 +177,8 @@ public class WeakEventListenerList implements Serializable {
      * 
      * @since 1.3
      */
-    public <T extends EventListener> T[] getListeners(Class<T> t) {
+    @SuppressWarnings("unchecked")
+	public <T extends EventListener> T[] getListeners(Class<T> t) {
         List<T> liveListeners = cleanReferences();
         List<T> listeners = new ArrayList<T>();
         for (int i = 0; i < liveListeners.size(); i++) {
@@ -189,7 +197,8 @@ public class WeakEventListenerList implements Serializable {
     * @param t the type of the listener to be added
      * @param l the listener to be added
      */
-    public synchronized <T extends EventListener> void add(Class<T> t, T l) {
+    @SuppressWarnings("unchecked")
+	public synchronized <T extends EventListener> void add(Class<T> t, T l) {
         if (l==null) {
             // In an ideal world, we would do an assertion here
             // to help developers know they are probably doing
@@ -200,7 +209,8 @@ public class WeakEventListenerList implements Serializable {
             throw new IllegalArgumentException("Listener " + l +
                                          " is not of type " + t);
         }
-        List listeners = cleanReferences();
+        @SuppressWarnings("unused")
+		List listeners = cleanReferences();
         getReferences().add(new WeakReference<T>(l));
         getClasses().add(t);
     }

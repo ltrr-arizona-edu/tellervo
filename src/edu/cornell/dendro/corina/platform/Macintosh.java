@@ -95,6 +95,7 @@ public class Macintosh {
 	        });
 	 */
 
+	@SuppressWarnings("unchecked")
 	public static void registerAboutHandler(final CorinaAction about) {
 		try {
 			InvocationHandler handler = new InvocationHandler() {
@@ -140,6 +141,7 @@ public class Macintosh {
 
 	// -- why does it have to be run in its own thread?
 	// -- what's with the ISEx?  is that how i cancel?  if yes, say so.
+	@SuppressWarnings("unchecked")
 	public static void registerQuitHandler(Runnable quit) {
 		final Runnable glue = quit;
 
@@ -186,6 +188,7 @@ public class Macintosh {
 	            }
 	 */
 
+	@SuppressWarnings("unchecked")
 	public static void registerPrefsHandler(Runnable prefs) {
 		final Runnable glue = prefs;
 

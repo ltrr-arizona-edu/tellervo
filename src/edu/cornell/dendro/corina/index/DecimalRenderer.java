@@ -28,6 +28,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  * to do anythin about this right now
  * ] aaron 1/18/05
  */
+@SuppressWarnings("serial")
 public class DecimalRenderer extends DefaultTableCellRenderer {
   // "..." -- 3 dots -- the
   // unicode is \u2026, but "..." is guaranteed -- pick one

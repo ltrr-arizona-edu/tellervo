@@ -1,12 +1,8 @@
 package edu.cornell.dendro.corina.io;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
@@ -30,7 +26,6 @@ public class TridasTreeModel implements TreeModel {
 	        //do nothing
 	    }
 
-	    @SuppressWarnings("unchecked")
 		@Override
 	    public Object getChild(Object parent, int index) {
 	        if(parent instanceof TridasProject)

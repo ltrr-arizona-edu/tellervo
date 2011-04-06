@@ -5,7 +5,6 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,22 +18,17 @@ import javax.swing.event.EventListenerList;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasIdentifier;
-import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
-import edu.cornell.dendro.corina.admin.TridasEntityChooser;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.dbbrowse.CorinaCodePanel.ObjectListMode;
 import edu.cornell.dendro.corina.sample.Element;
@@ -42,24 +36,19 @@ import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
-import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
-import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
-import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.PopupListener;
-import edu.cornell.dendro.corina.util.labels.LabBarcode.Type;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
-import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
-import edu.cornell.dendro.corina.ui.Builder;
 
 public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements ActionListener, TridasSelectListener {
 
@@ -288,8 +277,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         	@Override
         	public void mouseClicked(MouseEvent e) { 
 				
-        		int selRow = tree.getRowForLocation(e.getX(), e.getY());
-				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+        		TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
 				tree.setSelectionPath(selPath);
 				
 				if(listenersAreCheap)
@@ -373,7 +361,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	protected JPopupMenu initPopupMenu(boolean expandEnabled, Class<?> clazz)
 	{
 		
-		String className = this.getFriendlyClassName(clazz);
+		String className = TridasTreeViewPanel.getFriendlyClassName(clazz);
 		Boolean isTridas = false;
 		if(clazz.getSimpleName().startsWith("Tridas"))
 		{
@@ -529,7 +517,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
      * 
      * @param node
      */
-    @SuppressWarnings({ "unchecked", "null" })
+    @SuppressWarnings({ "unchecked" })
 	public void expandEntity(DefaultMutableTreeNode node)
     {
     	ITridas entity;
@@ -580,7 +568,6 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     		for (ITridas ent : returnList)
     		{
                 newChildNode = new DefaultMutableTreeNode(ent);  
-                Integer childCount = node.getChildCount();
                 //((DefaultTreeModel) tree.getModel()).insertNodeInto(objectNode, node, childCount);
                 addTridasNodeInOrder(tree, node, newChildNode);
 
@@ -787,6 +774,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 * 
 	 * @param node
 	 */
+	@SuppressWarnings("unchecked")
 	protected void deleteEntity(DefaultMutableTreeNode node)
 	{
 		ITridas entity = null;
@@ -924,9 +912,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	public void refreshNode(DefaultMutableTreeNode node)
 	{
 		// Remove all children then add again
-		Integer children = node.getChildCount();
 		node.removeAllChildren();
-		children = node.getChildCount();
 		node.removeAllChildren();
 		//((DefaultTreeModel)tree.getModel()).reload();
 		expandEntity(node);

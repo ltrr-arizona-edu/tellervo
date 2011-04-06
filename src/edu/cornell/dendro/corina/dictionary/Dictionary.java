@@ -2,7 +2,6 @@ package edu.cornell.dendro.corina.dictionary;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -99,7 +98,7 @@ public class Dictionary extends CorinaResource {
 	
 	private static final Map<String, MVCArrayList<?>> dictionaries = new HashMap<String, MVCArrayList<?>>();
 	
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings("unchecked")
 	public static void registerDictionary(String dictionaryName, List<?> dictionary) {
 		MVCArrayList list;
 		if(dictionaries.containsKey(dictionaryName)){
@@ -122,13 +121,14 @@ public class Dictionary extends CorinaResource {
 	 * @param dictionaryName
 	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	public static List<?> getDictionary(String dictionaryName) {
 		MVCArrayList<?> dictionary = dictionaries.get(dictionaryName);
 
 		return (dictionary == null) ? Collections.unmodifiableList(new MVCArrayList()) : Collections.unmodifiableList(dictionary);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static MVCArrayList getMutableDictionary(String dictionaryName){
 		MVCArrayList<?> dictionary = dictionaries.get(dictionaryName);
 

@@ -15,7 +15,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.platform.Platform;
 
 // REFACTOR: this is very similar to OpenRecent, a menu shared by all open frames.
 
@@ -24,6 +24,7 @@ import edu.cornell.dendro.corina.core.App;
 // TODO: do everything from c'tor automatically; use addnotify/etc.
 
 // this is the most gloriously fucked up class.  whee...
+@SuppressWarnings("serial")
 public class WindowMenu extends JMenu {
     //
     // class data
@@ -32,13 +33,16 @@ public class WindowMenu extends JMenu {
     // list of windows: just ask Frame for it?
 
     // lists of menus and frames
-    private static List menus = new ArrayList();
-    private static List frames = new ArrayList();
+    @SuppressWarnings("unchecked")
+	private static List menus = new ArrayList();
+    @SuppressWarnings("unchecked")
+	private static List frames = new ArrayList();
 
     //
     // instance data
     //    
-    public WindowMenu(JFrame target) {
+    @SuppressWarnings("unchecked")
+	public WindowMenu(JFrame target) {
         super("Window");
         final JFrame w = target;
         
@@ -64,7 +68,7 @@ public class WindowMenu extends JMenu {
 
 		final int normal = 480; // pick a number
 
-                if (App.platform.isMac()) // menubar
+                if (Platform.isMac()) // menubar
                     max -= 22;
                 // take out any from the PC screenHeight?
 		// TODO: 1.4 has methods to get insets, i believe
@@ -103,7 +107,7 @@ public class WindowMenu extends JMenu {
                 public void actionPerformed(ActionEvent e) {
 		    // this automatically changes the flag state,
 		    // so i need to set it back.
-		    JCheckBoxMenuItem s = (JCheckBoxMenuItem) e.getSource();
+
 		    setSelected(false); // !s.isSelected());
 
                     if (glue.getState() == Frame.ICONIFIED)
@@ -124,7 +128,7 @@ public class WindowMenu extends JMenu {
                 public void actionPerformed(ActionEvent e) {
 		    // this automatically changes the flag state,
 		    // so i need to set it back.
-		    JCheckBoxMenuItem s = (JCheckBoxMenuItem) e.getSource();
+
 		    setSelected(false); // !s.isSelected());
 		    // BUG: if you select yourself, it should do nothing.
 		    // BUG: this doesn't restore the state of .selected
@@ -158,7 +162,7 @@ public class WindowMenu extends JMenu {
                             break;
                         }
                     }
-                    if (App.platform.isMac())
+                    if (Platform.isMac())
                         m.updateUI(); // WHOOPS: this swaps the help/windows menus.  but without it, it's worse.  ugh.
                 }
 

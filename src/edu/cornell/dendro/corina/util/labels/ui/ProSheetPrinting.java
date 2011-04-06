@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.util.labels.ui;
 
+@SuppressWarnings("serial")
 public class ProSheetPrinting extends ProSheetPrintingUI {
 
 	/**

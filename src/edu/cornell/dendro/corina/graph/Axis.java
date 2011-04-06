@@ -26,6 +26,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class Axis extends JPanel {
 	
 	private GraphInfo gInfo;

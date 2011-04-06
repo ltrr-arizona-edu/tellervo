@@ -283,9 +283,11 @@ public class DialogLayout implements LayoutManager2 {
             return controlWidth;
         }
     }
-    private List rows = new ArrayList();
+    @SuppressWarnings("unchecked")
+	private List rows = new ArrayList();
 
-    public void addLayoutComponent(Component comp, Object constraints) {
+    @SuppressWarnings("unchecked")
+	public void addLayoutComponent(Component comp, Object constraints) {
         // constraints is either (1) null, meaning this is a header
         // label (full span) or (2) a String, which is the label for
         // this component.
@@ -348,7 +350,7 @@ public class DialogLayout implements LayoutManager2 {
         f.setContentPane(p);
         
         f.pack();
-        f.show();
+        f.setVisible(true);
     }
 
     /*

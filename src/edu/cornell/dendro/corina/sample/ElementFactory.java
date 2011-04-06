@@ -5,8 +5,6 @@ import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import edu.cornell.dendro.corina.gui.Bug;
-
 public class ElementFactory {
 	/**
 	 * @param filename 

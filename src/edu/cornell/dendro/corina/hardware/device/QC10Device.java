@@ -1,15 +1,5 @@
 package edu.cornell.dendro.corina.hardware.device;
 
-import java.io.IOException;
-
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.BaudRate;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataBits;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.FlowControl;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.UnitMultiplier;
 
 
 public class QC10Device extends MetronicsGenericDevice {

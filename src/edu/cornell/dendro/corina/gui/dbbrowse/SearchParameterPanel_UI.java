@@ -10,6 +10,7 @@ package edu.cornell.dendro.corina.gui.dbbrowse;
  *
  * @author  peterbrewer
  */
+@SuppressWarnings("serial")
 public class SearchParameterPanel_UI extends javax.swing.JPanel {
     
     /** Creates new form SearchParameterPanel */

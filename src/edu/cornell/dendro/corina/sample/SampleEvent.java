@@ -30,6 +30,7 @@ import java.util.EventObject;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
+@SuppressWarnings("serial")
 public class SampleEvent extends EventObject {
     /**
        Construct a new SampleEvent with the specified source.

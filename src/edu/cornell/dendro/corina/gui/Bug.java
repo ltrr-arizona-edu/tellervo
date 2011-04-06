@@ -2,15 +2,6 @@ package edu.cornell.dendro.corina.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -21,15 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.jdom.Document;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-
-import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.util.BugReport;
 import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.OKCancel;
-import edu.cornell.dendro.corina.util.PureStringWriter;
 
 // TODO: refactor!
 
@@ -113,7 +98,7 @@ public class Bug extends JDialog {
 		super();
 
 		this.bug = t;
-		this.report = report;
+		this.setReport(report);
 		completeAndShow();
 	}
 
@@ -150,7 +135,6 @@ public class Bug extends JDialog {
 			}
 		});
 
-		final JDialog glue = this;
 		JButton submitreport = new JButton("Submit bug report");
 		submitreport.addActionListener(new AbstractAction() {
 			/**
@@ -159,7 +143,6 @@ public class Bug extends JDialog {
 			private static final long serialVersionUID = 4617777199430388184L;
 
 			public void actionPerformed(ActionEvent e) {
-				BugReportDialog reportDlg = new BugReportDialog(glue, report);
 				dispose();
 			}
 		});
@@ -220,5 +203,13 @@ public class Bug extends JDialog {
 	@Deprecated
 	public static void bug(Throwable t) {
 		new Bug(t);
+	}
+
+	public void setReport(BugReport report) {
+		this.report = report;
+	}
+
+	public BugReport getReport() {
+		return report;
 	}
 }

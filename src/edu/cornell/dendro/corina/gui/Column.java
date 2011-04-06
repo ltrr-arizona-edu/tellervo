@@ -40,6 +40,7 @@ import java.io.*;
   [ * ABC          > ]
 */
 
+@SuppressWarnings("serial")
 public class Column extends JPanel {
 
     // icons for "open folder" and "closed folder".  (is there a better way?)
@@ -52,6 +53,7 @@ public class Column extends JPanel {
 
     private static class MyModel implements ComboBoxModel {
 	String children[];
+	@SuppressWarnings("unchecked")
 	public MyModel(String folder) {
 	    File files[] = new File(folder).listFiles();
 
@@ -129,14 +131,13 @@ public class Column extends JPanel {
 
     private static final int THRESHOLD = 50;
 
-    private String folder;
 
     // only one of these is in use at a time.
     private JList list = null;
     private JComboBox combo = null;
 
     public Column(String folder) {
-	this.folder = folder;
+
 
 	setLayout(new BorderLayout());
 	setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -259,22 +260,26 @@ public class Column extends JPanel {
 
 	f.pack();
 	f.setSize(500, 500);
-	f.show();
+	f.setVisible(true);
     }
 
     // event model.  yeuch.
     public static interface FolderSelectionListener {
 	public void folderSelected(String newFolder);
     }
-    private java.util.Vector listeners = new Vector();
-    public void addFolderListener(FolderSelectionListener l) {
+    @SuppressWarnings("unchecked")
+	private java.util.Vector listeners = new Vector();
+    @SuppressWarnings("unchecked")
+	public void addFolderListener(FolderSelectionListener l) {
 	if (!listeners.contains(l))
 	    listeners.add(l);
     }
-    public void removeFolderListener(FolderSelectionListener l) {
+    @SuppressWarnings("unchecked")
+	public void removeFolderListener(FolderSelectionListener l) {
 	listeners.add(l);
     }
-    private void fireFolderChangedEvent(String newFolder) {
+    @SuppressWarnings("unchecked")
+	private void fireFolderChangedEvent(String newFolder) {
 	// alert all listeners
 	Vector l;
 	synchronized (this) {

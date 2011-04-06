@@ -5,9 +5,6 @@ package edu.cornell.dendro.corina.admin;
 
 import java.util.Comparator;
 
-import org.tridas.interfaces.ITridas;
-import org.tridas.schema.TridasSample;
-
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
 /**

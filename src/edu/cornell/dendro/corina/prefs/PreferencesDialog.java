@@ -89,7 +89,7 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 	
 	/// begin actual, non-static code!
 	private void initPrefsDialog() {
-		final PreferencesDialog glue = this;
+
 		
 		// populate everything
 		populateDialog();		
@@ -106,11 +106,10 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 		lblProxyPort1.setEnabled(isEnabled);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void setupCOMPort()
 	{
 		if (AbstractSerialMeasuringDevice.hasSerialCapability()) {
-
-			boolean addedPort = false;
 	
 			// first, enumerate all the ports.
 			Vector<String> comportlist = AbstractSerialMeasuringDevice.enumeratePorts();
@@ -119,7 +118,6 @@ public class PreferencesDialog extends Ui_PreferencesPanel {
 			String curport = App.prefs.getPref("corina.serialsampleio.port", null);
 			if (curport != null && !comportlist.contains(curport)) {
 				comportlist.add(curport);
-				addedPort = true;
 			} else if (curport == null) {
 				curport = "<choose a serial port>";
 				comportlist.add(curport);

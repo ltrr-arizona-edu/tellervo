@@ -78,6 +78,7 @@ public class EditorTabSetFactory {
 	/** Create a tabbed-line factory, given a line specification (see
 	 above).
 	 @param spec the line specification */
+	@SuppressWarnings("unchecked")
 	public static TabSet buildTabset(String spec, int width) {
 		// parse spec
 		StringTokenizer tok = new StringTokenizer(spec, " *<>^|", true);

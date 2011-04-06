@@ -2,18 +2,13 @@ package edu.cornell.dendro.corina.io.command;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-
-import org.tridas.interfaces.ITridas;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.io.control.ImportNodeSelectedEvent;
 import edu.cornell.dendro.corina.io.control.ImportSwapEntityEvent;
-import edu.cornell.dendro.corina.io.model.ImportModel;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow;
-import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
 
 public class EntitySwappedCommand implements ICommand {
 

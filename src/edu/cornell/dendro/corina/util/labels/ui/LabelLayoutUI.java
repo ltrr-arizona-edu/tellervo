@@ -12,6 +12,7 @@ package edu.cornell.dendro.corina.util.labels.ui;
  *
  * @author  peterbrewer
  */
+@SuppressWarnings("serial")
 public class LabelLayoutUI extends javax.swing.JPanel {
     
     /** Creates new form LabelLayoutUI */

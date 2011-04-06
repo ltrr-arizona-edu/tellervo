@@ -28,7 +28,6 @@ import edu.cornell.dendro.corina.components.table.ComboBoxCellEditor;
 import edu.cornell.dendro.corina.components.table.ControlledVocDictionaryComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicJComboBox;
 import edu.cornell.dendro.corina.components.table.DynamicKeySelectionManager;
-import edu.cornell.dendro.corina.components.table.IDynamicJComboBoxFilter;
 import edu.cornell.dendro.corina.components.table.TridasObjectExRenderer;
 import edu.cornell.dendro.corina.components.table.TridasShapeComboBox;
 import edu.cornell.dendro.corina.components.table.TridasShapeRenderer;
