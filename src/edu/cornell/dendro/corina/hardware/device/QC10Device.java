@@ -1,8 +1,13 @@
 package edu.cornell.dendro.corina.hardware.device;
 
+import java.io.DataOutputStream;
+import java.io.OutputStream;
+
+import edu.cornell.dendro.corina.hardware.SerialSampleIOEvent;
 
 
-public class QC10Device extends MetronicsGenericDevice {
+
+public class QC10Device extends GenericASCIIDevice {
 
 	@Override
 	public String toString() {
@@ -60,5 +65,48 @@ public class QC10Device extends MetronicsGenericDevice {
 		return false;
 	}
 
+	@Override
+	protected void sendRequest(String strCommand)
+	{
+		OutputStream output;
+
+
+    	try {
+    		
+	    output = getPort().getOutputStream();
+	    OutputStream outToPort=new DataOutputStream(output); 
+	    
+	    byte[] command = (strCommand+lineFeed.toCommandString()).getBytes();
+	    outToPort.write(command);
+        fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
+
+	    
+    	}
+    	catch (Exception ioe) {
+			fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error sending command to serial port");
+
+    	}	
+	}
 	
+	@Override
+	public Boolean isRequestDataCapable() {
+		return true;
+	}
+	
+	/**
+	 * Send zero command to Quadra-check QC10
+	 */
+	@Override
+	public void zeroMeasurement()
+	{
+		String strZeroDataCommand = "@3";
+		sendRequest(strZeroDataCommand);
+	}
+	
+	@Override
+	public void requestMeasurement() {
+		String strZeroDataCommand = "@16";
+		sendRequest(strZeroDataCommand);
+		
+	}
 }

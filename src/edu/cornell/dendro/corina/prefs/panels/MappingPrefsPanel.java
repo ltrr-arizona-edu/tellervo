@@ -39,11 +39,15 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 				"map.png", 
 				"Manage the Web Mapping Services available within Corina");
 		
-		setLayout(new MigLayout("", "[10px,grow]", "[100px,grow][0:n,grow][grow]"));
+		setLayout(new MigLayout("", "[10px,grow]", "[grow,fill][100px,grow][grow]"));
+		
+		
+		panelWarning = new GrfxWarning();
+		add(panelWarning, "cell 0 0,grow");
 		
 		panelWMS = new JPanel();
 		panelWMS.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Web Map Services (WMS)", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(panelWMS, "cell 0 0,growx,aligny top");
+		add(panelWMS, "cell 0 1,growx,aligny top");
 		panelWMS.setLayout(new MigLayout("", "[181.00px,grow,fill][176.00,grow][fill]", "[][][87px][][]"));
 		
 		lblMappingRequiresWeb = new JLabel("Mapping requires a web service connection");
@@ -62,10 +66,6 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 		tblWMS = new JTable();
 		tblWMS.setShowHorizontalLines(false);
 		scrollPane.setViewportView(tblWMS);
-		
-		
-		panelWarning = new GrfxWarning();
-		add(panelWarning, "cell 0 1,grow");
 
 		// Enable/Disable mapping
 		setMappingEnabled(!App.prefs.getBooleanPref("opengl.failed", false));
@@ -101,8 +101,9 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 	public void setMappingEnabled(Boolean b) {
 
 		panelWMS.setVisible(b);
-		panelWMS.setEnabled(b);
-
+		panelWMS.setEnabled(false);
+		panelWarning.setVisible(!b);
+		
 		if (!b) {
 			panelWarning.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {

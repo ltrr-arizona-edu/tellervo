@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Corina"
-!define PRODUCT_VERSION "2.11"
+!define PRODUCT_VERSION "2.12"
 !define PRODUCT_PUBLISHER "Cornell University"
 !define PRODUCT_WEB_SITE "http://dendro.cornell.edu/corina"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Corina.exe"
@@ -38,7 +38,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "c:\Users\aps03pwb\Desktop\corina-setup.exe"
+OutFile "..\..\target\corina-setup.exe"
 InstallDir "$PROGRAMFILES\Corina"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
