@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle;
 
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
@@ -32,6 +34,12 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
+import javax.swing.JPanel;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import net.miginfocom.swing.MigLayout;
+import java.awt.FlowLayout;
+import java.awt.BorderLayout;
 
 /**
  * GUI class to allow users to find the physical location of the sample they are
@@ -584,214 +592,109 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     @SuppressWarnings("serial")
 	private void initComponents() {
 
-        radBarcode = new javax.swing.JRadioButton();
-        radManual = new javax.swing.JRadioButton();
-        txtBarcode = new javax.swing.JTextField();
-        panelManualSearch = new javax.swing.JPanel();
-        cboElement = new javax.swing.JComboBox();
-        cboObject = new javax.swing.JComboBox();
-        cboSample = new javax.swing.JComboBox();
-        btnPopulateElements = new javax.swing.JButton();
-        btnPopulateSamples = new javax.swing.JButton();
-        lblObject = new javax.swing.JLabel();
-        lblElement = new javax.swing.JLabel();
-        lblSample = new javax.swing.JLabel();
-        btnSearch = new javax.swing.JButton();
-        panelResults = new javax.swing.JPanel();
-        scrollResults = new javax.swing.JScrollPane();
-        tblResults = new javax.swing.JTable();
-        panelButtons = new javax.swing.JPanel();
-        btnOk = new javax.swing.JButton();
-        sep = new javax.swing.JSeparator();
-
         setTitle("Find a sample...");
-
-        radBarcode.setSelected(true);
-        radBarcode.setText("Lookup sample by barcode or labcode:");
-
-        radManual.setText("Manually choose sample(s) to locate:");
-
-        txtBarcode.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtBarcodeActionPerformed(evt);
-            }
-        });
-
-        panelManualSearch.setEnabled(false);
-
-        cboElement.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--all--]" }));
-
-        cboObject.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--select--]" }));
-
-        cboSample.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--all--]" }));
-
-        btnPopulateElements.setText("Populate");
-
-        btnPopulateSamples.setText("Populate");
-
-        lblObject.setText("Object:");
-
-        lblElement.setText("Element:");
-
-        lblSample.setText("Sample:");
-
-        btnSearch.setText("Search");
-
-        org.jdesktop.layout.GroupLayout panelManualSearchLayout = new org.jdesktop.layout.GroupLayout(panelManualSearch);
-        panelManualSearch.setLayout(panelManualSearchLayout);
-        panelManualSearchLayout.setHorizontalGroup(
-            panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelManualSearchLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(lblObject, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
-                    .add(lblElement, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(lblSample, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(panelManualSearchLayout.createSequentialGroup()
-                        .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                            .add(cboSample, 0, 270, Short.MAX_VALUE)
-                            .add(cboElement, 0, 270, Short.MAX_VALUE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                            .add(btnPopulateElements, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(btnPopulateSamples, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, btnSearch, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .add(5, 5, 5))
-                    .add(panelManualSearchLayout.createSequentialGroup()
-                        .add(cboObject, 0, 373, Short.MAX_VALUE)
-                        .addContainerGap())))
-        );
-        panelManualSearchLayout.setVerticalGroup(
-            panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelManualSearchLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblObject)
-                    .add(cboObject, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnPopulateElements)
-                    .add(lblElement)
-                    .add(cboElement, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelManualSearchLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnPopulateSamples)
-                    .add(lblSample)
-                    .add(cboSample, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(btnSearch)
-                .addContainerGap())
-        );
-
-        tblResults.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null}
-            },
-            new String [] {
-                "Sample", "Box", "Location"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        scrollResults.setViewportView(tblResults);
-
-        org.jdesktop.layout.GroupLayout panelResultsLayout = new org.jdesktop.layout.GroupLayout(panelResults);
-        panelResults.setLayout(panelResultsLayout);
-        panelResultsLayout.setHorizontalGroup(
-            panelResultsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelResultsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(scrollResults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        panelResultsLayout.setVerticalGroup(
-            panelResultsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelResultsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(scrollResults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        btnOk.setText("Ok");
-
-        sep.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        sep.setMaximumSize(new java.awt.Dimension(9999, 2));
-        sep.setMinimumSize(new java.awt.Dimension(30, 2));
-        sep.setPreferredSize(new java.awt.Dimension(50, 2));
-
-        org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
-        panelButtons.setLayout(panelButtonsLayout);
-        panelButtonsLayout.setHorizontalGroup(
-            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelButtonsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(sep, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, btnOk))
-                .addContainerGap())
-        );
-        panelButtonsLayout.setVerticalGroup(
-            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelButtonsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(sep, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnOk)
-                .addContainerGap())
-        );
-
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(35, 35, 35)
-                .add(panelManualSearch, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(panelResults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(radBarcode)
-                            .add(radManual))
-                        .add(100, 100, 100))
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(29, 29, 29)
-                        .add(txtBarcode, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
-                        .addContainerGap())))
-            .add(layout.createSequentialGroup()
-                .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(radBarcode)
-                .add(3, 3, 3)
-                .add(txtBarcode, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(radManual)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelManualSearch, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelResults, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 59, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
+        
+        panel = new JPanel();
+        panel.setLayout(new MigLayout("", "[grow]", "[][][][][grow,fill][]"));
+        
+                radBarcode = new javax.swing.JRadioButton();
+                panel.add(radBarcode, "cell 0 0");
+                
+                        radBarcode.setSelected(true);
+                        radBarcode.setText("Lookup sample by barcode or labcode:");
+                        txtBarcode = new javax.swing.JTextField();
+                        panel.add(txtBarcode, "cell 0 1,growx");
+                        radManual = new javax.swing.JRadioButton();
+                        panel.add(radManual, "cell 0 2");
+                        
+                                radManual.setText("Manually choose sample(s) to locate:");
+                                panelManualSearch = new javax.swing.JPanel();
+                                panel.add(panelManualSearch, "cell 0 3,growx");
+                                cboElement = new javax.swing.JComboBox();
+                                cboObject = new javax.swing.JComboBox();
+                                cboSample = new javax.swing.JComboBox();
+                                btnPopulateElements = new javax.swing.JButton();
+                                btnPopulateSamples = new javax.swing.JButton();
+                                lblObject = new javax.swing.JLabel();
+                                lblElement = new javax.swing.JLabel();
+                                lblSample = new javax.swing.JLabel();
+                                btnSearch = new javax.swing.JButton();
+                                
+                                        panelManualSearch.setEnabled(false);
+                                        
+                                                cboElement.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--all--]" }));
+                                                
+                                                        cboObject.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--select--]" }));
+                                                        
+                                                                cboSample.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[--all--]" }));
+                                                                
+                                                                        btnPopulateElements.setText("Populate");
+                                                                        
+                                                                                btnPopulateSamples.setText("Populate");
+                                                                                
+                                                                                        lblObject.setText("Object:");
+                                                                                        
+                                                                                                lblElement.setText("Element:");
+                                                                                                
+                                                                                                        lblSample.setText("Sample:");
+                                                                                                        
+                                                                                                                btnSearch.setText("Search");
+                                                                                                                panelManualSearch.setLayout(new MigLayout("", "[69px][208px,grow][6px][98px]", "[24px][25px][25px][25px]"));
+                                                                                                                panelManualSearch.add(lblObject, "cell 0 0,growx,aligny center");
+                                                                                                                panelManualSearch.add(lblElement, "cell 0 1,growx,aligny center");
+                                                                                                                panelManualSearch.add(lblSample, "cell 0 2,growx,aligny center");
+                                                                                                                panelManualSearch.add(cboSample, "cell 1 2,growx,aligny top");
+                                                                                                                panelManualSearch.add(cboElement, "cell 1 1,growx,aligny top");
+                                                                                                                panelManualSearch.add(btnPopulateElements, "cell 3 1,alignx left,aligny top");
+                                                                                                                panelManualSearch.add(btnPopulateSamples, "cell 3 2,alignx left,aligny top");
+                                                                                                                panelManualSearch.add(btnSearch, "cell 3 3,growx,aligny top");
+                                                                                                                panelManualSearch.add(cboObject, "cell 1 0 3 1,growx,aligny top");
+                                                                                                                panelResults = new javax.swing.JPanel();
+                                                                                                                panel.add(panelResults, "cell 0 4,growx");
+                                                                                                                scrollResults = new javax.swing.JScrollPane();
+                                                                                                                tblResults = new javax.swing.JTable();
+                                                                                                                
+                                                                                                                        tblResults.setModel(new javax.swing.table.DefaultTableModel(
+                                                                                                                            new Object [][] {
+                                                                                                                                {null, null, null}
+                                                                                                                            },
+                                                                                                                            new String [] {
+                                                                                                                                "Sample", "Box", "Location"
+                                                                                                                            }
+                                                                                                                        ) {
+                                                                                                                            boolean[] canEdit = new boolean [] {
+                                                                                                                                false, false, false
+                                                                                                                            };
+                                                                                                                
+                                                                                                                            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                                                                                                                return canEdit [columnIndex];
+                                                                                                                            }
+                                                                                                                        });
+                                                                                                                        scrollResults.setViewportView(tblResults);
+                                                                                                                        panelResults.setLayout(new MigLayout("", "[314.00px,grow]", "[150px,grow]"));
+                                                                                                                        panelResults.add(scrollResults, "cell 0 0,grow");
+                                                                                                                        panelButtons = new javax.swing.JPanel();
+                                                                                                                        panel.add(panelButtons, "cell 0 5,growx");
+                                                                                                                        btnOk = new javax.swing.JButton();
+                                                                                                                        sep = new javax.swing.JSeparator();
+                                                                                                                        
+                                                                                                                                btnOk.setText("Ok");
+                                                                                                                                
+                                                                                                                                        sep.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+                                                                                                                                        sep.setMaximumSize(new java.awt.Dimension(9999, 2));
+                                                                                                                                        sep.setMinimumSize(new java.awt.Dimension(30, 2));
+                                                                                                                                        sep.setPreferredSize(new java.awt.Dimension(50, 2));
+                                                                                                                                        panelButtons.setLayout(new MigLayout("", "[410px,grow]", "[2px][25px]"));
+                                                                                                                                        panelButtons.add(sep, "cell 0 0,growx,aligny top");
+                                                                                                                                        panelButtons.add(btnOk, "cell 0 1,alignx right,aligny top");
+                        
+                                txtBarcode.addActionListener(new java.awt.event.ActionListener() {
+                                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                        txtBarcodeActionPerformed(evt);
+                                    }
+                                });
+        getContentPane().setLayout(new BorderLayout(0, 0));
+        getContentPane().add(panel);
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtBarcodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBarcodeActionPerformed
@@ -823,6 +726,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
     protected javax.swing.JSeparator sep;
     protected javax.swing.JTable tblResults;
     protected javax.swing.JTextField txtBarcode;
+    private JPanel panel;
     // End of variables declaration//GEN-END:variables
 
     

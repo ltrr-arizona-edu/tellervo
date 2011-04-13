@@ -9,7 +9,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import javax.swing.GroupLayout;
 import javax.swing.JOptionPane;
+import javax.swing.LayoutStyle;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.LoginDialog;
@@ -22,6 +24,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * Dialog for setting users own password, or for user with admin
@@ -333,51 +336,51 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
 
         lblUser.setText("User:");
 
-        org.jdesktop.layout.GroupLayout panelFieldsLayout = new org.jdesktop.layout.GroupLayout(panelFields);
-        panelFields.setLayout(panelFieldsLayout);
-        panelFieldsLayout.setHorizontalGroup(
-            panelFieldsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelFieldsLayout.createSequentialGroup()
+        GroupLayout gl_panelFields = new GroupLayout(panelFields);
+        panelFields.setLayout(gl_panelFields);
+        gl_panelFields.setHorizontalGroup(
+            gl_panelFields.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(gl_panelFields.createSequentialGroup()
                 .addContainerGap()
-                .add(panelFieldsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(lblOld)
-                    .add(lblNew)
-                    .add(lblVerify)
-                    .add(lblUser))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelFieldsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(lblUserText, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, pwdNew, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
-                    .add(pwdOld, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, pwdVerify, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE))
-                .add(17, 17, 17)
-                .add(lblIcon, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 64, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addGroup(gl_panelFields.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(lblOld)
+                    .addComponent(lblNew)
+                    .addComponent(lblVerify)
+                    .addComponent(lblUser))
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(gl_panelFields.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(lblUserText, GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                    .addComponent(pwdNew, GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                    .addComponent(pwdOld, GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                    .addComponent(pwdVerify, GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE))
+                .addGap(17, 17, 17)
+                .addComponent(lblIcon, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
-        panelFieldsLayout.setVerticalGroup(
-            panelFieldsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelFieldsLayout.createSequentialGroup()
+        gl_panelFields.setVerticalGroup(
+            gl_panelFields.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(gl_panelFields.createSequentialGroup()
                 .addContainerGap()
-                .add(panelFieldsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblUser)
-                    .add(lblUserText))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelFieldsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblOld)
-                    .add(pwdOld, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelFieldsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblNew)
-                    .add(pwdNew, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelFieldsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblVerify)
-                    .add(pwdVerify, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addGroup(gl_panelFields.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblUser)
+                    .addComponent(lblUserText))
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(gl_panelFields.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblOld)
+                    .addComponent(pwdOld, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(gl_panelFields.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblNew)
+                    .addComponent(pwdNew, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(gl_panelFields.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblVerify)
+                    .addComponent(pwdVerify, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelFieldsLayout.createSequentialGroup()
+            .addGroup(GroupLayout.Alignment.TRAILING, gl_panelFields.createSequentialGroup()
                 .addContainerGap()
-                .add(lblIcon, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 115, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(9, 9, 9))
+                .addComponent(lblIcon, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9))
         );
 
         lblStrengthText.setText("Password meets systems requirements");
@@ -390,61 +393,37 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
         btnOk.setMinimumSize(new java.awt.Dimension(86, 29));
         btnOk.setPreferredSize(null);
 
-        org.jdesktop.layout.GroupLayout panelButtonsLayout = new org.jdesktop.layout.GroupLayout(panelButtons);
-        panelButtons.setLayout(panelButtonsLayout);
-        panelButtonsLayout.setHorizontalGroup(
-            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelButtonsLayout.createSequentialGroup()
+        GroupLayout gl_panelButtons = new GroupLayout(panelButtons);
+        panelButtons.setLayout(gl_panelButtons);
+        gl_panelButtons.setHorizontalGroup(
+            gl_panelButtons.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(GroupLayout.Alignment.TRAILING, gl_panelButtons.createSequentialGroup()
                 .addContainerGap()
-                .add(lblStrengthText, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnCancel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnOk, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 87, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblStrengthText, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnCancel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnOk, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
-        panelButtonsLayout.setVerticalGroup(
-            panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelButtonsLayout.createSequentialGroup()
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(panelButtonsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnOk, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(btnCancel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblStrengthText)))
+        gl_panelButtons.setVerticalGroup(
+            gl_panelButtons.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(gl_panelButtons.createSequentialGroup()
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(gl_panelButtons.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnOk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCancel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblStrengthText)))
         );
 
         sep.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         sep.setMaximumSize(new java.awt.Dimension(9999, 2));
         sep.setMinimumSize(new java.awt.Dimension(30, 2));
         sep.setPreferredSize(new java.awt.Dimension(50, 2));
-
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(panelButtons, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .add(layout.createSequentialGroup()
-                        .add(7, 7, 7)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(panelFields, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(sep, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE))))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(9, 9, 9)
-                .add(panelFields, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(sep, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelButtons, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        getContentPane().setLayout(new MigLayout("", "[473px]", "[136px][2px][37px]"));
+        getContentPane().add(panelButtons, "cell 0 2,growx,aligny top");
+        getContentPane().add(panelFields, "cell 0 0,alignx left,aligny top");
+        getContentPane().add(sep, "cell 0 1,growx,aligny top");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

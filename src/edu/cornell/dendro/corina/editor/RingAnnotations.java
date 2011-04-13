@@ -6,6 +6,10 @@
 
 package edu.cornell.dendro.corina.editor;
 
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle;
+import net.miginfocom.swing.MigLayout;
+
 /**
  *
  * @author  peterbrewer
@@ -45,6 +49,7 @@ public class RingAnnotations extends javax.swing.JPanel {
         panelCustomNote = new javax.swing.JPanel();
         scrCustomNote = new javax.swing.JScrollPane();
         txtCustomNote = new javax.swing.JTextArea();
+        txtCustomNote.setLineWrap(true);
         lblCustomNote = new javax.swing.JLabel();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Ring Annotations"));
@@ -86,6 +91,7 @@ public class RingAnnotations extends javax.swing.JPanel {
         btnCancel.setText("Cancel");
 
         btnCustom.setText("Add or edit custom note");
+        setLayout(new MigLayout("", "[204px,grow][45px][73px][6px][86px]", "[189.00px,grow,fill][104px,grow][25px]"));
 
         txtCustomNote.setColumns(20);
         txtCustomNote.setRows(5);
@@ -93,58 +99,27 @@ public class RingAnnotations extends javax.swing.JPanel {
 
         lblCustomNote.setText("Custom note:");
 
-        org.jdesktop.layout.GroupLayout panelCustomNoteLayout = new org.jdesktop.layout.GroupLayout(panelCustomNote);
-        panelCustomNote.setLayout(panelCustomNoteLayout);
-        panelCustomNoteLayout.setHorizontalGroup(
-            panelCustomNoteLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelCustomNoteLayout.createSequentialGroup()
-                .add(lblCustomNote)
+        GroupLayout gl_panelCustomNote = new GroupLayout(panelCustomNote);
+        panelCustomNote.setLayout(gl_panelCustomNote);
+        gl_panelCustomNote.setHorizontalGroup(
+            gl_panelCustomNote.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(gl_panelCustomNote.createSequentialGroup()
+                .addComponent(lblCustomNote)
                 .addContainerGap())
-            .add(scrCustomNote, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+            .addComponent(scrCustomNote, GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
         );
-        panelCustomNoteLayout.setVerticalGroup(
-            panelCustomNoteLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelCustomNoteLayout.createSequentialGroup()
-                .add(lblCustomNote)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(scrCustomNote, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE))
+        gl_panelCustomNote.setVerticalGroup(
+            gl_panelCustomNote.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(gl_panelCustomNote.createSequentialGroup()
+                .addComponent(lblCustomNote)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrCustomNote, GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE))
         );
-
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(panelCustomNote, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(btnCustom)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 53, Short.MAX_VALUE)
-                        .add(btnApply)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnCancel)
-                        .add(17, 17, 17))
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(scrRingAnnotations, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
-                        .addContainerGap())))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(scrRingAnnotations, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 187, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelCustomNote, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(18, 18, 18)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnApply)
-                    .add(btnCancel)
-                    .add(btnCustom))
-                .addContainerGap())
-        );
+        add(panelCustomNote, "cell 0 1 5 1,grow");
+        add(btnCustom, "cell 0 2,alignx left,aligny top");
+        add(btnApply, "cell 2 2,alignx left,aligny top");
+        add(btnCancel, "cell 4 2,alignx left,aligny top");
+        add(scrRingAnnotations, "cell 0 0 5 1,grow");
     }// </editor-fold>//GEN-END:initComponents
     
     

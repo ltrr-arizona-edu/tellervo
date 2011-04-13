@@ -3,7 +3,9 @@ package edu.cornell.dendro.corina.editor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.GroupLayout;
 import javax.swing.JDialog;
+import javax.swing.LayoutStyle;
 
 import edu.cornell.dendro.corina.editor.EditorFactory.BarcodeDialogResult;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -13,6 +15,7 @@ import edu.cornell.dendro.corina.ui.Builder;
  * Created on August 10, 2009, 4:41 PM
  */
 import edu.cornell.dendro.corina.ui.I18n;
+import net.miginfocom.swing.MigLayout;
 
 
 
@@ -30,6 +33,12 @@ public class ScanBarcodeUI extends javax.swing.JPanel {
         initComponents();
         internationalizeComponents();
         jLabel2.setIcon(Builder.getIcon("barcode.png", 128));
+        setLayout(new MigLayout("", "[128px][12px][286px,grow,fill]", "[75px][19px][25px][23px]"));
+        add(chkAlwaysManual, "cell 0 3 3 1,growx,aligny top");
+        add(jLabel2, "cell 0 0 1 3,alignx left,aligny top");
+        add(txtBarcode, "cell 2 1,growx,aligny top");
+        add(jLabel1, "cell 2 0,growx,aligny top");
+        add(btnManual, "cell 2 2,alignx center,aligny top");
         
         result = new BarcodeDialogResult(parent);
 
@@ -95,44 +104,7 @@ public class ScanBarcodeUI extends javax.swing.JPanel {
 
         jLabel1.setText("<html>Set the sample metadata for this series by <br>scanning the sample's barcode.  Alternatively <br> manually enter the metadata later.</html>");
 
-        jLabel2.setIcon(new javax.swing.ImageIcon("Users/peterbrewer/dev/java/workspace2/Corina/src/edu/cornell/dendro/corina_resources/Icons/128x128/barcode.png")); // NOI18N
-
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, chkAlwaysManual, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
-                        .add(jLabel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 128, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                            .add(txtBarcode, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, jLabel1)
-                            .add(btnManual))))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(jLabel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 128, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(10, 10, 10))
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(jLabel1)
-                        .add(18, 18, 18)
-                        .add(txtBarcode, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnManual)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)))
-                .add(18, 18, 18)
-                .add(chkAlwaysManual)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        jLabel2.setIcon(new javax.swing.ImageIcon("Users/peterbrewer/dev/java/workspace2/Corina/src/edu/cornell/dendro/corina_resources/Icons/128x128/barcode.png"));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnManualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManualActionPerformed

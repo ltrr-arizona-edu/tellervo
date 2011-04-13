@@ -11,8 +11,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 
+import javax.swing.GroupLayout;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -45,6 +47,7 @@ import edu.cornell.dendro.corina.util.labels.ui.TridasListCellRenderer;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
+import net.miginfocom.swing.MigLayout;
 
 /**
  *
@@ -72,6 +75,7 @@ public class BoxCuration extends javax.swing.JDialog
      * 
      * @param parent
      * @param modal
+     * @wbp.parser.constructor
      */
     public BoxCuration(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -663,56 +667,18 @@ public class BoxCuration extends javax.swing.JDialog
         txtComments.setRows(5);
         jScrollPane1.setViewportView(txtComments);
 
-        org.jdesktop.layout.GroupLayout panelBoxDetailsLayout = new org.jdesktop.layout.GroupLayout(panelBoxDetails);
-        panelBoxDetails.setLayout(panelBoxDetailsLayout);
-        panelBoxDetailsLayout.setHorizontalGroup(
-            panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelBoxDetailsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
-                    .add(panelBoxDetailsLayout.createSequentialGroup()
-                        .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblCurationLocation)
-                            .add(lblLastUpdated)
-                            .add(lblTrackingLocation)
-                            .add(lblName))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(txtName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
-                            .add(txtTrackingLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
-                            .add(txtLastUpdated, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
-                            .add(txtCurationLocation, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)))
-                    .add(lblComments))
-                .addContainerGap())
-        );
-        panelBoxDetailsLayout.setVerticalGroup(
-            panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelBoxDetailsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblName)
-                    .add(txtName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblLastUpdated)
-                    .add(txtLastUpdated, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblCurationLocation)
-                    .add(txtCurationLocation, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(panelBoxDetailsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblTrackingLocation)
-                    .add(txtTrackingLocation, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(18, 18, 18)
-                .add(lblComments)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         tabbedPaneBox.addTab("Details", panelBoxDetails);
+        panelBoxDetails.setLayout(new MigLayout("", "[144px][12px][350px,grow]", "[19px][19px][19px][19px][15px][163px,grow]"));
+        panelBoxDetails.add(jScrollPane1, "cell 0 5 3 1,grow");
+        panelBoxDetails.add(lblCurationLocation, "cell 0 2,alignx left,aligny center");
+        panelBoxDetails.add(lblLastUpdated, "cell 0 1,alignx left,aligny center");
+        panelBoxDetails.add(lblTrackingLocation, "cell 0 3,alignx left,aligny center");
+        panelBoxDetails.add(lblName, "cell 0 0,alignx left,aligny center");
+        panelBoxDetails.add(txtName, "cell 2 0,growx,aligny top");
+        panelBoxDetails.add(txtTrackingLocation, "cell 2 3,growx,aligny top");
+        panelBoxDetails.add(txtLastUpdated, "cell 2 1,growx,aligny top");
+        panelBoxDetails.add(txtCurationLocation, "cell 2 2,growx,aligny top");
+        panelBoxDetails.add(lblComments, "cell 0 4,alignx left,aligny top");
 
         tblBoxContents.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -748,89 +714,25 @@ public class BoxCuration extends javax.swing.JDialog
         btnMarkMissing.setText("Mark unchecked as missing from box");
         btnMarkMissing.setEnabled(false);
 
-        org.jdesktop.layout.GroupLayout panelContentsLayout = new org.jdesktop.layout.GroupLayout(panelContents);
-        panelContents.setLayout(panelContentsLayout);
-        panelContentsLayout.setHorizontalGroup(
-            panelContentsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelContentsLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelContentsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
-                    .add(lblSampleCount)
-                    .add(panelContentsLayout.createSequentialGroup()
-                        .add(btnAddSampleToBox)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 29, Short.MAX_VALUE)
-                        .add(btnMarkMissing)))
-                .addContainerGap())
-        );
-        panelContentsLayout.setVerticalGroup(
-            panelContentsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, panelContentsLayout.createSequentialGroup()
-                .add(panelContentsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnAddSampleToBox)
-                    .add(btnMarkMissing))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(lblSampleCount)
-                .addContainerGap())
-        );
-
         tabbedPaneBox.addTab("Contents", panelContents);
+        panelContents.setLayout(new MigLayout("", "[164px][49px][293px]", "[25px][256px,grow][15px]"));
+        panelContents.add(jScrollPane2, "cell 0 1 3 1,grow");
+        panelContents.add(lblSampleCount, "cell 0 2,alignx left,aligny top");
+        panelContents.add(btnAddSampleToBox, "cell 0 0,alignx left,aligny top");
+        panelContents.add(btnMarkMissing, "cell 2 0,alignx left,aligny top");
 
         btnCreateNewBox.setText("Create New Box");
 
         lblSelectBox.setText("...or select box:");
-
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, tabbedPaneBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 506, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
-                        .add(btnApply)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnOk)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED))
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(layout.createSequentialGroup()
-                                .add(lblSelectBox, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .add(18, 18, 18))
-                            .add(layout.createSequentialGroup()
-                                .add(lblScanOrSelect, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
-                                .add(23, 23, 23)))
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, txtBarcode, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                                .add(cboBox, 0, 242, Short.MAX_VALUE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(btnCreateNewBox)))))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblScanOrSelect)
-                    .add(txtBarcode, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblSelectBox)
-                    .add(cboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(btnCreateNewBox))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(tabbedPaneBox, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnOk)
-                    .add(btnApply))
-                .addContainerGap())
-        );
+        getContentPane().setLayout(new MigLayout("", "[127.00px][242px,grow][86px][54px]", "[19px][25px][347px,grow][25px]"));
+        getContentPane().add(tabbedPaneBox, "cell 0 2 4 1,grow");
+        getContentPane().add(btnApply, "cell 2 3,alignx right,aligny top");
+        getContentPane().add(btnOk, "cell 3 3,alignx left,aligny top");
+        getContentPane().add(lblSelectBox, "cell 0 1,alignx left,aligny center");
+        getContentPane().add(lblScanOrSelect, "cell 0 0,alignx left,aligny center");
+        getContentPane().add(txtBarcode, "cell 1 0 3 1,growx,aligny top");
+        getContentPane().add(cboBox, "cell 1 1,growx,aligny top");
+        getContentPane().add(btnCreateNewBox, "cell 2 1 2 1,alignx right,aligny top");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

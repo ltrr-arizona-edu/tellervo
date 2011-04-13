@@ -11,7 +11,7 @@ public class QC1100 extends GenericASCIIDevice {
 
 	@Override
 	public String toString() {
-		return "Quick-Chek QC1100-AR-NL";
+		return "Metronics Quick-Chek 1100";
 	}
 
 	@Override

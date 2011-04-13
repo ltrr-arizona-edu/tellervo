@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -18,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.LayoutStyle;
 import javax.swing.ScrollPaneConstants;
 
 import edu.cornell.dendro.corina.Year;
@@ -103,7 +105,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		refPanel.add(createReconcilePane(s2, dv2, "Reference series: "));
 		
 		//JPanel refPanel = new JPanel(new BorderLayout());
-		//refPanel.add(createReconcilePane(s2, dv2), BorderLayout.CENTER);
+		//refPanel.addComponent(createReconcilePane(s2, dv2), BorderLayout.CENTER);
 		//refPanel.setVisible(extraIsShown);
 		
 		// Graph panel
@@ -170,33 +172,33 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		final ReconcileWindow glue = this;
 
 		// Layout the buttons
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(buttonPanel);
+        GroupLayout layout = new GroupLayout(buttonPanel);
         buttonPanel.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(btnViewType)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnHelp)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnRemeasure)                
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 361, Short.MAX_VALUE)
-                .add(btnFinish)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnCancel))
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, sepLine, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE)
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(btnViewType)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnHelp)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnRemeasure)                
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 361, Short.MAX_VALUE)
+                .addComponent(btnFinish)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnCancel))
+            .addComponent(sepLine, GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(sepLine, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnHelp)
-                    .add(btnCancel)
-                    .add(btnFinish)
-                    .add(btnRemeasure)
-                    .add(btnViewType))
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(sepLine, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnHelp)
+                    .addComponent(btnCancel)
+                    .addComponent(btnFinish)
+                    .addComponent(btnRemeasure)
+                    .addComponent(btnViewType))
                 .addContainerGap(26, Short.MAX_VALUE))
         );			
 	

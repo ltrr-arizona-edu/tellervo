@@ -6,7 +6,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
+import javax.swing.GroupLayout;
 import javax.swing.JOptionPane;
+import javax.swing.LayoutStyle;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
@@ -198,34 +200,34 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
             }
         });
 
-        org.jdesktop.layout.GroupLayout userPanelLayout = new org.jdesktop.layout.GroupLayout(userPanel);
+        GroupLayout userPanelLayout = new GroupLayout(userPanel);
         userPanel.setLayout(userPanelLayout);
         userPanelLayout.setHorizontalGroup(
-            userPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(userPanelLayout.createSequentialGroup()
+            userPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(userPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(userPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, scrollUsers, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
-                    .add(userPanelLayout.createSequentialGroup()
-                        .add(chkShowDisabledUsers)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 109, Short.MAX_VALUE)
-                        .add(btnEditUser444)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnNewUser)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnDeleteUser)))
+                .addGroup(userPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(scrollUsers, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
+                    .addGroup(userPanelLayout.createSequentialGroup()
+                        .addComponent(chkShowDisabledUsers)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
+                        .addComponent(btnEditUser444)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnNewUser)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDeleteUser)))
                 .addContainerGap())
         );
         userPanelLayout.setVerticalGroup(
-            userPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(userPanelLayout.createSequentialGroup()
-                .add(userPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(chkShowDisabledUsers)
-                    .add(btnDeleteUser)
-                    .add(btnNewUser)
-                    .add(btnEditUser444))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(scrollUsers, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
+            userPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(userPanelLayout.createSequentialGroup()
+                .addGroup(userPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(chkShowDisabledUsers)
+                    .addComponent(btnDeleteUser)
+                    .addComponent(btnNewUser)
+                    .addComponent(btnEditUser444))
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrollUsers, GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -291,40 +293,40 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 
         lblGroupMembers.setText("Group members:");
 
-        org.jdesktop.layout.GroupLayout groupPanelLayout = new org.jdesktop.layout.GroupLayout(groupPanel);
+        GroupLayout groupPanelLayout = new GroupLayout(groupPanel);
         groupPanel.setLayout(groupPanelLayout);
         groupPanelLayout.setHorizontalGroup(
-            groupPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, groupPanelLayout.createSequentialGroup()
+            groupPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(GroupLayout.Alignment.TRAILING, groupPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(groupPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, scrollMembers, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, scrollGroups, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, groupPanelLayout.createSequentialGroup()
-                        .add(chkShowDisabledGroups)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 122, Short.MAX_VALUE)
-                        .add(btnEditGroup)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnNewGroup)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnDeleteGroup))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, lblGroupMembers))
+                .addGroup(groupPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                    .addComponent(scrollMembers, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
+                    .addComponent(scrollGroups, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
+                    .addGroup(groupPanelLayout.createSequentialGroup()
+                        .addComponent(chkShowDisabledGroups)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
+                        .addComponent(btnEditGroup)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnNewGroup)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDeleteGroup))
+                    .addComponent(lblGroupMembers))
                 .addContainerGap())
         );
         groupPanelLayout.setVerticalGroup(
-            groupPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(groupPanelLayout.createSequentialGroup()
-                .add(groupPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(chkShowDisabledGroups)
-                    .add(btnDeleteGroup)
-                    .add(btnNewGroup)
-                    .add(btnEditGroup))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(scrollGroups, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(lblGroupMembers)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(scrollMembers, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+            groupPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(groupPanelLayout.createSequentialGroup()
+                .addGroup(groupPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(chkShowDisabledGroups)
+                    .addComponent(btnDeleteGroup)
+                    .addComponent(btnNewGroup)
+                    .addComponent(btnEditGroup))
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrollGroups, GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblGroupMembers)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrollMembers, GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -332,24 +334,24 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 
         btnOk.setText("Ok");
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+        GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, btnOk)
-                    .add(accountsTabPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(btnOk)
+                    .addComponent(accountsTabPane, GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .add(accountsTabPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnOk)
+                .addComponent(accountsTabPane, GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnOk)
                 .addContainerGap())
         );
 

@@ -9,11 +9,13 @@ import java.awt.event.FocusListener;
 import java.io.IOException;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.LayoutStyle;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 
@@ -47,6 +49,11 @@ import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
 import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import net.miginfocom.swing.MigLayout;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 
 
 
@@ -72,7 +79,8 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		initialize();
 	}
 
-    /** Creates new form CrossdateCommitDialog */
+    /** Creates new form CrossdateCommitDialog 
+     * @wbp.parser.constructor*/
 	public CrossdateCommitDialog(java.awt.Dialog parent) {
 		super(parent, true);
 		initComponents();
@@ -304,144 +312,100 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
-        btnCancel = new javax.swing.JButton();
-        btnOk = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtJustification = new javax.swing.JTextArea();
-        jLabel1 = new javax.swing.JLabel();
-        cboCertainty = new javax.swing.JComboBox();
-        jLabel2 = new javax.swing.JLabel();
-        txtVersion = new javax.swing.JTextField();
-        txtNewCrossdateName = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jSeparator1 = new javax.swing.JSeparator();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        lblCrossdateName = new javax.swing.JLabel();
-        lblNewDateRange = new javax.swing.JLabel();
-        lblMasterSampleName = new javax.swing.JLabel();
         lblprefix = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        btnCancel.setText("Cancel");
-
-        btnOk.setText("OK");
-
-        txtJustification.setColumns(20);
-        txtJustification.setRows(5);
-        jScrollPane1.setViewportView(txtJustification);
-
-        jLabel1.setText("Justification:");
-
-        jLabel2.setText("Certainty:");
-
-        txtNewCrossdateName.setEnabled(false);
-
-        jLabel3.setText("Version:");
-
-        jLabel4.setText("Series:");
-
-        jSeparator1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel5.setText("Master series:");
-
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel6.setText("New date range:");
-        jLabel6.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-
-        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel7.setText("Series being crossdated:");
-
-        lblCrossdateName.setText("C-XXX-XX-X-X-X (1234-2345)");
-
-        lblNewDateRange.setText("2345-5678");
-
-        lblMasterSampleName.setText("C-XXX-XX-X-X-X (9876-5432)");
-
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                            .add(jLabel7, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
-                            .add(jLabel5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 153, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .add(18, 18, 18)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblNewDateRange, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
-                            .add(lblCrossdateName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
-                            .add(lblMasterSampleName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)))
-                    .add(jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jLabel1)
-                            .add(jLabel2)
-                            .add(jLabel3)
-                            .add(jLabel4))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
-                            .add(txtVersion, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
-                            .add(layout.createSequentialGroup()
-                                .add(lblprefix)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(txtNewCrossdateName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE))
-                            .add(cboCertainty, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 163, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(btnCancel)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(btnOk)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblCrossdateName)
-                    .add(jLabel7))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblNewDateRange)
-                    .add(jLabel6))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblMasterSampleName)
-                    .add(jLabel5))
-                .add(18, 18, 18)
-                .add(jSeparator1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(18, 18, 18)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel4)
-                    .add(lblprefix, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(txtNewCrossdateName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel3)
-                    .add(txtVersion, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel2)
-                    .add(cboCertainty, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jLabel1)
-                    .add(jScrollPane1))
-                .add(18, 18, 18)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnOk)
-                    .add(btnCancel))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        getContentPane().setLayout(new BorderLayout(0, 0));
+        
+        label = new JLabel("");
+        getContentPane().add(label);
+        
+        label_1 = new JLabel("");
+        getContentPane().add(label_1);
+        
+        label_2 = new JLabel("");
+        getContentPane().add(label_2);
+        
+        JPanel panel = new JPanel();
+        panel.setLayout(new MigLayout("", "[][]", "[][][][][][][][]"));
+        jLabel7 = new javax.swing.JLabel();
+        panel.add(jLabel7, "cell 0 0");
+        
+                jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                jLabel7.setText("Series being crossdated:");
+                lblCrossdateName = new javax.swing.JLabel();
+                panel.add(lblCrossdateName, "cell 1 0");
+                
+                        lblCrossdateName.setText("C-XXX-XX-X-X-X (1234-2345)");
+                jLabel6 = new javax.swing.JLabel();
+                panel.add(jLabel6, "cell 0 1");
+                
+                        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                        jLabel6.setText("New date range:");
+                        jLabel6.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+                        lblNewDateRange = new javax.swing.JLabel();
+                        panel.add(lblNewDateRange, "cell 1 1");
+                        
+                                lblNewDateRange.setText("2345-5678");
+                        jLabel5 = new javax.swing.JLabel();
+                        panel.add(jLabel5, "flowy,cell 0 2");
+                        
+                                jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                                jLabel5.setText("Master series:");
+                                lblMasterSampleName = new javax.swing.JLabel();
+                                panel.add(lblMasterSampleName, "cell 1 2");
+                                
+                                        lblMasterSampleName.setText("C-XXX-XX-X-X-X (9876-5432)");
+                                        jSeparator1 = new javax.swing.JSeparator();
+                                        panel.add(jSeparator1, "cell 0 7");
+                                        
+                                                jSeparator1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+                                                jLabel4 = new javax.swing.JLabel();
+                                                panel.add(jLabel4, "cell 0 3");
+                                                
+                                                        jLabel4.setText("Series:");
+                                                        txtNewCrossdateName = new javax.swing.JTextField();
+                                                        panel.add(txtNewCrossdateName, "cell 1 3,growx");
+                                                        
+                                                                txtNewCrossdateName.setEnabled(false);
+                                                                jLabel3 = new javax.swing.JLabel();
+                                                                panel.add(jLabel3, "cell 0 4");
+                                                                
+                                                                        jLabel3.setText("Version:");
+                                                                        txtVersion = new javax.swing.JTextField();
+                                                                        panel.add(txtVersion, "cell 1 4,growx");
+                                                                        jLabel2 = new javax.swing.JLabel();
+                                                                        panel.add(jLabel2, "cell 0 5");
+                                                                        
+                                                                                jLabel2.setText("Certainty:");
+                                                                                cboCertainty = new javax.swing.JComboBox();
+                                                                                panel.add(cboCertainty, "cell 1 5");
+                                                                                jLabel1 = new javax.swing.JLabel();
+                                                                                panel.add(jLabel1, "cell 0 6");
+                                                                                
+                                                                                        jLabel1.setText("Justification:");
+                                                                                        jScrollPane1 = new javax.swing.JScrollPane();
+                                                                                        panel.add(jScrollPane1, "cell 1 6");
+                                                                                        txtJustification = new javax.swing.JTextArea();
+                                                                                        
+                                                                                                txtJustification.setColumns(20);
+                                                                                                txtJustification.setRows(5);
+                                                                                                jScrollPane1.setViewportView(txtJustification);
+        getContentPane().add(panel, BorderLayout.NORTH);
+        getContentPane().add(lblprefix);
+        
+        panel_1 = new JPanel();
+        getContentPane().add(panel_1, BorderLayout.SOUTH);
+        panel_1.setLayout(new MigLayout("", "[grow][54px][81px]", "[25px]"));
+        btnOk = new javax.swing.JButton();
+        panel_1.add(btnOk, "cell 1 0,alignx left,aligny top");
+        
+                btnOk.setText("OK");
+                
+                        btnCancel = new javax.swing.JButton();
+                        panel_1.add(btnCancel, "cell 2 0,alignx left,aligny top");
+                        
+                                btnCancel.setText("Cancel");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -483,6 +447,8 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
     protected javax.swing.JTextArea txtJustification;
     protected javax.swing.JTextField txtNewCrossdateName;
     protected javax.swing.JTextField txtVersion;
-    // End of variables declaration//GEN-END:variables
-    
+    private JLabel label;
+    private JLabel label_1;
+    private JLabel label_2;
+    private JPanel panel_1;
 }

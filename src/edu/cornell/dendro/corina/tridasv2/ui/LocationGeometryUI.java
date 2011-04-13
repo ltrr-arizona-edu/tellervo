@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -12,10 +13,12 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
 import javax.swing.SpinnerNumberModel;
-
-import org.jdesktop.layout.GroupLayout;
-import org.jdesktop.layout.LayoutStyle;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
+import net.miginfocom.swing.MigLayout;
 
 /*
  * LocationGeometry.java
@@ -62,6 +65,44 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         spnDMSLatSec.setModel(new SpinnerNumberModel(0.0d, 0.0d, 59.99d, 0.1));
         spnDMSLongMin.setModel(new SpinnerNumberModel(0.0d, 0.0d, 59.99d, 0.1));
         spnDMSLongSec.setModel(new SpinnerNumberModel(0.0d, 0.0d, 59.99d, 0.1));
+        setLayout(new MigLayout("", "[130px][10px][97px][18px][312px][2px][99px]", "[23px][25px][24px][24px][24px][98px,grow][94px,grow][58px]"));
+        add(radManual, "cell 2 0,alignx right,aligny top");
+        add(radGPS, "cell 4 0,growx,aligny top");
+        add(lblRadio, "cell 0 0 7 1,growx,aligny center");
+        add(panelDecDeg, "cell 0 6 5 1,alignx left,aligny top");
+        panelDecDeg.setLayout(new MigLayout("", "[130px][120px][7px]", "[23px][23px]"));
+        panelDecDeg.add(lblDDLong, "cell 0 1,alignx left,aligny center");
+        panelDecDeg.add(lblDDLat, "cell 0 0,growx,aligny center");
+        panelDecDeg.add(spnDDLat, "cell 1 0,growx,aligny bottom");
+        panelDecDeg.add(spnDDLong, "cell 1 1,growx,aligny bottom");
+        panelDecDeg.add(lblLatDeg1, "cell 2 0,growx,aligny top");
+        panelDecDeg.add(lblLatDeg2, "cell 2 1,growx,aligny top");
+        add(panelButton, "cell 0 7 7 1,growx,aligny top");
+        add(panelDMS, "cell 0 5 5 1,growx,aligny top");
+        panelDMS.setLayout(new MigLayout("", "[130px:n][89px][9px][89px][4px][89px][8px]", "[34px][34px]"));
+        panelDMS.add(lblLat, "cell 0 0,alignx left,aligny center");
+        panelDMS.add(lblLong, "cell 0 1,alignx left,aligny center");
+        panelDMS.add(spnDMSLatDeg, "cell 1 0,growx,aligny center");
+        panelDMS.add(lblLatDeg, "cell 2 0,alignx left,aligny center");
+        panelDMS.add(spnDMSLatMin, "cell 3 0,growx,aligny center");
+        panelDMS.add(lblLatMin, "cell 4 0,alignx left,growy");
+        panelDMS.add(spnDMSLatSec, "cell 5 0,growx,aligny center");
+        panelDMS.add(lblLatSec, "cell 6 0,alignx left,aligny center");
+        panelDMS.add(spnDMSLongDeg, "cell 1 1,growx,aligny center");
+        panelDMS.add(lblLongDeg, "cell 2 1,alignx left,aligny center");
+        panelDMS.add(spnDMSLongMin, "cell 3 1,growx,aligny center");
+        panelDMS.add(lblLongMin, "cell 4 1,alignx left,growy");
+        panelDMS.add(spnDMSLongSec, "cell 5 1,growx,aligny center");
+        panelDMS.add(lblLongSec, "cell 6 1,alignx left,aligny center");
+        add(lblGPSFilename, "cell 0 1,growx,aligny center");
+        add(lblWaypoint, "cell 0 2,growx,aligny center");
+        add(lblDatum, "cell 0 3,growx,aligny center");
+        add(lblFormat, "cell 0 4,growx,aligny center");
+        add(cboLatLongStyle, "cell 2 4 3 1,growx,aligny top");
+        add(cboDatum, "cell 2 3 3 1,growx,aligny top");
+        add(cboWaypoint, "cell 2 2 3 1,growx,aligny top");
+        add(txtGPSFilename, "cell 2 1 3 1,growx,aligny center");
+        add(btnGPSBrowse, "cell 6 1,alignx left,aligny top");
 
     }
     
@@ -149,76 +190,6 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         lblLongSec.setFont(new Font("Lucida Grande", 0, 18));
         lblLongSec.setText("''");
 
-        GroupLayout panelDMSLayout = new GroupLayout(panelDMS);
-        panelDMS.setLayout(panelDMSLayout);
-        panelDMSLayout.setHorizontalGroup(
-            panelDMSLayout.createParallelGroup(GroupLayout.LEADING)
-            .add(panelDMSLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelDMSLayout.createParallelGroup(GroupLayout.LEADING)
-                    .add(lblLat)
-                    .add(lblLong))
-                .add(76, 76, 76)
-                .add(panelDMSLayout.createParallelGroup(GroupLayout.LEADING)
-                    .add(panelDMSLayout.createSequentialGroup()
-                        .add(spnDMSLatDeg, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.RELATED)
-                        .add(lblLatDeg, GroupLayout.PREFERRED_SIZE, 7, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.UNRELATED)
-                        .add(spnDMSLatMin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.RELATED)
-                        .add(lblLatMin, GroupLayout.PREFERRED_SIZE, 4, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.UNRELATED)
-                        .add(spnDMSLatSec, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.RELATED)
-                        .add(lblLatSec))
-                    .add(panelDMSLayout.createSequentialGroup()
-                        .add(spnDMSLongDeg, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.RELATED)
-                        .add(lblLongDeg)
-                        .addPreferredGap(LayoutStyle.UNRELATED)
-                        .add(spnDMSLongMin, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.RELATED)
-                        .add(lblLongMin, GroupLayout.PREFERRED_SIZE, 4, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.UNRELATED)
-                        .add(spnDMSLongSec, GroupLayout.PREFERRED_SIZE, 52, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.RELATED)
-                        .add(lblLongSec)))
-                .addContainerGap(132, Short.MAX_VALUE))
-        );
-
-        panelDMSLayout.linkSize(new Component[] {spnDMSLatDeg, spnDMSLatMin, spnDMSLatSec, spnDMSLongDeg, spnDMSLongMin, spnDMSLongSec}, GroupLayout.HORIZONTAL);
-
-        panelDMSLayout.linkSize(new Component[] {lblLatDeg, lblLongDeg}, GroupLayout.HORIZONTAL);
-
-        panelDMSLayout.linkSize(new Component[] {lblLatMin, lblLongMin}, GroupLayout.HORIZONTAL);
-
-        panelDMSLayout.linkSize(new Component[] {lblLatSec, lblLongSec}, GroupLayout.HORIZONTAL);
-
-        panelDMSLayout.setVerticalGroup(
-            panelDMSLayout.createParallelGroup(GroupLayout.LEADING)
-            .add(panelDMSLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelDMSLayout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(lblLat)
-                    .add(spnDMSLatDeg, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .add(lblLatDeg)
-                    .add(spnDMSLatMin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .add(lblLatMin, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE)
-                    .add(lblLatSec, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)
-                    .add(spnDMSLatSec, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(panelDMSLayout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(spnDMSLongDeg, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .add(lblLongDeg)
-                    .add(lblLongMin, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE)
-                    .add(lblLongSec, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)
-                    .add(lblLong)
-                    .add(spnDMSLongMin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .add(spnDMSLongSec, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
         cboLatLongStyle.setModel(new DefaultComboBoxModel(new String[] { "Decimal degrees", "Degrees, minutes and seconds" }));
 
         lblFormat.setText("Format:");
@@ -243,27 +214,27 @@ public class LocationGeometryUI extends javax.swing.JPanel {
 
         btnViewMap.setText("View on map");
 
-        GroupLayout panelButtonLayout = new GroupLayout(panelButton);
-        panelButton.setLayout(panelButtonLayout);
-        panelButtonLayout.setHorizontalGroup(
-            panelButtonLayout.createParallelGroup(GroupLayout.LEADING)
-            .add(GroupLayout.TRAILING, panelButtonLayout.createSequentialGroup()
+        GroupLayout gl_panelButton = new GroupLayout(panelButton);
+        panelButton.setLayout(gl_panelButton);
+        gl_panelButton.setHorizontalGroup(
+            gl_panelButton.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(GroupLayout.Alignment.TRAILING, gl_panelButton.createSequentialGroup()
                 .addContainerGap()
-                .add(btnViewMap)
-                .addPreferredGap(LayoutStyle.RELATED, 437, Short.MAX_VALUE)
-                .add(btnCancel)
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(btnOK)
+                .addComponent(btnViewMap)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 437, Short.MAX_VALUE)
+                .addComponent(btnCancel)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnOK)
                 .addContainerGap())
         );
-        panelButtonLayout.setVerticalGroup(
-            panelButtonLayout.createParallelGroup(GroupLayout.LEADING)
-            .add(GroupLayout.TRAILING, panelButtonLayout.createSequentialGroup()
+        gl_panelButton.setVerticalGroup(
+            gl_panelButton.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(GroupLayout.Alignment.TRAILING, gl_panelButton.createSequentialGroup()
                 .addContainerGap(21, Short.MAX_VALUE)
-                .add(panelButtonLayout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(btnOK)
-                    .add(btnCancel)
-                    .add(btnViewMap))
+                .addGroup(gl_panelButton.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnOK)
+                    .addComponent(btnCancel)
+                    .addComponent(btnViewMap))
                 .addContainerGap())
         );
 
@@ -283,121 +254,6 @@ public class LocationGeometryUI extends javax.swing.JPanel {
 
         lblLatDeg2.setFont(new Font("Lucida Grande", 0, 18)); // NOI18N
         lblLatDeg2.setText("''");
-
-        GroupLayout panelDecDegLayout = new GroupLayout(panelDecDeg);
-        panelDecDeg.setLayout(panelDecDegLayout);
-        panelDecDegLayout.setHorizontalGroup(
-            panelDecDegLayout.createParallelGroup(GroupLayout.LEADING)
-            .add(panelDecDegLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelDecDegLayout.createParallelGroup(GroupLayout.LEADING)
-                    .add(lblDDLong)
-                    .add(lblDDLat, GroupLayout.PREFERRED_SIZE, 61, GroupLayout.PREFERRED_SIZE))
-                .add(panelDecDegLayout.createParallelGroup(GroupLayout.TRAILING)
-                    .add(panelDecDegLayout.createSequentialGroup()
-                        .add(66, 66, 66)
-                        .add(spnDDLat, GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))
-                    .add(panelDecDegLayout.createSequentialGroup()
-                        .addPreferredGap(LayoutStyle.RELATED)
-                        .add(spnDDLong, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(panelDecDegLayout.createParallelGroup(GroupLayout.LEADING)
-                    .add(lblLatDeg1, GroupLayout.PREFERRED_SIZE, 7, GroupLayout.PREFERRED_SIZE)
-                    .add(lblLatDeg2, GroupLayout.PREFERRED_SIZE, 7, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(164, Short.MAX_VALUE))
-        );
-
-        panelDecDegLayout.linkSize(new Component[] {spnDDLat, spnDDLong}, GroupLayout.HORIZONTAL);
-
-        panelDecDegLayout.setVerticalGroup(
-            panelDecDegLayout.createParallelGroup(GroupLayout.LEADING)
-            .add(panelDecDegLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelDecDegLayout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(lblDDLat, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .add(lblLatDeg1)
-                    .add(spnDDLat, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .add(10, 10, 10)
-                .add(panelDecDegLayout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(lblDDLong)
-                    .add(lblLatDeg2)
-                    .add(spnDDLong, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(26, Short.MAX_VALUE))
-        );
-
-        GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(148, 148, 148)
-                .add(radManual)
-                .add(18, 18, 18)
-                .add(radGPS, GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
-                .add(101, 101, 101))
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(lblRadio, GroupLayout.PREFERRED_SIZE, 617, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(41, Short.MAX_VALUE))
-            .add(layout.createSequentialGroup()
-                .add(panelDecDeg, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .add(panelButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(GroupLayout.TRAILING, layout.createSequentialGroup()
-                .add(layout.createParallelGroup(GroupLayout.TRAILING)
-                    .add(GroupLayout.LEADING, panelDMS, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(layout.createParallelGroup(GroupLayout.LEADING)
-                            .add(lblGPSFilename, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
-                            .add(lblWaypoint, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
-                            .add(lblDatum, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
-                            .add(lblFormat, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE))
-                        .add(10, 10, 10)
-                        .add(layout.createParallelGroup(GroupLayout.LEADING)
-                            .add(cboLatLongStyle, 0, 447, Short.MAX_VALUE)
-                            .add(cboDatum, 0, 447, Short.MAX_VALUE)
-                            .add(cboWaypoint, 0, 447, Short.MAX_VALUE)
-                            .add(layout.createSequentialGroup()
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(txtGPSFilename, GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)))))
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(btnGPSBrowse)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(lblRadio)
-                    .add(radManual)
-                    .add(radGPS))
-                .add(18, 18, 18)
-                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(lblGPSFilename)
-                    .add(btnGPSBrowse)
-                    .add(txtGPSFilename, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(lblWaypoint)
-                    .add(cboWaypoint, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(lblDatum)
-                    .add(cboDatum, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                    .add(lblFormat)
-                    .add(cboLatLongStyle, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(panelDMS, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(panelDecDeg, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(panelButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
     }// </editor-fold>
 
 

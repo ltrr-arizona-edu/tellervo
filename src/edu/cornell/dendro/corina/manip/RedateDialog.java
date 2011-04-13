@@ -29,6 +29,7 @@ import java.util.EnumSet;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -38,11 +39,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.jdesktop.layout.GroupLayout;
-import org.jdesktop.layout.LayoutStyle;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasDatingType;
@@ -183,6 +183,7 @@ public class RedateDialog extends JDialog {
 	/**
 	 * @param sample
 	 * @param owner
+	 * @wbp.parser.constructor
 	 */
 	public RedateDialog(Sample sample, JFrame owner) {
 		this(sample, owner, sample.getRange());
@@ -458,35 +459,35 @@ public class RedateDialog extends JDialog {
 		GroupLayout layout = new GroupLayout(p);
 		p.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(GroupLayout.LEADING)
-				.add(layout.createSequentialGroup()
-						.add(layout.createParallelGroup(GroupLayout.LEADING)
-								.add(lblNewRange)
-								.add(lblDating))
-								.add(18, 18, 18)
-								.add(layout.createParallelGroup(GroupLayout.LEADING)
-										.add(layout.createSequentialGroup()
-												.add(startField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-												.addPreferredGap(LayoutStyle.UNRELATED)
-												.add(lblTo)
-												.addPreferredGap(LayoutStyle.UNRELATED)
-												.add(endField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(layout.createSequentialGroup()
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(lblNewRange)
+								.addComponent(lblDating))
+								.addGap(18, 18, 18)
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+										.addGroup(layout.createSequentialGroup()
+												.addComponent(startField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+												.addComponent(lblTo)
+												.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+												.addComponent(endField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 												.addContainerGap(89, Short.MAX_VALUE))
-												.add(cboDatingType, 0, 191, Short.MAX_VALUE)))
+												.addComponent(cboDatingType, 0, 191, Short.MAX_VALUE)))
 		);
 		layout.setVerticalGroup(
-				layout.createParallelGroup(GroupLayout.LEADING)
-				.add(layout.createSequentialGroup()
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(layout.createSequentialGroup()
 						.addContainerGap()
-						.add(layout.createParallelGroup(GroupLayout.BASELINE)
-								.add(lblNewRange)
-								.add(startField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.add(lblTo)
-								.add(endField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(LayoutStyle.RELATED)
-								.add(layout.createParallelGroup(GroupLayout.BASELINE)
-										.add(lblDating)
-										.add(cboDatingType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(lblNewRange)
+								.addComponent(startField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblTo)
+								.addComponent(endField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+										.addComponent(lblDating)
+										.addComponent(cboDatingType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 										.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 
