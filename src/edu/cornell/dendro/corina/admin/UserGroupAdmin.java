@@ -6,12 +6,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-import javax.swing.GroupLayout;
 import javax.swing.JOptionPane;
-import javax.swing.LayoutStyle;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
+import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gui.LoginDialog;
@@ -19,8 +18,8 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIEntity;
-import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -118,7 +117,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     	chkShowDisabledUsers.setText(I18n.getText("admin.showDisabledAccounts"));
     	chkShowDisabledGroups.setText(I18n.getText("admin.showDisabledGroups"));
     	btnOk.setText(I18n.getText("general.ok"));
-    	btnEditUser444.setText(I18n.getText("menus.edit"));
+    	btnEditUser.setText(I18n.getText("menus.edit"));
     	btnNewUser.setText(I18n.getText("menus.file.new"));
     	btnDeleteUser.setText(I18n.getText("general.delete"));
     	btnEditGroup.setText(I18n.getText("menus.edit"));
@@ -142,7 +141,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         userPanel = new javax.swing.JPanel();
         scrollUsers = new javax.swing.JScrollPane();
         tblUsers = new javax.swing.JTable();
-        btnEditUser444 = new javax.swing.JButton();
+        btnEditUser = new javax.swing.JButton();
         btnNewUser = new javax.swing.JButton();
         btnDeleteUser = new javax.swing.JButton();
         chkShowDisabledUsers = new javax.swing.JCheckBox();
@@ -155,7 +154,6 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         btnDeleteGroup = new javax.swing.JButton();
         scrollMembers = new javax.swing.JScrollPane();
         tblMembers = new javax.swing.JTable();
-        lblGroupMembers = new javax.swing.JLabel();
         btnOk = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -182,8 +180,8 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         tblUsers.setShowVerticalLines(false);
         scrollUsers.setViewportView(tblUsers);
 
-        btnEditUser444.setText("Edit");
-        btnEditUser444.addActionListener(new java.awt.event.ActionListener() {
+        btnEditUser.setText("Edit");
+        btnEditUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEditUser444ActionPerformed(evt);
             }
@@ -201,38 +199,13 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
             }
         });
 
-        GroupLayout gl_userPanel = new GroupLayout(userPanel);
-        userPanel.setLayout(gl_userPanel);
-        gl_userPanel.setHorizontalGroup(
-            gl_userPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(gl_userPanel.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(gl_userPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(scrollUsers, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
-                    .addGroup(gl_userPanel.createSequentialGroup()
-                        .addComponent(chkShowDisabledUsers)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
-                        .addComponent(btnEditUser444)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnNewUser)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDeleteUser)))
-                .addContainerGap())
-        );
-        gl_userPanel.setVerticalGroup(
-            gl_userPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(gl_userPanel.createSequentialGroup()
-                .addGroup(gl_userPanel.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(chkShowDisabledUsers)
-                    .addComponent(btnDeleteUser)
-                    .addComponent(btnNewUser)
-                    .addComponent(btnEditUser444))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollUsers, GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         accountsTabPane.addTab("Users", userPanel);
+        userPanel.setLayout(new MigLayout("", "[197px][126px,grow][61px][6px][65px][6px][81px]", "[25px][335px,grow,fill]"));
+        userPanel.add(scrollUsers, "cell 0 1 7 1,grow");
+        userPanel.add(chkShowDisabledUsers, "cell 0 0,alignx left,aligny center");
+        userPanel.add(btnEditUser, "cell 2 0,alignx left,aligny top");
+        userPanel.add(btnNewUser, "cell 4 0,alignx left,aligny top");
+        userPanel.add(btnDeleteUser, "cell 6 0,alignx left,aligny top");
 
         tblGroups.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -292,69 +265,23 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         });
         scrollMembers.setViewportView(tblMembers);
 
-        lblGroupMembers.setText("Group members:");
-
-        GroupLayout gl_groupPanel = new GroupLayout(groupPanel);
-        groupPanel.setLayout(gl_groupPanel);
-        gl_groupPanel.setHorizontalGroup(
-            gl_groupPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(GroupLayout.Alignment.TRAILING, gl_groupPanel.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(gl_groupPanel.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                    .addComponent(scrollMembers, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
-                    .addComponent(scrollGroups, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
-                    .addGroup(gl_groupPanel.createSequentialGroup()
-                        .addComponent(chkShowDisabledGroups)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
-                        .addComponent(btnEditGroup)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnNewGroup)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDeleteGroup))
-                    .addComponent(lblGroupMembers))
-                .addContainerGap())
-        );
-        gl_groupPanel.setVerticalGroup(
-            gl_groupPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(gl_groupPanel.createSequentialGroup()
-                .addGroup(gl_groupPanel.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(chkShowDisabledGroups)
-                    .addComponent(btnDeleteGroup)
-                    .addComponent(btnNewGroup)
-                    .addComponent(btnEditGroup))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollGroups, GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblGroupMembers)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollMembers, GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         accountsTabPane.addTab("Groups", groupPanel);
+        groupPanel.setLayout(new MigLayout("", "[183px][140px,grow][61px][6px][65px][6px][81px]", "[25px][127px,grow][15px][181px,grow]"));
+        lblGroupMembers = new javax.swing.JLabel();
+        
+                lblGroupMembers.setText("Group members:");
+                groupPanel.add(lblGroupMembers, "cell 0 2 7 1,alignx left,aligny top");
+        groupPanel.add(scrollMembers, "cell 0 3 7 1,grow");
+        groupPanel.add(scrollGroups, "cell 0 1 7 1,grow");
+        groupPanel.add(chkShowDisabledGroups, "cell 0 0,alignx left,aligny center");
+        groupPanel.add(btnEditGroup, "cell 2 0,alignx left,aligny top");
+        groupPanel.add(btnNewGroup, "cell 4 0,alignx left,aligny top");
+        groupPanel.add(btnDeleteGroup, "cell 6 0,alignx left,aligny top");
+        getContentPane().setLayout(new MigLayout("", "[571px,grow]", "[405px,grow][25px]"));
 
         btnOk.setText("Ok");
-
-        GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(btnOk)
-                    .addComponent(accountsTabPane, GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(accountsTabPane, GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnOk)
-                .addContainerGap())
-        );
+        getContentPane().add(btnOk, "cell 0 1,alignx right,aligny top");
+        getContentPane().add(accountsTabPane, "cell 0 0,grow");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -406,7 +333,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     protected javax.swing.JButton btnDeleteGroup;
     protected javax.swing.JButton btnDeleteUser;
     protected javax.swing.JButton btnEditGroup;
-    protected javax.swing.JButton btnEditUser444;
+    protected javax.swing.JButton btnEditUser;
     protected javax.swing.JButton btnNewGroup;
     protected javax.swing.JButton btnNewUser;
     protected javax.swing.JButton btnOk;
