@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.cross;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -9,15 +10,15 @@ import java.awt.event.FocusListener;
 import java.io.IOException;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.LayoutStyle;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.schema.ControlledVoc;
@@ -32,11 +33,6 @@ import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
-/*
- * CrossdateCommitDialog2.java
- *
- * Created on September 4, 2009, 9:27 AM
- */
 import edu.cornell.dendro.corina.sample.SampleLoader;
 import edu.cornell.dendro.corina.sample.SampleType;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
@@ -49,11 +45,6 @@ import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.openrecent.OpenRecent;
 import edu.cornell.dendro.corina.util.openrecent.SeriesDescriptor;
 import edu.cornell.dendro.corina.wsi.corina.NewTridasIdentifier;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import net.miginfocom.swing.MigLayout;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 
 
 

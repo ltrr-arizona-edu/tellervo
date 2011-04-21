@@ -17,7 +17,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
 import edu.cornell.dendro.corina.gui.ProgressMeter.ProgressEvent;
-import edu.cornell.dendro.corina.util.Center;
 
 @SuppressWarnings("serial")
 public class SplashDialog extends JDialog implements ProgressMeter.ProgressListener {
@@ -27,14 +26,17 @@ public class SplashDialog extends JDialog implements ProgressMeter.ProgressListe
 
 	public SplashDialog() {
 		this(null, null);
+		setLocationRelativeTo(null);
 	}
 
 	public SplashDialog(String title) {
 		this(title, null);
+		setLocationRelativeTo(null);
 	}
 
 	public SplashDialog(BufferedImage img) {
 		this(null, img);
+		setLocationRelativeTo(null);
 	}
 
 	public SplashDialog(String title, BufferedImage img) {
@@ -78,7 +80,8 @@ public class SplashDialog extends JDialog implements ProgressMeter.ProgressListe
 
 		
 		setContentPane(content);
-		pack();				
+		pack();		
+		this.setLocationRelativeTo(null);
 	}
 
 	public void closeProgress(ProgressEvent event) {
@@ -90,11 +93,10 @@ public class SplashDialog extends JDialog implements ProgressMeter.ProgressListe
 	}
 
 	public void displayProgress(final ProgressEvent event) {
-		final JDialog glue = this;
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				Center.center(glue);
+				setLocationRelativeTo(null);
 				stateChanged(event);
 				toFront();
 			}

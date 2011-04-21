@@ -20,6 +20,7 @@ import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -66,11 +67,11 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         tblUsers.removeColumn(tblUsers.getColumn( I18n.getText("dbbrowser.hash")));
         
         // Populate groups list
-        /*ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
+        ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
         groupsModel = new SecurityGroupTableModel(lstofGroups, null);
         tblGroups.setModel(groupsModel);
         groupsSorter = new TableRowSorter<SecurityGroupTableModel>(groupsModel);
-        tblGroups.setRowSorter(usersSorter);*/
+        tblGroups.setRowSorter(usersSorter);
         
         btnOk.addActionListener(this);
         btnDeleteUser.addActionListener(this);
@@ -200,15 +201,15 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
             }
         });
 
-        GroupLayout userPanelLayout = new GroupLayout(userPanel);
-        userPanel.setLayout(userPanelLayout);
-        userPanelLayout.setHorizontalGroup(
-            userPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(userPanelLayout.createSequentialGroup()
+        GroupLayout gl_userPanel = new GroupLayout(userPanel);
+        userPanel.setLayout(gl_userPanel);
+        gl_userPanel.setHorizontalGroup(
+            gl_userPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(gl_userPanel.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(userPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(gl_userPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(scrollUsers, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
-                    .addGroup(userPanelLayout.createSequentialGroup()
+                    .addGroup(gl_userPanel.createSequentialGroup()
                         .addComponent(chkShowDisabledUsers)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
                         .addComponent(btnEditUser444)
@@ -218,10 +219,10 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
                         .addComponent(btnDeleteUser)))
                 .addContainerGap())
         );
-        userPanelLayout.setVerticalGroup(
-            userPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(userPanelLayout.createSequentialGroup()
-                .addGroup(userPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+        gl_userPanel.setVerticalGroup(
+            gl_userPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(gl_userPanel.createSequentialGroup()
+                .addGroup(gl_userPanel.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(chkShowDisabledUsers)
                     .addComponent(btnDeleteUser)
                     .addComponent(btnNewUser)
@@ -293,16 +294,16 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 
         lblGroupMembers.setText("Group members:");
 
-        GroupLayout groupPanelLayout = new GroupLayout(groupPanel);
-        groupPanel.setLayout(groupPanelLayout);
-        groupPanelLayout.setHorizontalGroup(
-            groupPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(GroupLayout.Alignment.TRAILING, groupPanelLayout.createSequentialGroup()
+        GroupLayout gl_groupPanel = new GroupLayout(groupPanel);
+        groupPanel.setLayout(gl_groupPanel);
+        gl_groupPanel.setHorizontalGroup(
+            gl_groupPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(GroupLayout.Alignment.TRAILING, gl_groupPanel.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(groupPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                .addGroup(gl_groupPanel.createParallelGroup(GroupLayout.Alignment.TRAILING)
                     .addComponent(scrollMembers, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
                     .addComponent(scrollGroups, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
-                    .addGroup(groupPanelLayout.createSequentialGroup()
+                    .addGroup(gl_groupPanel.createSequentialGroup()
                         .addComponent(chkShowDisabledGroups)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
                         .addComponent(btnEditGroup)
@@ -313,10 +314,10 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
                     .addComponent(lblGroupMembers))
                 .addContainerGap())
         );
-        groupPanelLayout.setVerticalGroup(
-            groupPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(groupPanelLayout.createSequentialGroup()
-                .addGroup(groupPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+        gl_groupPanel.setVerticalGroup(
+            gl_groupPanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(gl_groupPanel.createSequentialGroup()
+                .addGroup(gl_groupPanel.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(chkShowDisabledGroups)
                     .addComponent(btnDeleteGroup)
                     .addComponent(btnNewGroup)

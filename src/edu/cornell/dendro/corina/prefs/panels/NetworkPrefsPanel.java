@@ -15,7 +15,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
@@ -54,7 +53,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		setLayout(new MigLayout("", "[grow]", "[115.00px][188.00px][grow]"));
 		
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Web service", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+		panel.setBorder(new TitledBorder(null, "Web service", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panel, "cell 0 0,grow");
 		panel.setLayout(new MigLayout("", "[100px:100px:100px][grow]", "[][15px][]"));
 		
@@ -80,7 +79,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		panel.add(btnForceDictionaryReload, "cell 1 2,alignx right");
 		
 		JPanel panelNetworkConnection = new JPanel();
-		panelNetworkConnection.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Network Connection", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelNetworkConnection.setBorder(new TitledBorder(null, "Network Connection", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panelNetworkConnection, "cell 0 1,grow");
 		panelNetworkConnection.setLayout(new MigLayout("", "[100px:100px:100px][grow][][]", "[][][][][]"));
 		

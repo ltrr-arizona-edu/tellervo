@@ -83,6 +83,8 @@ public class Splash extends JDialog implements ProgressMeter.ProgressListener {
 			}
 		});
 		*/
+		
+		setLocationRelativeTo(null);
 	}
 
 	public void closeProgress(ProgressEvent event) {

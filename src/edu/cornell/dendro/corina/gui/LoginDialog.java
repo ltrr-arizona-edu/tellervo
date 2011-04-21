@@ -63,22 +63,17 @@ public class LoginDialog extends JDialog {
 	
 	public LoginDialog(Frame frame) {
 		super(frame, true);
-		
 		initialize();
 	}
 
 	public LoginDialog(Dialog dialog) {
 		super(dialog, true);
-		
 		initialize();
 	}
 	
 	public LoginDialog() {
 		super((Frame)null, true);
-		
 		initialize();
-		setLocationRelativeTo(null);
-
 	}
 	
 	/**
@@ -88,21 +83,21 @@ public class LoginDialog extends JDialog {
 		
 		setTitle(I18n.getText("login.Authentication"));
 		setIconImage(Builder.getApplicationIcon());
-		setBounds(100, 100, 599, 272);
+		setBounds(100, 100, 502, 277);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		GridBagLayout gbl_contentPanel = new GridBagLayout();
-		gbl_contentPanel.columnWidths = new int[]{107, 87, 16, 0, 0, 0};
+		gbl_contentPanel.columnWidths = new int[]{122, 77, 16, 0, 0};
 		gbl_contentPanel.rowHeights = new int[]{0, 0, 0, 26, 0, 0, 0, 0};
-		gbl_contentPanel.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPanel.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		contentPanel.setLayout(gbl_contentPanel);
 		{
 			lblTitle = new JLabel(I18n.getText("login.requestLogin"));
 			GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 			gbc_lblNewLabel.fill = GridBagConstraints.HORIZONTAL;
-			gbc_lblNewLabel.gridwidth = 3;
+			gbc_lblNewLabel.gridwidth = 2;
 			gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
 			gbc_lblNewLabel.gridx = 2;
 			gbc_lblNewLabel.gridy = 0;
@@ -111,9 +106,9 @@ public class LoginDialog extends JDialog {
 		{
 			lockIcon = new JLabel(Builder.getIcon("key.png", 128));
 			GridBagConstraints gbc_lockIcon = new GridBagConstraints();
-			gbc_lockIcon.anchor = GridBagConstraints.NORTH;
-			gbc_lockIcon.gridheight = 6;
 			gbc_lockIcon.insets = new Insets(0, 0, 0, 5);
+			gbc_lockIcon.anchor = GridBagConstraints.NORTHWEST;
+			gbc_lockIcon.gridheight = 6;
 			gbc_lockIcon.gridx = 0;
 			gbc_lockIcon.gridy = 1;
 			contentPanel.add(lockIcon, gbc_lockIcon);
@@ -131,7 +126,7 @@ public class LoginDialog extends JDialog {
 			username = new JTextField();
 			GridBagConstraints gbc_username = new GridBagConstraints();
 			gbc_username.fill = GridBagConstraints.HORIZONTAL;
-			gbc_username.gridwidth = 3;
+			gbc_username.gridwidth = 2;
 			gbc_username.insets = new Insets(0, 0, 5, 0);
 			gbc_username.gridx = 2;
 			gbc_username.gridy = 1;
@@ -150,7 +145,7 @@ public class LoginDialog extends JDialog {
 		{
 			password = new JPasswordField();
 			GridBagConstraints gbc_password = new GridBagConstraints();
-			gbc_password.gridwidth = 3;
+			gbc_password.gridwidth = 2;
 			gbc_password.fill = GridBagConstraints.HORIZONTAL;
 			gbc_password.insets = new Insets(0, 0, 5, 0);
 			gbc_password.gridx = 2;
@@ -194,7 +189,6 @@ public class LoginDialog extends JDialog {
 		{
 			serverUrl = new JTextField();
 			GridBagConstraints gbc_serverUrl = new GridBagConstraints();
-			gbc_serverUrl.gridwidth = 2;
 			gbc_serverUrl.fill = GridBagConstraints.HORIZONTAL;
 			gbc_serverUrl.insets = new Insets(0, 0, 5, 5);
 			gbc_serverUrl.gridx = 2;
@@ -209,7 +203,7 @@ public class LoginDialog extends JDialog {
 			GridBagConstraints gbc_btnUnlockUrl = new GridBagConstraints();
 			gbc_btnUnlockUrl.anchor = GridBagConstraints.WEST;
 			gbc_btnUnlockUrl.insets = new Insets(0, 0, 5, 0);
-			gbc_btnUnlockUrl.gridx = 4;
+			gbc_btnUnlockUrl.gridx = 3;
 			gbc_btnUnlockUrl.gridy = 3;
 			contentPanel.add(wsurlLock, gbc_btnUnlockUrl);
 			
@@ -240,7 +234,7 @@ public class LoginDialog extends JDialog {
 		{
 			rememberUsername = new JCheckBox(I18n.getText("login.rememberMyUsername"));
 			GridBagConstraints gbc_rememberUsername = new GridBagConstraints();
-			gbc_rememberUsername.gridwidth = 3;
+			gbc_rememberUsername.gridwidth = 2;
 			gbc_rememberUsername.anchor = GridBagConstraints.WEST;
 			gbc_rememberUsername.insets = new Insets(0, 0, 5, 0);
 			gbc_rememberUsername.gridx = 2;
@@ -250,7 +244,7 @@ public class LoginDialog extends JDialog {
 		{
 			rememberPassword = new JCheckBox(I18n.getText("login.rememberMyPassword"));
 			GridBagConstraints gbc_rememberPassword = new GridBagConstraints();
-			gbc_rememberPassword.gridwidth = 3;
+			gbc_rememberPassword.gridwidth = 2;
 			gbc_rememberPassword.anchor = GridBagConstraints.WEST;
 			gbc_rememberPassword.insets = new Insets(0, 0, 5, 0);
 			gbc_rememberPassword.gridx = 2;
@@ -260,7 +254,7 @@ public class LoginDialog extends JDialog {
 		{
 			autoLogin = new JCheckBox(I18n.getText("login.automatically"));
 			GridBagConstraints gbc_autoLogin = new GridBagConstraints();
-			gbc_autoLogin.gridwidth = 3;
+			gbc_autoLogin.gridwidth = 2;
 			gbc_autoLogin.anchor = GridBagConstraints.WEST;
 			gbc_autoLogin.gridx = 2;
 			gbc_autoLogin.gridy = 6;
@@ -295,6 +289,7 @@ public class LoginDialog extends JDialog {
 		
 		// finally, make it so when we press enter we choose to log in
 		getRootPane().setDefaultButton(loginButton);
+		setLocationRelativeTo(null);
 	}
 	
 	/**

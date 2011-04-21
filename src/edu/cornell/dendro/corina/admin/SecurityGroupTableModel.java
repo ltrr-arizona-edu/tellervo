@@ -46,6 +46,10 @@ public class SecurityGroupTableModel extends AbstractTableModel {
 	};
 	
 	public int getRowCount() {
+		if(groupList==null)
+		{
+			return 0;
+		}
 		return groupList.size();
 	};		
 	

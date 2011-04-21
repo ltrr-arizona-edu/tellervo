@@ -23,6 +23,7 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -298,6 +299,12 @@ public class EditorFactory {
 		// should we get this elsewhere?
 		String title = "["+I18n.getText("editor.newSeries")+ "]";
 
+    	if(App.prefs.getBooleanPref("corina.barcodes.disable", false))
+    	{
+    		
+
+    	}
+		
 		final JDialog dialog = new JDialog();
 		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
 		
@@ -316,6 +323,9 @@ public class EditorFactory {
 			container.setCursor(Cursor.getDefaultCursor());
 			return;
 		}
+		
+        
+
 
 		/*
 		if(!result.barcodeScanSuccessful())

@@ -46,6 +46,10 @@ public class SecurityUserTableModel extends AbstractTableModel {
 	};
 	
 	public int getRowCount() {
+		if(userList==null)
+		{
+			return 0;
+		}
 		return userList.size();
 	};		
 	

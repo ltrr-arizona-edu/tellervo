@@ -44,7 +44,8 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
 	private SecurityGroupTableModel groupsModel;
 	private TableRowSorter<SecurityGroupTableModel> groupsSorter;
 	
-    /** Creates new form UserUI */
+    /** Creates new form UserUI 
+     * @wbp.parser.constructor*/
     public UserUI(JDialog parent, boolean modal) {
         super(parent, modal);
         initComponents();

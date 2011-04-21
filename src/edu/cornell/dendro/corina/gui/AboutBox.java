@@ -17,7 +17,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.Center;
 
 /*
  * AboutBox2.java
@@ -52,7 +51,7 @@ public class AboutBox extends javax.swing.JDialog {
         setResizable(false);
         
         // center it
-        Center.center(this);
+        setLocationRelativeTo(null);
         
     }
     

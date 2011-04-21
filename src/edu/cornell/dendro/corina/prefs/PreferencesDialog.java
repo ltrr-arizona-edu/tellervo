@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.prefs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -68,7 +69,6 @@ public class PreferencesDialog extends JDialog {
 		setIconImage(Builder.getApplicationIcon());
 		setTitle("Preferences");
 		
-		setBounds(100, 100, 765, 556);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -173,6 +173,10 @@ public class PreferencesDialog extends JDialog {
 		}
 		
 		setupPages();
+		pack();
+
+		setLocationRelativeTo(null); 
+		setSize(new Dimension(770, 560));
 	}
 	
 	private void hideAllPages()

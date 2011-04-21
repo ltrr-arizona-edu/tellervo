@@ -11,14 +11,16 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 
-import javax.swing.GroupLayout;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.LayoutStyle;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
@@ -41,13 +43,11 @@ import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ArrayListModel;
-import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.labels.ui.TridasListCellRenderer;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
-import net.miginfocom.swing.MigLayout;
 
 /**
  *
@@ -617,25 +617,6 @@ public class BoxCuration extends javax.swing.JDialog
         lblScanOrSelect = new javax.swing.JLabel();
         btnOk = new javax.swing.JButton();
         btnApply = new javax.swing.JButton();
-        tabbedPaneBox = new javax.swing.JTabbedPane();
-        panelBoxDetails = new javax.swing.JPanel();
-        txtLastUpdated = new javax.swing.JTextField();
-        lblLastUpdated = new javax.swing.JLabel();
-        txtCurationLocation = new javax.swing.JTextField();
-        txtTrackingLocation = new javax.swing.JTextField();
-        lblCurationLocation = new javax.swing.JLabel();
-        lblTrackingLocation = new javax.swing.JLabel();
-        lblComments = new javax.swing.JLabel();
-        txtName = new javax.swing.JTextField();
-        lblName = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtComments = new javax.swing.JTextArea();
-        panelContents = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblBoxContents = new javax.swing.JTable();
-        btnAddSampleToBox = new javax.swing.JButton();
-        lblSampleCount = new javax.swing.JLabel();
-        btnMarkMissing = new javax.swing.JButton();
         txtBarcode = new javax.swing.JTextField();
         btnCreateNewBox = new javax.swing.JButton();
         lblSelectBox = new javax.swing.JLabel();
@@ -650,82 +631,108 @@ public class BoxCuration extends javax.swing.JDialog
 
         btnApply.setText("Apply");
 
-        txtLastUpdated.setEditable(false);
-
-        lblLastUpdated.setText("Last updated:");
-
-        lblCurationLocation.setText("Permanent location:");
-
-        lblTrackingLocation.setText("Current location:");
-
-        lblComments.setText("Comments:");
-
-        lblName.setText("Name:");
-
-        txtComments.setColumns(20);
-        txtComments.setLineWrap(true);
-        txtComments.setRows(5);
-        jScrollPane1.setViewportView(txtComments);
-
-        tabbedPaneBox.addTab("Details", panelBoxDetails);
-        panelBoxDetails.setLayout(new MigLayout("", "[144px][12px][350px,grow]", "[19px][19px][19px][19px][15px][163px,grow]"));
-        panelBoxDetails.add(jScrollPane1, "cell 0 5 3 1,grow");
-        panelBoxDetails.add(lblCurationLocation, "cell 0 2,alignx left,aligny center");
-        panelBoxDetails.add(lblLastUpdated, "cell 0 1,alignx left,aligny center");
-        panelBoxDetails.add(lblTrackingLocation, "cell 0 3,alignx left,aligny center");
-        panelBoxDetails.add(lblName, "cell 0 0,alignx left,aligny center");
-        panelBoxDetails.add(txtName, "cell 2 0,growx,aligny top");
-        panelBoxDetails.add(txtTrackingLocation, "cell 2 3,growx,aligny top");
-        panelBoxDetails.add(txtLastUpdated, "cell 2 1,growx,aligny top");
-        panelBoxDetails.add(txtCurationLocation, "cell 2 2,growx,aligny top");
-        panelBoxDetails.add(lblComments, "cell 0 4,alignx left,aligny top");
-
-        tblBoxContents.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Sample", "Check Presence"
-            }
-        ) {
-            @SuppressWarnings("unchecked")
-			Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Boolean.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, true
-            };
-
-            @SuppressWarnings("unchecked")
-			public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane2.setViewportView(tblBoxContents);
-
-        btnAddSampleToBox.setText("Add sample to box");
-
-        lblSampleCount.setText("0 samples in box");
-
-        btnMarkMissing.setText("Mark unchecked as missing from box");
-        btnMarkMissing.setEnabled(false);
-
-        tabbedPaneBox.addTab("Contents", panelContents);
-        panelContents.setLayout(new MigLayout("", "[164px][49px][293px]", "[25px][256px,grow][15px]"));
-        panelContents.add(jScrollPane2, "cell 0 1 3 1,grow");
-        panelContents.add(lblSampleCount, "cell 0 2,alignx left,aligny top");
-        panelContents.add(btnAddSampleToBox, "cell 0 0,alignx left,aligny top");
-        panelContents.add(btnMarkMissing, "cell 2 0,alignx left,aligny top");
-
         btnCreateNewBox.setText("Create New Box");
 
         lblSelectBox.setText("...or select box:");
         getContentPane().setLayout(new MigLayout("", "[127.00px][242px,grow][86px][54px]", "[19px][25px][347px,grow][25px]"));
-        getContentPane().add(tabbedPaneBox, "cell 0 2 4 1,grow");
+        
+        panel = new JPanel();
+        panel.setBorder(null);
+        getContentPane().add(panel, "cell 0 2 4 1,grow");
+        panel.setLayout(new MigLayout("", "[127.00px][242px,grow][86px][54px]", "[347px,grow]"));
+        tabbedPaneBox = new javax.swing.JTabbedPane();
+        panel.add(tabbedPaneBox, "cell 0 0 4 1,grow");
+        panelBoxDetails = new javax.swing.JPanel();
+        panelBoxDetails.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+        txtLastUpdated = new javax.swing.JTextField();
+        lblLastUpdated = new javax.swing.JLabel();
+        txtCurationLocation = new javax.swing.JTextField();
+        txtTrackingLocation = new javax.swing.JTextField();
+        lblCurationLocation = new javax.swing.JLabel();
+        lblTrackingLocation = new javax.swing.JLabel();
+        lblComments = new javax.swing.JLabel();
+        txtName = new javax.swing.JTextField();
+        lblName = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtComments = new javax.swing.JTextArea();
+        panelContents = new javax.swing.JPanel();
+        panelContents.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblBoxContents = new javax.swing.JTable();
+        btnAddSampleToBox = new javax.swing.JButton();
+        lblSampleCount = new javax.swing.JLabel();
+        btnMarkMissing = new javax.swing.JButton();
+        
+                txtLastUpdated.setEditable(false);
+                
+                        lblLastUpdated.setText("Last updated:");
+                        
+                                lblCurationLocation.setText("Permanent location:");
+                                
+                                        lblTrackingLocation.setText("Current location:");
+                                        
+                                                lblComments.setText("Comments:");
+                                                
+                                                        lblName.setText("Name:");
+                                                        
+                                                                txtComments.setColumns(20);
+                                                                txtComments.setLineWrap(true);
+                                                                txtComments.setRows(5);
+                                                                jScrollPane1.setViewportView(txtComments);
+                                                                
+                                                                        tabbedPaneBox.addTab("Details", panelBoxDetails);
+                                                                        panelBoxDetails.setLayout(new MigLayout("", "[144px][12px][350px,grow]", "[19px][19px][19px][19px][15px][163px,grow]"));
+                                                                        panelBoxDetails.add(jScrollPane1, "cell 0 5 3 1,grow");
+                                                                        panelBoxDetails.add(lblCurationLocation, "cell 0 2,alignx left,aligny center");
+                                                                        panelBoxDetails.add(lblLastUpdated, "cell 0 1,alignx left,aligny center");
+                                                                        panelBoxDetails.add(lblTrackingLocation, "cell 0 3,alignx left,aligny center");
+                                                                        panelBoxDetails.add(lblName, "cell 0 0,alignx left,aligny center");
+                                                                        panelBoxDetails.add(txtName, "cell 2 0,growx,aligny top");
+                                                                        panelBoxDetails.add(txtTrackingLocation, "cell 2 3,growx,aligny top");
+                                                                        panelBoxDetails.add(txtLastUpdated, "cell 2 1,growx,aligny top");
+                                                                        panelBoxDetails.add(txtCurationLocation, "cell 2 2,growx,aligny top");
+                                                                        panelBoxDetails.add(lblComments, "cell 0 4,alignx left,aligny top");
+                                                                        
+                                                                                tblBoxContents.setModel(new javax.swing.table.DefaultTableModel(
+                                                                                    new Object [][] {
+                                                                        
+                                                                                    },
+                                                                                    new String [] {
+                                                                                        "Sample", "Check Presence"
+                                                                                    }
+                                                                                ) {
+                                                                                    @SuppressWarnings("unchecked")
+                                                                        			Class[] types = new Class [] {
+                                                                                        java.lang.Object.class, java.lang.Boolean.class
+                                                                                    };
+                                                                                    boolean[] canEdit = new boolean [] {
+                                                                                        false, true
+                                                                                    };
+                                                                        
+                                                                                    @SuppressWarnings("unchecked")
+                                                                        			public Class getColumnClass(int columnIndex) {
+                                                                                        return types [columnIndex];
+                                                                                    }
+                                                                        
+                                                                                    public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                                                                        return canEdit [columnIndex];
+                                                                                    }
+                                                                                });
+                                                                                jScrollPane2.setViewportView(tblBoxContents);
+                                                                                
+                                                                                        btnAddSampleToBox.setText("Add sample to box");
+                                                                                        
+                                                                                                lblSampleCount.setText("0 samples in box");
+                                                                                                
+                                                                                                        btnMarkMissing.setText("Mark unchecked as missing from box");
+                                                                                                        btnMarkMissing.setEnabled(false);
+                                                                                                        
+                                                                                                                tabbedPaneBox.addTab("Contents", panelContents);
+                                                                                                                panelContents.setLayout(new MigLayout("", "[164px][49px][293px]", "[25px][256px,grow][15px]"));
+                                                                                                                panelContents.add(jScrollPane2, "cell 0 1 3 1,grow");
+                                                                                                                panelContents.add(lblSampleCount, "cell 0 2,alignx left,aligny top");
+                                                                                                                panelContents.add(btnAddSampleToBox, "cell 0 0,alignx left,aligny top");
+                                                                                                                panelContents.add(btnMarkMissing, "cell 2 0,alignx left,aligny top");
         getContentPane().add(btnApply, "cell 2 3,alignx right,aligny top");
         getContentPane().add(btnOk, "cell 3 3,alignx left,aligny top");
         getContentPane().add(lblSelectBox, "cell 0 1,alignx left,aligny center");
@@ -801,6 +808,7 @@ public class BoxCuration extends javax.swing.JDialog
     protected javax.swing.JTextField txtLastUpdated;
     protected javax.swing.JTextField txtName;
     protected javax.swing.JTextField txtTrackingLocation;
+    private JPanel panel;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -892,7 +900,7 @@ public class BoxCuration extends javax.swing.JDialog
 			dialog.setResizable(false);
 			dialog.pack();
 			dialog.setModal(true);
-			Center.center(dialog);
+			this.setLocationRelativeTo(null);
 			dialog.setVisible(true);
 			BarcodeDialogResult result = barcodeUI.getResult();
 			

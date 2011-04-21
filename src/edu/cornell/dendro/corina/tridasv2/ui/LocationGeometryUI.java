@@ -1,6 +1,5 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 
@@ -15,9 +14,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingConstants;
+
 import net.miginfocom.swing.MigLayout;
 
 /*

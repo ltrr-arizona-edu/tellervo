@@ -56,7 +56,6 @@ import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.util.Center;
 import edu.cornell.dendro.corina.util.ListUtil;
 
 public class XCorina extends JFrame {
@@ -216,7 +215,10 @@ public class XCorina extends JFrame {
 		 tbSplit.setDividerLocation(0.25);
 		 */
 
-		Center.center(this);
+		//Center.center(this);
+		this.setLocationRelativeTo(null);
+		
+		
 		// show
 		setVisible(true);
 	}

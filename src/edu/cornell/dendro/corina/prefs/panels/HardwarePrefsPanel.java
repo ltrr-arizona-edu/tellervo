@@ -14,7 +14,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
@@ -29,6 +28,7 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
 import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -69,7 +69,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		setLayout(new MigLayout("", "[grow]", "[][][grow]"));
 		
 		panel = new JPanel();
-		panel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Measuring Platform", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+		panel.setBorder(new TitledBorder(null, "Measuring Platform", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panel, "cell 0 0,grow");
 		panel.setLayout(new MigLayout("", "[][grow][][grow]", "[][][][][33.00][][]"));
 		
@@ -160,13 +160,14 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 
 		panelBarcode = new JPanel();
-		panelBarcode.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Barcode scanner", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelBarcode.setBorder(new TitledBorder(null, "Barcode scanner", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panelBarcode, "cell 0 1,grow");
 		panelBarcode.setLayout(new MigLayout("", "[]", "[]"));
 		
 		chkDisableBarcodes = new JCheckBox("Disable support for barcode scanner");
 		panelBarcode.add(chkDisableBarcodes, "cell 0 0");
-
+		new CheckBoxWrapper(chkDisableBarcodes, "corina.barcodes.disable", false );
+		
 		btnTestConnection = new JButton("Test connection");
     	panel.add(btnTestConnection, "cell 0 5 4 1,alignx right");
     	btnTestConnection.addActionListener(new ActionListener(){

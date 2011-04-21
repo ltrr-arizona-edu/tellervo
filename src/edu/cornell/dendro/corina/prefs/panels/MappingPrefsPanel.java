@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.prefs.panels;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -8,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
@@ -46,7 +46,7 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 		add(panelWarning, "cell 0 0,grow");
 		
 		panelWMS = new JPanel();
-		panelWMS.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Web Map Services (WMS)", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelWMS.setBorder(new TitledBorder(null, "Web Map Services (WMS)", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panelWMS, "cell 0 1,growx,aligny top");
 		panelWMS.setLayout(new MigLayout("", "[181.00px,grow,fill][176.00,grow][fill]", "[][][87px][][]"));
 		
