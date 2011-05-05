@@ -286,7 +286,8 @@
   <!-- Deb -->
   <taskdef name="deb" classname="com.googlecode.ant_deb_task.Deb" classpathref="ant-deb.classpath">
   </taskdef>
-  
+  	
+	
   <!-- Linux Desktop file -->
   <taskdef name="desktopEntry" classname="com.googlecode.ant_deb_task.DesktopEntry" classpathref="ant-deb.classpath">
   </taskdef>
@@ -743,11 +744,11 @@
 	can't make DMG files-->
 	<target name="createMacAppZip" depends="createMacApp" unless="isMac">
 		
-		<zip destfile="${dist.home}/corina_${app.version}.app.zip" basedir="${dist.home}/Corina.app" />
+		<zip destfile="${dist.home}/corina_${app.version}.app.zip" basedir="${dist.home}" includes="Corina.app/**" />
 
 		<!-- Delete the Corina.app folder -->
-		<!--<delete dir="${dist.home}/Corina.app" />-->
-		<echo message="To build DMG on non-Mac dev machine run: sudo ./make_dmg ../../target/Corina.app ../../target/Corina.dmg"/>
+		<delete dir="${dist.home}/Corina.app" />
+		<echo message="To build DMG on non-Mac dev machine run: sudo ./make_dmg ../../target/Corina.app ../../target/Corina.dmg Corina"/>
 
 		
 	</target>
