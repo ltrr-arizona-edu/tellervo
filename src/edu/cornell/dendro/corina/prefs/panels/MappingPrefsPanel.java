@@ -1,8 +1,11 @@
 package edu.cornell.dendro.corina.prefs.panels;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -29,43 +32,57 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 	private JScrollPane scrollPane;
 	private JTable tblWMS;
 	private JLabel lblMappingRequiresWeb;
+	@SuppressWarnings("unused")
+	private ArrayList<WSIWmsServer> serverDetails = new ArrayList<WSIWmsServer>();
 	
 	/**
 	 * Create the panel.
 	 */
+	@SuppressWarnings("unchecked")
 	public MappingPrefsPanel() {
 		
 		super(I18n.getText("preferences.mapping"), 
 				"map.png", 
 				"Manage the Web Mapping Services available within Corina");
 		
-		setLayout(new MigLayout("", "[10px,grow]", "[grow,fill][100px,grow][grow]"));
-		
-		
-		panelWarning = new GrfxWarning();
-		add(panelWarning, "cell 0 0,grow");
+		serverDetails = Dictionary.getMutableDictionary("wmsServerDictionary");
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		panelWMS = new JPanel();
 		panelWMS.setBorder(new TitledBorder(null, "Web Map Services (WMS)", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		add(panelWMS, "cell 0 1,growx,aligny top");
-		panelWMS.setLayout(new MigLayout("", "[181.00px,grow,fill][176.00,grow][fill]", "[][][87px][][]"));
+		add(panelWMS);
+		panelWMS.setLayout(new MigLayout("", "[181.00px,grow,fill][325.00,grow][176.00,right][fill]", "[25.00,top][82.00,grow,fill]"));
 		
 		lblMappingRequiresWeb = new JLabel("Mapping requires a web service connection");
-		panelWMS.add(lblMappingRequiresWeb, "cell 0 1 3 1");
+		lblMappingRequiresWeb.setForeground(Color.RED);
+		panelWMS.add(lblMappingRequiresWeb, "cell 0 0 2 1");
 		
 		btnRemove = new JButton("Remove");
-		panelWMS.add(btnRemove, "cell 1 2,alignx right");
+		panelWMS.add(btnRemove, "cell 2 0,alignx right");
 		
 		btnAdd = new JButton("Add");
-		panelWMS.add(btnAdd, "cell 2 2,alignx right,aligny center");
+		panelWMS.add(btnAdd, "cell 3 0,alignx right,aligny top");
+		btnAdd.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				
+			}
+			
+		});
 		
 		scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		panelWMS.add(scrollPane, "cell 0 3 3 1,grow");
+		panelWMS.add(scrollPane, "cell 0 1 4 1,grow");
 		
 		tblWMS = new JTable();
 		tblWMS.setShowHorizontalLines(false);
 		scrollPane.setViewportView(tblWMS);
+		
+		
+		panelWarning = new GrfxWarning();
+		add(panelWarning);
 
 		// Enable/Disable mapping
 		setMappingEnabled(!App.prefs.getBooleanPref("opengl.failed", false));
@@ -79,14 +96,14 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 				.getMutableDictionary("wmsServerDictionary");
 		wmsModel = new WMSTableModel();
 		
-		if (serverDetails == null || serverDetails.size() == 0) {
+		/*if (serverDetails == null || serverDetails.size() == 0) {
 			setMappingEnabled(false);	
 			return;
 		}
 		else
 		{
 			setMappingEnabled(true);			
-		}
+		}*/
 		
 		for(WSIWmsServer server : serverDetails)
 		{
@@ -101,7 +118,6 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 	public void setMappingEnabled(Boolean b) {
 
 		panelWMS.setVisible(b);
-		panelWMS.setEnabled(false);
 		panelWarning.setVisible(!b);
 		
 		if (!b) {
@@ -115,7 +131,26 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 				}
 			});
 		}
+		
+		if(panelWMS.isVisible())
+		{
+			populateWMSTable();
+			// Show message and buttons depending on WS status
+			Boolean wsDisabled = App.prefs.getBooleanPref("corina.webservice.disable", true);
+			lblMappingRequiresWeb.setVisible(wsDisabled);
+			btnAdd.setEnabled(!wsDisabled);
+			btnRemove.setEnabled(!wsDisabled);
+			tblWMS.setEnabled(!wsDisabled);
+			
+		}
+		
+		
 
+	}
+
+	@Override
+	public void refresh() {
+		setMappingEnabled(true);		
 	}
 	
 }

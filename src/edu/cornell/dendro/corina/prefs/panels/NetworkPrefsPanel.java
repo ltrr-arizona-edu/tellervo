@@ -184,6 +184,12 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		
 		return false;
 	}
+
+	@Override
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 

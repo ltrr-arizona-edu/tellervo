@@ -59,8 +59,8 @@ public class PreferencesDialog extends JDialog {
 	public PreferencesDialog() {
 	
 		// Define the pages of the preferences panels
-		registerPreferencesPage(new HardwarePrefsPanel());
 		registerPreferencesPage(new NetworkPrefsPanel());
+		registerPreferencesPage(new HardwarePrefsPanel());
 		registerPreferencesPage(new StatsPrefsPanel());
 		registerPreferencesPage(new AppearancePrefsPanel());
 		registerPreferencesPage(new MappingPrefsPanel());
@@ -209,10 +209,11 @@ public class PreferencesDialog extends JDialog {
 			button.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					hideAllPages();
-					page.setVisible(true);
 					lblTitle.setText(page.getPageTitle());
 					lblSubtitle.setText(page.getSubTitle());
+					hideAllPages();
+					page.setVisible(true);
+					page.refresh();
 				}
 			});
 			
@@ -242,6 +243,7 @@ public class PreferencesDialog extends JDialog {
 		{
 			if(page.getClass().equals(clazz))
 			{
+				page.refresh();
 				return page;
 			}
 		}

@@ -129,4 +129,10 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 		
 	}
 
+	@Override
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

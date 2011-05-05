@@ -296,6 +296,12 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	public JComboBox getCboPort() {
 		return cboPort;
 	}
+
+	@Override
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 	

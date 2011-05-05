@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.gis;
 
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -105,6 +106,7 @@ public class WMSManager extends JFrame {
         this.setVisible(true);
         this.setAlwaysOnTop(true);
         this.setTitle("WMS Layer Manager");
+        this.setIconImage(Builder.getApplicationIcon());
     }
 
     private WMSLayersPanel addTab(int position, WSIWmsServer server)

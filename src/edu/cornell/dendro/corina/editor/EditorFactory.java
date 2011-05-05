@@ -299,33 +299,28 @@ public class EditorFactory {
 		// should we get this elsewhere?
 		String title = "["+I18n.getText("editor.newSeries")+ "]";
 
-    	if(App.prefs.getBooleanPref("corina.barcodes.disable", false))
+		BarcodeDialogResult result = null;
+    	if(!App.prefs.getBooleanPref("corina.barcodes.disable", false))
     	{
-    		
-
+			final JDialog dialog = new JDialog();
+			final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
+			
+			dialog.setTitle(I18n.getText("barcode"));
+			dialog.setIconImage(Builder.getApplicationIcon());
+			dialog.setContentPane(barcodeUI);
+			dialog.setResizable(false);
+			dialog.pack();
+			dialog.setModal(true);
+			Center.center(dialog);
+			dialog.setVisible(true);
+			result = barcodeUI.getResult();
+	
+			// no success, so just ignore..
+			if(!result.success){
+				container.setCursor(Cursor.getDefaultCursor());
+				return;
+			}
     	}
-		
-		final JDialog dialog = new JDialog();
-		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
-		
-		dialog.setTitle(I18n.getText("barcode"));
-		dialog.setIconImage(Builder.getApplicationIcon());
-		dialog.setContentPane(barcodeUI);
-		dialog.setResizable(false);
-		dialog.pack();
-		dialog.setModal(true);
-		Center.center(dialog);
-		dialog.setVisible(true);
-		BarcodeDialogResult result = barcodeUI.getResult();
-
-		// no success, so just ignore..
-		if(!result.success){
-			container.setCursor(Cursor.getDefaultCursor());
-			return;
-		}
-		
-        
-
 
 		/*
 		if(!result.barcodeScanSuccessful())
@@ -355,7 +350,10 @@ public class EditorFactory {
 		sample.setMeta(Metadata.TITLE, I18n.getText("general.newEntry")+": " + title);
 
 		// attach anything we loaded in the above dialog
-		result.populateCorinaSample(sample);
+		if(result!=null)
+		{
+			result.populateCorinaSample(sample);
+		}
 		
 		// setup our loader and series identifier
 		CorinaWsiTridasElement.attachNewSample(sample);

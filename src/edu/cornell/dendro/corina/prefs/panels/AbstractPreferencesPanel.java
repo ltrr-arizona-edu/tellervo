@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.ui.I18n;
 
 public abstract class AbstractPreferencesPanel extends JPanel {
 
@@ -59,7 +58,10 @@ public abstract class AbstractPreferencesPanel extends JPanel {
 	
 	public String getPageTitle()
 	{
-		return I18n.getText("preferences.hardware")+ " Preferences";
+		return title + " Preferences";
 	}
+	
+	public abstract void refresh();
+	
 	
 }

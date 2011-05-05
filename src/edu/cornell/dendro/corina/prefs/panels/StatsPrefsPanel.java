@@ -127,4 +127,12 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 		new ColorComboBoxWrapper(cboHighlightColor, Prefs.GRID_HIGHLIGHTCOLOR, Color.green);
 	}
 
+
+
+	@Override
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
