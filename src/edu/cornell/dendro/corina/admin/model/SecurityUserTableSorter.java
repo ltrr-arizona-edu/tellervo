@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.admin;
+package edu.cornell.dendro.corina.admin.model;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

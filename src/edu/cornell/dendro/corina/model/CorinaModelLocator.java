@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.model;
 
+import edu.cornell.dendro.corina.admin.control.UserGroupAdminController;
 import edu.cornell.dendro.corina.bulkImport.control.BulkImportController;
 import edu.cornell.dendro.corina.bulkImport.control.ColumnChooserController;
 import edu.cornell.dendro.corina.editor.control.EditorController;
@@ -21,6 +22,7 @@ public class CorinaModelLocator {
 	
 	private final ImportModel corinaImportModel = new ImportModel();
 	
+	private final UserGroupAdminController userGroupAdminControl = new UserGroupAdminController();
 	
 	private CorinaModelLocator(){
 		

@@ -174,7 +174,7 @@ public class AdminMenu extends JMenu {
 	protected void addUserGroupMenu() {
 		
 	  	JMenuItem usergroup = Builder.makeMenuItem("menus.admin.usersandgroups",
-	            "edu.cornell.dendro.corina.admin.UserGroupAdmin.main()", "edit_group.png");
+	            "edu.cornell.dendro.corina.admin.view.UserGroupAdminView.main()", "edit_group.png");
 	
 	  	
 		// Enable if user is an admin

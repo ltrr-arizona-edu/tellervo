@@ -1,25 +1,28 @@
-package edu.cornell.dendro.corina.admin;
+package edu.cornell.dendro.corina.admin.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
-import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
+import com.dmurph.mvc.MVCEvent;
+
 import net.miginfocom.swing.MigLayout;
+import edu.cornell.dendro.corina.admin.control.AuthenticateEvent;
+import edu.cornell.dendro.corina.admin.control.DisplayUGAEvent;
+import edu.cornell.dendro.corina.admin.control.EditUserEvent;
+import edu.cornell.dendro.corina.admin.control.ToggleDisabledAccountsEvent;
+import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModel;
+import edu.cornell.dendro.corina.admin.model.SecurityUserTableModel;
+import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.gui.LoginDialog;
-import edu.cornell.dendro.corina.gui.UserCancelledException;
+import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.schema.WSIEntity;
-import edu.cornell.dendro.corina.schema.WSISecurityGroup;
-import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -31,22 +34,40 @@ import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
  * groups a user is in.
  *
  * @author  peterbrewer
+ * @author dan
  */
-public class UserGroupAdmin extends javax.swing.JDialog implements ActionListener, MouseListener
+public class UserGroupAdminView extends javax.swing.JDialog implements ActionListener, MouseListener
 {
     
 	private static final long serialVersionUID = -7039984838996355038L;
+	private static UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
 	private SecurityUserTableModel usersModel;
-	private TableRowSorter<SecurityUserTableModel> usersSorter;
 	private SecurityGroupTableModel groupsModel;
+	private TableRowSorter<SecurityUserTableModel> usersSorter;
 	private TableRowSorter<SecurityGroupTableModel> groupsSorter;
+
 	
     /** Creates new form UserGroupAdmin */
-    public UserGroupAdmin(java.awt.Frame parent, boolean modal) {
+    public UserGroupAdminView(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        linkModel();
         setupGui();
         internationlizeComponents();
+    }
+    
+    private void linkModel(){
+    	
+        // Populate user list
+        usersModel = mainModel.getUsersModel();
+        tblUsers.setModel(usersModel);
+        usersSorter = mainModel.getUsersSorter(usersModel);
+        
+        // Populate groups list
+        groupsModel = mainModel.getGroupsModel();
+        tblGroups.setModel(groupsModel);
+        groupsSorter = mainModel.getGroupsSorter(groupsModel);
+        
     }
     
     @SuppressWarnings("unchecked")
@@ -55,23 +76,12 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
         setLocationRelativeTo(null);
         setIconImage(Builder.getApplicationIcon());
                 
-        // Populate user list
-        ArrayList<WSISecurityUser> lstofUsers = (ArrayList<WSISecurityUser>) Dictionary.getDictionaryAsArrayList("securityUserDictionary");  
-        usersModel = new SecurityUserTableModel(lstofUsers);
-        tblUsers.setModel(usersModel);
-        usersSorter = new TableRowSorter<SecurityUserTableModel>(usersModel);
         tblUsers.setRowSorter(usersSorter);
+        tblGroups.setRowSorter(groupsSorter);
 
         tblUsers.addMouseListener(this);
         tblUsers.removeColumn(tblUsers.getColumn( I18n.getText("dbbrowser.hash")));
-        
-        // Populate groups list
-        ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
-        groupsModel = new SecurityGroupTableModel(lstofGroups, null);
-        tblGroups.setModel(groupsModel);
-        groupsSorter = new TableRowSorter<SecurityGroupTableModel>(groupsModel);
-        tblGroups.setRowSorter(usersSorter);
-        
+              
         btnOk.addActionListener(this);
         btnDeleteUser.addActionListener(this);
         btnNewUser.addActionListener(this);
@@ -298,31 +308,14 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
     private void chkShowDisabledGroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledGroupsActionPerformed  
     }//GEN-LAST:event_chkShowDisabledGroupsActionPerformed
     
-    /**
-     * @param args the command line arguments
-     */
     public static void main() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-            	
-            	// Make sure the user has admin credentials
-            	LoginDialog dlg = new LoginDialog();
-            	try {
-            		dlg.setGuiForConfirmation();
-            		dlg.setUsername(App.currentUser.getUsername());
-            		dlg.doLogin(null, false);            		
-               	} catch (UserCancelledException uce) {
-            		return;
-            	}
-            	
-            	
-                UserGroupAdmin dialog = new UserGroupAdmin(new javax.swing.JFrame(), false);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-
-                    }
-                });
-                dialog.setVisible(true);
+               	CorinaModelLocator.getInstance();
+               	MVCEvent authenticateUserEvent = new AuthenticateEvent(mainModel);
+               	authenticateUserEvent.dispatch();
+        		MVCEvent displayEvent = new DisplayUGAEvent();
+        		displayEvent.dispatch();
             }
         });
     }
@@ -374,7 +367,7 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 		}
 		else if (e.getSource()==this.btnNewUser)
 		{
-	        UserUI userDialog = new UserUI(this, true);
+	        UserUIView userDialog = new UserUIView(this, true);
 	        userDialog.setVisible(true);
 		}
 	}
@@ -414,21 +407,8 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 	 */
 	public void showDisabledAccounts(Boolean show)
 	{
-    	if(show)
-    	{
-    		usersSorter.setRowFilter(null);
-    	}
-    	else	
-    	{
-	        RowFilter<SecurityUserTableModel, Object> rf = null;
-	        //If current expression doesn't parse, don't update.
-	        try {
-	            rf = RowFilter.regexFilter("t", 5);
-	        } catch (java.util.regex.PatternSyntaxException e) {
-	            return;
-	        }
-	        usersSorter.setRowFilter(rf);
-    	}
+		ToggleDisabledAccountsEvent event = new ToggleDisabledAccountsEvent(show, mainModel);
+		event.dispatch();
 	}
 
 	@Override
@@ -451,25 +431,8 @@ public class UserGroupAdmin extends javax.swing.JDialog implements ActionListene
 	
 	private void editUser()
 	{
-    	WSISecurityUser seluser = usersModel.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow()));
-        UserUI userDialog = new UserUI(this, true, seluser);
-        userDialog.setVisible(true); 
+		int userIndex = tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow());
+		EditUserEvent event = new EditUserEvent(userIndex, mainModel);
+		event.dispatch();
 	}
-
-	public void setGroupsModel(SecurityGroupTableModel groupsModel) {
-		this.groupsModel = groupsModel;
-	}
-
-	public SecurityGroupTableModel getGroupsModel() {
-		return groupsModel;
-	}
-
-	public void setGroupsSorter(TableRowSorter<SecurityGroupTableModel> groupsSorter) {
-		this.groupsSorter = groupsSorter;
-	}
-
-	public TableRowSorter<SecurityGroupTableModel> getGroupsSorter() {
-		return groupsSorter;
-	}
-	
 }

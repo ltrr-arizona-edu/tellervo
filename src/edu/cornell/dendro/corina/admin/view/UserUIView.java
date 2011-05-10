@@ -1,4 +1,4 @@
-package edu.cornell.dendro.corina.admin;
+package edu.cornell.dendro.corina.admin.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +14,8 @@ import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle;
 import javax.swing.table.TableRowSorter;
 
+import edu.cornell.dendro.corina.admin.SetPasswordUI;
+import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModel;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
@@ -36,7 +38,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource
  * 
  * @author  peterbrewer
  */
-public class UserUI extends javax.swing.JDialog implements ActionListener, MouseListener{
+public class UserUIView extends javax.swing.JDialog implements ActionListener, MouseListener{
     
 	private static final long serialVersionUID = 1L;
 	WSISecurityUser user = new WSISecurityUser();
@@ -46,7 +48,7 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
 	
     /** Creates new form UserUI 
      * @wbp.parser.constructor*/
-    public UserUI(JDialog parent, boolean modal) {
+    public UserUIView(JDialog parent, boolean modal) {
         super(parent, modal);
         initComponents();
     	isNewUser = true;
@@ -54,7 +56,7 @@ public class UserUI extends javax.swing.JDialog implements ActionListener, Mouse
 
     }
     
-    public UserUI(JDialog parent, boolean modal, WSISecurityUser user) {
+    public UserUIView(JDialog parent, boolean modal, WSISecurityUser user) {
         super(parent, modal);
         this.user = user;
         initComponents();
