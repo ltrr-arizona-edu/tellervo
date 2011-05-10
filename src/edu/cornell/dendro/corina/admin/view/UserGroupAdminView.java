@@ -12,21 +12,17 @@ import com.dmurph.mvc.MVCEvent;
 
 import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.admin.control.AuthenticateEvent;
+import edu.cornell.dendro.corina.admin.control.DeleteUserEvent;
 import edu.cornell.dendro.corina.admin.control.DisplayUGAEvent;
 import edu.cornell.dendro.corina.admin.control.EditUserEvent;
+import edu.cornell.dendro.corina.admin.control.OkFinishEvent;
 import edu.cornell.dendro.corina.admin.control.ToggleDisabledAccountsEvent;
 import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModel;
 import edu.cornell.dendro.corina.admin.model.SecurityUserTableModel;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
-import edu.cornell.dendro.corina.schema.CorinaRequestType;
-import edu.cornell.dendro.corina.schema.EntityType;
-import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
-import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
 
 /**
  * GUI class for administering users and groups.  Allows user with the correct
@@ -34,7 +30,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
  * groups a user is in.
  *
  * @author  peterbrewer
- * @author dan
+ * @author  dan
  */
 public class UserGroupAdminView extends javax.swing.JDialog implements ActionListener, MouseListener
 {
@@ -46,7 +42,18 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 	private TableRowSorter<SecurityUserTableModel> usersSorter;
 	private TableRowSorter<SecurityGroupTableModel> groupsSorter;
 
-	
+    public static void main() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+               	CorinaModelLocator.getInstance();
+               	MVCEvent authenticateUserEvent = new AuthenticateEvent(mainModel);
+               	authenticateUserEvent.dispatch();
+        		MVCEvent displayEvent = new DisplayUGAEvent();
+        		displayEvent.dispatch();
+            }
+        });
+    }
+     
     /** Creates new form UserGroupAdmin */
     public UserGroupAdminView(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -308,19 +315,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     private void chkShowDisabledGroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledGroupsActionPerformed  
     }//GEN-LAST:event_chkShowDisabledGroupsActionPerformed
     
-    public static void main() {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-               	CorinaModelLocator.getInstance();
-               	MVCEvent authenticateUserEvent = new AuthenticateEvent(mainModel);
-               	authenticateUserEvent.dispatch();
-        		MVCEvent displayEvent = new DisplayUGAEvent();
-        		displayEvent.dispatch();
-            }
-        });
-    }
-  
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JTabbedPane accountsTabPane;
     protected javax.swing.JButton btnDeleteGroup;
@@ -346,9 +340,8 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
  	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==this.btnOk) 
 		{
-			App.dictionary.query();
-			App.dictionary.debugDumpListeners();
-			this.dispose();
+			OkFinishEvent event = new OkFinishEvent(mainModel);
+			event.dispatch();
 		}
 		else if (e.getSource()==this.btnDeleteUser)
 		{
@@ -372,32 +365,10 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 		}
 	}
 	
-	private Boolean deleteUser(String usrid)
+	private void deleteUser(String usrid)
 	{
-		WSIEntity entity = new WSIEntity();
-		
-		entity.setId(usrid);
-		
-		entity.setType(EntityType.SECURITY_USER);
-    			
-		// associate a resource
-    	WSIEntityResource rsrc = new WSIEntityResource(CorinaRequestType.DELETE, entity);
-    	
-		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
-		rsrc.query();
-		accdialog.setVisible(true);
-		
-		if(accdialog.isSuccessful())
-		{
-			rsrc.getAssociatedResult();
-			JOptionPane.showMessageDialog(this, "User deleted", "Success", JOptionPane.NO_OPTION);
-			return true;
-		}
-		
-		JOptionPane.showMessageDialog(this, "Unable to delete user as their details are referenced by data in the database.\n" +
-				"If the user is no longer active you can disable instead.", "Error", JOptionPane.ERROR_MESSAGE);
-		
-		return false;
+		DeleteUserEvent event = new DeleteUserEvent(usrid, mainModel);
+		event.dispatch();
 	}
     
 	/**

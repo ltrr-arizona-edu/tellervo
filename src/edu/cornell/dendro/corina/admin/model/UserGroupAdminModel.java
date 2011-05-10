@@ -16,7 +16,6 @@ public class UserGroupAdminModel extends AbstractModel {
 
 	private static UserGroupAdminModel model = null;
 	private UserGroupAdminView mainView;
-	private LoginDialog loginDialog = new LoginDialog();
 	private SecurityUserTableModel usersModel;
 	private TableRowSorter<SecurityUserTableModel> usersSorter;
 	private SecurityGroupTableModel groupsModel;
@@ -35,10 +34,6 @@ public class UserGroupAdminModel extends AbstractModel {
 	
 	public UserGroupAdminView getMainView() {
 		return mainView;
-	}
-
-	public LoginDialog getLoginDialog() {
-		return loginDialog;
 	}
 
 	public SecurityGroupTableModel getGroupsModel() {

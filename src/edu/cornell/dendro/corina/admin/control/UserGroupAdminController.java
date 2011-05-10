@@ -8,10 +8,12 @@ import com.dmurph.mvc.control.FrontController;
 //import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 
 import edu.cornell.dendro.corina.admin.command.AuthenticateUserCommand;
+import edu.cornell.dendro.corina.admin.command.DeleteUserCommand;
 import edu.cornell.dendro.corina.admin.command.EditUserCommand;
 import edu.cornell.dendro.corina.admin.command.ToggleDisabledAccountsCommand;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.admin.view.UserGroupAdminView;
+import edu.cornell.dendro.corina.core.App;
 
 public class UserGroupAdminController extends FrontController {
 	
@@ -19,12 +21,16 @@ public class UserGroupAdminController extends FrontController {
 		public static final String AUTHENTICATE_USER = "UGA_AUTHENICATE_USER";
 		public static final String EDIT_USER = "UGA_EDIT_USER";
 		public static final String TOGGLE_DISABLED_ACCOUNTS = "UGA_TOGGLE_DISABLED_ACCOUNTS";
+		public static final String DELETE_USER = "UGA_DELETE_USER";
+		public static final String OK_FINISH = "UGA_OK_FINISH";
         
         public UserGroupAdminController(){
                 registerCommand(DISPLAY_UGA, "display");
                 registerCommand(AUTHENTICATE_USER, AuthenticateUserCommand.class);
                 registerCommand(EDIT_USER, EditUserCommand.class);
                 registerCommand(TOGGLE_DISABLED_ACCOUNTS, ToggleDisabledAccountsCommand.class);
+                registerCommand(DELETE_USER, DeleteUserCommand.class);
+                registerCommand(OK_FINISH, "finish");
         }
         
     	public void display(MVCEvent argEvent){
@@ -56,5 +62,12 @@ public class UserGroupAdminController extends FrontController {
 //    			return;
 //    		}
     		//MVC.showEventMonitor();
+    	}
+    	
+    	public void finish(MVCEvent argEvent){
+    		UserGroupAdminView view = ((OkFinishEvent) argEvent).model.getMainView();
+			App.dictionary.query();
+			App.dictionary.debugDumpListeners();
+			view.dispose();
     	}
 }

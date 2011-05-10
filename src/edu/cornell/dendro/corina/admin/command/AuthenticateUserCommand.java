@@ -11,8 +11,7 @@ import edu.cornell.dendro.corina.gui.UserCancelledException;
 public class AuthenticateUserCommand implements ICommand {
 
         public void execute(MVCEvent argEvent) {
-        		AuthenticateEvent event = (AuthenticateEvent) argEvent;
-                LoginDialog dlg = event.model.getLoginDialog();
+                LoginDialog dlg = new LoginDialog();
                 
              // Make sure the user has admin credentials
             	try {
