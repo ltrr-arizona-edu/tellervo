@@ -288,7 +288,7 @@ public class Prefs extends AbstractSubsystem {
 		prefs = new Properties(defaults);
 
 		try {
-			prefs.load(new FileInputStream(FILENAME));
+			prefs.load(new FileInputStream(FILENAME));	
 		} catch (FileNotFoundException fnfe) {
 			// user doesn't have a properties file, so we'll give her one!
 			try {
@@ -296,6 +296,7 @@ public class Prefs extends AbstractSubsystem {
 				// handling.
 				prefs.store(new FileOutputStream(FILENAME),
 						"Corina user preferences");
+				App.isFirstRun = true;
 			} catch (IOException ioe) {
 				errors.append("Error copying preferences file to your home directory: "
 							+ ioe.getMessage() + "\n");

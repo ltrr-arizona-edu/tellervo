@@ -17,6 +17,7 @@ import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.PreferencesDialog;
 import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.WizardDialog;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
@@ -44,8 +45,7 @@ public class App{
   private static PreferencesDialog prefsDialog;
   public static AppModel appmodel;
   
-
-
+  public static Boolean isFirstRun = false;
   
   private final static boolean DEBUGGING = false;
 
@@ -77,6 +77,10 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     prefs = new Prefs();
     prefs.init();
     prefsDialog = new PreferencesDialog();
+    
+    if (isFirstRun) {
+    	runWizard();
+    }
     
     if (meter != null) {
       meter.setProgress(3);
@@ -226,6 +230,11 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 	public static void showPreferencesDialog()
 	{
 		prefsDialog.setVisible(true);
+	}
+	
+	public static void runWizard()
+	{
+		WizardDialog wiz = new WizardDialog(prefsDialog);
 	}
   
 	

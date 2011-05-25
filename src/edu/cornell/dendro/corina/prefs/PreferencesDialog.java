@@ -252,6 +252,17 @@ public class PreferencesDialog extends JDialog {
 		
 	}
 	
+	void showHardPrefsPanel()
+	{
+		hideAllPages();
+		for(final AbstractPreferencesPanel page: pageList)
+		{
+			if (page instanceof HardwarePrefsPanel)
+			{
+				page.setVisible(true);
+			}
+		}
+	}
 
 
 	
