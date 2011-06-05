@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**
@@ -18,7 +20,7 @@ public class SecurityGroupTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = -8612040164917147271L;
 	private ArrayList<WSISecurityGroup> groupList;
 	private ArrayList<WSISecurityGroup> memberOfList;	
-  	
+	private ArrayList<WSISecurityGroup> userMembersList;	
 	
     private final String[] columnNames = {
             I18n.getText("dbbrowser.hash"),
@@ -32,7 +34,8 @@ public class SecurityGroupTableModel extends AbstractTableModel {
 		memberOfList = memberOf;
 	}
     
-    public void setGroups(ArrayList<WSISecurityGroup> grpList){
+
+	public void setGroups(ArrayList<WSISecurityGroup> grpList){
     	groupList = grpList;  
     }
     

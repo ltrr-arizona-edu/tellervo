@@ -40,6 +40,7 @@ public class SecurityUserEntityResource extends CorinaAssociatedResource<WSISecu
 	@Override
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
+
 		
 		// get a list of only the 'series' elements
 		List<WSISecurityUser> usrList = ListUtil.subListOfType(
@@ -47,6 +48,7 @@ public class SecurityUserEntityResource extends CorinaAssociatedResource<WSISecu
 
 		if (usrList.size()>0)
 		{
+			setAssociatedResult(usrList.get(0));
 			return true;
 		}
 		

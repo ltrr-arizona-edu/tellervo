@@ -2,24 +2,20 @@ package edu.cornell.dendro.corina.admin.model;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Collections;
 import java.util.Comparator;
-
 import javax.swing.JTable;
-import javax.swing.table.TableRowSorter;
-
 import edu.cornell.dendro.corina.gui.SortedHeaderArrowRenderer;
-import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 
-public class SecurityUserTableSorter extends TableRowSorter implements MouseListener {
-	private SecurityUserTableModel model;
+public class SecurityGroupTableSorter extends MouseAdapter {
+	private SecurityGroupTableModel model;
 	private JTable table;
 	private SortedHeaderArrowRenderer headerRenderer;
 	
 	private int lastSortedCol = -1;
 	
-	public SecurityUserTableSorter(SecurityUserTableModel model, JTable table) {
+	public SecurityGroupTableSorter(SecurityGroupTableModel model, JTable table) {
 		this.table = table;
 		this.model = model;	
 		
@@ -67,11 +63,11 @@ public class SecurityUserTableSorter extends TableRowSorter implements MouseList
 	 */
 	public void sortOnColumn(int col, boolean reverse) {
 		if(col == lastSortedCol) {
-			Collections.reverse(model.getUsers());
+			Collections.reverse(model.getGroups());
 			headerRenderer.setReversed(!headerRenderer.isReversed());
 		}
 		else {
-			Collections.sort(model.getUsers(), new SecurityUserListTableColumnComparator(model, col));
+			Collections.sort(model.getGroups(), new SecurityGroupListTableColumnComparator(model, col));
 			
 			headerRenderer.setSortColumn(col);
 			headerRenderer.setReversed(false);
@@ -79,7 +75,7 @@ public class SecurityUserTableSorter extends TableRowSorter implements MouseList
 			lastSortedCol = col;
 			
 			if(reverse)
-				Collections.reverse(model.getUsers());
+				Collections.reverse(model.getGroups());
 		}
 
 		// notify the model and repaint the header
@@ -88,24 +84,24 @@ public class SecurityUserTableSorter extends TableRowSorter implements MouseList
 		
 	}
 			
-	private class SecurityUserListTableColumnComparator implements Comparator<WSISecurityUser> 
+	private class SecurityGroupListTableColumnComparator implements Comparator<WSISecurityGroup> 
 	{
 		private int column;
-		private SecurityUserTableModel model;
+		private SecurityGroupTableModel model;
 		
-		public SecurityUserListTableColumnComparator(SecurityUserTableModel model, int column) {
+		public SecurityGroupListTableColumnComparator(SecurityGroupTableModel model, int column) {
 			this.column = column;
 			this.model = model;
 		}
 		
-		private Object getValue(WSISecurityUser usr) {
+		private Object getValue(WSISecurityGroup usr) {
 
 			
-			return model.getColumnValueForUser(usr, column);
+			return model.getColumnValueForGroup(usr, column);
 		}
 		
 		@SuppressWarnings("unchecked")
-		public int compare(WSISecurityUser e1, WSISecurityUser e2) {
+		public int compare(WSISecurityGroup e1, WSISecurityGroup e2) {
 			Object o1 = getValue(e1);
 			Object o2 = getValue(e2);
 
@@ -124,29 +120,5 @@ public class SecurityUserTableSorter extends TableRowSorter implements MouseList
 			// fallback on lame string compares
 			return o1.toString().compareToIgnoreCase(o2.toString());
 		}
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 }

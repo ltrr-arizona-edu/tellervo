@@ -49,7 +49,9 @@ public enum EntityType {
     @XmlEnumValue("box")
     BOX("box"),
     @XmlEnumValue("securityUser")
-    SECURITY_USER("securityUser");
+    SECURITY_USER("securityUser"),
+    @XmlEnumValue("securityGroup")
+    SECURITY_GROUP("securityGroup");
     private final String value;
 
     EntityType(String v) {

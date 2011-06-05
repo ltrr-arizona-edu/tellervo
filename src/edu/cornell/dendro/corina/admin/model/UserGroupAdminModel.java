@@ -2,6 +2,7 @@ package edu.cornell.dendro.corina.admin.model;
 
 import java.util.ArrayList;
 
+import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
 
 import com.dmurph.mvc.model.AbstractModel;
@@ -17,7 +18,7 @@ public class UserGroupAdminModel extends AbstractModel {
 	private static UserGroupAdminModel model = null;
 	private UserGroupAdminView mainView;
 	private SecurityUserTableModel usersModel;
-	private TableRowSorter<SecurityUserTableModel> usersSorter;
+	private SecurityUserTableSorter usersSorter;
 	private SecurityGroupTableModel groupsModel;
 	private TableRowSorter<SecurityGroupTableModel> groupsSorter;
 
@@ -64,10 +65,11 @@ public class UserGroupAdminModel extends AbstractModel {
 		return usersModel;
 	}
 
-	public TableRowSorter<SecurityUserTableModel> getUsersSorter(
-			SecurityUserTableModel argUsersModel) {
+	public SecurityUserTableSorter getUsersSorter(
+			SecurityUserTableModel argUsersModel, JTable table) {
 		if(usersSorter==null){
-			usersSorter = new TableRowSorter<SecurityUserTableModel>(argUsersModel);
+			usersSorter = new SecurityUserTableSorter(argUsersModel, table);
+			//usersSorter = new TableRowSorter<SecurityUserTableModel>(argUsersModel);
 		}
 		return usersSorter;
 	}

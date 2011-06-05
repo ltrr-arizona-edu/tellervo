@@ -2,21 +2,18 @@ package edu.cornell.dendro.corina.admin.control;
 
 import com.dmurph.mvc.MVCEvent;
 
-import javax.swing.JTable;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 //import com.dmurph.mvc.tracking.ITrackable;
 
-public class ToggleDisabledAccountsEvent extends MVCEvent{ // implements ITrackable {
+public class EditGroupEvent extends MVCEvent{ // implements ITrackable {
 	private static final long serialVersionUID = 1L;
 	public final UserGroupAdminModel model;
-	public final boolean show;
-	public final JTable table;
+	public final int groupIndex;
 
-	public ToggleDisabledAccountsEvent(boolean argShow, UserGroupAdminModel argModel, JTable argTable) {
-		super(UserGroupAdminController.TOGGLE_DISABLED_ACCOUNTS);
+	public EditGroupEvent(int argGroupIndex, UserGroupAdminModel argModel) {
+		super(UserGroupAdminController.EDIT_GROUP);
 		model = argModel;
-		show = argShow;
-		table = argTable;
+		groupIndex = argGroupIndex;
 	}
 
 //	/**

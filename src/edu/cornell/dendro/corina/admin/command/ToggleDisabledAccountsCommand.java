@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.admin.command;
 
+import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
@@ -14,8 +15,9 @@ public class ToggleDisabledAccountsCommand implements ICommand {
         public void execute(MVCEvent argEvent) {
         	ToggleDisabledAccountsEvent event = (ToggleDisabledAccountsEvent) argEvent;
         	boolean show = event.show;
+        	JTable table = event.table;
         	SecurityUserTableModel usersModel = event.model.getUsersModel();
-        	TableRowSorter<SecurityUserTableModel> usersSorter = event.model.getUsersSorter(usersModel); 
+        	TableRowSorter<SecurityUserTableModel> usersSorter = event.model.getUsersSorter(usersModel, null); 
         	if(show){
         		usersSorter.setRowFilter(null);
         	}

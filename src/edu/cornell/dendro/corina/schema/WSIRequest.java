@@ -95,6 +95,7 @@ import org.tridas.util.TridasObjectEx;
     "measurementSeries",
     "derivedSeries",
     "securityUsers",
+    "securityGroups",
     "boxes",
     "entities",
     "authenticate",
@@ -123,6 +124,8 @@ public class WSIRequest
     protected List<TridasDerivedSeries> derivedSeries;
     @XmlElement(name = "securityUser")
     protected List<WSISecurityUser> securityUsers;
+    @XmlElement(name = "securityGroup")
+    protected List<WSISecurityGroup> securityGroups;
     @XmlElement(name = "box")
     protected List<WSIBox> boxes;
     @XmlElement(name = "entity")
@@ -802,6 +805,18 @@ public class WSIRequest
      */
     public void setSecurityUsers(List<WSISecurityUser> securityUsers) {
         this.securityUsers = securityUsers;
+    }
+    
+    /**
+     * Sets the value of the securityGroups property.
+     * 
+     * @param securityGroups
+     *     allowed object is
+     *     {@link WSISecurityGroup[ }
+     *     
+     */
+    public void setSecurityGroup(List<WSISecurityGroup> securityGroups) {
+        this.securityGroups = securityGroups;
     }
 
     /**

@@ -8,9 +8,12 @@ import com.dmurph.mvc.control.FrontController;
 //import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 
 import edu.cornell.dendro.corina.admin.command.AuthenticateUserCommand;
+import edu.cornell.dendro.corina.admin.command.DeleteGroupCommand;
 import edu.cornell.dendro.corina.admin.command.DeleteUserCommand;
+import edu.cornell.dendro.corina.admin.command.EditGroupCommand;
 import edu.cornell.dendro.corina.admin.command.EditUserCommand;
 import edu.cornell.dendro.corina.admin.command.ToggleDisabledAccountsCommand;
+import edu.cornell.dendro.corina.admin.command.ToggleDisabledGroupsCommand;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.admin.view.UserGroupAdminView;
 import edu.cornell.dendro.corina.core.App;
@@ -20,16 +23,22 @@ public class UserGroupAdminController extends FrontController {
 		public static final String DISPLAY_UGA = "UGA_DISPLAY_UGA";
 		public static final String AUTHENTICATE_USER = "UGA_AUTHENICATE_USER";
 		public static final String EDIT_USER = "UGA_EDIT_USER";
+		public static final String EDIT_GROUP = "UGA_EDIT_GROUP";
 		public static final String TOGGLE_DISABLED_ACCOUNTS = "UGA_TOGGLE_DISABLED_ACCOUNTS";
+		public static final String TOGGLE_DISABLED_GROUPS = "UGA_TOGGLE_DISABLED_GROUPS";
 		public static final String DELETE_USER = "UGA_DELETE_USER";
+		public static final String DELETE_GROUP = "UGA_DELETE_GROUP";
 		public static final String OK_FINISH = "UGA_OK_FINISH";
         
         public UserGroupAdminController(){
                 registerCommand(DISPLAY_UGA, "display");
                 registerCommand(AUTHENTICATE_USER, AuthenticateUserCommand.class);
                 registerCommand(EDIT_USER, EditUserCommand.class);
+                registerCommand(EDIT_GROUP, EditGroupCommand.class);
                 registerCommand(TOGGLE_DISABLED_ACCOUNTS, ToggleDisabledAccountsCommand.class);
+                registerCommand(TOGGLE_DISABLED_GROUPS, ToggleDisabledGroupsCommand.class);
                 registerCommand(DELETE_USER, DeleteUserCommand.class);
+                registerCommand(DELETE_GROUP, DeleteGroupCommand.class);
                 registerCommand(OK_FINISH, "finish");
         }
         
