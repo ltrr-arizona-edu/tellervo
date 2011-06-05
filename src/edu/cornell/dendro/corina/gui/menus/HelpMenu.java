@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.platform.Platform;
@@ -76,6 +77,7 @@ public class HelpMenu extends JMenu {
 		helpwiki.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				Help.showHelpIndex();
+				
 			}
 		});
 		
@@ -96,7 +98,21 @@ public class HelpMenu extends JMenu {
      * FIXME: not really just an "error" log... more like "activity" log.
      */
     protected void addErrorLogMenu() {
-        add(Builder.makeMenuItem("menus.help.error_log", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()", "log.png"));
+        //add(Builder.makeMenuItem("menus.help.error_log", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()", "log.png"));
+        JMenuItem logviewer = new JMenuItem(I18n.getText("menus.help.error_log"));
+        logviewer.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				App.setLogViewerVisible(true);
+				
+			}
+        	
+        });
+        add(logviewer);
+    	
+    	//add(Builder.makeMenuItem("menus.help.error_log", "edu.cornell.dendro.corina.gui.Log4JViewer.showLogViewer()", "log.png"));
+
         debugMenu = Builder.makeMenuItem("menus.help.xml_debug", "edu.cornell.dendro.corina.gui.XMLDebugView.showDialog()", "networksettings.png");
         add(debugMenu);
         addSeparator();

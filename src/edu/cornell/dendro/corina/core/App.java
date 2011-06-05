@@ -6,13 +6,18 @@ package edu.cornell.dendro.corina.core;
 import java.io.File;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
+
 import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.gui.Log4JViewer;
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.LoginSplash;
 import edu.cornell.dendro.corina.gui.ProgressMeter;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.PreferencesDialog;
@@ -33,6 +38,7 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
  * @author Aaron Hamid
  */
 public class App{
+  
   public static Prefs prefs;
   public static Platform platform;
   public static Logging logging;
@@ -44,12 +50,15 @@ public class App{
   private static String username;
   private static PreferencesDialog prefsDialog;
   public static AppModel appmodel;
+  private static Log4JViewer logviewer;
+  
   
   public static Boolean isFirstRun = false;
   
   private final static boolean DEBUGGING = false;
 
-  private static final CorinaLog log = new CorinaLog(App.class);
+  //private static final CorinaLog log = new CorinaLog(App.class);
+  private final static Logger log = LoggerFactory.getLogger(App.class);
   private static boolean initialized;
   
   private static ProxyManager proxies; // for handling our proxies
@@ -62,7 +71,11 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     log.debug("initializing App");
 
     appmodel = new AppModel();
-
+    
+    logviewer = new Log4JViewer();
+    logviewer.setVisible(false);
+    
+    SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
     
     
     if (meter != null) {
@@ -207,10 +220,15 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 		domain = path;
 	} catch (Exception e) {
 		// TODO Auto-generated catch block
-		System.out.println("Error determining domain base from webservice URL");
-		e.printStackTrace();
+		log.error("Error determining domain base from webservice URL");
+		
 	}
   
+  }
+
+  public static void setLogViewerVisible(Boolean b)
+  {
+	  logviewer.setVisible(b);
   }
 
   public static boolean isLoggedIn(){
@@ -234,7 +252,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 	
 	public static void runWizard()
 	{
-		WizardDialog wiz = new WizardDialog(prefsDialog);
+		new WizardDialog(prefsDialog);
 	}
   
 	

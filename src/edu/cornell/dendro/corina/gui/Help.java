@@ -20,17 +20,19 @@
 
 package edu.cornell.dendro.corina.gui;
 
+import java.awt.event.ActionEvent;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.JButton;
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
+
+import org.jpedal.examples.simpleviewer.Commands;
+import org.jpedal.examples.simpleviewer.SimpleViewer;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.ui.Alert;
-
-import java.awt.event.ActionEvent;
 
 
 public class Help {
@@ -44,9 +46,51 @@ public class Help {
 	/**
 	 * Open the help page index
 	 */
+	@SuppressWarnings("deprecation")
 	public static void showHelpIndex() 
 	{
-		Help.showHelpPage("UserGuideContents");	
+		//Help.showHelpPage("UserGuideContents");
+		//Help.showExternalPage("http://dendro.cornell.edu/corina/documentation/corina-manual.pdf");
+		
+		@SuppressWarnings("unused")
+		String[] locations = new String[] {
+				"http://dendro.cornell.edu/corina/documentation/corina-manual.pdf" ,
+			};
+
+		SimpleViewer pdf = new SimpleViewer();
+		pdf.setupViewer();
+		
+		pdf.openDefaultFile("http://dendro.cornell.edu/corina/documentation/corina-manual.pdf");
+		
+
+
+		//reads tree and populates lookup table
+		String bookmark = "Installation";
+		String bookmarkPage=pdf.getSwingGUI().getBookmark(bookmark);
+
+		if(bookmarkPage==null)
+		{
+			Alert.error("Bookmark not found", "");
+		}
+			//throw new PdfException("Unknown bookmark "+bookmark);
+
+		int page=Integer.parseInt((String)bookmarkPage);
+		Object[] input = new Object[]{page}; 
+		pdf.executeCommand(Commands.GOTO, input);
+		
+		
+		
+		
+		//pdf.openDefaultFileAtPage(defaultFile, page)
+		
+		/*JDialog dialog = new JDialog();
+		dialog.setContentPane(pdfHelpPanel);
+		dialog.setIconImage(Builder.getApplicationIcon());
+		dialog.setTitle("Help");
+		dialog.pack();
+		dialog.setVisible(true);*/
+		
+		
 	}
 	
 	/**

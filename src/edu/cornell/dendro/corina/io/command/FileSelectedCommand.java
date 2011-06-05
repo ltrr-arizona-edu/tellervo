@@ -62,7 +62,7 @@ public class FileSelectedCommand implements ICommand {
 		}
 		
 		// Warn if project contains derivedSeries
-		if(reader.getProject().isSetDerivedSeries())
+		if(reader.getProjects()[0].isSetDerivedSeries())
 		{
 			event.model.appendConversionWarning(new ConversionWarning(
 					WarningType.IGNORED, 
@@ -70,7 +70,7 @@ public class FileSelectedCommand implements ICommand {
 		}
 		
 		// Add custom Corina warnings for unsupported aspects of TRiDaS
-		for (TridasMeasurementSeries series: TridasUtils.getMeasurementSeriesFromTridasProject(reader.getProject()))
+		for (TridasMeasurementSeries series: TridasUtils.getMeasurementSeriesFromTridasProject(reader.getProjects()[0]))
 		{
 			if(series.isSetValues())
 			{
@@ -121,7 +121,7 @@ public class FileSelectedCommand implements ICommand {
 		
 		
 		// Extract project from file
-		TridasRepresentationTreeModel treeMdl = new TridasRepresentationTreeModel(reader.getProject());
+		TridasRepresentationTreeModel treeMdl = new TridasRepresentationTreeModel(reader.getProjects()[0]);
 		event.model.setTreeModel(treeMdl);
 		
 	}

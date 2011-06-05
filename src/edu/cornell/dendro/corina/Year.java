@@ -20,8 +20,6 @@
 
 package edu.cornell.dendro.corina;
 
-import java.math.BigInteger;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
@@ -161,7 +159,7 @@ public final class Year implements Comparable<Year> {
      */
     public org.tridas.schema.Year tridasYearValue() {
     	org.tridas.schema.Year tridasYear = new org.tridas.schema.Year();
-    	tridasYear.setValue(BigInteger.valueOf(Math.abs(y)));
+    	tridasYear.setValue(Integer.valueOf(Math.abs(y)));
     	if(y < 0)
     		tridasYear.setSuffix(DatingSuffix.BC);
     	else if(y > 0)

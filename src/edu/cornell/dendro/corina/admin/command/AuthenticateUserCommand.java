@@ -3,7 +3,6 @@ package edu.cornell.dendro.corina.admin.command;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-import edu.cornell.dendro.corina.admin.control.AuthenticateEvent;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;

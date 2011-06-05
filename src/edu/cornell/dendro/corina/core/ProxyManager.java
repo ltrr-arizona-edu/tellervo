@@ -1,5 +1,8 @@
 package edu.cornell.dendro.corina.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
 
@@ -13,6 +16,7 @@ import edu.cornell.dendro.corina.prefs.PrefsListener;
 
 public class ProxyManager implements PrefsListener {
 	private String lastProxyType;
+	private final static Logger log = LoggerFactory.getLogger(ProxyManager.class);
 	
 	public ProxyManager() {
 		setupProxy();
@@ -36,7 +40,7 @@ public class ProxyManager implements PrefsListener {
 		// be safe and copy the string
 		lastProxyType = new String(proxyType);
 		
-		System.out.println("PROXY: Proxy type: " + proxyType);
+		log.info("Proxy type: {}", proxyType);
 		
 		// make sure we remove any properties we don't want
 		if("default".equals(proxyType) || "direct".equals(proxyType)) {

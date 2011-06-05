@@ -19,6 +19,14 @@
 		</layout>
 	</appender>
 
+  <appender name="swinggui" class="edu.cornell.dendro.corina.gui.MySwingLogAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p %c{1} - %m%n" />
+		</layout>
+	</appender>
+
+
   <!-- This is really noisy, ignore it! -->
   <logger name="org.apache.http" additivity="false">
     <level value="info"/>

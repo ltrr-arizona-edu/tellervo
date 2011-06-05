@@ -141,17 +141,25 @@ public class ImportDialog extends JDialog implements PropertyChangeListener, Tri
 			// Try and highlight the line in the input file that is to blame if poss
 			if(	e.getPointerType().equals(PointerType.LINE) 
 					&& e.getPointerNumber()!=null 
-					&& e.getPointerNumber()!=0)
+					&& !e.getPointerNumber().equals("0"))
 			{
-				originalFilePane.addCaretListener(new LineHighlighter(Color.red, e.getPointerNumber()));
-				this.tabbedPane.setSelectedIndex(2);
-				int pos=1;
-				for(int i=0; i<e.getPointerNumber(); i++)
-				{
-					 pos = originalFilePane.getText().indexOf("\n", pos+1);
-				}
+				try{
+					Integer linenum = Integer.parseInt(e.getPointerNumber());
+
 				
-				originalFilePane.setCaretPosition(pos);
+					originalFilePane.addCaretListener(new LineHighlighter(Color.red, linenum));
+					this.tabbedPane.setSelectedIndex(2);
+					int pos=1;
+					for(int i=0; i<linenum; i++)
+					{
+						 pos = originalFilePane.getText().indexOf("\n", pos+1);
+					}
+					originalFilePane.setCaretPosition(pos);
+					
+					} catch (NumberFormatException ex)
+				{}
+				
+				
 				tabbedPane.setEnabledAt(0, false);
 				this.horizSplitPane.setDividerLocation(0);
 				this.panelTreeTable.setVisible(false);
@@ -167,7 +175,7 @@ public class ImportDialog extends JDialog implements PropertyChangeListener, Tri
 		
 		
 		
-		tridasreptree = new TridasFileImportPanel(reader.getProject());
+		tridasreptree = new TridasFileImportPanel(reader.getProjects()[0]);
 		
 		setWarnings(reader.getWarnings());
 		

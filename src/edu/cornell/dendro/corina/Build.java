@@ -115,5 +115,5 @@ public class Build {
     public final static String YEAR = "2001-2011";
 
     /** Author's name (for copyright). */
-    public final static String AUTHOR = "Peter Brewer, Chris Dunham, Aaron Hamid, Ken Harris, Drew Kalina, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl and Kit Sturgeon";
+    public final static String AUTHOR = "Peter Brewer, Chris Dunham, Dan Girshovich, Aaron Hamid, Ken Harris, Drew Kalina, Rocky Li, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl and Kit Sturgeon";
 }

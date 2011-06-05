@@ -3,6 +3,7 @@ package edu.cornell.dendro.corina.io.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +21,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -85,7 +86,7 @@ import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
 import edu.cornell.dendro.corina.ui.I18n;
 
-public class ImportView extends JDialog{
+public class ImportView extends JFrame{
 
 	private static final long serialVersionUID = -9142222993569420620L;
 	
@@ -386,14 +387,16 @@ public class ImportView extends JDialog{
 				buttonPanel.add(btnFinish);
 			}
 		}
-
 		pack();
 		//this.setSize(new Dimension(800,600));
 		vertSplitPane.setDividerLocation(0.8);
 		horizSplitPane.setDividerLocation(0.5);
-		pack();
+		setExtendedState(getExtendedState() | Frame.MAXIMIZED_BOTH);
+		setIconImage(Builder.getApplicationIcon());
+		
 		chooseOrCancelUIUpdate();
 		enableEditing(false);
+		
 	}
 	
 	/**
@@ -881,17 +884,22 @@ public class ImportView extends JDialog{
 		// Try and highlight the line in the input file that is to blame if poss
 		if(	e.getPointerType().equals(PointerType.LINE) 
 				&& e.getPointerNumber()!=null 
-				&& e.getPointerNumber()!=0)
+				&& !e.getPointerNumber().equals("0"))
 		{
-			txtOriginalFile.addCaretListener(new LineHighlighter(Color.red, e.getPointerNumber()));
-			this.tabbedPane.setSelectedIndex(0);
-			int pos=1;
-			for(int i=0; i<e.getPointerNumber(); i++)
-			{
-				 pos = txtOriginalFile.getText().indexOf("\n", pos+1);
-			}
-			
-			txtOriginalFile.setCaretPosition(pos);
+			try{
+				Integer linenum = Integer.parseInt(e.getPointerNumber());
+				
+				txtOriginalFile.addCaretListener(new LineHighlighter(Color.red, linenum ));
+				this.tabbedPane.setSelectedIndex(0);
+				int pos=1;
+				for(int i=0; i<linenum; i++)
+				{
+					 pos = txtOriginalFile.getText().indexOf("\n", pos+1);
+				}
+				
+				txtOriginalFile.setCaretPosition(pos);
+			} catch (NumberFormatException ex)
+			{}
 			tabbedPane.setEnabledAt(1, false);
 			this.horizSplitPane.setDividerLocation(0);
 			this.panelTreeTable.setVisible(false);

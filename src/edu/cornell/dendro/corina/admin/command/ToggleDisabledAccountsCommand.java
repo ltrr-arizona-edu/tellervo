@@ -1,6 +1,5 @@
 package edu.cornell.dendro.corina.admin.command;
 
-import javax.swing.JDialog;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 

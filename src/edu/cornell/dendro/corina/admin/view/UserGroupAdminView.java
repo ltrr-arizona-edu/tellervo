@@ -77,7 +77,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         
     }
     
-    @SuppressWarnings("unchecked")
 	private void setupGui(){
     	// Set up basic dialog 
         setLocationRelativeTo(null);

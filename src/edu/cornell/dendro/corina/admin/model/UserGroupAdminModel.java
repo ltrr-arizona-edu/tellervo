@@ -8,12 +8,12 @@ import com.dmurph.mvc.model.AbstractModel;
 
 import edu.cornell.dendro.corina.admin.view.UserGroupAdminView;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
 public class UserGroupAdminModel extends AbstractModel {
 
+	private static final long serialVersionUID = -1731874198092507070L;
 	private static UserGroupAdminModel model = null;
 	private UserGroupAdminView mainView;
 	private SecurityUserTableModel usersModel;
@@ -36,6 +36,7 @@ public class UserGroupAdminModel extends AbstractModel {
 		return mainView;
 	}
 
+	@SuppressWarnings("unchecked")
 	public SecurityGroupTableModel getGroupsModel() {
 		if (groupsModel == null) {
 			ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary
@@ -53,6 +54,7 @@ public class UserGroupAdminModel extends AbstractModel {
 		return groupsSorter;
 	}
 
+	@SuppressWarnings("unchecked")
 	public SecurityUserTableModel getUsersModel() {
 		if (usersModel == null) {
 			ArrayList<WSISecurityUser> lstofUsers = (ArrayList<WSISecurityUser>) Dictionary

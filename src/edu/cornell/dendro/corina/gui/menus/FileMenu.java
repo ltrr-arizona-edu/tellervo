@@ -22,6 +22,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.tridas.io.AbstractDendroFileReader;
+import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.util.SafeIntYear;
@@ -110,7 +111,50 @@ public class FileMenu extends JMenu {
 	
 	public void addIOMenus(){
 		
-		fileimport = Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithtricycle()", "fileimport.png");
+		fileimport = Builder.makeMenu("menus.file.import", "fileimport.png");
+		
+		for (final String s : TridasIO.getSupportedReadingFormats()) {
+			
+			JMenuItem importitem = new JMenuItem(s);
+
+			importitem.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// Set up file chooser and filters
+					JFileChooser fc = new JFileChooser();
+					AbstractDendroFileReader reader = TridasIO.getFileReader(s);
+					DendroFileFilter filter = reader.getDendroFileFilter();
+
+					fc.addChoosableFileFilter(filter);
+					fc.setFileFilter(filter);
+					
+					int returnVal = fc.showOpenDialog(null);
+						
+					// Get details from user
+				    if (returnVal == JFileChooser.APPROVE_OPTION) {
+				        File file = fc.getSelectedFile();
+				        
+				        
+				        ImportView importDialog = new ImportView(file, s);
+
+						importDialog.setVisible(true);
+				        
+				 
+					    
+				    } else {
+				    	return;
+				    }
+
+					
+				}
+				
+			});
+			
+			fileimport.add(importitem);
+		}
+		
+		//fileimport = Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithtricycle()", "fileimport.png");
 		add(fileimport);
 		
 		fileexport = Builder.makeMVCMenuItem("menus.file.export", IOController.OPEN_EXPORT_WINDOW, "fileexport.png");
@@ -501,7 +545,7 @@ public class FileMenu extends JMenu {
 		}
 		
 		// Extract project
-		TridasProject project = reader.getProject();	
+		TridasProject project = reader.getProjects()[0];	
 		ArrayList<TridasMeasurementSeries> seriesList = TridasUtils.getMeasurementSeriesFromTridasProject(project);
 		
 		if(seriesList.size()==0) 

@@ -16,7 +16,7 @@ public class Logging extends AbstractSubsystem {
   @Override
 public void init() {
     super.init();
-    CorinaLog.init();
+    //CorinaLog.init();
     setInitialized(true);
   }
   @Override
