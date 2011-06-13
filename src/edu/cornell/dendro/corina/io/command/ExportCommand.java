@@ -104,10 +104,15 @@ public class ExportCommand implements ICommand {
 			if(tseries instanceof TridasMeasurementSeries)
 			{
 				// Set all the standard mSeries entities
+				trad.getMeasurementSeries().clear();
 				trad.getMeasurementSeries().add((TridasMeasurementSeries) tseries);
-				tsamp.getRadiuses().add(trad);
+				tsamp.getRadiuses().clear();
+				tsamp.getRadiuses().add(trad);				
+				telem.getSamples().clear();
 				telem.getSamples().add(tsamp);
+				tobj.getElements().clear();
 				tobj.getElements().add(telem);
+				project.getObjects().clear();
 				project.getObjects().add(tobj);
 			}
 			else
