@@ -1,52 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="edu/cornell/dendro/corina/cross/legacy/|edu/cornell/dendro/corina/db/|edu/cornell/dendro/corina/gui/datawizard/|edu/cornell/dendro/corina/search/|edu/cornell/dendro/corina/browser/|edu/cornell/dendro/corina/gui/newui/" including="edu/cornell/dendro/corina/**|edu/cornell/dendro/corina_indexing/**|edu/cornell/dendro/corina_resources/**|edu/cornell/dendro/cpgdb/**|edu/cornell/dendro/webservice/schemas/*|log4j.xml|net/opengis/gml/schema/**|org/tridas/**" kind="src" path="src">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Corina-dev/native/Libraries"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="Libraries/commons-lang-2.4.jar" sourcepath="C:/Users/Daniel/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/batik.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/RXTXcomm.jar" sourcepath="LibraryDocsAndSources/rxtx-2.0-7pre1 2.src.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/jdom.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/jna.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/apache-mime4j-0.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/commons-codec-1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/httpclient-4.0-beta2.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/httpcore-4.0-beta3.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/httpmime-4.0-beta2.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/jsyntaxpane-0.9.5-b17.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/l2fprod-common-shared.jar" sourcepath="Libraries/src/l2fprod-common-7.3-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/l2fprod-common-sheet.jar" sourcepath="Libraries/src/l2fprod-common-7.3-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/jaxen-1.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/l2fprod-common-buttonbar.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/iText-2.1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/jaxb/plugin/coll-prop.0.1-1.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/PDFRenderer.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/java-simple-mvc-1.3.4-SNAPSHOT.jar" sourcepath="LibraryDocsAndSources/java-simple-mvc-1.3.4-SNAPSHOT-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/JGoogleAnalyticsTracker-1.1.0.jar" sourcepath="LibraryDocsAndSources/JGoogleAnalyticsTracker-1.1.0-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/gluegen-rt.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/jogl.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/worldwind-0.6.570.13645.jar" sourcepath="/worldwind-0.6.570.13645/src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-6-sun-1.6.0.24"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/JFontChooser.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/jfontchooser-1.0.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/miglayout15-swing.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/jh.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/pljava.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/postgresql-8.2-506.jdbc3.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/forms-1.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/jxl-2.6.10.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/wizard.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/org-netbeans-swing-outline.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/swing-layout-1.0.4.jar"/>
-	<classpathentry kind="lib" path="Libraries/pdfhelp.jar" sourcepath="LibraryDocsAndSources/pdfhelp_lgpl_src.zip"/>
-	<classpathentry kind="lib" path="Libraries/jpedal_lgpl.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/DendroFileIO-0.1.3.jar" sourcepath="LibraryDocsAndSources/DendroFileIO-0.1.3-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/TridasJLib-0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/simple-log-2.0.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/TRiCYCLE-0.2.4.jar" sourcepath="LibraryDocsAndSources/TRiCYCLE-0.2.4-sources.jar"/>
-	<classpathentry kind="lib" path="Libraries/sysout-over-slf4j-1.0.1.jar"/>
-	<classpathentry kind="output" path="build"/>
+	<classpathentry excluding="edu/cornell/dendro/cpgdb/|edu/cornell/dendro/webservice/" kind="src" output="target/classes" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/generated"/>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>
