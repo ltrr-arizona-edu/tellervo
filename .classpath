@@ -29,7 +29,7 @@
 	<classpathentry exported="true" kind="lib" path="Libraries/gluegen-rt.jar"/>
 	<classpathentry exported="true" kind="lib" path="Libraries/jogl.jar"/>
 	<classpathentry exported="true" kind="lib" path="Libraries/worldwind-0.6.570.13645.jar" sourcepath="/worldwind-0.6.570.13645/src"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-6-sun-1.6.0.24"/>
 	<classpathentry exported="true" kind="lib" path="Libraries/JFontChooser.jar"/>
 	<classpathentry exported="true" kind="lib" path="Libraries/jfontchooser-1.0.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="Libraries/miglayout15-swing.jar"/>
