@@ -39,12 +39,12 @@ public class TridasAnnotation extends GlobeAnnotation implements ActionListener{
 
 	
     protected static final String CLOSE_IMAGE_PATH = "images/16x16-button-cancel.png";
-    protected static final String SEARCHFORSERIES_IMAGE_PATH = "edu/cornell/dendro/corina_resources/Icons/searchforseries.png";
-    protected static final String VIEWMETADATA_IMAGE_PATH = "edu/cornell/dendro/corina_resources/Icons/viewmetadata.png";
-    protected static final String PIXEL22_MASK_PATH = "images/16x16-button-cancel.png";
+    protected static final String SEARCHFORSERIES_IMAGE_PATH = "Icons/searchforseries.png";
+    protected static final String VIEWMETADATA_IMAGE_PATH = "Icons/viewmetadata.png";
+    protected static final String PIXEL22_MASK_PATH = "Icons/16x16-button-cancel.png";
 
-    protected static final String BUSY_IMAGE_PATH = "images/indicator-16.gif";
-    protected static final String PIXEL16_MASK_PATH = "images/16x16-button-depressed-mask.png";
+    protected static final String BUSY_IMAGE_PATH = "Icons/indicator-16.gif";
+    protected static final String PIXEL16_MASK_PATH = "Icons/16x16-button-depressed-mask.png";
 
     protected static final String CLOSE_TOOLTIP_TEXT = "Close window";
     protected static final String SEARCHFORSERIES_TOOLTIP_TEXT = "Search for associated series";

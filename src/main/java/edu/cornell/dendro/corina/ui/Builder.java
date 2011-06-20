@@ -21,6 +21,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dmurph.mvc.MVCEvent;
 import com.lowagie.text.BadElementException;
 
@@ -31,6 +34,7 @@ import edu.cornell.dendro.corina.platform.Platform;
 // underlines the correct 'A'
 
 public class Builder {
+	private final static Logger log = LoggerFactory.getLogger(Builder.class);
 
 	// (don't instantiate me)
 	private Builder() {
@@ -312,6 +316,7 @@ public class Builder {
 		urlBuffer.append('/');		
 		urlBuffer.append(name);
 		
+		//log.debug("Icon url: "+urlBuffer.toString());
 		return urlBuffer.toString();
 		
 	}
@@ -360,7 +365,7 @@ public class Builder {
 
 	public final static String IMAGES = "Images";
 	public final static String ICONS = "Icons";
-	private final static String RESOURCE_PACKAGE_PREFIX = "edu/cornell/dendro/corina_resources/";
+	private final static String RESOURCE_PACKAGE_PREFIX = "";
 	
 	private final static String IMAGES_PACKAGE_PREFIX = RESOURCE_PACKAGE_PREFIX + IMAGES;
 	

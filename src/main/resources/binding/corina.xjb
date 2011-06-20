@@ -23,7 +23,7 @@
 	</jaxb:bindings> 
 	
 	<!-- Corina -->
-	<jaxb:bindings schemaLocation="corina.xsd" node="/xs:schema">
+	<jaxb:bindings schemaLocation="../schemas/corina.xsd" node="/xs:schema">
 		
 		<!-- Rename Corina root element to WSIRootElement -->
 		<jaxb:bindings node="//xs:element[@name='corina']">
@@ -85,7 +85,7 @@
 	</jaxb:bindings>
 	
 	<!-- Tridas schema. Prefix with 'Tridas'! -->
-	<jaxb:bindings schemaLocation="tridas.xsd" node="/xs:schema">
+	<jaxb:bindings schemaLocation="../schemas/tridas.xsd" node="/xs:schema">
 		<jaxb:schemaBindings>
 			<jaxb:package name="org.tridas.schema"/>
 			<jaxb:nameXmlTransform>

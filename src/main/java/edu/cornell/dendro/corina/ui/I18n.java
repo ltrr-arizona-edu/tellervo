@@ -269,10 +269,10 @@ public class I18n {
 	static {
 		ResourceBundle bundle;
 		try {
-			bundle = ResourceBundle.getBundle("edu/cornell/dendro/corina_resources/Translations/TextBundle");
+			bundle = ResourceBundle.getBundle("Translations/TextBundle");
 		} catch (MissingResourceException mre) {
 			try {
-				bundle = ResourceBundle.getBundle("edu/cornell/dendro/corina_resources/Translations/TextBundle");
+				bundle = ResourceBundle.getBundle("Translations/TextBundle");
 			} catch (MissingResourceException mre2) {
 				System.out.println("Could not find locale file.");
 				mre2.printStackTrace();

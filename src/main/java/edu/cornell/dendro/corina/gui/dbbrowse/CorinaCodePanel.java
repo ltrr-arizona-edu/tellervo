@@ -183,7 +183,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		AudioClip beep;
 		try {	
 			// play this to indicate measuring is on...
-			beep = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/checkout.wav"));
+			beep = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/checkout.wav"));
 			if(beep != null)
 				beep.play();
 		} catch (Exception ae) { 

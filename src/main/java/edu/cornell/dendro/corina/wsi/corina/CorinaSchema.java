@@ -9,9 +9,14 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 public class CorinaSchema {
+	private final static Logger log = LoggerFactory.getLogger(CorinaSchema.class);
+
+	
 	private CorinaSchema() {
 		// not instantiable
 	}
@@ -81,11 +86,18 @@ public class CorinaSchema {
 	 * @return
 	 */
     private static InputStream findSchema(String filename) {
-    	InputStream ret = CorinaSchema.class.getClassLoader().getResourceAsStream
-    		("edu/cornell/dendro/webservice/schemas/" + filename);
+    	InputStream ret = CorinaSchema.class.getClassLoader().getResourceAsStream("schemas/"+filename);
+    	//InputStream ret = CorinaSchema.class.getClassLoader().getResourceAsStream("edu/cornell/dendro/webservice/schemas/" + filename);
     	
     	if(ret == null)
-    		System.out.println("FAILED to load local schema: " + filename);
+    	{
+    		log.error("Failed to load local schema: " + filename);
+    	}
+    	else
+    	{
+    		log.debug("Successfully loaded schema: " + filename);
+    	}
+    	
     	
     	return ret;
     }
@@ -99,7 +111,7 @@ public class CorinaSchema {
     	// namespace, filename, prefix
     	{ "http://www.w3.org/1999/xlink", "xlinks.xsd", "xlink" },
     	{ "http://www.opengis.net/gml", "gmlsf.xsd", "gml" },
-    	{ "http://www.tridas.org/1.2.1", "tridas.xsd", "tridas" },
+    	{ "http://www.tridas.org/1.2.2", "tridas.xsd", "tridas" },
     	{ "http://dendro.cornell.edu/schema/corina/1.0", "corina.xsd", "c"},
     };
     

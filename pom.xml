@@ -5,8 +5,62 @@
   <version>2.12.0-SNAPSHOT</version>
   <name>Corina</name>
   <description>Dendrochronological collection, curation and management software</description>
+	<licenses>
+		<license>
+		    <name>The GNU General Public License, Version 3.0</name>
+      		<url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+      		<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Peter Brewer</name>
+			<email>p.brewer@cornell.edu</email>
+			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern Dendrochronology</organization>
+			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+		</developer>
+		<developer>
+			<name>Daniel Murphy</name>
+			<email>daniel@dmurph.com</email>
+			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern Dendrochronology</organization>
+			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+		</developer>
+		
+	</developers>
+	<scm>
+		<connection>scm:svn:svn+ssh://tridas.sf.net/svnroot/tridas/DendroLibrary/DendroFileIOGui</connection>
+		<developerConnection>scm:svn:svn+ssh://tridas.sf.net/svnroot/tridas/DendroLibrary/DendroFileIOGui</developerConnection>
+		<tag>trunk</tag>
+		<url>http://tridas.sf.net</url>
+	</scm>
 
+	<properties>
+		<version>${project.version}</version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	 <!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml
+	 file contains the correct username and password for the repository server -->
+	<distributionManagement>
+	    <repository>
+	      <id>tridas-releases</id>
+	      <url>http://maven.tridas.org/repository/tridas-releases/</url>
+	    </repository>
+	    <snapshotRepository>
+	      <id>tridas-snapshots</id>
+	      <url>http://maven.tridas.org/repository/tridas-snapshots/</url>
+	    </snapshotRepository>
+	</distributionManagement>
+	
+	
   <dependencies>
+  	<dependency>
+		<groupId>org.tridas</groupId>
+		<artifactId>tridasjlib</artifactId>
+		<version>0.3-SNAPSHOT</version>
+		<type>jar</type>
+		<scope>compile</scope>
+	</dependency>
     <dependency>
     	<groupId>com.lowagie</groupId>
     	<artifactId>itext</artifactId>
@@ -14,6 +68,20 @@
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
+    		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+		<version>1.6.1</version>
+		<type>jar</type>
+		<scope>compile</scope>
+	</dependency>
     <dependency>
     	<groupId>jdom</groupId>
     	<artifactId>jdom</artifactId>
@@ -164,6 +232,7 @@
 		<type>jar</type>
 		<scope>compile</scope>
 	</dependency>
+
   </dependencies>
   
   
@@ -201,7 +270,8 @@
 						<arg>-Xannotate</arg>
 					</args>
 
-
+					<schemaDirectory>src/main/resources/schemas</schemaDirectory>
+					<bindingDirectory>src/main/resources/binding</bindingDirectory>
 					<generateDirectory>src/main/generated</generateDirectory>
 
 					
@@ -517,7 +587,5 @@
 
 	</pluginRepositories>
   
-  	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+
 </project>

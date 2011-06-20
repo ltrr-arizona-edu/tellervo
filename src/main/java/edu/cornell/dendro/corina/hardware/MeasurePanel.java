@@ -50,12 +50,12 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		
 		AudioClip measInit;
 		try {
-			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/meas1.wav"));
-			measure_dec = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/measdec.wav"));
-			measure_error = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/measerr.wav"));
+			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/meas1.wav"));
+			measure_dec = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/measdec.wav"));
+			measure_error = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/measerr.wav"));
 			
 			// play this to indicate measuring is on...
-			measInit = Applet.newAudioClip(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Sounds/measinit.wav"));
+			measInit = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/measinit.wav"));
 			if(measInit != null)
 				measInit.play();
 			 	System.out.println("Sound played");

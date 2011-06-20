@@ -68,7 +68,7 @@ public class Tree extends JLabel implements DragGestureListener {
         setBorder(BorderFactory.createEmptyBorder());
 
         // icon
-        ImageIcon img = new ImageIcon(getClass().getClassLoader().getResource("edu/cornell/dendro/corina_resources/Images/Tree.png"));
+        ImageIcon img = new ImageIcon(getClass().getClassLoader().getResource("Images/Tree.png"));
 
         // use line height, approximately
         int height = getFont().getSize() + 4;

@@ -107,7 +107,7 @@ public class ScanBarcodeUI extends javax.swing.JPanel {
 
         jLabel1.setText("<html>Set the sample metadata for this series by <br>scanning the sample's barcode.  Alternatively <br> manually enter the metadata later.</html>");
 
-        jLabel2.setIcon(new javax.swing.ImageIcon("Users/peterbrewer/dev/java/workspace2/Corina/src/edu/cornell/dendro/corina_resources/Icons/128x128/barcode.png"));
+        jLabel2.setIcon(new javax.swing.ImageIcon("Icons/128x128/barcode.png"));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnManualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManualActionPerformed

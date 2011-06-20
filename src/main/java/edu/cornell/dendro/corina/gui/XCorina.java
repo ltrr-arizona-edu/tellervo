@@ -141,7 +141,7 @@ public class XCorina extends JFrame {
 		// set background...
 		ClassLoader cl = this.getClass().getClassLoader();		
 		BufferedImage img = null;
-		URL url = cl.getResource("edu/cornell/dendro/corina_resources/Images/background3.png");
+		URL url = cl.getResource("Images/background3.png");
 		if (url != null) {
 			try {
 				img = ImageIO.read(url);
