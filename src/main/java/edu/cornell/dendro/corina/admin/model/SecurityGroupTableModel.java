@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
-import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**

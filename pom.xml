@@ -7,19 +7,6 @@
   <description>Dendrochronological collection, curation and management software</description>
 
   <dependencies>
-  	<dependency>
-		<groupId>org.tridas</groupId>
-		<artifactId>tridasjlib</artifactId>
-		<version>0.3-SNAPSHOT</version>
-		<type>jar</type>
-		<scope>compile</scope>
-	</dependency>
-    <dependency>
-      <groupId>org.tridas</groupId>
-      <artifactId>tricycle</artifactId>
-      <version>0.2.5-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
     	<groupId>com.lowagie</groupId>
     	<artifactId>itext</artifactId>
@@ -71,7 +58,6 @@
     	<groupId>org.apache.httpcomponents</groupId>
     	<artifactId>httpclient</artifactId>
     	<version>4.1.1</version>
-    	<!-- <version>4.0</version>-->
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
@@ -79,7 +65,6 @@
     	<groupId>org.apache.httpcomponents</groupId>
     	<artifactId>httpmime</artifactId>
     	<version>4.1.1</version>
-    	<!-- <version>4.0</version>-->
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
@@ -158,6 +143,27 @@
       <version>0.6.851</version>
     </dependency>
 
+	<dependency>
+		<groupId>org.tridas</groupId>
+		<artifactId>dendrofileio</artifactId>
+		<version>0.1.5-SNAPSHOT</version>
+		<type>jar</type>
+		<scope>compile</scope>
+	</dependency>
+	<dependency>
+		<groupId>com.miglayout</groupId>
+		<artifactId>miglayout</artifactId>
+		<version>3.7.4</version>
+		<type>jar</type>
+		<scope>compile</scope>
+	</dependency>
+	<dependency>
+		<groupId>com.dmurph.mvc</groupId>
+		<artifactId>java-simple-mvc</artifactId>
+		<version>1.4.0.1</version>
+		<type>jar</type>
+		<scope>compile</scope>
+	</dependency>
   </dependencies>
   
   
