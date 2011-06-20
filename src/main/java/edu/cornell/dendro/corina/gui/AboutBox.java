@@ -106,7 +106,7 @@ public class AboutBox extends javax.swing.JDialog {
     	
         StringBuffer contents = new StringBuffer();
         BufferedReader reader = null;
-        InputStream is = getClass().getClassLoader().getResourceAsStream("Licenses/Corina.txt"); 
+        InputStream is = getClass().getClassLoader().getResourceAsStream("Licenses/license.txt"); 
         
         try {
         	reader = new BufferedReader(new InputStreamReader(is));

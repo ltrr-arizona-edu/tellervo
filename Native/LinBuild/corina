@@ -1,1 +1,2 @@
-java -jar /usr/share/corina/Corina.jar
+#!/bin/bash
+java -jar /usr/share/corina/corina-${version}.jar

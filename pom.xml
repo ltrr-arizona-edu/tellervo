@@ -1,249 +1,285 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>edu.cornell.dendro</groupId>
-  <artifactId>corina</artifactId>
-  <version>2.12.0-SNAPSHOT</version>
-  <name>Corina</name>
-  <description>Dendrochronological collection, curation and management software</description>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<!-- Metadata -->
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>edu.cornell.dendro</groupId>
+	<artifactId>corina</artifactId>
+	<version>2.12.0-SNAPSHOT</version>
+	<name>Corina</name>
+	<description>Dendrochronological collection, curation and management software</description>
 	<licenses>
 		<license>
-		    <name>The GNU General Public License, Version 3.0</name>
-      		<url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
-      		<distribution>repo</distribution>
+			<name>The GNU General Public License, Version 3.0</name>
+			<url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	<organization>
+		<name>Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern Dendrochronology</name>
+		<url>http://dendro.cornell.edu</url>
+	</organization>
 	<developers>
 		<developer>
 			<name>Peter Brewer</name>
 			<email>p.brewer@cornell.edu</email>
-			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern Dendrochronology</organization>
+			<roles>
+				<role>Lead Developer</role>
+			</roles>
+			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
+				Dendrochronology</organization>
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+		</developer>
+		<developer>
+			<name>Chris Dunham</name>
+			<organization>The Epison Group</organization>
+		</developer>
+		<developer>
+			<name>Dan Girshovich</name>
+			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
+				Dendrochronology</organization>
+			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+		</developer>
+		<developer>
+			<name>Aaron Hamid</name>
+		</developer>
+		<developer>
+			<name>Ken Harris</name>
+		</developer>
+		<developer>
+			<name>Drew Kalina</name>
+		</developer>
+		<developer>
+			<name>Rocky Li</name>
+			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
+				Dendrochronology</organization>
+			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+		</developer>
+		<developer>
+			<name>Lucas Madar</name>
+			<roles>
+				<role>Senior Developer</role>
+			</roles>
+			<organization>The Epison Group</organization>
 		</developer>
 		<developer>
 			<name>Daniel Murphy</name>
 			<email>daniel@dmurph.com</email>
-			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern Dendrochronology</organization>
+			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
+				Dendrochronology</organization>
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
 		</developer>
-		
+		<developer>
+			<name>Robert 'Mecki' Pohl</name>
+		</developer>
+		<developer>
+			<name>Kit Sturgeon</name>
+			<email>kit@episongroup.com</email>
+			<organization>The Epison Group</organization>
+		</developer>
 	</developers>
 	<scm>
-		<connection>scm:svn:svn+ssh://tridas.sf.net/svnroot/tridas/DendroLibrary/DendroFileIOGui</connection>
-		<developerConnection>scm:svn:svn+ssh://tridas.sf.net/svnroot/tridas/DendroLibrary/DendroFileIOGui</developerConnection>
-		<tag>trunk</tag>
-		<url>http://tridas.sf.net</url>
+		<connection>scm:svn:svn+ssh://dendro.cornell.edu/home/svn/corina/branches/dev</connection>
+		<developerConnection>scm:svn:svn+ssh://dendro.cornell.edu/home/svn/corina/branches/dev</developerConnection>
+		<url>http://dendro.cornell.edu/corina</url>
 	</scm>
-
 	<properties>
-		<version>${project.version}</version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	 <!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml
+	<!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml
 	 file contains the correct username and password for the repository server -->
 	<distributionManagement>
-	    <repository>
-	      <id>tridas-releases</id>
-	      <url>http://maven.tridas.org/repository/tridas-releases/</url>
-	    </repository>
-	    <snapshotRepository>
-	      <id>tridas-snapshots</id>
-	      <url>http://maven.tridas.org/repository/tridas-snapshots/</url>
-	    </snapshotRepository>
+		<repository>
+			<id>tridas-releases</id>
+			<url>http://maven.tridas.org/repository/tridas-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>tridas-snapshots</id>
+			<url>http://maven.tridas.org/repository/tridas-snapshots/</url>
+		</snapshotRepository>
 	</distributionManagement>
-	
-	
-  <dependencies>
-  	<dependency>
-		<groupId>org.tridas</groupId>
-		<artifactId>tridasjlib</artifactId>
-		<version>0.3-SNAPSHOT</version>
-		<type>jar</type>
-		<scope>compile</scope>
-	</dependency>
-    <dependency>
-    	<groupId>com.lowagie</groupId>
-    	<artifactId>itext</artifactId>
-    	<version>2.1.7</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    		<dependency>
+
+	<!-- Packages that this project depends upon-->
+	<dependencies>
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext</artifactId>
+			<version>2.1.7</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
-	</dependency>
-	<dependency>
-		<groupId>org.slf4j</groupId>
-		<artifactId>slf4j-log4j12</artifactId>
-		<version>1.6.1</version>
-		<type>jar</type>
-		<scope>compile</scope>
-	</dependency>
-    <dependency>
-    	<groupId>jdom</groupId>
-    	<artifactId>jdom</artifactId>
-    	<version>1.1</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-        <groupId>jpedal</groupId>
-        <artifactId>jpedal</artifactId>
-        <version>4.45-b-105</version>
-    </dependency>
-    <dependency>
-    	<groupId>com.l2fprod.common</groupId>
-    	<artifactId>l2fprod-common-buttonbar</artifactId>
-    	<version>6.9.1</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>com.l2fprod.common</groupId>
-    	<artifactId>l2fprod-common-fontchooser</artifactId>
-    	<version>6.9.1</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>uk.org.lidalia</groupId>
-    	<artifactId>sysout-over-slf4j</artifactId>
-    	<version>1.0.2</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>postgresql</groupId>
-    	<artifactId>pljava-public</artifactId>
-    	<version>1.0.0b4</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.apache.httpcomponents</groupId>
-    	<artifactId>httpclient</artifactId>
-    	<version>4.1.1</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.apache.httpcomponents</groupId>
-    	<artifactId>httpmime</artifactId>
-    	<version>4.1.1</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>com.kenai.nbpwr</groupId>
-    	<artifactId>com-sun-pdfview</artifactId>
-    	<version>1.0.5-201003191900</version>
-    	<type>nbm</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.swinglabs</groupId>
-    	<artifactId>swing-layout</artifactId>
-    	<version>1.0.3</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.netbeans.api</groupId>
-    	<artifactId>org-jdesktop-layout</artifactId>
-    	<version>RELEASE68</version>
-    	<type>pom</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>com.l2prod.common</groupId>
-    	<artifactId>l2fprod-common-sheet</artifactId>
-    	<version>6.9.1</version>
-    </dependency>
-    <dependency>
-    	<groupId>com.google.code</groupId>
-    	<artifactId>jsyntaxpane</artifactId>
-    	<version>0.9.5</version>
-    </dependency>
-    <!-- <dependency>
-    	<groupId>org.apache.james</groupId>
-    	<artifactId>apache-mime4j</artifactId>
-    	<version>0.6</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>-->
-    <dependency>
-    	<groupId>commons-lang</groupId>
-    	<artifactId>commons-lang</artifactId>
-    	<version>2.6</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>batik</groupId>
-    	<artifactId>batik-svggen</artifactId>
-    	<version>1.6-1</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.rxtx</groupId>
-    	<artifactId>rxtx</artifactId>
-    	<version>2.1.7</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.netbeans.api</groupId>
-    	<artifactId>org-netbeans-swing-outline</artifactId>
-    	<version>1.0</version>
-    </dependency>
-	<dependency>
-		<groupId>net.java.dev.jogl</groupId>
-		<artifactId>jogl</artifactId>
-		<version>1.1.1-rc6</version>
-	</dependency>
-	<dependency>
-      <groupId>gov.nasa.worldwind</groupId>
-      <artifactId>worldwind</artifactId>
-      <version>0.6.851</version>
-    </dependency>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>jpedal</groupId>
+			<artifactId>jpedal</artifactId>
+			<version>4.45-b-105</version>
+		</dependency>
+		<dependency>
+			<groupId>com.l2fprod.common</groupId>
+			<artifactId>l2fprod-common-buttonbar</artifactId>
+			<version>6.9.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.l2fprod.common</groupId>
+			<artifactId>l2fprod-common-fontchooser</artifactId>
+			<version>6.9.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.lidalia</groupId>
+			<artifactId>sysout-over-slf4j</artifactId>
+			<version>1.0.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>pljava-public</artifactId>
+			<version>1.0.0b4</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.1.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.1.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.kenai.nbpwr</groupId>
+			<artifactId>com-sun-pdfview</artifactId>
+			<version>1.0.5-201003191900</version>
+			<type>nbm</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.swinglabs</groupId>
+			<artifactId>swing-layout</artifactId>
+			<version>1.0.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.netbeans.api</groupId>
+			<artifactId>org-jdesktop-layout</artifactId>
+			<version>RELEASE68</version>
+			<type>pom</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.l2prod.common</groupId>
+			<artifactId>l2fprod-common-sheet</artifactId>
+			<version>6.9.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code</groupId>
+			<artifactId>jsyntaxpane</artifactId>
+			<version>0.9.5</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-svggen</artifactId>
+			<version>1.6-1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.rxtx</groupId>
+			<artifactId>rxtx</artifactId>
+			<version>2.1.7</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.netbeans.api</groupId>
+			<artifactId>org-netbeans-swing-outline</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.java.dev.jogl</groupId>
+			<artifactId>jogl</artifactId>
+			<version>1.1.1-rc6</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nasa.worldwind</groupId>
+			<artifactId>worldwind</artifactId>
+			<version>0.6.851</version>
+		</dependency>
+		<dependency>
+			<groupId>org.tridas</groupId>
+			<artifactId>dendrofileio</artifactId>
+			<version>0.1.5-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout</artifactId>
+			<version>3.7.4</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.dmurph.mvc</groupId>
+			<artifactId>java-simple-mvc</artifactId>
+			<version>1.4.0.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
 
-	<dependency>
-		<groupId>org.tridas</groupId>
-		<artifactId>dendrofileio</artifactId>
-		<version>0.1.5-SNAPSHOT</version>
-		<type>jar</type>
-		<scope>compile</scope>
-	</dependency>
-	<dependency>
-		<groupId>com.miglayout</groupId>
-		<artifactId>miglayout</artifactId>
-		<version>3.7.4</version>
-		<type>jar</type>
-		<scope>compile</scope>
-	</dependency>
-	<dependency>
-		<groupId>com.dmurph.mvc</groupId>
-		<artifactId>java-simple-mvc</artifactId>
-		<version>1.4.0.1</version>
-		<type>jar</type>
-		<scope>compile</scope>
-	</dependency>
-
-  </dependencies>
-  
-  
-  	<organization>
-		<name>Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern Dendrochronology</name>
-		<url>http://dendro.cornell.edu</url>
-	</organization>
-  
-  <build>
-  	<plugins>
-  			<!-- JAXB -->
+	<build>
+	
+		<!-- Create launch scripts for Linux builds with correct version number -->
+		<resources>
+		  <resource>
+	        <directory>Native/LinBuild</directory>
+	        <filtering>true</filtering>
+	      </resource>
+		</resources>
+	
+		<plugins>
+			<!-- JAXB -->
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
 				<artifactId>maven-jaxb2-plugin</artifactId>
@@ -273,11 +309,6 @@
 					<schemaDirectory>src/main/resources/schemas</schemaDirectory>
 					<bindingDirectory>src/main/resources/binding</bindingDirectory>
 					<generateDirectory>src/main/generated</generateDirectory>
-
-					
-					<!--
-					<strict>true</strict>
-					-->
 					<verbose>true</verbose>
 
 					<plugins>
@@ -290,131 +321,90 @@
 
 				</configuration>
 				<dependencies>
-
-				    <dependency>
+					<dependency>
 						<groupId>org.jvnet.jaxb2_commons</groupId>
 						<artifactId>jaxb2-basics-runtime</artifactId>
 						<version>0.6.1</version>
 					</dependency>
-
 					<dependency>
 						<groupId>org.jvnet.jaxb2_commons</groupId>
 						<artifactId>xjc-if-ins</artifactId>
 						<version>0.5.2</version>
 					</dependency>
-
 					<dependency>
 						<groupId>org.jvnet.jaxb2_commons</groupId>
 						<artifactId>jaxb2-basics-annotate</artifactId>
 						<version>0.6.1</version>
 					</dependency>
-
 					<dependency>
 						<groupId>org.tridas.schema</groupId>
 						<artifactId>tridasaandi</artifactId>
 						<version>1.0</version>
 					</dependency>
-
 					<dependency>
 						<groupId>org.tridas.schema</groupId>
 						<artifactId>tridas-annotations</artifactId>
 						<version>1.0</version>
 					</dependency>
-
 					<dependency>
 						<groupId>com.sun.tools.xjc</groupId>
 						<artifactId>collection-setter-injector</artifactId>
 						<version>0.1</version>
 					</dependency>
-					
 					<dependency>
 						<groupId>org.tridas</groupId>
 						<artifactId>tridasjlib</artifactId>
 						<version>0.3-SNAPSHOT</version>
 					</dependency>
-					
-
-
-
-					<!--
-						<dependency> <groupId>org.no0ne</groupId>
-						<artifactId>coll-prop</artifactId> <version>0.1-SNAPSHOT</version>
-						</dependency>
-					-->
-
-					<!--
-						<dependency>
-						<groupId>org.jvnet.jaxb2_commons.plugin.annotate</groupId>
-						<artifactId>jaxb2-annotate</artifactId>
-						<version>0.5.1-SNAPSHOT</version> </dependency>
-					-->
-
-					<!--
-						<dependency> <groupId>org.jvnet.annox</groupId>
-						<artifactId>annox-plugin</artifactId>
-						<version>0.4.3-SNAPSHOT</version> </dependency>
-					-->
 				</dependencies>
 			</plugin>
-			
-			<!-- Nasty kludge fix to delete the duplicate TRiDaS and GML 
-			classes produced by JAXB when creating the Corina classes. -->
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<configuration>
-						<task>
-                            <echo>Removing extra JAXB generated classes...</echo>
-                        </task>
-							<tasks>
-								<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath"/>
-								<delete dir="src/main/generated/net"/>
-								<delete dir="src/main/generated/org"/>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-				   <dependency>
-				     <groupId>ant-contrib</groupId>
-				     <artifactId>ant-contrib</artifactId>
-				     <version>1.0b3</version>
-				     <exclusions>
-				       <exclusion>
-				         <groupId>ant</groupId>
-				         <artifactId>ant</artifactId>
-				       </exclusion>
-				     </exclusions>
-				   </dependency>
-				   <dependency>
-				     <groupId>ant</groupId>
-				     <artifactId>ant-nodeps</artifactId>
-				     <version>1.6.5</version>
-				   </dependency>
-				</dependencies>
-			</plugin>
-			
+
+
+
 			<!-- Reconfigure "clean" in Maven not to delete target directory -->
 			<plugin>
-			    <artifactId>maven-clean-plugin</artifactId>
-			    <configuration>
-			        <excludeDefaultDirectories>true</excludeDefaultDirectories>
-			        <filesets>
-			            <fileset>
-			                <directory>target</directory>
-			                <includes>
-			                    <include>**/*</include>
-			                </includes>
-			            </fileset>
-			        </filesets>
-			    </configuration>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<excludeDefaultDirectories>true</excludeDefaultDirectories>
+					<filesets>
+						<fileset>
+							<directory>target</directory>
+							<includes>
+								<include>**/*</include>
+							</includes>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-javadoc-plugin</artifactId>
+			  <version>2.7</version>
+			  <executions>
+			    <execution>
+			      <id>attach-javadocs</id>
+			      <goals>
+			        <goal>jar</goal>
+			      </goals>
+			    </execution>
+			  </executions>
 			</plugin>
 			
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-source-plugin</artifactId>
+			  <version>2.1.2</version>
+			  <executions>
+			    <execution>
+			      <id>attach-sources</id>
+			      <goals>
+			        <goal>jar</goal>
+			      </goals>
+			    </execution>
+			  </executions>
+			</plugin>
+
 			<!-- Compile application -->
 			<plugin>
 				<inherited>true</inherited>
@@ -433,8 +423,8 @@
 					<debug>true</debug>
 				</configuration>
 			</plugin>
-			
-			
+
+
 			<!--  Use shade to create a single jar containing all the dependencies -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -468,49 +458,157 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<!--  Create a Windows native executable 
+			      n.b. this creates a raw executable, not an installer. To
+			      create the installer you will need to run the NSIS script 
+			      outside of Maven -->
+			<plugin>
+				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+				<artifactId>launch4j-plugin</artifactId>
+				<version>1.5.0.0</version>
+				<executions>
+					<execution>
+						<id>launch4j</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<dontWrapJar>false</dontWrapJar>
+							<headerType>gui</headerType>
+							<outfile>${project.build.directory}/${project.build.finalName}.exe</outfile>
+							<jar>${project.build.directory}/${project.build.finalName}.jar</jar>
+							<icon>src/main/resources/Icons/corina-application.ico</icon>
+							<errTitle>TRiCYCLE</errTitle>
+							<jre>
+								<minVersion>1.6.0</minVersion>
+							</jre>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			
+			<!-- Create a MacOSX native executable 
+			     n.b. on Linux and Windows this will create an *app.zip file
+			          on MacOSX it will also create a DMG file. Also not that
+			          on Linux and Windows computers the App will not include
+			          the Apple integration portions therefore they will have
+			          an ugly menu bar. -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>osxappbundle-maven-plugin</artifactId>
+				<version>1.0-alpha-2</version>
+				<configuration>
+					<additionalResources>
+						<fileSet>
+							<directory>src/main/resources/Licenses</directory>
+							<includes>
+								<include>license.txt</include>
+							</includes>
+						</fileSet>
+						<fileSet>
+							<directory>Documentation/</directory>
+							<includes>
+								<include>corina-manual.pdf</include>
+							</includes>
+						</fileSet>
+					</additionalResources>
+					<bundleName>Corina</bundleName>
+					<zipFile>${project.build.directory}/${project.build.finalName}-app.zip</zipFile>
+					<mainClass>edu.cornell.dendro.gui.Startup</mainClass>
+					<jvmVersion>1.6+</jvmVersion>
+					<iconFile>src/main/resources/Icons/corina-application.icns</iconFile>
+					<javaApplicationStub>Native/MacBuild/JavaApplicationStub</javaApplicationStub>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>bundle</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			
+			<!-- Nasty kludge fixes.  Tasks that Maven can 
+			not perform are	done by running Ant instead-->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<!-- Delete the duplicate TRiDaS and GML 
+					classes produced by JAXB when creating the Corina classes. -->
+					<execution>
+						<id>DeleteDuplicateJAXBClasses</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<task>
+								<echo>Removing extra JAXB generated classes...</echo>
+							</task>
+							<tasks>
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
+									classpathref="maven.plugin.classpath"/>
+								<delete dir="src/main/generated/net"/>
+								<delete dir="src/main/generated/org"/>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<!-- Insert native libraries into MacOSX App file -->
+					<execution>
+						<id>AddLibsToMacOSXApp</id>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
+									classpathref="maven.plugin.classpath"/>
+								<zip destfile="${project.build.directory}/${project.build.finalName}-app.zip" update="true">
+									<zipfileset dir="Native/Libraries/" includes="*.jnilib" prefix="${project.build.finalName}/Corina.app"/>
+									<zipfileset dir="Native/Libraries/" includes="*.so" prefix="${project.build.finalName}/Corina.app"/>
+								</zip>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>					
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>1.0b3</version>
+						<exclusions>
+							<exclusion>
+								<groupId>ant</groupId>
+								<artifactId>ant</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>ant-nodeps</artifactId>
+						<version>1.6.5</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
 		</plugins>
-		
 
-		
-  </build>
-  
-  	<repositories>
 
-		<!-- Codehaus -->
-		<!-- <repository>
-			<id>codehaus</id>
-			<name>Codehaus repository</name>
-			<url>http://repository.codehaus.org</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</snapshots>
-		</repository>-->
 
-<!-- 
-		<repository>
-			<id>java.net</id>
-			<url>http://download.java.net/maven/1</url>
-			<layout>legacy</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</snapshots>
-		</repository>-->
-		
+	</build>
+
+	<repositories>
+
 		<repository>
 			<id>repo1.maven.org</id>
 			<url>http://repo1.maven.org/maven2/</url>
 			<snapshots>
 				<enabled>true</enabled>
-				
+
 			</snapshots>
 		</repository>
 
@@ -524,7 +622,7 @@
 				<checksumPolicy>fail</checksumPolicy>
 			</snapshots>
 		</repository>
-		
+
 		<repository>
 			<id>maven.geomajas.org</id>
 			<name>Geomajas repository for JPedal</name>
@@ -536,36 +634,36 @@
 				<checksumPolicy>fail</checksumPolicy>
 			</snapshots>
 		</repository>
-  
-     <repository>
-         <id>geotk</id>
-         <name>Geotk</name>
-         <url>http://maven.geotoolkit.org/</url>
-     </repository>
-     
-	    <repository>
-	      <id>tridas-releases</id>
-	      <name>TRiDaS Maven Releases Repository</name>
-	      <url>http://maven.tridas.org/repository/tridas-releases/</url>
-	      <releases>
-	        <enabled>true</enabled>
-	      </releases>
-	      <snapshots>
-	        <enabled>false</enabled>
-	      </snapshots>
-	    </repository>
-	    <repository>
-	      <id>tridas-snapshots</id>
-	      <name>TRiDaS Maven Snapshots Repository</name>
-	      <url>http://maven.tridas.org/repository/tridas-snapshots/</url>
-	      <releases>
-	        <enabled>false</enabled>
-	      </releases>
-	      <snapshots>
-	        <enabled>true</enabled>
-	      </snapshots>
-	    </repository>
-     
+
+		<repository>
+			<id>geotk</id>
+			<name>Geotk</name>
+			<url>http://maven.geotoolkit.org/</url>
+		</repository>
+
+		<repository>
+			<id>tridas-releases</id>
+			<name>TRiDaS Maven Releases Repository</name>
+			<url>http://maven.tridas.org/repository/tridas-releases/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>tridas-snapshots</id>
+			<name>TRiDaS Maven Snapshots Repository</name>
+			<url>http://maven.tridas.org/repository/tridas-snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
 	</repositories>
 
 
@@ -586,6 +684,6 @@
 		</pluginRepository>
 
 	</pluginRepositories>
-  
+
 
 </project>
