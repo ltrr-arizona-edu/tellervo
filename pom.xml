@@ -323,6 +323,22 @@
 				</dependencies>
 			</plugin>
 			
+			<!-- Reconfigure "clean" in Maven not to delete target directory -->
+			<plugin>
+			    <artifactId>maven-clean-plugin</artifactId>
+			    <configuration>
+			        <excludeDefaultDirectories>true</excludeDefaultDirectories>
+			        <filesets>
+			            <fileset>
+			                <directory>target</directory>
+			                <includes>
+			                    <include>**/*</include>
+			                </includes>
+			            </fileset>
+			        </filesets>
+			    </configuration>
+			</plugin>
+			
 			<!-- Compile application -->
 			<plugin>
 				<inherited>true</inherited>
