@@ -253,6 +253,8 @@ public class Builder {
 			return new ImageIcon(url);
 		else
 			return getMissingIcon(size);
+		
+		
 	}	
 	
 	
@@ -346,9 +348,11 @@ public class Builder {
 		String sizeStr = size + "x" + size;
 		String resourceurl = RESOURCE_PACKAGE_PREFIX + ICONS + "/" + sizeStr + "/missingicon.png";
 		java.net.URL url = cl.getResource(resourceurl);
+		
 		if (url != null)
 			return new ImageIcon(url);
 		else {
+			log.error("Error loading icon: "+resourceurl);
 			IllegalStateException ise = new IllegalStateException("Can't load missing icon icon!");
 			new Bug(ise);
 			throw ise;
