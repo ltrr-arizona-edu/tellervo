@@ -55,7 +55,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Web service", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panel, "cell 0 0,grow");
-		panel.setLayout(new MigLayout("", "[100px:100px:100px][grow]", "[][15px][]"));
+		panel.setLayout(new MigLayout("", "[100px:100px:100px][grow]", "[][15px][][]"));
 		
 		chkDisableWS = new JCheckBox("Disable web service integration and work offline");
 		panel.add(chkDisableWS, "cell 1 0");

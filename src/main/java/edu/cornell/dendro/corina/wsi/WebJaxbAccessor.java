@@ -329,7 +329,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 	/** A https scheme that allows for self-signed https certs */
 	private static Scheme selfSignableHTTPSScheme = null;
 	
-	private static void setSelfSignableHTTPSScheme(HttpClient client) {
+	static void setSelfSignableHTTPSScheme(HttpClient client) {
 		if(selfSignableHTTPSScheme == null) {
 			try {
 				// make a new SSL context

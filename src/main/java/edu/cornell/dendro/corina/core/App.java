@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tridas.io.TridasIO;
 
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 
@@ -29,6 +30,8 @@ import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ListUtil;
+import edu.cornell.dendro.corina.wsi.ResourceEvent;
+import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
 
 /**
@@ -79,7 +82,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     
     
     if (meter != null) {
-      meter.setMaximum(9);
+      meter.setMaximum(10);
       meter.setProgress(2);
     }
 
@@ -119,8 +122,13 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     CorinaWsiAccessor.loadCorinaContext();
     if (meter != null)
     	meter.setProgress(5);
-        
     
+    // load coordinate reference systems
+    if(meter !=null){
+    	meter.setNote(I18n.getText("login.loadingCRS"));
+    	meter.setProgress(6);
+    	TridasIO.initializeCRS();
+    }
     
     // only do this if we can log in now...
     if (splash != null) {
@@ -144,7 +152,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	}
 
     	if (meter != null) {
-        	meter.setProgress(6);
+        	meter.setProgress(7);
         }
     }
     
@@ -160,9 +168,13 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
         if(!DEBUGGING)
         	dictionary.query();
     }
+       
+    
     if (meter != null) {
     	meter.setProgress(7);
     }
+    
+
 
     // Get the current users details from the dictionary
     isAdmin=false;
@@ -201,12 +213,14 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
         }
     }
     if (meter != null) {
-    	meter.setProgress(8);
+    	meter.setProgress(9);
     }
 
+
+    
     // we're done here!
 	if (meter != null)
-		meter.setProgress(9);
+		meter.setProgress(10);
 
     initialized = true;   
     

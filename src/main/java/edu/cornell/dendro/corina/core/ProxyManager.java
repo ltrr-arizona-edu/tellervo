@@ -68,7 +68,7 @@ public class ProxyManager implements PrefsListener {
 			System.setProperty("http.proxyHost", host);
 			System.setProperty("http.proxyPort", App.prefs.getPref("corina.proxy.http_port", "80"));
 
-			System.out.println("PROXY: http: " + System.getProperty("http.proxyHost") + 
+			log.info("PROXY: http: " + System.getProperty("http.proxyHost") + 
 					":" + System.getProperty("http.proxyPort"));
 		} 
 		else {
@@ -80,7 +80,7 @@ public class ProxyManager implements PrefsListener {
 			System.setProperty("https.proxyHost", host);
 			System.setProperty("https.proxyPort", App.prefs.getPref("corina.proxy.https_port", "443"));
 
-			System.out.println("PROXY: https: " + System.getProperty("https.proxyHost") + 
+			log.info("PROXY: https: " + System.getProperty("https.proxyHost") + 
 					":" + System.getProperty("https.proxyPort"));
 		} 
 		else {

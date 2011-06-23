@@ -36,6 +36,7 @@ import edu.cornell.dendro.corina.prefs.panels.AbstractPreferencesPanel;
 import edu.cornell.dendro.corina.prefs.panels.StatsPrefsPanel;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.wsi.WSIServerDetails;
 
 public class PreferencesDialog extends JDialog {
 	
@@ -140,6 +141,16 @@ public class PreferencesDialog extends JDialog {
 						
 						if(networkPrefsPanel.hasWSURLChanged())
 						{
+							WSIServerDetails serverDetails = new WSIServerDetails();
+							
+							if(!serverDetails.isServerValid())
+							{
+								Alert.message("Unvalid Webservice URL", 
+								"The URL you have entered is not a valid Corina Webservice");
+								return;
+							}
+							
+							
 							int n = JOptionPane.showConfirmDialog(
 								    null,
 								    "You will need to restart Corina for the new web service URL to take effect.\n" +

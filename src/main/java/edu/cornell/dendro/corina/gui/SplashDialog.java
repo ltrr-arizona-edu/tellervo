@@ -65,7 +65,7 @@ public class SplashDialog extends JDialog implements ProgressMeter.ProgressListe
 		// make the progress pane
 		progressPanel = new Container();
 		progressPanel.setLayout(new GridLayout(2, 1));
-		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setHorizontalAlignment(SwingConstants.RIGHT);
 		progressPanel.add(label);
 		progressPanel.add(progress);
 		label.setVisible(true);

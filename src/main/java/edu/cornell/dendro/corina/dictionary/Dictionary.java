@@ -10,6 +10,9 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
@@ -23,7 +26,8 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceCacher;
 public class Dictionary extends CorinaResource {
 
 	public static final String DICTIONARY_REGISTERED = "DICTIONARY_DICTIONARY_REGISTERED";
-	
+	private final static Logger log = LoggerFactory.getLogger(Dictionary.class);
+
 	public Dictionary() {
 		super("dictionaries", CorinaRequestType.READ);
 		
@@ -52,8 +56,8 @@ public class Dictionary extends CorinaResource {
 
 			// Dictionary has more than one element per entry??
 			if(type.propOrder().length != 1) {
-				System.err.println("Ignoring dictionary " + dict.name() + 
-						" with " + type.propOrder().length + " properties.");
+				log.error("Ignoring dictionary "+ dict.name(), 
+						" with "+ type.propOrder().length + " properties.");
 				continue;
 			}
 			
@@ -64,13 +68,13 @@ public class Dictionary extends CorinaResource {
 			try {
 				method = o.getClass().getMethod(fieldAccessor, (Class<?>[]) null);
 			} catch (Exception ex) {
-				System.err.println("Dictionary " + dict.name() + "/" + fieldName + " is unreadable: " + ex.getMessage());
+				log.error("Dictionary " + dict.name() + "/" + fieldName + " is unreadable: " + ex.getMessage());
 				continue;
 			}
 
 			// dictionary isn't a list??
 			if(!method.getReturnType().isAssignableFrom(List.class)) {
-				System.err.println("Dictionary " + dict.name() + "/" + fieldName + " is not a list (??)");
+				log.error("Dictionary " + dict.name() + "/" + fieldName + " is not a list (??)");
 				continue;				
 			}
 
@@ -79,13 +83,13 @@ public class Dictionary extends CorinaResource {
 				// we know this cast will work
 				dictionaryList = (List<?>) method.invoke(o, (Object[]) null);
 			} catch (Exception ex) {
-				System.err.println("Dictionary " + dict.name() + "/" + fieldName + " error: " + ex.getMessage());
+				log.error("Dictionary " + dict.name() + "/" + fieldName + " error: " + ex.getMessage());
 				continue;
 			}
 			
 			// empty dictionary?
 			if(dictionaryList == null) {
-				System.err.println("Dictionary " + dict.name() + "/" + fieldName + " is null");
+				log.error("Dictionary " + dict.name() + "/" + fieldName + " is null");
 				continue;				
 			}
 			
@@ -110,7 +114,7 @@ public class Dictionary extends CorinaResource {
 		list.clear();
 		list.addAll(dictionary);
 		
-		System.out.println("Registering dictionary: " + dictionaryName);
+		log.info("Registering dictionary: " + dictionaryName);
 		DictionaryRegisteredEvent event = new DictionaryRegisteredEvent(dictionaryName, list);
 		event.dispatch();
 	}
