@@ -26,23 +26,37 @@ The IDE of choice of the main Corina developers is Eclipse (\url{http://www.ecli
 
 We have successfully developed Corina on Mac, Windows and Linux computers over the years.  The methods for setting up are almost identical.  
 
-The first step is to install eclipse, sun-java6-jdk and subversion.  These are all readily available from their respective websites.  On Ubuntu they can be install from the command line easily as follows:
+The first step is to install Eclipse, Sun Java6 JDK, Subversion and Maven.  These are all readily available from their respective websites.  On Ubuntu they can be install from the command line easily as follows:
 
-\code{sudo apt-get install eclipse subversion sun-java6-jdk}
+\code{sudo apt-get install eclipse subversion sun-java6-jdk maven2}
 
 Once installed, you can then launch Eclipse.  To access the Corina source code you will need to install the Subversive plugin to Eclipse.  As of Eclipse v3.5 this can be done by going to \menutwo{Help}{Install new software}.  Select the main Update site in the `Work with' box, then locate the `Subversive SVN Team Provider' plugin under `Collaboration'.  If you are using an earlier version of Eclipse you may need to add a specific Subversive update site.  See the Subversive website (\url{http://www.eclipse.org/subversive/}) for more details.  Once installed you will need to restart Eclipse.
 
+Next you will need to install the m2eclipse Maven plugin to Eclipse.  This can also be installed by going to \menutwo{Help}{Install new software}, however, you will also need to add the Maven update site as this plugin is not currently available in the main Eclipse repository.  You can do this by click the `Add' button and using the URL \url{http://m2eclipse.sonatype.org/sites/m2e}.  Once again you will need to restart Eclipse before continuing.
+
 Next you need to get the Corina source code.  Go to File \menutwo{New}{Project}, then in the dialog select \menutwo{SVN}{Project from SVN}.  There are two methods of accessing the Corina repository: anonymously, in which case you will have read only access; or with a username provided by the Corina development team.  Anonymous users will need to add a repository in the form: \url{http://dendro.cornell.edu/svn/corina/} and full users will need to use \url{svn+ssh://dendro.cornell.edu/home/svn/corina/}.
 
-Once the project has downloaded to your workspace, you may need to set the compliance level.  This can be done by going to \menuthree{Project}{Properties}{Java compiler} and choosing compliance level of 6.0.  Corina uses a handful of Java 6 specific functions, particularly with regards JAXB, so will not run successfully with Java 5.
+Once the project has downloaded to your workspace, you may need to set the compliance level.  This can be done by going to \menuthree{Project}{Properties}{Java compiler} and choosing compliance level of 6.0.  Corina uses a handful of Java 6 specific functions, particularly with regards JAXB, so will not run successfully with Java 5.  
 
 To launch Corina, you will need to \menutwo{Run}{Run Java application}.  Create a new run configuration with the main class set to `edu.cornell.dendro.corina.gui.Startup'.     
 
 
 \section{Dependencies}
 \index{Dependencies!Desktop client}
+\label{txt:DependenciesDesktopClient}
+As of June 2011, Maven is used to build Corina rather than the original Ant.  One of the main benefits of Maven is that it handles dependencies much more dynamically than Ant.  This has become more of an issue as the Corina project as grown, as it is now dependent on over 80 different open source libraries.  
 
-All the libraries that Corina depends upon are included in the source code and the Ant build script should handle compilation.  For the record, Corina currently depends upon the libraries listed in table \ref{tbl:desktopDependencies}.  The table also specifies the licenses that these libraries are made available under.
+In an ideal world, any libraries that your code is dependent on should be available in central Maven repositories and downloaded and installed seamlessly as part of the build process.  Maven should also handle transient dependencies (i.e. dependencies or dependencies) automatically.  Therefore if a developer knows he needs the functions within a particular library, he simply needs to supply the details of this library without having to worry about the other libraries that this new library is in turn dependent on.  Maven also manages versions much more efficiently.  If a library is dependent on a particular version of another library this is specified within the Maven build mechanism.  This means it is much easier to keep dependencies up-to-date without having to worry about the cascading issues that upgrades often have.  In short, Maven is intended to save developers from `JAR hell'.
+
+In practice, life is not necessarily that simple.  Although Maven assists developers in many ways, it also has its own particular quirks and annoyances.  The main problem is how to handle the situation when the dependencies you need are not available in central repositories.  To solve this you either need to install these jars into your local Maven repository, or make them available in a 3rd party Maven repository.  For the ease of developement we have set up a Maven repository as part of the TRiDaS project which can be browsed at \url{http://maven.tridas.org/}.  This repository is already configured within the Corina project so assuming this repository is still alive, then your Corina project should automatically build.  If not, then you will need to install the few non-standard jars.  These jars will continue to be maintained in the Corina SVN repository and can be installed as follows:
+
+\begin{enumerate}
+ \item On your command line navigate to the Libraries folder of your Corina source code
+ \item On Linux and Mac you can then simply run the MavenInstallCommands script
+ \item On Windows you will need to manually run the commands located in this file
+\end{enumerate}
+
+For the record, Corina currently depends upon the libraries listed in table \ref{tbl:desktopDependencies}.  The table also specifies the licenses that these libraries are made available under.
 
 
 \begin{table*}[htbp]
@@ -69,7 +83,7 @@ Jsyntaxpane & Apache 2.0\\
 L2prod-common-shared &Apache 2.0\\
 L2prod-common-sheet &Apache 2.0\\
 l2fprod common buttonbar &Apache 2.0\\
-itext &GAPL\\
+iText &GAPL\\
 PDFRenderer & LGPL\\
 DendroFileIO & Apache 2.0\\
 Java Simple MVC & MIT\\
@@ -90,7 +104,7 @@ Netbeans Swing Outline & GPLv2\\
 \bottomrule
 \end{tabular*}
 \captionsetup{width=0.6\textwidth}
-\caption{Libraries that Corina depends upon and the licenses under which they are used.}
+\caption{Corina's primary and major first order dependencies along with the licenses under which they are used.  Note there are a total of 82 libraries upon which Corina draws.}
 \label{tbl:desktopDependencies}
 \end{table*}
 
@@ -117,23 +131,6 @@ Subversive & Eclipse Public License - v1.0\\
 \caption{Additional tools/libraries typically used in the development of Corina.}
 \end{table*}
 
-\subsection{Adding new dependencies}
-\index{Dependencies!Adding new}
-The procedure for adding new dependencies to Corina is unfortunately a little long winded and obscure.  First a new property should be added to the Ant build.xml file but the actual property of this tag is set in a companion build.properties file.  The idea behind this was so that it would be easier for newer versions of the dependencies to be swapped in. A typical property tag looks like this:
-
-\code{<property name="my-new-dependency.jar" value="(set this in build.properties!)"/>}
-
-Next, this property can then be used to update the compile classpath.  Simply add a pathelement to the compile.classpath entry like this:
-
-\code{<pathelement location="\$\{my-new-dependency.jar\}"/>}
-
-Next, in the create\_run\_jar target, you need to update the classpath of the jar that will be created.  Add the name of your new dependency to the Rsrc-Class-Path attribute in the manifest section.  Finally, you also need to make sure your new dependency is added to the final Corina jar that is produced.  Add an entry to the list of zipfileset entries like this:
-
-\code{<zipfileset dir="Libraries" includes="my-new-dependency.jar"/>}
-
-This procedure is a long way from elegant and can cause confusing error messages if you make a typo.  It may make sense to migrate the build system from Ant to Maven, although this of course will add different issues.  For the moment, Ant is working so ``if it ain't broke don't fix it''.
-
-
 \section{Code layout}
 \index{Developing!Code layout}
 Corina has been actively developed since 2000, so has seen contributions by many different developers.  Coding practices have also changed in this time so inevitably there are some inconsistencies with how the source code is organized.  For instance, the most recent interfaces have been implemented using the Model-View-Controller (MVC) architecture whereas earlier interfaces contain both domain and user logic in single monolithic classes.  
@@ -142,7 +139,7 @@ Perhaps the most important inconsistency to understand is due to the transistion
 
 \section{Multimedia resources}
 \index{Icons}
-Corina includes infrastructure for multimedia resources such as icons, images and sounds within the package `edu.cornell.dendro.corina\_resources'.  The most extensive is the Icons subpackage which contains many icons at various sizes ranging from $16\times16$ to $512\times512$ as PNG format files.  The icons are accessed via the static Builder class.  This has various accessor functions which take the filename and the size required, and return the icon itself or a URI of the icon from within the Jar.
+Corina includes infrastructure for multimedia resources such as icons, images and sounds within the Maven resource folder `src/main/resources'.  The most extensive is the Icons folder which contains many icons at various sizes ranging from $16\times16$ to $512\times512$ as PNG format files.  The icons are accessed via the static Builder class.  This has various accessor functions which take the filename and the size required, and return the icon itself or a URI of the icon from within the Jar.
 
 \section{Translations}
 \index{Translations}
@@ -165,40 +162,42 @@ There are currently minimal translations for UK English, German, French, Dutch, 
 \section{Build script}
 \label{txt:buildScript}
 \index{Developing!Build script}
-\index{Ant build script}
 \index{Packaging}
-Corina is built using an Ant build.xml script.  Earlier versions used Java WebStart technology to deploy Corina, but this has since been replaced with native installers for the major platforms due to various complications arising from the more advanced features being added to Corina.  The build targets of interest are as follows:
+Corina is built using Maven and is controlled through the pom.xml file stored in the base of the Corina source code.  Earlier versions of Corina used Ant but managing the increasing number of dependencies as Corina has grown become too onerous (see section \ref{txt:DependenciesDesktopClient} for more details). 
+
+Earlier version of Corina used Java WebStart technology to deploy, but this has since been replaced with native installers for the major platforms due to various complications largely associated with Native libraries required for 3D graphics and serial port hardware. 
+
+We use the standard Maven `life cycle' for building, packaging and deploying Corina.  The standard method for doing this in Eclipse is by right clicking on the pom.xml file and selecting \menutwo{Run as}{Maven package} etc.  The main `phases' are as follows:
 
 \begin{description*}
- \item[create\_run\_jar] -- This target is used by most other targets to produce an executable jar.  It uses jar-in-jar-loader to create a single jar containing on the dependencies along with the class-path and manifest to make them accessible.  It should not be necessary to run this target directly as you should be using one or more of the native targets below.
- \item[native-win] -- This creates a native Windows executable using Launch4J.  Note that this creates the exe application file not an installer, so does not include the native libraries required to run the 3D graphics and serial port features of Corina.  See section \ref{txt:windowsInstaller} for instructions on using NSIS to do this.
- \item[native-mac] -- This creates native Mac app file.  An application stub is included so this can be run on any development platform, not just MacOSX.
- \item[native-mac-dmg] -- This transforms the .app file from native-mac into a disk image that Mac users are familiar with.  Unfortunately this requires the utility `hdiutil' which is not part of Apple's open source Darwin code, so can only be run on MacOSX development platforms.
- \item[native-linux]  -- This creates a native Ubuntu .deb package with native libraries.  It includes a .desktop specification so will add menu entries on most modern distributions. It is quite a simple package so is likely to work with other distributions and perhaps even RPM systems, with the use of Alien.  These have not been tested though.
- \item[native-all-platforms] -- This is a convenience target that runs native-win, native-mac and native-linux.
- \item[native-clean] -- Cleans the target folder ready for a new build.
- \item[server-package] -- Creates a native Ubuntu deb package for the Corina server.  See section \ref{txt:serverPackage} for more details.
- \item[buildschema] -- Runs JAXB to autogenerate the Corina classes based upon the Corina webservice schema.  See section \ref{txt:jaxb} for more details. 
- \item[cleanschema] -- Deletes the autogenerated JAXB classes.
+ \item[package] - This compiles Corina and builds a single executable JAR containing all dependencies (thanks to the maven-shade-plugin) along with native Windows, MacOSX and Linux packages.  These are all placed in the `target' folder.
+ \item[clean] - This deletes any previously compiled classes and packages in the target folder.  It should only be necessary to run this occassionally if Maven has got a bit confused.
+ \item[install] - This installs the compiled jar in your local Maven repository.
+ \item[deploy] - This uploads the compiled jar into the maven.tridas.org repository.  Note that you will need to either run this phase from the command line or by setting up a customer run configuration in Eclipse.
 \end{description*}
 
-To run any of these targets simple right click on the build.xml file at the root of your project and select \menutwo{Run as}{Ant build\ldots} and select the target(s) that you require.
 
-Note that depending on the platform you are using, different settings are required to be passed to Ant, e.g. the location of the Launch4J executable.  These settings are included in properties files in the base of the project called Linux.properties, MacOSX.properties and Windows.properties respectively.  They should already contain the settings required to make the build work on each of these platforms, but if not, this is where they are located.
 
-\section{Windows installer}
+\subsection{Windows installer}
 \label{txt:windowsInstaller}
 \index{Packaging!Windows}
-The Ant build script generates the Windows executable for the Corina application.  Windows users, however, expect an installer that will create menu entries and add uninstall options to the control panel.  An installer is also required to install the user manual and the native libraries required for the serial-port and 3D graphics features in Corina.  
+Maven generates the Windows executable for the Corina application through the 'launch4j' plugin.  Windows users, however, expect an installer that will create menu entries and add uninstall options to the control panel.  An installer is also required to install the user manual and the native libraries required for the serial-port and 3D graphics features in Corina.  
 
 The best open source tool for creating Windows installer scripts is NSIS (see \url{http://nsis.sourceforge.net}).  This is an extremely flexible scripting system that does all we need, although unfortunately it is only officially released for Windows development platforms.  It is possible to install on Linux/MacOSX but this requires a lot of hoop jumping.  
 
 Once installed NSIS can be run using the script `native/WinBuild/nsis.script.nsi'.
 
+\subsection{Mac package}
+The Maven osxappbundle plugin is able to produce both .app and .dmg files.  Unfortunately, the libraries for producing .dmg files are proprietary to Apple, as are the libraries that integrate applications into the standard Apple look and feel (e.g. menus at top of screen, integrated quit, preferences and help etc).  When Maven is run on Windows or Linux, it is therefore only able to produce a slightly degraded .app file, and not .dmg.  We therefore recommend producing the Mac release on OSX, either natively or under a virtual machine.
 
-\section{Native libraries}
 
-Although Corina is written in Java, it requires a number of native libraries to make use of OpenGL 3D graphics capabilities and to access the serial port of the computer.  This libraries are different for Windows compared to POSIX systems like Linux and MacOSX.  The correct libraries must be installed to OS specific locations therefore they must be included as part of native installers.
+\subsection{Linux Deb package}
+
+\subsection{Linux RPM package}
+
+\subsection{Native libraries}
+
+Although Corina is written in Java, it requires a number of native libraries to make use of OpenGL 3D graphics capabilities and to access the serial port of the computer.  This libraries are different for Windows compared to POSIX systems like Linux and MacOSX.  The correct libraries must be installed to OS specific locations and not within the Corina jar.  They must therefore be included as part of each native installer.
 
 On Windows these libraries take the form of Dynamic Link Libraries (DLL) files which need to be installed in the same folder as the Corina executable:
 
@@ -230,8 +229,15 @@ Java Architecture for XML Binding (JAXB) is a technology that automatically maps
 
 JAXB is used by TridasJLib to create Java class representations of the TRiDaS data model.  It is also used directly in Corina to create classes for the Corina web service.  Although the Corina webservice is based heavily on TRiDaS (the two were developed in parallel), the Corina schema extends TRiDaS by including classes such as dictionaries and the `box' concept which are required for a lab data management application.  
 
-If changes are made to the Corina schema the JAXB classes must be regenerated.  This is done using the cleanschema and buildschema Ant targets.
+The Corina JAXB classes are automatically built by Maven using the 'maven-jaxb2-plugin' and placed within the `src/main/generated' folder.  Please note that any manual changes to these classes will automatically be overriden the next time Maven is run.  If you feel that changes are necessary to these classes then it is likely that one or more of the following needs modification:
 
+\begin{itemize*}
+ \item The Corina schema located in `src/main/resources/schemas'
+ \item The Corina JAXB bindings located in `src/main/resources/binding'
+ \item The specification for how JAXB is run located in the `pom.xml' file
+\end{itemize*}
+
+Please note that JAXB supports plugins and extensions for enhancing the classes that it produces.  One thing to note in the Maven pom.xml is a nasty workaround when running JAXB.  As the Corina schema depends on the GML and TRiDaS schemas, these classes are also built by JAXB.  These classes however are already provided by the DendroFileIO library.  It should be possible to use a feature called `episodes' to handle this but this seems buggy and causes issues.  For now, we use an antrun task to delete the duplicate classes immediately after they are produced.
 
 
 \section{Java version}
@@ -239,7 +245,7 @@ If changes are made to the Corina schema the JAXB classes must be regenerated.  
 \index{Java}
 Although we would like Corina to run on older versions of Java (specifically Java 5), there are a number of features of Java 6 such as JAXB that we really need.  This isn't really a problem on Linux and Windows as Java 6 has been around for a long time now, but it is a bit problematic for MacOSX users.  For reasons unknown Apple was extremely slow bringing Java 6 to MacOSX, only releasing it with 10.6 (Snow Leopard) several years after Windows and Linux.  Corina will therefore not run on older Mac machine.  This will gradually become less of an issue as machines age and ``Snow Leopard or later'' becomes less difficult for users to fulfill.  
 
-Corina has been developed against the Sun JDK.  Although Sun re-released much of its JDK under the GPL license there are still portions that are only available under  proprietary licenses due to various plugins being the copyright of third parties.  Although it is still distributed at no cost, it is not `free' under the terms required by the Free Software Foundation.  Corina can still legally be used with the Sun JDK even though it is regarded as proprietary software due to the `Major components' exception of the GPL license.  However, open source purists find this undesirable and so you may prefer to use open equivalents such as OpenJDK, IcedTea or Apache Harmony.   Basic tests have been performed using OpenJDK and it appears to work well, but a full assessment of the implications has not been carried out.  As Sun continues to open source the JDK, differences between it an OpenJDK will become less and the potential for issues reduced.
+Corina has been developed against the Sun JDK.  Although Sun re-released much of its JDK under the GPL license there are still portions that are only available under  proprietary licenses due to various plugins being the copyright of third parties.  Although it is still distributed at no cost, it is not `free' under the terms required by the Free Software Foundation.  Corina can still legally be used with the Sun JDK even though it is regarded as proprietary software due to the `Major components' exception of the GPL license.  However, open source purists find this undesirable and so you may prefer to use open equivalents such as OpenJDK, IcedTea or Apache Harmony.   Basic tests have been performed using OpenJDK and there are some aspects of the Corina code that still need attention.  As Sun continues to open source the JDK, differences between it an OpenJDK will become less and the potential for issues reduced.  We will continue to review the situation and will release an OpenJDK compatible version of Corina as soon as is practical.
 
 
 \section{Developing graphical interfaces}
@@ -250,7 +256,22 @@ Some interfaces were created using the graphical designed in Netbeans IDE.  Thes
 
 More recently the Google WindowBuilder Pro tool has been used for interface design.  This has the benefit of (usually) being able to parse existing code enabling the modification of existing dialogs.  WindowsBuilder does have its quirks though so make sure you keep up-to-date with new releases.
 
+\section{Making a new release}
+Making a new release should be a relatively quick and simply process, but there are still a few things to remember:
 
+\begin{itemize}
+ \item Make sure this documentation is up-to-date!  Use a {\LaTeX} editor to update and compile to PDF.
+ \item If this release relies upon a certain version of the Corina server, make sure you set this correctly in `/corina-desktop/src/main/java/edu/cornell/dendro/corina/core/App.java'.  This is important to ensure that users aren't working against an old version of the server which could have unexpected side-effects.
+ \item Increment the build version number in the pom.xml
+ \item Update the splash screen and background graphics.
+ \item Check the code in Eclipse and eliminate as many warnings as possible.
+ \item Make sure the developers metadata is correct in the pom.xml.  Add any new developers that have joined the project since the last release.
+ \item Go ahead and run Maven package, then build the Windows installer and MacOSX dmg packages.
+ \item TEST!
+ \item Deploy to maven.tridas.org using Maven.
+ \item Copy native packages to the \url{http://dendro.cornell.edu/corina} website .
+ \item Update the Corina website to include the new release.
+\end{itemize}
 
 
 \index{Developing|)}

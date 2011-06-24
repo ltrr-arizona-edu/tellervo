@@ -1,5 +1,6 @@
 package edu.cornell.dendro.corina.ui;
 
+import java.awt.Window;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -23,6 +24,14 @@ public class Alert {
 				      JOptionPane.ERROR_MESSAGE,
 				      treeIcon);
     }
+    
+    public static void error(Window parent, String title, String text) {
+    	JOptionPane.showMessageDialog(parent, 
+    				      text,
+    				      maybeTitle(title),
+    				      JOptionPane.ERROR_MESSAGE,
+    				      treeIcon);
+        }
 
     // extracted error-dialog code
     public static void message(String title, String text) {
@@ -31,6 +40,15 @@ public class Alert {
 				      maybeTitle(title),
 				      JOptionPane.INFORMATION_MESSAGE);
     }
+    
+    
+    public static void message(Window parent, String title, String text) {
+    	JOptionPane.showMessageDialog(parent, 
+    				      text,
+    				      maybeTitle(title),
+    				      JOptionPane.INFORMATION_MESSAGE);
+        }
+    
     /*
       uses of Alert.error():
       -- custom text (x1)
@@ -76,6 +94,6 @@ public class Alert {
     }
 
     // icon for dialogs
-    private final static Icon treeIcon = Builder.getIcon("treeicon.png", 64); // WAS: Tree-64x64.png
+    private final static Icon treeIcon = Builder.getIcon("corina-application.png", 64); // WAS: Tree-64x64.png
  
 }

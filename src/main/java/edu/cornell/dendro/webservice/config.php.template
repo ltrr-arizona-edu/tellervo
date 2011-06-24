@@ -37,7 +37,7 @@ $debugFlag = FALSE;
 $timingFlag = FALSE;
 
 // Version number to be displayed in output headers
-$wsversion = "0.2"; 
+$wsversion = "1.0.0"; 
 
 // Path to Corina XSD
 $corinaXSD = $baseFolder."schemas/corina.xsd";
@@ -81,7 +81,7 @@ $cdbCredentialsFile = "/usr/share/corina-server/corina_server_credentials";
 // Array of known clients and the minimum version that can be used when accessing this webservice
 $corinaClientIdentifiers = array( 
 								array("name" => "Corina WSI", 	
-										"minVersion" => "2.11", 						
+										"minVersion" => "2.12", 						
 									 ), 
 								array("name" => "Firefox", 		
 										"minVersion" => "1.0", 

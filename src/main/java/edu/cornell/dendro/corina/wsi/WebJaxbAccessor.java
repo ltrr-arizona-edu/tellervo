@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -86,8 +87,14 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 		
 		try {
 			String path = App.prefs.getPref("corina.webservice.url", "invalid-url!");
-			
 			url = new URI(path.trim());
+			
+			// If no protocol is provided assume http
+			if(url.getScheme()==null)
+			{
+				url = new URI("http://"+path.trim());
+			}
+			
 		} catch (URISyntaxException e) {
 			new Bug(e);
 		}		
@@ -222,7 +229,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			
 			req.setHeader("User-Agent", "Corina WSI " + Build.VERSION + 
 					" (" + clientModuleVersion + "; ts " + Build.COMPLETE_VERSION_NUMBER +")");
-
+			
 			// are we using https? should we allow self-signed certs?
 			if(url.getScheme().equals("https"))
 				setSelfSignableHTTPSScheme(client);
@@ -252,7 +259,11 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			//inspector.verifyDocument();
 			
 			return inObject;
-		} catch (HttpResponseException hre) {
+		} catch (UnknownHostException e)
+		{
+			throw new IOException("The URL of the server you have specified is unknown");
+		}
+		catch (HttpResponseException hre) {
 			BugReport bugs = new BugReport(hre);
 			
 			bugs.addDocument("sent.xml", outDocument);
@@ -261,7 +272,13 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 
 			throw new IOException("The server returned a protocol error " + hre.getStatusCode() + 
 					": " + hre.getLocalizedMessage());
-		} catch (ResponseProcessingException rspe) {
+		} catch (IllegalStateException ex)
+		{
+			throw new IOException("Webservice URL must be a full URL qualified with a communications protocol.\n" +
+				"Corina currently supports http:// and https://.");	
+		}
+		
+		catch (ResponseProcessingException rspe) {
 			Throwable cause = rspe.getCause();
 			BugReport bugs = new BugReport(cause);
 			Document invalidDoc = rspe.getNonvalidatingDocument();

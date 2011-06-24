@@ -32,10 +32,12 @@ import javax.swing.border.EmptyBorder;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.wsi.ResourceEvent;
 import edu.cornell.dendro.corina.wsi.ResourceEventListener;
+import edu.cornell.dendro.corina.wsi.WSIServerDetails;
 import edu.cornell.dendro.corina.wsi.corina.WebInterfaceCode;
 import edu.cornell.dendro.corina.wsi.corina.WebInterfaceException;
 import edu.cornell.dendro.corina.wsi.corina.resources.AuthenticateResource;
@@ -524,6 +526,16 @@ public class LoginDialog extends JDialog {
 			return;
 		}
 		
+		// Check that the server is valid
+		WSIServerDetails serverDetails = new WSIServerDetails();
+		if(!serverDetails.isServerValid())
+		{
+			Alert.error(this, "Incompatible Server", serverDetails.getErrorMessage());
+			return;
+					
+		}
+		
+		
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		// first off, we're busy now.
 		enableDialogButtons(false);
@@ -548,7 +560,7 @@ public class LoginDialog extends JDialog {
 						
 						// failure. what type?
 						JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
-								"Error: " + e.toString(),
+								e.getLocalizedMessage(),
 							    "Could not authenticate",
 							    JOptionPane.ERROR_MESSAGE);
 						enableDialogButtons(true);

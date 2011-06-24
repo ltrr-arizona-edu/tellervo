@@ -145,7 +145,7 @@ public class PreferencesDialog extends JDialog {
 							
 							if(!serverDetails.isServerValid())
 							{
-								Alert.message("Unvalid Webservice URL", 
+								Alert.error("Unvalid Webservice URL", 
 								"The URL you have entered is not a valid Corina Webservice");
 								return;
 							}

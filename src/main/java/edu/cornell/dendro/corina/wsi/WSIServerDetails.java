@@ -1,17 +1,12 @@
 package edu.cornell.dendro.corina.wsi;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -39,18 +34,21 @@ public class WSIServerDetails {
 	public enum WSIServerStatus
 	{
 		MALFORMED_URL,
-		VALID,
 		URL_NOT_RESPONDING,
 		URL_NOT_CORINA_WS,
-		NOT_CHECKED;
+		NOT_CHECKED,
+		TOO_OLD,
+		STATUS_ERROR,
+		VALID;
 		
 	}
 	
 	private static final Logger log = LoggerFactory.getLogger(WSIServerDetails.class);
-	private String majorversion = "";
-	private String minorversion = "";
+	private Integer majorversion = null;
+	private Integer minorversion = null;
 	private String revision = "";
 	private WSIServerStatus status = WSIServerStatus.NOT_CHECKED;
+	private String errMessage= null;
 	
 	public WSIServerDetails()
 	{
@@ -66,7 +64,6 @@ public class WSIServerDetails {
 	{
 	    
 		URI                url; 
-	    URLConnection      urlConn; 
 	    BufferedReader    dis = null;
 	    DefaultHttpClient client = new DefaultHttpClient();
 
@@ -98,7 +95,7 @@ public class WSIServerDetails {
 				      if(s.contains("<wsVersion>"))
 				      {
 				    	  String[] strparts = s.split("<[/]*wsVersion>");
-				    	  if(strparts.length>0) parseVersionStr(strparts[1]);
+				    	  if(strparts.length>0) parserThisServerVersion(strparts[1]);
 				    	  
 				    	  status = WSIServerStatus.VALID;
 				    	  return true;
@@ -107,68 +104,39 @@ public class WSIServerDetails {
 			}
 			else
 			{
-				log.error("Web service URL is invalid");
+				errMessage="Web service URL is invalid";
+				log.debug(errMessage);
 				status = WSIServerStatus.URL_NOT_RESPONDING;
 				return false;
 			}
 			
 
 	    } catch (ClientProtocolException e) {
-			log.error("Web service URL is invalid");
+	    	errMessage="Web service URL is invalid";
+			log.debug(errMessage);
 			status = WSIServerStatus.URL_NOT_RESPONDING;
 			return false;
 		} catch (IOException e) {
-			log.error("Web service URL is invalid");
+			errMessage="Web service URL is invalid";
+			log.debug(errMessage);
 			status = WSIServerStatus.URL_NOT_RESPONDING;
 			return false;
 		} catch (URISyntaxException e) {
-			log.error("Web service URL is malformed");
+			errMessage="Web service URL is malformed";
+			log.debug(errMessage);
 			status = WSIServerStatus.MALFORMED_URL;
 			return false;
-		} catch (Exception e) {
-			log.error("Unable to obtain version information from server: " + e.getLocalizedMessage());
-			status = WSIServerStatus.URL_NOT_CORINA_WS;
-			return false;
-		}
-	
-			/*
-		    urlConn = url.openConnection(); 
-		    urlConn.setDoInput(true); 
-		    urlConn.setUseCaches(false);
-	
-
-		    dis = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-
-		    String s;
-		    
-		    while ((s = dis.readLine()) != null)
-		    { 
-		      if(s.contains("<wsVersion>"))
-		      {
-		    	  String[] strparts = s.split("<[/]*wsVersion>");
-		    	  if(strparts.length>0) parseVersionStr(strparts[0]);
-		    	  
-		    	  status = WSIServerStatus.VALID;
-		    	  return true;
-		      }
-		    } 
-	    
-	    
-		} catch (MalformedURLException e) {
-			log.error("Web service URL is malformed");
+		} catch (IllegalStateException e){
+			errMessage="Web service URL is malformed";
+			log.debug(errMessage);
 			status = WSIServerStatus.MALFORMED_URL;
-			return false;
-		} catch (IOException e) {
-			log.error("Web service URL is invalid");
-			status = WSIServerStatus.URL_NOT_RESPONDING;
-			return false;
-
+			return false;			
 		} catch (Exception e) {
-			log.error("Unable to obtain version information from server: " + e.getLocalizedMessage());
+			errMessage="Unable to obtain version information from server: " + e.getLocalizedMessage();
+			log.debug(errMessage);
 			status = WSIServerStatus.URL_NOT_CORINA_WS;
 			return false;
-		} */finally
-		{
+		} finally{
 			try {
 				if(dis!=null)
 				{
@@ -177,9 +145,9 @@ public class WSIServerDetails {
 			} catch (IOException e) { }
 		}
 	
-		status = WSIServerStatus.VALID;
+		status = WSIServerStatus.URL_NOT_CORINA_WS;
 
-		return true;
+		return false;
 	}
 	
 	/**
@@ -198,31 +166,47 @@ public class WSIServerDetails {
 	 * @param str
 	 * @throws Exception
 	 */
-	private void parseVersionStr(String str) throws Exception
+	private String[] parseVersionStr(String str) throws Exception
 	{
-		if(str==null) throw new Exception("Server version is null");
+		if(str==null) throw new Exception("Version information returned from server is null");
 		
-		if(str=="") throw new Exception("Server version is null");
+		if(str=="") throw new Exception("Version information returned from server is null");
 		
 		String[] versionparts = str.split("\\.");
 		
 		if(versionparts.length==0)
 		{
-			throw new Exception("Server version invalid");
+			throw new Exception("Version information returned from server is invalid");
 		}
 		
-		if(versionparts.length>=1)
+		return versionparts;
+
+	}
+	
+	
+	private void parserThisServerVersion(String str) throws Exception
+	{
+		String[] versionparts = parseVersionStr(str);
+		
+		try{
+			if(versionparts.length>=1)
+			{
+				majorversion = Integer.parseInt(versionparts[0]);
+			}
+			if(versionparts.length>=2)
+			{
+				minorversion = Integer.parseInt(versionparts[1]);
+			}
+			if(versionparts.length>=3)
+			{
+				revision = versionparts[2];
+			}
+		} catch (NumberFormatException e)
 		{
-			majorversion = versionparts[0];
+			throw new Exception("Server version is invalid");
 		}
-		if(versionparts.length>=2)
-		{
-			minorversion = versionparts[1];
-		}
-		if(versionparts.length>=3)
-		{
-			revision = versionparts[2];
-		}
+		
+		isServerValid();
 		
 	}
 	
@@ -245,7 +229,7 @@ public class WSIServerDetails {
 		}
 		if(!revision.equals(""))
 		{
-			str+="."+revision;
+			str+=" rev. "+revision;
 		}
 		
 		return str;
@@ -258,21 +242,92 @@ public class WSIServerDetails {
 	 * @return
 	 */
 	public Boolean isServerValid()
-	{
+	{		
+		
 		if(status==WSIServerStatus.VALID)
 		{
+			try {
+				String[] earliestServerVersion = parseVersionStr(App.earliestServerVersionSupported);
+				Integer earliestMajor = null;
+				Integer earliestMinor = null;
+				String earliestRevision = null;
+				
+				
+				if(earliestServerVersion.length>=1)
+				{
+					earliestMajor = Integer.parseInt(earliestServerVersion[0]);
+				}
+				if(earliestServerVersion.length>=2)
+				{
+					earliestMinor = Integer.parseInt(earliestServerVersion[1]);
+				}
+				if(earliestServerVersion.length>=3)
+				{
+					earliestRevision = earliestServerVersion[2];
+				}
+				
+				if(majorversion<earliestMajor)
+				{
+					setTooOldErrorMessage();
+					return false;
+				}
+				else
+				{
+					if(minorversion<earliestMinor)
+					{
+						setTooOldErrorMessage();
+						return false;
+					}
+					else
+					{
+						if(earliestRevision.compareTo(earliestRevision)<0)
+						{
+							setTooOldErrorMessage();
+							return false;
+						}
+						
+					}
+					
+				}
+				
+				
+				
+			}
+			catch (Exception e) {
+				errMessage = "Supported server versions not specified correctly in code";
+				log.debug(errMessage);
+				return false;
+			}
+			
+			
 			return true;
 		}
 		
 		return false;
 	}
 	
+	private void setTooOldErrorMessage()
+	{
+		errMessage = "The version of the Corina server ("+ getWSIVersion()+") that\n"+
+		"you are trying to connect to is too old for this client.\n"+
+		"The server needs to be version "+ App.earliestServerVersionSupported + " or later.";
+		log.debug(errMessage);
+		status = WSIServerStatus.TOO_OLD;
+	}
+	
+	public String getErrorMessage()
+	{
+		return errMessage;
+	}
+	
+	
+	
 	/**
 	 * Get the major version number for the server
 	 * 
 	 * @return
 	 */
-	public String getMajorVersion()
+	public Integer getMajorVersion()
 	{
 		return majorversion;
 	}
@@ -282,7 +337,7 @@ public class WSIServerDetails {
 	 * 
 	 * @return
 	 */
-	public String getMinorVersion()
+	public Integer getMinorVersion()
 	{
 		return minorversion;
 	}

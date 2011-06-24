@@ -37,7 +37,7 @@ public class AuthenticateResource extends CorinaResource {
 	 */
 	public AuthenticateResource(String username, String password, String nonce, String seq) {
 		super("authenticate", CorinaRequestType.SECURELOGIN, BadCredentialsBehavior.JUST_FAIL);
-			
+
 		// generate a random client nonce
 		byte[] randomBytes = new byte[10];
 		Random random = new Random();
@@ -60,6 +60,9 @@ public class AuthenticateResource extends CorinaResource {
 	 */
 	public AuthenticateResource() {
 		super("authenticate", CorinaRequestType.NONCE, BadCredentialsBehavior.JUST_FAIL);
+
+		
+		
 	}
 
 	/**
@@ -117,6 +120,7 @@ public class AuthenticateResource extends CorinaResource {
 		return;
 	}
 
+	
 	/* (non-Javadoc)
 	 * @see edu.cornell.dendro.corina.wsi.Resource#processQueryResult(java.lang.Object)
 	 */

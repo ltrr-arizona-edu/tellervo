@@ -130,7 +130,7 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 						
 					case FAILURE:
 						throw new ResourceException("Preprocessor returned generic failure");
-						
+												
 					case FAILURE_CANCELLED:
 						throw new UserCancelledException();
 						
@@ -193,7 +193,7 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 	 * 
 	 * @param object
 	 */
-	private void doQuerySucceeded(INTYPE object) {
+	protected void doQuerySucceeded(INTYPE object) {
 		try {
 			// Call our (potentially overridden) querySucceeded method
 			querySucceeded(object);
@@ -209,7 +209,7 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 	 * 
 	 * @param e the exception of failure!
 	 */
-	private void doQueryFailed(Exception e) {
+	protected void doQueryFailed(Exception e) {
 		try {
 			// Call our (potentially overridden) queryFailed method
 			queryFailed(e);

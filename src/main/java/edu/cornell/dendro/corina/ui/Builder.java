@@ -252,6 +252,7 @@ public class Builder {
 		if (url != null)
 			return new ImageIcon(url);
 		else
+			log.warn("Unabled to find icon "+name+".  Replacing with the 'missing icon' icon.");
 			return getMissingIcon(size);
 		
 		
