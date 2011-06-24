@@ -165,13 +165,13 @@ There are currently minimal translations for UK English, German, French, Dutch, 
 \index{Packaging}
 Corina is built using Maven and is controlled through the pom.xml file stored in the base of the Corina source code.  Earlier versions of Corina used Ant but managing the increasing number of dependencies as Corina has grown become too onerous (see section \ref{txt:DependenciesDesktopClient} for more details). 
 
-Earlier version of Corina used Java WebStart technology to deploy, but this has since been replaced with native installers for the major platforms due to various complications largely associated with Native libraries required for 3D graphics and serial port hardware. 
+Earlier version of Corina were deployed using Java WebStart technology primarily because this is platform independent and requires just a single click for a user to install.  However, this has since been replaced with native installers for the major platforms due to various complications largely associated with Native libraries required for 3D graphics and serial port hardware.  We have also found most users are more comfortable with the standard install procedures that they are used to on their operating systems.
 
-We use the standard Maven `life cycle' for building, packaging and deploying Corina.  The standard method for doing this in Eclipse is by right clicking on the pom.xml file and selecting \menutwo{Run as}{Maven package} etc.  The main `phases' are as follows:
+While you develop Maven should automatically build Corina for you in the background.  Specific build commands are only required as you approach a release.  We use the standard Maven `life cycle' for building, packaging and deploying Corina.  The method for doing this in Eclipse is by right clicking on the pom.xml file and selecting \menutwo{Run as}{Maven package} etc.  The main `phases' are as follows:
 
 \begin{description*}
+ \item[clean] - This deletes any previously compiled classes and packages in the target folder.  It should only be necessary to run this occassionally if Maven has got a bit confused.  If this is the case you may also need to force Eclipse to clean too by going to \menutwo{Project}{Clean...}
  \item[package] - This compiles Corina and builds a single executable JAR containing all dependencies (thanks to the maven-shade-plugin) along with native Windows, MacOSX and Linux packages.  These are all placed in the `target' folder.
- \item[clean] - This deletes any previously compiled classes and packages in the target folder.  It should only be necessary to run this occassionally if Maven has got a bit confused.
  \item[install] - This installs the compiled jar in your local Maven repository.
  \item[deploy] - This uploads the compiled jar into the maven.tridas.org repository.  Note that you will need to either run this phase from the command line or by setting up a customer run configuration in Eclipse.
 \end{description*}

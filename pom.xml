@@ -315,7 +315,6 @@
 
 					<schemaDirectory>src/main/resources/schemas</schemaDirectory>
 					<bindingDirectory>src/main/resources/binding</bindingDirectory>
-					
 					<generateDirectory>src/main/generated</generateDirectory>
 					<verbose>true</verbose>
 
@@ -481,7 +480,7 @@
 			      outside of Maven -->
 			<plugin>
 				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-				<artifactId>launch4j</artifactId>
+				<artifactId>launch4j-plugin</artifactId>
 				<version>1.5.0.0</version>
 				<executions>
 					<execution>
