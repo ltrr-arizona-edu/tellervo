@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.tridas.io.TridasIO;
 
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
+
 import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gui.Log4JViewer;
@@ -29,6 +30,8 @@ import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ListUtil;
+import edu.cornell.dendro.corina.wsi.ResourceEvent;
+import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
 
 /**
