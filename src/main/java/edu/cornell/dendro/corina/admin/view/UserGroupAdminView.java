@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Copyright (C) 2011 Peter Brewer.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contributors:
+ *     Dan Girshovich
+ *     Peter Brewer
+ ******************************************************************************/
 package edu.cornell.dendro.corina.admin.view;
 
 import java.awt.event.ActionEvent;
@@ -8,15 +28,15 @@ import java.awt.event.MouseListener;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableRowSorter;
 
+import net.miginfocom.swing.MigLayout;
+
 import com.dmurph.mvc.MVCEvent;
 
-import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.admin.control.AuthenticateEvent;
 import edu.cornell.dendro.corina.admin.control.DeleteUserEvent;
 import edu.cornell.dendro.corina.admin.control.DisplayUGAEvent;
 import edu.cornell.dendro.corina.admin.control.EditUserEvent;
 import edu.cornell.dendro.corina.admin.control.OkFinishEvent;
-import edu.cornell.dendro.corina.admin.control.ToggleDisabledAccountsEvent;
 import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModel;
 import edu.cornell.dendro.corina.admin.model.SecurityUserTableModel;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;

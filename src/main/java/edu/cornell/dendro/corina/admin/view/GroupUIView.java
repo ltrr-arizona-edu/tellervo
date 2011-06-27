@@ -1,32 +1,44 @@
+/*******************************************************************************
+ * Copyright (C) 2011 Dan Girshovich and Peter Brewer.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Contributors:
+ *     Dan Girshovich
+ *     Peter Brewer
+ ******************************************************************************/
 package edu.cornell.dendro.corina.admin.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.LayoutStyle;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.TableRowSorter;
 
-import edu.cornell.dendro.corina.admin.SetPasswordUI;
 import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModel;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
-import edu.cornell.dendro.corina.schema.WSISecurityUser;
-import edu.cornell.dendro.corina.schema.WSISecurityUser.MemberOf;
-import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityGroupEntityResource;
-import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
 
 
 
