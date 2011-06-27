@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.chart;
 
 import java.util.Comparator;
 

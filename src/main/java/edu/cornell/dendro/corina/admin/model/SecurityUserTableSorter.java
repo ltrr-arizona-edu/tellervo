@@ -30,6 +30,7 @@ import javax.swing.table.TableRowSorter;
 import edu.cornell.dendro.corina.gui.SortedHeaderArrowRenderer;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
+@SuppressWarnings("unchecked")
 public class SecurityUserTableSorter extends TableRowSorter implements MouseListener {
 	private SecurityUserTableModel model;
 	private JTable table;
@@ -122,7 +123,6 @@ public class SecurityUserTableSorter extends TableRowSorter implements MouseList
 			return model.getColumnValueForUser(usr, column);
 		}
 		
-		@SuppressWarnings("unchecked")
 		public int compare(WSISecurityUser e1, WSISecurityUser e2) {
 			Object o1 = getValue(e1);
 			Object o2 = getValue(e2);

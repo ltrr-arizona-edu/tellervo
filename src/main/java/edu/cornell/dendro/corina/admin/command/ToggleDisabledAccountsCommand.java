@@ -31,10 +31,11 @@ import edu.cornell.dendro.corina.admin.model.SecurityUserTableModel;
 
 public class ToggleDisabledAccountsCommand implements ICommand {
 
-        public void execute(MVCEvent argEvent) {
+        @SuppressWarnings("unchecked")
+		public void execute(MVCEvent argEvent) {
         	ToggleDisabledAccountsEvent event = (ToggleDisabledAccountsEvent) argEvent;
         	boolean show = event.show;
-        	JTable table = event.table;
+        	//JTable table = event.table;
         	SecurityUserTableModel usersModel = event.model.getUsersModel();
         	TableRowSorter<SecurityUserTableModel> usersSorter = event.model.getUsersSorter(usersModel, null); 
         	if(show){

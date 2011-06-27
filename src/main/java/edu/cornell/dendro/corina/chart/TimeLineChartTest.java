@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.chart;
 
 import java.awt.Color;
 import java.awt.GradientPaint;
@@ -104,10 +104,7 @@ public class TimeLineChartTest extends ApplicationFrame {
 				// Fatal error interpreting file
 
 			}
-			
-			// Extract the TridasProject
-			TridasTridas container = reader.getTridasContainer();
-			
+						
 			
 			TridasProject p = reader.getProjects()[0];
 			this.setTitle(p.getTitle());

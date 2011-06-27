@@ -70,6 +70,7 @@ public String getColumnName(int col) {
 
   // used so Integer columns get rendered right-aligned.
   // TODO: can i do this for other classes/columns? if not, why not?
+  @SuppressWarnings("unchecked")
   @Override
 public Class getColumnClass(int col) {
     switch (col) {
