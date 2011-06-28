@@ -242,10 +242,10 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     }
 
     if (meter != null) {
+    	meter.setProgress(10);
+    	meter.setNote(I18n.getText("login.initJOGL"));
     	JOGLWrapper jogl = new JOGLWrapper();
     	jogl.init();
-    	
-    	meter.setProgress(10);
     }
     
     // we're done here!

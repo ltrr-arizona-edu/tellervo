@@ -34,32 +34,53 @@
 		<developer>
 			<name>Chris Dunham</name>
 			<organization>The Epison Group</organization>
+			<roles>
+				<role>Inactive developer</role>
+			</roles>
 		</developer>
 		<developer>
 			<name>Dan Girshovich</name>
 			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
 				Dendrochronology</organization>
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+			<roles>
+				<role>Student developer</role>
+			</roles>				
 		</developer>
 		<developer>
 			<name>Aaron Hamid</name>
+			<email>aaron@incandescentsoftware.com</email>
+			<organization>Incandescent Software LLC</organization>
+			<organizationUrl>http://www.incandescentsoftware.com/</organizationUrl>
+			<roles>
+				<role>Inactive developer</role>
+			</roles>
 		</developer>
 		<developer>
 			<name>Ken Harris</name>
+			<roles>
+				<role>Inactive developer</role>
+			</roles>			
 		</developer>
 		<developer>
 			<name>Drew Kalina</name>
+			<roles>
+				<role>Inactive developer</role>
+			</roles>			
 		</developer>
 		<developer>
 			<name>Rocky Li</name>
 			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
 				Dendrochronology</organization>
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+			<roles>
+				<role>Student developer</role>
+			</roles>			
 		</developer>
 		<developer>
 			<name>Lucas Madar</name>
 			<roles>
-				<role>Senior Developer</role>
+				<role>Inactive developer</role>
 			</roles>
 			<organization>The Epison Group</organization>
 		</developer>
@@ -69,14 +90,23 @@
 			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
 				Dendrochronology</organization>
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+			<roles>
+				<role>Student developer</role>
+			</roles>				
 		</developer>
 		<developer>
 			<name>Robert 'Mecki' Pohl</name>
+			<roles>
+				<role>Inactive developer</role>
+			</roles>	
 		</developer>
 		<developer>
 			<name>Kit Sturgeon</name>
 			<email>kit@episongroup.com</email>
 			<organization>The Epison Group</organization>
+			<roles>
+				<role>Consultant</role>
+			</roles>				
 		</developer>
 	</developers>
 	<scm>
