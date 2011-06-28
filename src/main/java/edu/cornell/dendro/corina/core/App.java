@@ -50,6 +50,7 @@ import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceEvent;
 import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
+import fr.iscpif.jogl.JOGLWrapper;
 
 /**
  * Contextual state of the app; holds references to all "subsystems".
@@ -106,7 +107,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     
     
     if (meter != null) {
-      meter.setMaximum(10);
+      meter.setMaximum(11);
       meter.setProgress(2);
     }
 
@@ -240,11 +241,16 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	meter.setProgress(9);
     }
 
-
+    if (meter != null) {
+    	JOGLWrapper jogl = new JOGLWrapper();
+    	jogl.init();
+    	
+    	meter.setProgress(10);
+    }
     
     // we're done here!
 	if (meter != null)
-		meter.setProgress(10);
+		meter.setProgress(11);
 
     initialized = true;   
     
