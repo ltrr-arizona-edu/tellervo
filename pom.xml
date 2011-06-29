@@ -139,6 +139,23 @@
 			<artifactId>worldwindjava</artifactId>
 			<version>0.6.874.15796</version>			
 		</dependency>
+		    
+    <!-- Unknown version taken from the WWJ  -->
+    <dependency>
+      <groupId>org.osgeo</groupId>
+      <artifactId>gdal</artifactId>
+      <version>0.1.unknown</version>
+    </dependency>
+    
+    <!-- Wrapper for JOGL native libs -->
+	<dependency>
+	  <groupId>fr.iscpif</groupId>
+	  <artifactId>jogl</artifactId>
+	  <version>1.0-SNAPSHOT</version>
+	</dependency>
+		
+		
+		
 		<dependency>
 			<groupId>com.lowagie</groupId>
 			<artifactId>itext</artifactId>
@@ -226,13 +243,6 @@
 			<artifactId>swing-layout</artifactId>
 			<version>1.0.3</version>
 			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.netbeans.api</groupId>
-			<artifactId>org-jdesktop-layout</artifactId>
-			<version>RELEASE68</version>
-			<type>pom</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -645,6 +655,15 @@
 	<repositories>
 
 		<repository>
+		  <id>maven.iscpif.fr</id>
+		  <url>http://maven.iscpif.fr/snapshots</url>
+		</repository>
+		<repository>
+		  <id>thirdparty.maven.iscpif.fr</id>
+		  <url>http://maven.iscpif.fr/thirdparty/</url>
+		</repository>
+
+		<repository>
 			<id>repo1.maven.org</id>
 			<url>http://repo1.maven.org/maven2/</url>
 			<snapshots>
@@ -691,6 +710,17 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		    <repository>
+      <id>m2-copy</id>
+      <name>m2-copy</name>
+      <url>http://maven.tridas.org/repository/m2-copy/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
 		
 		<repository>
 			<id>maven.geomajas.org</id>
@@ -709,8 +739,25 @@
 
 
 	<pluginRepositories>
-
-		<!-- JAXB related -->
+		
+		<pluginRepository>
+			<id>tridas-releases</id>
+			<name>TRiDaS Maven Releases Repository</name>
+			<url>http://maven.tridas.org/repository/tridas-releases/</url>
+		</pluginRepository>
+		
+		<pluginRepository>
+			<id>tridas-snapshots</id>
+			<name>TRiDaS Maven Snapshots Repository</name>
+			<url>http://maven.tridas.org/repository/tridas-snapshots/</url>
+		</pluginRepository>
+		
+		<pluginRepository>
+		      <id>m2-copy</id>
+		      <name>m2-copy</name>
+		      <url>http://maven.tridas.org/repository/m2-copy/</url>
+		</pluginRepository>		
+		
 		<pluginRepository>
 			<id>maven2-repository.dev.java.net</id>
 			<name>Java.net Maven 2 Repository</name>
