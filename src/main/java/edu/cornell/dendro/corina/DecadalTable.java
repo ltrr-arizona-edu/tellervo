@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2011 Peter Brewer.
+ * Copyright (C) 2004-2011 Peter Brewer.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * Contributors:
+ *     Aaron Hamid
+ *     Lucas Madar
  *     Peter Brewer
  ******************************************************************************/
 package edu.cornell.dendro.corina;

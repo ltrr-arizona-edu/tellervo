@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2003-2011 Ken Harris and Peter Brewer.
+ * Copyright (C) 2002-2011 Ken Harris and Peter Brewer.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
  * 
  * Contributors:
  *     Ken Harris - initial implementation
+ *     Lucas Madar 
  *     Peter Brewer
  ******************************************************************************/
 package edu.cornell.dendro.corina;

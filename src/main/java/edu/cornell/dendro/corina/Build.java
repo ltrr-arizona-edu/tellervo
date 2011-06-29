@@ -22,12 +22,6 @@ package edu.cornell.dendro.corina;
 
 import java.io.*;
 
-/**
-   The build timestamp.
-
-   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
-   @version $Id$
-*/
 public class Build {
     // don't instantiate me
     private Build() {

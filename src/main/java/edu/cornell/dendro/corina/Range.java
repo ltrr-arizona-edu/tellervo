@@ -16,6 +16,8 @@
  * 
  * Contributors:
  *     Ken Harris - initial implementation
+ *     Aaron Hamid 
+ *     Lucas Madar
  *     Peter Brewer
  ******************************************************************************/
 package edu.cornell.dendro.corina;
