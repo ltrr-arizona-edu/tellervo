@@ -653,7 +653,7 @@
 	</build>
 
 	<repositories>
-
+<!-- 
 		<repository>
 		  <id>maven.iscpif.fr</id>
 		  <url>http://maven.iscpif.fr/snapshots</url>
@@ -687,7 +687,7 @@
 			<name>Geotk</name>
 			<url>http://maven.geotoolkit.org/</url>
 		</repository>
-
+-->
 		<repository>
 			<id>tridas-releases</id>
 			<name>TRiDaS Maven Releases Repository</name>
@@ -710,6 +710,7 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<!-- 
 		    <repository>
       <id>m2-copy</id>
       <name>m2-copy</name>
@@ -733,10 +734,10 @@
 				<checksumPolicy>fail</checksumPolicy>
 			</snapshots>
 		</repository>
-
+-->
 	</repositories>
 
-
+	
 
 	<pluginRepositories>
 		
@@ -752,11 +753,11 @@
 			<url>http://maven.tridas.org/repository/tridas-snapshots/</url>
 		</pluginRepository>
 		
-		<pluginRepository>
+		<!-- <pluginRepository>
 		      <id>m2-copy</id>
 		      <name>m2-copy</name>
 		      <url>http://maven.tridas.org/repository/m2-copy/</url>
-		</pluginRepository>		
+		</pluginRepository>	
 		
 		<pluginRepository>
 			<id>maven2-repository.dev.java.net</id>
@@ -768,7 +769,7 @@
 			<id>maven-repository.dev.java.net</id>
 			<name>Java.net Maven 1 Repository (legacy)</name>
 			<url>http://download.java.net/maven/1</url>
-		</pluginRepository>
+		</pluginRepository>-->
 
 	</pluginRepositories>
 
