@@ -147,7 +147,7 @@ public class ImagePanel extends JPanel
 	public static void main(String [] args)
 	throws Exception
 	{
-		BufferedImage image = javax.imageio.ImageIO.read( new java.io.File("Images/splash2.png") );
+		BufferedImage image = javax.imageio.ImageIO.read( new java.io.File("Images/splash3.png") );
 
 		ImagePanel north = new ImagePanel(image, ImagePanel.ACTUAL);
 		north.setImageAlignmentY(1.0f);

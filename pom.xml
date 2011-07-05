@@ -567,7 +567,7 @@
 					</additionalResources>
 					<bundleName>Corina</bundleName>
 					<zipFile>${project.build.directory}/${project.build.finalName}-app.zip</zipFile>
-					<mainClass>edu.cornell.dendro.gui.Startup</mainClass>
+					<mainClass>edu.cornell.dendro.corina.gui.Startup</mainClass>
 					<jvmVersion>1.6+</jvmVersion>
 					<iconFile>src/main/resources/Icons/corina-application.icns</iconFile>
 					<javaApplicationStub>Native/MacBuild/JavaApplicationStub</javaApplicationStub>
