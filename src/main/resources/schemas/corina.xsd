@@ -705,8 +705,17 @@
 		% SECURITY GROUP
 		%%%%%%%%%%%%%% -->
 	
-	<xs:element name="securityGroup" >
+	<xs:element name="securityGroup">		
 		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="members" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
 			<xs:attribute name="id" type="xs:token" use="optional"/>
 			<xs:attribute name="name" type="xs:string" use="optional"/>
 			<xs:attribute name="description" type="xs:string" use="optional"/>
