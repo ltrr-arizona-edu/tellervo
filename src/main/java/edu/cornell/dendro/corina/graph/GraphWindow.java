@@ -43,20 +43,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,15 +59,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.batik.svggen.SVGGraphics2D;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.cross.Cross;
-import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.FileDialog;
 import edu.cornell.dendro.corina.gui.SaveableDocument;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
@@ -320,7 +306,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		return PAGE_EXISTS;
 	}
 
-	public String toSVG() {
+	/*public String toSVG() {
 		try {
 			// (the next 3 steps taken from
 			// http://xml.apache.org/batik/svggen.html)
@@ -350,12 +336,12 @@ public class GraphWindow extends XFrame implements SampleListener,
 			new Bug(ioe);
 			return null; // can't happen
 		}
-	}
+	}*/
 
 	// copy this graph to the clipboard as SVG -- is this really valuable? does
 	// it work?
 	@SuppressWarnings("unused")
-	private void copyToClipboard() {
+	/*private void copyToClipboard() {
 		final String glue = toSVG();
 
 		// copy = svg to clipboard
@@ -403,7 +389,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 		} catch (ClassNotFoundException cnfe) {
 			System.out.println("cnfe!"); // !!!
 		}
-	}
+	}*/
 
 	// drop target
 	private DropTargetListener dtl;

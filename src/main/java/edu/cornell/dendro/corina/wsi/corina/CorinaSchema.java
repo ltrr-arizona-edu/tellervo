@@ -67,7 +67,9 @@ public class CorinaSchema {
 	 * @return
 	 */
 	private static Schema loadCorinaSchema() {
-		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		//SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+
 		try {
 			return factory.newSchema(getSchemaSources());
 		} catch (SAXException e) {
@@ -146,3 +148,4 @@ public class CorinaSchema {
     	return VALIDATE_SCHEMAS;
     }
 }
+
