@@ -23,6 +23,8 @@ package edu.cornell.dendro.corina.core;
 import java.io.File;
 import java.util.List;
 
+import javax.media.opengl.GLException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tridas.io.TridasIO;
@@ -37,6 +39,7 @@ import edu.cornell.dendro.corina.gui.LoginSplash;
 import edu.cornell.dendro.corina.gui.ProgressMeter;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.logging.Logging;
+import edu.cornell.dendro.corina.nativelib.NativeLibWrapper;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.PreferencesDialog;
 import edu.cornell.dendro.corina.prefs.Prefs;
@@ -50,7 +53,6 @@ import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.ResourceEvent;
 import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
-import fr.iscpif.jogl.JOGLWrapper;
 
 /**
  * Contextual state of the app; holds references to all "subsystems".
@@ -107,12 +109,30 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     
     
     if (meter != null) {
-      meter.setMaximum(11);
-      meter.setProgress(2);
+      meter.setMaximum(10);
+      meter.setProgress(0);
     }
 
+    if (meter != null) {
+    	meter.setNote(I18n.getText("login.initJOGL"));
+    	meter.setProgress(1);
+    	NativeLibWrapper natives = new NativeLibWrapper();
+    	try {
+			natives.init();
+		} catch (GLException e) {
+			log.error(e.getLocalizedMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			log.error(e.getLocalizedMessage());
+			e.printStackTrace();
+		}
+    }
+    
+    
+    
     // load properties -- messagedialog here is UGLY!
     if (meter != null) {
+    	meter.setProgress(2);
       meter.setNote(I18n.getText("login.initPreferences"));
     }
     prefs = new Prefs();
@@ -123,41 +143,31 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	runWizard();
     }
     
-    if (meter != null) {
-      meter.setProgress(3);
-    }
-    /*try {
-      //Prefs.init();
-    } catch (IOException ioe) {
-      JOptionPane.showMessageDialog(null,
-          "While trying to load preferences:\n" + ioe.getMessage(),
-          "Corina: Error Loading Preferences", JOptionPane.ERROR_MESSAGE);
-    }*/
     
     // set up our proxies before we try to do anything online
-    if (meter != null)
+    if (meter != null){
+    	meter.setProgress(3);
     	meter.setNote(I18n.getText("login.setupProxy"));
+    }
     setProxies(new ProxyManager());
-    if (meter != null) 
-    	meter.setProgress(4);
-    
+        
     // load our JAXB xml binding context
     if (meter != null)
+    	meter.setProgress(4);
     	meter.setNote(I18n.getText("login.bindingSchemas"));
     CorinaWsiAccessor.loadCorinaContext();
-    if (meter != null)
-    	meter.setProgress(5);
-    
+       
     // load coordinate reference systems
     if(meter !=null){
+    	meter.setProgress(5);
     	meter.setNote(I18n.getText("login.loadingCRS"));
-    	meter.setProgress(6);
     	TridasIO.initializeCRS();
     }
     
     // only do this if we can log in now...
     if (splash != null) {
         if (meter != null) {
+        	meter.setProgress(6);
         	meter.setNote(I18n.getText("login.loggingIn"));
         }
         
@@ -176,12 +186,10 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     		// we default to not being logged in...
     	}
 
-    	if (meter != null) {
-        	meter.setProgress(7);
-        }
     }
     
     if (meter != null) {
+    	meter.setProgress(7);
     	meter.setNote(I18n.getText("login.initDictionary"));
     }
     dictionary = new Dictionary();
@@ -196,7 +204,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
        
     
     if (meter != null) {
-    	meter.setProgress(7);
+    	meter.setProgress(8);
     }
     
 
@@ -226,6 +234,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     
     // Cache the TRiDaS objects 
     if (meter != null) {
+    	meter.setProgress(9);
     	meter.setNote(I18n.getText("login.initObjectList"));
     }
     tridasObjects = new TridasObjectList();
@@ -237,20 +246,15 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
         	meter.setNote(I18n.getText("login.updateObjectList"));
         }
     }
-    if (meter != null) {
-    	meter.setProgress(9);
-    }
-
-    if (meter != null) {
-    	meter.setProgress(10);
-    	meter.setNote(I18n.getText("login.initJOGL"));
-    	JOGLWrapper jogl = new JOGLWrapper();
-    	jogl.init();
-    }
     
     // we're done here!
-	if (meter != null)
-		meter.setProgress(11);
+    if (meter != null) {
+    	meter.setProgress(10);
+    	meter.setNote("");
+    }
+
+
+
 
     initialized = true;   
     
