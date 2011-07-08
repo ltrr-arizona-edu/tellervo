@@ -4,28 +4,32 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.l2fprod.common.swing.ComponentFactory;
 
+/**
+ * Editor for enabling easier editing of strings in metadata browser
+ * 
+ * @author pwb48
+ *
+ */
 public class MemoEditor extends AbstractPropertyEditor {
 
-	private final static Logger log = LoggerFactory.getLogger(MemoEditor.class);
 
 	private String theString;
 	private JTextField textField;
 	private JButton btnEdit;
 	private JButton btnDelete;
+	private MemoEditorDialog dialog;
 	
 	public MemoEditor()
 	{
@@ -54,35 +58,22 @@ public class MemoEditor extends AbstractPropertyEditor {
 		
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				MemoEditorDialog dialog = new MemoEditorDialog(SwingUtilities.getWindowAncestor(editor), theString);
-								
-				// cancelled...
-				if(!dialog.hasResults())return;
-				
-	
-				setValue(dialog.getString());
-
+				launchEditDialog();
 			}
 		});
 		
 
-		
 		textField.addKeyListener(new KeyListener(){
 
 			@Override
 			public void keyPressed(KeyEvent arg0) {
-				
-				// TODO Auto-generated method stub
+	
 				int id = arg0.getKeyCode();
-				if(id == KeyEvent.VK_ENTER)
+				if(id == KeyEvent.VK_ENTER || id == KeyEvent.VK_TAB)
 				{
-
-					
 					String oldValue = theString;
 					theString = textField.getText();
 					firePropertyChange(oldValue, theString);
-
 				}
 			}
 
@@ -91,6 +82,39 @@ public class MemoEditor extends AbstractPropertyEditor {
 			@Override
 			public void keyTyped(KeyEvent arg0) { }
 
+		});
+		
+		textField.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent event) {
+				if(event.getClickCount()>=2)
+				{
+					
+					if(dialog==null)
+					{
+						launchEditDialog();
+					}
+					else
+					{
+						dialog.setVisible(false);
+						dialog = null;
+					}
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {	}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) { }
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {	}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) { }
+			
 		});
 
 	}
@@ -112,5 +136,13 @@ public class MemoEditor extends AbstractPropertyEditor {
 	
 	private void setToNull() {
 		setValue(null);
+	}
+	
+	private void launchEditDialog()
+	{
+		dialog = new MemoEditorDialog(editor, theString);
+		if(!dialog.hasResults())return;
+		setValue(dialog.getString());
+		dialog = null;		
 	}
 }

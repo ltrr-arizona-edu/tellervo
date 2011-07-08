@@ -1,23 +1,25 @@
 package edu.cornell.dendro.corina.tridasv2.ui;
 
-import java.awt.Window;
-import java.awt.Dialog;
-import java.awt.Frame;
-
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
-import edu.cornell.dendro.corina.ui.Builder;
-import edu.cornell.dendro.corina.util.Center;
+import javax.swing.ScrollPaneConstants;
 
 import net.miginfocom.swing.MigLayout;
+import edu.cornell.dendro.corina.ui.Builder;
 
+/**
+ * Dialog for easier editing of long string values in metadata
+ * 
+ * @author pwb48
+ *
+ */
 public class MemoEditorDialog extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
@@ -26,17 +28,15 @@ public class MemoEditorDialog extends JPanel {
 	private Boolean hasResults = false;
 	private JTextArea textArea;
 	
-	public MemoEditorDialog(Window parent, String str) 
+	public MemoEditorDialog(Component parent, String str) 
 	{
-		// construct a new dialog!
-		if (parent instanceof Frame || parent == null)
-			dialog = new JDialog((Frame) parent, "Memo", true);
-		else
-			dialog = new JDialog((Dialog) parent, "Memo", true);
 
-		//dialog.setIconImage(Builder.getImage("Preferences16.gif"));
+		dialog = new JDialog();
+		dialog.setTitle("Memo");
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
+		dialog.setModal(true);
+		dialog.setUndecorated(true);
+		
 		dialog.setContentPane(this);
 		
 		
@@ -45,12 +45,16 @@ public class MemoEditorDialog extends JPanel {
 		
 		
 		
-		this.setLayout(new MigLayout("", "[446px]", "[236px][37px]"));
+		this.setLayout(new MigLayout("", "[446px,grow,fill]", "[236px,grow,fill][37px]"));
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		add(scrollPane, "cell 0 0,grow");
 		
 		textArea = new JTextArea();
+		textArea.setLineWrap(true);
+		scrollPane.setViewportView(textArea);
 		textArea.setText(theString);
-		
-		add(textArea, "cell 0 0,grow");
 		
 		JPanel panel = new JPanel();
 		add(panel, "cell 0 1,alignx right,aligny top");
@@ -84,9 +88,10 @@ public class MemoEditorDialog extends JPanel {
 			}			
 		});
 		
-		dialog.pack();
-
-		Center.center(dialog);
+		dialog.setBounds(parent.getLocationOnScreen().x, 
+				parent.getLocationOnScreen().y, 
+				parent.getWidth(), 
+				200);
 		dialog.setVisible(true);
 	}
 	

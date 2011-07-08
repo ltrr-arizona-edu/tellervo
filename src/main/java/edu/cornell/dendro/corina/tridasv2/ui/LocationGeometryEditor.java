@@ -28,7 +28,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import org.tridas.schema.TridasLocationGeometry;
 
@@ -101,7 +100,7 @@ public class LocationGeometryEditor extends AbstractPropertyEditor {
 		LocationGeometry dialog = new LocationGeometry();
 		
 		// show the dialog...
-		dialog.showDialog(SwingUtilities.getWindowAncestor(editor), geometry);
+		dialog.showDialog(editor, geometry);
 		
 		// cancelled...
 		if(!dialog.hasResults())

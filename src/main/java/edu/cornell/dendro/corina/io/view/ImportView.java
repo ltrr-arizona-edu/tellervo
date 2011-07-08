@@ -542,7 +542,13 @@ public class ImportView extends JFrame{
 				
 				//TODO Check if there are outstanding entities that need fixing 
 				// and warn
-
+				TridasRepresentationTreeModel treeModel = model.getTreeModel();
+				
+				DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+				for (int i = 0; i < root.getChildCount(); i++)
+				{
+					
+				}
 
 				dispose();
 			}
@@ -1181,60 +1187,18 @@ public class ImportView extends JFrame{
 				
 		if(enabled) 
 		{
-			
-			// First warn users and get confirmation if the user hadn't saved previous changes
-			/*if(model.getSelectedRow().isDirty())
-			{
-				if(isUserOkWithLoosingAnyChanges())
-				{
-					model.getSelectedRow().revertChanges();
-				}	
-				else
-				{
-					return;
-				}
-			}*/	
-			
 			// Remove any 'preview' watermark
 			propertiesTable.setHasWatermark(false);
-			
-			/*if(currentEntity instanceof ITridasSeries)
-				temporaryEditingEntity = TridasCloner.cloneSeriesRefValues((ITridasSeries) currentEntity, (Class<? extends ITridasSeries>) currentEntity.getClass());
-			else
-				temporaryEditingEntity = TridasCloner.clone(currentEntity, currentEntity.getClass());
-
-			// user chose to edit without choosing 'new', so be nice and make a new one for them
-			/*if(temporaryEditingEntity == null && topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
-				temporaryEditingEntity = thisEntity;
-				populateNewEntity(currentMode, temporaryEditingEntity);
-			}*/
-		
-			//if(temporaryEditingEntity != null)
-			
-			
 		}
-		/*if(model.getSelectedRow() !=null)
-		{
-			TridasRepresentationTableTreeRow node = model.getSelectedRow();
-			if(node.getCurrentEntity()!=null)
-			{
-				ITridas currEntity = node.getCurrentEntity();
-				propertiesPanel.readFromObject(currEntity);
-			}
-		}*/
-		/*else {
-			temporaryEditingEntity = null;
-						
-			// don't display anything if we have nothingk!
-			if(currentEntity != null)
-				propertiesPanel.readFromObject(currentEntity);
-		}*/
+
 
 		// disable choosing other stuff while we're editing
 		// but only if something else doesn't disable it first
 		if(topChooser.isEnabled())
+		{
 			topChooser.setEnabled(!enabled);
-		changeButton.setEnabled(!enabled);
+			changeButton.setEnabled(!enabled);
+		}
 		
 		// show/hide our buttons
 		editEntitySave.setEnabled(true);
@@ -1284,7 +1248,7 @@ public class ImportView extends JFrame{
 		
 		return (ret == JOptionPane.YES_OPTION);
 	}
-	
+
 	
 
 }

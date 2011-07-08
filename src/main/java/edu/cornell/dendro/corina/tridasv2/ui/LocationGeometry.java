@@ -20,9 +20,7 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.tridasv2.ui;
 
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.Window;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -50,10 +48,12 @@ import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Alert;
-import edu.cornell.dendro.corina.util.Center;
+import edu.cornell.dendro.corina.ui.Builder;
 
 public class LocationGeometry extends LocationGeometryUI implements
 		ActionListener, ChangeListener {
+	public LocationGeometry() {
+	}
 	private static final long serialVersionUID = 1L;
 
 	private JDialog dialog;
@@ -62,25 +62,26 @@ public class LocationGeometry extends LocationGeometryUI implements
 	final JFileChooser fc = new JFileChooser();
 	final GPXFileFilter filter = new GPXFileFilter();
 
-	public void showDialog(Window parent, TridasLocationGeometry geometry) {
-		// construct a new dialog!
-		if (parent instanceof Frame || parent == null)
-			dialog = new JDialog((Frame) parent, "Location Geometry", true);
-		else
-			dialog = new JDialog((Dialog) parent, "Location Geometry", true);
-
-		//dialog.setIconImage(Builder.getImage("Preferences16.gif"));
+	public void showDialog(Component parent, TridasLocationGeometry geometry) {
+		dialog = new JDialog();
+		dialog.setTitle("Memo");
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
+		dialog.setModal(true);
+		dialog.setUndecorated(true);
+		
 		dialog.setContentPane(this);
+		
+		
+		dialog.setIconImage(Builder.getApplicationIcon());
 		setDefaults();
 
 		if(geometry != null)	
 			setFromGeometry(geometry);
 		
-		dialog.pack();
-
-		Center.center(dialog);
+		dialog.setBounds(parent.getLocationOnScreen().x, 
+				parent.getLocationOnScreen().y, 
+				600, 
+				400);
 		dialog.setVisible(true);
 	}
 
