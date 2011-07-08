@@ -36,7 +36,7 @@ public class ImportModel extends HashModel {
 	private static final long serialVersionUID = 1L;
 	public static final String TREE_MODEL = "treeModel";
 	public static final String CONVERSION_WARNINGS = "conversionWarnings";
-	public static final String SELECTED_NODE = "selectedNode";
+	public static final String SELECTED_ROW = "selectedNode";
 	public static final String ORIGINAL_FILE = "originalFile";
 	public static final String INVALID_FILE_EXCEPTION = "invalidFileException";
 	
@@ -44,7 +44,7 @@ public class ImportModel extends HashModel {
 	{
 		registerProperty(ImportModel.TREE_MODEL, PropertyType.READ_WRITE, new TridasRepresentationTreeModel(null));
 		registerProperty(ImportModel.CONVERSION_WARNINGS, PropertyType.READ_WRITE);
-		registerProperty(ImportModel.SELECTED_NODE, PropertyType.READ_WRITE, new TridasRepresentationTableTreeRow());
+		registerProperty(ImportModel.SELECTED_ROW, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.ORIGINAL_FILE, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.INVALID_FILE_EXCEPTION, PropertyType.READ_WRITE);
 	}
@@ -125,9 +125,10 @@ public class ImportModel extends HashModel {
 	 * Set the selected node
 	 * @param defaultMutableTreeNode
 	 */
-	public void setSelectedNode(TridasRepresentationTableTreeRow row)
+	public void setSelectedRow(TridasRepresentationTableTreeRow row)
 	{
-		setProperty(ImportModel.SELECTED_NODE, row);		
+	
+		setProperty(ImportModel.SELECTED_ROW, row);		
 	}
 	
 	/**
@@ -135,9 +136,9 @@ public class ImportModel extends HashModel {
 	 * 
 	 * @return
 	 */
-	public TridasRepresentationTableTreeRow getSelectedNode()
+	public TridasRepresentationTableTreeRow getSelectedRow()
 	{
-		return (TridasRepresentationTableTreeRow) getProperty(ImportModel.SELECTED_NODE);
+		return (TridasRepresentationTableTreeRow) getProperty(ImportModel.SELECTED_ROW);
 	}
 	
 	/**

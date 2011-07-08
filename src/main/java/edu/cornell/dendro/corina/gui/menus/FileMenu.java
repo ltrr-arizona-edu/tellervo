@@ -176,13 +176,17 @@ public class FileMenu extends JMenu {
 		//fileimport = Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithtricycle()", "fileimport.png");
 		add(fileimport);
 		
-		fileexport = Builder.makeMVCMenuItem("menus.file.export", IOController.OPEN_EXPORT_WINDOW, "fileexport.png");
-		add(fileexport);
+		addExportMenus();
+
 		
 		bulkentry = Builder.makeMVCMenuItem("menus.file.bulkimport", BulkImportController.DISPLAY_BULK_IMPORT, "bulkDataEntry.png");
 		add(bulkentry);
 	}
 	
+	public void addExportMenus(){
+		fileexport = Builder.makeMVCMenuItem("menus.file.export", IOController.OPEN_EXPORT_WINDOW, "fileexport.png");
+		add(fileexport);
+	}
 
 	public void addNewOpenMenus() {
 				

@@ -20,7 +20,10 @@
 package edu.cornell.dendro.corina.io.command;
 
 import javax.swing.JOptionPane;
+import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -33,12 +36,17 @@ import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.io.control.ImportEntitySaveEvent;
+import edu.cornell.dendro.corina.io.control.ImportSwapEntityEvent;
+import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow;
+import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 
 public class EntitySaveCommand implements ICommand {
+	
+	private final static Logger log = LoggerFactory.getLogger(EntitySaveCommand.class);
 
 	@Override
 	public void execute(MVCEvent argEvent) {
@@ -49,12 +57,14 @@ public class EntitySaveCommand implements ICommand {
 		
 		// Remove all children as we just want the current entity for 
 		// sending to the webservice
-		ITridas entity = removeChildren(event.model.getSelectedNode().model.getCurrentEntity());
-		ITridas parentEntity = event.model.getSelectedNode().model.getParentEntity();	
-		Class<? extends ITridas> currentEntityType = event.model.getSelectedNode().model.getCurrentEntityClass();
-		
+		TridasRepresentationTableTreeRow selnode = event.model.getSelectedRow();
+		ITridas currEntity = selnode.getCurrentEntity();
+		ITridas entity = removeChildren(currEntity);
+		ITridas parentEntity = selnode.getParentEntity();	
+		Class<? extends ITridas> currentEntityType = selnode.getCurrentEntityClass();
+
 		// are we saving something new?
-		boolean isNew = event.model.getSelectedNode().model.isCurrentEntityNew();
+		boolean isNew = selnode.isCurrentEntityNew();
 		
 		// sanity check to ensure parent entity being null means we're an object
 		if(parentEntity == null && !currentEntityType.equals(TridasObject.class)) {
@@ -96,17 +106,17 @@ public class EntitySaveCommand implements ICommand {
 		}
 		
 		// take the return value and update the model
-		event.model.getSelectedNode().model.setCurrentEntity(entity);
-		event.model.getSelectedNode().model.saveChanges();
+		selnode.setCurrentEntity(entity);
+		selnode.saveChanges();
 		
-		/*
-		TridasRepresentationTableTreeRow oldrow = event.model.getSelectedNode();	
+		
+		TridasRepresentationTableTreeRow oldrow = event.model.getSelectedRow();	
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode((ITridas) entity);
 		TridasRepresentationTableTreeRow newrow = 
 			new TridasRepresentationTableTreeRow(node, ImportStatus.STORED_IN_DATABASE);
 		ImportSwapEntityEvent ev = new ImportSwapEntityEvent(event.model, newrow, oldrow);
         ev.dispatch();
-
+/*
 		// if it was new, re-enable our editing
 		if(isNew) {
 			// stick it in the combo box list
@@ -121,15 +131,14 @@ public class EntitySaveCommand implements ICommand {
 			selectInTopChooser();
 		
 		}
-		
+		*/
 		// on success...
 		//currentMode.clearChanged();
-		editEntity.setSelected(false);
-		enableEditing(false);
+
 		//populateComboAndSelect(false);
 		//temporaryEditingEntity = null;
 	
-		 */
+		 
 
 		
 	}
@@ -144,6 +153,13 @@ public class EntitySaveCommand implements ICommand {
 	private ITridas removeChildren(ITridas entity)
 	{
 	//	System.out.println("removing children from "+entity.getTitle());
+		
+		if(entity==null)
+		{
+			log.warn("Unable to remove children from this entity as it is null!");
+			return null;
+		}
+		
 		if(entity instanceof TridasProject)
 		{
 			((TridasProject) entity).setDerivedSeries(null);

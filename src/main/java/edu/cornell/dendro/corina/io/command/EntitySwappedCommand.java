@@ -36,13 +36,13 @@ public class EntitySwappedCommand implements ICommand {
 		ImportSwapEntityEvent event = (ImportSwapEntityEvent) argEvent;
 
 		// Get the tree node representing the entity we're going to replace
-		DefaultMutableTreeNode oldNode = event.oldRow.node;
+		DefaultMutableTreeNode oldNode = event.oldRow.getDefaultMutableTreeNode();
 		
 		// Get the tree node representing the parent of the entity we're replacing
-		DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) event.oldRow.node.getParent();
+		DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) event.oldRow.getDefaultMutableTreeNode().getParent();
 		
 		// Get the tree node representing the new entity that we now want
-		DefaultMutableTreeNode newNode = event.getValue().node;
+		DefaultMutableTreeNode newNode = event.getValue().getDefaultMutableTreeNode();
 		
 		// Calculate the index for the node we're replacing
 		int newNodeIndex = parentNode.getIndex(oldNode);
@@ -60,14 +60,13 @@ public class EntitySwappedCommand implements ICommand {
 		}
 		
 		// Go ahead and remove the old node
-		event.model.getTreeModel().removeNodeFromParent((MutableTreeNode) event.oldRow.node);
+		event.model.getTreeModel().removeNodeFromParent((MutableTreeNode) event.oldRow.getDefaultMutableTreeNode());
 		
 		// Add new node in its place
 		event.model.getTreeModel().insertNodeInto(newNode, parentNode, newNodeIndex);
 		
 		// Select the new node
-		TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow();
-		row.node = newNode;		
+		TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow(newNode, null);	
 		ImportNodeSelectedEvent event2 = new ImportNodeSelectedEvent(event.model, row);
 		event2.dispatch();
 	}

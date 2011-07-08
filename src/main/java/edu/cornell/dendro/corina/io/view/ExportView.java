@@ -4,7 +4,6 @@
 package edu.cornell.dendro.corina.io.view;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -13,8 +12,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.border.EtchedBorder;
@@ -91,7 +89,7 @@ public class ExportView extends JFrame {
 		addListeners();
 		linkModel();
 		pack();
-		this.setSize(700, 400);
+		this.setSize(564, 332);
 		setLocationRelativeTo(null);
 	}
 	
@@ -114,9 +112,10 @@ public class ExportView extends JFrame {
 		JPanel panelMain = new JPanel();
 		panelMain.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		getContentPane().add(panelMain, BorderLayout.CENTER);
-		panelMain.setLayout(new BorderLayout(0, 0));
+		panelMain.setLayout(new BorderLayout(15, 15));
 		
 		JSplitPane splitPane = new JSplitPane();
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		panelMain.add(splitPane);
 		splitPane.setResizeWeight(0.5);
 		splitPane.setOneTouchExpandable(true);
@@ -147,66 +146,73 @@ public class ExportView extends JFrame {
 		JLabel lblNewLabel = new JLabel("Summary of export:");
 		panelSummary.add(lblNewLabel, BorderLayout.NORTH);
 		
-		JPanel panelOptions = new JPanel();
-		splitPane.setLeftComponent(panelOptions);
-		panelOptions.setLayout(new MigLayout("", "[97px][176.00px,grow][][grow]", "[27px][27px][][][][]"));
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		splitPane.setLeftComponent(tabbedPane);
 		
-		JLabel lblWhatToExport = new JLabel(I18n.getText("io.convert.whatExport"));
-		panelOptions.add(lblWhatToExport, "cell 0 0,alignx trailing");
-		
-		selection = new JComboBox(new String[] { model.getElements().size() <= 1 ? "The selected sample" : "The group of "+model.getElements().size()+" samples." });
-		panelOptions.add(selection, "cell 1 0 2 1,growx");
-		
-		JLabel lblGrouping = new JLabel(I18n.getText("io.convert.lblGrouping"));
-		panelOptions.add(lblGrouping, "cell 0 1,alignx trailing");
-		
-		groupings = new JComboBox(groupingNames);
-		panelOptions.add(groupings, "cell 1 1 2 1,growx");
+		JPanel panelBasic = new JPanel();
+		tabbedPane.addTab("Basic settings", null, panelBasic, null);
+		panelBasic.setLayout(new MigLayout("", "[right][grow,fill][]", "[][]"));
 		
 		JLabel lblFormat = new JLabel(I18n.getText("io.convert.lblFormat"));
-		panelOptions.add(lblFormat, "cell 0 2,alignx trailing");
+		panelBasic.add(lblFormat, "cell 0 0");
 		
 		format = new JComboBox(TridasIO.getSupportedWritingFormats());
-		panelOptions.add(format, "cell 1 2 2 1,growx");
-		
-		JLabel lblNaming = new JLabel(I18n.getText("io.convert.lblNaming"));
-		panelOptions.add(lblNaming, "cell 0 3,alignx trailing");
-		
-		naming = new JComboBox(namings);
-		panelOptions.add(naming, "cell 1 3 2 1,growx");
-		
-		JLabel lblEncoding = new JLabel(I18n.getText("io.convert.lblEncoding"));
-		panelOptions.add(lblEncoding, "cell 0 4,alignx trailing");
-		
-		charset = new JComboBox(charsets.toArray(new String[0]));
-		panelOptions.add(charset, "cell 1 4 2 1,growx");
+		panelBasic.add(format, "cell 1 0 2 1");
 		
 		JLabel lblOutputFolder = new JLabel(I18n.getText("io.convert.lblOutput"));
-		panelOptions.add(lblOutputFolder, "cell 0 5,alignx trailing");
+		panelBasic.add(lblOutputFolder, "cell 0 1");
 		
 		destFolder = new JTextField();
-		panelOptions.add(destFolder, "cell 1 5,growx");
+		panelBasic.add(destFolder, "cell 1 1");
 		
 		btnBrowse = new JButton(I18n.getText("io.convert.btnBrowse"));
-		panelOptions.add(btnBrowse, "cell 2 5,alignx center");
-
+		panelBasic.add(btnBrowse, "cell 2 1,alignx left");
+		
+		JPanel panelAdv = new JPanel();
+		tabbedPane.addTab("Advanced options", null, panelAdv, null);
+		panelAdv.setLayout(new MigLayout("", "[right][grow,fill]", "[][][][]"));
+		
+		JLabel lblWhatToExport = new JLabel(I18n.getText("io.convert.whatExport"));
+		panelAdv.add(lblWhatToExport, "cell 0 0");
+		
+		selection = new JComboBox(new String[] { model.getElements().size() <= 1 ? "The selected sample" : "The group of "+model.getElements().size()+" samples." });
+		panelAdv.add(selection, "cell 1 0");
+		
+		JLabel lblGrouping = new JLabel(I18n.getText("io.convert.lblGrouping"));
+		panelAdv.add(lblGrouping, "cell 0 1");
+		
+		groupings = new JComboBox(groupingNames);
+		panelAdv.add(groupings, "cell 1 1");
+		
+		JLabel lblNaming = new JLabel(I18n.getText("io.convert.lblNaming"));
+		panelAdv.add(lblNaming, "cell 0 2");
+		
+		naming = new JComboBox(namings);
+		panelAdv.add(naming, "cell 1 2");
+		
+		JLabel lblEncoding = new JLabel(I18n.getText("io.convert.lblEncoding"));
+		panelAdv.add(lblEncoding, "cell 0 3");
+		
+		charset = new JComboBox(charsets.toArray(new String[0]));
+		panelAdv.add(charset, "cell 1 3");
 		
 		JPanel panelButtons = new JPanel();
-		getContentPane().add(panelButtons, BorderLayout.SOUTH);
-		panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
+		panelMain.add(panelButtons, BorderLayout.SOUTH);
+		panelButtons.setLayout(new MigLayout("", "[][grow,fill][][]", "[]"));
 		
 		btnHelp = new JButton(I18n.getText("io.convert.btnHelp"));
-		panelButtons.add(btnHelp);
-		
-		Component horizontalGlue = Box.createHorizontalGlue();
-		panelButtons.add(horizontalGlue);
+		panelButtons.add(btnHelp, "cell 0 0");
 		
 		btnConvert = new JButton(I18n.getText("io.convert.btnConvert"));
-		panelButtons.add(btnConvert);
+		panelButtons.add(btnConvert, "cell 2 0");
 		
 		btnSave = new JButton(I18n.getText("io.convert.btnSave"));
+		panelButtons.add(btnSave, "cell 3 0");
 		btnSave.setEnabled(false);
-		panelButtons.add(btnSave);
+
+		
+		pack();
+
 	}
 	
 	private void addListeners() {

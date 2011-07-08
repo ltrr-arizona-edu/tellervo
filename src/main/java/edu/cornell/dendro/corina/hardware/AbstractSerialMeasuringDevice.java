@@ -32,11 +32,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.TooManyListenersException;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.cornell.dendro.corina.core.ClassScope;
 import edu.cornell.dendro.corina.ui.I18n;
 
 import edu.cornell.dendro.corina.ui.Alert;
@@ -52,6 +58,8 @@ public abstract class AbstractSerialMeasuringDevice
 	implements 
 		SerialPortEventListener, SerialSampleIOListener
 {
+
+	private final static Logger log = LoggerFactory.getLogger(AbstractSerialMeasuringDevice.class);
 
 	/** The actual serial port we're operating on */
 	private SerialPort port;
@@ -210,7 +218,7 @@ public abstract class AbstractSerialMeasuringDevice
 		}
 		else
 		{
-			System.out.println("Port is null!");
+			log.error("Port is null!");
 			return null;
 		}
 	}
@@ -335,7 +343,7 @@ public abstract class AbstractSerialMeasuringDevice
 		finishInitialize();
 		
 		if(port != null) {
-			System.out.println("Closing port (finalize): " + port.getName());
+			log.debug("Closing port (finalize): " + port.getName());
 			port.close();
 			port = null;
 		}
@@ -346,11 +354,11 @@ public abstract class AbstractSerialMeasuringDevice
 	 */
 	public void close() {
 		if(port == null) {
-			System.out.println("dataport already closed; ignoring close call?");
+			log.debug("dataport already closed; ignoring close call?");
 			return;
 		}
 		
-		System.out.println("Closing port (manual): " + port.getName());
+		log.debug("Closing port (manual): " + port.getName());
 		
 		state = PortState.DIE;
 		finishInitialize();
@@ -607,18 +615,28 @@ public abstract class AbstractSerialMeasuringDevice
 
 		// set the checked flag... check it, if it succeeds, change the result.
 		hscChecked = true;
+		
 		try {
-			// this loads the DLL...
+			
+			/* Check what libs are loaded
+			final String[] libraries = ClassScope.getLoadedLibraries(ClassLoader.getSystemClassLoader()); 
+			//MyClassName.class.getClassLoader()
+			for(String lib: libraries)
+			{
+				log.debug(lib+" is loaded");
+			}*/
+			
+			
 			Class.forName("gnu.io.RXTXCommDriver");
 			hscResult = true;
 		}
 		catch (Exception e) {
 			// driver not installed...
-			System.err.println(e.toString());
+			log.error(e.toString());
 		}
 		catch (Error e) {
 			// native interface not installed...
-			System.err.println(e.toString());
+			log.error(e.toString());
 		}
 		return hscResult;
 	}

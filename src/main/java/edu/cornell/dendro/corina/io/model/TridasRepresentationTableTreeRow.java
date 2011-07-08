@@ -19,15 +19,37 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.io.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 
-public class TridasRepresentationTableTreeRow {
+import com.dmurph.mvc.model.HashModel;
 
-	public DefaultMutableTreeNode node;
-	public ImportStatus action = ImportStatus.UNKNOWN;
-	public ImportEntityModel model;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.tridasv2.TridasComparator;
+import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityListHolder;
+
+public class TridasRepresentationTableTreeRow extends HashModel{
+
+
+	private static final long serialVersionUID = 1L;
+	private final static Logger log = LoggerFactory.getLogger(TridasRepresentationTableTreeRow.class);
+
+	public static final String NODE = "treeNode";
+	public static final String IMPORT_STATUS_ACTION = "importStatusAction";
+	public static final String CURRENT_ENTITY = "currentEntity";
+	public static final String PARENT_ENTITY = "parentEntity";
+	public static final String CLASS = "entityClass";
+	public static final String ENTITY_LIST = "entityList";
+	
 	
 	public enum ImportStatus{
 		IGNORE("Ignored"),
@@ -51,24 +73,191 @@ public class TridasRepresentationTableTreeRow {
 	public TridasRepresentationTableTreeRow(DefaultMutableTreeNode node, 
 			ImportStatus action)
 	{
-		this.node   = node;
+		registerProperty(TridasRepresentationTableTreeRow.NODE, PropertyType.READ_WRITE);
+		registerProperty(TridasRepresentationTableTreeRow.IMPORT_STATUS_ACTION, PropertyType.READ_WRITE);
+		registerProperty(TridasRepresentationTableTreeRow.CURRENT_ENTITY, PropertyType.READ_WRITE);
+		registerProperty(TridasRepresentationTableTreeRow.PARENT_ENTITY, PropertyType.READ_WRITE);
+		registerProperty(TridasRepresentationTableTreeRow.CLASS, PropertyType.READ_WRITE);
+		registerProperty(TridasRepresentationTableTreeRow.ENTITY_LIST, PropertyType.READ_WRITE, new ArrayList<ITridas>());
+	
 		
-		if(action!=null) this.action = action;
-		
-		ITridas entity = (ITridas) node.getUserObject();
-		ITridas parent = null;
-		try{
-			parent = (ITridas) ((DefaultMutableTreeNode)node.getParent()).getUserObject();
-		} catch (Exception e)
+		if(node==null )
 		{
-			
+			log.warn("TridasRepresentationTableTreeRow node is null");
 		}
 		
-		this.model  = new ImportEntityModel(entity, parent);
+		setNode(node);
+		setAction(action);
+
+
 	}
 
-	public TridasRepresentationTableTreeRow() {
+	public ITridas getCurrentEntity()
+	{
+		return (ITridas) getProperty(TridasRepresentationTableTreeRow.CURRENT_ENTITY);
+	}
+	
+	public ITridas getParentEntity()
+	{
+		return (ITridas) getProperty(TridasRepresentationTableTreeRow.PARENT_ENTITY);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Class<? extends ITridas> getCurrentEntityClass()
+	{
+		return (Class<? extends ITridas>) getProperty(TridasRepresentationTableTreeRow.CLASS);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ArrayList<ITridas> getEntityList()
+	{
+		return (ArrayList<ITridas>) getProperty(TridasRepresentationTableTreeRow.ENTITY_LIST);
+	}
+	
+	
+	public void setCurrentEntity(ITridas entity)
+	{
+		if(entity==null) log.warn("Setting current entity to null");
 		
+		setProperty(TridasRepresentationTableTreeRow.CURRENT_ENTITY, entity);
+		setProperty(TridasRepresentationTableTreeRow.CLASS, entity.getClass());
+	}
+	
+	private void setParentEntity(ITridas entity)
+	{
+		
+		setProperty(TridasRepresentationTableTreeRow.PARENT_ENTITY, entity);
+		populateEntityList();
+	}
+	
+	public void setEntityList(ArrayList<? extends ITridas> list)
+	{
+		setProperty(TridasRepresentationTableTreeRow.ENTITY_LIST, list);
+	}
+	
+	private void populateEntityList()
+	{
+		List<? extends ITridas> entities = null;
+		TridasEntityListHolder lists = new TridasEntityListHolder();
+		
+		ITridas currentEntity = getCurrentEntity();
+		ITridas parentEntity = getParentEntity();
+		
+		if (currentEntity instanceof TridasProject)
+		{
+			// This entity is a project so set list to null as 
+			// projects aren't supported
+		}
+		else if(currentEntity instanceof TridasObject)
+		{
+			// This entity is an object so grab object dictionary
+			entities = App.tridasObjects.getObjectList();
+		}
+		
+		// Otherwise, check that the parent is already in db by checking
+		// the identifier domain and set list accordingly 
+		try{
+			if (parentEntity.getIdentifier().getDomain().equals(App.domain))
+			{
+				entities = lists.getChildList(parentEntity, true);
+			}
+		} catch (Exception e)
+		{	}	
+		
+		setEntityList(sortList(entities));
+	}
+	
+	/**
+	 * Sort a list of ITridas objects
+	 * 
+	 * @param list
+	 */
+	private ArrayList<? extends ITridas> sortList(List<? extends ITridas> list) {
+		// Sort list intelligently
+		ArrayList<ITridas> entities = new ArrayList<ITridas>();
+		
+		if(list==null || list.isEmpty()) return null;
+		
+		for(int i=0; i<list.size(); i++)
+		{
+			ITridas e = list.get(i);	
+			entities.add(e);
+		}
+		
+		
+		
+		if(!(entities.get(0) instanceof TridasObject))
+		{
+			TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+					TridasComparator.NullBehavior.NULLS_LAST, 
+					TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+			
+			Collections.sort(entities, numSorter);
+		}
+
+		return entities;
+	}
+	
+	public boolean isCurrentEntityNew()
+	{
+		ITridas currentEntity = getCurrentEntity();
+		
+		if(currentEntity==null)
+		{
+			System.out.println("No entity");
+			return false;
+
+		}
+		
+		if (!currentEntity.isSetIdentifier())
+		{
+			return true;
+		}
+		else if (!currentEntity.getIdentifier().isSetDomain())
+		{
+			System.out.println("No domain");
+			return true;
+		}
+		else if (!currentEntity.getIdentifier().getDomain().equals(App.domain))
+		{
+			System.out.println("Different domain - this one is: "+currentEntity.getIdentifier().getDomain());
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
+	public void setNode(DefaultMutableTreeNode node)
+	{
+		setProperty(TridasRepresentationTableTreeRow.NODE, node);
+		
+		ITridas entity = (ITridas) getDefaultMutableTreeNode().getUserObject();
+		ITridas parent = null;
+		try{
+			parent = (ITridas) ((DefaultMutableTreeNode)getDefaultMutableTreeNode().getParent()).getUserObject();
+		} catch (Exception e){ }
+		
+		setCurrentEntity(entity);
+		setParentEntity(parent);
+		
+	}
+	
+	
+	public void setAction(ImportStatus action)
+	{
+		setProperty(TridasRepresentationTableTreeRow.IMPORT_STATUS_ACTION, action);
+	}
+	
+	
+	public DefaultMutableTreeNode getDefaultMutableTreeNode()
+	{
+		return (DefaultMutableTreeNode) getProperty(TridasRepresentationTableTreeRow.NODE);
+	}
+	
+	public ImportStatus getImportStatusAction()
+	{
+		return (ImportStatus) getProperty(TridasRepresentationTableTreeRow.IMPORT_STATUS_ACTION);
 	}
 	
 	

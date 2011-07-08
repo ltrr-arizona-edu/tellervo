@@ -89,12 +89,12 @@ public class BulkImportController extends FrontController {
 	}
 	
 	public void display(MVCEvent argEvent){
-		if(MVC.getTracker() == null){
+		/*if(MVC.getTracker() == null){
 			JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(new AnalyticsConfigData("UA-17109202-7"), GoogleAnalyticsVersion.V_4_7_2);
 			MVC.setTracker(tracker);
 		}else{
 			MVC.getTracker().resetSession();
-		}
+		}*/
 		//MVC.showEventMonitor();
 		
 		if(BulkImportModel.getInstance().getMainView() != null){

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<corina xmlns="http://dendro.cornell.edu/schema/corina/1.0"
+ xmlns:ns2="http://www.tridas.org/1.2.2"
+ xmlns:ns3="http://www.opengis.net/gml"
+ xmlns:ns4="http://www.w3.org/1999/xlink"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://dendro.cornell.edu/schema/corina/1.0 file:/home/pwb48/dev/java3/corina-desktop/src/main/resources/schemas/corina.xsd">
+        <request type="create" format="standard" parentEntityID="parentEntityID1" mergeWithID="mergeWithID1">
+            <authenticate username="username1" password="password1" cnonce="cnonce1" snonce="snonce1" hash="hash1" seq="seq1"/>
+        </request>
+</corina>

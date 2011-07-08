@@ -1,0 +1,16 @@
+aaron = aaron <aaron>
+aps03pwb = Peter Brewer <pwb48@cornell.edu>
+bitpoet = bitpoet <bitpoet>
+cdunham = cdunham <cdunham>
+djg252 = djg252 <djg252>
+djm376 = djm376 <djm376>
+drewk = drewk <drewk>
+frl8 = frl8 <frl8>
+lucas = Lucas Madar <lucas@mcsnw.com>
+Lucas Madar = Lucas Madar <lucas@mcsnw.comr>
+lucasm = Lucas Madar <lucas@mcsnw.com>
+lucasmo = Lucas Madar <lucas@mcsnw.com>
+(no author) = (no author) <(no author)>
+Peter Brewer = Peter Brewer <pwb48@cornell.edu>
+pwb48 = Peter Brewer <pwb48@cornell.edu>
+root = root <root>

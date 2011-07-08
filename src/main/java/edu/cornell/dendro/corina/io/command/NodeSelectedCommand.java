@@ -30,7 +30,7 @@ public class NodeSelectedCommand implements ICommand {
 	public void execute(MVCEvent argEvent) {
 		ImportNodeSelectedEvent event = (ImportNodeSelectedEvent) argEvent;
 		
-		if(event.getValue()!=null) event.model.setSelectedNode(event.getValue());
+		if(event.getValue()!=null) event.model.setSelectedRow(event.getValue());
 		
 	}
 

@@ -71,14 +71,14 @@ public class EditorFileMenu extends FileMenu {
 
 	public void addExportMenus() {
 		// add "Export..." menuitem
-		JMenuItem export = Builder.makeMenuItem("menus.file.export", true, "fileexport.png");
-		export.addActionListener(new ActionListener() {
+		fileexport = Builder.makeMenuItem("menus.file.export", true, "fileexport.png");
+		fileexport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				OpenExportEvent event = new OpenExportEvent(sample);
 				event.dispatch();
 			}
 		});
-		add(export);
+		add(fileexport);
 		
 		
 		

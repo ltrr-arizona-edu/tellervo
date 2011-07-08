@@ -54,7 +54,7 @@ public class NativeLibWrapper {
         try {
             libfolder = extractLibDir(nativeLibInfo);
         } catch (IOException ex) {
-            throw new GLException("Could not extract native libs from jar.",ex);
+            throw new Exception(ex.getLocalizedMessage());
         }
         log.debug("Native library folder " + libfolder);
         loadNatives(libfolder, nativeLibInfo);
@@ -70,10 +70,13 @@ public class NativeLibWrapper {
         for (String lib : allLibs) {
             String path = "lib/" + nativeLibInfo.getSubDirectoryPath() + '/' + nativeLibInfo.getNativeLibName(lib);
             
-            //log.debug("Extracting " + path);
+            log.debug("Extracting " + path);
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
 
+            if(is==null) throw new IOException("Unable to find native library: "+nativeLibInfo.getNativeLibName(lib));
+            
             try {
+            	is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
                 File dest = new File(dir, nativeLibInfo.getNativeLibName(lib));
                 dest.deleteOnExit();
                 OutputStream os = new FileOutputStream(dest);
@@ -171,6 +174,7 @@ public class NativeLibWrapper {
         String nativeLibName = nativeLibInfo.getNativeLibName(libName);
         try {
             System.load(new File(installDir, nativeLibName).getPath());
+            log.info("Successfully loaded native lib: "+nativeLibName);
         } catch (UnsatisfiedLinkError ex) {
             // should be safe to continue as long as the native is loaded by any loader
             if (ex.getMessage().indexOf("already loaded") == -1) {

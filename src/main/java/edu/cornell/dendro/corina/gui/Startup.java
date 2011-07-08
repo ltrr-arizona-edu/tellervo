@@ -104,7 +104,7 @@ public class Startup implements PrivilegedAction {
 		    App.platform.init();
 			
 			ClassLoader cl = this.getClass().getClassLoader();
-			URL url = cl.getResource("Images/splash3.png");
+			URL url = cl.getResource("Images/splash2.png");
 			BufferedImage img = null;
 		
 			if (url != null) {

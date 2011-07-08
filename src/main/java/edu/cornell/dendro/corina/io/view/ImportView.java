@@ -62,13 +62,17 @@ import jsyntaxpane.DefaultSyntaxKit;
 import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
 import org.netbeans.swing.outline.OutlineModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.exceptions.InvalidDendroFileException.PointerType;
+import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
+import org.tridas.schema.TridasVariable;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVC;
@@ -88,7 +92,6 @@ import edu.cornell.dendro.corina.io.control.ImportMergeEntitiesEvent;
 import edu.cornell.dendro.corina.io.control.ImportNodeSelectedEvent;
 import edu.cornell.dendro.corina.io.control.ImportSwapEntityEvent;
 import edu.cornell.dendro.corina.io.model.ImportEntityListComboBox;
-import edu.cornell.dendro.corina.io.model.ImportEntityModel;
 import edu.cornell.dendro.corina.io.model.ImportModel;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
@@ -100,18 +103,18 @@ import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyRendererFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
-import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
 import edu.cornell.dendro.corina.ui.I18n;
 
 public class ImportView extends JFrame{
 
+	private final static Logger log = LoggerFactory.getLogger(ImportView.class);
+
 	private static final long serialVersionUID = -9142222993569420620L;
 	
 	/** The MVC Import Model **/
 	private ImportModel model;
-	private ImportEntityModel entityModel;
 	
 	/** Main panel into which everything is placed **/
 	private final JPanel contentPanel = new JPanel();
@@ -179,13 +182,7 @@ public class ImportView extends JFrame{
 	private ImportEntityListComboBox topChooser;
 	private JButton changeButton;
 	private JButton cancelChangeButton;
-	
-	//private ITridas temporaryEditingEntity;
-	//private ITridas temporarySelectingEntity;
-	//private ITridas currentEntity;
-	//private ITridas parentEntity;
-	//private Class<? extends ITridas> currentEntityType;
-	
+		
 	private static final String CHANGE_STATE = I18n.getText("general.change");
 	private static final String CHOOSE_STATE = I18n.getText("general.choose");
 	private boolean changingTop;
@@ -234,13 +231,7 @@ public class ImportView extends JFrame{
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel);
 		{
-			{
-				{
-					{
-						DefaultSyntaxKit.initKit();
-					}
-				}
-			}
+			DefaultSyntaxKit.initKit();
 		}
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
@@ -415,6 +406,7 @@ public class ImportView extends JFrame{
 		
 		chooseOrCancelUIUpdate();
 		enableEditing(false);
+		updateConversionWarningsTable();
 		
 	}
 	
@@ -431,15 +423,15 @@ public class ImportView extends JFrame{
 
 				if(name.equals(ImportModel.ORIGINAL_FILE))
 				{
-					// Original file has changed so GUI to show its contents
+					// Original file has changed so update GUI to show its contents
                     txtOriginalFile.setText(model.getFileToImportContents());
 				}
 				else if (name.equals(ImportModel.CONVERSION_WARNINGS))
 				{
 					// New conversion warnings so set the table
-					updateConversionWarningsTable(model.getConversionWarnings());
+					updateConversionWarningsTable();
 				}
-				else if (name.equals(ImportModel.SELECTED_NODE))
+				else if (name.equals(ImportModel.SELECTED_ROW))
 				{
 					// An entity in the tree-table has been selected so 
 					// update the metadata panel
@@ -448,7 +440,7 @@ public class ImportView extends JFrame{
 					int selRow = treeTable.getSelectedRow();
 					DefaultMutableTreeNode guiSelectedEntity = 
 						(DefaultMutableTreeNode) treeTable.getValueAt(selRow, 0);
-					DefaultMutableTreeNode modelSelectedEntity = model.getSelectedNode().node;
+					DefaultMutableTreeNode modelSelectedEntity = model.getSelectedRow().getDefaultMutableTreeNode();
 					if((guiSelectedEntity==null) || (!guiSelectedEntity.equals(modelSelectedEntity)))
 					{
 						TreePath path =  getPath(modelSelectedEntity);
@@ -456,21 +448,20 @@ public class ImportView extends JFrame{
 					}
 					
 					// Set up entity model listeners
-					entityModel = model.getSelectedNode().model;
-					linkEntityModel();
+					linkRowModel();
 					
 					// Update the metadata panel
 					updateMetadataPanel();			
-					updateEntityChooser(entityModel.getEntityList());					
+					updateEntityChooser();					
 				}
 				else if (name.equals(ImportModel.TREE_MODEL))
 				{
 					// Tree model has changed so update the tree-table
-					updateTreeTable(model.getTreeModel());
+					updateTreeTable();
 				}
 				else if (name.equals(ImportModel.INVALID_FILE_EXCEPTION))
 				{
-					setGUIForInvalidFile(model.getFileException());
+					setGUIForInvalidFile();
 				}
 				
 
@@ -482,18 +473,17 @@ public class ImportView extends JFrame{
 		});
 	}
 	
-	private void linkEntityModel()
+	private void linkRowModel()
 	{
-		if(entityModel==null) return;
-		
-		entityModel.addPropertyChangeListener(new PropertyChangeListener() {
+				
+		model.getSelectedRow().addPropertyChangeListener(new PropertyChangeListener() {
 			
 			public void propertyChange(PropertyChangeEvent evt) {
 				String name = evt.getPropertyName();
 
-				if(name.equals(ImportEntityModel.CURRENT_ENTITY))
+				if(name.equals(TridasRepresentationTableTreeRow.CURRENT_ENTITY))
 				{
-					//propertiesPanel.readFromObject(entityModel.getCurrentEntity());
+					propertiesPanel.readFromObject(model.getSelectedRow().getCurrentEntity());
 				}
 				
 			}
@@ -533,34 +523,28 @@ public class ImportView extends JFrame{
 				}
 				
 				int selRow = treeTable.getSelectedRow();
-				DefaultMutableTreeNode selectedEntity = 
-					(DefaultMutableTreeNode) treeTable.getValueAt(selRow, 0);	
+				DefaultMutableTreeNode selectedEntity = (DefaultMutableTreeNode) treeTable.getValueAt(selRow, 0);	
 				ImportStatus status = (ImportStatus) treeTable.getValueAt(selRow, 1);
 				TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow(selectedEntity, status);		
                 ImportNodeSelectedEvent event = new ImportNodeSelectedEvent(model, row);
                 event.dispatch();
+                model.setSelectedRow(row);
 				
 			}
 		});
 
-		
-		// Listen for finish button press
-		this.btnFinish.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dispose();
 				
-			}
-		});
-		
 		// Listen for set from db button press
 		this.btnFinish.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Alert.message("blah", "Button pressed");
 				
+				//TODO Check if there are outstanding entities that need fixing 
+				// and warn
+
+
+				dispose();
 			}
 		});
 		
@@ -576,7 +560,7 @@ public class ImportView extends JFrame{
 				{
 					changingTop = false;
 					propertiesTable.setHasWatermark(false);
-					TridasRepresentationTableTreeRow oldrow = model.getSelectedNode();	
+					TridasRepresentationTableTreeRow oldrow = model.getSelectedRow();	
 					DefaultMutableTreeNode node = new DefaultMutableTreeNode((ITridas) topChooser.getSelectedItem());
 					TridasRepresentationTableTreeRow newrow = 
 						new TridasRepresentationTableTreeRow(node, ImportStatus.STORED_IN_DATABASE);
@@ -597,17 +581,16 @@ public class ImportView extends JFrame{
 		
 		editEntity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(entityModel.isDirty())
+				
+				if(editEntity.isSelected())
 				{
-					if(isUserOkWithLoosingAnyChanges())
-					{
-						entityModel.revertChanges();
-					}	
-					else
-					{
-						return;
-					}
-				}	
+					log.debug("Starting to edit entity");
+				}
+				else
+				{
+					log.debug("Stopping entity edit");
+				}
+
 				enableEditing(editEntity.isSelected());	
 			}			
 		});
@@ -615,9 +598,30 @@ public class ImportView extends JFrame{
 		editEntitySave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Need to replace 'null' below with this dialog
+								
+				ITridas entity = model.getSelectedRow().getCurrentEntity();
+				propertiesPanel.writeToObject(entity);
+				log.debug("About to save entity" + entity.getTitle());
+				
+				if(entity instanceof TridasMeasurementSeries)
+				{
+					TridasMeasurementSeries en = (TridasMeasurementSeries) entity;
+					if(en.isSetValues())
+					{
+						if(en.getValues().get(0).isSetVariable())
+						{
+							TridasVariable variable = new TridasVariable();
+							variable.setNormalTridas(NormalTridasVariable.RING_WIDTH);
+							en.getValues().get(0).setVariable(variable);
+						}
+					}
+					
+					model.getSelectedRow().setCurrentEntity(en);
+				}
 				
 				ImportEntitySaveEvent event = new ImportEntitySaveEvent(model, null);
 				event.dispatch();
+				
 			}
 		});
 
@@ -626,7 +630,7 @@ public class ImportView extends JFrame{
 				
 				if(isUserOkWithLoosingAnyChanges())
 				{
-					model.getSelectedNode().model.revertChanges();
+					model.getSelectedRow().revertChanges();
 					editEntity.setSelected(false);
 					enableEditing(false);
 				}
@@ -656,8 +660,19 @@ public class ImportView extends JFrame{
 	 * Set up the conversion warnings table with the provided warnings
 	 * @param warnings
 	 */
-	private void updateConversionWarningsTable(ConversionWarning[] warnings)
+	private void updateConversionWarningsTable()
 	{
+		ConversionWarning[] warnings = model.getConversionWarnings();
+		if(warnings==null) 
+		{
+			vertSplitPane.setDividerLocation(1.0);
+			return;
+		}
+		if(warnings.length==0) {
+			vertSplitPane.setDividerLocation(1.0);
+			return;
+		}
+		
 		ConversionWarningTableModel cwModel = new ConversionWarningTableModel(warnings);
 		tblWarnings.setModel(cwModel);
 		lblConversionWarnings.setText("Conversion warnings ("+warnings.length+"):");
@@ -671,6 +686,8 @@ public class ImportView extends JFrame{
 		col = tblWarnings.getColumnModel().getColumn(2);
 		col.setMinWidth(width); 
 		col.setPreferredWidth(5000);
+		
+		
 	}
 	
 	
@@ -682,7 +699,7 @@ public class ImportView extends JFrame{
 	private void updateDataPanel() 
 	{
 	
-		ITridas entity = (ITridas) model.getSelectedNode().node.getUserObject();
+		ITridas entity = (ITridas) model.getSelectedRow().getDefaultMutableTreeNode().getUserObject();
 		
 		if(!(entity instanceof TridasMeasurementSeries))
 		{
@@ -735,16 +752,16 @@ public class ImportView extends JFrame{
 		//setTopBarSummaryTitle(parentNode);
 		
 		// Extract the entity and entity type from the select table tree row
-		ITridas currentEntity = entityModel.getCurrentEntity();
-		Class<? extends ITridas> currentEntityType = entityModel.getCurrentEntityClass();
+		ITridas currentEntity = model.getSelectedRow().getCurrentEntity();
+		Class<? extends ITridas> currentEntityType = model.getSelectedRow().getCurrentEntityClass();
 
 		
 		// Extract the parent entity 
 		try{
-			ITridas parentEntity = entityModel.getParentEntity();
-			System.out.println("Set parent entity successfully to: " + parentEntity.getTitle());
+			ITridas parentEntity = model.getSelectedRow().getParentEntity();
+			log.debug("Set parent entity successfully to: " + parentEntity.getTitle());
 		} catch (Exception e){
-			System.out.println("Unable to set parent entity");
+			log.warn("Unable to set parent entity");
 		}
 			
 		// Swapping entities so disable editing
@@ -772,12 +789,12 @@ public class ImportView extends JFrame{
 		}
 		
 		// Set the watermark text across metadata panel
-		if(model.getSelectedNode().action.equals(ImportStatus.PENDING))
+		if(model.getSelectedRow().getImportStatusAction().equals(ImportStatus.PENDING))
 		{
 			propertiesTable.setHasWatermark(true);
 			propertiesTable.setWatermarkText(I18n.getText("general.preview").toUpperCase());
 		}
-		else if(model.getSelectedNode().action.equals(ImportStatus.IGNORE))
+		else if(model.getSelectedRow().getImportStatusAction().equals(ImportStatus.IGNORE))
 		{
 			propertiesTable.setHasWatermark(true);
 			propertiesTable.setWatermarkText("IGNORED");
@@ -816,11 +833,12 @@ public class ImportView extends JFrame{
 	 * @param thisEntity
 	 * @param parentEntity
 	 */
-	private void updateEntityChooser(List<? extends ITridas> entities)
+	private void updateEntityChooser()
 	{
+		List<? extends ITridas> entities = model.getSelectedRow().getEntityList();
 		topChooser.setList(entities);
-		ITridas currentEntity = entityModel.getCurrentEntity();
-		ITridas parentEntity = entityModel.getParentEntity();
+		ITridas currentEntity = model.getSelectedRow().getCurrentEntity();
+		ITridas parentEntity = model.getSelectedRow().getParentEntity();
 
 		if (currentEntity instanceof TridasProject)
 		{
@@ -884,7 +902,9 @@ public class ImportView extends JFrame{
 	 * provided treeModel.
 	 * @param treeModel
 	 */
-	private void updateTreeTable(TridasRepresentationTreeModel treeModel) {
+	private void updateTreeTable() {
+		
+		TridasRepresentationTreeModel treeModel = model.getTreeModel();
 		
 		OutlineModel mdl = DefaultOutlineModel.createOutlineModel(
 	    		treeModel, treeModel, true, "TRiDaS Entities");
@@ -897,7 +917,11 @@ public class ImportView extends JFrame{
 	 * Set the GUI to illustrate an invalid file
 	 * @param fileException
 	 */
-	private void setGUIForInvalidFile(InvalidDendroFileException e) {
+	private void setGUIForInvalidFile() {
+		
+		InvalidDendroFileException e = model.getFileException();
+		
+		if(e==null) return;
 		
 		String error = e.getLocalizedMessage();
 		// Try and highlight the line in the input file that is to blame if poss
@@ -919,17 +943,22 @@ public class ImportView extends JFrame{
 				txtOriginalFile.setCaretPosition(pos);
 			} catch (NumberFormatException ex)
 			{}
-			tabbedPane.setEnabledAt(1, false);
-			this.horizSplitPane.setDividerLocation(0);
-			this.panelTreeTable.setVisible(false);
-			this.panelWarnings.setVisible(false);	
+
+			
 			error+="\n\n"+"The file is shown below with the problematic line highlighted.";
 			
 		}
 		
+		tabbedPane.setEnabledAt(1, false);
+		horizSplitPane.setDividerLocation(0.0);
+		panelTreeTable.setVisible(false);
+		panelWarnings.setVisible(false);
+
+		
 		txtErrorMessage.setVisible(true);
 		txtErrorMessage.setText(error);
 		pack();
+		this.tabbedPane.setSelectedIndex(0);
 		
 	}	
 	
@@ -948,7 +977,7 @@ public class ImportView extends JFrame{
 	private void selectInTopChooser() {
 		// disable actionListener firing when we change combobox selection
 		topChooserListener.setEnabled(false);
-		ITridas currentEntity = entityModel.getCurrentEntity();
+		ITridas currentEntity = model.getSelectedRow().getCurrentEntity();
 		
 		try {
 			if (currentEntity == null) {
@@ -1143,21 +1172,33 @@ public class ImportView extends JFrame{
 		
 		String entityname = "entity";
 		try{
-			entityname = TridasTreeViewPanel.getFriendlyClassName(entityModel.getCurrentEntityClass());
+			entityname = TridasTreeViewPanel.getFriendlyClassName(model.getSelectedRow().getCurrentEntityClass());
 		} catch (Exception e){}
 		
 		editEntityText.setFont(editEntityText.getFont().deriveFont(Font.BOLD));
 		editEntityText.setText(enabled ? I18n.getText("metadata.currentlyEditingThis") + " " + entityname
 				: I18n.getText("metadata.clickLockToEdit") + " " +entityname);
-		
+				
 		if(enabled) 
 		{
+			
+			// First warn users and get confirmation if the user hadn't saved previous changes
+			/*if(model.getSelectedRow().isDirty())
+			{
+				if(isUserOkWithLoosingAnyChanges())
+				{
+					model.getSelectedRow().revertChanges();
+				}	
+				else
+				{
+					return;
+				}
+			}*/	
+			
+			// Remove any 'preview' watermark
 			propertiesTable.setHasWatermark(false);
-		}
-		
-		/*if(enabled) {
-			propertiesTable.setHasWatermark(false);
-			if(currentEntity instanceof ITridasSeries)
+			
+			/*if(currentEntity instanceof ITridasSeries)
 				temporaryEditingEntity = TridasCloner.cloneSeriesRefValues((ITridasSeries) currentEntity, (Class<? extends ITridasSeries>) currentEntity.getClass());
 			else
 				temporaryEditingEntity = TridasCloner.clone(currentEntity, currentEntity.getClass());
@@ -1167,12 +1208,21 @@ public class ImportView extends JFrame{
 				temporaryEditingEntity = thisEntity;
 				populateNewEntity(currentMode, temporaryEditingEntity);
 			}*/
-		/*
-			if(temporaryEditingEntity != null)
-				propertiesPanel.readFromObject(temporaryEditingEntity);
+		
+			//if(temporaryEditingEntity != null)
+			
+			
 		}
-	
-		else {
+		/*if(model.getSelectedRow() !=null)
+		{
+			TridasRepresentationTableTreeRow node = model.getSelectedRow();
+			if(node.getCurrentEntity()!=null)
+			{
+				ITridas currEntity = node.getCurrentEntity();
+				propertiesPanel.readFromObject(currEntity);
+			}
+		}*/
+		/*else {
 			temporaryEditingEntity = null;
 						
 			// don't display anything if we have nothingk!
@@ -1222,9 +1272,9 @@ public class ImportView extends JFrame{
 	private boolean isUserOkWithLoosingSelection() {
 		
 		// nothing new has been selected, nothing to lose
-		Class<? extends ITridas> currentEntityType = entityModel.getCurrentEntityClass();
+		Class<? extends ITridas> currentEntityType = model.getSelectedRow().getCurrentEntityClass();
 		
-		if(!entityModel.isDirty())
+		if(!model.getSelectedRow().isDirty())
 			return true;
 		
 		int ret = JOptionPane.showConfirmDialog(this, 

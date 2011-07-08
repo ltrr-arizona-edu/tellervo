@@ -28,11 +28,12 @@ public class ImportNodeSelectedEvent extends ObjectEvent<TridasRepresentationTab
 
 	private static final long serialVersionUID = 1L;
 	public final ImportModel model;
-	
+	public TridasRepresentationTableTreeRow row;
 
 	public ImportNodeSelectedEvent(ImportModel model, TridasRepresentationTableTreeRow row) {
 		super(IOController.ENTITY_SELECTED, row);
 		this.model = model;
+		this.row = row;
 	}
 
 }

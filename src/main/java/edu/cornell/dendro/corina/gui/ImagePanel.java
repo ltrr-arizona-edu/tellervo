@@ -144,32 +144,5 @@ public class ImagePanel extends JPanel
 		this.setSize(d);
 	}
 
-	public static void main(String [] args)
-	throws Exception
-	{
-		BufferedImage image = javax.imageio.ImageIO.read( new java.io.File("Images/splash3.png") );
 
-		ImagePanel north = new ImagePanel(image, ImagePanel.ACTUAL);
-		north.setImageAlignmentY(1.0f);
-		JTextArea text = new JTextArea(5, 40);
-		JScrollPane scrollPane = new JScrollPane( text );
-		north.add( scrollPane );
-
-		ImagePanel south = new ImagePanel(image, ImagePanel.SCALED);
-		JPanel buttons = new JPanel();
-		buttons.add( new JButton("One") );
-		buttons.add( new JButton("Two") );
-		JPanel boxes = new JPanel();
-		boxes.add( new JCheckBox("One") );
-		boxes.add( new JCheckBox("Two") );
-		south.add(buttons, BorderLayout.NORTH);
-		south.add(boxes, BorderLayout.SOUTH);
-
-		JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().add( north, BorderLayout.NORTH );
-		frame.getContentPane().add( south, BorderLayout.SOUTH );
-		frame.pack();
-		frame.setVisible(true);
-	}
 }

@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.core;
 
 import java.io.File;
 import java.util.List;
+import java.util.Vector;
 
 import javax.media.opengl.GLException;
 
@@ -216,18 +217,25 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 		List<WSISecurityUser> users = (List<WSISecurityUser>) ListUtil.subListOfType(dictionary, WSISecurityUser.class);
 		
     	for(WSISecurityUser su: users){
-    		if(su.getUsername().compareTo(username)==0) 
+    		try{
+	    		if(su.getUsername().compareTo(username)==0) 
+	    		{
+	    			currentUser = su;
+	    	    	// Set whether the current user is an administrator or not so that 
+	    	    	// it is easy to disable options that will result in a 'no permissions' 
+	    	    	// error
+	    	    	 try{    				  
+	    				  for(WSISecurityGroup grp : su.getMemberOf().getSecurityGroups())
+	    				  {
+	    					  if(grp.getId().equals("1")) isAdmin=true;
+	    				  }
+	    			    } catch (Exception e){  }
+	    		}
+    		} catch (NullPointerException e)
     		{
-    			currentUser = su;
-    	    	// Set whether the current user is an administrator or not so that 
-    	    	// it is easy to disable options that will result in a 'no permissions' 
-    	    	// error
-    	    	 try{    				  
-    				  for(WSISecurityGroup grp : su.getMemberOf().getSecurityGroups())
-    				  {
-    					  if(grp.getId().equals("1")) isAdmin=true;
-    				  }
-    			    } catch (Exception e){  }
+    			if(username==null) log.warn("username is null");
+    			if(su==null) log.warn("su is null");
+    			if(su.getUsername()==null) log.warn("su.getusername is null");
     		}
     	}
     }

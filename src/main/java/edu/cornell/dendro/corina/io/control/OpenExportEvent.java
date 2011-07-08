@@ -29,7 +29,7 @@ public class OpenExportEvent extends MVCEvent {
 	 */
 	public OpenExportEvent(Sample argSample) {
 		super(IOController.OPEN_EXPORT_WINDOW);
-		sample = null;
+		sample = argSample;
 	}
 
 }

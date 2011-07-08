@@ -55,6 +55,9 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		
 		// edit location geometry with dialog
 		registerEditor(TridasLocationGeometry.class, LocationGeometryEditor.class);
+		
+		// Offer text editing window
+		registerEditor(String.class, MemoEditor.class);
 	}
 	
 	public synchronized PropertyEditor getEditor(Property property) {

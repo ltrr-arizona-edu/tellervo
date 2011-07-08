@@ -318,23 +318,16 @@
 		    <version>4.3.4</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>org.tridas</groupId>
-			<artifactId>native-lib-wrapper</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
 	
 		<!-- Create launch scripts for Linux builds with correct version number -->
 		<resources>
-		  <resource>
-	        <directory>Native/LinBuild</directory>
-	        <filtering>true</filtering>
-	      </resource>
+		  	<resource>
+		  		<directory>src/main/resources</directory>
+		  	</resource>
+
 		</resources>
 	
 		<plugins>
@@ -485,7 +478,7 @@
 						<exclude>**/edu/cornell/dendro/cpgdb/*</exclude>
 						<exclude>**/edu/cornell/dendro/webservice/*</exclude>
 					</excludes>
-					<include>/native/Libraries</include>
+					<!-- <include>/native/Libraries</include>-->
 					<optimise>true</optimise>
 					<debug>true</debug>
 				</configuration>
@@ -633,7 +626,6 @@
 									classpathref="maven.plugin.classpath"/>
 								<zip destfile="${project.build.directory}/${project.build.finalName}-app.zip" update="true">
 									<zipfileset dir="Native/Libraries/" includes="*.jnilib" prefix="${project.build.finalName}/Corina.app"/>
-									<zipfileset dir="Native/Libraries/" includes="*.so" prefix="${project.build.finalName}/Corina.app"/>
 								</zip>
 							</tasks>
 						</configuration>
