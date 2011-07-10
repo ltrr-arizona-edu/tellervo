@@ -52,6 +52,7 @@ import edu.cornell.dendro.corina.core.AppModel;
 import edu.cornell.dendro.corina.gis.GISFrame;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.dbbrowse.MetadataBrowser;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -134,7 +135,7 @@ public class AdminMenu extends JMenu {
    	  add(changepwd); 
    	  
    	  
-   	  if(App.prefs.getPref("corina.login.remember_password") != null)
+   	  if(App.prefs.getBooleanPref(PrefKey.REMEMBER_PASSWORD, false))
    	  {
    		  JMenuItem forgetpwd = Builder.makeMenuItem("menus.admin.forgetpwd",
    				  "edu.cornell.dendro.corina.gui.menus.AdminMenu.forgetPassword()", "forgetpassword.png");
@@ -148,9 +149,9 @@ public class AdminMenu extends JMenu {
      */
     public static void forgetPassword()
     {
-		App.prefs.removePref("corina.login.remember_password");
-		App.prefs.removePref("corina.login.password");
-		App.prefs.removePref("corina.login.auto_login");
+		App.prefs.removePref(PrefKey.REMEMBER_PASSWORD);
+		App.prefs.removePref(PrefKey.PERSONAL_DETAILS_PASSWORD);
+		App.prefs.removePref(PrefKey.AUTO_LOGIN);
 		// TODO Would be good to disable or remove the button after this
     }
     

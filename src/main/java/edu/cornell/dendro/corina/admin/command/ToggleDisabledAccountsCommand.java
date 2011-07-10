@@ -19,7 +19,6 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin.command;
 
-import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 

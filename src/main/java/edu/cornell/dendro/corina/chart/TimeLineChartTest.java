@@ -56,12 +56,10 @@ import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasProject;
-import org.tridas.schema.TridasTridas;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
-import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.DefaultFontMapper;
 import com.lowagie.text.pdf.FontMapper;
 import com.lowagie.text.pdf.PdfContentByte;
@@ -71,7 +69,10 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class TimeLineChartTest extends ApplicationFrame {
 
-    /**
+	private static final long serialVersionUID = 1L;
+
+
+	/**
      * Creates a new demo.
      *
      * @param title  the frame title.
@@ -344,7 +345,7 @@ public class TimeLineChartTest extends ApplicationFrame {
     		JFreeChart chart,
     		Integer width, int height,
     		FontMapper mapper) throws IOException {
-    		Rectangle pagesize = new Rectangle(width, height);
+    		//Rectangle pagesize = new Rectangle(width, height);
     		
     		Document document = new Document(PageSize.A3, 50, 50, 50, 50);
     		

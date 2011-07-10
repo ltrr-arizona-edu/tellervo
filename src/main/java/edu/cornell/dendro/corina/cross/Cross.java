@@ -44,6 +44,7 @@ import java.lang.reflect.Constructor;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -248,7 +249,7 @@ public abstract class Cross implements Runnable {
 	 */
 
 	public int getOverlap() {
-		return App.prefs.getIntPref("corina.cross.overlap", 15);
+		return App.prefs.getIntPref(PrefKey.STATS_OVERLAP_REQUIRED, 15);
 	}
 
 	/**

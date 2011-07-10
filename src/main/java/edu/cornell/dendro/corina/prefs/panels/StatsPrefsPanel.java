@@ -30,7 +30,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
-import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
@@ -135,15 +135,15 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 	
 	private void linkToPrefs()
 	{
-		new FormatWrapper(cboTScore, "corina.cross.tscore.format", "0.00");
-		new FormatWrapper(cboRScore, "corina.cross.rvalue.format", "0.00");
-		new FormatWrapper(cboTrend, "corina.cross.trend.format", "0.0%");
-		new FormatWrapper(cboDScore, "corina.cross.dscore.format", "0.00");
-		new FormatWrapper(cboWJ, "corina.cross.weiserjahre.format", "0.0%");
+		new FormatWrapper(cboTScore, PrefKey.STATS_FORMAT_TSCORE, "0.00");
+		new FormatWrapper(cboRScore, PrefKey.STATS_FORMAT_RVALUE, "0.00");
+		new FormatWrapper(cboTrend, PrefKey.STATS_FORMAT_TREND, "0.0%");
+		new FormatWrapper(cboDScore, PrefKey.STATS_FORMAT_DSCORE, "0.00");
+		new FormatWrapper(cboWJ, PrefKey.STATS_FORMAT_WEISERJAHRE, "0.0%");
 		new SpinnerWrapper(spnMinOverlap, "corina.cross.overlap", 15);
 		new SpinnerWrapper(spnMinOverlapDScore, "corina.cross.d-overlap", 100);
-		new CheckBoxWrapper(chkHighlightSig, Prefs.GRID_HIGHLIGHT, true);
-		new ColorComboBoxWrapper(cboHighlightColor, Prefs.GRID_HIGHLIGHTCOLOR, Color.green);
+		new CheckBoxWrapper(chkHighlightSig, PrefKey.GRID_HIGHLIGHT, true);
+		new ColorComboBoxWrapper(cboHighlightColor, PrefKey.GRID_HIGHLIGHTCOLOR, Color.green);
 	}
 
 

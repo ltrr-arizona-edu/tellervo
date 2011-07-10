@@ -24,10 +24,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 
 public class PrefHandle<T> {
 	/** The name of the preference */
-	protected final String prefName;
+	protected final PrefKey prefKey;
 	/** The default value of this preference (can be null) */
 	protected final T defaultValue;
 	
@@ -43,8 +44,8 @@ public class PrefHandle<T> {
 		FONT
 	}	
 	
-	public PrefHandle(String prefName, Class<T> prefClass, T defaultValue) {
-		this.prefName = prefName;
+	public PrefHandle(PrefKey key, Class<T> prefClass, T defaultValue) {
+		this.prefKey = key;
 		this.defaultValue = defaultValue;
 
 		// which routine do we use to set/get?
@@ -65,10 +66,37 @@ public class PrefHandle<T> {
 			underlyingType = HandleType.FONT;
 		else
 			throw new IllegalArgumentException("Not sure how to handle this type: " + prefClass.getName());
+
 	}
 	
-	protected PrefHandle(String prefName, T defaultValue) {
-		this.prefName = prefName;
+	@Deprecated
+	public PrefHandle(String prefName, Class<T> prefClass, T defaultValue) {
+		this.prefKey = PrefKey.valueOf(prefName);
+		this.defaultValue = defaultValue;
+		// which routine do we use to set/get?
+		if(prefClass.isEnum())
+			throw new IllegalArgumentException("Use EnumPrefHandle for enums");
+		
+		if(String.class.isAssignableFrom(prefClass))
+			underlyingType = HandleType.STRING;
+		else if(Color.class.isAssignableFrom(prefClass))
+			underlyingType = HandleType.COLOR;
+		else if(Dimension.class.isAssignableFrom(prefClass))
+			underlyingType = HandleType.DIMENSION;
+		else if(Boolean.class.isAssignableFrom(prefClass))
+			underlyingType = HandleType.BOOLEAN;
+		else if(Integer.class.isAssignableFrom(prefClass))
+			underlyingType = HandleType.INTEGER;
+		else if(Font.class.isAssignableFrom(prefClass))
+			underlyingType = HandleType.FONT;
+		else
+			throw new IllegalArgumentException("Not sure how to handle this type: " + prefClass.getName());
+
+	}
+	
+	
+	protected PrefHandle(PrefKey key, T defaultValue) {
+		this.prefKey = key;
 		this.defaultValue = defaultValue;
 		this.underlyingType = null;
 	}
@@ -88,33 +116,33 @@ public class PrefHandle<T> {
 		
 		// special case for nulls (unset)
 		if(value == null) {
-			App.prefs.setPref(prefName, null);
+			App.prefs.setPref(prefKey, null);
 			return;
 		}
 		
 		switch(underlyingType) {
 		case STRING:
-			App.prefs.setPref(prefName, (String) value);
+			App.prefs.setPref(prefKey, (String) value);
 			break;
 			
 		case COLOR:
-			App.prefs.setColorPref(prefName, (Color) value);
+			App.prefs.setColorPref(prefKey, (Color) value);
 			break;
 			
 		case DIMENSION:
-			App.prefs.setDimensionPref(prefName, (Dimension) value);
+			App.prefs.setDimensionPref(prefKey, (Dimension) value);
 			break;
 			
 		case BOOLEAN:
-			App.prefs.setBooleanPref(prefName, (Boolean) value);
+			App.prefs.setBooleanPref(prefKey, (Boolean) value);
 			break;
 
 		case INTEGER:
-			App.prefs.setIntPref(prefName, (Integer) value);
+			App.prefs.setIntPref(prefKey, (Integer) value);
 			break;
 			
 		case FONT:
-			App.prefs.setFontPref(prefName, (Font) value);
+			App.prefs.setFontPref(prefKey, (Font) value);
 			break;
 		}
 	}
@@ -142,26 +170,26 @@ public class PrefHandle<T> {
 		
 		switch(underlyingType) {
 		case STRING:
-			return (T) App.prefs.getPref(prefName, (String) defaultReturn);
+			return (T) App.prefs.getPref(prefKey, (String) defaultReturn);
 						
 		case COLOR:
-			return (T) App.prefs.getColorPref(prefName, (Color) defaultReturn);
+			return (T) App.prefs.getColorPref(prefKey, (Color) defaultReturn);
 			
 		case DIMENSION:
-			return (T) App.prefs.getDimensionPref(prefName, (Dimension) defaultReturn);
+			return (T) App.prefs.getDimensionPref(prefKey, (Dimension) defaultReturn);
 			
 		case BOOLEAN: {
-			Boolean value = App.prefs.getBooleanPref(prefName, (Boolean) defaultReturn);			
+			Boolean value = App.prefs.getBooleanPref(prefKey, (Boolean) defaultReturn);			
 			return (T) value;
 		}
 
 		case INTEGER: {
-			Integer value = App.prefs.getIntPref(prefName, (Integer) defaultReturn);
+			Integer value = App.prefs.getIntPref(prefKey, (Integer) defaultReturn);
 			return (T) value;
 		}
 			
 		case FONT:
-			return (T) App.prefs.getFontPref(prefName, (Font) defaultReturn);
+			return (T) App.prefs.getFontPref(prefKey, (Font) defaultReturn);
 		}
 		
 		// not possible to get here!

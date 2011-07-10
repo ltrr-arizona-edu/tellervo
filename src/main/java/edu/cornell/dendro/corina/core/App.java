@@ -22,7 +22,6 @@ package edu.cornell.dendro.corina.core;
 
 import java.io.File;
 import java.util.List;
-import java.util.Vector;
 
 import javax.media.opengl.GLException;
 
@@ -31,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.tridas.io.TridasIO;
 
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
-
 import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gui.Log4JViewer;
@@ -45,14 +43,13 @@ import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.PreferencesDialog;
 import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.WizardDialog;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ListUtil;
-import edu.cornell.dendro.corina.wsi.ResourceEvent;
-import edu.cornell.dendro.corina.wsi.ResourceEventListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
 
 /**
@@ -267,7 +264,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     initialized = true;   
     
     // Get the domain of the WS used
-    String wsurl = App.prefs.getPref("corina.webservice.url", "");
+    String wsurl = App.prefs.getPref(PrefKey.WEBSERVICE_URL, "");
     try {
 	
 		String path = wsurl.substring(wsurl.indexOf("://")+3);

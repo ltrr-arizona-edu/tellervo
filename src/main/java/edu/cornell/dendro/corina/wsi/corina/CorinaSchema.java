@@ -23,7 +23,6 @@ package edu.cornell.dendro.corina.wsi.corina;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;

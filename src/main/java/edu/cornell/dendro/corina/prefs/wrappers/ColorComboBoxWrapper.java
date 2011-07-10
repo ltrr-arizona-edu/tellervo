@@ -31,11 +31,33 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
+
 public class ColorComboBoxWrapper extends ItemWrapper<Color> {
+	
+	public ColorComboBoxWrapper(JComboBox cbo, PrefKey key, Color defaultColor)
+	{
+		super(key.getValue(), defaultColor, Color.class);
+		init(cbo);
+	}
+	
+	/**
+	 * Use ColorComboBoxWrapper(JComboBox PrefKey Color) instead
+	 * 
+	 * @param cbo
+	 * @param prefName
+	 * @param defaultColor
+	 */
+	@Deprecated
 	public ColorComboBoxWrapper(JComboBox cbo, String prefName,
 			Color defaultColor) {
 		super(prefName, defaultColor, Color.class);
+		init(cbo);
 
+	}
+	
+	private void init(JComboBox cbo)
+	{
 		// set up the combo box
 		cbo.addItemListener(this);
 		cbo.setModel(new DefaultComboBoxModel(DEFAULT_COLORS));

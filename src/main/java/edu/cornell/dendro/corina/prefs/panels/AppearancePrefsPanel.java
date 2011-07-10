@@ -35,7 +35,7 @@ import net.miginfocom.swing.MigLayout;
 
 import org.tridas.schema.NormalTridasUnit;
 
-import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.prefs.components.UIDefaultsComponent;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.ColorComboBoxWrapper;
@@ -73,18 +73,18 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 		
 		JComboBox cboEditorBGColor = new JComboBox();
 		panelEditor.add(cboEditorBGColor, "flowx,cell 1 2,alignx left");
-		new ColorComboBoxWrapper(cboEditorBGColor, Prefs.EDIT_BACKGROUND, Color.white);
+		new ColorComboBoxWrapper(cboEditorBGColor, PrefKey.EDIT_BACKGROUND, Color.white);
 		
 		JCheckBox chkShowEditorGrid = new JCheckBox("Gridlines");
 		panelEditor.add(chkShowEditorGrid, "cell 2 2");
-		new CheckBoxWrapper(chkShowEditorGrid, Prefs.EDIT_GRIDLINES, true);
+		new CheckBoxWrapper(chkShowEditorGrid, PrefKey.EDIT_GRIDLINES, true);
 		
 		JLabel lblFont = new JLabel("Font:");
 		panelEditor.add(lblFont, "cell 0 3,alignx right,aligny center");
 		
 		JButton btnFont = new JButton("Font");
 		panelEditor.add(btnFont, "flowy,cell 1 3 2 1,alignx left");
-		new FontButtonWrapper(btnFont, Prefs.EDIT_FONT, getFont());
+		new FontButtonWrapper(btnFont, PrefKey.EDIT_FONT, getFont());
 		
 		JPanel panelCharts = new JPanel();
 		panelCharts.setBorder(new TitledBorder(null, "Charts", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
@@ -108,7 +108,7 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 		
 		final JCheckBox chkShowChartGrid = new JCheckBox("");
 		panelCharts.add(chkShowChartGrid, "flowx,cell 1 2");
-		new CheckBoxWrapper(chkShowChartGrid, Prefs.GRAPH_GRIDLINES, true);
+		new CheckBoxWrapper(chkShowChartGrid, PrefKey.GRAPH_GRIDLINES, true);
 		
 				
 				
@@ -123,9 +123,9 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 					}
 					
 				});
-				new ColorComboBoxWrapper(cboAxisCursorColor, Prefs.GRAPH_AXISCURSORCOLOR, Color.white);
-				new ColorComboBoxWrapper(cboChartBGColor, Prefs.GRAPH_BACKGROUND, Color.black);
-				new ColorComboBoxWrapper(cboGridColor, Prefs.GRAPH_GRIDLINES_COLOR, Color.darkGray);
+				new ColorComboBoxWrapper(cboAxisCursorColor, PrefKey.GRAPH_AXISCURSORCOLOR, Color.white);
+				new ColorComboBoxWrapper(cboChartBGColor, PrefKey.GRAPH_BACKGROUND, Color.black);
+				new ColorComboBoxWrapper(cboGridColor, PrefKey.GRAPH_GRIDLINES_COLOR, Color.darkGray);
 		
 		JPanel panelGeneral = new JPanel();
 		panelGeneral.setBorder(new TitledBorder(null, "General", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
@@ -140,11 +140,14 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 	    		NormalTridasUnit.MICROMETRES.toString()
 	    };
 		
-		new FormatWrapper(cboDisplayUnits, "corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.toString(), unit_keys);
+		new FormatWrapper(cboDisplayUnits, 
+				PrefKey.DISPLAY_UNITS, 
+				NormalTridasUnit.HUNDREDTH_MM.toString(), 
+				unit_keys);
 		
 		JComboBox cboTextColor = new JComboBox();
 		panelEditor.add(cboTextColor, "cell 1 3,alignx left");
-		new ColorComboBoxWrapper(cboTextColor, Prefs.EDIT_FOREGROUND, Color.black);
+		new ColorComboBoxWrapper(cboTextColor, PrefKey.EDIT_FOREGROUND, Color.black);
 		
 	}
 

@@ -55,6 +55,7 @@ import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.XMLDebugView;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.util.BugReport;
 import edu.cornell.dendro.corina.util.PureStringWriter;
 import edu.cornell.dendro.corina.util.XMLBody;
@@ -106,7 +107,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 		this.receivingObjectClass = receivingObjectClass;
 		
 		try {
-			String path = App.prefs.getPref("corina.webservice.url", "invalid-url!");
+			String path = App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid-url!");
 			url = new URI(path.trim());
 			
 			// If no protocol is provided assume http

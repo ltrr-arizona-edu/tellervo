@@ -108,9 +108,9 @@ import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.platform.Platform;
-import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
@@ -698,7 +698,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private void setUIFromPrefs() {
 		if (wjTable == null)
 			return;
-		Font font = App.prefs.getFontPref(Prefs.EDIT_FONT, null);
+		Font font = App.prefs.getFontPref(PrefKey.EDIT_FONT, null);
 		if (font != null)
 			wjTable.setFont(font);
 		// BUG: this doesn't reset the row-heights!
@@ -707,15 +707,12 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		wjTable.setRowHeight((font == null ? 12 : font.getSize()) + 4);
 
 		// disable gridlines, if requested
-		boolean gridlines = Boolean.valueOf(
-				App.prefs.getPref(Prefs.EDIT_GRIDLINES, "true")).booleanValue();
+		boolean gridlines =	App.prefs.getBooleanPref(PrefKey.EDIT_GRIDLINES, true);
 		wjTable.setShowGrid(gridlines);
 
 		// set colors
-		wjTable.setBackground(App.prefs.getColorPref(Prefs.EDIT_BACKGROUND,
-				Color.white));
-		wjTable.setForeground(App.prefs.getColorPref(Prefs.EDIT_FOREGROUND,
-				Color.black));
+		wjTable.setBackground(App.prefs.getColorPref(PrefKey.EDIT_BACKGROUND,Color.white));
+		wjTable.setForeground(App.prefs.getColorPref(PrefKey.EDIT_FOREGROUND,Color.black));
 		wjTable.repaint();
 	}
 

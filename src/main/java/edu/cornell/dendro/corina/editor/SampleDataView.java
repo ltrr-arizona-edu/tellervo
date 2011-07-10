@@ -68,9 +68,9 @@ import edu.cornell.dendro.corina.editor.support.ModifiableTableCellRenderer;
 import edu.cornell.dendro.corina.editor.support.TableCellModifier;
 import edu.cornell.dendro.corina.editor.support.TableCellModifierListener;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.remarks.Remarks;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
@@ -564,7 +564,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 	private void initPrefs() {
 		// reset fonts
-		Font font = App.prefs.getFontPref("corina.edit.font", null);
+		Font font = App.prefs.getFontPref(PrefKey.EDIT_FONT, null);
 		if (font != null)
 			myTable.setFont(font);
 
@@ -575,14 +575,13 @@ public class SampleDataView extends JPanel implements SampleListener,
 		myTable.setRowHeight(16);
 		
 		// disable gridlines, if requested
-		boolean gridlines = Boolean.valueOf(
-				App.prefs.getPref(Prefs.EDIT_GRIDLINES, "true")).booleanValue();
+		boolean gridlines = App.prefs.getBooleanPref(PrefKey.EDIT_GRIDLINES, true);
 		myTable.setShowGrid(gridlines);
 
 		// set colors
-		myTable.setBackground(App.prefs.getColorPref(Prefs.EDIT_BACKGROUND,
+		myTable.setBackground(App.prefs.getColorPref(PrefKey.EDIT_BACKGROUND,
 				Color.white));
-		myTable.setForeground(App.prefs.getColorPref(Prefs.EDIT_FOREGROUND,
+		myTable.setForeground(App.prefs.getColorPref(PrefKey.EDIT_FOREGROUND,
 				Color.black));
 	}
 
@@ -688,7 +687,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		
 		if (myModel instanceof UnitAwareDecadalModel)
 		{
-			String pref = App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString());
+			String pref = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.HUNDREDTH_MM.value().toString());
 
 			
 			((UnitAwareDecadalModel) myModel).setDisplayUnits(NormalTridasUnit.valueOf(pref));

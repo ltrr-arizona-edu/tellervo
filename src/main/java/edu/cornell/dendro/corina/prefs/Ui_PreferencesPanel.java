@@ -32,6 +32,7 @@ import edu.cornell.dendro.corina.gis.WMSTableModel;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import edu.cornell.dendro.corina.hardware.TestMeasurePanel;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.prefs.panels.HardwarePrefsPanel;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
@@ -68,7 +69,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	
     
     	// Enable/Disable mapping 
-    	setMappingEnabled(!App.prefs.getBooleanPref("opengl.failed", false));
+    	setMappingEnabled(!App.prefs.getBooleanPref(PrefKey.OPENGL_FAILED, false));
     	
     	// Set up WMS stuff
     	this.tblWMS.setModel(wmsModel);
@@ -78,8 +79,8 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	
     	// Set up platform types
     	new FormatWrapper(hpp.getCboPlatformType(), 
-    			Prefs.SERIAL_DEVICE, 
-    			App.prefs.getPref(Prefs.SERIAL_DEVICE, "[none]"), 
+    			PrefKey.SERIAL_DEVICE, 
+    			App.prefs.getPref(PrefKey.SERIAL_DEVICE, "[none]"), 
     			SerialDeviceSelector.getAvailableDevicesNames());
         
         panelMeasureHolder = new JPanel();

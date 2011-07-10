@@ -33,6 +33,7 @@ import javax.swing.event.EventListenerList;
 import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import gov.nasa.worldwind.event.RenderingExceptionListener;
@@ -129,7 +130,7 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==this.btnRetry)
 		{
-			App.prefs.setBooleanPref("opengl.failed", false);
+			App.prefs.setBooleanPref(PrefKey.OPENGL_FAILED, false);
 			if(mapPanel==null)
 			{
 				final GISFrame map = new GISFrame();

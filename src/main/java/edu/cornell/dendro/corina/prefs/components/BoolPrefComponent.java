@@ -28,29 +28,40 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 
-// TODO: clean up imports
-// TODO: gpl header
-// TODO: javadoc
-// TODO: rename to Check(Box?)PrefComponent?
 
-@SuppressWarnings("serial")
 public class BoolPrefComponent extends JCheckBox implements ActionListener {
 
-    private String pref;
+	private static final long serialVersionUID = 1L;
+	private PrefKey prefKey;
 
+	@Deprecated
     public BoolPrefComponent(String name, String pref) {
 	super(name);
 
-        this.pref = pref;
+        this.prefKey = PrefKey.valueOf(pref);
 
         // set initial value
-        if ("true".equals(App.prefs.getPref(pref))) // (null means false)
+        if (App.prefs.getBooleanPref(pref, false)) // (null means false)
             setSelected(true);
 
         // listen for user clicks
 	addActionListener(this);
     }
+	
+    public BoolPrefComponent(String name, PrefKey key) {
+    	super(name);
+
+            this.prefKey = key;
+
+            // set initial value
+            if (App.prefs.getBooleanPref(key, false)) // (null means false)
+                setSelected(true);
+
+            // listen for user clicks
+    	addActionListener(this);
+        }
 
     // list of widgets which this checkbox also dims/undims
     @SuppressWarnings("unchecked")
@@ -72,6 +83,6 @@ public class BoolPrefComponent extends JCheckBox implements ActionListener {
             ((JComponent) controlees.get(i)).setEnabled(isSelected());
 
 	// set myself
-        App.prefs.setPref(pref, String.valueOf(isSelected()));
+        App.prefs.setPref(prefKey, String.valueOf(isSelected()));
     }
 }

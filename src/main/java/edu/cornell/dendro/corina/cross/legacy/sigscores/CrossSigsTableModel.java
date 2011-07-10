@@ -17,7 +17,10 @@ import edu.cornell.dendro.corina.ui.I18n;
 
 
 class CrossSigsTableModel extends AbstractTableModel {
-  // i'm not sure what this is, but i need it.
+
+	private static final long serialVersionUID = 1L;
+
+// i'm not sure what this is, but i need it.
   private final static DecimalFormat formatNoPercent = new DecimalFormat("#.0#");
 
   private final SignificantScoresView view;

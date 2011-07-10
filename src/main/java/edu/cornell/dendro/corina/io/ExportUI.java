@@ -55,6 +55,7 @@ import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Help;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -334,7 +335,7 @@ public class ExportUI extends javax.swing.JPanel{
     private void doExport(){
 		
     	// Set the export format for future use
-    	App.prefs.setPref("corina.export.format", this.cboExportFormat.getSelectedItem().toString());
+    	App.prefs.setPref(PrefKey.EXPORT_FORMAT, this.cboExportFormat.getSelectedItem().toString());
     	    	
     	// Get defaults for creating project
     	TridasMetadataFieldSet defaults = new TridasMetadataFieldSet();

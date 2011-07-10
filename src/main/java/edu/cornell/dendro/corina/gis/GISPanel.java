@@ -20,6 +20,7 @@
 package edu.cornell.dendro.corina.gis;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -72,7 +73,7 @@ public class GISPanel extends JPanel implements SelectListener{
         {
         	super(new BorderLayout());
         	
-        	if(App.prefs.getBooleanPref("opengl.failed", false))
+        	if(App.prefs.getBooleanPref(PrefKey.OPENGL_FAILED, false))
         	{
         		wwd=null;
         		failedReq();
@@ -119,7 +120,7 @@ public class GISPanel extends JPanel implements SelectListener{
         private void failedReq()
         {
         	this.failedRetest = true;
-        	App.prefs.setBooleanPref("opengl.failed", true);
+        	App.prefs.setBooleanPref(PrefKey.OPENGL_FAILED, true);
         	GrfxWarning warn = new GrfxWarning(this);
         	warn.btnRetry.setVisible(false);
         	this.add(warn, BorderLayout.CENTER);

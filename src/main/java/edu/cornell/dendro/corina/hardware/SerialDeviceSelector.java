@@ -33,11 +33,11 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
 import edu.cornell.dendro.corina.hardware.device.EveIODevice;
-import edu.cornell.dendro.corina.hardware.device.LintabDevice;
 import edu.cornell.dendro.corina.hardware.device.GenericASCIIDevice;
+import edu.cornell.dendro.corina.hardware.device.LintabDevice;
 import edu.cornell.dendro.corina.hardware.device.QC10Device;
 import edu.cornell.dendro.corina.hardware.device.QC1100;
-import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 
 
 public class SerialDeviceSelector {
@@ -117,8 +117,8 @@ public class SerialDeviceSelector {
 	 */
 	public static AbstractSerialMeasuringDevice getSelectedDevice(Boolean doInitialize) throws IOException, InstantiationException, IllegalAccessException
 	{
-		String selectedDevice = App.prefs.getPref(Prefs.SERIAL_DEVICE, null);
-		String portName = App.prefs.getPref("corina.serialsampleio.port", "COM1");
+		String selectedDevice = App.prefs.getPref(PrefKey.SERIAL_DEVICE, null);
+		String portName = App.prefs.getPref(PrefKey.SERIAL_PORT, "COM1");
 		AbstractSerialMeasuringDevice device = null;
 
 		if(selectedDevice==null || selectedDevice.equals(SerialDeviceSelector.none))
@@ -144,20 +144,20 @@ public class SerialDeviceSelector {
 			{
 				// Device has settable port parameters so set them
 				BaudRate baudRate = null;
-				if(App.prefs.getPref("corina.port.baudrate", null)!=null &&
+				if(App.prefs.getPref(PrefKey.SERIAL_BAUD, null)!=null &&
 					device.isBaudEditable())
 				{
 					 try{
-						 baudRate = BaudRate.valueOf(App.prefs.getPref("corina.port.baudrate", null));
+						 baudRate = BaudRate.valueOf(App.prefs.getPref(PrefKey.SERIAL_BAUD, null));
 					 } catch (Exception e) {}
 				}
 				
 				PortParity parity = null;
-				if (App.prefs.getPref("corina.port.parity", null)!=null &&
+				if (App.prefs.getPref(PrefKey.SERIAL_PARITY, null)!=null &&
 					device.isParityEditable())
 				{
 					try{
-						parity = PortParity.valueOf(App.prefs.getPref("corina.port.parity", null));
+						parity = PortParity.valueOf(App.prefs.getPref(PrefKey.SERIAL_PARITY, null));
 					} catch (Exception e) {}
 				}
 
@@ -171,38 +171,38 @@ public class SerialDeviceSelector {
 				}*/
 				
 				FlowControl fc = null;
-				if(App.prefs.getPref("corina.port.flowcontrol", null)!=null &&
+				if(App.prefs.getPref(PrefKey.SERIAL_FLOWCONTROL, null)!=null &&
 					device.isFlowControlEditable())
 				{
 					try{
-						fc = FlowControl.valueOf(App.prefs.getPref("corina.port.flowcontrol", null));
+						fc = FlowControl.valueOf(App.prefs.getPref(PrefKey.SERIAL_FLOWCONTROL, null));
 					} catch (Exception e){}
 				}
 				
 				DataBits db = null;
-				if(App.prefs.getPref("corina.port.databits", null)!=null &&
+				if(App.prefs.getPref(PrefKey.SERIAL_DATABITS, null)!=null &&
 					device.isDatabitsEditable())
 				{
 					try{
-						db = DataBits.valueOf(App.prefs.getPref("corina.port.databits", null));
+						db = DataBits.valueOf(App.prefs.getPref(PrefKey.SERIAL_DATABITS, null));
 					} catch (Exception e){}
 				}
 				
 				StopBits sb = null;
-				if(App.prefs.getPref("corina.port.stopbits", null)!=null &&
+				if(App.prefs.getPref(PrefKey.SERIAL_STOPBITS, null)!=null &&
 					device.isStopbitsEditable())
 				{
 					try{
-						sb = StopBits.valueOf(App.prefs.getPref("corina.port.stopbits", null));
+						sb = StopBits.valueOf(App.prefs.getPref(PrefKey.SERIAL_STOPBITS, null));
 					} catch (Exception e){}
 				}
 				
 				LineFeed lf = null;
-				if(App.prefs.getPref("corina.port.linefeed", null)!=null &&
+				if(App.prefs.getPref(PrefKey.SERIAL_LINEFEED, null)!=null &&
 					device.isLineFeedEditable())
 				{
 					try{
-						lf = LineFeed.valueOf(App.prefs.getPref("corina.port.linefeed", null));
+						lf = LineFeed.valueOf(App.prefs.getPref(PrefKey.SERIAL_LINEFEED, null));
 					} catch (Exception e){}
 				}
 				

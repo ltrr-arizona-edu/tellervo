@@ -32,6 +32,7 @@ import javax.swing.JRadioButtonMenuItem;
 import org.tridas.schema.NormalTridasUnit;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
@@ -83,7 +84,7 @@ public class UnitsPanel extends JLabel implements SampleListener {
 				    state = glue;
 
 				    // store state in pref
-				    App.prefs.setPref("corina.displayunits", unit_keys[state]);
+				    App.prefs.setPref(PrefKey.DISPLAY_UNITS, unit_keys[state]);
 
 				    // update label
 				    label.setText(I18n.getText("units")+ ": "+ ((JMenuItem) e.getSource()).getText());
@@ -100,7 +101,7 @@ public class UnitsPanel extends JLabel implements SampleListener {
 	    });
 
 		// which one?  read from prefs
-		String pref = App.prefs.getPref("corina.displayunits");
+		String pref = App.prefs.getPref(PrefKey.DISPLAY_UNITS, null);
 		if (pref != null) {
 		    for (int i=0; i<unit.length; i++) {
 				if (pref.equals(unit_keys[i])) {

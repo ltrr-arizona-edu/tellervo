@@ -40,6 +40,7 @@
 package edu.cornell.dendro.corina.cross;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -128,7 +129,7 @@ public class DScore extends Cross {
 	}
 
 	public String getFormat() {
-		return App.prefs.getPref("corina.cross.dscore.format", "0.00");
+		return App.prefs.getPref(PrefKey.STATS_FORMAT_DSCORE, "0.00");
 	}
 
 	public static String getNameStatic() {
@@ -168,7 +169,7 @@ public class DScore extends Cross {
 
 	@Override
 	public int getOverlap() {
-		return App.prefs.getIntPref("corina.cross.d-overlap", 100);
+		return App.prefs.getIntPref(PrefKey.STATS_OVERLAP_REQUIRED_DSCORE, 100);
 	}
 
 	/*

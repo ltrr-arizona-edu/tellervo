@@ -38,6 +38,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gis.GrfxWarning;
 import edu.cornell.dendro.corina.gis.WMSTableModel;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -104,7 +105,7 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 		add(panelWarning);
 
 		// Enable/Disable mapping
-		setMappingEnabled(!App.prefs.getBooleanPref("opengl.failed", false));
+		setMappingEnabled(!App.prefs.getBooleanPref(PrefKey.OPENGL_FAILED, false));
 		populateWMSTable();
 
 	}
@@ -155,7 +156,7 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 		{
 			populateWMSTable();
 			// Show message and buttons depending on WS status
-			Boolean wsDisabled = App.prefs.getBooleanPref("corina.webservice.disable", true);
+			Boolean wsDisabled = App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, true);
 			lblMappingRequiresWeb.setVisible(wsDisabled);
 			btnAdd.setEnabled(!wsDisabled);
 			btnRemove.setEnabled(!wsDisabled);

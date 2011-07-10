@@ -35,7 +35,7 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.graph.Graph;
-import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -274,8 +274,8 @@ public class AllScoresTableModel extends AbstractTableModel {
             df = new DecimalFormat("0000"); // sane default?
             
             // fore = App.prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black);
-            back = App.prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white);
-            lite = App.prefs.getColorPref(Prefs.GRID_HIGHLIGHTCOLOR, Color.green);
+            back = App.prefs.getColorPref(PrefKey.EDIT_BACKGROUND, Color.white);
+            lite = App.prefs.getColorPref(PrefKey.GRID_HIGHLIGHTCOLOR, Color.green);
         }
         
         public void updateCross() {

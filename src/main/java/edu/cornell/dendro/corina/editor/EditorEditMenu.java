@@ -64,6 +64,7 @@ import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.io.TwoColumn;
 import edu.cornell.dendro.corina.io.WrongFiletypeException;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
@@ -217,7 +218,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		addInsertYears();
 
 		if (AbstractSerialMeasuringDevice.hasSerialCapability()
-				&& App.prefs.getPref("corina.serialsampleio.port", null) != null) {
+				&& App.prefs.getPref(PrefKey.SERIAL_PORT, null) != null) {
 			addSeparator();
 			addMeasure();
 		}

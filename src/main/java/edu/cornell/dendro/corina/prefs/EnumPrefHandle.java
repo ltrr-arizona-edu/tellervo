@@ -20,13 +20,22 @@
 package edu.cornell.dendro.corina.prefs;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 
 public class EnumPrefHandle<T extends Enum<T>> extends PrefHandle<T> {
 	/** The type of this preference */
 	protected final Class<T> type;
 
+	public EnumPrefHandle(PrefKey key, Class<T> prefClass, T defaultValue) {
+		super(key, defaultValue);
+		
+		// store the enum preference
+		this.type = prefClass;
+	}
+	
+	@Deprecated
 	public EnumPrefHandle(String prefName, Class<T> prefClass, T defaultValue) {
-		super(prefName, defaultValue);
+		super(PrefKey.valueOf(prefName), defaultValue);
 		
 		// store the enum preference
 		this.type = prefClass;
@@ -34,11 +43,11 @@ public class EnumPrefHandle<T extends Enum<T>> extends PrefHandle<T> {
 
 	@Override
 	public T get(T defaultReturn) {
-		return App.prefs.getEnumPref(prefName, defaultReturn, type);
+		return App.prefs.getEnumPref(prefKey, defaultReturn, type);
 	}
 
 	@Override
 	public void set(T value) {
-		App.prefs.setPref(prefName, value.toString());
+		App.prefs.setPref(prefKey, value.toString());
 	}	
 }

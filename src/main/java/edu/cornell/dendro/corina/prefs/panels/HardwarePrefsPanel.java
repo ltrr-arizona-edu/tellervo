@@ -46,7 +46,7 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.FlowCont
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
-import edu.cornell.dendro.corina.prefs.Prefs;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -99,8 +99,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     	
 		// Set up platform types
     	new FormatWrapper(cboPlatformType, 
-    			Prefs.SERIAL_DEVICE, 
-    			App.prefs.getPref(Prefs.SERIAL_DEVICE, "[none]"), 
+    			PrefKey.SERIAL_DEVICE, 
+    			App.prefs.getPref(PrefKey.SERIAL_DEVICE, "[none]"), 
     			SerialDeviceSelector.getAvailableDevicesNames());
     	cboPlatformType.addItemListener(new ItemListener(){
 			@Override
@@ -122,8 +122,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		cboDatabits.setModel(new DefaultComboBoxModel(new String[] {}));
 		panel.add(cboDatabits, "cell 3 1,alignx left");
 		new FormatWrapper(cboDatabits, 
-				"corina.port.databits", 
-				App.prefs.getPref("corina.port.databits", "8"), 
+				PrefKey.SERIAL_DATABITS, 
+				App.prefs.getPref(PrefKey.SERIAL_DATABITS, "8"), 
 				DataBits.allValuesAsArray());
 		
 		lblBaud = new JLabel("Baud:");
@@ -132,8 +132,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		cboBaud.setModel(new DefaultComboBoxModel(new String[] {}));
 		panel.add(cboBaud, "cell 1 2,alignx left");
     	new FormatWrapper(cboBaud, 
-    			"corina.port.baudrate", 
-    			App.prefs.getPref("corina.port.baudrate", "9600"), 
+    			PrefKey.SERIAL_BAUD, 
+    			App.prefs.getPref(PrefKey.SERIAL_BAUD, "9600"), 
     			BaudRate.allValuesAsArray());
 		
 		lblFlowControl = new JLabel("Handshaking / Flow control:");
@@ -142,8 +142,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		cboFlowControl.setModel(new DefaultComboBoxModel(new String[] {}));
 		panel.add(cboFlowControl, "cell 3 2,alignx left");
 		new FormatWrapper(cboFlowControl, 
-				"corina.port.flowcontrol", 
-				App.prefs.getPref("corina.port.flowcontrol", "None"), 
+				PrefKey.SERIAL_FLOWCONTROL, 
+				App.prefs.getPref(PrefKey.SERIAL_FLOWCONTROL, "None"), 
 				FlowControl.allValuesAsArray());
 		
 		lblParity = new JLabel("Parity:");
@@ -152,8 +152,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		cboParity.setModel(new DefaultComboBoxModel(new String[] {}));
 		panel.add(cboParity, "cell 1 3,alignx left");
     	new FormatWrapper(cboParity, 
-    			"corina.port.parity", 
-    			App.prefs.getPref("corina.port.parity", "None"), 
+    			PrefKey.SERIAL_PARITY, 
+    			App.prefs.getPref(PrefKey.SERIAL_PARITY, "None"), 
     			PortParity.allValuesAsArray());
 		
 		
@@ -162,8 +162,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		cboLineFeed = new JComboBox();
 		panel.add(cboLineFeed, "cell 3 3,alignx left");
 		new FormatWrapper(cboLineFeed, 
-				"corina.port.linefeed", 
-				App.prefs.getPref("corina.port.linefeed", "CR"), 
+				PrefKey.SERIAL_LINEFEED, 
+				App.prefs.getPref(PrefKey.SERIAL_LINEFEED, "CR"), 
 				LineFeed.allValuesAsArray());
 		
 		
@@ -173,8 +173,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     	cboStopbits.setModel(new DefaultComboBoxModel(new String[] {}));
     	panel.add(cboStopbits, "cell 1 4,alignx left");	
     	new FormatWrapper(cboStopbits, 
-    			"corina.port.stopbits", 
-    			App.prefs.getPref("corina.port.stopbits", "2"), 
+    			PrefKey.SERIAL_STOPBITS, 
+    			App.prefs.getPref(PrefKey.SERIAL_STOPBITS, "2"), 
     			StopBits.allValuesAsArray());
 		
 
@@ -235,7 +235,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			Vector<String> comportlist = AbstractSerialMeasuringDevice.enumeratePorts();
 	
 			// do we have a COM port selected that's not in the list? (ugh!)
-			String curport = App.prefs.getPref("corina.serialsampleio.port", null);
+			String curport = App.prefs.getPref(PrefKey.SERIAL_PORT, null);
 			if (curport != null && !comportlist.contains(curport)) {
 				comportlist.add(curport);
 			} else if (curport == null) {
@@ -253,7 +253,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 
 			cboPort.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
-					App.prefs.setPref("corina.serialsampleio.port",
+					App.prefs.setPref(PrefKey.SERIAL_PORT,
 							(String) cboPort.getSelectedItem());
 				}
 			});

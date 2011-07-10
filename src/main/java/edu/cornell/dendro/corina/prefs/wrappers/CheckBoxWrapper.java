@@ -24,11 +24,20 @@ import java.awt.event.ItemEvent;
 import javax.swing.AbstractButton;
 import javax.swing.JCheckBox;
 
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
+
 // this one is nice and simple! :)
 
 public class CheckBoxWrapper extends ItemWrapper<Boolean> {
 	public CheckBoxWrapper(JCheckBox cb, String prefName, Boolean defaultValue) {
 		super(prefName, defaultValue, Boolean.class);
+		
+		cb.setSelected(getValue());
+		cb.addItemListener(this);
+	}
+	
+	public CheckBoxWrapper(JCheckBox cb, PrefKey key, Boolean defaultValue) {
+		super(key.getValue(), defaultValue, Boolean.class);
 		
 		cb.setSelected(getValue());
 		cb.addItemListener(this);

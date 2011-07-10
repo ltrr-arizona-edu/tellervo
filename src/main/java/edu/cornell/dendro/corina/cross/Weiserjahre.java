@@ -40,6 +40,7 @@
 package edu.cornell.dendro.corina.cross;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -55,7 +56,7 @@ public class Weiserjahre extends Cross {
 
 	public String getFormat() {
         // FIXME: this should be a pref, as well
-        return App.prefs.getPref("corina.cross.weiserjahre.format", "0.0%") +
+        return App.prefs.getPref(PrefKey.STATS_FORMAT_WEISERJAHRE, "0.0%") +
         	"of 0000";
     }
 

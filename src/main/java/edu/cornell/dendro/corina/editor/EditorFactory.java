@@ -25,6 +25,7 @@ import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.io.Metadata;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
@@ -300,7 +301,7 @@ public class EditorFactory {
 		String title = "["+I18n.getText("editor.newSeries")+ "]";
 
 		BarcodeDialogResult result = null;
-    	if(!App.prefs.getBooleanPref("corina.barcodes.disable", false))
+    	if(!App.prefs.getBooleanPref(PrefKey.BARCODES_DISABLED, false))
     	{
 			final JDialog dialog = new JDialog();
 			final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);

@@ -340,7 +340,6 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 	// copy this graph to the clipboard as SVG -- is this really valuable? does
 	// it work?
-	@SuppressWarnings("unused")
 	/*private void copyToClipboard() {
 		final String glue = toSVG();
 

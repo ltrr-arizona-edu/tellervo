@@ -52,6 +52,7 @@ import javax.swing.filechooser.FileFilter;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.logging.CorinaLog;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -180,7 +181,7 @@ public class FileDialog {
 		String wd = (String) workingDirectories.get(function);
 		
 		if(wd == null)
-			return App.prefs.getPref("corina.dir.data");
+			return App.prefs.getPref(PrefKey.DATA_DIR, null);
 
 		return wd;
 	}

@@ -53,9 +53,10 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 
 /**
-    A popup menu for picking a color.  Given a key (like "corina.graph.background"),
+    A popup menu for picking a color.  Given a preference key ,
     this popup will change the value of that preference using the Prefs class methods.
 
     <h2>Left to do</h2>
@@ -155,57 +156,59 @@ public class ColorPrefComponent extends JComboBox {
     
         @param preference the preference key that this popup corresponds to
     */
-    public ColorPrefComponent(String preference) {
-	// color
-      Color oldColor = App.prefs.getColorPref(preference, Color.black); // BUG: what if it's not parseable?
-	boolean stdColor = false;
+    
+    public ColorPrefComponent(PrefKey preference) {
+		// color
+	      Color oldColor = App.prefs.getColorPref(preference, Color.black); // BUG: what if it's not parseable?
+		boolean stdColor = false;
+	
+		// add a bunch of standard colors
+		for (int i=0; i<DEFAULT_COLORS.length; i++) {
+		    addItem(DEFAULT_COLORS[i]);
+		    if (DEFAULT_COLORS[i].color.equals(oldColor)) {
+			setSelectedIndex(i);
+			stdColor = true;
+		    }
+		}
+	
 
-	// add a bunch of standard colors
-	for (int i=0; i<DEFAULT_COLORS.length; i++) {
-	    addItem(DEFAULT_COLORS[i]);
-	    if (DEFAULT_COLORS[i].color.equals(oldColor)) {
-		setSelectedIndex(i);
-		stdColor = true;
-	    }
-	}
-
-	// "other" item
-	// BUG: no i18n!
-	final NamedColor other = new NamedColor("Other...",
+		// "other" item
+		// BUG: no i18n!
+		final NamedColor other = new NamedColor("Other...",
 						(stdColor||oldColor==null) ? OTHER_COLOR : oldColor);
-	addItem(other);
-	if (!stdColor)
-	    setSelectedIndex(DEFAULT_COLORS.length);
+		addItem(other);
+		if (!stdColor)
+			setSelectedIndex(DEFAULT_COLORS.length);
 
         // glue
-        final String pref = preference;
+        final PrefKey pref = preference;
 
         // when the user selects something, deal with it
-	addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    // "other" selected?
-		    if ((NamedColor) ((JComboBox) e.getSource()).getSelectedItem() == other) {
-			// ask for new color
-			Color newColor = JColorChooser.showDialog(null, // no parent component?
-								  "Choose New Color",
-								  other.color);
-			if (newColor != null)
-			    other.color = newColor;
-		    }
-                    
-                    // encode color as string
-		    Color color = ((NamedColor) ((JComboBox) e.getSource()).getSelectedItem()).color;
-		    String value = "#" + Integer.toHexString(color.getRGB() & 0x00ffffff);
-
-                    // set preference
-        App.prefs.setPref(pref, value);
-		}
+        addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+			    // "other" selected?
+			    if ((NamedColor) ((JComboBox) e.getSource()).getSelectedItem() == other) {
+				// ask for new color
+				Color newColor = JColorChooser.showDialog(null, // no parent component?
+									  "Choose New Color",
+									  other.color);
+				if (newColor != null)
+				    other.color = newColor;
+			    }
+	                    
+	                    // encode color as string
+			    Color color = ((NamedColor) ((JComboBox) e.getSource()).getSelectedItem()).color;
+			    String value = "#" + Integer.toHexString(color.getRGB() & 0x00ffffff);
+	
+	                    // set preference
+	        App.prefs.setPref(pref, value);
+			}
 	    });
 
-	// set the renderer
-	setRenderer(new ColorLabelRenderer());
-
-	// display all
-	setMaximumRowCount(getItemCount());
+		// set the renderer
+		setRenderer(new ColorLabelRenderer());
+	
+		// display all
+		setMaximumRowCount(getItemCount());
     }
 }

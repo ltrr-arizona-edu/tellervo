@@ -32,6 +32,7 @@ import javax.swing.JRadioButtonMenuItem;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.manip.MeanSensitivity;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
@@ -80,7 +81,7 @@ public class Statistics extends JLabel implements SampleListener {
 				    state = glue;
 
 				    // store state in pref
-				    App.prefs.setPref("corina.modeline.statistic", stat_keys[state]);
+				    App.prefs.setPref(PrefKey.STATS_MODELINE, stat_keys[state]);
 
 				    // update label
 				    label.setText(((JMenuItem) e.getSource()).getText());
@@ -97,7 +98,7 @@ public class Statistics extends JLabel implements SampleListener {
 	computeAllStats();
 
 	// which one?  read from prefs
-	String pref = App.prefs.getPref("corina.modeline.statistic");
+	String pref = App.prefs.getPref(PrefKey.STATS_MODELINE, null);
 	if (pref != null) {
 	    for (int i=0; i<stat_names.length; i++) {
 		if (pref.equals(stat_keys[i])) {

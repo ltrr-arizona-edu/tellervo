@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 
 /**
  * This class simply handles our proxy settings
@@ -49,7 +50,7 @@ public class ProxyManager implements PrefsListener {
 	}
 	
 	private void setupProxy() {
-		String proxyType = App.prefs.getPref("corina.proxy.type", "default");
+		String proxyType = App.prefs.getPref(PrefKey.PROXY_TYPE, "default");
 
 		// no changes here? ignore it and move on
 		// but not for manual - we might have changed some settings
@@ -83,9 +84,9 @@ public class ProxyManager implements PrefsListener {
 			return;
 				
 		String host;
-		if((host = App.prefs.getPref("corina.proxy.http", null)) != null) {
+		if((host = App.prefs.getPref(PrefKey.PROXY_HTTP, (String)null)) != null) {
 			System.setProperty("http.proxyHost", host);
-			System.setProperty("http.proxyPort", App.prefs.getPref("corina.proxy.http_port", "80"));
+			System.setProperty("http.proxyPort", App.prefs.getPref(PrefKey.PROXY_PORT_HTTP, "80"));
 
 			log.info("PROXY: http: " + System.getProperty("http.proxyHost") + 
 					":" + System.getProperty("http.proxyPort"));
@@ -95,9 +96,9 @@ public class ProxyManager implements PrefsListener {
 			System.clearProperty("http.proxyPort");			
 		}
 		
-		if((host = App.prefs.getPref("corina.proxy.https", null)) != null) {
+		if((host = App.prefs.getPref(PrefKey.PROXY_HTTPS, (String)null)) != null) {
 			System.setProperty("https.proxyHost", host);
-			System.setProperty("https.proxyPort", App.prefs.getPref("corina.proxy.https_port", "443"));
+			System.setProperty("https.proxyPort", App.prefs.getPref(PrefKey.PROXY_HTTPS, "443"));
 
 			log.info("PROXY: https: " + System.getProperty("https.proxyHost") + 
 					":" + System.getProperty("https.proxyPort"));

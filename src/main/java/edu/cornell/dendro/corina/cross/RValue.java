@@ -44,6 +44,7 @@ import java.util.List;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina_indexing.HighPass;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -97,7 +98,7 @@ public class RValue extends Cross {
 	/** A format string for R-values.
 	 @return a format string for R-values */
 	public String getFormat() {
-		return App.prefs.getPref("corina.cross.rvalue.format", "0.00");
+		return App.prefs.getPref(PrefKey.STATS_FORMAT_RVALUE, "0.00");
 	}
 	
 	public static String getNameStatic() {

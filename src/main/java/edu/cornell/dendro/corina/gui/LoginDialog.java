@@ -50,6 +50,7 @@ import javax.swing.border.EmptyBorder;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -411,23 +412,23 @@ public class LoginDialog extends JDialog {
 		
 		
 		// remember the username? load it.
-		if(App.prefs.getBooleanPref("corina.login.remember_username", true)) {
+		if(App.prefs.getBooleanPref(PrefKey.REMEMBER_USERNAME, true)) {
 			rememberUsername.setSelected(true);
-			username.setText(App.prefs.getPref("corina.login.username", ""));			
+			username.setText(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, ""));			
 		} else {
 			rememberUsername.setSelected(false);
 		}
 		
 		// remember the password? load it.
-		if(App.prefs.getBooleanPref("corina.login.remember_password", false)) {
+		if(App.prefs.getBooleanPref(PrefKey.REMEMBER_PASSWORD, false)) {
 			rememberPassword.setSelected(true);
-			password.setText(decryptPassword(App.prefs.getPref("corina.login.password", "").toCharArray()));			
+			password.setText(decryptPassword(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_PASSWORD, "").toCharArray()));			
 		} else {
 			rememberPassword.setSelected(false);
 		}
 		
 		// auto login?
-		if(App.prefs.getBooleanPref("corina.login.auto_login", false)) {		
+		if(App.prefs.getBooleanPref(PrefKey.AUTO_LOGIN, false)) {		
 			autoLogin.setSelected(true);
 		} else {
 			autoLogin.setSelected(false);
@@ -476,26 +477,26 @@ public class LoginDialog extends JDialog {
 		if (this.ignoreSavedInfo) return;
 		
 		if(rememberUsername.isSelected()) {
-			App.prefs.setPref("corina.login.remember_username", "true");
-			App.prefs.setPref("corina.login.username", username.getText());
+			App.prefs.setBooleanPref(PrefKey.REMEMBER_USERNAME, true);
+			App.prefs.setPref(PrefKey.PERSONAL_DETAILS_USERNAME, username.getText());
 		}
 		else {
-			App.prefs.removePref("corina.login.remember_username");
-			App.prefs.removePref("corina.login.username");
+			App.prefs.removePref(PrefKey.REMEMBER_USERNAME);
+			App.prefs.removePref(PrefKey.PERSONAL_DETAILS_USERNAME);
 		}
 		
 		if(rememberPassword.isSelected()) {
-			App.prefs.setPref("corina.login.remember_password", "true");
-			App.prefs.setPref("corina.login.password", encryptPassword(password.getPassword()));
+			App.prefs.setBooleanPref(PrefKey.REMEMBER_PASSWORD, true);
+			App.prefs.setPref(PrefKey.PERSONAL_DETAILS_PASSWORD, encryptPassword(password.getPassword()));
 		} else {
-			App.prefs.removePref("corina.login.remember_password");
-			App.prefs.removePref("corina.login.password");
+			App.prefs.removePref(PrefKey.REMEMBER_PASSWORD);
+			App.prefs.removePref(PrefKey.PERSONAL_DETAILS_PASSWORD);
 		}
 
 		if(autoLogin.isSelected()) {
-			App.prefs.setPref("corina.login.auto_login", "true");
+			App.prefs.setBooleanPref(PrefKey.AUTO_LOGIN, true);
 		} else {
-			App.prefs.removePref("corina.login.auto_login");
+			App.prefs.removePref(PrefKey.AUTO_LOGIN);
 		}
 	}
 	

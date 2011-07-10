@@ -81,23 +81,89 @@ import edu.cornell.dendro.corina.util.WeakEventListenerList;
  */
 public class Prefs extends AbstractSubsystem {
 	// sample editor
-	public static final String EDIT_FOREGROUND = "corina.edit.foreground";
-	public static final String EDIT_BACKGROUND = "corina.edit.background";
-	public static final String EDIT_FONT = "corina.edit.font";
-	public static final String EDIT_GRIDLINES = "corina.edit.gridlines";
-	// graph
-	public static final String GRAPH_BACKGROUND = "corina.graph.background";
-	public static final String GRAPH_GRIDLINES = "corina.graph.graphpaper";
-	public static final String GRAPH_GRIDLINES_COLOR = "corina.graph.graphpaper.color";
-	public static final String GRAPH_AXISCURSORCOLOR = "corina.graph.foreground";
-	// ???
-	public static final String GRID_HIGHLIGHT = "corina.grid.highlight";
-	public static final String GRID_HIGHLIGHTCOLOR = "corina.grid.hightlightcolor";
-	
-	public static final String SERIAL_DEVICE = "corina.serial.measuring.device";
 
 	private static final CorinaLog log = new CorinaLog("Prefs");
 
+	
+	/**
+	 * Enum for all the keys identifying preference types in Corina
+	 * 
+	 * @author pwb48
+	 *
+	 */
+	public enum PrefKey{
+		
+		EDIT_FOREGROUND("corina.edit.foreground"),
+		EDIT_BACKGROUND("corina.edit.background"),
+		EDIT_FONT("corina.edit.font"),
+		EDIT_GRIDLINES("corina.edit.gridlines"),
+		GRAPH_BACKGROUND("corina.graph.background"),
+		GRAPH_GRIDLINES("corina.graph.graphpaper"),
+		GRAPH_GRIDLINES_COLOR("corina.graph.graphpaper.color"),
+		GRAPH_AXISCURSORCOLOR("corina.graph.foreground"),
+		GRID_HIGHLIGHT("corina.grid.highlight"),
+		GRID_HIGHLIGHTCOLOR("corina.grid.hightlightcolor"),
+		DISPLAY_UNITS("corina.displayunits"),
+		BARCODES_DISABLED("corina.barcodes.disable"),
+		
+		/** Boolean indicating whether OpenGL failed on last attempt*/
+		OPENGL_FAILED("opengl.failed"),
+		SERIAL_DEVICE("corina.serial.measuring.device"),
+		SERIAL_PORT("corina.serialsampleio.port"),
+		SERIAL_DATABITS("corina.port.databits"),
+		SERIAL_BAUD("corina.port.baudrate"),
+		SERIAL_FLOWCONTROL("corina.port.flowcontrol"),
+		SERIAL_PARITY("corina.port.parity"),
+		SERIAL_LINEFEED("corina.port.linefeed"),
+		SERIAL_STOPBITS("corina.port.stopbits"),
+		
+		STATS_FORMAT_TSCORE("corina.cross.tscore.format"),
+		STATS_FORMAT_RVALUE("corina.cross.rvalue.format"),
+		STATS_FORMAT_TREND("corina.cross.trend.format"),
+		STATS_FORMAT_DSCORE("corina.cross.dscore.format"),
+		STATS_FORMAT_WEISERJAHRE("corina.cross.weiserjahre.format"),
+		STATS_OVERLAP_REQUIRED("corina.cross.overlap"),
+		STATS_OVERLAP_REQUIRED_DSCORE("corina.cross.d-overlap"),
+		STATS_MODELINE("corina.modeline.statistic"),
+		
+		PERSONAL_DETAILS_EMAIL("corina.bugreport.fromemail"),
+		PERSONAL_DETAILS_USERNAME("corina.login.username"),
+		PERSONAL_DETAILS_PASSWORD("corina.login.password"),
+		REMEMBER_USERNAME("corina.login.remember_username"),
+		REMEMBER_PASSWORD("corina.login.remember_password"),
+		AUTO_LOGIN("corina.login.auto_login"),
+		
+		INDEX_POLY_DEGREES("corina.index.polydegs"),
+		INDEX_LOWPASS("corina.index.lowpass"),
+		INDEX_CUBIC_FACTOR("corina.index.cubicfactor"),
+		
+		EXPORT_FORMAT("corina.export.format"),
+		
+		/** URL for the Corina webservice */
+		WEBSERVICE_URL("corina.webservice.url"),
+		WEBSERVICE_DISABLED("corina.webservice.disable"),
+		PROXY_TYPE("corina.proxy.type"),
+		PROXY_PORT_HTTP("corina.proxy.http_port"),
+		PROXY_PORT_HTTPS("corina.proxy.https_port"),
+		PROXY_HTTPS("corina.proxy.https"),
+		PROXY_HTTP("corina.proxy.http"),
+		
+		DATA_DIR("corina.dir.data");
+		
+		private String key;
+		
+		private PrefKey(String key)
+		{
+			this.key = key;
+		}
+		
+		public String getValue()
+		{
+			return key;
+		}
+	}
+	
+	
 	/**
 	 * if true, silently ignore if the prefs can't be saved. protected to avoid
 	 * synthetic accessor
@@ -474,7 +540,7 @@ public class Prefs extends AbstractSubsystem {
 		dialog.setResizable(false);
 		dialog.setVisible(true);
 
-		// return true iff "try again" is clicked
+		// return true if "try again" is clicked
 		return optionPane.getValue().equals(I18n.getText("try_again"));
 	}
 
@@ -494,8 +560,17 @@ public class Prefs extends AbstractSubsystem {
 		return prefs;
 	}
 
-	// just wrappers, for now
-	public void setPref(String pref, String value) {
+
+	
+	/**
+	 * Set the value of a preference
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void setPref(PrefKey key, String value)
+	{
+		String pref = key.getValue();
 		
 		// support removing via set(null)
 		if(value == null)
@@ -515,23 +590,99 @@ public class Prefs extends AbstractSubsystem {
 		save();
 		firePrefChanged(pref);
 	}
-
+	
 	/**
-	 * Often best to use getPref(name, default) instead
+	 * Set the value of a preference to the specified boolean
+	 * @param key
+	 * @param value
 	 */
-	public String getPref(String pref) {
-		return prefs.getProperty(pref);
+	public void setBooleanPref(PrefKey key, boolean value) {
+		setPref(key, Boolean.toString(value));
 	}
 	
 	/**
-	 * Get a preference result as an enum
+	 * Set the value of a preference to the specified color
+	 * @param pref
+	 * @param value
+	 */
+	public void setColorPref(PrefKey pref, Color value) {
+		String encoded = "#" + Integer.toHexString(value.getRGB() & 0x00ffffff);
+		setPref(pref, encoded);
+	}
+	
+	/**
+	 * Set the value of a preference to the specified int
+	 * @param pref
+	 * @param value
+	 */
+	public void setIntPref(PrefKey pref, int value) {
+		setPref(pref, Integer.toString(value));
+	}
+	
+	/**
+	 * Set the value of a preference to the specified font
+	 * @param pref
+	 * @param value
+	 */
+	public void setFontPref(PrefKey pref, Font value) {
+		setPref(pref, stringifyFont(value));
+	}
+	
+	/**
+	 * Set the value of a preference to the specified dimension
+	 * @param pref
+	 * @param value
+	 */
+	public void setDimensionPref(PrefKey pref, Dimension value) {
+		setPref(pref, value.width + "," + value.height);
+	}
+
+
+	
+	/**
+	 * Method for getting the string value of a preference
 	 * 
+	 * @param key
+	 * @param deflt
+	 * @return
+	 */
+	public String getPref(PrefKey key, String deflt){
+		String value = prefs.getProperty(key.getValue());
+		if (value == null)
+			value = deflt;
+		
+		return value;	
+	}
+	
+	/**
+	 * Get a color for the specified preference key
+	 * 
+	 * @param key
+	 * @param deflt
+	 * @return
+	 */
+	public Color getColorPref(PrefKey key, Color deflt) {
+		String value = prefs.getProperty(key.getValue());
+		if (value == null)
+			return deflt;
+		try {
+			return Color.decode(value);
+		} catch (NumberFormatException nfe) {
+			log.warn("Invalid color for preference '" + key.getValue() + "': " + value);
+			return deflt;
+		}
+	}
+	
+	/**
+	 * Get an enum for the specified preference key
+	 * 
+	 * @param <T>
 	 * @param pref
 	 * @param deflt
 	 * @param enumType
 	 * @return
 	 */
-	public <T extends Enum<T>> T getEnumPref(String pref, T deflt, Class<T> enumType) {
+	public <T extends Enum<T>> T getEnumPref(PrefKey pref, T deflt, Class<T> enumType) {
 		String val = getPref(pref, null);
 		if(val == null)
 			return deflt;
@@ -543,18 +694,194 @@ public class Prefs extends AbstractSubsystem {
 		}
 	}
 	
-	public String getPref(String pref, String deflt) {
-		String value = prefs.getProperty(pref);
-		if (value == null)
-			value = deflt;
-				
-		return value;
+	
+	/**
+	 * Method for getting the boolean value of a preference
+	 * @param key
+	 * @param deflt
+	 * @return
+	 */
+	public Boolean getBooleanPref(PrefKey key, Boolean deflt)
+	{
+		String value = prefs.getProperty(key.getValue());
+		if(value == null)
+			return deflt;
+		return Boolean.parseBoolean(value);
 	}
 	
+	/**
+	 * Get the specified preference as an int
+	 * @param key
+	 * @param deflt
+	 * @return
+	 */
+	public int getIntPref(PrefKey key, int deflt) {
+		String value = prefs.getProperty(key.getValue());
+		if (value == null)
+			return deflt;
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException nfe) {
+			log.warn("Invalid integer for preference '" + key.getValue() + "': " + value);
+			return deflt;
+		}
+	}
+	
+	
+	/**
+	 * Get the requested preference as a font
+	 * 
+	 * @param key
+	 * @param deflt
+	 * @return
+	 */
+	public Font getFontPref(PrefKey key, Font deflt) {
+		String value = prefs.getProperty(key.getValue());
+		if (value == null)
+			return deflt;
+		return Font.decode(value);
+	}
+	
+	/**
+	 * Get the requested preference as a Dimension
+	 * 
+	 * @param key
+	 * @param deflt
+	 * @return
+	 */
+	public Dimension getDimensionPref(PrefKey key, Dimension deflt) {
+		String value = prefs.getProperty(key.getValue());
+		if (value == null)
+			return deflt;
+		StringTokenizer st = new StringTokenizer(value, ",");
+		Dimension d = new Dimension(deflt);
+		if (st.hasMoreTokens()) {
+			String s = st.nextToken();
+			try {
+				int i = Integer.parseInt(s);
+				if (i > 0)
+					d.width = i;
+			} catch (NumberFormatException nfe) {
+				log.warn("Invalid dimension width: " + s);
+			}
+		}
+		if (st.hasMoreTokens()) {
+			String s = st.nextToken();
+			try {
+				int i = Integer.parseInt(s);
+				if (i > 0)
+					d.height = i;
+			} catch (NumberFormatException nfe) {
+				log.warn("Invalid dimension height: " + s);
+			}
+		}
+		return d;
+	}
+	
+	
+	
+
+	/**
+	 * Remove a preference
+	 * 
+	 * @param key
+	 */
+	public void removePref(PrefKey key)
+	{
+		prefs.remove(key.getValue());
+		save();
+		firePrefChanged(key.getValue());
+	}
+	
+	/**
+	 * Remove a preference
+	 * 
+	 * @param pref
+	 */
+	@Deprecated
+	public void removePref(String pref) {
+		prefs.remove(pref);
+		save();
+		firePrefChanged(pref);
+	}
+
+	private WeakEventListenerList listeners = new WeakEventListenerList();
+
+	public void addPrefsListener(PrefsListener l) {
+		listeners.add(PrefsListener.class, l);
+	}
+
+	public void removePrefsListener(PrefsListener l) {
+		listeners.remove(PrefsListener.class, l);
+	}
+
+	public void firePrefChanged(String pref) {
+		// alert all listeners
+		Object[] l = listeners.getListenerList();
+
+		PrefsEvent e = new PrefsEvent(Prefs.class, pref);
+
+		for (int i = 0; i < l.length; i += 2) {
+			if (l[i] == PrefsListener.class)
+				((PrefsListener) l[i + 1]).prefChanged(e);
+		}
+	}
+	
+	/**
+	 * Code a font into a string
+	 * 
+	 * @param f
+	 * @return
+	 */
+	public static final String stringifyFont(Font f) {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append(f.getFontName());
+		sb.append('-');
+		
+		int s = sb.length();
+		if ((f.getStyle() & Font.BOLD) != 0) {
+			sb.append("BOLD");
+		}
+		if ((f.getStyle() & Font.ITALIC) != 0) {
+			sb.append("ITALIC");
+		}
+		if (sb.length() > s) {
+			sb.append('-');
+		}
+		
+		sb.append(f.getSize());
+		
+		return sb.toString();
+	}
+
+	
+
+	
+	
+	
+	/**
+	 *  DEPRECATED METHODS
+	 */
+	
+	/**
+	 * Use setPref(PrefKey, ...) instead
+	 * @param pref
+	 * @param value
+	 */
+	@Deprecated
 	public void setBooleanPref(String pref, boolean value) {
 		setPref(pref, Boolean.toString(value));
 	}
 	
+	/**
+	 * Use getPref(PrefKey, ...) instead
+	 * 
+	 * @param pref
+	 * @param deflt
+	 * @return
+	 */
+	@Deprecated
 	public boolean getBooleanPref(String pref, boolean deflt) {
 		String value = prefs.getProperty(pref);
 		if(value == null)
@@ -562,10 +889,24 @@ public class Prefs extends AbstractSubsystem {
 		return Boolean.parseBoolean(value);
 	}
 	
+	/**
+	 * Use setPref(PrefKey, ...) instead
+	 * @param pref
+	 * @param value
+	 */
+	@Deprecated
 	public void setDimensionPref(String pref, Dimension value) {
 		setPref(pref, value.width + "," + value.height);
 	}
 
+	/**
+	 * Use getPref(PrefKey, ...) instead
+	 * 
+	 * @param pref
+	 * @param deflt
+	 * @return
+	 */
+	@Deprecated
 	public Dimension getDimensionPref(String pref, Dimension deflt) {
 		String value = prefs.getProperty(pref);
 		if (value == null)
@@ -595,10 +936,24 @@ public class Prefs extends AbstractSubsystem {
 		return d;
 	}
 	
+	/**
+	 * Use setPref(PrefKey, ...) instead
+	 * @param pref
+	 * @param value
+	 */
+	@Deprecated
 	public void setIntPref(String pref, int value) {
 		setPref(pref, Integer.toString(value));
 	}
 
+	/**
+	 * Use getPref(PrefKey, ...) instead
+	 * 
+	 * @param pref
+	 * @param deflt
+	 * @return
+	 */
+	@Deprecated
 	public int getIntPref(String pref, int deflt) {
 		String value = prefs.getProperty(pref);
 		if (value == null)
@@ -611,11 +966,25 @@ public class Prefs extends AbstractSubsystem {
 		}
 	}
 	
+	/**
+	 * Use setPref(PrefKey, ...) instead
+	 * @param pref
+	 * @param value
+	 */
+	@Deprecated
 	public void setColorPref(String pref, Color value) {
 		String encoded = "#" + Integer.toHexString(value.getRGB() & 0x00ffffff);
 		setPref(pref, encoded);
 	}
 
+	/**
+	 * Use getPref(PrefKey, ...) instead
+	 * 
+	 * @param pref
+	 * @param deflt
+	 * @return
+	 */
+	@Deprecated
 	public Color getColorPref(String pref, Color deflt) {
 		String value = prefs.getProperty(pref);
 		if (value == null)
@@ -628,77 +997,97 @@ public class Prefs extends AbstractSubsystem {
 		}
 	}
 	
+	/**
+	 * Use setPref(PrefKey, ...) instead
+	 * @param pref
+	 * @param value
+	 */
+	@Deprecated
 	public void setFontPref(String pref, Font value) {
 		setPref(pref, stringifyFont(value));
 	}
 
+	/**
+	 * Use getPref(PrefKey, ...) instead
+	 * 
+	 * @param pref
+	 * @param deflt
+	 * @return
+	 */
+	@Deprecated
 	public Font getFontPref(String pref, Font deflt) {
 		String value = prefs.getProperty(pref);
 		if (value == null)
 			return deflt;
 		return Font.decode(value);
 	}
-
-	public void removePref(String pref) {
-		prefs.remove(pref);
-		save();
-		firePrefChanged(pref);
+	
+	/**
+	 * Use getPref(PrefKey, ...) instead
+	 * @param pref
+	 * @return
+	 */
+	@Deprecated
+	public String getPref(String pref) {
+		return prefs.getProperty(pref);
 	}
-
-	private WeakEventListenerList listeners = new WeakEventListenerList();
-
-	// IDEA: addPrefsListener(l, String pref)?
-	public void addPrefsListener(PrefsListener l) {
-		listeners.add(PrefsListener.class, l);
-	}
-
-	public void removePrefsListener(PrefsListener l) {
-		listeners.remove(PrefsListener.class, l);
-	}
-
-	public void firePrefChanged(String pref) {
-		// alert all listeners
-		Object[] l = listeners.getListenerList();
-
-		PrefsEvent e = new PrefsEvent(Prefs.class, pref);
-
-		for (int i = 0; i < l.length; i += 2) {
-			if (l[i] == PrefsListener.class)
-				((PrefsListener) l[i + 1]).prefChanged(e);
+	
+	/**
+	 * Get a preference result as an enum
+	 * 
+	 * @param pref
+	 * @param deflt
+	 * @param enumType
+	 * @return
+	 */
+	@Deprecated
+	public <T extends Enum<T>> T getEnumPref(String pref, T deflt, Class<T> enumType) {
+		String val = getPref(pref, null);
+		if(val == null)
+			return deflt;
+		
+		try {
+			return Enum.valueOf(enumType, val);
+		} catch (Exception e) {
+			return deflt;
 		}
 	}
 	
-	public static final String stringifyFont(Font f) {
-		StringBuffer sb = new StringBuffer();
-
-		sb.append(f.getFontName());
-		sb.append('-');
-		
-		int s = sb.length();
-		if ((f.getStyle() & Font.BOLD) != 0) {
-			sb.append("BOLD");
-		}
-		if ((f.getStyle() & Font.ITALIC) != 0) {
-			sb.append("ITALIC");
-		}
-		if (sb.length() > s) {
-			sb.append('-');
-		}
-		
-		sb.append(f.getSize());
-		
-		return sb.toString();
-	}
-	/*
-	 * PrefsListener[] l; synchronized (Prefs.class) { l = (PrefsListener[])
-	 * listeners.toArray(new PrefsListener[listeners.size()]); }
+	/**
+	 * Use getPref(PrefKey, String) instead
 	 * 
-	 * int size = l.length;
-	 * 
-	 * if (size == 0) return;
-	 * 
-	 * PrefsEvent e = new PrefsEvent(Prefs.class, pref);
-	 * 
-	 * for (int i = 0; i < size; i++) { l[i].prefChanged(e); } }
+	 * @param pref
+	 * @param deflt
+	 * @return
 	 */
+	@Deprecated
+	public String getPref(String pref, String deflt) {
+		String value = prefs.getProperty(pref);
+		if (value == null)
+			value = deflt;
+				
+		return value;
+	}
+	
+	@Deprecated
+	public void setPref(String pref, String value) {
+		
+		// support removing via set(null)
+		if(value == null)
+		{
+			prefs.remove(pref);
+		}
+		// Trim spaces from webservice URL
+		else if(pref.equals("corina.webservice.url"))
+		{
+			prefs.setProperty(pref, value.trim());
+		}
+		else
+		{
+			prefs.setProperty(pref, value);
+		}
+
+		save();
+		firePrefChanged(pref);
+	}
 }

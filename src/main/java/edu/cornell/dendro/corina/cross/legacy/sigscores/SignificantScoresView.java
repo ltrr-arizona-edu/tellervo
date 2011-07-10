@@ -63,9 +63,9 @@ import edu.cornell.dendro.corina.cross.HighScore;
 import edu.cornell.dendro.corina.cross.RangeRenderer;
 import edu.cornell.dendro.corina.graph.GraphWindow;
 import edu.cornell.dendro.corina.index.DecimalRenderer;
-import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.util.NoEmptySelection;
 
 /**
@@ -113,7 +113,10 @@ import edu.cornell.dendro.corina.util.NoEmptySelection;
  * @version $Id$
  */
 public class SignificantScoresView extends JPanel implements PrefsListener {
-  /**
+
+	private static final long serialVersionUID = 1L;
+
+/**
    * Make a new view of the significant scores of a crossdate.
    * 
    * @param crossdate
@@ -340,8 +343,7 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
 
   private void refreshGridlines() {
     // gridlines; WAS: ...cross...
-    boolean gridlines = Boolean.valueOf(App.prefs.getPref("corina.edit.gridlines"))
-        .booleanValue();
+    boolean gridlines = App.prefs.getBooleanPref(PrefKey.EDIT_GRIDLINES, true);
     table.setShowGrid(gridlines);
   }
 
@@ -352,8 +354,8 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
 
   private void refreshFont() {
     // WAS: corina.cross.font (merged with corina.edit.font)
-    if (App.prefs.getPref("corina.edit.font") != null) {
-      Font f = Font.decode(App.prefs.getPref("corina.edit.font"));
+    if (App.prefs.getPref(PrefKey.EDIT_FONT, null) != null) {
+      Font f = Font.decode(App.prefs.getPref(PrefKey.EDIT_FONT, null));
       table.setFont(f);
       table.setRowHeight(f.getSize() + 3);
       // FIXME: instead of 3, use (defaultRowHeight - defaultFontSize)
@@ -361,11 +363,11 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
   }
 
   private void refreshBackground() {
-    table.setBackground(App.prefs.getColorPref(Prefs.EDIT_BACKGROUND, Color.white));
+    table.setBackground(App.prefs.getColorPref(PrefKey.EDIT_BACKGROUND, Color.white));
   }
 
   private void refreshForeground() {
-    table.setForeground(App.prefs.getColorPref(Prefs.EDIT_FOREGROUND, Color.black));
+    table.setForeground(App.prefs.getColorPref(PrefKey.EDIT_FOREGROUND, Color.black));
   }
 
   public void prefChanged(PrefsEvent e) {

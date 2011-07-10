@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.util.StringUtils;
 
@@ -91,9 +92,7 @@ public class IndexSet {
         indexes.add(new Index(sample, new Horizontal(sample)));
 
         // polynomial fits
-        String degreesToUse = App.prefs.getPref("corina.index.polydegs");
-        if (degreesToUse == null)
-            degreesToUse = "1 2 3 4 5 6";
+        String degreesToUse = App.prefs.getPref(PrefKey.INDEX_POLY_DEGREES, "1 2 3 4 5 6");
         int polydegs[] = StringUtils.extractInts(degreesToUse);
         for (int i=0; i<polydegs.length; i++)
             indexes.add(new Index(sample, new Polynomial(sample, polydegs[i])));
@@ -103,10 +102,10 @@ public class IndexSet {
         indexes.add(new Index(sample, new Floating(sample)));
         indexes.add(new Index(sample, 
         		new HighPass(sample, StringUtils.extractInts(
-        				App.prefs.getPref("corina.index.lowpass", "1 2 4 2 1")))));
+        				App.prefs.getPref(PrefKey.INDEX_LOWPASS, "1 2 4 2 1")))));
         indexes.add(new Index(sample, 
         		new CubicSpline(sample, 
-        				Double.parseDouble(App.prefs.getPref("corina.index.cubicfactor", "1e-16")))));
+        				Double.parseDouble(App.prefs.getPref(PrefKey.INDEX_CUBIC_FACTOR, "1e-16")))));
         
         compute();
     }

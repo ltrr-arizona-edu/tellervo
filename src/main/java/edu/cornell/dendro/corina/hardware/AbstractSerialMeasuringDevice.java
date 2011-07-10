@@ -20,6 +20,8 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.hardware;
 
+import edu.cornell.dendro.corina.ui.Alert;
+import edu.cornell.dendro.corina.ui.I18n;
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
@@ -32,8 +34,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.TooManyListenersException;
 import java.util.Vector;
@@ -41,11 +41,6 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.cornell.dendro.corina.core.ClassScope;
-import edu.cornell.dendro.corina.ui.I18n;
-
-import edu.cornell.dendro.corina.ui.Alert;
 
 /**
  * Abstract base class for a serial port measuring device

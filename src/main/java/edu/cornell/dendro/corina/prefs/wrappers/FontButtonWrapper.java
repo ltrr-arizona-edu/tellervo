@@ -26,9 +26,21 @@ import javax.swing.JButton;
 
 import com.l2fprod.common.swing.JFontChooser;
 
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
+
 public class FontButtonWrapper extends ActionWrapper<Font> {
+	
+	
+	@Deprecated
 	public FontButtonWrapper(JButton button, String prefName, Font defaultFont) {
 		super(prefName, defaultFont, Font.class);
+		
+		updateButton(button);
+		button.addActionListener(this);
+	}
+	
+	public FontButtonWrapper(JButton button, PrefKey key, Font defaultFont) {
+		super(key.getValue(), defaultFont, Font.class);
 		
 		updateButton(button);
 		button.addActionListener(this);

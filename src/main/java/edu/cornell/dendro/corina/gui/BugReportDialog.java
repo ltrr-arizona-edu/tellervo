@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.BugReport;
 import edu.cornell.dendro.corina.util.Center;
@@ -43,7 +44,7 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 	public BugReportDialog(Window parent, BugReport report) {
 		this.report = report;
 
-		txtEmailAddress.setText(App.prefs.getPref("corina.bugreport.fromemail", ""));
+		txtEmailAddress.setText(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_EMAIL, ""));
 		
 		DocumentHolder[] docs = report.getDocuments().toArray(new DocumentHolder[0]);
 		lstAttachments.setListData(docs);
@@ -79,7 +80,7 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 		
 		// attach stuff to the bug report...
 		if(email.length() > 0) {
-			App.prefs.setPref("corina.bugreport.fromemail", txtEmailAddress.getText());
+			App.prefs.setPref(PrefKey.PERSONAL_DETAILS_EMAIL, txtEmailAddress.getText());
 			
 			report.setFromEmail(email);
 		}

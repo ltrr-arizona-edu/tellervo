@@ -66,6 +66,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.layouts.DialogLayout;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.NoEmptySelection;
 import edu.cornell.dendro.corina.util.OKCancel;
@@ -249,7 +250,7 @@ public class SourcesTable extends JTable {
 	    JButton change = new JButton("Change...");
 	    change.addActionListener(new AbstractAction() {
 		    public void actionPerformed(ActionEvent e) {
-			JFileChooser fc = new JFileChooser(App.prefs.getPref("corina.dir.data"));
+			JFileChooser fc = new JFileChooser(App.prefs.getPref(PrefKey.DATA_DIR, null));
 			fc.setDialogTitle("Select Source Folder");
 			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int x = fc.showDialog(null /* ??? */, "Select");

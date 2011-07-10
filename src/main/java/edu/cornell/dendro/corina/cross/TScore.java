@@ -40,6 +40,7 @@
 package edu.cornell.dendro.corina.cross;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -135,7 +136,7 @@ public class TScore extends RValue {
 	/** A format string for T-scores.
 	 @return a format string for T-scores */
 	public String getFormat() {
-		return App.prefs.getPref("corina.cross.tscore.format", "0.00");
+		return App.prefs.getPref(PrefKey.STATS_FORMAT_TSCORE, "0.00");
 	}
 	
 	public static String getNameStatic() {

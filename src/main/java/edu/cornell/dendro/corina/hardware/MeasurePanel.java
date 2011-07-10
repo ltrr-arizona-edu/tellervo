@@ -38,6 +38,7 @@ import net.miginfocom.swing.MigLayout;
 import org.tridas.schema.NormalTridasUnit;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -210,7 +211,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	@Override
 	public void receiverUpdateCurrentValue(Integer value) {
 		
-		NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+		NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.HUNDREDTH_MM.value().toString()));
 		
 		if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
 		{

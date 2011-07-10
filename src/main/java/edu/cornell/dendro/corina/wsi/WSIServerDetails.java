@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.wsi.util.WSCookieStoreHandler;
 
 /**
@@ -89,7 +90,7 @@ public class WSIServerDetails {
 
 	    try {
 	    	
-			String path = App.prefs.getPref("corina.webservice.url", "invalid-url!");
+			String path = App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid-url!");
 			
 			url = new URI(path.trim());
 	    	

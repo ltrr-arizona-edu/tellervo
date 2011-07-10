@@ -22,6 +22,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -221,29 +222,26 @@ public class LoginPanel extends JPanel {
 		String tmp;
 		
 		// remember the username? load it.
-		if((tmp = App.prefs.getPref("corina.login.remember_username")) != null &&
-				Boolean.valueOf(tmp) == true) {
-			
+		if(App.prefs.getBooleanPref(PrefKey.REMEMBER_USERNAME, false))
+		{	
 			rememberUsername.setSelected(true);
-			username.setText(App.prefs.getPref("corina.login.username", ""));			
+			username.setText(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, ""));			
 		} else {
 			rememberUsername.setSelected(false);
 		}
 		
 		// remember the password? load it.
-		if((tmp = App.prefs.getPref("corina.login.remember_password")) != null &&
-				Boolean.valueOf(tmp) == true) {
-			
+		if(App.prefs.getBooleanPref(PrefKey.REMEMBER_PASSWORD, false))
+		{
 			rememberPassword.setSelected(true);
-			password.setText(decryptPassword(App.prefs.getPref("corina.login.password", "").toCharArray()));			
+			password.setText(decryptPassword(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_PASSWORD, "").toCharArray()));			
 		} else {
 			rememberPassword.setSelected(false);
 		}
 		
 		// auto login?
-		if((tmp = App.prefs.getPref("corina.login.auto_login")) != null &&
-				Boolean.valueOf(tmp) == true) {	
-			
+		if(App.prefs.getBooleanPref(PrefKey.AUTO_LOGIN, false))
+		{			
 			autoLogin.setSelected(true);
 		} else {
 			autoLogin.setSelected(false);
@@ -252,20 +250,7 @@ public class LoginPanel extends JPanel {
 		checkCheckboxes();
 	}
 	
-	private String encryptPassword(char[] in) {
-		StringBuffer out = new StringBuffer();
 
-		for(int i = 0; i < in.length; i++) {
-			String v = Integer.toHexString(in[i]);
-			
-			if(v.length() < 2)
-				out.append("0");
-			out.append(v);
-		}
-
-		return out.toString();
-	}
-	
 	private String decryptPassword(char[] in) {
 		// sanity check.
 		if(in.length == 0 || in.length % 2 != 0)
@@ -285,31 +270,8 @@ public class LoginPanel extends JPanel {
 		return out.toString();
 	}
 	
-	@SuppressWarnings("unused")
-	private void saveSettings() {
-		if(rememberUsername.isSelected()) {
-			App.prefs.setPref("corina.login.remember_username", "true");
-			App.prefs.setPref("corina.login.username", username.getText());
-		}
-		else {
-			App.prefs.removePref("corina.login.remember_username");
-			App.prefs.removePref("corina.login.username");
-		}
-		
-		if(rememberPassword.isSelected()) {
-			App.prefs.setPref("corina.login.remember_password", "true");
-			App.prefs.setPref("corina.login.password", encryptPassword(password.getPassword()));
-		} else {
-			App.prefs.removePref("corina.login.remember_password");
-			App.prefs.removePref("corina.login.password");
-		}
 
-		if(autoLogin.isSelected()) {
-			App.prefs.setPref("corina.login.auto_login", "true");
-		} else {
-			App.prefs.removePref("corina.login.auto_login");
-		}
-	}
+
 	
 	@SuppressWarnings("unused")
 	private void placeCursor() {

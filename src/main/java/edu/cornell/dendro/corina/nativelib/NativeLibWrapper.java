@@ -21,10 +21,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
+
 import javax.media.opengl.GLException;
-import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,10 +110,11 @@ public class NativeLibWrapper {
         throw new Exception("Init failed : Unsupported os / arch ( " + new Object[]{osName} + " / " + new Object[]{osArch} + "). Please check you're using a 32-bit JVM.");
     }
 
-    public void loadNatives(final File nativeLibDir, final NativeLibInfo nativeLibInfo) throws GLException 
+    @SuppressWarnings("unchecked")
+	public void loadNatives(final File nativeLibDir, final NativeLibInfo nativeLibInfo) throws GLException 
     {
 
-             Exception throwable = null;
+
 
                 try {
                     // disable JOGL and GlueGen runtime library loading from elsewhere
@@ -165,7 +165,7 @@ public class NativeLibWrapper {
                     
                     
                 } catch (Exception t) {
-                    throwable = t;
+
                 }
     }
    

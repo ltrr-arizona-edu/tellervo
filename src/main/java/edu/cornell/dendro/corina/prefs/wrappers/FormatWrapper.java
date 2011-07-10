@@ -25,12 +25,38 @@ import java.text.DecimalFormat;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
+
 public class FormatWrapper extends ItemWrapper<String> {
 	
 	String[] formats;
+	
+	@Deprecated
 	public FormatWrapper(JComboBox cbo, String prefName, Object defaultValue) {
 		super(prefName, defaultValue, String.class);
-		
+		initFormats(cbo);
+	}
+	
+	@Deprecated
+	public FormatWrapper(JComboBox cbo, String prefName, Object defaultValue, String[]values) {
+		super(prefName, defaultValue, String.class);
+		initGeneric(cbo, values);
+	}
+	
+	public FormatWrapper(JComboBox cbo, PrefKey key, Object defaultValue, String[]values) {
+		super(key.getValue(), defaultValue, String.class);
+		initGeneric(cbo, values);
+	}
+	
+	public FormatWrapper(JComboBox cbo, PrefKey key, Object defaultValue) {
+		super(key.getValue(), defaultValue, String.class);
+		initFormats(cbo);
+	}
+	
+	
+
+	private void initFormats(JComboBox cbo)
+	{
 		// show a sample for each format thingy...
 		formats = new String[FORMAT_STRINGS.length];
 		int selectedIdx = -1;
@@ -48,16 +74,14 @@ public class FormatWrapper extends ItemWrapper<String> {
 		cbo.addItemListener(this);
 	}
 	
-	public FormatWrapper(JComboBox cbo, String prefName, Object defaultValue, String[]values) {
-		super(prefName, defaultValue, String.class);
+	private void initGeneric(JComboBox cbo, String[] values)
+	{
 		
 		// show a sample for each format thingy...
 		formats = values;
 		int selectedIdx = -1;
 		
 		for(int i = 0; i < values.length; i++) {
-			//formats[i] = new DecimalFormat(FORMAT_STRINGS[i]).format(SAMPLE_NUMBER);
-			//formats[i] = 
 			if(formats[i].equals(getValue()))
 				selectedIdx = i;
 		}
@@ -68,7 +92,7 @@ public class FormatWrapper extends ItemWrapper<String> {
 		
 		cbo.addItemListener(this);
 	}
-
+	
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		int selectedIdx = ((JComboBox) e.getSource()).getSelectedIndex();
