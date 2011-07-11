@@ -21,7 +21,7 @@ In research laboratories, samples generally come to the lab in large batches fol
 
 For commercial labs offering dendrochronological dating as a service, samples more likely to arrive in smaller batches.  In this case, the bulk data entry interface may not be the most efficient method for entering metadata.  In this case the user may simply prefer to use the \menutwo{File}{New} method for each sample.  
 
-Either way, the concept behind the curation of a collection in Corina revolves around the accurately recording as much metadata about a sample as possible, then labelling the physical sample with a label containing a barcode for Corina and sample code for the user.  By entering a sample into the database as soon as it enters the lab, it can be traced throughout the workflow.  When a chronology is built, it is easily to quickly and efficient locate all samples that have been used.  By assigning samples to boxes, groups of similar samples (e.g.\ from the same site) can also be easily stored together and located quickly and efficiently.  
+Either way, the concept behind the curation of a collection in Corina revolves around the accurately recording as much metadata about a sample as possible, then labeling the physical sample with a label containing a barcode for Corina and sample code for the user.  By entering a sample into the database as soon as it enters the lab, it can be traced throughout the workflow.  When a chronology is built, it is easily to quickly and efficient locate all samples that have been used.  By assigning samples to boxes, groups of similar samples (e.g.\ from the same site) can also be easily stored together and located quickly and efficiently.  
 
 
 \section{Barcodes}
@@ -30,9 +30,9 @@ Either way, the concept behind the curation of a collection in Corina revolves a
 
 Barcodes allow you to keep track of what samples you have and where they are stored.  Although it is not essential to use the barcode functions, we strongly suggest you do because they save time and money, but most importantly they greatly reduce the scope for erroneous data entry.  For instance, when measuring a sample a user simply scans its barcode and all the relevant metadata is retrieved from the database, rather than relying on them to enter data manually.  Barcodes have been routinely used in the retail industry since the 1980s.  They can be equally as useful in dendrochronology laboratories.
 
-Corina creates and reads barcodes for samples, measurement series and boxes.  Each barcode encodes the unique identification code stored in the Corina database for each of these entities.  Due to Corina use of universally unique identifiers (UUIDs), these codes a garanteed to be unique opening the opportunity of labs to loan samples, much like libraries do with books.  There are many styles (or `symbologies') of barcodes in use today, but Corina uses one of the most common (Code 128) which is supported by the vast majority of barcode readers.  For a detailed discussion on the specifications of the Corina barcode see section \ref{txt:barcodeSpecs}.
+Corina creates and reads barcodes for samples, measurement series and boxes.  Each barcode encodes the unique identification code stored in the Corina database for each of these entities.  Due to Corina's use of universally unique identifiers (UUIDs), these codes are guaranteed to be unique opening the opportunity of labs to loan samples, much like libraries do with books.  There are many styles (or `symbologies') of barcodes in use today, but Corina uses one of the most common (Code 128) which is supported by the vast majority of barcode readers.  For a detailed discussion on the specifications of the Corina barcode see section \ref{txt:barcodeSpecs}.
 
-Basic barcode readers are now cheap and widely available, with basic devices retailing for a few tens of dollars.  Most are characterised as `keyboard interface devices' and work like an automated keyboard, typing in a string of characters when a label is scanned.  
+Basic barcode readers are now cheap and widely available, with basic devices retailing for a few tens of dollars.  Most are characterized as `keyboard interface devices' and work like an automated keyboard, typing in a string of characters when a label is scanned.  
 
 Within the Corina application, whenever the user is required to specify a box, sample or series, they have the option of typing the human readable lab code or scanning the barcode. By using the barcode, the user can be sure they are not entering typographic errors so we recommend using barcodes whenever possible. 
 
@@ -41,6 +41,13 @@ The most important barcode is the label for the physical wood sample.  These are
 \subsection{Sample labels}
 \index{Labels!Samples}
 Before labels can be generated, metadata entries the sample level must have been made in the database.  This is typically done using the `bulk data entry' interface (see page \pageref{txt:bulkentry}).  If samples are already in the database, the user needs to select the object of interest in the label creation dialog to see all the available samples.  It is then just a matter of selecting the samples of interest and moving them into the `selected' column.  Once the list is populated (samples from multiple objects can be included), then you can either click `Preview' to see a PDF of the labels, or `Print' to print directly.
+
+\begin{figure}[hbtp]
+  \centering
+    \includegraphics[width=100mm]{Images/samplebarcode.png}
+    \caption{An example of a sample barcode produced by Corina for the Cornell lab.  Note the label also includes the human readable code for the sample.}
+    \label{fig:graph}
+\end{figure}
 
 The current label style is designed to fit on standard core mounts and most samples.  There are no widely available die-cut labels that fulfill this need, so the labels are intended to be printed on archival grade full page sheet labels (e.g.\ Avery\textsuperscript{\textregistered} layout 6575), and then manually guillotined.  
 

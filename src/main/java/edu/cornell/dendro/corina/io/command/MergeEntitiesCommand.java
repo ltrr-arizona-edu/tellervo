@@ -25,9 +25,14 @@ import java.util.ArrayList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
@@ -36,38 +41,40 @@ import edu.cornell.dendro.corina.io.control.ImportMergeEntitiesEvent;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
 
 public class MergeEntitiesCommand implements ICommand {
+	  private final static Logger log = LoggerFactory.getLogger(MergeEntitiesCommand.class);
 
 	@Override
 	public void execute(MVCEvent argEvent) {
 		ImportMergeEntitiesEvent event = (ImportMergeEntitiesEvent) argEvent;
-		System.out.println("Merge event called");
+		log.debug("Merge event called");
 
 		TridasProject root = (TridasProject) ((DefaultMutableTreeNode)event.model.getTreeModel().getRoot()).getUserObject();
 		
 		ITridas entityType = null;
 		try {
 			entityType = event.getValue().newInstance();
-		} catch (InstantiationException e1) {
-			// TODO Auto-generated catch block
+		} catch (Exception e1) {
+			log.error("Unable to determine entity type in merge entities command");
 			e1.printStackTrace();
-		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		} 
 		
-		System.out.println("Merging "+entityType.getClass());
+		log.debug("Merging "+entityType.getClass());
 		
 
-		if(entityType instanceof TridasObject)
+		if( (entityType instanceof TridasObject) ||
+			(entityType instanceof TridasElement) ||
+			(entityType instanceof TridasSample) ||
+			(entityType instanceof TridasRadius)
+		  )
 		{
-			System.out.println("Merging objects in tree");
+			log.debug("Merging objects in TRiDaS hierarchy");
 			if (!root.isSetObjects()) return;
 			if (!(root.getObjects().size()>1)) return;
 		
 			ArrayList<TridasObject> objlist = (ArrayList<TridasObject>) root.getObjects();
 			for(int i = 1; i<objlist.size(); i++)
 			{
-				System.out.println("Merging object no. "+i);
+				log.debug("Merging object no. "+i);
 				TridasObject obj = objlist.get(i);
 				if(!obj.isSetElements()) continue;
 				objlist.get(0).getElements().addAll(obj.getElements());
@@ -76,13 +83,37 @@ public class MergeEntitiesCommand implements ICommand {
 			ArrayList<TridasObject> objlistnew = new ArrayList<TridasObject>();
 			objlistnew.add(objlist.get(0));
 			root.setObjects(objlistnew);
-			System.out.println("Set root of tree to new root");
+			log.debug("Set root of tree to new root");
 			TridasRepresentationTreeModel tm = new TridasRepresentationTreeModel(root);
 			event.model.setTreeModel(tm);
 			
 			
 		}
-
+		
+		// TODO work out how to manipulate the hierarchy
+		/**
+		if( (entityType instanceof TridasElement) ||
+			(entityType instanceof TridasSample) ||
+			(entityType instanceof TridasRadius)
+		  )
+		{
+			log.debug("Merging elements in TRiDaS hierarchy");
+			if (!root.isSetObjects()) return;
+			
+			// Should only be 1 object now
+			TridasObject obj = (TridasObject) root.getObjects().get(0);
+			if(!obj.isSetElements()) return;
+			ArrayList<TridasElement> list = (ArrayList<TridasElement>) obj.getElements();
+				
+			for(int i = 1; i<list.size(); i++)
+			{
+				log.debug("Merging element no. "+i);
+				TridasElement el = list.get(i);
+				if(el.isSetSamples()) continue;
+				list.get(0).getSamples().addAll(el.getSamples());
+			}
+		}
+		*/
 		
 	}
 

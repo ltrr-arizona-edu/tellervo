@@ -27,15 +27,17 @@ import java.net.URI;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.core.AbstractSubsystem;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 
 /**
  * Platform subsystem that takes care of platform-specific things.
  * @author Aaron Hamid
  */
 public class Platform extends AbstractSubsystem {
-	private static final CorinaLog log = new CorinaLog(Platform.class);
+	private final static Logger log = LoggerFactory.getLogger(Platform.class);
 
 	private boolean isMac;
 	private boolean isWindows;

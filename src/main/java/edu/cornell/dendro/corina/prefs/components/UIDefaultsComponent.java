@@ -36,14 +36,16 @@ import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 
 public class UIDefaultsComponent extends JComponent implements TableModelListener, ActionListener {
 
   private static final long serialVersionUID = 1L;
 
-  private static final CorinaLog log = new CorinaLog("UIDefaultsComponent");
+  private final static Logger log = LoggerFactory.getLogger(UIDefaultsComponent.class);
   
   private UIDefaultsTableModel model = new UIDefaultsTableModel();
   

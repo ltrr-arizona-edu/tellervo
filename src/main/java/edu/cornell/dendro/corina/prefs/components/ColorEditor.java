@@ -19,23 +19,24 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.prefs.components;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.table.TableCellEditor;
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import edu.cornell.dendro.corina.logging.CorinaLog;
+import javax.swing.AbstractCellEditor;
+import javax.swing.JColorChooser;
+import javax.swing.JDialog;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellEditor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class ColorEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
-  private static final CorinaLog log = new CorinaLog(ColorEditor.class);
+  private final static Logger log = LoggerFactory.getLogger(ColorEditor.class);  
   
   Color currentColor;
   //JButton button;
@@ -102,7 +103,7 @@ public class ColorEditor extends AbstractCellEditor implements TableCellEditor, 
           
     //return button;
     Component c = table.getCellRenderer(row, column).getTableCellRendererComponent(table, value, isSelected, true, row, column);
-    log.debug(c);
+    log.debug(c.toString());
     return c;
   }
 }

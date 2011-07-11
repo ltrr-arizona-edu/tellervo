@@ -211,7 +211,7 @@ public class ImportView extends JFrame{
 		topChooserListener = new ChoiceComboBoxActionListener(this);
 
 		model = CorinaModelLocator.getInstance().getImportModel();
-		MVC.showEventMonitor();
+		//MVC.showEventMonitor();
 		initComponents();
 		linkModel();
 		initListeners();

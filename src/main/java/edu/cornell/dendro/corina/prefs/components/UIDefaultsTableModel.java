@@ -38,14 +38,16 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.AbstractTableModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 
 @SuppressWarnings("serial")
 public class UIDefaultsTableModel extends AbstractTableModel {
-  private static final CorinaLog log = new CorinaLog(UIDefaultsTableModel.class);
-  
+  private final static Logger log = LoggerFactory.getLogger(UIDefaultsTableModel.class);  
   private Object[][] data;
+  
   public void setComponent(Component comp) {
   }
 
@@ -137,7 +139,7 @@ public void setValueAt(Object value, int row, int col) {
 public synchronized void reset() {
     UIDefaults uidefaults = UIManager.getDefaults();
     
-    CorinaLog.realErr.println("Clearing UIDefaults preferences");
+    log.debug("Clearing UIDefaults preferences");
     uidefaults.clear();
     log.debug("UIDEFAULTS size: " + App.prefs.getUIDefaults().size());
     uidefaults.putAll(App.prefs.getUIDefaults());
@@ -155,7 +157,7 @@ public synchronized void reset() {
     while (it.hasNext()) {
       String key = it.next().toString();
       if (key.startsWith("uidefaults.")) {
-        CorinaLog.realErr.println("Found UIDefaults preference: " + key);
+        log.debug("Found UIDefaults preference: " + key);
         keylist.add(key);
       }
     }
@@ -164,7 +166,7 @@ public synchronized void reset() {
     it = keylist.iterator();
     while (it.hasNext()) {
       String key = (String) it.next();
-      CorinaLog.realErr.println("Removing UIDefaults preference: " + key);
+      log.debug("Removing UIDefaults preference: " + key);
       App.prefs.removePref(key);
     }
     

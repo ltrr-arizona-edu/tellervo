@@ -56,15 +56,17 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.Preview;
 import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.io.WrongFiletypeException;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.sample.ElementFactory;
 
 @SuppressWarnings("serial")
 public class SamplePreview extends JPanel implements PropertyChangeListener {
-  private static final CorinaLog log = new CorinaLog(SamplePreview.class);
+	private final static Logger log = LoggerFactory.getLogger(SamplePreview.class);
 
   //private PreviewComponent preview;
   private JScrollPane sp;
@@ -84,7 +86,7 @@ public class SamplePreview extends JPanel implements PropertyChangeListener {
     gbc.anchor = GridBagConstraints.NORTH;
     gbc.fill = GridBagConstraints.BOTH;
 
-    log.trace(getInsets());
+    log.trace(getInsets().toString());
     setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0,2,0,0),
                                                  BorderFactory.createTitledBorder("Preview")));
     //setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED ));

@@ -19,19 +19,21 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.prefs.components;
 
+import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
 
-import edu.cornell.dendro.corina.logging.CorinaLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class ColorRenderer extends JLabel implements TableCellRenderer {
-  private static final CorinaLog log = new CorinaLog(ColorRenderer.class);
+	private final static Logger log = LoggerFactory.getLogger(ColorRenderer.class);
   
   Border unselectedBorder = null;
   Border selectedBorder = null;

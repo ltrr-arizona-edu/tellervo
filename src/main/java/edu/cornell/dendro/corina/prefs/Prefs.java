@@ -54,10 +54,12 @@ import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.core.AbstractSubsystem;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.BugReport;
@@ -82,7 +84,7 @@ import edu.cornell.dendro.corina.util.WeakEventListenerList;
 public class Prefs extends AbstractSubsystem {
 	// sample editor
 
-	private static final CorinaLog log = new CorinaLog("Prefs");
+	private final static Logger log = LoggerFactory.getLogger(Prefs.class);
 
 	
 	/**

@@ -42,10 +42,10 @@ package edu.cornell.dendro.corina.cross;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.sample.Sample;
 
 /**
@@ -60,7 +60,7 @@ import edu.cornell.dendro.corina.sample.Sample;
  * </ul>
  */
 public class TopScores {
-	private static final Log log = new CorinaLog(TopScores.class);
+	private final static Logger log = LoggerFactory.getLogger(TopScores.class);
 	private Cross c;
 	private List<HighScore> highScores;
 

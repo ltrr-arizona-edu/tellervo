@@ -96,6 +96,7 @@
 \newcommand{\subtitle}[1]{\def\@thesubtitle{#1}}
 \newcommand{\thesubtitle}[0]{\@thesubtitle}
 \newcommand{\thefulltitle}[0]{\@thetitle: \@thesubtitle}
+\newcommand{\BibTeX}{{\sc Bib}\TeX}
 
 
 

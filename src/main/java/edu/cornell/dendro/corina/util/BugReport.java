@@ -20,11 +20,15 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.util;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
@@ -44,13 +48,16 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jdom.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.ui.Alert;
 
 public class BugReport {
+	private final static Logger log = LoggerFactory.getLogger(BugReport.class);
+	
 	private final Throwable bug;
 
 	private String fromEmail;
@@ -118,15 +125,37 @@ public class BugReport {
 	}
 	
 	public static String getLogTrace() {
-		StringBuffer errors = new StringBuffer();	
-		ListModel logEntries = CorinaLog.getLogListModel();
+		DataInputStream in = null;
+		StringBuilder str = new StringBuilder();
+		try{
+			  // Open the file that is the first 
+			  // command line parameter
+			  FileInputStream fstream = new FileInputStream(System.getProperty("user.home")
+						+File.separator+"corina-submission.log" );
+			  // Get the object of DataInputStream
+			  in = new DataInputStream(fstream);
+			  BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			  String strLine;
+			  //Read File Line By Line
+			  while ((strLine = br.readLine()) != null)   
+			  {
+				  // Print the content on the console
+				  str.append(strLine + "\n");
+			  }
 
-		for(int i = 0; i < logEntries.getSize(); i++) {
-			errors.append(logEntries.getElementAt(i));
-			errors.append("\r\n");
-		}
-
-		return errors.toString();
+			}
+		  catch (Exception e){//Catch exception if any
+			  System.err.println("Error: " + e.getMessage());
+		  	}
+		  finally{
+			  //Close the input stream
+			  try {
+				in.close();
+			} catch (IOException e) {}
+		  }
+		  
+		  return str.toString();
+	
 	}
 	
 	public static String getUserInfo() {

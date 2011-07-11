@@ -58,7 +58,6 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -93,12 +92,7 @@ public class Startup implements PrivilegedAction {
 		 * Font f = new Font("courier", java.awt.Font.PLAIN, 24);
 		 * UIManager.put("Menu.font", f); UIManager.put("MenuItem.font", f);
 		 */
-		try {
-			// Initialize logging first before we do anything
-			// Moved from App.java because we have to load the Platform before we make any dialogs.
-		    App.logging = new Logging();
-		    App.logging.init();
-		    
+		try {		    
 		    // now, init the platform. This sets look/feel and Mac toolbars and such.
 		    App.platform = new Platform();
 		    App.platform.init();
@@ -207,7 +201,7 @@ public class Startup implements PrivilegedAction {
 					.println("Cannot create LoginContext. " + se.getMessage());
 			System.exit(-1);
 		}
-
+		
 		int i;
 		for (i = 0; i < 3; i++) {
 			try {

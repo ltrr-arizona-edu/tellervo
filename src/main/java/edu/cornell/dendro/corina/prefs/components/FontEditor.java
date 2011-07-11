@@ -19,22 +19,22 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.prefs.components;
 
+import java.awt.Component;
+import java.awt.Font;
+
 import javax.swing.AbstractCellEditor;
-import javax.swing.table.TableCellEditor;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellEditor;
 
-import java.awt.Font;
-import java.awt.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.l2fprod.common.swing.JFontChooser;
 
-import edu.cornell.dendro.corina.logging.CorinaLog;
-
 @SuppressWarnings("serial")
 public class FontEditor extends AbstractCellEditor implements TableCellEditor {
-  private static final CorinaLog log = new CorinaLog(FontEditor.class);
-  
+	private final static Logger log = LoggerFactory.getLogger(FontEditor.class);  
   private Font currentFont;
   private String text;
 
@@ -66,7 +66,4 @@ public class FontEditor extends AbstractCellEditor implements TableCellEditor {
     return table.getCellRenderer(row, column).getTableCellRendererComponent(table, value, isSelected, true, row, column);
   }
 
-public static CorinaLog getLog() {
-	return log;
-}
 }

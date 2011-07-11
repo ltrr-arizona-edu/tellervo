@@ -106,7 +106,6 @@ import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.SerialDeviceSelector;
 import edu.cornell.dendro.corina.io.Metadata;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
@@ -138,8 +137,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		SampleListener, PrintableDocument, FocusListener {
 
 	private static final long serialVersionUID = 1L;
-
-	private static final CorinaLog log = new CorinaLog("Editor");
 
 	// gui
 	private JTable wjTable;
@@ -928,10 +925,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	public void focusLost(FocusEvent e) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	public static CorinaLog getLog() {
-		return log;
 	}
 
 	public void setBargraphPanel(BargraphPanel bargraphPanel) {

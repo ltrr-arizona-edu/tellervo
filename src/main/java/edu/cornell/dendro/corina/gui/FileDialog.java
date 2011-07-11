@@ -51,7 +51,6 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.logging.CorinaLog;
 import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -99,7 +98,7 @@ public class FileDialog {
   	private static final String SINGLE_VIEWMODE_PREF = CLASS_NAME + ".single.viewmode";
   	private static final String MULTI_VIEWMODE_PREF = CLASS_NAME + ".double.viewmode";
 
-  	private static final CorinaLog log = new CorinaLog("Prefs");
+  
 
 	private FileDialog() {
 		// (don't instantiate me)
@@ -438,7 +437,4 @@ public class FileDialog {
 		return mp.getElementList();
 	}
 
-	public static CorinaLog getLog() {
-		return log;
-	}
 }

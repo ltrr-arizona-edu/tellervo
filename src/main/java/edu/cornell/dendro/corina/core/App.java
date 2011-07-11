@@ -37,7 +37,6 @@ import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.LoginSplash;
 import edu.cornell.dendro.corina.gui.ProgressMeter;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
-import edu.cornell.dendro.corina.logging.Logging;
 import edu.cornell.dendro.corina.nativelib.NativeLibWrapper;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.prefs.PreferencesDialog;
@@ -51,6 +50,7 @@ import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ListUtil;
 import edu.cornell.dendro.corina.wsi.corina.CorinaWsiAccessor;
+import gov.nasa.worldwind.util.Logging;
 
 /**
  * Contextual state of the app; holds references to all "subsystems".
@@ -97,7 +97,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // will point out bad design and/or bugs
 	if (initialized) throw new IllegalStateException("AppContext already initialized.");
     log.debug("initializing App");
-
+    
     appmodel = new AppModel();
     
     logviewer = new Log4JViewer();

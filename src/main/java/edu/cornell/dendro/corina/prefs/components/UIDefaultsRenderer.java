@@ -20,15 +20,17 @@
 package edu.cornell.dendro.corina.prefs.components;
 
 import java.awt.Component;
+
 import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.table.TableCellRenderer;
 
-import edu.cornell.dendro.corina.logging.CorinaLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UIDefaultsRenderer implements TableCellRenderer {
-  private static CorinaLog log = new CorinaLog(UIDefaultsRenderer.class);
+  private final static Logger log = LoggerFactory.getLogger(UIDefaultsRenderer.class);
   private ColorRenderer colorRenderer;
   private FontRenderer fontRenderer;
 

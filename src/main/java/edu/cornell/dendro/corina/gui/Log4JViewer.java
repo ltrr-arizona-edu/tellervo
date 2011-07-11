@@ -34,6 +34,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.Priority;
 
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -60,6 +61,7 @@ public class Log4JViewer extends JDialog {
 				txtLog.setFont(new Font("Andale Mono", Font.PLAIN, 11));
 				
 				TextAreaLogger appender = new TextAreaLogger(new PatternLayout("%-6p : %m [%c{1}]%n"), txtLog);
+				appender.setThreshold(Priority.INFO);
 				Logger.getRootLogger().addAppender(appender);
 				scrollPane.setViewportView(txtLog);
 			}

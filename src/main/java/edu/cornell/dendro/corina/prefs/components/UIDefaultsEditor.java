@@ -23,15 +23,16 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 
-import javax.swing.JTable;
 import javax.swing.AbstractCellEditor;
-import javax.swing.table.TableCellEditor;
+import javax.swing.JTable;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.table.TableCellEditor;
 
-import edu.cornell.dendro.corina.logging.CorinaLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Aaron
@@ -41,8 +42,8 @@ import edu.cornell.dendro.corina.logging.CorinaLog;
  */
 @SuppressWarnings("serial")
 public class UIDefaultsEditor extends AbstractCellEditor implements TableCellEditor, CellEditorListener {
-  private static final CorinaLog log = new CorinaLog(UIDefaultsEditor.class);
-  
+  private final static Logger log = LoggerFactory.getLogger(UIDefaultsEditor.class);  
+	
   private ColorEditor colorEditor = new ColorEditor();
   private FontEditor fontEditor = new FontEditor();
   private TableCellEditor chosenEditor;

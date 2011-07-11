@@ -97,7 +97,6 @@ MigLayout & BSD\\
 PLJava & BSD\\
 PostgreSQL & PostgreSQL License (BSD/MIT)\\
 Forms & BSD\\
-Simplelog & GPLv3\\
 JXL & LGPL\\
 Netbeans Swing Outline & GPLv2\\
 \bottomrule
@@ -157,6 +156,41 @@ What key the `accel' keyword refers to depends on the operating system Corina is
 
 
 There are currently minimal translations for UK English, German, French, Dutch, Polish and Turkish.  These are by no means complete, and there are number of interfaces that are not internationalized at all.  Further assistance is required from native speakers to complete this task.
+
+\section{Logging}
+\index{Logging}
+Logging in Corina is handled by the SLF4J and Log4J packages.  Rather than write debug notes directly to System.out, Log4J handles logging in a more intelligent way.  First of all, each log message is assigned a log level which are (in order of severity) fatal, error, warn, info, debug and trace.  Through a log4j.xml configuration file contained within the resources folder, we can control the level at which messages are displayed.  For instance while we develop we would likely show all messages up to and including `trace', but when we deploy we might only want to show messages up to and including `warn'. 
+
+Log4J also enables us to log to several places (known as appenders), e.g. console, log file or a component within our application.  It is also possible to change the level of logging depending on the log type, so minimal messages can be sent to the console but verbose messages to the log file.  Corina has the following four appenders configured:
+
+\begin{itemize}
+ \item Standard log file (corina.log) that rolls over up to 2mb of messages
+ \item Submission log file (corina-submission.log) that contains the last 100kb of verbose messages and is used by the bug submission tool to enable users to notify developers of problems.
+ \item Console -- standard messages to the console when launched from command line
+ \item Swing GUI -- a swing component for displaying basic logs to the users in the application.
+\end{itemize}
+
+To alter the way these appenders are configured you need to edit the log4j.xml file.  See the Log4J documentation for further information.
+
+Using the logging framework is very simple.  Just define a Logger as a static variable in your class like this:
+\code{private final static Logger log = LoggerFactory.getLogger(MyClassName.class);}
+where MyClassName is the name of the current class.  Then you can log messages simply by calling log.warn(`My message'), log.debug('My message') etc.
+
+
+\section{Preferences}
+\index{Preferences}
+It is helpful to remember certain user preferences e.g. colors, fonts, usernames, URLs, last folder opened etc so that they don't have to do tasks repeatedly.  This is achieved through the use of a preferences file.  This file is stored in a users home folder and consulted to see if a preference has been saved, otherwise Corina falls back to a default value.  
+
+The preferences are accessed from the static member App.prefs.  To set a preference you can do the following:
+\code{App.prefs.setPref(PrefKey.PREFKEY, "the value to set");}
+where PrefKey.PREFKEY is an enum containing a unique string to identify the preference, and the second value is the string value to set.  There are other specific methods for different data types e.g. setBooleanPref(), setIntPref(), setColorPref() etc.
+
+To retrieve a preference, you use a similar syntax:
+\code{App.prefs.getPref(PrefKey.PREFKEY, "default value");}
+
+When you get a preference the second parameter contains the default value to return if no preference is found.  Like the setPref() method, there are also a host of getPref() methods for different data types.
+
+
 
 \section{Build script}
 \label{txt:buildScript}
@@ -255,11 +289,23 @@ Some interfaces were created using the graphical designed in Netbeans IDE.  Thes
 
 More recently the Google WindowBuilder Pro tool has been used for interface design.  This has the benefit of (usually) being able to parse existing code enabling the modification of existing dialogs.  WindowsBuilder does have its quirks though so make sure you keep up-to-date with new releases.
 
+\section{Writing documentation}
+\index{Documentation}
+The documentation in Corina is written in the well established typesetting language {\LaTeXe}.  {\LaTeX} is a great tool for producing high quality documentation with a good structure and style.  Unlike standard WYSIWYG (what you see is what you get) word processing applications like Microsoft Word, {\LaTeX} uses simple plain text code to layout a document so that it is often described as WYSIWYM (what you see is what you mean)!  The style of a {\LaTeX} document is handled separated enabling the author to concentrate on content.  By removing the possibility for authors to tinker with font sizes etc, {\LaTeX} forces you to create clear, well structured documents.  For further details see \url{http://en.wikibooks.org/wiki/LaTeX/}.
+
+The master document is `Documentation/corina-manual.tex' and imports each chapter file.  To build the documentation you will need a editor to update and compile to PDF.  On Linux I would suggest Kile, on MacOSX TeXShop and on Windows WinEdt.  To add or edit bibliography entries you will also need a {\BibTeX} editor such as JabRef or BibDesk.
+
+Images specific to the documentation should be stored in `Documentation/Images', but you will also automatically have access to the image and icon resources in the application itself.  This can be useful, for instance when illustrating what icon a user needs to click for perform a task.  To reference a icon for instance you can use the path `Icons/48x48/myicon.png'.
+
+{\LaTeX} has fantastic cross-referencing and citation functionality built in.  Please follow the lead of the existing documentation!
+
+
 \section{Making a new release}
 Making a new release should be a relatively quick and simply process, but there are still a few things to remember:
 
 \begin{itemize}
- \item Make sure this documentation is up-to-date!  Use a {\LaTeX} editor to update and compile to PDF.
+ \item Make sure this documentation is up-to-date!  
+ \item Update the logging appenders to an appropriate level so that the user is not swamped by debug messages
  \item If this release relies upon a certain version of the Corina server, make sure you set this correctly in `/corina-desktop/src/main/java/edu/cornell/dendro/corina/core/App.java'.  This is important to ensure that users aren't working against an old version of the server which could have unexpected side-effects.
  \item Increment the build version number in the pom.xml
  \item Update the splash screen and background graphics.
