@@ -40,7 +40,7 @@
 			<param name="ConversionPattern" value="%-5p %c{1} - %m%n" />
 		</layout>
     <filter class="org.apache.log4j.varia.LevelRangeFilter">
-            <param name="LevelMin" value="WARN" />
+            <param name="LevelMin" value="DEBUG" />
             <param name="LevelMax" value="FATAL" />
             <param name="AcceptOnMatch" value="true" />
     </filter>		

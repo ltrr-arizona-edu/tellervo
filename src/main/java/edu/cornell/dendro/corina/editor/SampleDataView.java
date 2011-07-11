@@ -120,6 +120,11 @@ public class SampleDataView extends JPanel implements SampleListener,
 		if(statusBar!=null)	statusBar.setVisible(b);
 	}
 	
+	public Sample getSample()
+	{
+		return mySample;
+	}
+	
 	// (for Editor)
 	public void stopEditing(boolean disableFutureEdits) {
 		

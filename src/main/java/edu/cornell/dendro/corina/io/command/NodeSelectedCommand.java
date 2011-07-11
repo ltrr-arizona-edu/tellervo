@@ -19,6 +19,8 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.io.command;
 
+import org.tridas.schema.TridasMeasurementSeries;
+
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
@@ -30,7 +32,14 @@ public class NodeSelectedCommand implements ICommand {
 	public void execute(MVCEvent argEvent) {
 		ImportNodeSelectedEvent event = (ImportNodeSelectedEvent) argEvent;
 		
+		// Update the model to show the selected node
 		if(event.getValue()!=null) event.model.setSelectedRow(event.getValue());
+		
+		// If the node is a series, we also need to update the data table
+		if(event.getValue().getCurrentEntity() instanceof TridasMeasurementSeries)
+		{
+			
+		}
 		
 	}
 

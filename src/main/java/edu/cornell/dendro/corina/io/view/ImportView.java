@@ -21,6 +21,7 @@ package edu.cornell.dendro.corina.io.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.Image;
@@ -129,6 +130,7 @@ public class ImportView extends JFrame{
 	
 	/** Panel for displaying ring with data**/
 	private JPanel panelData;
+	private SampleDataView dataPanel;
 	
 	/** Panel and table for displaying conversion warnings **/
 	private JPanel panelWarnings;
@@ -495,6 +497,8 @@ public class ImportView extends JFrame{
 	 */
 	private void initListeners()
 	{
+		final Component glue = (Component) this;
+		
 		// Listen to entities being selected in tree table
 		this.treeTable.addMouseListener(new MouseListener() {
 			
@@ -536,21 +540,38 @@ public class ImportView extends JFrame{
 				
 		// Listen for set from db button press
 		this.btnFinish.addActionListener(new ActionListener() {
-			
+		
+		
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				//TODO Check if there are outstanding entities that need fixing 
-				// and warn
-				TridasRepresentationTreeModel treeModel = model.getTreeModel();
-				
-				DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
-				for (int i = 0; i < root.getChildCount(); i++)
+				Integer outstanding = model.getCountOutstandingEntities();
+				String plural="y";
+				if(outstanding>1)plural = "ies";
+								
+				if(outstanding>0)
 				{
+					Object[] options = {"Yes",
+					                    "No",
+					                    "Cancel"};
+					int n = JOptionPane.showOptionDialog(glue,
+					    "You still have "+outstanding+" entit"+plural+" that have not been imported.\n"					
+					    + "Are you sure you want to close the import dialog?",
+					    "Outstanding entities",
+					    JOptionPane.YES_NO_CANCEL_OPTION,
+					    JOptionPane.QUESTION_MESSAGE,
+					    null,
+					    options,
+					    options[2]);
 					
-				}
+					if(n==JOptionPane.YES_OPTION) dispose();
 
-				dispose();
+				}
+				else
+				{
+					dispose();
+				}
+				
 			}
 		});
 		
@@ -704,7 +725,16 @@ public class ImportView extends JFrame{
 	 */
 	private void updateDataPanel() 
 	{
-	
+		//TODO This doesn't work yet!
+		
+		try{
+		Sample mysample = dataPanel.getSample();
+		log.debug("Sample length = "+mysample.countRings());
+		} catch (Exception e)
+		{
+			log.debug("Unable to get sample from data panel");
+		}
+		
 		ITridas entity = (ITridas) model.getSelectedRow().getDefaultMutableTreeNode().getUserObject();
 		
 		if(!(entity instanceof TridasMeasurementSeries))
@@ -724,15 +754,37 @@ public class ImportView extends JFrame{
 		
 		TridasMeasurementSeries series = (TridasMeasurementSeries) entity;
 		
-		System.out.println("Values group count = "+series.getValues().size());
-		System.out.println("Value count = "+series.getValues().get(0).getValues().size());
+		log.debug("Values group count = "+series.getValues().size());
+		log.debug("Value count = "+series.getValues().get(0).getValues().size());
 		
+		TridasVariable var = new TridasVariable();
+		var.setNormalTridas(NormalTridasVariable.RING_WIDTH);
+		series.getValues().get(0).setVariable(var);
 		
 		Sample s = new Sample(series);
-		System.out.println("Value count from sample = "+s.getData().size());
+		/*List<TridasValue> values = series.getValues().get(0).getValues();
+		ArrayList<Number> valuesint = new ArrayList<Number>();
+		ArrayList<Integer> countint = new ArrayList<Integer>();
+		for(TridasValue v : values)
+		{
+			valuesint.add(Integer.valueOf(v.getValue()));
+			countint.add(v.getCount());
+		}
+
+		
+		Year startYear = new Year(series.getInterpretation().getFirstYear().getValue());
+		Range range = new Range(startYear, valuesint.size());
+		
+		s.setData(valuesint);
+		s.setCount(countint);
+		s.setRange(range);
+		s.setS*/
+		
+		log.debug("Value count from sample = "+s.getData().size());
 
 
-		SampleDataView dataPanel = new SampleDataView(s);
+		dataPanel = new SampleDataView(s);
+		s.setSeries(series);
 		
 		panelData.setLayout(new BorderLayout());
 		panelData.add(dataPanel, BorderLayout.CENTER);
@@ -795,12 +847,12 @@ public class ImportView extends JFrame{
 		}
 		
 		// Set the watermark text across metadata panel
-		if(model.getSelectedRow().getImportStatusAction().equals(ImportStatus.PENDING))
+		if(model.getSelectedRow().getImportStatus().equals(ImportStatus.PENDING))
 		{
 			propertiesTable.setHasWatermark(true);
 			propertiesTable.setWatermarkText(I18n.getText("general.preview").toUpperCase());
 		}
-		else if(model.getSelectedRow().getImportStatusAction().equals(ImportStatus.IGNORE))
+		else if(model.getSelectedRow().getImportStatus().equals(ImportStatus.IGNORE))
 		{
 			propertiesTable.setHasWatermark(true);
 			propertiesTable.setWatermarkText("IGNORED");

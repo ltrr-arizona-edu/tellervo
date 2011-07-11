@@ -26,10 +26,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 
 import com.dmurph.mvc.model.HashModel;
+
+import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 
 public class ImportModel extends HashModel {
 
@@ -213,6 +217,44 @@ public class ImportModel extends HashModel {
 	  
 	}
 
+	public Integer getCountOutstandingEntities()
+	{
+		TridasRepresentationTreeModel treemodel = getTreeModel();
+		
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) treemodel.getRoot();
+		ArrayList<ImportStatus> statusList = compileStatusList(treemodel, root, new ArrayList<ImportStatus>());
+		
+		Integer i = 0;
+		for(ImportStatus status : statusList)
+		{
+			if(status.equals(ImportStatus.PENDING)) i++;
+		}
+		
+
+		return i;
+	}
 	
+
+	
+	private ArrayList<ImportStatus> compileStatusList(TridasRepresentationTreeModel treemodel, 
+			DefaultMutableTreeNode node, 
+			ArrayList<ImportStatus> statusList)
+	{
+		
+		ImportStatus status = (ImportStatus) treemodel.getValueFor(node, 0);
+		
+		if(status!=null)
+		{	
+			statusList.add(status);
+		}
+
+		for(int i=0; i<node.getChildCount(); i++)
+		{
+			DefaultMutableTreeNode childnode = (DefaultMutableTreeNode) node.getChildAt(i);
+			compileStatusList(treemodel, childnode, statusList);
+		}
+		
+		return statusList;
+	}
 	
 }

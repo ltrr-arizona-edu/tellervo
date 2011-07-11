@@ -87,7 +87,7 @@ public class TridasRepresentationTableTreeRow extends HashModel{
 		}
 		
 		setNode(node);
-		setAction(action);
+		setImportStatus(action);
 
 
 	}
@@ -244,7 +244,7 @@ public class TridasRepresentationTableTreeRow extends HashModel{
 	}
 	
 	
-	public void setAction(ImportStatus action)
+	public void setImportStatus(ImportStatus action)
 	{
 		setProperty(TridasRepresentationTableTreeRow.IMPORT_STATUS_ACTION, action);
 	}
@@ -255,7 +255,7 @@ public class TridasRepresentationTableTreeRow extends HashModel{
 		return (DefaultMutableTreeNode) getProperty(TridasRepresentationTableTreeRow.NODE);
 	}
 	
-	public ImportStatus getImportStatusAction()
+	public ImportStatus getImportStatus()
 	{
 		return (ImportStatus) getProperty(TridasRepresentationTableTreeRow.IMPORT_STATUS_ACTION);
 	}
