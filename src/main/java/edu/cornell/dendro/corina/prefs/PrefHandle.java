@@ -28,7 +28,7 @@ import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 
 public class PrefHandle<T> {
 	/** The name of the preference */
-	protected final PrefKey prefKey;
+	protected final String pref;
 	/** The default value of this preference (can be null) */
 	protected final T defaultValue;
 	
@@ -45,7 +45,7 @@ public class PrefHandle<T> {
 	}	
 	
 	public PrefHandle(PrefKey key, Class<T> prefClass, T defaultValue) {
-		this.prefKey = key;
+		this.pref = key.toString();
 		this.defaultValue = defaultValue;
 
 		// which routine do we use to set/get?
@@ -71,7 +71,7 @@ public class PrefHandle<T> {
 	
 	@Deprecated
 	public PrefHandle(String prefName, Class<T> prefClass, T defaultValue) {
-		this.prefKey = PrefKey.valueOf(prefName);
+		this.pref = prefName;
 		this.defaultValue = defaultValue;
 		// which routine do we use to set/get?
 		if(prefClass.isEnum())
@@ -95,8 +95,8 @@ public class PrefHandle<T> {
 	}
 	
 	
-	protected PrefHandle(PrefKey key, T defaultValue) {
-		this.prefKey = key;
+	protected PrefHandle(String key, T defaultValue) {
+		this.pref = key;
 		this.defaultValue = defaultValue;
 		this.underlyingType = null;
 	}
@@ -116,33 +116,33 @@ public class PrefHandle<T> {
 		
 		// special case for nulls (unset)
 		if(value == null) {
-			App.prefs.setPref(prefKey, null);
+			App.prefs.setPref(pref, null);
 			return;
 		}
 		
 		switch(underlyingType) {
 		case STRING:
-			App.prefs.setPref(prefKey, (String) value);
+			App.prefs.setPref(pref, (String) value);
 			break;
 			
 		case COLOR:
-			App.prefs.setColorPref(prefKey, (Color) value);
+			App.prefs.setColorPref(pref, (Color) value);
 			break;
 			
 		case DIMENSION:
-			App.prefs.setDimensionPref(prefKey, (Dimension) value);
+			App.prefs.setDimensionPref(pref, (Dimension) value);
 			break;
 			
 		case BOOLEAN:
-			App.prefs.setBooleanPref(prefKey, (Boolean) value);
+			App.prefs.setBooleanPref(pref, (Boolean) value);
 			break;
 
 		case INTEGER:
-			App.prefs.setIntPref(prefKey, (Integer) value);
+			App.prefs.setIntPref(pref, (Integer) value);
 			break;
 			
 		case FONT:
-			App.prefs.setFontPref(prefKey, (Font) value);
+			App.prefs.setFontPref(pref, (Font) value);
 			break;
 		}
 	}
@@ -170,26 +170,26 @@ public class PrefHandle<T> {
 		
 		switch(underlyingType) {
 		case STRING:
-			return (T) App.prefs.getPref(prefKey, (String) defaultReturn);
+			return (T) App.prefs.getPref(pref, (String) defaultReturn);
 						
 		case COLOR:
-			return (T) App.prefs.getColorPref(prefKey, (Color) defaultReturn);
+			return (T) App.prefs.getColorPref(pref, (Color) defaultReturn);
 			
 		case DIMENSION:
-			return (T) App.prefs.getDimensionPref(prefKey, (Dimension) defaultReturn);
+			return (T) App.prefs.getDimensionPref(pref, (Dimension) defaultReturn);
 			
 		case BOOLEAN: {
-			Boolean value = App.prefs.getBooleanPref(prefKey, (Boolean) defaultReturn);			
+			Boolean value = App.prefs.getBooleanPref(pref, (Boolean) defaultReturn);			
 			return (T) value;
 		}
 
 		case INTEGER: {
-			Integer value = App.prefs.getIntPref(prefKey, (Integer) defaultReturn);
+			Integer value = App.prefs.getIntPref(pref, (Integer) defaultReturn);
 			return (T) value;
 		}
 			
 		case FONT:
-			return (T) App.prefs.getFontPref(prefKey, (Font) defaultReturn);
+			return (T) App.prefs.getFontPref(pref, (Font) defaultReturn);
 		}
 		
 		// not possible to get here!

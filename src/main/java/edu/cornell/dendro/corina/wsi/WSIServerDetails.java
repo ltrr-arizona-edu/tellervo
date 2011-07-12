@@ -39,7 +39,7 @@ import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.wsi.util.WSCookieStoreHandler;
 
 /**
- * Class for polling the Corina WS to check the server is valid and the check
+ * Class for polling the Corina WS to check the server is valid and to check
  * version information.
  * 
  * @author pwb48

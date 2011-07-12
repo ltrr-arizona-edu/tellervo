@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.io.Files;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 
 /**
 An Element, basically a reference to a Sample (stored on disk).
@@ -83,7 +84,7 @@ public class FileElement implements SampleLoader {
 				this.folder = fn.substring(0, pos);
 				this.basename = fn.substring(pos + 1, fn.length());
 				
-				this.filename = App.prefs.getPref("corina.dir.data", ".") + File.separator +
+				this.filename = App.prefs.getPref(PrefKey.FOLDER_DATA, ".") + File.separator +
 								this.folder.replace(":", File.separator) + File.separator +
 								this.basename;
 			}

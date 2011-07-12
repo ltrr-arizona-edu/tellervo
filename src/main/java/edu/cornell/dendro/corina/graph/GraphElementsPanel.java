@@ -27,12 +27,14 @@ import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -40,8 +42,24 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.util.ValidationEventCollector;
 
+import org.tridas.io.AbstractDendroFileReader;
+import org.tridas.io.DendroFileFilter;
+import org.tridas.io.TridasIO;
+import org.tridas.io.exceptions.InvalidDendroFileException;
+import org.tridas.io.formats.tridas.TridasWriter;
+import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasTridas;
+
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.dbbrowse.DBBrowser;
+import edu.cornell.dendro.corina.io.view.ImportView;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -103,7 +121,7 @@ public class GraphElementsPanel extends JPanel {
 	    JPanel addButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 	    add(addButtonContainer, BorderLayout.CENTER);
 	    
-	    addButton = new JButton("Add...");
+	    addButton = new JButton("Add series...");
 	    addButtonContainer.add(addButton);
 	    addButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent ae) {
@@ -142,6 +160,8 @@ public class GraphElementsPanel extends JPanel {
 	    		}	
 	    	}
 	    });
+	    
+	
 
 	    removeButton = new JButton("Remove");
 	    removeButton.setEnabled(false);
@@ -180,5 +200,6 @@ public class GraphElementsPanel extends JPanel {
 	private GraphWindow window;
 	private JButton addButton;
 	private JButton removeButton;
+	private JButton btnAddFile;
 	private ColorComboBox colorselect;
 }

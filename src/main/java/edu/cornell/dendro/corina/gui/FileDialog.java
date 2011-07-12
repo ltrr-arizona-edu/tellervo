@@ -180,7 +180,7 @@ public class FileDialog {
 		String wd = (String) workingDirectories.get(function);
 		
 		if(wd == null)
-			return App.prefs.getPref(PrefKey.DATA_DIR, null);
+			return App.prefs.getPref(PrefKey.FOLDER_DATA, null);
 
 		return wd;
 	}

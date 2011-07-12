@@ -75,6 +75,7 @@ import edu.cornell.dendro.corina.io.WrongFiletypeException;
 import edu.cornell.dendro.corina.io.control.IOController;
 import edu.cornell.dendro.corina.io.view.ImportView;
 import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.CorinaWsiTridasElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementFactory;
@@ -141,10 +142,14 @@ public class FileMenu extends JMenu {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					// Set up file chooser and filters
-					JFileChooser fc = new JFileChooser();
 					AbstractDendroFileReader reader = TridasIO.getFileReader(s);
 					DendroFileFilter filter = reader.getDendroFileFilter();
-
+					File lastFolder = null;
+					try{
+						lastFolder = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_READ, null));
+					} catch (Exception e){}
+					
+					JFileChooser fc = new JFileChooser(lastFolder);
 					fc.addChoosableFileFilter(filter);
 					fc.setFileFilter(filter);
 					
@@ -153,13 +158,11 @@ public class FileMenu extends JMenu {
 					// Get details from user
 				    if (returnVal == JFileChooser.APPROVE_OPTION) {
 				        File file = fc.getSelectedFile();
-				        
-				        
 				        ImportView importDialog = new ImportView(file, s);
-
 						importDialog.setVisible(true);
 				        
-				 
+						// Remember this folder for next time
+						App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
 					    
 				    } else {
 				    	return;

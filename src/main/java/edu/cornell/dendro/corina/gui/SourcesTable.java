@@ -250,7 +250,7 @@ public class SourcesTable extends JTable {
 	    JButton change = new JButton("Change...");
 	    change.addActionListener(new AbstractAction() {
 		    public void actionPerformed(ActionEvent e) {
-			JFileChooser fc = new JFileChooser(App.prefs.getPref(PrefKey.DATA_DIR, null));
+			JFileChooser fc = new JFileChooser(App.prefs.getPref(PrefKey.FOLDER_DATA, null));
 			fc.setDialogTitle("Select Source Folder");
 			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int x = fc.showDialog(null /* ??? */, "Select");

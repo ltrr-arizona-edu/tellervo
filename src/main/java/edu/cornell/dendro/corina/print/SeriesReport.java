@@ -65,6 +65,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.editor.WJTableModel;
 import edu.cornell.dendro.corina.io.Metadata;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.remarks.Remarks;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.Alert;
@@ -90,7 +91,7 @@ public class SeriesReport extends ReportBase {
 		
 	private void generateSeriesReport(OutputStream output) {
 	
-		displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+		displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.HUNDREDTH_MM.value().toString()));
 
 		try {
 		
