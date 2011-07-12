@@ -177,12 +177,22 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     		if(DEBUGGING)
     			throw new UserCancelledException();
     		dlg.doLogin(null, false);
-    		username=dlg.getUsername().toString();
+    		
     		appmodel.setNetworkStatus(NetworkStatus.ONLINE);  		
     		
        	} catch (UserCancelledException uce) {
     		// we default to not being logged in...
     	}
+       	
+		// Grab username either from prefs or directly from dialog
+		if(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, null)!=null)
+		{
+			username= App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, null);
+		}
+		else
+		{
+			username=dlg.getUsername().toString();
+		}
 
     }
     
