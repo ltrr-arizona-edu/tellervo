@@ -28,12 +28,12 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -41,10 +41,13 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -73,6 +76,7 @@ import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
+import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasVariable;
 import org.tridas.util.TridasObjectEx;
 
@@ -84,7 +88,9 @@ import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.SampleDataView;
-import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel;
+import edu.cornell.dendro.corina.gui.TridasEntityChooser;
+import edu.cornell.dendro.corina.gui.TridasEntityChooser.EntitiesAccepted;
+import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel;
 import edu.cornell.dendro.corina.io.ConversionWarningTableModel;
 import edu.cornell.dendro.corina.io.LineHighlighter;
 import edu.cornell.dendro.corina.io.control.FileSelectedEvent;
@@ -92,6 +98,7 @@ import edu.cornell.dendro.corina.io.control.ImportEntitySaveEvent;
 import edu.cornell.dendro.corina.io.control.ImportMergeEntitiesEvent;
 import edu.cornell.dendro.corina.io.control.ImportNodeSelectedEvent;
 import edu.cornell.dendro.corina.io.control.ImportSwapEntityEvent;
+import edu.cornell.dendro.corina.io.control.ReplaceHierarchyEvent;
 import edu.cornell.dendro.corina.io.model.ImportEntityListComboBox;
 import edu.cornell.dendro.corina.io.model.ImportModel;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow;
@@ -107,6 +114,7 @@ import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.PopupListener;
 
 public class ImportView extends JFrame{
 
@@ -500,26 +508,14 @@ public class ImportView extends JFrame{
 		final Component glue = (Component) this;
 		
 		// Listen to entities being selected in tree table
-		this.treeTable.addMouseListener(new MouseListener() {
-			
-			@Override
-			public void mouseReleased(MouseEvent e) { }
-			
-			@Override
-			public void mousePressed(MouseEvent e) { }
-			
-			@Override
-			public void mouseExited(MouseEvent e) {	}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) { }
+		this.treeTable.addMouseListener(new PopupListener() {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
 				// Check the user isn't part way through changing this entity
 				if(!isUserOkWithLoosingAnyChanges()) return;
-
+				
 				if(changingTop)
 				{
 					changingTop =false;
@@ -533,6 +529,18 @@ public class ImportView extends JFrame{
                 ImportNodeSelectedEvent event = new ImportNodeSelectedEvent(model, row);
                 event.dispatch();
                 model.setSelectedRow(row);
+				
+			}
+			
+			
+	       	@Override
+			public void showPopup(MouseEvent e) 
+			{
+				log.debug("showPopup called");
+				
+				int selRow = treeTable.getSelectedRow();
+				DefaultMutableTreeNode selectedEntity = (DefaultMutableTreeNode) treeTable.getValueAt(selRow, 0);	
+				showPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), selectedEntity);
 				
 			}
 		});
@@ -682,6 +690,72 @@ public class ImportView extends JFrame{
 	{
 		
 	}
+	
+	protected void showPopupMenu(JComponent source, int x, int y, final DefaultMutableTreeNode selectedEntity)
+	{
+        // define the popup
+        JPopupMenu popupMenu = new JPopupMenu();
+        final JFrame glue = this;
+        
+        if(selectedEntity.getUserObject() instanceof TridasMeasurementSeries)
+        {
+	        JMenuItem setHierarchyMenu = new JMenuItem("Set hierarchy by labcode");
+	        
+	        setHierarchyMenu.addActionListener(new ActionListener(){
+	        
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					ITridas newParent = TridasEntityChooser.showDialog(null, 
+							"Select entity", 
+							TridasRadius.class, 
+							EntitiesAccepted.SPECIFIED_ENTITY_AND_BELOW);
+					
+					log.debug("User wants to set hierarchy of "+ 
+							((ITridas) selectedEntity.getUserObject()).getTitle() +
+							" using labcode for " + newParent.getTitle());
+					
+					ReplaceHierarchyEvent event = new ReplaceHierarchyEvent(model, glue, selectedEntity ,newParent );
+					event.dispatch();
+					
+					expandTree(true);
+					
+				}
+	        	
+	        });
+	        
+	        popupMenu.add(setHierarchyMenu);
+	        popupMenu.setOpaque(true);
+	        popupMenu.setLightWeightPopupEnabled(false);
+
+	        popupMenu.show(source, x, y);
+        }
+	}
+	
+    private void expandTree(boolean expands) {
+        TreeNode roots = (TreeNode) model.getTreeModel().getRoot();
+        expandAll(new TreePath(roots), expands);
+    }
+    
+    private void expandAll(TreePath path, boolean expands) {
+        TreeNode node = (TreeNode) path.getLastPathComponent();
+ 
+       if (node.getChildCount() >= 0) {
+            Enumeration enumeration = node.children();
+           while (enumeration.hasMoreElements()) {
+                TreeNode ns = (TreeNode) enumeration.nextElement();
+                TreePath ps = path.pathByAddingChild(ns);
+ 
+                expandAll(ps, expands);
+            }
+        }
+ 
+        if (expands) {
+        	treeTable.expandPath(path);
+        } else {
+        	treeTable.collapsePath(path);
+        }
+    } 
+	
 	
 	/**
 	 * Set up the conversion warnings table with the provided warnings
@@ -969,6 +1043,7 @@ public class ImportView extends JFrame{
 		
 		
 		this.treeTable.setModel(mdl);
+		expandTree(true);
 	}
 	
 	/**

@@ -52,7 +52,11 @@ import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel.TreeDepth;
+import edu.cornell.dendro.corina.gui.TridasSelectEvent;
+import edu.cornell.dendro.corina.gui.TridasSelectListener;
+import edu.cornell.dendro.corina.gui.hierarchy.ManagementTreeViewPanel;
+import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel;
+import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel.TreeDepth;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;

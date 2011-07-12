@@ -64,6 +64,9 @@ import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.TridasSelectEvent;
+import edu.cornell.dendro.corina.gui.TridasSelectListener;
+import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel;
 import edu.cornell.dendro.corina.sample.CachedElement;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;

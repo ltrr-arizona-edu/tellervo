@@ -36,8 +36,8 @@ import org.tridas.io.defaults.TridasMetadataFieldSet;
 import org.tridas.schema.TridasProject;
 import org.tridas.util.TridasObjectEx;
 
-import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectEvent;
-import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectListener;
+import edu.cornell.dendro.corina.gui.TridasSelectEvent;
+import edu.cornell.dendro.corina.gui.TridasSelectListener;
 import edu.cornell.dendro.corina.io.view.TridasOutlineRenderData;
 
 @SuppressWarnings("serial")

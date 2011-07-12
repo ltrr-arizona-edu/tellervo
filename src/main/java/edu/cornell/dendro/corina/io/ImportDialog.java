@@ -73,9 +73,9 @@ import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.lowagie.text.Font;
 
-import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectEvent;
-import edu.cornell.dendro.corina.gui.dbbrowse.TridasSelectListener;
-import edu.cornell.dendro.corina.gui.dbbrowse.TridasTreeViewPanel;
+import edu.cornell.dendro.corina.gui.TridasSelectEvent;
+import edu.cornell.dendro.corina.gui.TridasSelectListener;
+import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel;
 import edu.cornell.dendro.corina.tridasv2.TridasCloner;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;

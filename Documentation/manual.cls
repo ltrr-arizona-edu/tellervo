@@ -72,10 +72,10 @@
 
 
 %% Define new commands for typesetting boxes
-\newcommand{\warn}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/warning.png} \emph{#1}}}}\end{center}}
-\newcommand{\info}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/info.png} #1}}}\end{center}}
-\newcommand{\tip}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/idea.png} #1}}}\end{center}}
-\newcommand{\code}[1]{\begin{center}{\colorbox{lgrey}{\parbox{15cm}{\includegraphics[width=3mm]{Images/code.png}\hspace{5mm}\texttt{#1}}}}\end{center}}
+\newcommand{\warn}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{0.9\textwidth}{\includegraphics[width=3mm]{Images/warning.png} \emph{#1}}}}\end{center}}
+\newcommand{\info}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{0.9\textwidth}{\includegraphics[width=3mm]{Images/info.png} #1}}}\end{center}}
+\newcommand{\tip}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{0.9\textwidth}{\includegraphics[width=3mm]{Images/idea.png} #1}}}\end{center}}
+\newcommand{\code}[1]{\begin{center}{\colorbox{lgrey}{\parbox{0.9\textwidth}{\includegraphics[width=3mm]{Images/code.png}\hspace{5mm}\texttt{#1}}}}\end{center}}
 
 %% Define commands for typesetting menu entries
 \newcommand{\menutwo}[2]{\emph{#1 {\color{dgreen}\MVRightarrow}\ #2}}
@@ -122,6 +122,9 @@
 \DeclareOption{a5paper}
    {\setlength\paperheight {210mm}%
     \setlength\paperwidth  {148mm}}
+\DeclareOption{kindlesize}
+   {\setlength\paperheight {240mm}%
+    \setlength\paperwidth  {180mm}}
 \DeclareOption{b5paper}
    {\setlength\paperheight {250mm}%
     \setlength\paperwidth  {176mm}}

@@ -65,10 +65,14 @@ public class EntitySwappedCommand implements ICommand {
 		// Add new node in its place
 		event.model.getTreeModel().insertNodeInto(newNode, parentNode, newNodeIndex);
 		
-		// Select the new node
-		TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow(newNode, null);	
-		ImportNodeSelectedEvent event2 = new ImportNodeSelectedEvent(event.model, row);
-		event2.dispatch();
+		if(event.selectNodeAfterSwap)
+		{
+			// Select the new node
+			TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow(newNode, null);	
+			ImportNodeSelectedEvent event2 = new ImportNodeSelectedEvent(event.model, row);
+			event2.dispatch();
+		}
+		
 	}
 
 	private DefaultMutableTreeNode copySubTree(DefaultMutableTreeNode destNode, DefaultMutableTreeNode srcNode) throws CloneNotSupportedException

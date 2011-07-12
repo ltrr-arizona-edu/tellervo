@@ -29,10 +29,19 @@ public class ImportSwapEntityEvent extends ObjectEvent<TridasRepresentationTable
 	private static final long serialVersionUID = 1L;
 	public final ImportModel model;
 	public final TridasRepresentationTableTreeRow oldRow;
+	public Boolean selectNodeAfterSwap = true;
+	
 	public ImportSwapEntityEvent(ImportModel model, TridasRepresentationTableTreeRow newRow, TridasRepresentationTableTreeRow oldRow) {
 		super(IOController.ENTITY_SWAPPED, newRow);
 		this.model = model;
 		this.oldRow = oldRow;
+	}
+	
+	public ImportSwapEntityEvent(ImportModel model, TridasRepresentationTableTreeRow newRow, TridasRepresentationTableTreeRow oldRow, Boolean selectOnCompletion) {
+		super(IOController.ENTITY_SWAPPED, newRow);
+		this.model = model;
+		this.oldRow = oldRow;
+		this.selectNodeAfterSwap = selectOnCompletion;
 	}
 
 }
