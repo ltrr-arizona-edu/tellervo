@@ -22,12 +22,16 @@ package edu.cornell.dendro.corina_indexing;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Lucas Madar
  *
  */
 public abstract class IndexFunction {
-	
+	private final static Logger log = LoggerFactory.getLogger(IndexFunction.class);
+
 	/** The indexable which we intend to use to create our index */
 	protected Indexable input;
 	
@@ -70,7 +74,7 @@ public abstract class IndexFunction {
 	 * but seems unnecessary.
 	 */
 	public void doIndex() {
-		System.out.println("Starting index function " + getI18nTag());
+		log.debug("Starting index function " + getI18nTag());
 		if(input == null)
 			throw new IllegalArgumentException("Index function has not been properly initilaized");
 		if(alreadyIndexed)

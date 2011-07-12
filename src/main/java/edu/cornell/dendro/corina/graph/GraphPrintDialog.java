@@ -55,6 +55,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
@@ -69,7 +72,8 @@ import edu.cornell.dendro.corina.util.Center;
  */
 @SuppressWarnings({"serial", "unchecked"})
 public class GraphPrintDialog extends JPanel {
-	
+	private final static Logger log = LoggerFactory.getLogger(GraphPrintDialog.class);
+
 	public final static int PRINT_PRINTER = 1;
 	public final static int PRINT_PDF = 2;
 	public final static int PRINT_PNG = 3;
@@ -240,10 +244,10 @@ public class GraphPrintDialog extends JPanel {
 					pm.setNote("Cleaning up...");
 					g.dispose();
 				} catch (DocumentException de) {
-					System.err.println(de.getMessage());
+					log.error(de.getMessage());
 					de.printStackTrace();
 				} catch (IOException ioe) {
-					System.err.println(ioe.getMessage());
+					log.error(ioe.getMessage());
 					ioe.printStackTrace();
 				}
 

@@ -29,6 +29,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 public abstract class ResourceCacher<INTYPE> implements ResourceEventListener {
@@ -40,6 +43,9 @@ public abstract class ResourceCacher<INTYPE> implements ResourceEventListener {
 
 	/** Remove this cacher on load */
 	private final boolean removeOnLoad;
+	
+	private final static Logger log = LoggerFactory.getLogger(ResourceCacher.class);
+
 	
 	/**
 	 * Generates a resource cacher that saves a resource to disk.
@@ -76,7 +82,7 @@ public abstract class ResourceCacher<INTYPE> implements ResourceEventListener {
 		final ResourceEventListener glue = this;
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				System.out.println("Unloading resource cacher for " + myResource.getResourceName());
+				log.debug("Unloading resource cacher for " + myResource.getResourceName());
 				myResource.removeResourceEventListener(glue);
 				myResource = null;
 			}
@@ -118,7 +124,7 @@ public abstract class ResourceCacher<INTYPE> implements ResourceEventListener {
 			myResource.processQueryResult(intypeClass.cast(obj));
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("Couldn't load cache into "
+			log.error("Couldn't load cache into "
 					+ myResource.getResourceName() + ": " + e.getMessage());
 			return false;
 		}
@@ -126,7 +132,7 @@ public abstract class ResourceCacher<INTYPE> implements ResourceEventListener {
 		Date endTime = new Date();
 		long ms = endTime.getTime() - startTime.getTime();
 		
-		System.out.println("Loaded cache for " + myResource.getResourceName() + " [" + ms + " ms]");
+		log.debug("Loaded cache for " + myResource.getResourceName() + " [" + ms + " ms]");
 		
 		return true;
 	}
@@ -150,7 +156,7 @@ public abstract class ResourceCacher<INTYPE> implements ResourceEventListener {
 			
 			marshaller.marshal(obj, getCacheFile());
 		} catch (JAXBException e) {
-			System.err.println("Couldn't save cache for "
+			log.error("Couldn't save cache for "
 					+ myResource.getResourceName() + ": " + e.getMessage());
 		}
 	}

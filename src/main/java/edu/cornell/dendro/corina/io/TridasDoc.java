@@ -29,6 +29,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasVariable;
@@ -56,6 +58,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.wsi.corina.TridasGenericFieldMap;
 
 public class TridasDoc implements Filetype {	
+	private final static Logger log = LoggerFactory.getLogger(TridasDoc.class);
 
 	@Override
 	public String toString() {
@@ -234,7 +237,7 @@ public class TridasDoc implements Filetype {
 				elements.add(new CachedElement(ref));
 			}
 			else {
-				System.out.println("Sample " + s + " references unknown element: " + identifier);
+				log.error("Sample " + s + " references unknown element: " + identifier);
 			}
 		}
 		
@@ -423,7 +426,7 @@ public class TridasDoc implements Filetype {
 		try {
 			doc = new SAXBuilder().build(r);
 		} catch (JDOMException jdome) {
-			System.out.println("JDOME: " + jdome);
+			log.error(jdome.getLocalizedMessage());
 			throw new WrongFiletypeException();
 		}
 		

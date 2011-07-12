@@ -27,7 +27,14 @@ import java.io.OutputStreamWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.cornell.dendro.corina.core.App;
+
 public class UpdateFolder implements Runnable {
+	
+	private final static Logger log = LoggerFactory.getLogger(UpdateFolder.class);
 
     // update folder TO with folder FROM
     private String from, to;
@@ -129,10 +136,8 @@ public class UpdateFolder implements Runnable {
 			copy(fromFileList[i], toFile);
 		    } catch (IOException ioe) {
 			// FIXME: this is bad ... stuff in a vector or something ...
-			System.out.println("exception");
-			System.out.println("   message=" + ioe.getMessage());
-			System.out.println("   string=" + ioe.toString());
-			System.out.println("   class=" + ioe.getClass());
+			log.error(ioe.getMessage());
+
 		    }
 		}
 	    }
@@ -156,7 +161,7 @@ public class UpdateFolder implements Runnable {
 	    if (!fromFile.exists()) {
 		boolean success = delete(toFile);
 		if (!success)
-		    System.out.println("ERROR!  can't delete " + toFile);
+		    log.error("ERROR!  can't delete " + toFile);
 	    }
 	}
     }
@@ -191,7 +196,7 @@ public class UpdateFolder implements Runnable {
     // in any given instance of UpdateFolder, only one call at a time should call this.
     // DESIGN: should i enforce this by setting a flag on enter/exit from function?
     public void copy(File from, File to) throws IOException {
-	System.out.println("(note: copying file " + from + ")");
+	log.debug("Copying file " + from);
 
 	InputStreamReader r = null;
 	OutputStreamWriter w = null;

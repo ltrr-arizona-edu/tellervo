@@ -261,9 +261,7 @@ public class ExportView extends JFrame {
 					destFolder.setText(file.getAbsoluteFile().toString());
 					model.setExportDirectory(file.getAbsoluteFile().toString());
 				}
-				else {
-					System.out.println("Save command cancelled by user.");
-				}
+
 				
 				// If file/folder selected enable OK button
 				if (destFolder.getText() == null || destFolder.getText().equals("")) {

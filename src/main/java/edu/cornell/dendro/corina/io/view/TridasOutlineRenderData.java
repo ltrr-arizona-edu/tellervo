@@ -24,6 +24,8 @@ import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.netbeans.swing.outline.RenderDataProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -42,6 +44,8 @@ import edu.cornell.dendro.corina.ui.Builder;
  * @author peterbrewer
  */
 public class TridasOutlineRenderData implements RenderDataProvider {
+ 
+	private final static Logger log = LoggerFactory.getLogger(TridasOutlineRenderData.class);
 
 	Icon databaseIcon;
 	Icon objectIcon;
@@ -76,7 +80,7 @@ public class TridasOutlineRenderData implements RenderDataProvider {
            entity = (ITridas) dmtn.getUserObject();
         } catch (Exception e)
         {
-        	System.out.println("Error getting display name in TridasOutlineRenderData - getUserObject is null");
+        	log.error("Error getting display name in TridasOutlineRenderData - getUserObject is null");
         	return "";
         }
         

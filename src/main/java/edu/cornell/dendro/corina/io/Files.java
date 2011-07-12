@@ -19,6 +19,7 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.io;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.sample.Sample;
 
 import java.io.File;
@@ -30,8 +31,15 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // wrapper for corina.formats: load() and save() a file, given only its filename
 public class Files {
+	
+	private final static Logger log = LoggerFactory.getLogger(Files.class);
+
+	
 	// don't instantiate me
 	private Files() {
 	}
@@ -114,7 +122,7 @@ public class Files {
 					return s;
 				} catch (IllegalArgumentException iae) {
 					// can't create loader -- ??? (bug, probably)
-					System.out.println("bug: " + iae);
+					log.error(iae.getLocalizedMessage());
 				} catch (WrongFiletypeException wfe) {
 					continue;
 				} catch (IOException ioe) {

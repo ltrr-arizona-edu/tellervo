@@ -49,6 +49,8 @@ import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.data.time.SimpleTimePeriod;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.formats.heidelberg.HeidelbergReader;
@@ -69,6 +71,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class TimeLineChartTest extends ApplicationFrame {
 
+	private final static Logger log = LoggerFactory.getLogger(TimeLineChartTest.class);
 	private static final long serialVersionUID = 1L;
 
 
@@ -367,7 +370,7 @@ public class TimeLineChartTest extends ApplicationFrame {
     		cb.addTemplate(tp, 0, 0);
     		}
     		catch(DocumentException de) {
-    		System.err.println(de.getMessage());
+    		log.error(de.getMessage());
     		}
     		document.close();
     		}

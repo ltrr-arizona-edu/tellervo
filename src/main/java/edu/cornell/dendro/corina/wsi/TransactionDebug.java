@@ -26,7 +26,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import org.jdom.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.BugReportDialog;
 import edu.cornell.dendro.corina.gui.XMLDebugView;
 import edu.cornell.dendro.corina.util.BugReport;
@@ -34,6 +37,7 @@ import edu.cornell.dendro.corina.util.XMLDebug;
 import edu.cornell.dendro.corina.wsi.corina.CorinaNamespacePrefixMapper;
 
 public class TransactionDebug {
+	private final static Logger log = LoggerFactory.getLogger(TransactionDebug.class);
 	private static boolean isDebuggingEnabled = true;
 	private static boolean isExtremelyVerboseDebuggingEnabled = false;
 	
@@ -41,7 +45,7 @@ public class TransactionDebug {
 		XMLDebugView.addDocument(doc, noun, false);
 	
 		if(isExtremelyVerboseDebuggingEnabled) {
-			System.out.println("---SENT---");
+			log.trace("---SENT---");
 			XMLDebug.dumpDocument(doc);
 		}
 		
@@ -76,7 +80,7 @@ public class TransactionDebug {
 			XMLDebugView.addDocument(doc, noun, true);
 
 			if(isExtremelyVerboseDebuggingEnabled) {
-				System.out.println("---RECV---");
+				log.trace("---RECV---");
 				XMLDebug.dumpDocument(doc);
 			}
 			

@@ -196,9 +196,7 @@ public class ExportUI extends javax.swing.JPanel{
 		            File file = fc.getSelectedFile();
 		            txtOutput.setText(file.getAbsoluteFile().toString());
 
-		        } else {
-		            System.out.println("Save command cancelled by user.");
-		        }
+		        } 
 		        
 		        // If file/folder selected enable OK button
 				if(txtOutput.getText()==null || txtOutput.getText().equals(""))

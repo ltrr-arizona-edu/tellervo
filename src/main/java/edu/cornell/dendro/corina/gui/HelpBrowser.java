@@ -39,29 +39,31 @@
 
 package edu.cornell.dendro.corina.gui;
 
-import java.io.IOException;
-
-import java.net.URL;
-import java.util.Stack;
-
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Stack;
+
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JEditorPane;
-import javax.swing.JButton;
-import javax.swing.AbstractAction;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
    A small help browser.  It's a very simple web browser built using
@@ -97,7 +99,10 @@ import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 */
 @SuppressWarnings("serial")
 public class HelpBrowser extends JFrame {
-    // history
+    
+	private final static Logger log = LoggerFactory.getLogger(HelpBrowser.class);
+	
+	// history
     @SuppressWarnings("unchecked")
 	private Stack back=new Stack(), fwd=new Stack();
 
@@ -145,7 +150,7 @@ public class HelpBrowser extends JFrame {
         try {
 	    editorPane.setPage(getClass().getClassLoader().getResource(HELP_PAGE));
         } catch (Exception e) { // TODO: specify which exceptions!
-            System.err.println("Attempted to read a bad URL: " + url);
+            log.error("Attempted to read a bad URL: " + url);
         }
 
 	// make it scrollable
@@ -163,7 +168,7 @@ public class HelpBrowser extends JFrame {
 		    try {
 			editorPane.setPage((URL) back.pop());
 		    } catch (IOException ioe) {
-			System.err.println("Attempted to read a bad URL: " + ioe);
+			log.error("Attempted to read a bad URL: " + ioe);
 		    }
 		    if (back.isEmpty())
 			backButton.setEnabled(false);
@@ -181,7 +186,7 @@ public class HelpBrowser extends JFrame {
 		    try {
 			editorPane.setPage((URL) fwd.pop());
 		    } catch (IOException ioe) {
-			System.err.println("Attempted to read a bad URL: " + ioe);
+			log.error("Attempted to read a bad URL: " + ioe);
 		    }
 		    if (fwd.isEmpty())
 			fwdButton.setEnabled(false);

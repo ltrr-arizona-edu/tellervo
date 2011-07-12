@@ -145,7 +145,7 @@ public class BugReport {
 
 			}
 		  catch (Exception e){//Catch exception if any
-			  System.err.println("Error: " + e.getMessage());
+			  log.error(e.getMessage());
 		  	}
 		  finally{
 			  //Close the input stream

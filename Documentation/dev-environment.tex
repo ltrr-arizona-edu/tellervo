@@ -176,6 +176,8 @@ Using the logging framework is very simple.  Just define a Logger as a static va
 \code{private final static Logger log = LoggerFactory.getLogger(MyClassName.class);}
 where MyClassName is the name of the current class.  Then you can log messages simply by calling log.warn(`My message'), log.debug('My message') etc.
 
+Before managed logging was introduced to Corina, debugging was often handled through the use of System.out and System.err messages.  To ensure that these messages are not lost we use another package called SysOutOverSLF4J.  This redirects messages sent to System.out and System.err to the logging system.  This is a temporary solution so when working on older classes, please take the time to transition these older calls to the proper logging calls.  We can then remove the need for SysOutOverSLF4J.
+
 
 \section{Preferences}
 \index{Preferences}

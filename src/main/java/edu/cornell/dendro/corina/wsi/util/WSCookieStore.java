@@ -27,8 +27,13 @@ import java.util.Map.Entry;
 import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSCookieStore implements Serializable {
+	
+	private final static Logger log = LoggerFactory.getLogger(WSCookieStore.class);
+
 	/**
 	 * 
 	 */
@@ -74,7 +79,7 @@ public class WSCookieStore implements Serializable {
 			cookies.put(hv, new WSCookieWrapper(c));
 			storeChanged = true;
 			
-			System.out.println("New Cookie: " + hv);
+			log.debug("New Cookie: " + hv);
 		}
 		
 		if(storeChanged) {

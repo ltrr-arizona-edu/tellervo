@@ -20,9 +20,6 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.wsi;
 
-import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.gui.UserCancelledException;
-
 import java.awt.EventQueue;
 import java.awt.Window;
 import java.io.IOException;
@@ -30,6 +27,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.event.EventListenerList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.gui.UserCancelledException;
 
 /*
  * A resource is essentially a wrapper for an XML document acquired
@@ -42,6 +45,8 @@ import javax.swing.event.EventListenerList;
  *
  */
 public abstract class Resource<INTYPE, OUTTYPE> {
+
+	private final static Logger log = LoggerFactory.getLogger(Resource.class);
 
 	/** The noun of our resource (measurementSeries, dictionary, etc) */
 	private String resourceName; // the noun associated with this resource
@@ -278,12 +283,11 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 	 * This is only called if processQueryResult() is not called.
 	 */
 	protected void queryFailed(Exception e) {
-		System.err.println("Failed to query resource " + resourceName);
+		log.error("Failed to query resource " + resourceName);
 		e.printStackTrace();
 		
 		if(e instanceof ResourceException && e.getCause() != null) {
-			System.err.println("Caused by:");
-			e.getCause().printStackTrace();
+			log.error("Caused by:"+ e.getCause().getLocalizedMessage());
 		}
 	}
 	
@@ -364,12 +368,12 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 	public void debugDumpListeners() {
 		Object[] listeners = listenerList.getListenerList();
 		
-		System.out.println("DUMPING LISTENERS " + listeners.length);
+		log.debug("DUMPING LISTENERS " + listeners.length);
 		
 		// For some reason, this array is stored oddly. ookay, java...
 		for(int i = 0; i < listeners.length; i += 2) {
 			if(listeners[i] == ResourceEventListener.class)
-				System.out.println("Listening: " + listeners[i + 1]);
+				log.debug("Listening: " + listeners[i + 1]);
 		}		
 	}
 	

@@ -23,6 +23,8 @@ import java.util.ArrayList;
 
 import javax.swing.tree.TreeModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -31,7 +33,10 @@ import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
+import edu.cornell.dendro.corina.core.App;
+
 public class TridasTreeModel implements TreeModel {
+	  private final static Logger log = LoggerFactory.getLogger(TridasTreeModel.class);
 
 	  private ITridas root;
 
@@ -70,7 +75,7 @@ public class TridasTreeModel implements TreeModel {
 	        {
 	        	return ((TridasRadius)parent).getMeasurementSeries().get(index);
 	        }
-	        System.out.println("getChild failing on index " + index +" of parent "+parent);
+	        log.error("getChild failing on index " + index +" of parent "+parent);
 	        return null;
 	    }
 

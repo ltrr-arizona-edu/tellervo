@@ -57,6 +57,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.platform.Platform;
@@ -77,6 +80,8 @@ import edu.cornell.dendro.corina.ui.Builder;
  */
 @SuppressWarnings("unchecked")
 public class Startup implements PrivilegedAction {
+	private final static Logger log = LoggerFactory.getLogger(Startup.class);
+	
 	private Startup(String[] args) {
 	}
 
@@ -193,12 +198,10 @@ public class Startup implements PrivilegedAction {
 		try {
 			lc = new LoginContext("Corina", new PasswordDialogCallbackHandler());
 		} catch (LoginException le) {
-			System.err
-					.println("Cannot create LoginContext. " + le.getMessage());
+			log.error("Cannot create LoginContext. " + le.getMessage());
 			System.exit(-1);
 		} catch (SecurityException se) {
-			System.err
-					.println("Cannot create LoginContext. " + se.getMessage());
+			log.error("Cannot create LoginContext. " + se.getMessage());
 			System.exit(-1);
 		}
 		
@@ -211,8 +214,8 @@ public class Startup implements PrivilegedAction {
 				break;
 			} catch (LoginException le) {
 
-				System.err.println("Authentication failed:");
-				System.err.println("  " + le.getMessage());
+				log.error("Authentication failed:");
+				log.error("  " + le.getMessage());
 				System.exit(-1);
 
 			}

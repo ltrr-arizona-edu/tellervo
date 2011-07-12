@@ -47,6 +47,9 @@ import java.util.ResourceBundle;
 
 import javax.swing.KeyStroke;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.util.StringUtils;
 
@@ -145,6 +148,8 @@ import edu.cornell.dendro.corina.util.StringUtils;
    @version $Id$
 */
 public class I18n {
+	
+	private final static Logger log = LoggerFactory.getLogger(I18n.class);
 
 	private I18n() {
 		// don't instantiate me
@@ -294,7 +299,7 @@ public class I18n {
 			try {
 				bundle = ResourceBundle.getBundle("Translations/TextBundle");
 			} catch (MissingResourceException mre2) {
-				System.out.println("Could not find locale file.");
+				log.error("Could not find locale file.");
 				mre2.printStackTrace();
 				bundle = new ResourceBundle() {
 					

@@ -26,6 +26,8 @@ package edu.cornell.dendro.corina.wsi.corina.resources;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridasSeries;
 
 import edu.cornell.dendro.corina.io.TridasDoc;
@@ -48,6 +50,8 @@ import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
  *
  */
 public class SeriesSearchResource extends CorinaAssociatedResource<ElementList> {
+	
+	private final static Logger log = LoggerFactory.getLogger(SeriesSearchResource.class);
 	/** The associated search parameters */
 	private final SearchParameters params;
 	
@@ -93,7 +97,7 @@ public class SeriesSearchResource extends CorinaAssociatedResource<ElementList> 
 			try {
 				sample = reader.loadFromBaseSeries(series, refmap);
 			} catch (IOException e) {
-				System.err.println("Couldn't loadFromBaseSeries: " + e.toString());
+				log.error("Couldn't loadFromBaseSeries: " + e.toString());
 				continue;
 			}
 			

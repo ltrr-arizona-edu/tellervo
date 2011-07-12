@@ -25,8 +25,12 @@ import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GUIDGenerator {
 	
+	private final static Logger log = LoggerFactory.getLogger(GUIDGenerator.class);
 	private static String myAddr = getInetAddress();
 	private static String myHash = Integer.toHexString(new Object().hashCode());
 	private static Random myRandomState = new Random(new SecureRandom().nextLong());
@@ -59,7 +63,7 @@ public class GUIDGenerator {
 		// try and get our local host.
 		try {
 			addr = InetAddress.getLocalHost();
-			System.out.println("Local IP: " + addr);
+			log.debug("Local IP: " + addr);
 			if(addr.isLoopbackAddress())
 				throw new UnknownHostException();
 			byteAddr = addr.getAddress();

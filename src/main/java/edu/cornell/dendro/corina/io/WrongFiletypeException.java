@@ -41,6 +41,9 @@ package edu.cornell.dendro.corina.io;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
    A file load operation was attempted with the wrong format loader.
    (Or, from the Sample(filename) constructor if no usable loader was
@@ -51,6 +54,8 @@ import java.io.IOException;
 */
 @SuppressWarnings("serial")
 public class WrongFiletypeException extends IOException {
+	private final static Logger log = LoggerFactory.getLogger(WrongFiletypeException.class);
+
     /** Make a new wrong filetype exception. */
     public WrongFiletypeException() {
         // nothing needed (this only exists for the javadoc tag)
@@ -58,6 +63,6 @@ public class WrongFiletypeException extends IOException {
     
     public WrongFiletypeException(String s) {
     	// For now, just dump debug info
-    	System.out.println("WFTE: " + s);
+    	log.error(s);
     }
 }

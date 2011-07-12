@@ -354,7 +354,7 @@ public class Builder {
 		
 		String returnurl = cl.getResource(urlBuffer.append(getIconURL(name, packagename, size)).toString()).toString();
 		
-		System.out.println("Icon: "+returnurl.substring(5));
+		log.debug("Icon: "+returnurl.substring(5));
 		return returnurl.substring(5);
 		
 	}
@@ -452,9 +452,8 @@ public class Builder {
 						try {
 							c.newInstance();
 						} catch (Exception ex) {
-							System.out.println("Builder.addAction(): can't instantiate " + 
+							log.error("Builder.addAction(): can't instantiate " + 
 									c + "; action was " + action);
-							ex.printStackTrace(System.out);
 						}
 					}
 				});

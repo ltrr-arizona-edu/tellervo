@@ -27,9 +27,13 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ToggleableBoundAction<T> extends ToggleableAction implements PropertyChangeListener {
 	private static final long serialVersionUID = 1L;
-	
+	private final static Logger log = LoggerFactory.getLogger(ToggleableBoundAction.class);
+
 	private final String keyTrue;
 	private final String keyFalse;
 	private final PropertyDescriptor property;
@@ -138,7 +142,7 @@ public class ToggleableBoundAction<T> extends ToggleableAction implements Proper
 			if(value == null)
 				return;
 
-			System.out.println(property.getName() + " changed: " + value);
+			log.debug(property.getName() + " changed: " + value);
 
 			if(!value.equals(getValue(CORINA_SELECTED_KEY)))
 				// this will trigger the change in the button

@@ -26,9 +26,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.core.App;
 
 public class WSCookieStoreHandler {
+	private final static Logger log = LoggerFactory.getLogger(WSCookieStoreHandler.class);
 	private static WSCookieStore cookieStore = null;
 	
 	/**
@@ -53,13 +57,13 @@ public class WSCookieStoreHandler {
 			
 			WSCookieStore cs = (WSCookieStore) in.readObject();
 			
-			System.out.println("Sucessfully loaded cookie store: " + getStorePath());
+			log.debug("Sucessfully loaded cookie store: " + getStorePath());
 
 			in.close();
 			return cs;
 			
 		} catch(IOException ioe) {
-			System.out.println("Failed to load cookie store: " + getStorePath());
+			log.error("Failed to load cookie store: " + getStorePath());
 			ioe.printStackTrace();
 		} catch(ClassNotFoundException cnfe) {
 			// err??
@@ -82,7 +86,7 @@ public class WSCookieStoreHandler {
 			out.close();
 			
 		} catch (IOException ex) {
-			System.out.println("Failed to save cookie store: " + getStorePath());
+			log.error("Failed to save cookie store: " + getStorePath());
 			ex.printStackTrace();
 		}
 	}

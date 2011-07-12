@@ -23,6 +23,9 @@ package edu.cornell.dendro.corina.wsi.corina;
 import java.awt.Dialog;
 import java.awt.Window;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.gui.LoginDialog;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
@@ -42,8 +45,10 @@ import edu.cornell.dendro.corina.wsi.ResourceException;
  * An implementation of a resource that uses the Corina webservice
  */
 
-public abstract class CorinaResource extends
-		Resource<WSIRootElement, WSIRootElement> {
+public abstract class CorinaResource extends Resource<WSIRootElement, WSIRootElement> {
+	
+    private final static Logger log = LoggerFactory.getLogger(CorinaResource.class);
+
 	/**
 	 * Construct a resource that prompts with a login dialog
 	 * 
@@ -147,7 +152,7 @@ public abstract class CorinaResource extends
 	 */
 	private boolean handleCredentialsException(WebPermissionsException w)
 			throws UserCancelledException, WebPermissionsException {
-		System.out.println(w);
+		log.error(w.getLocalizedMessage());
 		WebInterfaceCode code = w.getMessageCode();
 
 		// if we're set to prompt for login on failure, do so!
@@ -179,7 +184,7 @@ public abstract class CorinaResource extends
 				// dialog succeeded?
 				return true;
 			} catch (UserCancelledException uce) {
-				System.out.println("User cancelled query on " + getResourceName());
+				log.debug("User cancelled query on " + getResourceName());
 				throw uce;
 			}
 		}

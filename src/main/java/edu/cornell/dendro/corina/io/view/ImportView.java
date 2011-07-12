@@ -1044,25 +1044,25 @@ public class ImportView extends JFrame{
 			}
 			else if (!currentEntity.isSetIdentifier())
 			{
-				System.out.println("No identifier");
+				log.debug("No identifier");
 				topChooser.setSelectedItem(ImportEntityListComboBox.NEW_ITEM);
 				return;
 			}
 			else if (!currentEntity.getIdentifier().isSetDomain())
 			{
-				System.out.println("No domain");
+				log.debug("No domain");
 				topChooser.setSelectedItem(ImportEntityListComboBox.NEW_ITEM);
 				return;
 			}
 			else if (!currentEntity.getIdentifier().getDomain().equals(App.domain))
 			{
-				System.out.println("Different domain - this one is: "+currentEntity.getIdentifier().getDomain());
+				log.debug("Different domain - this one is: "+currentEntity.getIdentifier().getDomain());
 				topChooser.setSelectedItem(ImportEntityListComboBox.NEW_ITEM);
 				return;
 			}
 			else
 			{
-				System.out.println("Correct domain: "+currentEntity.getIdentifier().getDomain());
+				log.debug("Correct domain: "+currentEntity.getIdentifier().getDomain());
 				
 			}
 				
