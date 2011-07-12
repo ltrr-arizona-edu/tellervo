@@ -1,6 +1,0 @@
-if: exactly one sample is absolute,
-then: any crossdate where the moving sample's end date is later than the current year is impossible.
-
-show impossible crossdates:
--- not at all?
--- dimmed?

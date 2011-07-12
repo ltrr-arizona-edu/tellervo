@@ -53,13 +53,31 @@ The current label style is designed to fit on standard core mounts and most samp
 
 \subsection{Box labels}
 \index{Labels!Boxes}
-The procedure for printing box labels is the same as for samples.  Samples must have already been assigned to boxes before the label is printed (see section \ref{txt:assignToBox} for details).  To print (or preview) box labels go to \menuthree{Administration}{Labels}{Box labels}.  The label style is designed to be printed on $5'' \times 8{1 \over 8}''$ labels, two per sheet such as the Avery\textsuperscript{\textregistered} 6579 layout.
+The procedure for printing box labels is the same as for samples.  Samples must have already been assigned to boxes before the label is printed (see section \ref{txt:assignToBox} for details).  To print (or preview) box labels go to \menuthree{Administration}{Labels}{Box labels}.  The label style is designed to be printed on $5'' \times 8{1 \over 8}''$ labels, two per sheet such as the Avery\textsuperscript{\textregistered} 6579 layout.  An example is shown in figure \ref{fig:boxlabel}.
+
+\begin{figure}[htbp]
+  \centering
+    \setlength\fboxsep{0pt}
+    \setlength\fboxrule{0.5pt}
+    \fbox{\includegraphics[width=\textwidth, trim=0 15cm 0 0]{Images/boxlabel.pdf}}
+    \caption{An example of a box label from the Cornell collection. The label provides a human readable name for the box (GR38), a barcode for accessing the box details within Corina, and a summary of the samples contained within the box.}
+    \label{fig:boxlabel}
+\end{figure}
 
 \info{Until dynamic label styles have been implemented, box labels will print one per page.  To make use of the second label on the page, the same sheet should be fed through the printer a second time.}
 
 \subsection{Series barcodes}
 
-Series barcodes are printed at the top of a standard series report.  These are produced through the \menutwo{File}{Print}, or \menutwo{File}{Print preview}, menus.  
+Series barcodes are printed at the top of a standard series report (see figure \ref{fig:seriesreport}).  These are produced through the \menutwo{File}{Print}, or \menutwo{File}{Print preview}, menus.  
+
+\begin{figure}[p]
+  \centering
+    \setlength\fboxsep{0pt}
+    \setlength\fboxrule{0.5pt}
+    \fbox{\includegraphics[width=\textwidth]{Images/seriesreport.pdf}}
+    \caption{An example of a report showing barcode and basic metadata about a series.  }
+    \label{fig:seriesreport}
+\end{figure}
 
 
 \section{Storage boxes}
