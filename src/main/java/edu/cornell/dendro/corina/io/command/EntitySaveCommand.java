@@ -76,11 +76,14 @@ public class EntitySaveCommand implements ICommand {
 		EntityResource<? extends ITridas> resource;
 		
 		if(isNew)
-			resource = getNewAccessorResource(entity, parentEntity, 
-					currentEntityType);
+		{	
+			resource = getNewAccessorResource(entity, parentEntity, currentEntityType);
+			log.debug("Creating new resource of type "+currentEntityType.toString());
+		}
 		else
+		{
 			resource = getUpdateAccessorResource(entity, currentEntityType);
-
+		}
 		// set up a dialog...
 		CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(event.window, resource);
 
@@ -97,13 +100,16 @@ public class EntitySaveCommand implements ICommand {
 		}
 		
 		// replace the saved result
+		try{
 		entity = resource.getAssociatedResult();
-				
-		// sanity check the result
-		if(entity == null) {
+		} catch (Exception e)
+		{
+			// Sanity check
+			log.debug(e.getLocalizedMessage());
 			new Bug(new IllegalStateException("CREATE or UPDATE entity returned null"));
 			return;
 		}
+		
 		
 		// take the return value and update the model
 		selnode.setCurrentEntity(entity);
