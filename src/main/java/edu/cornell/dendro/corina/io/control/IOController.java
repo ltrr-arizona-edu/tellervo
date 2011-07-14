@@ -24,6 +24,7 @@ import com.dmurph.mvc.control.FrontController;
 import edu.cornell.dendro.corina.io.command.ConvertCommand;
 import edu.cornell.dendro.corina.io.command.EntitySaveCommand;
 import edu.cornell.dendro.corina.io.command.EntitySwappedCommand;
+import edu.cornell.dendro.corina.io.command.ExpandImportTreeCommand;
 import edu.cornell.dendro.corina.io.command.ExportCommand;
 import edu.cornell.dendro.corina.io.command.FileSelectedCommand;
 import edu.cornell.dendro.corina.io.command.MergeEntitiesCommand;
@@ -45,6 +46,7 @@ public class IOController extends FrontController {
     public static final String OPEN_EXPORT_WINDOW = "IO_OPEN_EXPORT";
     public static final String SAVE = "IO_SAVE";
     public static final String REPLACE_HIERARCHY = "REPLACE_HIERARCHY";
+    public static final String EXPAND_IMPORT_TREE = "EXPAND_IMPORT_TREE";
 
     public IOController()
     {
@@ -58,6 +60,8 @@ public class IOController extends FrontController {
     	registerCommand(OPEN_EXPORT_WINDOW, OpenExportCommand.class);
     	registerCommand(SAVE, SaveCommand.class);
     	registerCommand(REPLACE_HIERARCHY, ReplaceHierarchyCommand.class);
+    	registerCommand(EXPAND_IMPORT_TREE, ExpandImportTreeCommand.class);
+
     }
 
 	

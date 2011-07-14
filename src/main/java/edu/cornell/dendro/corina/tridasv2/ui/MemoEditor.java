@@ -16,6 +16,8 @@ import net.miginfocom.swing.MigLayout;
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.l2fprod.common.swing.ComponentFactory;
 
+import edu.cornell.dendro.corina.ui.Builder;
+
 /**
  * Editor for enabling easier editing of strings in metadata browser
  * 
@@ -43,11 +45,13 @@ public class MemoEditor extends AbstractPropertyEditor {
 		textField.setColumns(10);
 		
 		btnEdit = ComponentFactory.Helper.getFactory().createMiniButton();
-		btnEdit.setText("...");
+		btnEdit.setIcon(Builder.getIcon("note.png", 16));
+		btnEdit.setText("");
 		((JPanel)editor).add(btnEdit, "cell 1 0,alignx right,aligny top");
 		
 		btnDelete = ComponentFactory.Helper.getFactory().createMiniButton();
-		btnDelete.setText("X");
+		btnDelete.setIcon(Builder.getIcon("cancel.png", 16));
+		btnDelete.setText("");
 		((JPanel)editor).add(btnDelete, "cell 2 0,alignx left,aligny top");
 		
 		btnDelete.addActionListener(new ActionListener() {

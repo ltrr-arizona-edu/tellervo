@@ -33,7 +33,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -55,6 +54,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -93,6 +93,7 @@ import edu.cornell.dendro.corina.gui.TridasEntityChooser.EntitiesAccepted;
 import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel;
 import edu.cornell.dendro.corina.io.ConversionWarningTableModel;
 import edu.cornell.dendro.corina.io.LineHighlighter;
+import edu.cornell.dendro.corina.io.control.ExpandImportTreeEvent;
 import edu.cornell.dendro.corina.io.control.FileSelectedEvent;
 import edu.cornell.dendro.corina.io.control.ImportEntitySaveEvent;
 import edu.cornell.dendro.corina.io.control.ImportMergeEntitiesEvent;
@@ -102,8 +103,8 @@ import edu.cornell.dendro.corina.io.control.ReplaceHierarchyEvent;
 import edu.cornell.dendro.corina.io.model.ImportEntityListComboBox;
 import edu.cornell.dendro.corina.io.model.ImportModel;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow;
-import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
+import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
@@ -187,6 +188,9 @@ public class ImportView extends JFrame{
 	
 	/** Set from db button **/
 	private JButton btnMergeObjects;
+	private JButton btnExpandNodes;
+	private JButton btnContractNodes;
+	private JButton btnAssignByCode;
 	
 	private JTextPane txtErrorMessage;
 	private ImportEntityListComboBox topChooser;
@@ -378,8 +382,8 @@ public class ImportView extends JFrame{
 				horizSplitPane.setLeftComponent(panelTreeTable);
 				panelTreeTable.setLayout(new BorderLayout(0, 0));
 				{
-					btnMergeObjects = new JButton("Merge objects together");
-					panelTreeTable.add(btnMergeObjects, BorderLayout.SOUTH);
+					//btnMergeObjects = new JButton("Merge objects together");
+					//panelTreeTable.add(btnMergeObjects, BorderLayout.SOUTH);
 				}
 				{
 					lblTridasRepresentationOf = new JLabel("TRiDaS representation of file:");
@@ -418,6 +422,39 @@ public class ImportView extends JFrame{
 		enableEditing(false);
 		updateConversionWarningsTable();
 		
+		
+		initToolbar();
+		
+		
+	}
+	
+	
+	private void initToolbar()
+	{
+		JToolBar toolBar = new JToolBar("Toolbar");
+		
+		btnMergeObjects = new JButton("Merge all objects");
+		btnMergeObjects.setToolTipText("Merge all objects");
+		btnMergeObjects.setIcon(Builder.getIcon("merge.png", 22));
+		toolBar.add(btnMergeObjects);
+		
+		btnExpandNodes = new JButton("Expand nodes");
+		btnExpandNodes.setToolTipText("Expand nodes");
+		btnExpandNodes.setIcon(Builder.getIcon("view_tree.png", 22));
+		toolBar.add(btnExpandNodes);
+		
+		btnContractNodes = new JButton("Contract nodes");
+		btnContractNodes.setToolTipText("Contract nodes");
+		btnContractNodes.setIcon(Builder.getIcon("contract_tree.png", 22));
+		toolBar.add(btnContractNodes);
+		
+		
+		btnAssignByCode = new JButton("Assign by code");
+		btnAssignByCode.setToolTipText("Assign by code");
+		btnAssignByCode.setIcon(Builder.getIcon("barcode.png", 22));
+		toolBar.add(btnAssignByCode);
+		
+		add(toolBar, BorderLayout.PAGE_START);
 	}
 	
 	/**
@@ -462,7 +499,12 @@ public class ImportView extends JFrame{
 					
 					// Update the metadata panel
 					updateMetadataPanel();			
-					updateEntityChooser();					
+					updateEntityChooser();		
+					
+					// Enable/disable assign by code button depending on selected entity type
+					btnAssignByCode.setEnabled(modelSelectedEntity.getUserObject() instanceof TridasMeasurementSeries);
+					
+					
 				}
 				else if (name.equals(ImportModel.TREE_MODEL))
 				{
@@ -679,6 +721,31 @@ public class ImportView extends JFrame{
 			}		
 		});
 		
+		btnExpandNodes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ExpandImportTreeEvent e2 = new ExpandImportTreeEvent(true, model.getTreeModel(), treeTable);
+				e2.dispatch();
+			}		
+		});
+		
+		btnContractNodes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ExpandImportTreeEvent e2 = new ExpandImportTreeEvent(false, model.getTreeModel(), treeTable);
+				e2.dispatch();
+			}		
+		});
+		
+		final JFrame glue2 = this;
+		btnAssignByCode.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				int selRow = treeTable.getSelectedRow();
+				DefaultMutableTreeNode guiSelectedEntity = (DefaultMutableTreeNode) treeTable.getValueAt(selRow, 0);
+				DefaultMutableTreeNode modelSelectedEntity = model.getSelectedRow().getDefaultMutableTreeNode();
+				updateHierarchyByCodeDialog(modelSelectedEntity, glue2);
+				
+			}		
+		});
 	}
 	
 	
@@ -705,19 +772,8 @@ public class ImportView extends JFrame{
 	        
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					ITridas newParent = TridasEntityChooser.showDialog(null, 
-							"Select entity", 
-							TridasRadius.class, 
-							EntitiesAccepted.SPECIFIED_ENTITY_AND_BELOW);
-					
-					log.debug("User wants to set hierarchy of "+ 
-							((ITridas) selectedEntity.getUserObject()).getTitle() +
-							" using labcode for " + newParent.getTitle());
-					
-					ReplaceHierarchyEvent event = new ReplaceHierarchyEvent(model, glue, selectedEntity ,newParent );
-					event.dispatch();
-					
-					expandTree(true);
+
+					updateHierarchyByCodeDialog(selectedEntity, glue);
 					
 				}
 	        	
@@ -731,30 +787,26 @@ public class ImportView extends JFrame{
         }
 	}
 	
-    private void expandTree(boolean expands) {
-        TreeNode roots = (TreeNode) model.getTreeModel().getRoot();
-        expandAll(new TreePath(roots), expands);
-    }
-    
-    private void expandAll(TreePath path, boolean expands) {
-        TreeNode node = (TreeNode) path.getLastPathComponent();
- 
-       if (node.getChildCount() >= 0) {
-            Enumeration enumeration = node.children();
-           while (enumeration.hasMoreElements()) {
-                TreeNode ns = (TreeNode) enumeration.nextElement();
-                TreePath ps = path.pathByAddingChild(ns);
- 
-                expandAll(ps, expands);
-            }
-        }
- 
-        if (expands) {
-        	treeTable.expandPath(path);
-        } else {
-        	treeTable.collapsePath(path);
-        }
-    } 
+	
+ private void updateHierarchyByCodeDialog(DefaultMutableTreeNode selectedEntity, JFrame glue)
+ {
+	 if(!(selectedEntity.getUserObject() instanceof TridasMeasurementSeries)) return;
+	 
+		ITridas newParent = TridasEntityChooser.showDialog(this, 
+				"Select entity", 
+				TridasRadius.class, 
+				EntitiesAccepted.SPECIFIED_ENTITY_AND_BELOW);
+		
+		log.debug("User wants to set hierarchy of "+ 
+				((ITridas) selectedEntity.getUserObject()).getTitle() +
+				" using labcode for " + newParent.getTitle());
+		
+		ReplaceHierarchyEvent event = new ReplaceHierarchyEvent(model, glue, selectedEntity ,newParent );
+		event.dispatch();
+		
+		ExpandImportTreeEvent e2 = new ExpandImportTreeEvent(true, model.getTreeModel(), treeTable);
+		e2.dispatch();
+ }
 	
 	
 	/**
@@ -1043,7 +1095,8 @@ public class ImportView extends JFrame{
 		
 		
 		this.treeTable.setModel(mdl);
-		expandTree(true);
+		ExpandImportTreeEvent e2 = new ExpandImportTreeEvent(true, model.getTreeModel(), treeTable);
+		e2.dispatch();
 	}
 	
 	/**
