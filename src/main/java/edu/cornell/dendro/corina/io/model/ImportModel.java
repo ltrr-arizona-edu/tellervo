@@ -33,6 +33,7 @@ import org.tridas.io.exceptions.InvalidDendroFileException;
 
 import com.dmurph.mvc.model.HashModel;
 
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 
 public class ImportModel extends HashModel {
@@ -42,16 +43,28 @@ public class ImportModel extends HashModel {
 	public static final String CONVERSION_WARNINGS = "conversionWarnings";
 	public static final String SELECTED_ROW = "selectedNode";
 	public static final String ORIGINAL_FILE = "originalFile";
+	public static final String FILE_TYPE = "fileType";
 	public static final String INVALID_FILE_EXCEPTION = "invalidFileException";
+	public static final String FILE_ENCODING = "fileEncoding";
 	
 	public ImportModel()
 	{
 		registerProperty(ImportModel.TREE_MODEL, PropertyType.READ_WRITE, new TridasRepresentationTreeModel(null));
-		registerProperty(ImportModel.CONVERSION_WARNINGS, PropertyType.READ_WRITE);
+		registerProperty(ImportModel.CONVERSION_WARNINGS, PropertyType.READ_WRITE, new ConversionWarning[0]);
 		registerProperty(ImportModel.SELECTED_ROW, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.ORIGINAL_FILE, PropertyType.READ_WRITE);
 		registerProperty(ImportModel.INVALID_FILE_EXCEPTION, PropertyType.READ_WRITE);
+		registerProperty(ImportModel.FILE_TYPE, PropertyType.READ_WRITE);
+		registerProperty(ImportModel.FILE_ENCODING, PropertyType.READ_WRITE);
+
 	}
+	
+	public void setFileEncoding(String encoding)
+	{
+		setProperty(ImportModel.FILE_ENCODING, encoding);
+	}
+	
+	
 	
 	/**
 	 * Get the exception for the current dendro file
@@ -103,6 +116,11 @@ public class ImportModel extends HashModel {
 
 	}
 	
+	public void setFileType(String type)
+	{
+		setProperty(ImportModel.FILE_TYPE, type);
+	}
+	
 	/**
 	 * Get the file we are going to import
 	 * 
@@ -113,6 +131,11 @@ public class ImportModel extends HashModel {
 		return (File) getProperty(ImportModel.ORIGINAL_FILE);
 	}
 	
+	public String getFileType()
+	{
+		return (String) getProperty(ImportModel.FILE_TYPE);
+	}
+	
 	/**
 	 * Get the contents of the file we are going to import
 	 * @return
@@ -121,11 +144,13 @@ public class ImportModel extends HashModel {
 	{
 		try {
 			return getFileContents((File) getProperty(ImportModel.ORIGINAL_FILE));
-		} catch (IOException e) { }
+		} catch (IOException e) { 
+			new Bug(e);
+		}
 		return null;
 	}
 	
-	/**
+	/**s
 	 * Set the selected node
 	 * @param defaultMutableTreeNode
 	 */
@@ -133,6 +158,7 @@ public class ImportModel extends HashModel {
 	{
 	
 		setProperty(ImportModel.SELECTED_ROW, row);		
+		saveChanges();
 	}
 	
 	/**

@@ -51,9 +51,9 @@ public class EntitySaveCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		ImportEntitySaveEvent event = (ImportEntitySaveEvent) argEvent;
-			
+		log.debug("Compiling request to save current entity");	
 		// if nothing actually changed, just ignore it
-		if(!event.model.isDirty()) return;
+		//if(!event.model.isDirty()) return;
 		
 		// Remove all children as we just want the current entity for 
 		// sending to the webservice
@@ -83,7 +83,9 @@ public class EntitySaveCommand implements ICommand {
 		else
 		{
 			resource = getUpdateAccessorResource(entity, currentEntityType);
+			log.debug("Updating resource of type "+currentEntityType.toString());
 		}
+		
 		// set up a dialog...
 		CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(event.window, resource);
 
@@ -98,10 +100,14 @@ public class EntitySaveCommand implements ICommand {
 					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		else
+		{
+			log.debug("Save successful");
+		}
 		
 		// replace the saved result
 		try{
-		entity = resource.getAssociatedResult();
+		    entity = resource.getAssociatedResult();
 		} catch (Exception e)
 		{
 			// Sanity check
@@ -112,6 +118,7 @@ public class EntitySaveCommand implements ICommand {
 		
 		
 		// take the return value and update the model
+		log.debug("Updating the GUI model with saved entity");
 		selnode.setCurrentEntity(entity);
 		selnode.saveChanges();
 		

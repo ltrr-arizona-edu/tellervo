@@ -21,30 +21,50 @@ package edu.cornell.dendro.corina.io.command;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarning;
-import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.exceptions.ConversionWarning.WarningType;
+import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasValues;
 
+import com.dmurph.mvc.IllegalThreadException;
+import com.dmurph.mvc.IncorrectThreadException;
+import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.io.control.FileSelectedEvent;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
 import edu.cornell.dendro.corina.ui.Alert;
 
 public class FileSelectedCommand implements ICommand {
+	private final static Logger log = LoggerFactory.getLogger(FileSelectedCommand.class);
 
 	@Override
 	public void execute(MVCEvent argEvent) {
+		
+		try {
+	        MVC.splitOff(); // so other mvc events can execute
+		} catch (IllegalThreadException e) {
+		        // this means that the thread that called splitOff() was not an MVC thread, and the next event's won't be blocked anyways.
+		        e.printStackTrace();
+		} catch (IncorrectThreadException e) {
+		        // this means that this MVC thread is not the main thread, it was already splitOff() previously
+		        e.printStackTrace();
+		}
+
+		
 		FileSelectedEvent event = (FileSelectedEvent) argEvent;
 		try {
 			event.model.setFileToImport(event.file);
+			
 		} catch (IOException e) {
 			Alert.errorLoading(event.file.getAbsolutePath(), e);
 			return;
@@ -57,6 +77,10 @@ public class FileSelectedCommand implements ICommand {
 		{
 			Alert.error("Error", "Unknown file type");
 			return;
+		}
+		else
+		{
+			event.model.setFileType(event.fileType);
 		}
 		
 		// Try and load the file
@@ -89,6 +113,7 @@ public class FileSelectedCommand implements ICommand {
 		}
 		
 		// Add custom Corina warnings for unsupported aspects of TRiDaS
+		try{
 		for (TridasMeasurementSeries series: TridasUtils.getMeasurementSeriesFromTridasProject(reader.getProjects()[0]))
 		{
 			if(series.isSetValues())
@@ -132,10 +157,15 @@ public class FileSelectedCommand implements ICommand {
 					{
 						event.model.appendConversionWarning(new ConversionWarning(
 								WarningType.AMBIGUOUS, 
-								"Series does not have variables - assuming whole ring width"));
+								"Series does not specify what variable is provided - assuming whole ring width"));
 					}
 				}
 			}
+		}
+		} catch (Exception ex)
+		{
+			log.error("Error modifying series to deal with Corina limitations");
+			new Bug(ex);
 		}
 		
 		

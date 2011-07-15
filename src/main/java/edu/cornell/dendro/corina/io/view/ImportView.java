@@ -31,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +42,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -51,7 +53,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
@@ -69,6 +70,7 @@ import org.netbeans.swing.outline.OutlineModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
+import org.tridas.io.enums.Charsets;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.exceptions.InvalidDendroFileException.PointerType;
@@ -77,6 +79,8 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasValue;
+import org.tridas.schema.TridasValues;
 import org.tridas.schema.TridasVariable;
 import org.tridas.util.TridasObjectEx;
 
@@ -87,7 +91,6 @@ import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.lowagie.text.Font;
 
 import edu.cornell.dendro.corina.core.App;
-import edu.cornell.dendro.corina.editor.SampleDataView;
 import edu.cornell.dendro.corina.gui.TridasEntityChooser;
 import edu.cornell.dendro.corina.gui.TridasEntityChooser.EntitiesAccepted;
 import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel;
@@ -106,16 +109,18 @@ import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTreeModel;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
-import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridasv2.ui.CorinaPropertySheetTable;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyEditorFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.TridasPropertyRendererFactory;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityDeriver;
 import edu.cornell.dendro.corina.tridasv2.ui.support.TridasEntityProperty;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.FilterableComboBoxModel;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.PopupListener;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JComboBox;
 
 public class ImportView extends JFrame{
 
@@ -135,11 +140,10 @@ public class ImportView extends JFrame{
 
 	/** Panel and text area for displaying original legacy file **/
 	private JPanel panelOrigFile;
-	private JTextArea txtOriginalFile;
+	
 	
 	/** Panel for displaying ring with data**/
 	private JPanel panelData;
-	private SampleDataView dataPanel;
 	
 	/** Panel and table for displaying conversion warnings **/
 	private JPanel panelWarnings;
@@ -191,6 +195,7 @@ public class ImportView extends JFrame{
 	private JButton btnExpandNodes;
 	private JButton btnContractNodes;
 	private JButton btnAssignByCode;
+	private JButton btnReparseFile;
 	
 	private JTextPane txtErrorMessage;
 	private ImportEntityListComboBox topChooser;
@@ -201,12 +206,17 @@ public class ImportView extends JFrame{
 	private static final String CHOOSE_STATE = I18n.getText("general.choose");
 	private boolean changingTop;
 	private ChoiceComboBoxActionListener topChooserListener;
+	private JEditorPane dataPane;
+	private JScrollPane scrollPane_1;
+	private JComboBox cboEncoding;
+	private JLabel lblCharacterEncoding;
 	
 	/**
 	 * Standard constructor for Import Dialog with no file provided
 	 */
 	public ImportView()
 	{
+
 		topChooserListener = new ChoiceComboBoxActionListener(this);
 		model = CorinaModelLocator.getInstance().getImportModel();
 		MVC.showEventMonitor();
@@ -223,7 +233,6 @@ public class ImportView extends JFrame{
 	public ImportView(File file, String fileType)
 	{
 		topChooserListener = new ChoiceComboBoxActionListener(this);
-
 		model = CorinaModelLocator.getInstance().getImportModel();
 		//MVC.showEventMonitor();
 		initComponents();
@@ -239,13 +248,15 @@ public class ImportView extends JFrame{
 	 */
 	private void initComponents()
 	{
+		DefaultSyntaxKit.initKit();
+		
 		setTitle("Import to Database");
 		setBounds(100, 100, 804, 734);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel);
 		{
-			DefaultSyntaxKit.initKit();
+			
 		}
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
@@ -350,6 +361,7 @@ public class ImportView extends JFrame{
 				propertiesPanel.getTable().setRendererFactory(new TridasPropertyRendererFactory());
 				propertiesPanel.getTable().setEditorFactory(new TridasPropertyEditorFactory());
 				
+				
 				panelMetadata.add(propertiesPanel, BorderLayout.CENTER);
 				tabbedPane.addTab("Extracted TRiDaS Metadata", null, panelMetadata, null);
 				
@@ -357,25 +369,41 @@ public class ImportView extends JFrame{
 			{
 				panelData = new JPanel();
 				tabbedPane.addTab("Extracted Data", null, panelData, null);
+				panelData.setLayout(new BorderLayout(0, 0));
+				
+				scrollPane_1 = new JScrollPane();
+				panelData.add(scrollPane_1);
+				
+				dataPane = new JEditorPane();
+				dataPane.setEditable(false);
+				scrollPane_1.setViewportView(dataPane);
 				tabbedPane.setEnabledAt(1, false);
 			}
 			panelOrigFile = new JPanel();
 			tabbedPane.insertTab("Original file", null, panelOrigFile, null, 0);
-			panelOrigFile.setLayout(new BorderLayout(10, 10));
+			panelOrigFile.setLayout(new MigLayout("", "[159.00px][173.00][grow]", "[fill][][707px,grow,fill]"));
+		
+			
+			cboEncoding = new JComboBox();			
+			lblCharacterEncoding = new JLabel("Character encoding:");
+			panelOrigFile.add(lblCharacterEncoding, "flowx,cell 0 1,alignx left");
+			for (String s : Charsets.getReadingCharsets()) {
+				if (s.equals(Charset.defaultCharset().displayName())) {
+					continue;
+				}
+				cboEncoding.addItem(s);
+			}
+			
+			panelOrigFile.add(cboEncoding, "cell 1 1 2 1,alignx left");
 			{
-				JScrollPane scrollPane = new JScrollPane();
-				panelOrigFile.add(scrollPane, BorderLayout.CENTER);
+
 					
-					txtOriginalFile = new JTextArea();
-					scrollPane.setViewportView(txtOriginalFile);
-					txtOriginalFile.setEditable(false);
-					txtOriginalFile.setFont(new java.awt.Font("Courier", 0, 12));
 			}
 			
 			txtErrorMessage = new JTextPane();
 			txtErrorMessage.setForeground(Color.RED);
 			txtErrorMessage.setVisible(false);
-			panelOrigFile.add(txtErrorMessage, BorderLayout.NORTH);
+			panelOrigFile.add(txtErrorMessage, "cell 0 0 3 1,growx,aligny top");
 			{
 				panelTreeTable = new JPanel();
 				panelTreeTable.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -454,7 +482,12 @@ public class ImportView extends JFrame{
 		btnAssignByCode.setIcon(Builder.getIcon("barcode.png", 22));
 		toolBar.add(btnAssignByCode);
 		
-		add(toolBar, BorderLayout.PAGE_START);
+		btnReparseFile = new JButton("Reparse file");
+		btnReparseFile.setToolTipText("Reparse file");
+		btnReparseFile.setIcon(Builder.getIcon("reload.png", 22));
+		toolBar.add(btnReparseFile);
+		
+		getContentPane().add(toolBar, BorderLayout.PAGE_START);
 	}
 	
 	/**
@@ -470,8 +503,7 @@ public class ImportView extends JFrame{
 
 				if(name.equals(ImportModel.ORIGINAL_FILE))
 				{
-					// Original file has changed so update GUI to show its contents
-                    txtOriginalFile.setText(model.getFileToImportContents());
+					updateOriginalFile(null);
 				}
 				else if (name.equals(ImportModel.CONVERSION_WARNINGS))
 				{
@@ -548,32 +580,15 @@ public class ImportView extends JFrame{
 	private void initListeners()
 	{
 		final Component glue = (Component) this;
+		final JFrame glue2 = this;
 		
 		// Listen to entities being selected in tree table
 		this.treeTable.addMouseListener(new PopupListener() {
-			
+						
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				
-				// Check the user isn't part way through changing this entity
-				if(!isUserOkWithLoosingAnyChanges()) return;
-				
-				if(changingTop)
-				{
-					changingTop =false;
-					chooseOrCancelUIUpdate();
-				}
-				
-				int selRow = treeTable.getSelectedRow();
-				DefaultMutableTreeNode selectedEntity = (DefaultMutableTreeNode) treeTable.getValueAt(selRow, 0);	
-				ImportStatus status = (ImportStatus) treeTable.getValueAt(selRow, 1);
-				TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow(selectedEntity, status);		
-                ImportNodeSelectedEvent event = new ImportNodeSelectedEvent(model, row);
-                event.dispatch();
-                model.setSelectedRow(row);
-				
+			public void mouseClicked(MouseEvent e) {		
+				selectCurrentEntity();
 			}
-			
 			
 	       	@Override
 			public void showPopup(MouseEvent e) 
@@ -596,8 +611,8 @@ public class ImportView extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				
 				Integer outstanding = model.getCountOutstandingEntities();
-				String plural="y";
-				if(outstanding>1)plural = "ies";
+				String plural="y that has";
+				if(outstanding>1)plural = "ies that have";
 								
 				if(outstanding>0)
 				{
@@ -605,7 +620,7 @@ public class ImportView extends JFrame{
 					                    "No",
 					                    "Cancel"};
 					int n = JOptionPane.showOptionDialog(glue,
-					    "You still have "+outstanding+" entit"+plural+" that have not been imported.\n"					
+					    "You still have "+outstanding+" entit"+plural+" not been imported.\n"					
 					    + "Are you sure you want to close the import dialog?",
 					    "Outstanding entities",
 					    JOptionPane.YES_NO_CANCEL_OPTION,
@@ -676,28 +691,7 @@ public class ImportView extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				// TODO Need to replace 'null' below with this dialog
 								
-				ITridas entity = model.getSelectedRow().getCurrentEntity();
-				propertiesPanel.writeToObject(entity);
-				log.debug("About to save entity" + entity.getTitle());
-				
-				if(entity instanceof TridasMeasurementSeries)
-				{
-					TridasMeasurementSeries en = (TridasMeasurementSeries) entity;
-					if(en.isSetValues())
-					{
-						if(en.getValues().get(0).isSetVariable())
-						{
-							TridasVariable variable = new TridasVariable();
-							variable.setNormalTridas(NormalTridasVariable.RING_WIDTH);
-							en.getValues().get(0).setVariable(variable);
-						}
-					}
-					
-					model.getSelectedRow().setCurrentEntity(en);
-				}
-				
-				ImportEntitySaveEvent event = new ImportEntitySaveEvent(model, null);
-				event.dispatch();
+				saveChanges();
 				
 			}
 		});
@@ -710,6 +704,7 @@ public class ImportView extends JFrame{
 					model.getSelectedRow().revertChanges();
 					editEntity.setSelected(false);
 					enableEditing(false);
+					selectCurrentEntity();
 				}
 			}
 		});
@@ -735,19 +730,91 @@ public class ImportView extends JFrame{
 			}		
 		});
 		
-		final JFrame glue2 = this;
+		
 		btnAssignByCode.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				int selRow = treeTable.getSelectedRow();
-				DefaultMutableTreeNode guiSelectedEntity = (DefaultMutableTreeNode) treeTable.getValueAt(selRow, 0);
 				DefaultMutableTreeNode modelSelectedEntity = model.getSelectedRow().getDefaultMutableTreeNode();
 				updateHierarchyByCodeDialog(modelSelectedEntity, glue2);
+			}		
+		});
+		
+		btnReparseFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//default icon, custom title
+				int n = JOptionPane.showConfirmDialog(
+				    glue2,
+				    "Any changes you've not committed to the database will be lost.\n"+
+				    "Are you sure you want to continue?",
+				    "Confirm",
+				    JOptionPane.YES_NO_OPTION);
+				
+				if(n==JOptionPane.YES_OPTION)
+				{
+				
+					File file = null;
+					String fileType = null;
+					try{
+					 file = model.getFileToImport();
+					 fileType = model.getFileType();
+					} catch (Exception e2)
+					{
+						Alert.error("Error", "Unable to reparse file: "+e2.getLocalizedMessage());
+					}
+					FileSelectedEvent event = new FileSelectedEvent(model, file, fileType);
+					event.dispatch();
+				}
 				
 			}		
 		});
+
 	}
 	
+	
+	private void selectCurrentEntity()
+	{
+		// Check the user isn't part way through changing this entity
+		if(!isUserOkWithLoosingAnyChanges()) return;
+		
+		if(changingTop)
+		{
+			changingTop =false;
+			chooseOrCancelUIUpdate();
+		}
+		int selRow = treeTable.getSelectedRow();
+		DefaultMutableTreeNode selectedEntity = (DefaultMutableTreeNode) treeTable.getValueAt(selRow, 0);	
+		ImportStatus status = (ImportStatus) treeTable.getValueAt(selRow, 1);
+		TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow(selectedEntity, status);		
+        ImportNodeSelectedEvent event = new ImportNodeSelectedEvent(model, row);
+        event.dispatch();
+        model.setSelectedRow(row);
+	}
+	
+	private void saveChanges()
+	{
+		ITridas entity = model.getSelectedRow().getCurrentEntity();
+		propertiesPanel.writeToObject(entity);
+		log.debug("About to save entity " + entity.getTitle());
+		
+		if(entity instanceof TridasMeasurementSeries)
+		{
+			TridasMeasurementSeries en = (TridasMeasurementSeries) entity;
+			if(en.isSetValues())
+			{
+				if(en.getValues().get(0).isSetVariable())
+				{
+					TridasVariable variable = new TridasVariable();
+					variable.setNormalTridas(NormalTridasVariable.RING_WIDTH);
+					en.getValues().get(0).setVariable(variable);
+				}
+			}
+			
+			model.getSelectedRow().setCurrentEntity(en);
+		}
+		
+		ImportEntitySaveEvent event = new ImportEntitySaveEvent(model, null);
+		event.dispatch();
+	}
 	
 	
 	/**
@@ -826,6 +893,9 @@ public class ImportView extends JFrame{
 			return;
 		}
 		
+		
+
+		
 		ConversionWarningTableModel cwModel = new ConversionWarningTableModel(warnings);
 		tblWarnings.setModel(cwModel);
 		lblConversionWarnings.setText("Conversion warnings ("+warnings.length+"):");
@@ -840,7 +910,7 @@ public class ImportView extends JFrame{
 		col.setMinWidth(width); 
 		col.setPreferredWidth(5000);
 		
-		
+		vertSplitPane.setDividerLocation(0.8);
 	}
 	
 	
@@ -851,16 +921,7 @@ public class ImportView extends JFrame{
 	 */
 	private void updateDataPanel() 
 	{
-		//TODO This doesn't work yet!
-		
-		try{
-		Sample mysample = dataPanel.getSample();
-		log.debug("Sample length = "+mysample.countRings());
-		} catch (Exception e)
-		{
-			log.debug("Unable to get sample from data panel");
-		}
-		
+				
 		ITridas entity = (ITridas) model.getSelectedRow().getDefaultMutableTreeNode().getUserObject();
 		
 		if(!(entity instanceof TridasMeasurementSeries))
@@ -885,35 +946,36 @@ public class ImportView extends JFrame{
 		
 		TridasVariable var = new TridasVariable();
 		var.setNormalTridas(NormalTridasVariable.RING_WIDTH);
-		series.getValues().get(0).setVariable(var);
+	
 		
-		Sample s = new Sample(series);
-		/*List<TridasValue> values = series.getValues().get(0).getValues();
+		TridasValues seriesGroup = series.getValues().get(0);
+		seriesGroup.setVariable(var);
+		
+
+		List<TridasValue> values = seriesGroup.getValues();
 		ArrayList<Number> valuesint = new ArrayList<Number>();
 		ArrayList<Integer> countint = new ArrayList<Integer>();
+		StringBuilder datavals = new StringBuilder();
+		
+		if(seriesGroup.isSetUnit())
+		{
+			if(seriesGroup.getUnit().isSetNormalTridas())
+			{
+				datavals.append("Units="+seriesGroup.getUnit().getNormalTridas().toString()+"\n\n");
+			}
+		}
+		
 		for(TridasValue v : values)
 		{
 			valuesint.add(Integer.valueOf(v.getValue()));
 			countint.add(v.getCount());
+			datavals.append(v.getValue()+"\n");
 		}
 
-		
-		Year startYear = new Year(series.getInterpretation().getFirstYear().getValue());
-		Range range = new Range(startYear, valuesint.size());
-		
-		s.setData(valuesint);
-		s.setCount(countint);
-		s.setRange(range);
-		s.setS*/
-		
-		log.debug("Value count from sample = "+s.getData().size());
+		dataPane.setText(datavals.toString());
 
-
-		dataPanel = new SampleDataView(s);
-		s.setSeries(series);
-		
-		panelData.setLayout(new BorderLayout());
-		panelData.add(dataPanel, BorderLayout.CENTER);
+		//panelData.setLayout(new BorderLayout());
+		//panelData.add(dataPane, BorderLayout.CENTER);
 		tabbedPane.setEnabledAt(2, true);
 	}
 	
@@ -1099,6 +1161,45 @@ public class ImportView extends JFrame{
 		e2.dispatch();
 	}
 	
+	
+	
+	private void updateOriginalFile(Integer highlightline)
+	{
+		final JEditorPane txtOriginalFile = new JEditorPane();
+		JScrollPane scrollPane = new JScrollPane(txtOriginalFile);
+		try{
+		panelOrigFile.remove(3);} catch (Exception e){}
+		panelOrigFile.add(scrollPane, "cell 0 2 3 1,grow");
+		
+		txtOriginalFile.setEditable(false);
+		txtOriginalFile.setFont(new java.awt.Font("Courier", 0, 12));
+		
+		txtOriginalFile.setContentType("text/xml");
+
+		// Original file has changed so update GUI to show its contents
+		String contents = model.getFileToImportContents();
+        if(contents!=null)
+        {
+        	txtOriginalFile.setText(contents);
+        }
+		
+        if(highlightline!=null)
+        {
+			try{
+				txtOriginalFile.addCaretListener(new LineHighlighter(Color.red, highlightline ));
+				this.tabbedPane.setSelectedIndex(0);
+				int pos=1;
+				for(int i=0; i<highlightline; i++)
+				{
+					 pos = txtOriginalFile.getText().indexOf("\n", pos+1);
+				}
+				
+				txtOriginalFile.setCaretPosition(pos);
+			} catch (NumberFormatException ex)
+			{}
+        }
+	}
+	
 	/**
 	 * Set the GUI to illustrate an invalid file
 	 * @param fileException
@@ -1115,23 +1216,15 @@ public class ImportView extends JFrame{
 				&& e.getPointerNumber()!=null 
 				&& !e.getPointerNumber().equals("0"))
 		{
+			Integer line = null;
 			try{
-				Integer linenum = Integer.parseInt(e.getPointerNumber());
-				
-				txtOriginalFile.addCaretListener(new LineHighlighter(Color.red, linenum ));
-				this.tabbedPane.setSelectedIndex(0);
-				int pos=1;
-				for(int i=0; i<linenum; i++)
-				{
-					 pos = txtOriginalFile.getText().indexOf("\n", pos+1);
-				}
-				
-				txtOriginalFile.setCaretPosition(pos);
+			 line = Integer.parseInt(e.getPointerNumber());
+			 error+="\n\n"+"The file is shown below with the problematic line highlighted.";
 			} catch (NumberFormatException ex)
 			{}
-
+			updateOriginalFile(line);
 			
-			error+="\n\n"+"The file is shown below with the problematic line highlighted.";
+			
 			
 		}
 		
@@ -1335,6 +1428,7 @@ public class ImportView extends JFrame{
 	 */
 	@SuppressWarnings("unchecked")
 	private TreePath getPath(TreeNode node) { 
+		@SuppressWarnings("rawtypes")
 		List list = new ArrayList(); 
 		// Add all nodes to list 
 		while (node != null) 
@@ -1365,6 +1459,9 @@ public class ImportView extends JFrame{
 		editEntityText.setText(enabled ? I18n.getText("metadata.currentlyEditingThis") + " " + entityname
 				: I18n.getText("metadata.clickLockToEdit") + " " +entityname);
 				
+		editEntity.setSelected(enabled);
+		
+		
 		if(enabled) 
 		{
 			// Remove any 'preview' watermark
@@ -1393,17 +1490,26 @@ public class ImportView extends JFrame{
 	 */
 	private boolean isUserOkWithLoosingAnyChanges() {
 
-		if(changingTop)
+		if(changingTop|| editEntity.isSelected())
 		{
 			int ret = JOptionPane.showConfirmDialog(this, 
 					I18n.getText("question.confirmChangeForm"), 
 					I18n.getText("question.continue"), 
 					JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 			
+			if(ret==JOptionPane.YES_OPTION)
+			{
+				changingTop =false;
+				enableEditing(false);
+				chooseOrCancelUIUpdate();
+			}
+			
+			
 			return (ret == JOptionPane.YES_OPTION);
-		}
+		}		
 		else
 		{
+			enableEditing(false);
 			return true;
 		}
 		

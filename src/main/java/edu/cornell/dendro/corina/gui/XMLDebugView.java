@@ -50,7 +50,7 @@ public class XMLDebugView extends JDialog {
 	/** if not enabled, we ignore any add events */
 	private static final boolean enabled = true;
 	/** The maximum number of documents to hold */
-	private static final int maxDocuments = 10;
+	private static final int maxDocuments = 20;
 
 	private JList docsView;
 	private JEditorPane sourceView;

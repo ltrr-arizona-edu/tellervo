@@ -35,6 +35,8 @@ import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.l2fprod.common.swing.ComponentFactory;
 import com.l2fprod.common.swing.PercentLayout;
 
+import edu.cornell.dendro.corina.ui.Builder;
+
 /**
  * @author Lucas Madar
  *
@@ -43,6 +45,7 @@ public class LocationGeometryEditor extends AbstractPropertyEditor {
 	
 	private LocationGeometryRenderer label;
 	private JButton button;
+	private JButton gpsbutton;
 	private TridasLocationGeometry geometry;
 	
 	/**
@@ -52,16 +55,21 @@ public class LocationGeometryEditor extends AbstractPropertyEditor {
 		editor = new JPanel(new PercentLayout(PercentLayout.HORIZONTAL, 0));
 		((JPanel) editor).add("*", label = new LocationGeometryRenderer());
 		label.setOpaque(false);
-		((JPanel) editor).add(button = ComponentFactory.Helper.getFactory()
-				.createMiniButton());
-		button.addActionListener(new ActionListener() {
+		
+		gpsbutton = ComponentFactory.Helper.getFactory().createMiniButton();
+		gpsbutton.setText("");
+		gpsbutton.setIcon(Builder.getIcon("gps.png", 16));
+		
+		((JPanel) editor).add(gpsbutton);
+		gpsbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				selectGeometry();
 			}
 		});
 		((JPanel) editor).add(button = ComponentFactory.Helper.getFactory()
 				.createMiniButton());
-		button.setText("X");
+		button.setText("");
+		button.setIcon(Builder.getIcon("cancel.png", 16));
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				selectNull();

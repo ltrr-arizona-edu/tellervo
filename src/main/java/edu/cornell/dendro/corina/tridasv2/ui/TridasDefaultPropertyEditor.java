@@ -34,6 +34,8 @@ import javax.swing.JPanel;
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.lowagie.text.Font;
 
+import edu.cornell.dendro.corina.ui.Builder;
+
 public class TridasDefaultPropertyEditor extends AbstractPropertyEditor {
 
 	private JLabel label;
@@ -54,7 +56,8 @@ public class TridasDefaultPropertyEditor extends AbstractPropertyEditor {
 		// set class editor
 		editor = panel;
 
-		button = new JButton("Remove");
+		button = new JButton();
+		button.setIcon(Builder.getIcon("cancel.png", 16));
 		button.setMargin(new Insets(0,5,0,5));
 		
 		panel.add(Box.createHorizontalGlue());
