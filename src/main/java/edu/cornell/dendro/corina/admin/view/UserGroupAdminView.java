@@ -22,25 +22,28 @@ package edu.cornell.dendro.corina.admin.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableRowSorter;
-
 import net.miginfocom.swing.MigLayout;
-
-import com.dmurph.mvc.MVCEvent;
-
 import edu.cornell.dendro.corina.admin.control.AuthenticateEvent;
+import edu.cornell.dendro.corina.admin.control.DeleteGroupEvent;
 import edu.cornell.dendro.corina.admin.control.DeleteUserEvent;
 import edu.cornell.dendro.corina.admin.control.DisplayUGAEvent;
+import edu.cornell.dendro.corina.admin.control.EditGroupEvent;
 import edu.cornell.dendro.corina.admin.control.EditUserEvent;
 import edu.cornell.dendro.corina.admin.control.OkFinishEvent;
-import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModel;
-import edu.cornell.dendro.corina.admin.model.SecurityUserTableModel;
+import edu.cornell.dendro.corina.admin.control.ToggleDisabledUsersEvent;
+import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
+import edu.cornell.dendro.corina.admin.model.SecurityMixTableModel;
+import edu.cornell.dendro.corina.admin.model.SecurityUserTableModelA;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -52,24 +55,22 @@ import edu.cornell.dendro.corina.ui.I18n;
  * @author  peterbrewer
  * @author  dan
  */
-public class UserGroupAdminView extends javax.swing.JDialog implements ActionListener, MouseListener
+public class UserGroupAdminView extends javax.swing.JDialog implements ActionListener
 {
     
 	private static final long serialVersionUID = -7039984838996355038L;
 	private static UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
-	private SecurityUserTableModel usersModel;
-	private SecurityGroupTableModel groupsModel;
-	private TableRowSorter<SecurityUserTableModel> usersSorter;
-	private TableRowSorter<SecurityGroupTableModel> groupsSorter;
+	private SecurityUserTableModelA usersModel;
+	private SecurityGroupTableModelA groupsModel;
+	private ArrayList<WSISecurityUser> userList;
+	private ArrayList<WSISecurityGroup> groupList;
 
     public static void main() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                	CorinaModelLocator.getInstance();
-               	MVCEvent authenticateUserEvent = new AuthenticateEvent(mainModel);
-               	authenticateUserEvent.dispatch();
-        		MVCEvent displayEvent = new DisplayUGAEvent();
-        		displayEvent.dispatch();
+               	new AuthenticateEvent(mainModel).dispatch();
+        		new DisplayUGAEvent().dispatch();
             }
         });
     }
@@ -81,89 +82,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         linkModel();
         setupGui();
         internationlizeComponents();
-    }
-    
-    private void linkModel(){
-    	
-        // Populate user list
-        usersModel = mainModel.getUsersModel();
-        tblUsers.setModel(usersModel);
-        
-        //TODO - dan.girsh to fix!
-        //usersSorter = mainModel.getUsersSorter(usersModel);
-        
-        // Populate groups list
-        groupsModel = mainModel.getGroupsModel();
-        tblGroups.setModel(groupsModel);
-        groupsSorter = mainModel.getGroupsSorter(groupsModel);
-        
-    }
-    
-	private void setupGui(){
-    	// Set up basic dialog 
-        setLocationRelativeTo(null);
-        setIconImage(Builder.getApplicationIcon());
-                
-        tblUsers.setRowSorter(usersSorter);
-        tblGroups.setRowSorter(groupsSorter);
-
-        tblUsers.addMouseListener(this);
-        tblUsers.removeColumn(tblUsers.getColumn( I18n.getText("dbbrowser.hash")));
-              
-        btnOk.addActionListener(this);
-        btnDeleteUser.addActionListener(this);
-        btnNewUser.addActionListener(this);
-        
-        setIconImage(Builder.getApplicationIcon());
-        
-        this.chkShowDisabledUsers.setSelected(false);
-        showDisabledAccounts(false);
-        
-		/*tblUsers.addMouseListener(new PopupListener() {
-			@Override
-			public void showPopup(MouseEvent e) {
-				// only clicks on tables
-				if(!(e.getSource() instanceof JTable))
-					return;
-				
-				JTable table = (JTable) e.getSource();
-				ElementListTableModel model = (ElementListTableModel) table.getModel();
-				
-				// get the row and sanity check
-				int row = table.rowAtPoint(e.getPoint());
-				if(row < 0 || row >= model.getRowCount())
-					return;
-				
-				// select it?
-				table.setRowSelectionInterval(row, row);
-				
-				// get the element
-				Element element = model.getElementAt(row);
-				
-				// create and show the menu
-				//JPopupMenu popup = new ElementListPopupMenu(element, DBBrowser.this);
-				//popup.show(table, e.getX(), e.getY());
-			}
-		});*/
-        
-        
-    }
-    
-    private void internationlizeComponents()
-    {
-    	this.setTitle(I18n.getText("admin.usersAndGroups"));
-    	chkShowDisabledUsers.setText(I18n.getText("admin.showDisabledAccounts"));
-    	chkShowDisabledGroups.setText(I18n.getText("admin.showDisabledGroups"));
-    	btnOk.setText(I18n.getText("general.ok"));
-    	btnEditUser.setText(I18n.getText("menus.edit"));
-    	btnNewUser.setText(I18n.getText("menus.file.new"));
-    	btnDeleteUser.setText(I18n.getText("general.delete"));
-    	btnEditGroup.setText(I18n.getText("menus.edit"));
-    	btnNewGroup.setText(I18n.getText("menus.file.new"));
-    	btnDeleteGroup.setText(I18n.getText("general.delete"));
-    	accountsTabPane.setTitleAt(0, I18n.getText("admin.users"));
-    	accountsTabPane.setTitleAt(1, I18n.getText("admin.groups"));
-    	
     }
     
     /** This method is called from within the constructor to
@@ -186,7 +104,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         groupPanel = new javax.swing.JPanel();
         scrollGroups = new javax.swing.JScrollPane();
         tblGroups = new javax.swing.JTable();
-        chkShowDisabledGroups = new javax.swing.JCheckBox();
         btnEditGroup = new javax.swing.JButton();
         btnNewGroup = new javax.swing.JButton();
         btnDeleteGroup = new javax.swing.JButton();
@@ -196,25 +113,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        tblUsers.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"1", "peter", "Peter", "Brewer", "Admin, Staff", new Boolean(true)},
-                {"2", "lucas", "Lucas", "Madar", "Admin, Staff", new Boolean(true)}
-            },
-            new String [] {
-                "ID", "User", "First name", "Last name", "Groups", "Enabled"
-            }
-        ) {
-            @SuppressWarnings("unchecked")
-			Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
-            };
-
-            @SuppressWarnings("unchecked")
-			public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
         tblUsers.setShowVerticalLines(false);
         scrollUsers.setViewportView(tblUsers);
 
@@ -245,62 +143,12 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         userPanel.add(btnNewUser, "cell 4 0,alignx left,aligny top");
         userPanel.add(btnDeleteUser, "cell 6 0,alignx left,aligny top");
 
-        tblGroups.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"1", "Admin", new Boolean(true)},
-                {"2", "Staff", new Boolean(true)},
-                {"3", "Students", new Boolean(true)},
-                {"4", "Guests", new Boolean(true)}
-            },
-            new String [] {
-                "ID", "Group", "Enabled"
-            }
-        ) {
-            @SuppressWarnings("unchecked")
-			Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
-            };
-
-            @SuppressWarnings("unchecked")
-			public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
         scrollGroups.setViewportView(tblGroups);
 
-        chkShowDisabledGroups.setSelected(true);
-        chkShowDisabledGroups.setText("Show disabled groups");
-        chkShowDisabledGroups.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkShowDisabledGroupsActionPerformed(evt);
-            }
-        });
-
         btnEditGroup.setText("Edit");
-
         btnNewGroup.setText("New");
-
         btnDeleteGroup.setText("Delete");
-
-        tblMembers.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"1", "peter", "Peter", "Brewer", "Admin, Staff", new Boolean(true)},
-                {"2", "lucas", "Lucas", "Madar", "Admin, Staff", new Boolean(true)}
-            },
-            new String [] {
-                "ID", "User", "First name", "Last name", "Groups", "Enabled"
-            }
-        ) {
-            @SuppressWarnings("unchecked")
-			Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
-            };
-
-            @SuppressWarnings("unchecked")
-			public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        
         scrollMembers.setViewportView(tblMembers);
 
         accountsTabPane.addTab("Groups", groupPanel);
@@ -311,7 +159,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
                 groupPanel.add(lblGroupMembers, "cell 0 2 7 1,alignx left,aligny top");
         groupPanel.add(scrollMembers, "cell 0 3 7 1,grow");
         groupPanel.add(scrollGroups, "cell 0 1 7 1,grow");
-        groupPanel.add(chkShowDisabledGroups, "cell 0 0,alignx left,aligny center");
         groupPanel.add(btnEditGroup, "cell 2 0,alignx left,aligny top");
         groupPanel.add(btnNewGroup, "cell 4 0,alignx left,aligny top");
         groupPanel.add(btnDeleteGroup, "cell 6 0,alignx left,aligny top");
@@ -324,19 +171,73 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    @SuppressWarnings("unchecked")
+	private void linkModel(){
+    	
+        // Populate user list
+    	userList = (ArrayList<WSISecurityUser>) Dictionary
+			.getDictionaryAsArrayList("securityUserDictionary");
+    	usersModel = new SecurityUserTableModelA(userList);
+        tblUsers.setModel(usersModel);
+        tblUsers.setRowSorter(new TableRowSorter<SecurityUserTableModelA>(usersModel));
+        
+        // Populate groups list
+       	groupList = (ArrayList<WSISecurityGroup>) Dictionary
+			.getDictionaryAsArrayList("securityGroupDictionary");
+    	groupsModel = new SecurityGroupTableModelA(groupList);
+        tblGroups.setModel(groupsModel);
+        tblGroups.setRowSorter(new TableRowSorter<SecurityGroupTableModelA>(groupsModel));
+         
+    }
+    
+	private void setupGui(){
+    	// Set up basic dialog 
+        setLocationRelativeTo(null);
+        setIconImage(Builder.getApplicationIcon());
+
+        tblUsers.addMouseListener(new UserTableListener());
+        tblUsers.removeColumn(tblUsers.getColumn( I18n.getText("dbbrowser.hash")));
+              
+        tblGroups.addMouseListener(new GroupTableListener());
+        
+        btnOk.addActionListener(this);
+        btnDeleteUser.addActionListener(this);
+        btnNewUser.addActionListener(this);
+        btnDeleteGroup.addActionListener(this);
+        btnNewGroup.addActionListener(this);
+        btnEditGroup.addActionListener(this);        
+            
+        this.chkShowDisabledUsers.setSelected(true);
+        new ToggleDisabledUsersEvent(true, mainModel).dispatch();   
+    }
+    
+    private void internationlizeComponents()
+    {
+    	this.setTitle(I18n.getText("admin.usersAndGroups"));
+    	chkShowDisabledUsers.setText(I18n.getText("admin.showDisabledAccounts"));
+    	btnOk.setText(I18n.getText("general.ok"));
+    	btnEditUser.setText(I18n.getText("menus.edit"));
+    	btnNewUser.setText(I18n.getText("menus.file.new"));
+    	btnDeleteUser.setText(I18n.getText("general.delete"));
+    	btnEditGroup.setText(I18n.getText("menus.edit"));
+    	btnNewGroup.setText(I18n.getText("menus.file.new"));
+    	btnDeleteGroup.setText(I18n.getText("general.delete"));
+    	accountsTabPane.setTitleAt(0, I18n.getText("admin.users"));
+    	accountsTabPane.setTitleAt(1, I18n.getText("admin.groups"));
+    }
+    
+  
     private void btnEditUser444ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditUser444ActionPerformed
     	editUser();
     }//GEN-LAST:event_btnEditUser444ActionPerformed
 
     
     private void chkShowDisabledUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledUsersActionPerformed
-    	showDisabledAccounts(chkShowDisabledUsers.isSelected());
+		new ToggleDisabledUsersEvent(chkShowDisabledUsers.isSelected(), mainModel).dispatch();
     }//GEN-LAST:event_chkShowDisabledUsersActionPerformed
 
-    private void chkShowDisabledGroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledGroupsActionPerformed  
-    }//GEN-LAST:event_chkShowDisabledGroupsActionPerformed
-    
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+	// Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JTabbedPane accountsTabPane;
     protected javax.swing.JButton btnDeleteGroup;
     protected javax.swing.JButton btnDeleteUser;
@@ -345,7 +246,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     protected javax.swing.JButton btnNewGroup;
     protected javax.swing.JButton btnNewUser;
     protected javax.swing.JButton btnOk;
-    protected javax.swing.JCheckBox chkShowDisabledGroups;
     protected javax.swing.JCheckBox chkShowDisabledUsers;
     protected javax.swing.JPanel groupPanel;
     protected javax.swing.JLabel lblGroupMembers;
@@ -358,74 +258,102 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     protected javax.swing.JPanel userPanel;
     // End of variables declaration//GEN-END:variables
 
- 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource()==this.btnOk) 
-		{
-			OkFinishEvent event = new OkFinishEvent(mainModel);
-			event.dispatch();
-		}
-		else if (e.getSource()==this.btnDeleteUser)
-		{
-			Object[] options = {"OK",
-            "Cancel"};
-			int ret = JOptionPane.showOptionDialog(getParent(), 
-					"Are you sure you want to delete the user '"+ usersModel.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow())).getUsername() +"'?", 
-					"Confirm delete", 
-					JOptionPane.YES_NO_OPTION, 
-					JOptionPane.WARNING_MESSAGE, null, options, options[1]);
-			
-			if(ret == JOptionPane.YES_OPTION)
-			{
-				deleteUser(usersModel.getUserAt(tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow())).getId());
+    public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == this.btnOk) {
+			new OkFinishEvent(mainModel).dispatch();
+		} else if (e.getSource() == this.btnDeleteUser) {
+			Object[] options = { "OK", "Cancel" };
+			WSISecurityUser selectedUser = usersModel.getUserAt(
+					tblUsers.convertRowIndexToModel(tblUsers
+							.getSelectedRow()));
+			int ret = JOptionPane.showOptionDialog(
+					getParent(),
+					"Are you sure you want to delete the user '"
+							+ selectedUser.getUsername()
+							+ "'?", "Confirm delete",
+					JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE,
+					null, options, options[1]);
+
+			if (ret == JOptionPane.YES_OPTION) {
+				deleteUser(selectedUser.getId());
+			}
+		} else if (e.getSource() == this.btnNewUser) {
+			new UserUIView(this, true).setVisible(true);
+		} else if (e.getSource() == this.btnEditUser){
+			editUser();
+		} else if (e.getSource() == this.btnNewGroup){
+			new GroupUIView(this, true).setVisible(true);
+		} else if (e.getSource() == this.btnEditGroup){
+			editGroup();
+		} else if (e.getSource() == this.btnDeleteGroup){
+			Object[] options = { "OK", "Cancel" };
+			WSISecurityGroup selectedGroup = groupsModel.getGroupAt(
+					tblGroups.convertRowIndexToModel(tblGroups
+							.getSelectedRow()));
+			int ret = JOptionPane.showOptionDialog(
+					getParent(),
+					"Are you sure you want to delete the group '"
+							+ selectedGroup.getName()
+							+ "'?", "Confirm delete",
+					JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE,
+					null, options, options[1]);
+
+			if (ret == JOptionPane.YES_OPTION) {
+				deleteGroup(selectedGroup.getId());
 			}
 		}
-		else if (e.getSource()==this.btnNewUser)
-		{
-	        UserUIView userDialog = new UserUIView(this, true);
-	        userDialog.setVisible(true);
-		}
-	}
-	
-	private void deleteUser(String usrid)
-	{
-		DeleteUserEvent event = new DeleteUserEvent(usrid, mainModel);
-		event.dispatch();
 	}
     
-	/**
-	 * Hide or show disabled user accounts
-	 * 
-	 * @param show
-	 */
-	public void showDisabledAccounts(Boolean show)
-	{
-		//TODO - dan.girsh to fix!
-		//ToggleDisabledAccountsEvent event = new ToggleDisabledAccountsEvent(show, mainModel);
-		//event.dispatch();
+	private void deleteUser(String usrid) {
+		new DeleteUserEvent(usrid, mainModel).dispatch();
+	}
+	
+	private void deleteGroup(String groupid) {
+		new DeleteGroupEvent(groupid, mainModel).dispatch();
+	}
+	
+	private void resetMembers(){
+		WSISecurityGroup selectedGroup = groupsModel.getGroupAt(
+				tblGroups.convertRowIndexToModel(tblGroups.getSelectedRow()));
+
+		SecurityMixTableModel membersModel = new SecurityMixTableModel(selectedGroup);
+		tblMembers.setModel(membersModel);
+		tblMembers.setRowSorter(new TableRowSorter<SecurityMixTableModel>(membersModel));
+	}
+    
+	private void editUser() {
+		int userIndex = tblUsers.convertRowIndexToModel(tblUsers
+				.getSelectedRow());
+		new EditUserEvent(userIndex, mainModel).dispatch();
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		if(e.getClickCount()>1)
-		{
-			// Edit user when table is double clicked
-			editUser();
-		}
-		
+	private void editGroup() {
+		int groupIndex = tblGroups.convertRowIndexToModel(tblGroups
+				.getSelectedRow());
+		new EditGroupEvent(groupIndex, mainModel).dispatch();
 	}
-	@Override
-	public void mouseEntered(MouseEvent e) { }
-	@Override
-	public void mouseExited(MouseEvent e) { }
-	@Override
-	public void mousePressed(MouseEvent e) { }
-	@Override
-	public void mouseReleased(MouseEvent e) {	}
-	
-	private void editUser()
-	{
-		int userIndex = tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow());
-		EditUserEvent event = new EditUserEvent(userIndex, mainModel);
-		event.dispatch();
+
+	private class UserTableListener extends MouseAdapter {
+		@Override
+		public void mouseClicked(MouseEvent me) {
+			if (me.getClickCount() > 1) {
+				// Edit user when table is double clicked
+				editUser();
+			}
+		}
+	}
+
+	private class GroupTableListener extends MouseAdapter {
+		@Override
+		public void mouseClicked(MouseEvent me) {
+			if (me.getClickCount() > 1) {
+				// Edit group when table is double clicked
+				editGroup();
+			}
+			else if(me.getClickCount() == 1) {
+				super.mouseClicked(me);
+				resetMembers();
+			}
+		}
 	}
 }

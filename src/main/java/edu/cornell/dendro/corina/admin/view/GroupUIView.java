@@ -33,7 +33,8 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.TableRowSorter;
 
-import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModel;
+import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
+import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelB;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
@@ -53,8 +54,8 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 	private static final long serialVersionUID = 1L;
 	WSISecurityGroup group = new WSISecurityGroup();
 	Boolean isNewGroup = true;
-	private SecurityGroupTableModel groupsModel;
-	private TableRowSorter<SecurityGroupTableModel> groupsSorter;
+	private SecurityGroupTableModelA groupsModel;
+	private TableRowSorter<SecurityGroupTableModelA> groupsSorter;
 	
     /** Creates new form GroupUI 
      * @wbp.parser.constructor*/
@@ -241,9 +242,9 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
     	
         // Populate groups list
         ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
-        groupsModel = new SecurityGroupTableModel(lstofGroups, null);
+        groupsModel = new SecurityGroupTableModelA(lstofGroups);
         tblGroups.setModel(groupsModel);
-        groupsSorter = new TableRowSorter<SecurityGroupTableModel>(groupsModel);
+        groupsSorter = new TableRowSorter<SecurityGroupTableModelA>(groupsModel);
         tblGroups.setRowSorter(groupsSorter);
         tblGroups.setEditingColumn(3);
     	
@@ -319,15 +320,15 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 			// Double clicked on groups table - change groups membership accordingly
 			Boolean isMember = (Boolean) this.groupsModel.getValueAt(this.tblGroups.getSelectedRow(), 3);
 			
-			if(isMember)
-			{
-				groupsModel.setMembershipAt(this.tblGroups.getSelectedRow(), false);
-			}
-			else
-			{
-				groupsModel.setMembershipAt(this.tblGroups.getSelectedRow(), true);
-
-			}
+//			if(isMember)
+//			{
+//				groupsModel.setMembershipAt(this.tblGroups.getSelectedRow(), false);
+//			}
+//			else
+//			{
+//				groupsModel.setMembershipAt(this.tblGroups.getSelectedRow(), true);
+//
+//			}
 			this.tblGroups.repaint();
 		}
 	}

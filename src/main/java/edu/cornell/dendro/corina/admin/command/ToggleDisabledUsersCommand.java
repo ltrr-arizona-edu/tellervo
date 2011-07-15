@@ -19,30 +19,35 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin.command;
 
+import java.util.ArrayList;
+
 import javax.swing.RowFilter;
 import javax.swing.table.TableRowSorter;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-import edu.cornell.dendro.corina.admin.control.ToggleDisabledAccountsEvent;
-import edu.cornell.dendro.corina.admin.model.SecurityUserTableModel;
+import edu.cornell.dendro.corina.admin.control.ToggleDisabledUsersEvent;
+import edu.cornell.dendro.corina.admin.model.SecurityUserTableModelA;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
-public class ToggleDisabledAccountsCommand implements ICommand {
+public class ToggleDisabledUsersCommand implements ICommand {
 
         @SuppressWarnings("unchecked")
 		public void execute(MVCEvent argEvent) {
-        	ToggleDisabledAccountsEvent event = (ToggleDisabledAccountsEvent) argEvent;
+        	ToggleDisabledUsersEvent event = (ToggleDisabledUsersEvent) argEvent;
         	boolean show = event.show;
-        	//JTable table = event.table;
-        	SecurityUserTableModel usersModel = event.model.getUsersModel();
-        	TableRowSorter<SecurityUserTableModel> usersSorter = event.model.getUsersSorter(usersModel, null); 
+        	ArrayList<WSISecurityUser> userList = (ArrayList<WSISecurityUser>) Dictionary
+				.getDictionaryAsArrayList("securityUserDictionary");
+        	SecurityUserTableModelA userModel = new SecurityUserTableModelA(userList);
+        	TableRowSorter<SecurityUserTableModelA> usersSorter = new TableRowSorter<SecurityUserTableModelA>(userModel); 
         	if(show){
         		usersSorter.setRowFilter(null);
         	}
         	else	
         	{
-    	        RowFilter<SecurityUserTableModel, Object> rf = null;
+    	        RowFilter<SecurityUserTableModelA, Object> rf = null;
     	        //If current expression doesn't parse, don't update.
     	        try {
     	            rf = RowFilter.regexFilter("t", 5);

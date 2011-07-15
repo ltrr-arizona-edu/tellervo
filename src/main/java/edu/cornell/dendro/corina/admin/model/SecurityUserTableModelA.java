@@ -33,7 +33,7 @@ import edu.cornell.dendro.corina.ui.I18n;
  * @author peterbrewer
  *
  */
-public class SecurityUserTableModel extends AbstractTableModel {
+public class SecurityUserTableModelA extends AbstractTableModel {
 	
 	private static final long serialVersionUID = -8612040164917147271L;
 	private ArrayList<WSISecurityUser> userList;
@@ -49,15 +49,15 @@ public class SecurityUserTableModel extends AbstractTableModel {
             I18n.getText("general.enabled"),
         };
 	
-	public SecurityUserTableModel(ArrayList<WSISecurityUser> usrLst){
+	public SecurityUserTableModelA(ArrayList<WSISecurityUser> usrLst){
 		userList = usrLst;
 		setCompleteUserList(userList);
 	}
     
-    public void setUsers(ArrayList<WSISecurityUser> usrList){
+
+	public void setUsers(ArrayList<WSISecurityUser> usrList){
     	userList = usrList;  
 		setCompleteUserList(userList);
-
     }
     
 	public int getColumnCount() {

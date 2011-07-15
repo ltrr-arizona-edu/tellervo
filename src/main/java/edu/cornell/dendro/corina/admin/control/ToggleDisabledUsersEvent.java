@@ -25,17 +25,15 @@ import javax.swing.JTable;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 //import com.dmurph.mvc.tracking.ITrackable;
 
-public class ToggleDisabledAccountsEvent extends MVCEvent{ // implements ITrackable {
+public class ToggleDisabledUsersEvent extends MVCEvent{ // implements ITrackable {
 	private static final long serialVersionUID = 1L;
 	public final UserGroupAdminModel model;
 	public final boolean show;
-	public final JTable table;
 
-	public ToggleDisabledAccountsEvent(boolean argShow, UserGroupAdminModel argModel, JTable argTable) {
-		super(UserGroupAdminController.TOGGLE_DISABLED_ACCOUNTS);
+	public ToggleDisabledUsersEvent(boolean argShow, UserGroupAdminModel argModel) {
+		super(UserGroupAdminController.TOGGLE_DISABLED_USERS);
 		model = argModel;
 		show = argShow;
-		table = argTable;
 	}
 
 //	/**

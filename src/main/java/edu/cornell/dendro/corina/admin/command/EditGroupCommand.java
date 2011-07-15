@@ -19,22 +19,28 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin.command;
 
+import java.util.ArrayList;
+
 import javax.swing.JDialog;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.admin.control.EditGroupEvent;
-import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModel;
+import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
 import edu.cornell.dendro.corina.admin.view.GroupUIView;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 
 public class EditGroupCommand implements ICommand {
 
-        public void execute(MVCEvent argEvent) {
+        @SuppressWarnings("unchecked")
+		public void execute(MVCEvent argEvent) {
         	EditGroupEvent event = (EditGroupEvent) argEvent;
         	int groupSelected = event.groupIndex;
-        	SecurityGroupTableModel groupsModel = event.model.getGroupsModel();
+        	ArrayList<WSISecurityGroup> groupList = (ArrayList<WSISecurityGroup>) Dictionary
+			.getDictionaryAsArrayList("securityGroupDictionary");
+        	SecurityGroupTableModelA groupsModel = new SecurityGroupTableModelA(groupList);
         	JDialog view = event.model.getMainView();
         	
         	WSISecurityGroup selGroup = groupsModel.getGroupAt(groupSelected);

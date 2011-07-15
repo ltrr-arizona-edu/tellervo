@@ -34,7 +34,8 @@ import javax.swing.LayoutStyle;
 import javax.swing.table.TableRowSorter;
 
 import edu.cornell.dendro.corina.admin.SetPasswordUI;
-import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModel;
+import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
+import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelB;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
@@ -61,9 +62,9 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     
 	private static final long serialVersionUID = 1L;
 	WSISecurityUser user = new WSISecurityUser();
-	Boolean isNewUser = true;
-	private SecurityGroupTableModel groupsModel;
-	private TableRowSorter<SecurityGroupTableModel> groupsSorter;
+	Boolean isNewUser;
+	private SecurityGroupTableModelB groupsModel;
+	private TableRowSorter<SecurityGroupTableModelB> groupsSorter;
 	
     /** Creates new form UserUI 
      * @wbp.parser.constructor*/
@@ -301,16 +302,15 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 	    	if(user.isSetId()) 		  txtId.setText(user.getId());
 	    	if(user.isSetUsername())  txtUsername.setText(user.getUsername());
 	    	if(user.isSetIsActive())  chkEnabled.setSelected(user.isIsActive());
-	    	memberGroups = ((ArrayList)this.user.getMemberOf().getSecurityGroups());
     	}
     	
         // Populate groups list
         ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
-        groupsModel = new SecurityGroupTableModel(lstofGroups, memberGroups);
+        groupsModel = new SecurityGroupTableModelB(lstofGroups, user);
         tblGroups.setModel(groupsModel);
-        groupsSorter = new TableRowSorter<SecurityGroupTableModel>(groupsModel);
+        groupsSorter = new TableRowSorter<SecurityGroupTableModelB>(groupsModel);
         tblGroups.setRowSorter(groupsSorter);
-        tblGroups.setEditingColumn(3);
+        tblGroups.setEditingColumn(4);
     	
     	this.btnDoIt.addActionListener(this);
     	this.btnClose.addActionListener(this);
