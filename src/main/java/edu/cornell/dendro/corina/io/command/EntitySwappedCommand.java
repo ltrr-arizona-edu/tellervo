@@ -22,6 +22,9 @@ package edu.cornell.dendro.corina.io.command;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
+import com.dmurph.mvc.IllegalThreadException;
+import com.dmurph.mvc.IncorrectThreadException;
+import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
@@ -33,6 +36,17 @@ public class EntitySwappedCommand implements ICommand {
 
 	@Override
 	public void execute(MVCEvent argEvent) {
+		
+		try {
+	        MVC.splitOff(); // so other mvc events can execute
+		} catch (IllegalThreadException e) {
+		        // this means that the thread that called splitOff() was not an MVC thread, and the next event's won't be blocked anyways.
+		        e.printStackTrace();
+		} catch (IncorrectThreadException e) {
+		        // this means that this MVC thread is not the main thread, it was already splitOff() previously
+		        e.printStackTrace();
+		}
+		
 		ImportSwapEntityEvent event = (ImportSwapEntityEvent) argEvent;
 
 		// Get the tree node representing the entity we're going to replace

@@ -26,7 +26,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
@@ -40,6 +39,7 @@ import net.opengis.gml.schema.PointType;
 import net.opengis.gml.schema.Pos;
 
 import org.tridas.schema.TridasLocationGeometry;
+import org.tridas.spatial.GMLPointSRSHandler;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.GISFrame;
@@ -66,7 +66,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 		dialog = new JDialog();
 		dialog.setTitle("Memo");
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		dialog.setModal(true);
+		dialog.setModal(false);
 		dialog.setUndecorated(true);
 		
 		dialog.setContentPane(this);
@@ -108,6 +108,8 @@ public class LocationGeometry extends LocationGeometryUI implements
 		// TODO: Actually implement detecting this and putting in the right standards
 		point.setSrsName("EPSG:4326");
 		
+		
+		
 		Pos pos = new Pos();
 		point.setPos(pos);
 		
@@ -118,20 +120,14 @@ public class LocationGeometry extends LocationGeometryUI implements
 	}
 	
 	private void setFromGeometry(TridasLocationGeometry geometry) {
-		if(!geometry.isSetPoint() && geometry.getPoint().isSetPos() && geometry.getPoint().getPos().isSetValues())
+		if(!geometry.isSetPoint())
 			return;
 		
-		List<Double> latLong = geometry.getPoint().getPos().getValues();
-		// must be a tuple of lat, long!
-		if(latLong.size() != 2)
-			return;
+		GMLPointSRSHandler pointHandler = new GMLPointSRSHandler(geometry.getPoint());
+
 		
-		// gml pair is in the form of long, lat (x, y)
-		double lat = latLong.get(1);
-		double lng = latLong.get(0);
-		
-		spnDDLat.setValue(lat);
-		spnDDLong.setValue(lng);
+		spnDDLat.setValue(pointHandler.getWGS84LatCoord());
+		spnDDLong.setValue(pointHandler.getWGS84LongCoord());
 		
 		// listeners handle the rest!
 	}
