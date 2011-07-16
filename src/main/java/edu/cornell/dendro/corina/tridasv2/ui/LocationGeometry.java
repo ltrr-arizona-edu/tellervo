@@ -41,12 +41,10 @@ import net.opengis.gml.schema.Pos;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.spatial.GMLPointSRSHandler;
 
-import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.GISFrame;
 import edu.cornell.dendro.corina.gis.GPXParser;
 import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
-import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 
@@ -63,10 +61,12 @@ public class LocationGeometry extends LocationGeometryUI implements
 	final GPXFileFilter filter = new GPXFileFilter();
 
 	public void showDialog(Component parent, TridasLocationGeometry geometry) {
+
+		
 		dialog = new JDialog();
 		dialog.setTitle("Memo");
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		dialog.setModal(false);
+		dialog.setModal(true);
 		dialog.setUndecorated(true);
 		
 		dialog.setContentPane(this);
@@ -78,11 +78,14 @@ public class LocationGeometry extends LocationGeometryUI implements
 		if(geometry != null)	
 			setFromGeometry(geometry);
 		
+		
 		dialog.setBounds(parent.getLocationOnScreen().x, 
 				parent.getLocationOnScreen().y, 
 				600, 
 				400);
+		dialog.pack();
 		dialog.setVisible(true);
+		
 	}
 
 	/**
@@ -146,8 +149,8 @@ public class LocationGeometry extends LocationGeometryUI implements
 		btnViewMap.setEnabled(true);
 
 		// Poke the radio buttons and lat long style to set fields
-		radManualActionPerformed(null);
-		latLongStyleActionPerformed(null);
+		radManualActionPerformed();
+		latLongStyleActionPerformed();
 
 		cboWaypoint.addActionListener(this);
 		
@@ -159,13 +162,13 @@ public class LocationGeometry extends LocationGeometryUI implements
 
 		radManual.addActionListener(new ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				radManualActionPerformed(evt);
+				radManualActionPerformed();
 			}
 		});
 
 		cboLatLongStyle.addActionListener(new ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				latLongStyleActionPerformed(evt);
+				latLongStyleActionPerformed();
 			}
 		});
 
@@ -186,7 +189,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 		btnCancel.addActionListener(this);
 	}
 
-	private void latLongStyleActionPerformed(java.awt.event.ActionEvent evt) {
+	private void latLongStyleActionPerformed() {
 
 		switch (cboLatLongStyle.getSelectedIndex()) {
 		case 0:
@@ -198,7 +201,13 @@ public class LocationGeometry extends LocationGeometryUI implements
 			this.panelDMS.setVisible(true);
 			break;
 		}
+		
+		dialog.pack();
+		
 	}
+	
+	
+	
 
 	private void radGPSActionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -211,7 +220,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 		this.cboDatum.setEnabled(false);
 	}
 
-	private void radManualActionPerformed(java.awt.event.ActionEvent evt) {
+	private void radManualActionPerformed() {
 
 		this.setLatLongEnabled(true);
 		this.lblGPSFilename.setEnabled(false);
@@ -268,6 +277,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 		spnDMSLongMin.setValue((Double) dms_long_min);
 		spnDMSLongSec.setValue((Double) dms_long_sec);
 
+
 	}
 
 	private void setDDFromDMS() {
@@ -293,21 +303,6 @@ public class LocationGeometry extends LocationGeometryUI implements
 		// Set spinners
 		spnDDLat.setValue(ddlat);
 		spnDDLong.setValue(ddlong);
-	}
-
-	public static void main(String[] args) {
-		App.platform = new Platform();
-		App.platform.init();
-		App.init(null, null);
-
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				LocationGeometry lg = new LocationGeometry();
-
-				lg.showDialog(null, null);
-			}
-		});
-
 	}
 
 	public void actionPerformed(ActionEvent evt) {

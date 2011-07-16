@@ -36,6 +36,12 @@ import javax.swing.LayoutStyle;
 import javax.swing.SpinnerNumberModel;
 
 import net.miginfocom.swing.MigLayout;
+import java.awt.FlowLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.BoxLayout;
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
 
 /*
  * LocationGeometry.java
@@ -82,21 +88,33 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         spnDMSLatSec.setModel(new SpinnerNumberModel(0.0d, 0.0d, 59.99d, 0.1));
         spnDMSLongMin.setModel(new SpinnerNumberModel(0.0d, 0.0d, 59.99d, 0.1));
         spnDMSLongSec.setModel(new SpinnerNumberModel(0.0d, 0.0d, 59.99d, 0.1));
-        setLayout(new MigLayout("", "[130px][97px,grow][183.00px][125.00px]", "[23px][25px][24px][24px][24px][98px,grow][94px,grow][42.00px]"));
+        setLayout(new MigLayout("", "[101px:101.00px][106.00][174.00][90px:90px:90px]", "[23px][25px][24px][24px][24px][86.00][]"));
         add(radManual, "cell 1 0,alignx left,aligny top");
         add(radGPS, "cell 2 0,growx,aligny top");
-        add(lblRadio, "cell 0 0 4 1,alignx left,aligny center");
-        add(panelDecDeg, "cell 0 6 3 1,alignx left,aligny top");
-        panelDecDeg.setLayout(new MigLayout("insets 0", "[130px][120px][7px]", "[23px][23px]"));
+        add(lblRadio, "cell 0 0,alignx left,aligny center");
+        
+
+
+        panelDecDeg.setLayout(new MigLayout("insets 0", "[97px:97px][74.00px][7px]", "[23px][23px]"));
         panelDecDeg.add(lblDDLong, "cell 0 1,alignx left,aligny center");
         panelDecDeg.add(lblDDLat, "cell 0 0,growx,aligny center");
         panelDecDeg.add(spnDDLat, "cell 1 0,growx,aligny bottom");
         panelDecDeg.add(spnDDLong, "cell 1 1,growx,aligny bottom");
         panelDecDeg.add(lblLatDeg1, "cell 2 0,growx,aligny top");
         panelDecDeg.add(lblLatDeg2, "cell 2 1,growx,aligny top");
-        add(panelButton, "cell 0 7 4 1,growx,aligny top");
-        add(panelDMS, "cell 0 5 3 1,growx,aligny top");
-        panelDMS.setLayout(new MigLayout("insets 0", "[130px:130px][89px][9px][89px][4px][89px][8px]", "[34px][34px]"));
+        btnGPSBrowse = new JButton();
+        add(btnGPSBrowse, "cell 3 1,growx");
+        
+                btnGPSBrowse.setText("Browse");
+        btnViewMap = new JButton();
+        add(btnViewMap, "cell 0 6 2 1");
+        
+                btnViewMap.setText("View on map");
+        btnCancel = new JButton();
+        add(btnCancel, "cell 2 6,alignx right");
+        
+                btnCancel.setText("Cancel");
+        panelDMS.setLayout(new MigLayout("insets 0", "[97px:97px][70.00px][9px][53.00px][4px][63.00px][8px]", "[23.00px][23.00px]"));
         panelDMS.add(lblLat, "cell 0 0,alignx left,aligny center");
         panelDMS.add(lblLong, "cell 0 1,alignx left,aligny center");
         panelDMS.add(spnDMSLatDeg, "cell 1 0,growx,aligny center");
@@ -115,12 +133,22 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         add(lblWaypoint, "cell 0 2,growx,aligny center");
         add(lblDatum, "cell 0 3,growx,aligny center");
         add(lblFormat, "cell 0 4,growx,aligny center");
-        add(cboLatLongStyle, "cell 1 4 3 1,growx,aligny top");
-        add(cboDatum, "cell 1 3 3 1,growx,aligny top");
-        add(cboWaypoint, "cell 1 2 3 1,growx,aligny top");
+        add(cboLatLongStyle, "cell 1 4 2 1,alignx left,aligny top");
+        add(cboDatum, "cell 1 3 2 1,alignx left,aligny top");
+        add(cboWaypoint, "cell 1 2 2 1,alignx left,aligny top");
         add(txtGPSFilename, "cell 1 1 2 1,growx,aligny center");
-        add(btnGPSBrowse, "cell 3 1,growx,aligny top");
 
+        panelCoords = new JPanel();
+        
+        add(panelCoords, "cell 0 5 4 1,alignx left,growy");
+        panelCoords.setLayout(new FlowLayout(FlowLayout.LEADING, 5, 5));
+        panelCoords.add(panelDMS);
+        panelCoords.add(panelDecDeg);
+                btnOK = new JButton();
+                add(btnOK, "cell 3 6,growx");
+                
+                        btnOK.setText("OK");
+        
     }
     
     /** This method is called from within the constructor to
@@ -150,17 +178,12 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         lblFormat = new JLabel();
         txtGPSFilename = new JTextField();
         lblGPSFilename = new JLabel();
-        btnGPSBrowse = new JButton();
         cboDatum = new JComboBox();
         lblDatum = new JLabel();
         cboWaypoint = new JComboBox();
         lblWaypoint = new JLabel();
         radGPS = new JRadioButton();
         radManual = new JRadioButton();
-        panelButton = new JPanel();
-        btnOK = new JButton();
-        btnCancel = new JButton();
-        btnViewMap = new JButton();
         lblRadio = new JLabel();
         panelDecDeg = new JPanel();
         lblDDLong = new JLabel();
@@ -213,8 +236,6 @@ public class LocationGeometryUI extends javax.swing.JPanel {
 
         lblGPSFilename.setText("GPS filename:");
 
-        btnGPSBrowse.setText("Browse");
-
         cboDatum.setModel(new DefaultComboBoxModel(new String[] { "WGS84" }));
 
         lblDatum.setText("Datum:");
@@ -224,36 +245,6 @@ public class LocationGeometryUI extends javax.swing.JPanel {
         radGPS.setText("using waypoint from GPS");
 
         radManual.setText("manually");
-
-        btnOK.setText("OK");
-
-        btnCancel.setText("Cancel");
-
-        btnViewMap.setText("View on map");
-
-        GroupLayout gl_panelButton = new GroupLayout(panelButton);
-        panelButton.setLayout(gl_panelButton);
-        gl_panelButton.setHorizontalGroup(
-            gl_panelButton.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(GroupLayout.Alignment.TRAILING, gl_panelButton.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnViewMap)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 437, Short.MAX_VALUE)
-                .addComponent(btnCancel)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnOK)
-                .addContainerGap())
-        );
-        gl_panelButton.setVerticalGroup(
-            gl_panelButton.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(GroupLayout.Alignment.TRAILING, gl_panelButton.createSequentialGroup()
-                .addContainerGap(21, Short.MAX_VALUE)
-                .addGroup(gl_panelButton.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnOK)
-                    .addComponent(btnCancel)
-                    .addComponent(btnViewMap))
-                .addContainerGap())
-        );
 
         lblRadio.setText("Set location:");
 
@@ -300,7 +291,6 @@ public class LocationGeometryUI extends javax.swing.JPanel {
     protected JLabel lblLongSec;
     protected JLabel lblRadio;
     protected JLabel lblWaypoint;
-    protected JPanel panelButton;
     protected JPanel panelDMS;
     protected JPanel panelDecDeg;
     protected JRadioButton radGPS;
@@ -314,6 +304,5 @@ public class LocationGeometryUI extends javax.swing.JPanel {
     protected JSpinner spnDMSLongMin;
     protected JSpinner spnDMSLongSec;
     protected JTextField txtGPSFilename;
-    // End of variables declaration
-    
+    private JPanel panelCoords;
 }

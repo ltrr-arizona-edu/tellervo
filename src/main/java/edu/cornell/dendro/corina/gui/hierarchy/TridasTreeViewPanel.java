@@ -308,17 +308,22 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 				{
 			        if ( e.getButton()== MouseEvent.BUTTON1)
 			        {
-			        	if(e.getClickCount()>1)
-			            {
-				        	// Double left click event so expand entity
-			        		expandEntity((DefaultMutableTreeNode) selPath.getLastPathComponent());
-			            }
-			        	else
-			        	{
-				        	// Listeners are cheap so do select on single left click
-				        	DefaultMutableTreeNode node1 = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
-				        	doSelectEntity(node1);
-			        	}
+			        	try{
+				        	if(e.getClickCount()>1)
+				            {
+					        	// Double left click event so expand entity
+				        		expandEntity((DefaultMutableTreeNode) selPath.getLastPathComponent());
+				            }
+				        	else
+				        	{
+					        	// Listeners are cheap so do select on single left click
+					        	DefaultMutableTreeNode node1 = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
+					        	doSelectEntity(node1);
+				        	} 
+			        	}catch (NullPointerException ex)
+		        		{
+		        			// Don't worry - probably just clicked on a handle not a node
+		        		}
 			        }
 		        }
 				else

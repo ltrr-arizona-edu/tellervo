@@ -37,6 +37,8 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDerivedSeries;
@@ -76,7 +78,9 @@ import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
  * @author  peterbrewer
  */
 public class MetadataBrowser extends javax.swing.JDialog implements PropertyChangeListener, TridasSelectListener {
-    
+	
+	private final static Logger log = LoggerFactory.getLogger(MetadataBrowser.class);
+
 	private static final long serialVersionUID = 8940640945613031936L;
 	/** Panel containing the tree view of the entities in the database	 */
 	private ManagementTreeViewPanel treepanel;
@@ -342,8 +346,24 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 			resource = new EntityResource<TridasElement>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasElement.class);
 			type = TridasElement.class;
 		}
+		else if (temporaryEditingEntity instanceof TridasSample)
+		{
+			resource = new EntityResource<TridasSample>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasSample.class);
+			type = TridasSample.class;
+		}
+		else if (temporaryEditingEntity instanceof TridasRadius)
+		{
+			resource = new EntityResource<TridasRadius>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasRadius.class);
+			type = TridasRadius.class;
+		}
+		else if (temporaryEditingEntity instanceof TridasMeasurementSeries)
+		{
+			resource = new EntityResource<TridasMeasurementSeries>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasMeasurementSeries.class);
+			type = TridasMeasurementSeries.class;
+		}
 		else 
 		{
+			log.debug("Can't save entity.  Unsupported entity class.");
 			return;
 		}
 		

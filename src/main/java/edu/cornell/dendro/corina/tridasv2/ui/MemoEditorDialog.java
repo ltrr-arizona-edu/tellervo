@@ -12,6 +12,10 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
 import net.miginfocom.swing.MigLayout;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.ui.Builder;
 
 /**
@@ -22,6 +26,7 @@ import edu.cornell.dendro.corina.ui.Builder;
  */
 public class MemoEditorDialog extends JPanel {
 	
+	private final static Logger log = LoggerFactory.getLogger(MemoEditorDialog.class);
 	private static final long serialVersionUID = 1L;
 	private String theString;
 	private JDialog dialog;
@@ -88,10 +93,15 @@ public class MemoEditorDialog extends JPanel {
 			}			
 		});
 		
+		try{
 		dialog.setBounds(parent.getLocationOnScreen().x, 
 				parent.getLocationOnScreen().y, 
 				parent.getWidth(), 
 				200);
+		} catch (Exception e)
+		{
+			log.debug("Unable to determine location of parent for memo editor. Show anyway.");
+		}
 		dialog.setVisible(true);
 	}
 	
