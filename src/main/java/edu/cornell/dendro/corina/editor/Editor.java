@@ -140,22 +140,13 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	// gui
 	private JTable wjTable;
-
 	private JPanel wjPanel;
-
 	private EditorMeasurePanel measurePanel = null;
-
 	private JComponent metaView;
-
 	private ComponentViewer componentsPanel = null;
-	
 	private BargraphPanel bargraphPanel = null;
-	
-	// gui -- new
 	private SampleDataView dataView; // (a jpanel)
-	
 	protected GISPanel wwMapPanel;
-	
 	private JTabbedPane tabbedPanel;
 	
 	// for menus we have to notify...
@@ -166,9 +157,25 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	
 	// undo
 	private UndoManager undoManager = new UndoManager();
-
 	private UndoableEditSupport undoSupport = new UndoableEditSupport();
 
+	// data
+	private Sample sample;
+	
+	/**
+	 * The main editor dialog.  Contains multiple tabs depending on the data
+	 * we have available.
+	 * 
+	 * @param sample
+	 */
+	public Editor(Sample sample) {
+		// copy data ref
+		this.sample = sample;
+
+		// pass
+		setup();
+	}
+	
 	public void postEdit(UndoableEdit x) {
 		undoSupport.postEdit(x);
 	}
@@ -200,8 +207,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		}
 	}
 
-	// data
-	private Sample sample;
+
 
 	// BUG: measureMenu gets enabled/disabled here, when it's status
 	// should be the AND of what editor thinks and what measure
@@ -415,11 +421,18 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 
-	private void addCards() {
+	private void initTabs() {
+		
+		tabbedPanel = new JTabbedPane(SwingConstants.TOP);
+		getContentPane().add(tabbedPanel, BorderLayout.CENTER);
+		
+		// Fire of display units changed to make sure they are shown correctly to start with
+		sample.fireDisplayUnitsChanged();
+		
 		// start fresh
 		tabbedPanel.removeAll();
 
-		// all samples get data, meta
+		// all samples get data and metadata tabs
 		dataView = new SampleDataView(sample);
 		tabbedPanel.add(dataView, I18n.getText("editor.tab_data"));
 		tabbedPanel.add(metaView, I18n.getText("editor.tab_metadata"));
@@ -449,21 +462,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	    //		tabbedPanel.add(mozillaMapPanel, I18n.getText("editor.tab_map"));
 	}
 
-	private void initTabbedPanel() {
-		// try also: BOTTOM, but that's worse, by Fitt's Law, isn't it?
-		// (excel, for example, does that.)
-		tabbedPanel = new JTabbedPane(SwingConstants.TOP);
-		// tabbedPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0)); -- but the old frame is still there!  hmm...
-		addCards();
-		getContentPane().add(tabbedPanel, BorderLayout.CENTER);
-		
-		// Fire of display units changed to make sure they are shown correctly to start with
-		sample.fireDisplayUnitsChanged();
-		
-		
-		
-		
-	}
+
 
 	public Sample getSample() {
 		return sample;
@@ -480,23 +479,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 
-	// TODO: want single-instance editors.
-	// so:
-	// -- make this private
-	// -- (should it just be Editor(filename)?)
-	// -- keep a (sample,editor) hash
-	// -- create a public getEditor(Sample)
-	// -- if an editor is in the hash, just front() it
-	// -- if it's not, add it
-	// -- on dispose(), remove it from the hash
-	public Editor(Sample sample) {
-		// copy data ref
-		this.sample = sample;
-
-		// pass
-		setup();
-	}
 	
+	/**
+	 * Set up the WorldWindJava Map panel
+	 */
 	private void initWWMapPanel()
 	{
 		
@@ -510,9 +496,17 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		wwMapPanel = new GISPanel(new Dimension(300,300),true, allSites);
 		
 		try{
+			// First try to add a pin for the TridasElement itself
 			editorViewMenu = new GISViewMenu(wwMapPanel.getWwd(), wwMapPanel.getVisibleLayers());	
+			builder.addMarkerForTridasElement(elem);	
 			
-			builder.addMarkerForTridasElement(elem);			
+			// If no pin added for TridasElement, try TridasObject instead
+			if(!builder.containsMarkers())
+			{
+				builder.addMarkerForTridasObject(sample.getMeta(Metadata.OBJECT, TridasObject.class));
+			}
+				
+			// If still no joy, disable the map
 			if(!builder.containsMarkers())
 			{
 				wwMapPanel = null;
@@ -616,8 +610,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		initWJPanel();
 		initMetaView();
 		initComponentsPanel();
-		//initElemPanel();
-		//initMozillaMapPanel();
 		initWWMapPanel();
 
 		// i'll watch the data
@@ -627,7 +619,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		updateTitle();
 
 		// put views into notecard-tabbedPanel
-		initTabbedPanel();
+		initTabs();
 
 		// set preferences
 		setUIFromPrefs();
