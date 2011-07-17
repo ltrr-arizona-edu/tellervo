@@ -54,11 +54,9 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
 	public SecurityGroupTableModelB(ArrayList<WSISecurityGroup> grpLst, WSISecurityUser trgetUser){
 		groupList = grpLst;
 		targetUser = trgetUser;
+		userIsMemberOfList = new ArrayList<WSISecurityGroup>();
 		if(targetUser != null){
 			userIsMemberOfList = (ArrayList<WSISecurityGroup>) targetUser.getMemberOf().getSecurityGroups();
-		}
-		else{
-			userIsMemberOfList = new ArrayList<WSISecurityGroup>();
 		}
 		buildParentsMap();
 	}

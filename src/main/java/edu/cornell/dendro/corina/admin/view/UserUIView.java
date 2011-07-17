@@ -34,7 +34,6 @@ import javax.swing.LayoutStyle;
 import javax.swing.table.TableRowSorter;
 
 import edu.cornell.dendro.corina.admin.SetPasswordUI;
-import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
 import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelB;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
@@ -50,8 +49,6 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource
  *
  * Created on January 8, 2010, 11:03 AM
  */
-
-
 
 /**
  * GUI Class for viewing/editing a users details.

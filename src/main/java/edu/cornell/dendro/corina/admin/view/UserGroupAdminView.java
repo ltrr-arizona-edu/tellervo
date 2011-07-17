@@ -46,6 +46,7 @@ import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import javax.swing.JButton;
 
 /**
  * GUI class for administering users and groups.  Allows user with the correct
@@ -163,6 +164,14 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         groupPanel.add(btnNewGroup, "cell 4 0,alignx left,aligny top");
         groupPanel.add(btnDeleteGroup, "cell 6 0,alignx left,aligny top");
         getContentPane().setLayout(new MigLayout("", "[571px,grow]", "[405px,grow][25px]"));
+        
+        btnSync = new JButton("Sync");
+        btnSync.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		new UserGroupSyncer();;
+        	}
+        });
+        getContentPane().add(btnSync, "flowx,cell 0 1,alignx right");
 
         btnOk.setText("Ok");
         getContentPane().add(btnOk, "cell 0 1,alignx right,aligny top");
@@ -256,6 +265,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     protected javax.swing.JTable tblMembers;
     protected javax.swing.JTable tblUsers;
     protected javax.swing.JPanel userPanel;
+    private JButton btnSync;
     // End of variables declaration//GEN-END:variables
 
     public void actionPerformed(ActionEvent e) {
