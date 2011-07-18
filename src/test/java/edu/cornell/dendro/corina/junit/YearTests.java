@@ -17,12 +17,14 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.junit;
 
 import junit.framework.TestCase;
 
 import java.util.Iterator;
 
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.metadata.MetadataTemplate;
 
 public class YearTests extends TestCase {

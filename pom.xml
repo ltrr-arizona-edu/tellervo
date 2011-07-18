@@ -320,6 +320,7 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.1</version>
+			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -594,6 +595,61 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			
+			<!--  Create a Linux Ubuntu debian native installer -->
+			<plugin>
+				<artifactId>jdeb</artifactId>
+				<groupId>org.vafer</groupId>
+				<version>0.8</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jdeb</goal>
+						</goals>
+						<configuration>
+							<dataSet>
+								<data>
+									<src>${project.build.directory}/${project.build.finalName}.jar</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/corina</prefix>
+									</mapper>
+								</data>
+								<data>
+									<src>target/classes/corina</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/bin/</prefix>
+										<filemode>755</filemode>
+									</mapper>
+								</data>
+								<data>
+									<src>target/classes/corina.desktop</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/applications/</prefix>
+										<filemode>755</filemode>
+									</mapper>
+								</data>
+								<data>
+									<src>src/main/resources/Icons/48x48/corina-application.png</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/pixmaps/</prefix>
+									</mapper>
+								</data>
+							</dataSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
 			
 			<!-- Nasty kludge fixes.  Tasks that Maven can 
 			not perform are	done by running Ant instead-->

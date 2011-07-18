@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=${version}
+Type=Application
+Name=Corina
+Comment=Dendrochronology data file converter
+Generic=Dendrochronology data file converter
+TryExec=corina
+Exec=corina
+Icon=/usr/share/pixmaps/corina.xpm
+Terminal=false
+Categories=Utility;Science

@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.junit;
 
 import junit.framework.TestCase;
 

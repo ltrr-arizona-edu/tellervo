@@ -96,6 +96,10 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // throwing an error instead of simply ignoring it
     // will point out bad design and/or bugs
 	if (initialized) throw new IllegalStateException("AppContext already initialized.");
+	
+	App.platform = new Platform();
+    App.platform.init();
+	
     log.debug("initializing App");
     
     appmodel = new AppModel();
@@ -151,9 +155,11 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
         
     // load our JAXB xml binding context
     if (meter != null)
+    {
     	meter.setProgress(4);
     	meter.setNote(I18n.getText("login.bindingSchemas"));
-    CorinaWsiAccessor.loadCorinaContext();
+    	CorinaWsiAccessor.loadCorinaContext();
+    }
        
     // load coordinate reference systems
     if(meter !=null){

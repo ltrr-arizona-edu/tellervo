@@ -17,44 +17,20 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package edu.cornell.dendro.corina;
-
-import edu.cornell.dendro.corina.cross.Cross;
-import edu.cornell.dendro.corina.cross.Histogram;
-import edu.cornell.dendro.corina.cross.Trend;
-import edu.cornell.dendro.corina.sample.FileElement;
-import edu.cornell.dendro.corina.sample.Sample;
-
-import junit.framework.TestCase;
-
-import java.util.StringTokenizer;
+package edu.cornell.dendro.corina.junit;
 
 import java.text.DecimalFormat;
+import java.util.StringTokenizer;
+
+import junit.framework.TestCase;
+import edu.cornell.dendro.corina.cross.Histogram;
 
 public class CrossdatingTests extends TestCase {
     public CrossdatingTests(String name) {
         super(name);
     }
 
-    // testing ???
-    // WRITE ME: test the crosses themselves!
 
-    // testing corina.cross.overlap
-    public void testOverlap() {
-        try {
-            // try an unreasonably big overlap for some medium-length samples
-            System.setProperty("corina.cross.overlap", "500");
-            Sample s1 = new FileElement("Demo Data/chil/chil001.crn").load(); // these are <500 years long
-            Sample s2 = new FileElement("Demo Data/chil/chil002.crn").load();
-            Cross c = new Trend(s1, s2);
-            c.run();
-            fail();
-        } catch (IllegalArgumentException e) {
-	    // success
-        } catch (Exception e) {
-	    fail();
-	}
-    }
 
     // testing histogram
     public void testHistogram() {

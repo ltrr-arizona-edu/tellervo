@@ -152,7 +152,7 @@ public class Remarks {
 	
 	private final static Map<String, String> corinaRemarkIconMap = new HashMap<String, String>();
 	static {
-		//corinaRemarkIconMap.put("Single pinned", "singlepin.png");
+		corinaRemarkIconMap.put("insect damage", "bug.png");
 
 
 	}

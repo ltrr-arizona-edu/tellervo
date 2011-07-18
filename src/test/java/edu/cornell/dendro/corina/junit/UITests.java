@@ -18,7 +18,7 @@
  *     Lucas Madar
  *     Peter Brewer
  ******************************************************************************/
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.junit;
 
 import javax.swing.KeyStroke;
 
@@ -47,7 +47,7 @@ protected void setUp() throws Exception {
     // testing I18n
     //
     public void testGetText() {
-	String edit = I18n.getText("edit");
+	String edit = I18n.getText("menus.edit");
 
 	// make sure it's a word
 	assertTrue(edit.length() > 0);
@@ -62,17 +62,17 @@ protected void setUp() throws Exception {
 
     public void testGetKeyStroke() {
 	// "file" should not have a keystroke
-	assertEquals(I18n.getKeyStroke("file"), null);
+	assertEquals(I18n.getKeyStroke("menus.file"), null);
 
 	// "save" should, and it should be "<accel> <key>"
-	KeyStroke save = I18n.getKeyStroke("save");
+	KeyStroke save = I18n.getKeyStroke("menus.edit.copy");
 	assertTrue(save != null);
 	assertTrue(save.getModifiers() != 0);
     }
 
     public void testGetMnemonic() {
 	// edit should have a mnemonic, and it should be upper-case
-	Integer e = I18n.getMnemonic("edit");
+	Integer e = I18n.getMnemonic("menus.edit");
 	assertTrue(e != null);
 	assertTrue(e >= 'A' && e <= 'Z');
     }

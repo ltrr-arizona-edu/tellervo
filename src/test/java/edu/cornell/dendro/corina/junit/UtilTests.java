@@ -38,7 +38,7 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina;
+package edu.cornell.dendro.corina.junit;
 
 import edu.cornell.dendro.corina.util.StringUtils;
 import junit.framework.TestCase;

@@ -230,6 +230,5 @@ public class Startup implements PrivilegedAction {
 
 		Subject mySubject = lc.getSubject();
 		Subject.doAsPrivileged(mySubject, new Startup(args), null);
-		// Subject.doAs(mySubject, new Startup(args));
 	}
 }
