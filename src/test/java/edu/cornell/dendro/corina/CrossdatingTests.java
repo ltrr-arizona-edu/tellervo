@@ -17,8 +17,11 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package edu.cornell.dendro.corina.cross;
+package edu.cornell.dendro.corina;
 
+import edu.cornell.dendro.corina.cross.Cross;
+import edu.cornell.dendro.corina.cross.Histogram;
+import edu.cornell.dendro.corina.cross.Trend;
 import edu.cornell.dendro.corina.sample.FileElement;
 import edu.cornell.dendro.corina.sample.Sample;
 
@@ -28,8 +31,8 @@ import java.util.StringTokenizer;
 
 import java.text.DecimalFormat;
 
-public class UnitTests extends TestCase {
-    public UnitTests(String name) {
+public class CrossdatingTests extends TestCase {
+    public CrossdatingTests(String name) {
         super(name);
     }
 

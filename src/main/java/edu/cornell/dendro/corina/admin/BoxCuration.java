@@ -720,15 +720,17 @@ public class BoxCuration extends javax.swing.JDialog
                                                                                         "Sample", "Check Presence"
                                                                                     }
                                                                                 ) {
-                                                                                    @SuppressWarnings("unchecked")
-                                                                        			Class[] types = new Class [] {
+                                                                        			@SuppressWarnings("rawtypes")
+																					Class[] types = new Class [] {
                                                                                         java.lang.Object.class, java.lang.Boolean.class
                                                                                     };
                                                                                     boolean[] canEdit = new boolean [] {
                                                                                         false, true
                                                                                     };
                                                                         
-                                                                                    @SuppressWarnings("unchecked")
+                                                                                    @SuppressWarnings({
+																							"unchecked",
+																							"rawtypes" })
                                                                         			public Class getColumnClass(int columnIndex) {
                                                                                         return types [columnIndex];
                                                                                     }

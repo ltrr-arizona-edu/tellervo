@@ -25,8 +25,8 @@ import java.util.Iterator;
 
 import edu.cornell.dendro.corina.metadata.MetadataTemplate;
 
-public class UnitTests extends TestCase {
-    public UnitTests(String name) {
+public class YearTests extends TestCase {
+    public YearTests(String name) {
         super(name);
     }
 
@@ -114,9 +114,8 @@ public class UnitTests extends TestCase {
     //
     // testing MetadataTemplate.java
     //
-    @SuppressWarnings("unchecked")
 	public void testMetadataLoad() {
-		Iterator i = MetadataTemplate.getFields();
+		Iterator<?> i = MetadataTemplate.getFields();
 		assertTrue(i != null);
 		int n = 0;
 		while (i.hasNext()) {

@@ -38,12 +38,13 @@
 // Copyright 2001 Ken Harris <kbh7@cornell.edu>
 //
 
-package edu.cornell.dendro.corina.util;
+package edu.cornell.dendro.corina;
 
+import edu.cornell.dendro.corina.util.StringUtils;
 import junit.framework.TestCase;
 
-public class UnitTests extends TestCase {
-    public UnitTests(String name) {
+public class UtilTests extends TestCase {
+    public UtilTests(String name) {
         super(name);
     }
 

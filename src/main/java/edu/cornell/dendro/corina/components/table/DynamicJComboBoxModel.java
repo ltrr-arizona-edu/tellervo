@@ -30,7 +30,7 @@ public class DynamicJComboBoxModel<E> extends AbstractListModel implements Mutab
      * Constructs an empty DefaultComboBoxModel.
      */
     public DynamicJComboBoxModel() {
-        objects = new Vector();
+        objects = new Vector<E>();
     }
 
     /**
@@ -40,7 +40,7 @@ public class DynamicJComboBoxModel<E> extends AbstractListModel implements Mutab
      * @param items  an array of Object objects
      */
 	public DynamicJComboBoxModel(final E items[]) {
-        objects = new Vector();
+        objects = new Vector<E>();
         objects.ensureCapacity( items.length );
 
         int i,c;

@@ -456,7 +456,9 @@ public class ImportView extends JFrame{
 		
 	}
 	
-	
+	/**
+	 * Set up the toolbar
+	 */
 	private void initToolbar()
 	{
 		JToolBar toolBar = new JToolBar("Toolbar");
@@ -1162,7 +1164,13 @@ public class ImportView extends JFrame{
 	}
 	
 	
-	
+	/**
+	 * Update the GUI to show the original legacy file.  If the highlightline 
+	 * integer is included then this line will be highlighted for the user.
+	 * Typically used to show an error.
+	 * 
+	 * @param highlightline
+	 */
 	private void updateOriginalFile(Integer highlightline)
 	{
 		final JEditorPane txtOriginalFile = new JEditorPane();

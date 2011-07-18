@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Corina"
-!define PRODUCT_VERSION "2.12"
+!define PRODUCT_VERSION "2.12.1"
 !define PRODUCT_PUBLISHER "Cornell University"
 !define PRODUCT_WEB_SITE "http://dendro.cornell.edu/corina"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Corina.exe"
@@ -14,19 +14,19 @@
 
 ; MUI Settings
 !define MUI_ABORTWARNING
-!define MUI_ICON "../../src/edu/cornell/dendro/corina_resources/Icons/corina-install.ico"
+!define MUI_ICON "../../src/main/resources/Icons/corina-install.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE "..\..\Licenses\Corina.txt"
+!insertmacro MUI_PAGE_LICENSE "../../src/main/resources/Licenses/license.txt"
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
-!define MUI_FINISHPAGE_RUN "$INSTDIR\Corina.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -38,8 +38,8 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "..\..\target\corina-setup.exe"
-InstallDir "$PROGRAMFILES\Corina"
+OutFile "..\..\target\${PRODUCT_NAME}-${PRODUCT_VERSION}-setup.exe"
+InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
@@ -47,14 +47,10 @@ ShowUnInstDetails show
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "..\..\target\Corina.exe"
+  File "..\..\target\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
   CreateDirectory "$SMPROGRAMS\Cornell Dendro"
-  CreateShortCut "$SMPROGRAMS\Cornell Dendro\Corina - TRiDaS.lnk" "$INSTDIR\Corina.exe"
-  CreateShortCut "$DESKTOP\Corina - TRiDaS.lnk" "$INSTDIR\Corina.exe"
-  File "..\Libraries\gluegen-rt.dll"
-  File "..\Libraries\jogl.dll"
-  File "..\Libraries\jogl_awt.dll"
-  File "..\Libraries\jogl_cg.dll"
+  CreateShortCut "$SMPROGRAMS\Cornell Dendro\Corina - TRiDaS.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
+  CreateShortCut "$DESKTOP\Corina - TRiDaS.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
   File "..\Libraries\rxtxSerial.dll"
 SectionEnd
 
@@ -64,10 +60,10 @@ SectionEnd
 
 Section -Post
   WriteUninstaller "$INSTDIR\uninst.exe"
-  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Corina.exe"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\Corina.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
@@ -87,15 +83,11 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\rxtxSerial.dll"
-  Delete "$INSTDIR\jogl_cg.dll"
-  Delete "$INSTDIR\jogl_awt.dll"
-  Delete "$INSTDIR\jogl.dll"
-  Delete "$INSTDIR\gluegen-rt.dll"
-  Delete "$INSTDIR\Corina.exe"
+  Delete "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
 
   Delete "$SMPROGRAMS\Cornell Dendro\Uninstall.lnk"
-  Delete "$DESKTOP\Corina.lnk"
-  Delete "$SMPROGRAMS\Cornell Dendro\Corina.lnk"
+  Delete "$DESKTOP\Corina - TRiDaS.lnk"
+  Delete "$SMPROGRAMS\Cornell Dendro\Corina - TRiDaS.lnk"
 
   RMDir "$SMPROGRAMS\Cornell Dendro"
   RMDir "$INSTDIR"

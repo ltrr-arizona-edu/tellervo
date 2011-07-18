@@ -20,12 +20,10 @@
 package edu.cornell.dendro.corina.admin.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
-import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.I18n;
 
 /**

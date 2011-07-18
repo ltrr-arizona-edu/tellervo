@@ -21,9 +21,7 @@ package edu.cornell.dendro.corina.admin.control;
 
 import com.dmurph.mvc.MVCEvent;
 
-import javax.swing.JTable;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
-//import com.dmurph.mvc.tracking.ITrackable;
 
 public class ToggleDisabledUsersEvent extends MVCEvent{ // implements ITrackable {
 	private static final long serialVersionUID = 1L;

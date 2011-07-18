@@ -26,12 +26,10 @@ import java.util.List;
 // the view of a table
 public class DecadalTable {
 
-    @SuppressWarnings("unchecked")
-	private List data; 
+    private List<?> data; 
     private Range range;
     
-    @SuppressWarnings("unchecked")
-	DecadalTable(List data, Range range) {
+    DecadalTable(List<?> data, Range range) {
         this.setData(data);
         this.setRange(range);
     }
@@ -62,13 +60,11 @@ public class DecadalTable {
         return voidObject;
     }
 
-	@SuppressWarnings("unchecked")
-	public void setData(List data) {
+	public void setData(List<?> data) {
 		this.data = data;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List getData() {
+	public List<?> getData() {
 		return data;
 	}
 

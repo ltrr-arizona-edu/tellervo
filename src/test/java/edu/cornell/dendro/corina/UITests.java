@@ -18,12 +18,13 @@
  *     Lucas Madar
  *     Peter Brewer
  ******************************************************************************/
-package edu.cornell.dendro.corina.ui;
+package edu.cornell.dendro.corina;
 
 import javax.swing.KeyStroke;
 
 import junit.framework.TestCase;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /*
   yup, this looks weird.  it's fairly generic stuff, so i can change
@@ -31,8 +32,8 @@ import edu.cornell.dendro.corina.core.App;
   tests failing.
  */
 
-public class UnitTests extends TestCase {
-  public UnitTests(String name) {
+public class UITests extends TestCase {
+  public UITests(String name) {
     super(name);
   }
 

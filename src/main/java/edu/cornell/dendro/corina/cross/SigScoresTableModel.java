@@ -82,7 +82,7 @@ public class SigScoresTableModel extends AbstractTableModel {
 		public String[] scores;
 		public boolean[] significant;
 		
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public Comparable[] scoreValue;
 		
 		public ScoreInfo() {
@@ -107,7 +107,7 @@ public class SigScoresTableModel extends AbstractTableModel {
 			this.column = column;
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public int compare(ScoreInfo s1, ScoreInfo s2) {
 			Comparable v1 = getVal(s1);
 			Object v2 = getVal(s2);

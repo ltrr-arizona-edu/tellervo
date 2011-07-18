@@ -27,14 +27,13 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.TableRowSorter;
 
 import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
-import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelB;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
@@ -121,7 +120,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
                 "ID", "Group", "Description", "Member"
             }
         ) {
-            @SuppressWarnings("unchecked")
+			@SuppressWarnings("rawtypes")
 			Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
             };
@@ -129,8 +128,8 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
                 false, false, false, true
             };
 
-            @SuppressWarnings("unchecked")
-			public Class getColumnClass(int columnIndex) {
+
+			public Class<?> getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
 
