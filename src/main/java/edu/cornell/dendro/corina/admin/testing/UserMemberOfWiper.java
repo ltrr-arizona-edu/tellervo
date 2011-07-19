@@ -18,8 +18,7 @@
  *     Dan Girshovich
  ******************************************************************************/
 
-package edu.cornell.dendro.corina.admin.view;
-
+package edu.cornell.dendro.corina.admin.testing;
 import java.util.ArrayList;
 
 import javax.swing.JDialog;
@@ -33,37 +32,38 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityGroupEntityResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
 
-// for testing. run this to make the user's groups match the groups users
+// for testing. clears the memberOf property for all users
 
-public class UserGroupSyncer extends JDialog {
+public class UserMemberOfWiper extends JDialog {
 	
 	
-	public UserGroupSyncer(){
+	public UserMemberOfWiper(){
 		
+    	int counter = 0;
+
 		ArrayList<WSISecurityUser>lstofUsers = (ArrayList<WSISecurityUser>) Dictionary
 			.getDictionaryAsArrayList("securityUserDictionary");
+		
         for(WSISecurityUser user:lstofUsers){
-        	for(WSISecurityGroup group:(ArrayList<WSISecurityGroup>)user.getMemberOf().getSecurityGroups()){
-    			//TODO: check the group for null members property and create one if necessary
-        		//group.getMembers().getSecurityUsers().add(user);
+        	
+        	if(user.isSetMemberOf() && user.getMemberOf().isSetSecurityGroups()){
+        		user.getMemberOf().unsetSecurityGroups();        	
+	    		SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, user);
+	    		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
+	    		rsrc.query();
+	    		accdialog.setVisible(true);
+	    		
+	    		if(accdialog.isSuccessful())
+	    		{
+	    			System.out.println(rsrc.getAssociatedResult());
+	    			counter++;
+	    		}
+        	}else{
+        		counter++;
         	}
         }
         
-        ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
-        int counter = 0;
-        for(WSISecurityGroup group:lstofGroups){
-    		SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
-    		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
-    		rsrc.query();
-    		//accdialog.setVisible(true);
-    		if(accdialog.isSuccessful())
-    		{
-    			System.out.println(rsrc.getAssociatedResult());
-    			counter++;
-    		}
-        }
-        
-        System.out.println(""+counter+" out of "+lstofGroups.size()+" groups synced.");	
+        System.out.println(""+counter+" out of "+lstofUsers.size()+" users wiped.");	
 		
 	}
 }

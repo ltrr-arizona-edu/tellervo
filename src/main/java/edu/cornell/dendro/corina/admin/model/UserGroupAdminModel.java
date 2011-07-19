@@ -38,7 +38,7 @@ public class UserGroupAdminModel extends AbstractModel {
 	private UserGroupAdminView mainView;
 	private SecurityGroupTableModelA groupsModel;
 	private	TableRowSorter<SecurityGroupTableModelA> groupsSorter;
-	private SecurityUserTableModelA usersModel;
+	private SecurityUserTableModelA usersModelA;
 	private TableRowSorter<SecurityUserTableModelA> usersSorter;
 
 	public static UserGroupAdminModel getInstance() {
@@ -54,6 +54,24 @@ public class UserGroupAdminModel extends AbstractModel {
 	
 	public UserGroupAdminView getMainView() {
 		return mainView;
+	}
+
+	public TableRowSorter<SecurityUserTableModelA> getUsersSorterA() {
+		if(usersSorter==null){
+			usersSorter = new TableRowSorter<SecurityUserTableModelA>(getUsersModelA());
+		}
+		return usersSorter;
+	}
+
+	@SuppressWarnings("unchecked")
+	public SecurityUserTableModelA getUsersModelA() {
+		if(usersModelA==null){
+			ArrayList<WSISecurityUser> userList = (ArrayList<WSISecurityUser>) Dictionary
+				.getDictionaryAsArrayList("securityUserDictionary");
+			usersModelA = new SecurityUserTableModelA(userList);
+		}
+		
+		return usersModelA;
 	}
 
 }

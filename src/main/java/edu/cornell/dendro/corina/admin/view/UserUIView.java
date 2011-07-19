@@ -79,7 +79,6 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         initComponents();
     	isNewUser = false;
     	setupGUI();
-
     }
     
     /** This method is called from within the constructor to

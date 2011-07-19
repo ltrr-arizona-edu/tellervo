@@ -40,6 +40,9 @@ import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
 import edu.cornell.dendro.corina.admin.model.SecurityMixTableModel;
 import edu.cornell.dendro.corina.admin.model.SecurityUserTableModelA;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
+import edu.cornell.dendro.corina.admin.testing.SubmissionTest;
+import edu.cornell.dendro.corina.admin.testing.UserGroupSyncer;
+import edu.cornell.dendro.corina.admin.testing.UserMemberOfWiper;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
@@ -61,9 +64,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     
 	private static final long serialVersionUID = -7039984838996355038L;
 	private static UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
-	private SecurityUserTableModelA usersModel;
 	private SecurityGroupTableModelA groupsModel;
-	private ArrayList<WSISecurityUser> userList;
 	private ArrayList<WSISecurityGroup> groupList;
 
     public static void main() {
@@ -171,7 +172,15 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         		new UserGroupSyncer();;
         	}
         });
-        getContentPane().add(btnSync, "flowx,cell 0 1,alignx right");
+        
+        btnTestSubmit = new JButton("Test Submit");
+        btnTestSubmit.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		new SubmissionTest();
+        	}
+        });
+        getContentPane().add(btnTestSubmit, "flowx,cell 0 1,alignx right");
+        getContentPane().add(btnSync, "cell 0 1,alignx right");
 
         btnOk.setText("Ok");
         getContentPane().add(btnOk, "cell 0 1,alignx right,aligny top");
@@ -185,11 +194,8 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 	private void linkModel(){
     	
         // Populate user list
-    	userList = (ArrayList<WSISecurityUser>) Dictionary
-			.getDictionaryAsArrayList("securityUserDictionary");
-    	usersModel = new SecurityUserTableModelA(userList);
-        tblUsers.setModel(usersModel);
-        tblUsers.setRowSorter(new TableRowSorter<SecurityUserTableModelA>(usersModel));
+        tblUsers.setModel(mainModel.getUsersModelA());
+        tblUsers.setRowSorter(mainModel.getUsersSorterA());
         
         // Populate groups list
        	groupList = (ArrayList<WSISecurityGroup>) Dictionary
@@ -266,6 +272,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     protected javax.swing.JTable tblUsers;
     protected javax.swing.JPanel userPanel;
     private JButton btnSync;
+    private JButton btnTestSubmit;
     // End of variables declaration//GEN-END:variables
 
     public void actionPerformed(ActionEvent e) {
@@ -273,9 +280,8 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 			new OkFinishEvent(mainModel).dispatch();
 		} else if (e.getSource() == this.btnDeleteUser) {
 			Object[] options = { "OK", "Cancel" };
-			WSISecurityUser selectedUser = usersModel.getUserAt(
-					tblUsers.convertRowIndexToModel(tblUsers
-							.getSelectedRow()));
+			WSISecurityUser selectedUser = mainModel.getUsersModelA().getUserAt(
+					tblUsers.convertRowIndexToModel(tblUsers.getSelectedRow()));
 			int ret = JOptionPane.showOptionDialog(
 					getParent(),
 					"Are you sure you want to delete the user '"

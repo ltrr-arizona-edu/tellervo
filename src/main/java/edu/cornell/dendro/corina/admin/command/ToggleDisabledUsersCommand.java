@@ -38,10 +38,7 @@ public class ToggleDisabledUsersCommand implements ICommand {
 		public void execute(MVCEvent argEvent) {
         	ToggleDisabledUsersEvent event = (ToggleDisabledUsersEvent) argEvent;
         	boolean show = event.show;
-        	ArrayList<WSISecurityUser> userList = (ArrayList<WSISecurityUser>) Dictionary
-				.getDictionaryAsArrayList("securityUserDictionary");
-        	SecurityUserTableModelA userModel = new SecurityUserTableModelA(userList);
-        	TableRowSorter<SecurityUserTableModelA> usersSorter = new TableRowSorter<SecurityUserTableModelA>(userModel); 
+        	TableRowSorter<SecurityUserTableModelA> usersSorter = event.model.getUsersSorterA();
         	if(show){
         		usersSorter.setRowFilter(null);
         	}

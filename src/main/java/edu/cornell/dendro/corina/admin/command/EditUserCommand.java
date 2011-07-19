@@ -37,11 +37,8 @@ public class EditUserCommand implements ICommand {
 		public void execute(MVCEvent argEvent) {
         	EditUserEvent event = (EditUserEvent) argEvent;
         	int userSelected = event.userIndex;
-        	ArrayList<WSISecurityUser> userList = (ArrayList<WSISecurityUser>) Dictionary
-			.getDictionaryAsArrayList("securityUserDictionary");
-        	SecurityUserTableModelA usersModel = new SecurityUserTableModelA(userList);
+        	SecurityUserTableModelA usersModel = event.model.getUsersModelA();
         	JDialog view = event.model.getMainView();
-        	
         	WSISecurityUser seluser = usersModel.getUserAt(userSelected);
             UserUIView userDialog = new UserUIView(view, true, seluser);
             userDialog.setVisible(true); 
