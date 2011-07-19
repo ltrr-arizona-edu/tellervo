@@ -2,10 +2,10 @@
 Version=${version}
 Type=Application
 Name=Corina
-Comment=Dendrochronology data file converter
-Generic=Dendrochronology data file converter
+Comment=Dendrochronology software
+Generic=Dendrochronology software
 TryExec=corina
 Exec=corina
-Icon=/usr/share/pixmaps/corina.xpm
+Icon=/usr/share/pixmaps/corina.png
 Terminal=false
 Categories=Utility;Science
