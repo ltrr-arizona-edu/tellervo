@@ -48,9 +48,9 @@ public class SecurityMixTableModel extends AbstractTableModel {
 	
     private final String[] columnNames = {
             I18n.getText("dbbrowser.hash"),
-            "Group Member", //TODO: add I18n
+            I18n.getText("admin.member"),
             I18n.getText("admin.description"),
-            "Parent Groups" //TODO: add I18n
+            I18n.getText("admin.parents"),
         };
 	
 	public SecurityMixTableModel(WSISecurityGroup argParentGroup){

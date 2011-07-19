@@ -47,8 +47,8 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
             I18n.getText("dbbrowser.hash"),
             I18n.getText("admin.groups"),
             I18n.getText("admin.description"),
-            "Parent Groups", //TODO: add I18n
-            I18n.getText("admin.ismember"), //TODO:make this more clear
+            I18n.getText("admin.parents"),
+            I18n.getText("admin.ismember"), 
         };
 	
 	public SecurityGroupTableModelB(ArrayList<WSISecurityGroup> grpLst, WSISecurityUser trgetUser){
