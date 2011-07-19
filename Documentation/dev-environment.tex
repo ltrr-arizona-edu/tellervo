@@ -139,6 +139,15 @@ Perhaps the most important inconsistency to understand is due to the transistion
 \index{Icons}
 Corina includes infrastructure for multimedia resources such as icons, images and sounds within the Maven resource folder `src/main/resources'.  The most extensive is the Icons folder which contains many icons at various sizes ranging from $16\times16$ to $512\times512$ as PNG format files.  The icons are accessed via the static Builder class.  This has various accessor functions which take the filename and the size required, and return the icon itself or a URI of the icon from within the Jar.
 
+\subsection{Ring remarks}
+\index{Icons!Ring remarks}
+There are two types of ring remarks in Corina: TRiDaS controlled remarks and Corina controlled remarks.  The end user does not know the difference between the two, the only difference between them is how they are handled behind the scenes.  TRiDaS remarks are those designated in the TRiDaS schema, whereas Corina remarks are those defined specifically for Corina.  They are represented differently in TRiDaS files like this: 
+\code{<tridas:remark normalTridas="double pinned"/>\\ 
+<tridas:remark normal="Corina" normalStd="insect damage" normalId="165" />
+}
+
+To add a new remark type to Corina you will need to first enter it in the database table tlkpreadingnote specifying the vocabulary as `2' (Corina).  To display a custom icon for this remark in the software, you will need to add a $16\times16$ and a $48\times48$ version to the resources an then add an entry to the CorinaRemarkIconMap in edu/cornell/dendro/corina/remarks/Remarks.java.  The $16\times16$ icon is used in the editor interface, and the $48\times48$ in PDFs.
+
 \section{Translations}
 \index{Translations}
 There is internationalization infrastructure in place to enable Corina to be offered in multiple languages.  This is done through the use of Resource Bundles, one for each language.  Within the code, whenever a string is required, it is provided using the \verb|I18n.getText()| function which then retrieves the correct string for the current locale.  If no string is found, then the default language (English) string is returned.  There is an Eclipse plugin to assist with this task called ResourceBundle Editor and it can be downloaded from \url{http://eclipse-rbe.sourceforge.net}.  Once installed it provides a GUI that allows you to simultaneously update all languages at once.
@@ -227,14 +236,16 @@ The Maven osxappbundle plugin is able to produce both .app and .dmg files.  Unfo
 
 
 \subsection{Linux Deb package}
+A Linux Debian package is produced using the JDeb Maven plugin.  If Maven does its job properly, it should all `just work' as part of the standard maven package phase.  In addition to the configuration in the pom.xml, there are three files that are used to configure the final deb file.  In src/deb/control/ there is a control file which describes the runtime dependencies, maintainer of the package, description etc.  In src/main/resources/Linux are two files, one a simple bash script that is used to launch Corina on the users computer and the other a .desktop file for configuring how it appears in the users menus.  All three of these files are automatically updated with the current version number, so you hopefully shouldn't need to change anything. 
+
 
 \subsection{Linux RPM package}
 
 \subsection{Native libraries}
 
-Although Corina is written in Java, it requires a number of native libraries to make use of OpenGL 3D graphics capabilities and to access the serial port of the computer.  This libraries are different for Windows compared to POSIX systems like Linux and MacOSX.  The correct libraries must be installed to OS specific locations and not within the Corina jar.  They must therefore be included as part of each native installer.
+Although Corina is written in Java, it requires a number of native libraries to make use of OpenGL 3D graphics capabilities and to access the serial port of the computer.  This libraries are different for each operating system, and they are also different for 32 and 64 bit machines.  The correct libraries must be made available to the OS and are therefore typically installed outside of the jar file as part of the installation process.  
 
-On Windows these libraries take the form of Dynamic Link Libraries (DLL) files which need to be installed in the same folder as the Corina executable:
+On Windows these libraries take the form of Dynamic Link Libraries (DLL) files which are normally placed in the same folder as the executable:
 
 \begin{itemize*}
  \item gluegen-rt.dll
@@ -244,7 +255,7 @@ On Windows these libraries take the form of Dynamic Link Libraries (DLL) files w
  \item rxtxSerial.dll
 \end{itemize*}
 
-On POSIX systems the libraries come as pairs of JNILIB and SO files:
+On MacOSX the libraries come as JNILIB files and on Linux as .so files e.g.:
 
 \begin{itemize*}
  \item libgluegen-rt.jnilib and libgluegen-rt.so
@@ -255,6 +266,11 @@ On POSIX systems the libraries come as pairs of JNILIB and SO files:
 \end{itemize*}
 
 On Linux systems this are installed into the /usr/lib folder and on MacOSX they are included within the .app file.
+
+The introduction of 64 bit Windows was a tipping point for how Corina handled native libraries.  Prior to this, a separate installer package was created for each OS, each containing the correct libraries required for the system.  With the rise of 64 bit Windows we were faced with having to manage yet another native installer.  We therefore looked for an alternative to simplify the situation.  For the Jogl/Gluegen libraries this has been done with the introduction of a NativeLibWrapper class based almost entirely on the work of Romain Reuillon.  In short, all libraries are bundled within the jar, any on launch the wrapper class detects the OS version and extracts the correct libraries into a temporary folder before loading them dynamically.  
+
+Unfortunatey, the same technique does not seem to work for the serial library which, for now, needs to be packaged in the native installers as before.  
+
 
 \section{Java Architecture for XML Binding - JAXB}
 \label{txt:jaxb}
