@@ -303,18 +303,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0.13</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-		    <groupId>org.codehaus.izpack</groupId>
-		    <artifactId>izpack-standalone-compiler</artifactId>
-		    <version>4.3.4</version>
-		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -331,9 +319,10 @@
 		<resources>
 		  	<resource>
 		  		<directory>src/main/resources</directory>
+		  		<filtering>true</filtering>
 		  	</resource>
-
 		</resources>
+		
 	
 		<plugins>
 			<!-- JAXB -->
@@ -438,6 +427,16 @@
 								<exclude>**/.svn</exclude>
 							</excludes>
 						</fileset>
+						<fileset>
+				          <directory>src/main/generated</directory>
+				          <includes>
+				            <include>**/*.java</include>
+				          </includes>
+				          <excludes>
+								<exclude>**/.svn</exclude>
+							</excludes>
+				          <followSymlinks>false</followSymlinks>
+				        </fileset>
 					</filesets>
 				</configuration>
 			</plugin>
@@ -581,7 +580,7 @@
 					</additionalResources>
 					<bundleName>Corina</bundleName>
 					<zipFile>${project.build.directory}/${project.build.finalName}-app.zip</zipFile>
-					<mainClass>edu.cornell.dendro.gui.Startup</mainClass>
+					<mainClass>edu.cornell.dendro.corina.gui.Startup</mainClass>
 					<jvmVersion>1.6+</jvmVersion>
 					<iconFile>src/main/resources/Icons/corina-application.icns</iconFile>
 					<javaApplicationStub>Native/MacBuild/JavaApplicationStub</javaApplicationStub>
@@ -619,7 +618,7 @@
 									</mapper>
 								</data>
 								<data>
-									<src>target/classes/corina</src>
+									<src>target/classes/Linux/corina</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
@@ -628,11 +627,20 @@
 									</mapper>
 								</data>
 								<data>
-									<src>target/classes/corina.desktop</src>
+									<src>target/classes/Linux//corina.desktop</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
 										<prefix>/usr/share/applications/</prefix>
+										<filemode>755</filemode>
+									</mapper>
+								</data>
+								<data>
+									<src>Native/Libraries/librxtxSerial.so</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/lib/</prefix>
 										<filemode>755</filemode>
 									</mapper>
 								</data>
