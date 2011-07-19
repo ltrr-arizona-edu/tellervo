@@ -27,8 +27,8 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.metadata.MetadataTemplate;
 
-public class YearTests extends TestCase {
-    public YearTests(String name) {
+public class YearTest extends TestCase {
+    public YearTest(String name) {
         super(name);
     }
 

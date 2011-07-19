@@ -43,8 +43,8 @@ package edu.cornell.dendro.corina.junit;
 import edu.cornell.dendro.corina.util.StringUtils;
 import junit.framework.TestCase;
 
-public class UtilTests extends TestCase {
-    public UtilTests(String name) {
+public class UtilTest extends TestCase {
+    public UtilTest(String name) {
         super(name);
     }
 

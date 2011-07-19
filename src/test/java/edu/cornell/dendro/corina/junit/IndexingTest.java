@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.ArrayList;
 import edu.cornell.dendro.corina_indexing.*;
 
-public class IndexingTests extends TestCase {
-    public IndexingTests(String name) {
+public class IndexingTest extends TestCase {
+    public IndexingTest(String name) {
         super(name);
     }
 

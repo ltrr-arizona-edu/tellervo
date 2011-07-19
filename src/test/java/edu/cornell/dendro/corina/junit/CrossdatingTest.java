@@ -25,8 +25,8 @@ import java.util.StringTokenizer;
 import junit.framework.TestCase;
 import edu.cornell.dendro.corina.cross.Histogram;
 
-public class CrossdatingTests extends TestCase {
-    public CrossdatingTests(String name) {
+public class CrossdatingTest extends TestCase {
+    public CrossdatingTest(String name) {
         super(name);
     }
 

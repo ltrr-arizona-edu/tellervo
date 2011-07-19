@@ -32,8 +32,8 @@ import edu.cornell.dendro.corina.ui.I18n;
   tests failing.
  */
 
-public class UITests extends TestCase {
-  public UITests(String name) {
+public class UITest extends TestCase {
+  public UITest(String name) {
     super(name);
   }
 
