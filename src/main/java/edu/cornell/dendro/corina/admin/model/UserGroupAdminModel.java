@@ -20,6 +20,7 @@
 package edu.cornell.dendro.corina.admin.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
@@ -35,43 +36,95 @@ public class UserGroupAdminModel extends AbstractModel {
 
 	private static final long serialVersionUID = -1731874198092507070L;
 	private static UserGroupAdminModel model = null;
-	private UserGroupAdminView mainView;
-	private SecurityGroupTableModelA groupsModel;
-	private	TableRowSorter<SecurityGroupTableModelA> groupsSorter;
-	private SecurityUserTableModelA usersModelA;
-	private TableRowSorter<SecurityUserTableModelA> usersSorter;
-
 	public static UserGroupAdminModel getInstance() {
 		if (model == null) {
 			model = new UserGroupAdminModel();
 		}
 		return model;
 	}
+	private UserGroupAdminView mainView;
+	private SecurityUserTableModelA usersModelA;
+	private TableRowSorter<SecurityUserTableModelA> usersSorter;
+	private ArrayList<WSISecurityGroup> groupList;
+	private ArrayList<WSISecurityUser> userList;
 
-	public void setMainView(UserGroupAdminView mainView) {
-		this.mainView = mainView;
+	@SuppressWarnings("unchecked")
+	public void addGroups(ArrayList<WSISecurityGroup> newGroups){
+		groupList.addAll((ArrayList<WSISecurityGroup>) newGroups.clone());
+	}
+
+	@SuppressWarnings("unchecked")
+	public void addUsers(ArrayList<WSISecurityUser> newUsers){
+		userList.addAll((ArrayList<WSISecurityUser>) newUsers.clone());
+	}
+
+	@SuppressWarnings("unchecked")
+	public ArrayList<WSISecurityGroup> getGroupList() {
+        if(groupList==null){
+        	groupList = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
+        }
+        
+        return groupList;
 	}
 	
 	public UserGroupAdminView getMainView() {
 		return mainView;
 	}
 
+	@SuppressWarnings("unchecked")
+	public ArrayList<WSISecurityUser> getUserList() {
+        if(userList==null){
+        	userList = (ArrayList<WSISecurityUser>) Dictionary.getDictionaryAsArrayList("securityUserDictionary");  
+        }
+        
+        return userList;
+	}
+	
+	public SecurityUserTableModelA getUsersModelA() {
+		if(usersModelA==null){
+			usersModelA = new SecurityUserTableModelA();
+		}
+		
+		return usersModelA;
+	}
+	
 	public TableRowSorter<SecurityUserTableModelA> getUsersSorterA() {
 		if(usersSorter==null){
 			usersSorter = new TableRowSorter<SecurityUserTableModelA>(getUsersModelA());
 		}
 		return usersSorter;
 	}
-
-	@SuppressWarnings("unchecked")
-	public SecurityUserTableModelA getUsersModelA() {
-		if(usersModelA==null){
-			ArrayList<WSISecurityUser> userList = (ArrayList<WSISecurityUser>) Dictionary
-				.getDictionaryAsArrayList("securityUserDictionary");
-			usersModelA = new SecurityUserTableModelA(userList);
+	
+	public ArrayList<WSISecurityGroup> removeGroups(ArrayList<WSISecurityGroup> groups){
+		for(WSISecurityGroup g:groupList){
+			if(groups.contains(g)){
+				groupList.remove(g);
+			}
 		}
-		
-		return usersModelA;
+		return groupList;
+	}
+	
+	public ArrayList<WSISecurityUser> removeUsers(ArrayList<WSISecurityUser> users){
+		for(WSISecurityUser u:userList){
+			if(users.contains(u)){
+				userList.remove(u);
+			}
+		}
+		return userList;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setGroupList(ArrayList<WSISecurityGroup> newList){
+		groupList = (ArrayList<WSISecurityGroup>) newList.clone();
+	}
+	
+	public void setMainView(UserGroupAdminView mainView) {
+		this.mainView = mainView;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setUserList(ArrayList<WSISecurityUser> newList){
+		userList = (ArrayList<WSISecurityUser>) newList.clone();
 	}
 
 }

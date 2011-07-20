@@ -56,14 +56,14 @@ public class UserGroupSyncer extends JDialog {
     		members.setSecurityUsers(membersList);
     		group.setMembers(members); 
            		
-    		SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
-    		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
-    		rsrc.query();
-    		accdialog.setVisible(true);
-    		if(accdialog.isSuccessful())
-    		{
-    			System.out.println(rsrc.getAssociatedResult());
-    		}
+//    		SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
+//    		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
+//    		rsrc.query();
+//    		accdialog.setVisible(true);
+//    		if(accdialog.isSuccessful())
+//    		{
+//    			System.out.println(rsrc.getAssociatedResult());
+//    		}
         }
     	
 	}

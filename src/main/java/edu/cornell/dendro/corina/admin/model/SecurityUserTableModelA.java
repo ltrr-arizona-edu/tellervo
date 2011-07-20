@@ -36,6 +36,7 @@ import edu.cornell.dendro.corina.ui.I18n;
 public class SecurityUserTableModelA extends AbstractTableModel {
 	
 	private static final long serialVersionUID = -8612040164917147271L;
+	private UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
 	private ArrayList<WSISecurityUser> userList;
 	private ArrayList<WSISecurityUser> completeUserList;
 	private Boolean hideDisabled = true;    	
@@ -49,8 +50,8 @@ public class SecurityUserTableModelA extends AbstractTableModel {
             I18n.getText("general.enabled"),
         };
 	
-	public SecurityUserTableModelA(ArrayList<WSISecurityUser> usrLst){
-		userList = usrLst;
+	public SecurityUserTableModelA(){
+		userList = mainModel.getUserList();
 		setCompleteUserList(userList);
 	}
     

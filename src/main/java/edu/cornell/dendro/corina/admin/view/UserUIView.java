@@ -33,10 +33,12 @@ import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle;
 import javax.swing.table.TableRowSorter;
 
-import com.dmurph.mvc.I18n;
-
+import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.admin.SetPasswordUI;
+import edu.cornell.dendro.corina.admin.control.CreateNewUserEvent;
+import edu.cornell.dendro.corina.admin.control.UpdateUserEvent;
 import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelB;
+import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
@@ -62,6 +64,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 	private static final long serialVersionUID = 1L;
 	WSISecurityUser user = new WSISecurityUser();
 	Boolean isNewUser;
+	private UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
 	private SecurityGroupTableModelB groupsModel;
 	private TableRowSorter<SecurityGroupTableModelB> groupsSorter;
 	
@@ -85,19 +88,15 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     }
     
     private void internationlizeComponents() {
-        lblId.setText(I18n.getText("admin.id"));
-        lblUser = new javax.swing.JLabel();
-        lblName = new javax.swing.JLabel();
-        chkEnabled = new javax.swing.JCheckBox();
-        scrollPane = new javax.swing.JScrollPane();
-        tblGroups = new javax.swing.JTable();
-        btnDoIt = new javax.swing.JButton();
-        btnClose = new javax.swing.JButton();
-        btnSetPwd = new javax.swing.JButton();
-        txtPassword = new javax.swing.JPasswordField();
-        lblPassword = new javax.swing.JLabel();
-        lblPassword2 = new javax.swing.JLabel();
-        txtPassword2 = new javax.swing.JPasswordField();		
+        lblId.setText(I18n.getText("admin.id")+":");
+        lblUser.setText(I18n.getText("login.username")+":");
+        lblName.setText(I18n.getText("admin.realName")+":");
+        chkEnabled.setText(I18n.getText("general.enabled"));
+        btnDoIt.setText(I18n.getText("general.ok"));
+        btnClose.setText(I18n.getText("general.close"));
+        btnSetPwd.setText(I18n.getText("admin.setPassword"));
+        lblPassword.setText(I18n.getText("login.password")+":");
+        lblPassword2.setText(I18n.getText("admin.confirmPassword")+":");
 	}
 
 	/** This method is called from within the constructor to
@@ -320,8 +319,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     	}
     	
         // Populate groups list
-        ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
-        groupsModel = new SecurityGroupTableModelB(lstofGroups, user);
+        groupsModel = new SecurityGroupTableModelB(user);
         tblGroups.setModel(groupsModel);
         groupsSorter = new TableRowSorter<SecurityGroupTableModelB>(groupsModel);
         tblGroups.setRowSorter(groupsSorter);
@@ -368,6 +366,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 		
 		if(isNewUser)
 		{
+		
 			// Creating new user
 	    	
 			// Check passwords match
@@ -381,59 +380,14 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 			p1 = null;
 			p2 = null;
 			
-	    	// Set password to hash
-	    	MessageDigest digest;
-			try {
-				digest = MessageDigest.getInstance("MD5");
-				String pwd1 = new String(this.txtPassword.getPassword());
-				digest.update(pwd1.getBytes());
-		    	user.setHashOfPassword(StringUtils.bytesToHex(digest.digest()));
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			
-						
-			// associate a resource
-	    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.CREATE, user);
-	    	
-	    	
-			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
-			rsrc.query();
-			accdialog.setVisible(true);
-			
-			if(accdialog.isSuccessful())
-			{
-				rsrc.getAssociatedResult();
-				dispose();
-			}
-			
-			JOptionPane.showMessageDialog(this, "Error creating user.  Make sure the username is unique." + accdialog.getFailException().
-					getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-
+			//TODO: check to be sure handling passwords like this is ok.
+			new CreateNewUserEvent(user, this.txtPassword.getPassword(), this).dispatch();
 		}
 		else 
 		{
 			// Editing existing user
-			
-			// associate a resource
-	    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, user);
-	    	
-			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
-			rsrc.query();
-			accdialog.setVisible(true);
-			
-			if(accdialog.isSuccessful())
-			{
-				rsrc.getAssociatedResult();
-			}
-			
-			JOptionPane.showMessageDialog(this, "Error updating user: " + accdialog.getFailException().
-					getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			new UpdateUserEvent(user, this).dispatch();
 		}
-		
-
 	}
 
 	@Override
@@ -441,7 +395,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 		if(e.getClickCount()>1)
 		{
 			// Double clicked on groups table - change users membership accordingly
-			Boolean isMember = (Boolean) this.groupsModel.getValueAt(this.tblGroups.getSelectedRow(), 3);
+			Boolean isMember = (Boolean) this.groupsModel.getValueAt(this.tblGroups.getSelectedRow(), 4);
 			
 			if(isMember)
 			{

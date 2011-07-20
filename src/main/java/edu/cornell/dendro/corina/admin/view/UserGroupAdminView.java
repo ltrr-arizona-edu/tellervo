@@ -50,6 +50,7 @@ import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 
 /**
  * GUI class for administering users and groups.  Allows user with the correct
@@ -154,12 +155,14 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         scrollMembers.setViewportView(tblMembers);
 
         accountsTabPane.addTab("Groups", groupPanel);
-        groupPanel.setLayout(new MigLayout("", "[183px][140px,grow][61px][6px][65px][6px][81px]", "[25px][127px,grow][15px][181px,grow]"));
-        lblGroupMembers = new javax.swing.JLabel();
+        groupPanel.setLayout(new MigLayout("", "[183px][140px,grow][61px][6px][65px][6px][81px]", "[25px][127px,grow][][15px][181px,grow]"));
         
-                lblGroupMembers.setText("Group members:");
-                groupPanel.add(lblGroupMembers, "cell 0 2 7 1,alignx left,aligny top");
-        groupPanel.add(scrollMembers, "cell 0 3 7 1,grow");
+        lblGroups = new JLabel("Groups");
+        groupPanel.add(lblGroups, "cell 0 0");
+        
+        lblMembers = new JLabel("Members");
+        groupPanel.add(lblMembers, "cell 0 2");
+        groupPanel.add(scrollMembers, "cell 0 4 7 1,grow");
         groupPanel.add(scrollGroups, "cell 0 1 7 1,grow");
         groupPanel.add(btnEditGroup, "cell 2 0,alignx left,aligny top");
         groupPanel.add(btnNewGroup, "cell 4 0,alignx left,aligny top");
@@ -179,7 +182,15 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         		new SubmissionTest();
         	}
         });
-        getContentPane().add(btnTestSubmit, "flowx,cell 0 1,alignx right");
+        
+        btnWipeUsersGroups = new JButton("Wipe User's Groups");
+        btnWipeUsersGroups.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		new UserMemberOfWiper();
+        	}
+        });
+        getContentPane().add(btnWipeUsersGroups, "flowx,cell 0 1,alignx right");
+        getContentPane().add(btnTestSubmit, "cell 0 1,alignx right");
         getContentPane().add(btnSync, "cell 0 1,alignx right");
 
         btnOk.setText("Ok");
@@ -240,6 +251,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     	btnDeleteGroup.setText(I18n.getText("general.delete"));
     	accountsTabPane.setTitleAt(0, I18n.getText("admin.users"));
     	accountsTabPane.setTitleAt(1, I18n.getText("admin.groups"));
+    	lblMembers.setText(I18n.getText("admin.members"));
     }
     
   
@@ -263,7 +275,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     protected javax.swing.JButton btnOk;
     protected javax.swing.JCheckBox chkShowDisabledUsers;
     protected javax.swing.JPanel groupPanel;
-    protected javax.swing.JLabel lblGroupMembers;
     protected javax.swing.JScrollPane scrollGroups;
     protected javax.swing.JScrollPane scrollMembers;
     protected javax.swing.JScrollPane scrollUsers;
@@ -273,6 +284,9 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     protected javax.swing.JPanel userPanel;
     private JButton btnSync;
     private JButton btnTestSubmit;
+    private JButton btnWipeUsersGroups;
+    private JLabel lblGroups;
+    private JLabel lblMembers;
     // End of variables declaration//GEN-END:variables
 
     public void actionPerformed(ActionEvent e) {

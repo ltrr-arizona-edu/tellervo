@@ -27,11 +27,13 @@ import com.dmurph.mvc.control.FrontController;
 //import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 
 import edu.cornell.dendro.corina.admin.command.AuthenticateUserCommand;
+import edu.cornell.dendro.corina.admin.command.CreateNewUserCommand;
 import edu.cornell.dendro.corina.admin.command.DeleteGroupCommand;
 import edu.cornell.dendro.corina.admin.command.DeleteUserCommand;
 import edu.cornell.dendro.corina.admin.command.EditGroupCommand;
 import edu.cornell.dendro.corina.admin.command.EditUserCommand;
 import edu.cornell.dendro.corina.admin.command.ToggleDisabledUsersCommand;
+import edu.cornell.dendro.corina.admin.command.UpdateUserCommand;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.admin.view.UserGroupAdminView;
 import edu.cornell.dendro.corina.core.App;
@@ -46,6 +48,8 @@ public class UserGroupAdminController extends FrontController {
 		public static final String DELETE_USER = "UGA_DELETE_USER";
 		public static final String DELETE_GROUP = "UGA_DELETE_GROUP";
 		public static final String OK_FINISH = "UGA_OK_FINISH";
+		public static final String CREATE_NEW_USER = "UGA_CREATE_NEW_USER";
+		public static final String UPDATE_USER = "UGA_UPDATE_USER";
         
         public UserGroupAdminController(){
                 registerCommand(DISPLAY_UGA, "display");
@@ -56,6 +60,8 @@ public class UserGroupAdminController extends FrontController {
                 registerCommand(DELETE_USER, DeleteUserCommand.class);
                 registerCommand(DELETE_GROUP, DeleteGroupCommand.class);
                 registerCommand(OK_FINISH, "finish");
+                registerCommand(CREATE_NEW_USER, CreateNewUserCommand.class);
+                registerCommand(UPDATE_USER, UpdateUserCommand.class);
         }
         
     	public void display(MVCEvent argEvent){

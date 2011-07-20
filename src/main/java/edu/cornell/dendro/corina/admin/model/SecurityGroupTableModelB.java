@@ -37,11 +37,11 @@ import edu.cornell.dendro.corina.ui.I18n;
 public class SecurityGroupTableModelB extends AbstractTableModel {
 	
 	private static final long serialVersionUID = -8612040164917147271L;
+	private UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
 	private ArrayList<WSISecurityGroup> groupList;
 	private ArrayList<WSISecurityGroup> userIsMemberOfList;	
 	private HashMap<WSISecurityGroup, ArrayList<WSISecurityGroup>> parentsMap;
 	private WSISecurityUser targetUser;
-	private WSISecurityGroup targetGroup;
 	
     private final String[] columnNames = {
             I18n.getText("dbbrowser.hash"),
@@ -51,27 +51,27 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
             I18n.getText("admin.ismember"), 
         };
 	
-	public SecurityGroupTableModelB(ArrayList<WSISecurityGroup> grpLst, WSISecurityUser trgetUser){
-		groupList = grpLst;
+	public SecurityGroupTableModelB(WSISecurityUser trgetUser){
+		groupList = mainModel.getGroupList();
 		targetUser = trgetUser;
 		userIsMemberOfList = new ArrayList<WSISecurityGroup>();
-		if(targetUser != null){
+		parentsMap = new HashMap<WSISecurityGroup, ArrayList<WSISecurityGroup>>();
+		if(targetUser != null && targetUser.isSetMemberOf()){
 			userIsMemberOfList = (ArrayList<WSISecurityGroup>) targetUser.getMemberOf().getSecurityGroups();
 		}
 		buildParentsMap();
 	}
 	
-	//TODO: add checks for ln 70
 	private void buildParentsMap(){
 		for(WSISecurityGroup group:groupList){
         	for(WSISecurityGroup checkParent:groupList){
-    			if(checkParent.getMembers().getSecurityGroups().contains(group)){
+    			if(checkParent.isSetMembers() && checkParent.getMembers().getSecurityGroups().contains(group)){
     				if(!parentsMap.containsKey(group)){
     					parentsMap.put(group, new ArrayList<WSISecurityGroup>());
     				}
     				parentsMap.get(group).add(checkParent);
     			}
-        	}   				    			
+        	}
     	}
 	}
   
@@ -149,17 +149,13 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
 		case 0: return grp.getId();
 		case 1: return grp.getName();
 		case 2: return grp.getDescription();
-		case 3: 
-			if(userIsMemberOfList==null) return false;
-			for(WSISecurityGroup memberof : userIsMemberOfList)
-			{
-				if (grp.equals(memberof))
-				{
-					return true;
+		case 3: try{
+					return parentsMap.get(grp);
+				}catch(NullPointerException e){
+					return new ArrayList<WSISecurityGroup>();
 				}
-			}
-			return false;
-		case 4: return parentsMap.get(grp);
+		case 4: 
+			return userIsMemberOfList.contains(grp);
 		default: return null;
 		}
 		
