@@ -636,8 +636,8 @@
 									</mapper>
 								</data>
 								<data>
-									<src>Native/Libraries/librxtxSerial.so</src>
-									<type>file</type>
+									<src>Native/Libraries/linux-i586/</src>
+									<type>folder</type>
 									<mapper>
 										<type>perm</type>
 										<prefix>/usr/lib/</prefix>
@@ -693,7 +693,7 @@
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath"/>
 								<zip destfile="${project.build.directory}/${project.build.finalName}-app.zip" update="true">
-									<zipfileset dir="Native/Libraries/" includes="*.jnilib" prefix="${project.build.finalName}/Corina.app"/>
+									<zipfileset dir="Native/Libraries/macosx-universal/" includes="*.jnilib" prefix="${project.build.finalName}/Corina.app"/>
 								</zip>
 							</tasks>
 						</configuration>

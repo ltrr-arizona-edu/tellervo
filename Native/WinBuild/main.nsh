@@ -38,7 +38,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "..\..\target\${PRODUCT_NAME}-${PRODUCT_VERSION}-setup.exe"
+OutFile "..\..\target\${PRODUCT_NAME}-${PRODUCT_VERSION}-${PLATFORM_SUFFIX}setup.exe"
 InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -51,7 +51,11 @@ Section "MainSection" SEC01
   CreateDirectory "$SMPROGRAMS\Cornell Dendro"
   CreateShortCut "$SMPROGRAMS\Cornell Dendro\Corina - TRiDaS.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
   CreateShortCut "$DESKTOP\Corina - TRiDaS.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
-  File "..\Libraries\rxtxSerial.dll"
+  File "..\..\Native\Libraries\${PLATFORM}\gluegen-rt.dll"
+  File "..\..\Native\Libraries\${PLATFORM}\jogl.dll"
+  File "..\..\Native\Libraries\${PLATFORM}\jogl_awt.dll"
+  File "..\..\Native\Libraries\${PLATFORM}\jogl_cg.dll"
+  File "..\..\Native\Libraries\${PLATFORM}\rxtxSerial.dll"
 SectionEnd
 
 Section -AdditionalIcons
@@ -83,6 +87,10 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\rxtxSerial.dll"
+  Delete "$INSTDIR\gluegen-rt.dll"
+  Delete "$INSTDIR\jogl.dll"
+  Delete "$INSTDIR\jogl_awt.dll"
+  Delete "$INSTDIR\jogl_cg.dll"
   Delete "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
 
   Delete "$SMPROGRAMS\Cornell Dendro\Uninstall.lnk"
