@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.cornell.dendro</groupId>
 	<artifactId>corina</artifactId>
-	<version>2.12.1</version>
+	<version>2.12.2-SNAPSHOT</version>
 	<name>Corina</name>
 	<description>Dendrochronological collection, curation and management software</description>
 	<licenses>
@@ -319,6 +319,10 @@
 		<resources>
 		  	<resource>
 		  		<directory>src/main/resources</directory>
+		  		<filtering>false</filtering>
+		  	</resource>
+		    <resource>
+		  		<directory>Native/BuildResources/</directory>
 		  		<filtering>true</filtering>
 		  	</resource>
 		</resources>
@@ -415,6 +419,7 @@
 			<!-- Reconfigure "clean" in Maven not to delete target directory -->
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.4.1</version>
 				<configuration>
 					<excludeDefaultDirectories>true</excludeDefaultDirectories>
 					<filesets>
@@ -441,6 +446,7 @@
 				</configuration>
 			</plugin>
 
+			<!-- 
 			<plugin>
 			  <groupId>org.apache.maven.plugins</groupId>
 			  <artifactId>maven-javadoc-plugin</artifactId>
@@ -454,6 +460,7 @@
 			    </execution>
 			  </executions>
 			</plugin>
+			-->
 			
 			<plugin>
 			  <groupId>org.apache.maven.plugins</groupId>
@@ -517,7 +524,6 @@
 									</excludes>
 								</filter>
 							</filters>
-
 						</configuration>
 					</execution>
 				</executions>
@@ -579,7 +585,7 @@
 						</fileSet>
 					</additionalResources>
 					<bundleName>Corina</bundleName>
-					<zipFile>${project.build.directory}/${project.build.finalName}-app.zip</zipFile>
+					<zipFile>${project.build.directory}/Binaries/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>
 					<mainClass>edu.cornell.dendro.corina.gui.Startup</mainClass>
 					<jvmVersion>1.6+</jvmVersion>
 					<iconFile>src/main/resources/Icons/corina-application.icns</iconFile>
@@ -608,6 +614,7 @@
 							<goal>jdeb</goal>
 						</goals>
 						<configuration>
+							<deb>${project.build.directory}/Binaries/${project.version}/Linux/${project.build.finalName}.deb</deb>
 							<dataSet>
 								<data>
 									<src>${project.build.directory}/${project.build.finalName}.jar</src>
@@ -618,7 +625,7 @@
 									</mapper>
 								</data>
 								<data>
-									<src>target/classes/Linux/corina</src>
+									<src>target/classes/LinBuild/corina</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
@@ -627,7 +634,7 @@
 									</mapper>
 								</data>
 								<data>
-									<src>target/classes/Linux//corina.desktop</src>
+									<src>target/classes/LinBuild//corina.desktop</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
@@ -692,8 +699,8 @@
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath"/>
-								<zip destfile="${project.build.directory}/${project.build.finalName}-app.zip" update="true">
-									<zipfileset dir="Native/Libraries/macosx-universal/" includes="*.jnilib" prefix="${project.build.finalName}/Corina.app"/>
+								<zip destfile="${project.build.directory}/Binaries/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="true">
+									<zipfileset dir="Native/Libraries/macosx-universal/" includes="*.jnilib" prefix="${project.build.finalName}/Corina.app" />
 								</zip>
 							</tasks>
 						</configuration>
@@ -701,6 +708,46 @@
 							<goal>run</goal>
 						</goals>					
 					</execution>
+					
+					<!-- Run Makensis to create the windows installers -->
+					<execution>
+						<id>RunNSIS</id>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
+									classpathref="maven.plugin.classpath"/>
+							      <mkdir dir="${project.build.directory}/Binaries/${project.version}/Windows"/>
+							      <mkdir dir="${project.build.directory}/Binaries/${project.version}/Windows64"/>
+							      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
+							        <arg value="nsis-32bit.nsi"/>  
+							      </exec>  
+							      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
+							        <arg value="nsis-64bit.nsi"/>  
+							      </exec>  
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>					
+					</execution>
+					
+					<execution>
+						<id>CopyJarFile</id>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
+									classpathref="maven.plugin.classpath"/>
+							      <mkdir dir="${project.build.directory}/Binaries/${project.version}/Java"/>
+							      <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/Binaries/${project.version}/Java/${project.build.finalName}.jar" failonerror="false"/>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>					
+					</execution>
+					
 				</executions>
 				<dependencies>
 					<dependency>
@@ -719,6 +766,16 @@
 						<artifactId>ant-nodeps</artifactId>
 						<version>1.6.5</version>
 					</dependency>
+			          <dependency>
+			            <groupId>ant</groupId>
+			            <artifactId>ant-jsch</artifactId>
+			            <version>1.6.5</version>
+			          </dependency>
+			          <dependency>
+			            <groupId>com.jcraft</groupId>
+			            <artifactId>jsch</artifactId>
+			            <version>0.1.42</version>
+			          </dependency>
 				</dependencies>
 			</plugin>
 

@@ -120,7 +120,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	meter.setProgress(1);
     	NativeLibWrapper natives = new NativeLibWrapper();
     	try {
-			natives.init();
+			//natives.init();
 		} catch (GLException e) {
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();

@@ -26,13 +26,13 @@ The IDE of choice of the main Corina developers is Eclipse (\url{http://www.ecli
 
 We have successfully developed Corina on Mac, Windows and Linux computers over the years.  The methods for setting up are almost identical.  
 
-The first step is to install Eclipse, Sun Java6 JDK, Subversion and Maven.  These are all readily available from their respective websites.  On Ubuntu they can be install from the command line easily as follows:
+The first step is to install Eclipse, Sun Java6 JDK, Subversion, Maven and NSIS\footnote{Currently there do not appear to be any readily available binaries for NSIS for MacOSX although you can build this from source.  If you do not have NSIS installed you will get an error when packaging Corina, however, all other aspects of the development environment--including building OSX binaries--should work fine.}.  These are all readily available from their respective websites.  On Ubuntu they can be install from the command line easily as follows:
 
-\code{sudo apt-get install eclipse subversion sun-java6-jdk maven2}
+\code{sudo apt-get install eclipse subversion sun-java6-jdk maven2 nsis}
 
 Once installed, you can then launch Eclipse.  To access the Corina source code you will need to install the Subversive plugin to Eclipse.  As of Eclipse v3.5 this can be done by going to \menutwo{Help}{Install new software}.  Select the main Update site in the `Work with' box, then locate the `Subversive SVN Team Provider' plugin under `Collaboration'.  If you are using an earlier version of Eclipse you may need to add a specific Subversive update site.  See the Subversive website (\url{http://www.eclipse.org/subversive/}) for more details.  Once installed you will need to restart Eclipse.
 
-Next you will need to install the m2eclipse Maven plugin to Eclipse.  This can also be installed by going to \menutwo{Help}{Install new software}, however, you will also need to add the Maven update site as this plugin is not currently available in the main Eclipse repository.  You can do this by click the `Add' button and using the URL \url{http://m2eclipse.sonatype.org/sites/m2e}.  Once again you will need to restart Eclipse before continuing.
+Next you will need to install the m2e Maven plugin to Eclipse.  This can also be installed by going to \menutwo{Help}{Install new software}, however, you will also need to add the Maven update site as this plugin is not currently available in the main Eclipse repository.  You can do this by click the `Add' button and using the URL \url{http://m2eclipse.sonatype.org/sites/m2e}.  Once again you will need to restart Eclipse before continuing.
 
 Next you need to get the Corina source code.  Go to File \menutwo{New}{Project}, then in the dialog select \menutwo{SVN}{Project from SVN}.  There are two methods of accessing the Corina repository: anonymously (in which case you will have read only access); or with a username provided by the Corina development team.  Anonymous users will need to add a repository in the form: \url{http://dendro.cornell.edu/svn/corina/} and full users will need to use \url{svn+ssh://dendro.cornell.edu/home/svn/corina/}.
 
@@ -207,42 +207,45 @@ When you get a preference the second parameter contains the default value to ret
 \label{txt:buildScript}
 \index{Developing!Build script}
 \index{Packaging}
-Corina is built using Maven and is controlled through the pom.xml file stored in the base of the Corina source code.  Earlier versions of Corina used Ant but managing the increasing number of dependencies as Corina has grown become too onerous (see section \ref{txt:DependenciesDesktopClient} for more details). 
+Corina is built using Maven and is controlled through the pom.xml file stored in the base of the Corina source code.  Previous versions of Corina used Ant but managing the increasing number of dependencies as Corina has grown become too onerous (see section \ref{txt:DependenciesDesktopClient} for more details). 
 
-Earlier version of Corina were deployed using Java WebStart technology primarily because this is platform independent and requires just a single click for a user to install.  However, this has since been replaced with native installers for the major platforms due to various complications largely associated with Native libraries required for 3D graphics and serial port hardware.  We have also found most users are more comfortable with the standard install procedures that they are used to on their operating systems.
+Earlier versions of Corina were deployed using Java WebStart technology primarily because this is platform independent and requires just a single click for a user to install.  However, this has since been replaced with native installers for the major platforms due to various complications associated with native libraries (see section \ref{txt:NativeLibraries}) required for 3D graphics and serial port hardware.  We have also found most users are more comfortable with the standard install procedures that they are used to on their operating systems.
 
-While you develop Maven should automatically build Corina for you in the background.  Specific build commands are only required as you approach a release.  We use the standard Maven `life cycle' for building, packaging and deploying Corina.  The method for doing this in Eclipse is by right clicking on the pom.xml file and selecting \menutwo{Run as}{Maven package} etc.  The main `phases' are as follows:
+While you develop Maven should automatically build Corina for you in the background.  Specific build commands are only required as you approach a release.  We use the standard Maven `life cycle' for building, packaging and deploying Corina.  The method for doing this in Eclipse is by right clicking on the pom.xml file and selecting \menutwo{Run as}{Maven package} etc.  If the option you want is not displayed, you will need to create an entry in the build menu by going to \menutwo{Run}{Run configurations}, then create a new Maven Build with the required `goal'.   The main goals are as follows:
 
 \begin{description*}
  \item[clean] - This deletes any previously compiled classes and packages in the target folder.  It should only be necessary to run this occassionally if Maven has got a bit confused.  If this is the case you may also need to force Eclipse to clean too by going to \menutwo{Project}{Clean...}
- \item[package] - This compiles Corina and builds a single executable JAR containing all dependencies (thanks to the maven-shade-plugin) along with native Windows, MacOSX and Linux packages.  These are all placed in the `target' folder.
- \item[install] - This installs the compiled jar in your local Maven repository.
+ \item[package] - This compiles Corina and builds a single executable JAR containing all dependencies (thanks to the maven-shade-plugin) along with native Windows, MacOSX and Linux packages.  These are all placed in structured folders within `target\\Binaries' ready for deploying on a website.  When all is well this should be the only goal you need to run.
+ \item[install] - This installs the compiled jar in your local Maven repository. This is normally used when you are building a library that is being used by another program.  It is therefore not necessary for Corina.
  \item[deploy] - This uploads the compiled jar into the maven.tridas.org repository.  Note that you will need to either run this phase from the command line or by setting up a customer run configuration in Eclipse.
 \end{description*}
 
-
+I have had some issues with the m2e plugin getting a little stuck.  If you find you are getting Maven build errors you may like to try running Maven from the command line.  Navigate to the base of your corina folder and type mvn clean, mvn package, mvn install or mvn deploy depending on what you are trying to do.
 
 \subsection{Windows installer}
 \label{txt:windowsInstaller}
 \index{Packaging!Windows}
 Maven generates the Windows executable for the Corina application through the 'launch4j' plugin.  Windows users, however, expect an installer that will create menu entries and add uninstall options to the control panel.  An installer is also required to install the user manual and the native libraries required for the serial-port and 3D graphics features in Corina.  
 
-The best open source tool for creating Windows installer scripts is NSIS (see \url{http://nsis.sourceforge.net}).  This is an extremely flexible scripting system that does all we need, although unfortunately it is only officially released for Windows development platforms.  It is possible to install on Linux/MacOSX but this requires a lot of hoop jumping.  
-
-Once installed NSIS can be run using the script `native/WinBuild/nsis.script.nsi'.
+The best open source tool for creating Windows installer scripts is NSIS (see \url{http://nsis.sourceforge.net}).  This is an extremely flexible scripting system that does all we need.  If you have NSIS installed the Maven package goal should create both Windows 32 and 64 bit installers automatically.  We use the Maven antrun plugin to run the makensis executable twice, once on a script for build the 32bit executable and a second for creating the 64 bit executable.  These scripts are stored in Native/BuildResources/WinBuild, and are indentical (they import the major of the script from the same file) with the exception of the location of the native libraries folder.  The Maven resource plugin moves them into the target folder and replaces the version numbering for use in filenames etc.
 
 \subsection{Mac package}
-The Maven osxappbundle plugin is able to produce both .app and .dmg files.  Unfortunately, the libraries for producing .dmg files are proprietary to Apple, as are the libraries that integrate applications into the standard Apple look and feel (e.g. menus at top of screen, integrated quit, preferences and help etc).  When Maven is run on Windows or Linux, it is therefore only able to produce a slightly degraded .app file, and not .dmg.  We therefore recommend producing the Mac release on OSX, either natively or under a virtual machine.
+\index{Packaging!MacOSX}
+The Maven osxappbundle plugin is able to produce both .app and .dmg files.  Unfortunately, the libraries for producing .dmg files are proprietary to Apple.  When Maven is run on Windows or Linux, it is therefore only able to produce a  zipped .app file, and not .dmg.  We therefore recommend producing the Mac release on OSX, either natively or under a virtual machine.
+
+Note that the osxappbundle plugin does not support the inclusion of additional files such as native libraries  within the .app file. This task is therefore handled separately by the AntRun plugin that inserts the libraries directly to the .app file.
 
 
 \subsection{Linux Deb package}
-A Linux Debian package is produced using the JDeb Maven plugin.  If Maven does its job properly, it should all `just work' as part of the standard maven package phase.  In addition to the configuration in the pom.xml, there are three files that are used to configure the final deb file.  In src/deb/control/ there is a control file which describes the runtime dependencies, maintainer of the package, description etc.  In src/main/resources/Linux are two files, one a simple bash script that is used to launch Corina on the users computer and the other a .desktop file for configuring how it appears in the users menus.  All three of these files are automatically updated with the current version number, so you hopefully shouldn't need to change anything. 
+\index{Packaging!Linux}
+A Linux Debian package is produced using the JDeb Maven plugin.  If Maven does its job properly, it should all `just work' as part of the standard maven package phase.  In addition to the configuration in the pom.xml, there are three files that are used to configure the final deb file.  In src/deb/control/ there is a control file which describes the runtime dependencies, maintainer of the package, description etc.  In Native/BuildResources/LinBuild are two files, one a simple bash script that is used to launch Corina on the users computer and the other a .desktop file for configuring how it appears in the users menus.  All three of these files are automatically updated with the current version number, so hopefully you shouldn't need to change anything. 
 
 
 \subsection{Linux RPM package}
 
 \subsection{Native libraries}
-
+\label{txt:NativeLibraries}
+\index{Packaging!Native libraries}
 Although Corina is written in Java, it requires a number of native libraries to make use of OpenGL 3D graphics capabilities and to access the serial port of the computer.  This libraries are different for each operating system, and they are also different for 32 and 64 bit machines.  The correct libraries must be made available to the OS and are therefore typically installed outside of the jar file as part of the installation process.  
 
 On Windows these libraries take the form of Dynamic Link Libraries (DLL) files which are normally placed in the same folder as the executable:
@@ -267,9 +270,7 @@ On MacOSX the libraries come as JNILIB files and on Linux as .so files e.g.:
 
 On Linux systems this are installed into the /usr/lib folder and on MacOSX they are included within the .app file.
 
-The introduction of 64 bit Windows was a tipping point for how Corina handled native libraries.  Prior to this, a separate installer package was created for each OS, each containing the correct libraries required for the system.  With the rise of 64 bit Windows we were faced with having to manage yet another native installer.  We therefore looked for an alternative to simplify the situation.  For the Jogl/Gluegen libraries this has been done with the introduction of a NativeLibWrapper class based almost entirely on the work of Romain Reuillon.  In short, all libraries are bundled within the jar, any on launch the wrapper class detects the OS version and extracts the correct libraries into a temporary folder before loading them dynamically.  
-
-Unfortunatey, the same technique does not seem to work for the serial library which, for now, needs to be packaged in the native installers as before.  
+We have experimented with techniques for packaging the libraries within the jar, then extracting the correct libraries based on architecture and dynamically loaded at runtime.  This seemed to work relatively well for JOGL/Gluegen, but not rxtx.  On certain graphics cards the JOGL/Gluegen libraries also caused a SIGSEGV fault.  All native libraries are therefore now handled by the installer for the respective platforms.  
 
 
 \section{Java Architecture for XML Binding - JAXB}
