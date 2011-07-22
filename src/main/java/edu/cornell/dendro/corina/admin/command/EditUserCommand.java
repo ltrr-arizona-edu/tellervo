@@ -40,7 +40,10 @@ public class EditUserCommand implements ICommand {
         	SecurityUserTableModelA usersModel = event.model.getUsersModelA();
         	JDialog view = event.model.getMainView();
         	WSISecurityUser seluser = usersModel.getUserAt(userSelected);
-            UserUIView userDialog = new UserUIView(view, true, seluser);
+        	//TODO: change userDialog back to modal. Right now if it is
+        	// the events stemming from the dialog are blocked.
+        	// Look into MVC.splitOff()
+            UserUIView userDialog = new UserUIView(view, false, seluser);
             userDialog.setVisible(true); 
         }
 }

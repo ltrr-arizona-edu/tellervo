@@ -52,9 +52,9 @@ public class UpdateUserCommand implements ICommand {
 				rsrc.getAssociatedResult();
 				parent.dispose();
 			}
-			
-			JOptionPane.showMessageDialog(parent, "Error updating user: " + accdialog.getFailException().
-					getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-		
+			else{
+				JOptionPane.showMessageDialog(parent, "Error updating user: " + accdialog.getFailException().
+						getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
         }
 }

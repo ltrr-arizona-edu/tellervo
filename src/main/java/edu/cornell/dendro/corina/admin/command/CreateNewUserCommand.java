@@ -29,6 +29,7 @@ import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.admin.control.CreateNewUserEvent;
+import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.util.StringUtils;
@@ -36,14 +37,14 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
 
 public class CreateNewUserCommand implements ICommand {
-
+	
         public void execute(MVCEvent argEvent) {
 
         	CreateNewUserEvent event = (CreateNewUserEvent) argEvent;
         	String password = new String(event.password);
         	WSISecurityUser user = event.user;
         	JDialog parent = event.parent;
-        	
+        	UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
         	
 	    	// Set password to hash
 	    	MessageDigest digest;
@@ -65,11 +66,12 @@ public class CreateNewUserCommand implements ICommand {
 			if(accdialog.isSuccessful())
 			{
 				rsrc.getAssociatedResult();
+				mainModel.refreshUserList();
 				parent.dispose();
 			}
-			
-			JOptionPane.showMessageDialog(parent, "Error creating user.  Make sure the username is unique." + accdialog.getFailException().
-					getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-
+			else{
+				JOptionPane.showMessageDialog(parent, "Error creating user.  Make sure the username is unique." + accdialog.getFailException().
+						getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
         }
 }
