@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.admin.model;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.swing.JDialog;
 import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
 
@@ -29,8 +30,15 @@ import com.dmurph.mvc.model.AbstractModel;
 
 import edu.cornell.dendro.corina.admin.view.UserGroupAdminView;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.EntityType;
+import edu.cornell.dendro.corina.schema.WSIEntity;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
+import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
 
 public class UserGroupAdminModel extends AbstractModel {
 
@@ -95,22 +103,20 @@ public class UserGroupAdminModel extends AbstractModel {
 		return usersSorter;
 	}
 	
-	public ArrayList<WSISecurityGroup> removeGroups(ArrayList<WSISecurityGroup> groups){
+	public void removeGroups(ArrayList<WSISecurityGroup> groups){
 		for(WSISecurityGroup g:groupList){
 			if(groups.contains(g)){
 				groupList.remove(g);
 			}
 		}
-		return groupList;
 	}
 	
-	public ArrayList<WSISecurityUser> removeUsers(ArrayList<WSISecurityUser> users){
+	public void removeUsers(ArrayList<WSISecurityUser> users){
 		for(WSISecurityUser u:userList){
 			if(users.contains(u)){
 				userList.remove(u);
 			}
 		}
-		return userList;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -126,5 +132,21 @@ public class UserGroupAdminModel extends AbstractModel {
 	public void setUserList(ArrayList<WSISecurityUser> newList){
 		userList = (ArrayList<WSISecurityUser>) newList.clone();
 	}
+
+	public void addUser(WSISecurityUser user) {
+		userList.add(user);
+		usersModelA.fireTableDataChanged();
+	}
+
+	public void updateUser(WSISecurityUser user) {
+		for(WSISecurityUser u:userList){
+			if(u.getId()==user.getId()){
+				u=(WSISecurityUser) user.clone();
+				break;
+			}
+		}
+		usersModelA.fireTableDataChanged();
+	}
+
 
 }

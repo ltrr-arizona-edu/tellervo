@@ -19,6 +19,8 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
@@ -52,15 +54,8 @@ public class SecurityUserTableModelA extends AbstractTableModel {
 	
 	public SecurityUserTableModelA(){
 		userList = mainModel.getUserList();
-		setCompleteUserList(userList);
 	}
-    
 
-	public void setUsers(ArrayList<WSISecurityUser> usrList){
-    	userList = usrList;  
-		setCompleteUserList(userList);
-    }
-    
 	public int getColumnCount() {
 		return columnNames.length;
 	};
@@ -109,6 +104,9 @@ public class SecurityUserTableModelA extends AbstractTableModel {
 	
 	public String getGroupsAsString(WSISecurityUser usr)
 	{
+		if(!usr.isSetMemberOf()){
+			return "";
+		}
 		ArrayList<WSISecurityGroup> grps = (ArrayList<WSISecurityGroup>) usr.getMemberOf().getSecurityGroups();
 		String str = "";
 		for(WSISecurityGroup grp : grps)
@@ -141,22 +139,5 @@ public class SecurityUserTableModelA extends AbstractTableModel {
 		
 		return null;
 	}
-
-	public void setCompleteUserList(ArrayList<WSISecurityUser> completeUserList) {
-		this.completeUserList = completeUserList;
-	}
-
-	public ArrayList<WSISecurityUser> getCompleteUserList() {
-		return completeUserList;
-	}
-
-	public void setHideDisabled(Boolean hideDisabled) {
-		this.hideDisabled = hideDisabled;
-	}
-
-	public Boolean getHideDisabled() {
-		return hideDisabled;
-	}
-
 
 }

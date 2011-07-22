@@ -75,24 +75,6 @@ public class UserGroupAdminController extends FrontController {
             
     		UserGroupAdminModel.getInstance().setMainView(dialog);
             dialog.setVisible(true);
-            
-            //from bulk import display
-            
-//    		if(MVC.getTracker() == null){
-//    			JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(new AnalyticsConfigData("UA-17109202-7"), GoogleAnalyticsVersion.V_4_7_2);
-//    			MVC.setTracker(tracker);
-//    		}else{
-//    			MVC.getTracker().resetSession();
-//    		}
-    		//MVC.showEventMonitor();
-    		
-//    		if(UserGroupAdminModel.getInstance().getMainView() != null){
-//    			UserGroupAdminView window = UserGroupAdminModel.getInstance().getMainView();
-//    			window.setVisible(true);
-//    			window.toFront();
-//    			return;
-//    		}
-    		//MVC.showEventMonitor();
     	}
     	
     	public void finish(MVCEvent argEvent){

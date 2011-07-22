@@ -23,8 +23,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
@@ -39,14 +37,9 @@ import edu.cornell.dendro.corina.admin.control.CreateNewUserEvent;
 import edu.cornell.dendro.corina.admin.control.UpdateUserEvent;
 import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelB;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
-import edu.cornell.dendro.corina.dictionary.Dictionary;
-import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.schema.WSISecurityUser.MemberOf;
-import edu.cornell.dendro.corina.util.StringUtils;
-import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
-import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
 
 /*
  * UserUI.java
@@ -284,7 +277,6 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     protected javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
  
-    @SuppressWarnings("unchecked")
 	private void setupGUI()
     {
     	this.setLocationRelativeTo(getRootPane());
@@ -293,7 +285,6 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     	    	
     	this.tblGroups.addMouseListener(this);
 
-    	ArrayList<WSISecurityGroup> memberGroups = new ArrayList<WSISecurityGroup>();
     	if(isNewUser)
     	{
         	this.setTitle("Create user");
@@ -347,7 +338,6 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 			setPwdDialog.setVisible(true);
 			setPwdDialog.setModal(true);
 			setPwdDialog.setLocationRelativeTo(null);
-			
 		}
 	}
 	
@@ -360,6 +350,9 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 		
 		// Get groups
 		ArrayList<WSISecurityGroup> membershipList = this.groupsModel.getGroupMembership();
+		for(WSISecurityGroup g:membershipList){
+			g.setMembers(null);
+		}
 		MemberOf memberOf = new MemberOf();
 		memberOf.setSecurityGroups(membershipList);
 		user.setMemberOf(memberOf);

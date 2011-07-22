@@ -65,8 +65,8 @@ public class CreateNewUserCommand implements ICommand {
 			
 			if(accdialog.isSuccessful())
 			{
-				rsrc.getAssociatedResult();
-				mainModel.refreshUserList();
+				user.setId(rsrc.getAssociatedResult().getId());
+				mainModel.addUser(user);
 				parent.dispose();
 			}
 			else{

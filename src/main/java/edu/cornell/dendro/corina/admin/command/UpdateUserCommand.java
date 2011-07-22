@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 import edu.cornell.dendro.corina.admin.control.UpdateUserEvent;
+import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -36,6 +37,7 @@ public class UpdateUserCommand implements ICommand {
 
         public void execute(MVCEvent argEvent) {
 
+        	UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
         	UpdateUserEvent event = (UpdateUserEvent) argEvent;
         	WSISecurityUser user = event.user;
         	JDialog parent = event.parent;
@@ -49,7 +51,7 @@ public class UpdateUserCommand implements ICommand {
 			
 			if(accdialog.isSuccessful())
 			{
-				rsrc.getAssociatedResult();
+				mainModel.updateUser(rsrc.getAssociatedResult());
 				parent.dispose();
 			}
 			else{

@@ -54,9 +54,9 @@ public class DeleteUserCommand implements ICommand {
     			rsrc.getAssociatedResult();
     			JOptionPane.showMessageDialog(view, "User deleted", "Success", JOptionPane.NO_OPTION);
     		}
-    		
-    		JOptionPane.showMessageDialog(view, "Unable to delete user as their details are referenced by data in the database.\n" +
-    				"If the user is no longer active you can disable instead.", "Error", JOptionPane.ERROR_MESSAGE);
- 
+    		else{
+    			JOptionPane.showMessageDialog(view, "Unable to delete user as their details are referenced by data in the database.\n" +
+    					"If the user is no longer active you can disable instead.", "Error", JOptionPane.ERROR_MESSAGE);
+    		}
         }
 }
