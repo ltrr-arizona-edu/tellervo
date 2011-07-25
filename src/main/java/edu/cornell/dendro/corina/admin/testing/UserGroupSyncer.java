@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.swing.JDialog;
 
+import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
@@ -42,8 +43,8 @@ public class UserGroupSyncer extends JDialog {
 	
 	public UserGroupSyncer(){
 		
-        ArrayList<WSISecurityGroup> groupList = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
-        ArrayList<WSISecurityUser> userList = (ArrayList<WSISecurityUser>) Dictionary.getDictionaryAsArrayList("securityUserDictionary");  
+        ArrayList<WSISecurityGroup> groupList = UserGroupAdminModel.getInstance().getGroupList();
+        ArrayList<WSISecurityUser> userList = UserGroupAdminModel.getInstance().getUserList();  
 
         for(WSISecurityGroup group:groupList){
         	ArrayList<WSISecurityUser> membersList = new ArrayList<WSISecurityUser>();
@@ -55,6 +56,7 @@ public class UserGroupSyncer extends JDialog {
     		Members members = new Members();
     		members.setSecurityUsers(membersList);
     		group.setMembers(members); 
+    		UserGroupAdminModel.getInstance().updateGroup(group);
            		
 //    		SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
 //    		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);

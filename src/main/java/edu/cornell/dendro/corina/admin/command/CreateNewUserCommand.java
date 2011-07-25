@@ -16,6 +16,7 @@
  * 
  * Contributors:
  *     Peter Brewer
+ *     Dan Girshovich
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin.command;
 

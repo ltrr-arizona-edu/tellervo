@@ -16,6 +16,7 @@
  * 
  * Contributors:
  *     Peter Brewer
+ *     Dan Girshovich
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin.view;
 
@@ -349,12 +350,15 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 		user.setIsActive(this.chkEnabled.isSelected());
 		
 		// Get groups
-		ArrayList<WSISecurityGroup> membershipList = this.groupsModel.getGroupMembership();
-		for(WSISecurityGroup g:membershipList){
-			g.setMembers(null);
+		ArrayList<WSISecurityGroup> newMemListFull = this.groupsModel.getNewGroupMembership();
+		ArrayList<WSISecurityGroup> newMemListCleared = new ArrayList<WSISecurityGroup>();
+		for(WSISecurityGroup g:newMemListFull){
+			WSISecurityGroup group = (WSISecurityGroup) g.clone();
+			group.setMembers(null);
+			newMemListCleared.add(group);
 		}
 		MemberOf memberOf = new MemberOf();
-		memberOf.setSecurityGroups(membershipList);
+		memberOf.setSecurityGroups(newMemListCleared);
 		user.setMemberOf(memberOf);
 		
 		if(isNewUser)
@@ -378,8 +382,10 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 		}
 		else 
 		{
+			//get original group membership list
+			ArrayList<WSISecurityGroup> oldMemList = this.groupsModel.getOrigGroupMembership();
 			// Editing existing user
-			new UpdateUserEvent(user, this).dispatch();
+			new UpdateUserEvent(user, oldMemList, newMemListFull, this).dispatch();
 		}
 	}
 

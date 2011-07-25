@@ -21,6 +21,8 @@
 package edu.cornell.dendro.corina.admin.command;
 
 import java.security.MessageDigest;
+import java.util.ArrayList;
+
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -29,20 +31,74 @@ import com.dmurph.mvc.control.ICommand;
 import edu.cornell.dendro.corina.admin.control.UpdateUserEvent;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.SecurityGroupEntityResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
 
 public class UpdateUserCommand implements ICommand {
 
+		UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
+		UpdateUserEvent event;
+		WSISecurityUser user;
+		ArrayList<WSISecurityGroup> oldMemList;
+		ArrayList<WSISecurityGroup> newMemList;
+		JDialog parent;
+		
         public void execute(MVCEvent argEvent) {
 
-        	UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
-        	UpdateUserEvent event = (UpdateUserEvent) argEvent;
-        	WSISecurityUser user = event.user;
-        	JDialog parent = event.parent;
+        	event = (UpdateUserEvent) argEvent;
         	
-        	// associate a resource
+        	//this user should have its groups' members set to null in UserUIView
+        	user = event.user;
+        	
+        	oldMemList = event.oldMembershipList;
+        	newMemList = event.newMembershipList;
+        	parent = event.parent;
+        	
+        	updateUser();
+        	updateGroups();			
+        }
+
+		private void updateGroups() {
+  	
+			ArrayList<WSISecurityGroup> changedGroups = new ArrayList<WSISecurityGroup>();
+					
+			for(WSISecurityGroup group: mainModel.getGroupList()){
+				if(newMemList.contains(group) && !oldMemList.contains(group)){
+					group.getMembers().getSecurityUsers().add(user);
+					changedGroups.add(group);
+				}
+				else if(!newMemList.contains(group) && oldMemList.contains(group)){
+					group.getMembers().getSecurityUsers().remove(user);
+					changedGroups.add(group);
+				}
+			}	
+			
+			for(WSISecurityGroup group: changedGroups){
+				// associate a resource
+		    	SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
+		    	
+				CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(parent, rsrc);
+				rsrc.query();
+				accdialog.setVisible(true);
+				
+				if(accdialog.isSuccessful())
+				{
+					mainModel.updateGroup(rsrc.getAssociatedResult());
+					parent.dispose();
+				}
+				else{
+					JOptionPane.showMessageDialog(parent, "Error updating group: " + accdialog.getFailException().
+							getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+			
+		}
+
+		private void updateUser() {
+			// associate a resource
 	    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, user);
 	    	
 			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(parent, rsrc);
@@ -58,5 +114,5 @@ public class UpdateUserCommand implements ICommand {
 				JOptionPane.showMessageDialog(parent, "Error updating user: " + accdialog.getFailException().
 						getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			}
-        }
+		}
 }

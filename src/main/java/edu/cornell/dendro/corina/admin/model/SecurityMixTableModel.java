@@ -128,7 +128,12 @@ public Object getColumnValueForUser(WSISecurityUser usr, int columnIndex) {
 		case 0: return usr.getId();
 		case 1: return usr.getFirstName()+" "+usr.getLastName();
 		case 2: return "";
-		case 3: return (ArrayList<WSISecurityGroup>) usr.getMemberOf().getSecurityGroups();
+		case 3: 
+			String parentStr = "";
+			for(WSISecurityGroup g:usr.getMemberOf().getSecurityGroups()){
+				parentStr += g.getName()+", ";
+			}
+			return parentStr.substring(0, parentStr.lastIndexOf(","));
 		default: return null;
 		}
 		

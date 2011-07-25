@@ -20,20 +20,28 @@
 
 package edu.cornell.dendro.corina.admin.control;
 
+import java.util.ArrayList;
+
 import javax.swing.JDialog;
 
 import com.dmurph.mvc.MVCEvent;
 
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
 public class UpdateUserEvent extends MVCEvent{ // implements ITrackable {
 	private static final long serialVersionUID = 1L;
 	public final WSISecurityUser user;
+	public final ArrayList<WSISecurityGroup> oldMembershipList;
+	public final ArrayList<WSISecurityGroup> newMembershipList;
+
 	public final JDialog parent;
 
-	public UpdateUserEvent(WSISecurityUser u, JDialog prnt) {
+	public UpdateUserEvent(WSISecurityUser u, ArrayList<WSISecurityGroup> oldMemList, ArrayList<WSISecurityGroup> newMemList, JDialog prnt) {
 		super(UserGroupAdminController.UPDATE_USER);
 		user = u;
+		oldMembershipList = oldMemList;
+		newMembershipList = newMemList;
 		parent = prnt;
 	}
 

@@ -39,7 +39,8 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
 	private static final long serialVersionUID = -8612040164917147271L;
 	private UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
 	private ArrayList<WSISecurityGroup> groupList;
-	private ArrayList<WSISecurityGroup> userIsMemberOfList;	
+	private ArrayList<WSISecurityGroup> oldMemberOfList;
+	private ArrayList<WSISecurityGroup> newMemberOfList;	
 	private HashMap<WSISecurityGroup, ArrayList<WSISecurityGroup>> parentsMap;
 	private WSISecurityUser targetUser;
 	
@@ -54,10 +55,12 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
 	public SecurityGroupTableModelB(WSISecurityUser trgetUser){
 		groupList = mainModel.getGroupList();
 		targetUser = trgetUser;
-		userIsMemberOfList = new ArrayList<WSISecurityGroup>();
+		oldMemberOfList = new ArrayList<WSISecurityGroup>(); 
+		newMemberOfList = new ArrayList<WSISecurityGroup>();
 		parentsMap = new HashMap<WSISecurityGroup, ArrayList<WSISecurityGroup>>();
 		if(targetUser != null && targetUser.isSetMemberOf()){
-			userIsMemberOfList = (ArrayList<WSISecurityGroup>) targetUser.getMemberOf().getSecurityGroups();
+			newMemberOfList = (ArrayList<WSISecurityGroup>) (((ArrayList<WSISecurityGroup>) targetUser.getMemberOf().getSecurityGroups()).clone());
+			oldMemberOfList = (ArrayList<WSISecurityGroup>) newMemberOfList.clone();
 		}
 		buildParentsMap();
 	}
@@ -103,8 +106,12 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
 		return groupList;
 	}
 	
-	public ArrayList<WSISecurityGroup> getGroupMembership() {
-		return userIsMemberOfList;
+	public ArrayList<WSISecurityGroup> getNewGroupMembership() {
+		return newMemberOfList;
+	}
+	
+	public ArrayList<WSISecurityGroup> getOrigGroupMembership() {
+		return oldMemberOfList;
 	}
 	
 	public HashMap<WSISecurityGroup, ArrayList<WSISecurityGroup>> getParentsModel() {
@@ -128,17 +135,17 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
 		if (member)
 		{
 			// Make sure we are a member of the specifed group
-			if(!this.userIsMemberOfList.contains(grp))
+			if(!this.newMemberOfList.contains(grp))
 			{
-				userIsMemberOfList.add(grp);
+				newMemberOfList.add(grp);
 			}
 		}
 		else
 		{
 			// Make sure we are NOT a member of the specified group
-			if(this.userIsMemberOfList.contains(grp))
+			if(this.newMemberOfList.contains(grp))
 			{
-				userIsMemberOfList.remove(grp);
+				newMemberOfList.remove(grp);
 			}
 		}
 	}
@@ -155,7 +162,7 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
 					return new ArrayList<WSISecurityGroup>();
 				}
 		case 4: 
-			return userIsMemberOfList.contains(grp);
+			return newMemberOfList.contains(grp);
 		default: return null;
 		}
 		

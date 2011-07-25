@@ -148,5 +148,17 @@ public class UserGroupAdminModel extends AbstractModel {
 		usersModelA.fireTableDataChanged();
 	}
 
+	public void updateGroup(WSISecurityGroup group) {
+		for(WSISecurityGroup g:groupList){
+			if(g.getId()==group.getId()){
+				g=(WSISecurityGroup) group.clone();
+				break;
+			}
+		}
+
+		//possibly fire change from here later
+		
+	}
+
 
 }
