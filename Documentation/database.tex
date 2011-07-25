@@ -1,0 +1,67 @@
+\chapter{Corina Database}
+
+The database behind Corina is run on the popular open source relational database management system, PostgreSQL (Postgres). 
+
+
+\section{Database structure}
+
+
+\section{Spatial extension}
+
+Corina uses the PostGIS extension to Postgres to store and query spatial data within the database.  Rather than storing coordinate axis in separate fields, a single specialist `geometry' field type is used.
+
+
+\section{CPGDB functions}
+
+The Corina Postgresql Database (CPGDB) functions are a set of functions for searching, processing, and manipulating the data in the postgresql database. All functions are in thecpgdbschema, to allow for easy development alongside the database without modifying the database or its structure.
+
+Thus, to execute a cpgdb function, you must preface the function name with cpgdb, e.g.: 
+
+\code{SELECT * FROM cpgdb.GetVMeasurementResult('xxxx');}
+
+
+
+\begin{description}
+ \item[GetVMeasurementResultID] -- This function populates the tblVMeasurementResult and tblVMeasurementReadingResult tables, returning a single varchar which contains the tblVMeasurementResult ID. You probably want to use GetVMeasurementResult instead.
+
+ \item[GetVMeasurementResult] -- This function returns a table row from tblVMeasurementResult which has been populated with information from the provided VMeasurement ID. 
+
+ \item[GetVMeasurementReadingResult] -- This function is provided as a convenience method. It requires a VMeasurementResultID obtained from one of the above two functions. Data is returned sorted by year, ascending. 
+
+ \item[FindVMChildren] -- This function reverse traverses the database and gives a list of derived VMeasurements. This is most useful when given the ID of a direct VMeasurement, to find any sums, redates, or others based upon it. 
+
+ \item[FindVMParents] -- This function traverses the database and gives a list of parents VMeasurements. This is most useful when given the ID of a Sum, Redate, or Index, to find which VMeasurements it was based on. 
+
+ \item[FindChildrenOf] -- This function returns a list of all VMeasurements derived from something. Given `tree' and `16', for instance, it will find all VMeasurements derived from Tree ID 16. e.g.: 
+\code{select * from cpgdb.findchildrenof(`specimen', 1);}
+\warn{Does not traverse through object relationships. Will only return children of a single particular object. See FindChildrenOfObjectAncestor()}
+
+ \item[FindChildrenOfObjectAncestor] -- This function returns a list of all VMeasurements derived from a particular object and its descendants. The output is the same format as FindChildrenOf. 
+
+ \item[FindObjectTopLevelAncestor] -- Returns the toplevel ancestor object of a given object. Will return the given object if it has no toplevel ancestor. 
+
+ \item[FindObjectAncestors] -- Returns the ancestor objects of a given object, guaranteed from bottom to top. Can return an empty set. 
+
+ \item[FindObjectDescendants] -- Returns the descendant objects of a given object using a depth-first traversal. Can return an empty set. 
+
+ \item[FindObjectDescendantsByCode] -- Convenience wrapper around FindObjectDescendants which takes an object code rather than ID.
+
+ \item[FindObjectsAndDescendantsWhere] -- Returns the objects and that match a given WHERE clause and their descendants. Does not return duplicates. 
+
+ \item[FindElementObjectAncestors] -- Returns the ancestry tree of objects, given an element id. Really just a helper function for FindObjectAncestors(). 
+
+ \item[GetGroupMembership] -- This function returns a unique list of all the groups the specified user is a member of. 
+
+ \item[GetGroupMembershipArray] -- This function returns an integer array of all the securityGroupIDs the specified user is a member of. 
+
+ \item[GetUserPermissions] -- Returns an array of the permissions the specified user has for a particular object ID. The function backtracks \menuthree{tree}{site}{default} and \menutwo{site}{default} if no explicit permissions are found. If `No permission' is returned it is the only member of the array. If a user is a member of group 1 (admin), they automatically get all permissions. 
+
+ \item[MergeObjects] -- This function merges two objects together. The first object is taken as the basis with all its fields maintained unchanged. Any fields that are different in the second object are noted in the comments field for checking later. If a field is null in the first object but present in the second, then this value is used. The function cascades through the entity hierarchy merge subordinate entities where required using the other merge functions. 
+
+ \item[MergeElements] -- As for MergeObjects but for elements.
+
+ \item[MergeSamples] -- As for MergeObjects but for samples.
+
+ \item[MergeRadii] -- As for MergeObjects but for radii.
+
+\end{description}
