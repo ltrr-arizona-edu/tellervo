@@ -19,8 +19,6 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.gui;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -50,6 +48,7 @@ import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.SoundUtil;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
@@ -192,25 +191,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	     }
 
 	}
-	
-	
-    /**
-     * Play a beep.  Useful for when a barcode has been scanned.
-     */
-    public void playBarcodeBeep(){
-		AudioClip beep;
-		try {	
-			// play this to indicate measuring is on...
-			beep = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/checkout.wav"));
-			if(beep != null)
-				beep.play();
-		} catch (Exception ae) { 
-			System.out.println("Failed to play sound");
-			System.out.println(ae.getMessage());
-			}
 		
-    }
-	
     /**
      * Interpret the text field as a lab code
      */
@@ -237,7 +218,10 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		if(labcodestr.length()==0) return;
 				  
 		// Remove the "C-" from beginning if present
-		if (labcodestr.substring(0, 2).compareToIgnoreCase("C-")==0) labcodestr = labcodestr.substring(2, labcodestr.length());
+		if(labcodestr.length()>2)
+		{
+			if (labcodestr.substring(0, 2).compareToIgnoreCase("C-")==0) labcodestr = labcodestr.substring(2, labcodestr.length());
+		}
 		  
 		// Explode based on '-' delimiter
 		strarray = labcodestr.split("-");
@@ -396,7 +380,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		if(textField.getText().length()==24)
 		{
 			// A barcode was probably just scanned
-			playBarcodeBeep();		
+			SoundUtil.playBarcodeBeep();		
 			String barcodeText = textField.getText();
 			textField.setText("");
 			

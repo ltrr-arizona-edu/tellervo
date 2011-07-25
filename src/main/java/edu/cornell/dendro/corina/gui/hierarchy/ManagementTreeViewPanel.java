@@ -22,9 +22,11 @@ package edu.cornell.dendro.corina.gui.hierarchy;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JWindow;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -39,11 +41,11 @@ import org.tridas.schema.TridasSample;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.TridasEntityChooser;
 import edu.cornell.dendro.corina.gui.TridasEntityChooser.EntitiesAccepted;
-import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 import edu.cornell.dendro.corina.schema.EntityType;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 
 /**
  * Extension of the standard TridasTreeViewPanel with the addition of 
@@ -55,7 +57,7 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 
 	private static final long serialVersionUID = -7973400038586992025L;
-
+    private Window parent;
 	/**
 	 * Basic constructor for tree view panel used in the context of searching
 	 * for series.  Defaults are:
@@ -89,10 +91,10 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	 * @param listenersAreCheap - @see #setListenersAreCheap(Boolean)
 	 * @param textForSelectPopup - @see #setTextForSelectPopup(String)
 	 */
-	public ManagementTreeViewPanel(Window parent, TreeDepth depth, Boolean listenersAreCheap, 
-			String textForSelectPopup)
+	public ManagementTreeViewPanel(Window parent, TreeDepth depth, Boolean listenersAreCheap, String textForSelectPopup)
 	{
 		super(parent, depth, listenersAreCheap, textForSelectPopup);
+		this.parent = parent;
 	}
 	
 	
@@ -246,7 +248,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 			}
 			
 			
-			ITridas newParent = TridasEntityChooser.showDialog(null, 
+			ITridas newParent = TridasEntityChooser.showDialog(parent, 
 					"Select new parent", 
 					expectedClass, 
 					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);

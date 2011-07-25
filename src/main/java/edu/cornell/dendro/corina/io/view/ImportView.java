@@ -864,7 +864,7 @@ public class ImportView extends JFrame{
 		ITridas newParent = TridasEntityChooser.showDialog(this, 
 				"Select entity", 
 				TridasRadius.class, 
-				EntitiesAccepted.SPECIFIED_ENTITY_AND_BELOW);
+				EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR);
 		
 		log.debug("User wants to set hierarchy of "+ 
 				((ITridas) selectedEntity.getUserObject()).getTitle() +

@@ -125,6 +125,9 @@ public class Bug extends JDialog {
 	private BugReport report;
 
 	public void completeAndShow() {
+		
+		
+		
 		setTitle("Bug Report");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setResizable(false);
@@ -145,8 +148,8 @@ public class Bug extends JDialog {
 		JPanel message = Layout
 				.flowLayoutL(msgText);
 		
-		JButton bummer = new JButton("Continue");
-		bummer.addActionListener(new AbstractAction() {
+		JButton btnContinue = new JButton("Continue");
+		btnContinue.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = -4206533770425096704L;
 
 			public void actionPerformed(ActionEvent e) {
@@ -194,7 +197,7 @@ public class Bug extends JDialog {
 			}
 		});
 
-		JPanel buttons = Layout.buttonLayout(more, submitreport, bummer);
+		JPanel buttons = Layout.buttonLayout(more, submitreport, btnContinue);
 		buttons.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
 		JPanel content = Layout
@@ -204,9 +207,12 @@ public class Bug extends JDialog {
 		setContentPane(content);
 
 		pack();
-		OKCancel.addKeyboardDefaults(bummer);
+		OKCancel.addKeyboardDefaults(btnContinue);
 		// setResizable(false);
 		Center.center(this);
+		
+		if(bug instanceof UserCancelledException) return;
+		
 		this.setVisible(true);
 	}
 

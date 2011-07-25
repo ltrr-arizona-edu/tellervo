@@ -20,7 +20,6 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.hardware;
 
-import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.Color;
 import java.awt.Font;
@@ -42,6 +41,7 @@ import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.util.SoundUtil;
 
 
 public abstract class MeasurePanel extends JPanel implements MeasurementReceiver {
@@ -69,22 +69,12 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		
 		setLayout(new MigLayout("insets 0", "[grow][87.00,grow][146.00px][20.00]", "[][]"));
 		
-		AudioClip measInit;
-		try {
-			measure_one = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/meas1.wav"));
-			measure_dec = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/measdec.wav"));
-			measure_error = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/measerr.wav"));
-			
-			// play this to indicate measuring is on...
-			measInit = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/measinit.wav"));
-			if(measInit != null)
-				measInit.play();
-			 	System.out.println("Sound played");
-		} catch (Exception ae) { 
-			System.out.println("Failed to play sound");
-			System.out.println(ae.getMessage());
-			
-		}
+		measure_one = SoundUtil.getMeasureSound();
+		measure_dec = SoundUtil.getMeasureDecadeSound();
+		measure_error = SoundUtil.getMeasureErrorSound();
+		
+		SoundUtil.playMeasureInitSound();
+
 		
 		panel = new JPanel();
 		add(panel, "cell 0 0,grow");

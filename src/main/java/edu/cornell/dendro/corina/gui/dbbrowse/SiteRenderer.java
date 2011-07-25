@@ -37,7 +37,7 @@ import org.tridas.util.TridasObjectEx;
 public class SiteRenderer implements ListCellRenderer {
 	public SiteRenderer() {
 		panel = new JPanel();
-		lblCode = new JLabel("code");
+		lblCode = new JLabel("code");		
 		lblName = new JLabel("name");
 
 		BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);

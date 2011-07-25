@@ -30,10 +30,13 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -107,10 +110,11 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 	/** Class of the current entity */
 	private Class<? extends ITridas> currentEntityType;
 	DefaultMutableTreeNode nodeSelected;
+	private JFrame parent;
 	
-	
-    public MetadataBrowser(java.awt.Frame parent, boolean modal) {
+    public MetadataBrowser(JFrame parent, boolean modal) {
         super(parent, modal);
+        this.parent = parent;
         initComponents();
         setupGui();
         pack();
@@ -122,8 +126,9 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
      */
     public void setupGui()
     {
-    	// Set up tree panel
-    	treepanel = new ManagementTreeViewPanel(this, TreeDepth.SERIES, true, "View metadata");
+    	// Set up tree panel    		
+    	
+    	treepanel = new ManagementTreeViewPanel(((Window) this), TreeDepth.SERIES, true, "View metadata");
     	//treepanel.setObjectList(ObjectListMode.TOP_LEVEL_ONLY);
     	treepanel.addTridasSelectListener(this);
     	leftPane.add(treepanel, BorderLayout.CENTER);

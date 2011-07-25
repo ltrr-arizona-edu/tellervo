@@ -23,19 +23,28 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextPane;
+import javax.swing.JWindow;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -45,9 +54,22 @@ import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel;
 import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel.TreeDepth;
+import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
+import edu.cornell.dendro.corina.schema.SearchOperator;
+import edu.cornell.dendro.corina.schema.SearchParameterName;
+import edu.cornell.dendro.corina.schema.SearchReturnObject;
+import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.util.ArrayListModel;
+import edu.cornell.dendro.corina.util.labels.ui.TridasListCellRenderer;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
+import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
+import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
 
 /**
  * This is a dialog that asks the user to specify a TRiDaS entity by scanning a barcode or typing 
@@ -57,22 +79,49 @@ import edu.cornell.dendro.corina.ui.Builder;
  *
  */
 public class TridasEntityChooser extends JDialog implements ActionListener, TridasSelectListener{
-
+	
+	private final static Logger log = LoggerFactory.getLogger(TridasEntityChooser.class);
 	private static final long serialVersionUID = 3079094155424090769L;
 	private CorinaCodePanel codePanel;
-	private Class<? extends ITridas> expectedClass;
-	private EntitiesAccepted entitiesAccepted = EntitiesAccepted.ALL;
+	private final Class<? extends ITridas> expectedClass;
+	private final EntitiesAccepted entitiesAccepted;
 	private JButton okButton;
 	private JButton cancelButton;
 	private ITridas entity;
 	private JTextPane lblWarning;
-	private JFrame parent;
-	
+	private Window parent;
+	private JRadioButton radLabcode;
+	private JRadioButton radHierarchy;
+	private JPanel panelLabcode;
+	private JPanel panelHierarchy;
+	private JComboBox cboObject;
+	private JComboBox cboElement;
+	private JComboBox cboSample;
+	private JComboBox cboRadius;
+	private JComboBox cboSeries;	
+	private JLabel lblObject;
+	private JLabel lblElement;
+	private JLabel lblSample;
+	private JLabel lblRadius;
+	private JLabel lblSeries;
 
+	protected ArrayListModel<TridasObject> objModel = new ArrayListModel<TridasObject>();
+	protected ArrayListModel<TridasElement> elModel = new ArrayListModel<TridasElement>();
+	protected ArrayListModel<TridasSample> sampModel = new ArrayListModel<TridasSample>();
+	protected ArrayListModel<TridasRadius> radiusModel = new ArrayListModel<TridasRadius>();
+	protected ArrayListModel<TridasMeasurementSeries> seriesModel = new ArrayListModel<TridasMeasurementSeries>();
+	private JButton btnSelectO;
+	private JButton btnSelectE;
+	private JButton btnSelectS;
+	private JButton btnSelectR;
+
+	
 	public static enum EntitiesAccepted {
 		SPECIFIED_ENTITY_ONLY,
-		SPECIFIED_ENTITY_AND_ABOVE,
-		SPECIFIED_ENTITY_AND_BELOW,
+		/** Element is senior to Sample for instance*/
+		SPECIFIED_ENTITY_AND_SENIOR,
+		/** Radius is junior to Sample for instance*/
+		SPECIFIED_ENTITY_AND_JUNIOR,
 		ALL
 	}
 	
@@ -80,9 +129,12 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	 * Create the dialog.
 	 * @wbp.parser.constructor
 	 */
-	public TridasEntityChooser(JFrame parent){
-		super(parent, true);
+	public TridasEntityChooser(Window parent){
+		super(parent);
 		this.parent = parent;
+		this.setModal(true);
+		entitiesAccepted = EntitiesAccepted.ALL;
+		expectedClass = TridasObject.class;
 		setupGui();
 
 	}
@@ -96,16 +148,18 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	 * @param expectedClazz
 	 * @param ea
 	 */
-	public TridasEntityChooser(JFrame parent, Class<? extends ITridas> expectedClazz, EntitiesAccepted ea){
-		super(parent, true);
+	public TridasEntityChooser(Window parent, Class<? extends ITridas> expectedClazz, EntitiesAccepted ea){
+
+		super(parent);
 		this.parent = parent;
+		this.setModal(true);
+
 
 		entitiesAccepted = ea;
 		expectedClass = expectedClazz;
 		setupGui();
 	}
-	
-	
+		
 
 	/**
 	 * Get the entity specified by the user
@@ -115,6 +169,64 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	public ITridas getEntity()
 	{		
 		return entity;
+	}
+	
+	/**
+	 * Display panels depending on radio button selection
+	 */
+	private void setPanelToView()
+	{
+		if(radLabcode.isSelected())
+		{
+			panelLabcode.setVisible(true);
+			panelHierarchy.setVisible(false);
+		}
+		else
+		{
+			panelLabcode.setVisible(false);
+			panelHierarchy.setVisible(true);
+
+			// Hide/show combos depending on what level of entity we are returning
+			btnSelectO.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasElement.class));
+			cboElement.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasElement.class));
+			lblElement.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasElement.class));
+			
+			btnSelectE.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasSample.class));
+			cboSample.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasSample.class));
+			lblSample.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasSample.class));
+			
+			btnSelectS.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasRadius.class));
+			cboRadius.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasRadius.class));
+			lblRadius.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasRadius.class));
+			
+			btnSelectR.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasMeasurementSeries.class));
+			lblSeries.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasMeasurementSeries.class));
+			cboSeries.setVisible(isClassEqualOrMoreSeniorThanRequested(TridasMeasurementSeries.class));
+
+		}
+	}
+	
+	/**
+	 * Function useful for specifying if a combo should be visible or not.
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	private Boolean isClassEqualOrMoreSeniorThanRequested(Class<? extends ITridas> clazz)
+	{
+		if((entitiesAccepted.equals(EntitiesAccepted.ALL)) || 
+		   (entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_JUNIOR)))
+		{
+			return true;
+		}
+		else if((entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_ONLY)) || 
+				(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR)))
+		{
+			return getDepth(clazz)<=getDepth(expectedClass);
+		}
+		
+		return false;
+		
 	}
 	
 	
@@ -146,11 +258,134 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		{
 			JPanel panel = new JPanel();
 			this.getRootPane().add(panel, BorderLayout.CENTER);
-			panel.setLayout(new MigLayout("", "[][][grow]", "[][][][][][27.00][]"));
+			panel.setLayout(new MigLayout("", "[140px:140.00px:140px][400px:400px:800px,grow]", "[][25.00:25.00:25.00][25.00:25.00:25.00][grow]"));
+			{
+				radLabcode = new JRadioButton("Pick using barcode or labcode");
+				radLabcode.setSelected(true);
+				radLabcode.addActionListener(new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						setPanelToView();
+						
+					}
+					
+				});
+				panel.add(radLabcode, "cell 1 1");
+			}
+			{
+				radHierarchy = new JRadioButton("Pick from hierarchy");
+				panel.add(radHierarchy, "cell 1 2");
+				radHierarchy.addActionListener(new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						setPanelToView();
+						
+					}
+					
+				});
+			}
+			{
+				JLayeredPane layeredPane = new JLayeredPane();
+				panel.add(layeredPane, "cell 1 3,grow");
+				layeredPane.setLayout(new BorderLayout(0, 0));
+				panelLabcode = new JPanel();
+				layeredPane.add(panelLabcode, BorderLayout.NORTH);
+				panelLabcode.setLayout(new MigLayout("", "[252px,grow]", "[21.00px]"));
+				codePanel = new CorinaCodePanel(this);
+				panelLabcode.add(codePanel, "cell 0 0,grow");
+				
+				codePanel.addTridasSelectListener(this);
+				codePanel.setFocus();
+				{
+					panelHierarchy = new JPanel();
+					layeredPane.add(panelHierarchy, BorderLayout.CENTER);
+					panelHierarchy.setLayout(new MigLayout("", "[right][grow][]", "[][][][][]"));
+					{
+						lblObject = new JLabel("Object:");
+						panelHierarchy.add(lblObject, "cell 0 0,alignx trailing");
+					}
+					{
+						cboObject = new JComboBox();
+				    	cboObject.setModel(objModel);
+						populateObjectCombo();
+						panelHierarchy.add(cboObject, "cell 1 0,growx");
+					}
+					{
+						btnSelectO = new JButton("Select");
+						btnSelectO.addActionListener(this);
+						panelHierarchy.add(btnSelectO, "cell 2 0");
+					}
+					{
+						lblElement = new JLabel("Element:");
+						panelHierarchy.add(lblElement, "cell 0 1,alignx trailing");
+					}
+					{
+						cboElement = new JComboBox();
+						cboElement.setEnabled(false);
+						cboElement.setModel(elModel);
+						cboElement.setRenderer(new TridasListCellRenderer());
+						panelHierarchy.add(cboElement, "cell 1 1,growx");
+					}
+					{
+						btnSelectE = new JButton("Select");
+						btnSelectE.setEnabled(false);
+						btnSelectE.addActionListener(this);
+						panelHierarchy.add(btnSelectE, "cell 2 1");
+					}
+					{
+						lblSample = new JLabel("Sample:");
+						panelHierarchy.add(lblSample, "cell 0 2,alignx trailing");
+					}
+					{
+						cboSample = new JComboBox();
+						cboSample.setModel(sampModel);
+						cboSample.setRenderer(new TridasListCellRenderer());
+						cboSample.setEnabled(false);
+						panelHierarchy.add(cboSample, "cell 1 2,growx");
+					}
+					{
+						btnSelectS = new JButton("Select");
+						btnSelectS.setEnabled(false);
+						btnSelectS.addActionListener(this);
+						panelHierarchy.add(btnSelectS, "cell 2 2");
+					}
+					{
+						lblRadius = new JLabel("Radius:");
+						panelHierarchy.add(lblRadius, "cell 0 3,alignx trailing");
+					}
+					{
+						cboRadius = new JComboBox();
+						cboRadius.setModel(radiusModel);
+						cboRadius.setRenderer(new TridasListCellRenderer());
+						cboRadius.setEnabled(false);
+						panelHierarchy.add(cboRadius, "cell 1 3,growx");
+					}
+					{
+						btnSelectR = new JButton("Select");
+						btnSelectR.setEnabled(false);
+						btnSelectR.addActionListener(this);
+						panelHierarchy.add(btnSelectR, "cell 2 3");
+					}
+					{
+						lblSeries = new JLabel("Series:");
+						panelHierarchy.add(lblSeries, "cell 0 4,alignx trailing");
+					}
+					{
+						cboSeries = new JComboBox();
+						cboSeries.setModel(seriesModel);
+						cboSeries.setRenderer(new TridasListCellRenderer());
+						cboSeries.setEnabled(false);
+						cboSeries.addActionListener(this);
+						panelHierarchy.add(cboSeries, "cell 1 4,growx");
+					}
+				}
+			}
 			{
 				JPanel panelIcon = new JPanel();
 				panelIcon.setBorder(null);
-				panel.add(panelIcon, "cell 0 0 1 7,alignx center,aligny top");
+				panel.add(panelIcon, "cell 0 0 1 4,alignx center,aligny top");
 				{
 					JLabel lblIcon = new JLabel("");
 					lblIcon.setIcon(Builder.getIcon("barcode.png", 128));
@@ -158,32 +393,83 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 				}
 			}
 			{
-				JLabel lblScanBarcodeOr = new JLabel("Scan barcode or type lab code:");
-				panel.add(lblScanBarcodeOr, "cell 2 2");
-			}
-			{
 				lblWarning = new JTextPane();
 				lblWarning.setEditable(false);
+				lblWarning.setVisible(false);
 				lblWarning.setForeground(Color.RED);
 				lblWarning.setBackground(null);
 				lblWarning.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-				panel.add(lblWarning, "cell 2 3");
-			}
-			{
-				codePanel = new CorinaCodePanel(this);
-				panel.add(codePanel, "cell 2 5,growx,aligny top");
-				
-				codePanel.addTridasSelectListener(this);
-				
+				panel.add(lblWarning, "cell 1 0");
 			}
 		}
 		
+		// Put radio buttons in a group
+		ButtonGroup group = new ButtonGroup();
+		group.add(radLabcode);
+		group.add(radHierarchy);
+		setPanelToView();
+		
+		
 		this.setLocationRelativeTo(parent);
+		
+		this.radHierarchy.setSelected(true);
 		this.pack();
-		codePanel.setFocus();
+		this.radLabcode.setSelected(true);
+
 	}
 
-
+	
+	/**
+	 * Set the entity to return from the hierarchy combo boxes
+	 */
+	private void setEntityFromHierarchy()
+	{
+		if(this.cboSeries.isEnabled())
+		{
+			if(cboSeries.getSelectedItem()!=null)
+			{
+				entity = (ITridas) cboSeries.getSelectedItem();
+				return;
+			}
+		}
+		
+		if(this.cboRadius.isEnabled())
+		{
+			if(cboRadius.getSelectedItem()!=null)
+			{
+				entity = (ITridas) cboRadius.getSelectedItem();
+				return;
+			}
+		}
+		
+		if(this.cboSample.isEnabled())
+		{
+			if(cboSample.getSelectedItem()!=null)
+			{
+				entity = (ITridas) cboSample.getSelectedItem();
+				return;
+			}
+		}
+		
+		if(this.cboElement.isEnabled())
+		{
+			if(cboElement.getSelectedItem()!=null)
+			{
+				entity = (ITridas) cboElement.getSelectedItem();
+				return;
+			}
+		}
+		
+		if(this.cboObject.isEnabled())
+		{
+			if(cboObject.getSelectedItem()!=null)
+			{
+				entity = (ITridas) cboObject.getSelectedItem();
+				return;
+			}
+		}
+		
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -194,8 +480,49 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		}
 		else if (e.getActionCommand().equals("OK"))
 		{
-			codePanel.processLabCode();
+			if(this.radLabcode.isSelected())
+			{
+				// Entity selected from lab/barcode
+				codePanel.processLabCode();
+			}
+			else
+			{
+				// Entity specified by combo boxes
+				setEntityFromHierarchy();
+				returnEntity();
+			}
 		}
+		else if (e.getSource().equals(btnSelectO))
+		{
+			// Object selected so populate element combo
+			if(cboElement.isVisible()) 
+			{
+				cboElement.setEnabled(true);
+				btnSelectE.setEnabled(true);
+				populateElementCombo();
+			}
+		}
+		else if (e.getSource().equals(btnSelectE))
+		{
+			// Element selected so populate sample combo
+			if(cboSample.isVisible()) 
+			{
+				cboSample.setEnabled(true);
+				btnSelectS.setEnabled(true);
+				populateSampleCombo();
+			}
+		}
+		else if (e.getSource().equals(btnSelectS))
+		{
+			// Sample selected so populate radius combo
+			if(cboRadius.isVisible()) 
+			{
+				cboRadius.setEnabled(true);
+				btnSelectR.setEnabled(true);
+				populateRadiusCombo();
+			}
+		}
+		
 		
 	}
 	
@@ -208,7 +535,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	 * @param title
 	 * @return
 	 */
-	public static ITridas showDialog(JFrame parent, String title)
+	public static ITridas showDialog(JWindow parent, String title)
 	{
 		
         TridasEntityChooser dialog = new TridasEntityChooser(parent);
@@ -230,7 +557,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	 * @param acceptabletype
 	 * @return
 	 */
-	public static ITridas showDialog(JFrame parent, String title,
+	public static ITridas showDialog(Window parent, String title,
 			Class<? extends ITridas> clazz, EntitiesAccepted acceptabletype)
 	{
 		
@@ -245,7 +572,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 
 	}
 
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public void entitySelected(TridasSelectEvent event) {
 		
@@ -265,7 +592,20 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 			
 			entity = event.getEntity();
 			
-			if(checkEntityIsValid())
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		returnEntity();
+	}
+			
+	
+	private void returnEntity()
+	{
+
+			if(checkEntityIsValid(entity))
 			{
 				dispose();
 			}
@@ -273,16 +613,17 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 			{
 				if(entity!=null)
 				{
+					@SuppressWarnings("unchecked")
 					String givenClassName = TridasTreeViewPanel.getFriendlyClassName((Class<ITridas>) entity.getClass()).toLowerCase();
 					String expectedClassName = TridasTreeViewPanel.getFriendlyClassName(expectedClass).toLowerCase();
 
 					String modifier = "";			
 					
-					if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_ABOVE))
+					if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR))
 					{
 						modifier = " (or above)";
 					}
-					else if (entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_BELOW))
+					else if (entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_JUNIOR))
 					{
 						modifier = " (or below)";
 					}
@@ -297,16 +638,22 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 
 			}
 			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
 	}
 	
+	
+	/**
+	 * Set the warning label.  If you want to remove a warning set to null and the label
+	 * will be hidden.
+	 * 
+	 * @param text
+	 */
 	private void setWarning(String text)
 	{
+		// If warning is null then hide, otherwise show
+		lblWarning.setVisible(!(text==null));
+		
 		lblWarning.setText(text);
-		pack();
 	}
 	
 	
@@ -317,9 +664,9 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private Boolean checkEntityIsValid()
+	private Boolean checkEntityIsValid(ITridas ent)
 	{
-		if(entity==null)
+		if(ent==null)
 		{
 			return false;
 		}
@@ -333,35 +680,35 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		}
 		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_ONLY))
 		{
-			if(entity.getClass().equals(expectedClass) )
+			if(ent.getClass().equals(expectedClass) )
 			{
 				return true;
 			}
-			else if (entity.getClass().equals(TridasObjectEx.class) && expectedClass.equals(TridasObject.class))
+			else if (ent.getClass().equals(TridasObjectEx.class) && expectedClass.equals(TridasObject.class))
 			{
 				return true;
 			}
-			else if (entity.getClass().equals(TridasObject.class) && expectedClass.equals(TridasObjectEx.class))
+			else if (ent.getClass().equals(TridasObject.class) && expectedClass.equals(TridasObjectEx.class))
 			{
 				return true;
 			}
 			else
 			{
-				setWarning("Invalid entity - a "+TridasTreeViewPanel.getFriendlyClassName(expectedClass)+" is expected");
+				log.error("Invalid entity - a "+TridasTreeViewPanel.getFriendlyClassName(expectedClass)+" is expected");
 				return false;
 			}
 		}
-		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_BELOW))
+		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_JUNIOR))
 		{
-			Integer e1 = getDepth((Class<ITridas>) entity.getClass());
+			Integer e1 = getDepth((Class<ITridas>) ent.getClass());
 			Integer e2 = getDepth(expectedClass);
 			if(e1==0 || e2==0) return false;
 			return e1.compareTo(e2)>=0;
 			
 		}
-		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_ABOVE))
+		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR))
 		{
-			Integer e1 = getDepth((Class<ITridas>) entity.getClass());
+			Integer e1 = getDepth((Class<ITridas>) ent.getClass());
 			Integer e2 = getDepth(expectedClass);
 			if(e1==0 || e2==0) return false;
 			return e1.compareTo(e2)<=0;
@@ -369,7 +716,142 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		return false;
 	}
 	
+    /**
+     * Populate the combo box with available objects
+     */
+    private void populateObjectCombo()
+    {
+    	SiteRenderer rend = new SiteRenderer();
+    	rend.setMaximumTitleLength(30);
+    	cboObject.setRenderer(rend);
+    	objModel.replaceContents(App.tridasObjects.getObjectList());
+    	objModel.setSelectedItem(null);   
+    }
+    
+    private void populateElementCombo()
+    {
+    	TridasObject obj = null;
+    	
+    	if (cboObject.getSelectedItem()!=null)
+    	{
+    		obj = (TridasObject) cboObject.getSelectedItem();
+    	}
+    	else
+    	{
+    		return;
+    	}
+    	    	    	
+		// Find all elements for an object 
+    	SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
+    	param.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
+
+    	// we want an object return here, so we get a list of object->elements->samples when we use comprehensive
+		EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
+		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+		
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			System.out.println("oopsey doopsey.  Error getting elements");
+			return;
+		}
+		
+		List<TridasElement> elList = resource.getAssociatedResult();
+		
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(elList, numSorter);
+		
+		elModel.replaceContents(elList); 	
+    	
+		// Pick first in list
+		if(elModel.size()>0) cboElement.setSelectedIndex(0);
+    }
 	
+    /**
+     * Populate combo box with available samples
+     */
+    private void populateSampleCombo()
+    {
+    	TridasElement el = null;
+    	el = (TridasElement) cboElement.getSelectedItem();
+  	    	
+		// Find all samples for an element 
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
+    	param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, el.getIdentifier().getValue().toString());
+
+    	// we want a sample return here
+		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
+		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+		
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			System.out.println("oopsey doopsey.  Error getting samples");
+			return;
+		}
+		
+		List<TridasSample> sampList = resource.getAssociatedResult();
+		
+		/*TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(sampList, numSorter);
+		*/
+		sampModel.replaceContents(sampList); 	
+    	
+		// Pick first in list
+		if(sampModel.size()>0) cboSample.setSelectedIndex(0);
+    	
+    	
+    }
+    
+    private void populateRadiusCombo()
+    {
+    	TridasSample samp = null;
+    	samp = (TridasSample) cboSample.getSelectedItem();
+  	    	
+		// Find all radii for an sample 
+    	SearchParameters param = new SearchParameters(SearchReturnObject.RADIUS);
+    	param.addSearchConstraint(SearchParameterName.SAMPLEDBID, SearchOperator.EQUALS, samp.getIdentifier().getValue().toString());
+
+    	// we want a radius return here
+		EntitySearchResource<TridasRadius> resource = new EntitySearchResource<TridasRadius>(param, TridasRadius.class);
+		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+		
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			System.out.println("oopsey doopsey.  Error getting radii");
+			return;
+		}
+		
+		List<TridasRadius> radiusList = resource.getAssociatedResult();
+		
+		/*TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(sampList, numSorter);
+		*/
+		radiusModel.replaceContents(radiusList); 	
+    	
+		// Pick first in list
+		if(radiusModel.size()>0) cboRadius.setSelectedIndex(0);
+    	
+    	
+    }
+    
+    
 	/** 
 	 * Get the level of the Tridas class as an integer where
 	 * 1=object through to 5=series.  If a class is given that is 

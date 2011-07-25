@@ -19,8 +19,6 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.gui.dbbrowse;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -492,22 +490,6 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 	}
 */
     
-    /**
-     * Play a beep.  Useful for when a barcode has been scanned.
-     */
-    public void playBarcodeBeep(){
-		AudioClip beep;
-		try {	
-			// play this to indicate measuring is on...
-			beep = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/checkout.wav"));
-			if(beep != null)
-				beep.play();
-		} catch (Exception ae) { 
-			System.out.println("Failed to play sound");
-			System.out.println(ae.getMessage());
-			}
-		
-    }
     
     /**
      * Fully loads all elements back into the list

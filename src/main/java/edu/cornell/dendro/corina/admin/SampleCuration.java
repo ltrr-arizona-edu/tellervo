@@ -19,8 +19,6 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,6 +47,7 @@ import edu.cornell.dendro.corina.tridasv2.TridasComparator;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ArrayListModel;
+import edu.cornell.dendro.corina.util.SoundUtil;
 import edu.cornell.dendro.corina.util.labels.LabBarcode;
 import edu.cornell.dendro.corina.util.labels.ui.TridasListCellRenderer;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -148,10 +147,8 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         		if(txtBarcode.getText().length()==24)
         		{
 
-        			playBarcodeBeep();
+        			SoundUtil.playBarcodeBeep();
         			
-        			
-   
         			// A barcode was probably just scanned	
         			String barcodeText = txtBarcode.getText();
     				try {
@@ -221,22 +218,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         
     }
     
-    /**
-     * Play a beep for when barcode reader has scanned a barcode
-     */
-    public void playBarcodeBeep(){
-		AudioClip beep;
-		try {	
-			// play this to indicate measuring is on...
-			beep = Applet.newAudioClip(getClass().getClassLoader().getResource("Sounds/checkout.wav"));
-			if(beep != null)
-				beep.play();
-		} catch (Exception ae) { 
-			System.out.println("Failed to play sound");
-			System.out.println(ae.getMessage());
-			}
-		
-    }
+
     
     
     /**

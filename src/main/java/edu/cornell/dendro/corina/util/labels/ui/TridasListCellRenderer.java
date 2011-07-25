@@ -27,6 +27,8 @@ import javax.swing.JList;
 
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.schema.WSIBox;
@@ -41,6 +43,20 @@ public class TridasListCellRenderer extends DefaultListCellRenderer {
 
         if(value instanceof WSIBox) {
             value = ((WSIBox) value).getTitle();
+        }
+        
+        if(value instanceof TridasMeasurementSeries){
+        	TridasMeasurementSeries ms = (TridasMeasurementSeries) value;
+        	TridasGenericField f = GenericFieldUtils.findField(ms, "corina.internal.labcodeText");
+                	
+        	value = (f != null) ? f.getValue() : ms.getTitle();
+        }
+        
+        if(value instanceof TridasRadius){
+        	TridasRadius r = (TridasRadius) value;
+        	TridasGenericField f = GenericFieldUtils.findField(r, "corina.internal.labcodeText");
+                	
+        	value = (f != null) ? f.getValue() : r.getTitle();
         }
         
         if(value instanceof TridasSample){

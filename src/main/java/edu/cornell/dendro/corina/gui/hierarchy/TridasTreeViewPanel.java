@@ -52,9 +52,9 @@ import org.tridas.util.TridasObjectEx;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.CorinaCodePanel;
+import edu.cornell.dendro.corina.gui.CorinaCodePanel.ObjectListMode;
 import edu.cornell.dendro.corina.gui.TridasSelectEvent;
 import edu.cornell.dendro.corina.gui.TridasSelectListener;
-import edu.cornell.dendro.corina.gui.CorinaCodePanel.ObjectListMode;
 import edu.cornell.dendro.corina.sample.Element;
 import edu.cornell.dendro.corina.sample.ElementList;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -65,6 +65,7 @@ import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.tridasv2.GenericFieldUtils;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.PopupListener;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -803,7 +804,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 * 
 	 * @param node
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void deleteEntity(DefaultMutableTreeNode node)
 	{
 		ITridas entity = null;
@@ -956,12 +957,17 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		{
 			return;
 		}
-		/*else if (entities.size()!=1)
+
+		ITridas entity;
+		try{
+			entity = entities.get(0);
+		} catch (IndexOutOfBoundsException e)
 		{
+			Alert.message(parent, "No matches", "No matches for this code");
 			return;
-		}*/
+		}
 		
-		ITridas entity = entities.get(0);
+		
 		if(entity instanceof TridasObject)
 		{
 			TridasObjectEx object = (TridasObjectEx) entity;
