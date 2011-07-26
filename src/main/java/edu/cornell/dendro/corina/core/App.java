@@ -238,9 +238,9 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 	    	    	// it is easy to disable options that will result in a 'no permissions' 
 	    	    	// error
 	    	    	 try{    				  
-	    				  for(WSISecurityGroup grp : su.getMemberOf().getSecurityGroups())
+	    				  for(String grpId : su.getMemberOves())
 	    				  {
-	    					  if(grp.getId().equals("1")) isAdmin=true;
+	    					  if(grpId.equals("1")) isAdmin=true;
 	    				  }
 	    			    } catch (Exception e){  }
 	    		}
