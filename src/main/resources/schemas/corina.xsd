@@ -226,6 +226,10 @@
 			<xs:enumeration value="is"/>
 		</xs:restriction>
 	</xs:simpleType>
+	
+	<xs:simpleType name="idList">
+ 		<xs:list itemType="xs:token"/>
+	</xs:simpleType>
 
 	<!--
 %%%%%%%%%%%%%%
@@ -669,7 +673,6 @@
 		</xs:complexType>
 	</xs:element>
 	
-	
 	<!--
 		%%%%%%%%%%%%%%
 		%		USER
@@ -681,20 +684,12 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="memberOf" minOccurs="0" maxOccurs="1">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
 			<xs:attribute name="id" type="xs:token" use="optional"/>
 			<xs:attribute name="username" type="xs:string" use="optional" />
 			<xs:attribute name="firstName" type="xs:string" use="optional" />
 			<xs:attribute name="lastName" type="xs:string" use="optional" />
 			<xs:attribute name="isActive" type="xs:boolean" use="optional" />
+			<xs:attribute name="memberOf" type="idList" use="optional" />
 			<xs:attribute name="hashOfPassword" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>	
@@ -707,20 +702,12 @@
 	
 	<xs:element name="securityGroup">		
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="members" minOccurs="0" maxOccurs="1">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
-							<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-			<xs:attribute name="id" type="xs:token" use="optional"/>
+			<xs:attribute name="id" type="xs:token" use="optional" />
 			<xs:attribute name="name" type="xs:string" use="optional"/>
 			<xs:attribute name="description" type="xs:string" use="optional"/>
 			<xs:attribute name="isActive" type="xs:boolean" use="optional"/>
+			<xs:attribute name="userMembers" type="idList" use="optional" />
+			<xs:attribute name="groupMembers" type="idList" use="optional" />
 		</xs:complexType>
 	</xs:element>
 		
