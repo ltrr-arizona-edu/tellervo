@@ -151,9 +151,7 @@ public class Prefs extends AbstractSubsystem {
 		PROXY_HTTP("corina.proxy.http"),
 		
 		GRAPH_DEFAULT_AGENT("corina.graph.defaultagent"),
-		
-		LAST_EXPORT_FORMAT("corina.export.lastformat"),
-		
+				
 		FOLDER_DATA("corina.dir.data"),
 		FOLDER_LAST_READ("corina.dir.lastimport"),
 		FOLDER_LAST_SAVE("corina.dir.lastsave");

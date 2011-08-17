@@ -314,9 +314,9 @@ public class ExportUI extends javax.swing.JPanel{
     	formatModel.addAll(blah);
 
     	// Set the previously used format or default to TRiDaS
-		if(App.prefs.getPref("corina.export.format")!=null)
+		if(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null)!=null)
 		{
-			cboExportFormat.setSelectedItem(App.prefs.getPref("corina.export.format"));
+			cboExportFormat.setSelectedItem(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null));
 		}
 		else
 		{   	

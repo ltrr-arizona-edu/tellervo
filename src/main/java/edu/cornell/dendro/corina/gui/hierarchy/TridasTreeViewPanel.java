@@ -348,7 +348,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         	@Override
 			public void showPopup(MouseEvent e) 
 			{
-				log.debug("showPopup called");
+				log.trace("showPopup called");
 				int selRow = tree.getRowForLocation(e.getX(), e.getY());
 				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
 				tree.setSelectionPath(selPath);
@@ -752,9 +752,9 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 */
 	private void showPopupMenu(JComponent source, int x, int y, Class<?> clazz, boolean expandEnabled)
 	{
-		log.debug("Go ahead and show popup! as x="+x+", y="+y+", class="+clazz+", expandEnabled="+expandEnabled);
+		log.trace("Go ahead and show popup! as x="+x+", y="+y+", class="+clazz+", expandEnabled="+expandEnabled);
 		JPopupMenu popupMenu = initPopupMenu(expandEnabled, clazz);
-		log.debug("Popup menu = "+popupMenu.toString());
+		log.trace("Popup menu = "+popupMenu.toString());
 		popupMenu.show(source, x, y);
 	}
 	

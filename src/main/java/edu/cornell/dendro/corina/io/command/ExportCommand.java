@@ -32,6 +32,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.io.control.ConvertEvent;
 import edu.cornell.dendro.corina.io.control.ExportEvent;
 import edu.cornell.dendro.corina.io.model.ConvertModel;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.Element;
 
@@ -56,7 +57,7 @@ public class ExportCommand implements ICommand {
 		ExportEvent event = (ExportEvent) argEvent;
 		
 		// Set the export format for future use
-    	App.prefs.setPref("corina.export.format", event.format);
+    	App.prefs.setPref(PrefKey.EXPORT_FORMAT, event.format);
     	    	
     	// Get defaults for creating project
     	TridasMetadataFieldSet defaults = new TridasMetadataFieldSet();
@@ -142,7 +143,8 @@ public class ExportCommand implements ICommand {
 		INamingConvention naming = event.naming;
 		if(labCodeList.size() != projList.size()){
 			log.warn("Lab code list isn't the same size as project list");
-			Alert.message("Whoops", "Lab codes are not supported in the input set, using hierarchical naming convention instead.");
+			Alert.message("Inconsistent", "There was a problem using the labcodes to name files.\n" +
+					"Using hierarchical naming convention instead.");
 			naming = new HierarchicalNamingConvention();
 		}
 		

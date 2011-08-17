@@ -63,6 +63,7 @@ import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
 import edu.cornell.dendro.corina.schema.SearchReturnObject;
 import edu.cornell.dendro.corina.tridasv2.TridasComparator;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import edu.cornell.dendro.corina.util.labels.ui.TridasListCellRenderer;
@@ -104,12 +105,13 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	private JLabel lblSample;
 	private JLabel lblRadius;
 	private JLabel lblSeries;
+	private Integer retryCount = 0;
 
-	protected ArrayListModel<TridasObject> objModel = new ArrayListModel<TridasObject>();
-	protected ArrayListModel<TridasElement> elModel = new ArrayListModel<TridasElement>();
-	protected ArrayListModel<TridasSample> sampModel = new ArrayListModel<TridasSample>();
-	protected ArrayListModel<TridasRadius> radiusModel = new ArrayListModel<TridasRadius>();
-	protected ArrayListModel<TridasMeasurementSeries> seriesModel = new ArrayListModel<TridasMeasurementSeries>();
+	protected ArrayListModel<TridasObject> objModel;
+	protected ArrayListModel<TridasElement> elModel;
+	protected ArrayListModel<TridasSample> sampModel;
+	protected ArrayListModel<TridasRadius> radiusModel;
+	protected ArrayListModel<TridasMeasurementSeries> seriesModel;
 	private JButton btnSelectO;
 	private JButton btnSelectE;
 	private JButton btnSelectS;
@@ -308,7 +310,8 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 					}
 					{
 						cboObject = new JComboBox();
-				    	cboObject.setModel(objModel);
+				    	//cboObject.setModel(objModel);
+				    	cboObject.addActionListener(this);
 						populateObjectCombo();
 						panelHierarchy.add(cboObject, "cell 1 0,growx");
 					}
@@ -324,7 +327,8 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 					{
 						cboElement = new JComboBox();
 						cboElement.setEnabled(false);
-						cboElement.setModel(elModel);
+						//cboElement.setModel(elModel);
+						cboElement.addActionListener(this);
 						cboElement.setRenderer(new TridasListCellRenderer());
 						panelHierarchy.add(cboElement, "cell 1 1,growx");
 					}
@@ -340,7 +344,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 					}
 					{
 						cboSample = new JComboBox();
-						cboSample.setModel(sampModel);
+						//cboSample.setModel(sampModel);
 						cboSample.setRenderer(new TridasListCellRenderer());
 						cboSample.setEnabled(false);
 						panelHierarchy.add(cboSample, "cell 1 2,growx");
@@ -357,7 +361,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 					}
 					{
 						cboRadius = new JComboBox();
-						cboRadius.setModel(radiusModel);
+						//cboRadius.setModel(radiusModel);
 						cboRadius.setRenderer(new TridasListCellRenderer());
 						cboRadius.setEnabled(false);
 						panelHierarchy.add(cboRadius, "cell 1 3,growx");
@@ -374,7 +378,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 					}
 					{
 						cboSeries = new JComboBox();
-						cboSeries.setModel(seriesModel);
+						//cboSeries.setModel(seriesModel);
 						cboSeries.setRenderer(new TridasListCellRenderer());
 						cboSeries.setEnabled(false);
 						cboSeries.addActionListener(this);
@@ -522,7 +526,16 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 				populateRadiusCombo();
 			}
 		}
-		
+		else if (e.getSource().equals(cboObject))
+		{
+			log.debug("cboObject clicked");
+			log.debug("Combo has "+cboObject.getItemCount() + " items");
+		}
+		else if (e.getSource().equals(cboElement))
+		{
+			log.debug("cboElement clicked");
+			log.debug("Combo has "+cboElement.getItemCount() + " items");
+		}
 		
 	}
 	
@@ -723,13 +736,21 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
     {
     	SiteRenderer rend = new SiteRenderer();
     	rend.setMaximumTitleLength(30);
-    	cboObject.setRenderer(rend);
-    	objModel.replaceContents(App.tridasObjects.getObjectList());
-    	objModel.setSelectedItem(null);   
+    	//cboObject.setRenderer(rend);
+    	objModel = new ArrayListModel<TridasObject>(App.tridasObjects.getObjectList());
+    	//objModel.setSelectedItem(null);   
+    	cboObject.setModel(objModel);
     }
     
     private void populateElementCombo()
     {
+    	
+    	if(retryCount>=4) {
+    		Alert.error("Retry error", "Already tried to populate combo 4 times with no success");
+    		retryCount=0;
+    		return;
+    	}
+    	
     	TridasObject obj = null;
     	
     	if (cboObject.getSelectedItem()!=null)
@@ -738,6 +759,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
     	}
     	else
     	{
+    		log.debug("Can't populate element combo as no object is selected");
     		return;
     	}
     	    	    	
@@ -755,21 +777,47 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		
 		if(!dialog.isSuccessful()) 
 		{ 
-			System.out.println("oopsey doopsey.  Error getting elements");
+			log.error("Error getting elements from the search request");
 			return;
 		}
 		
-		List<TridasElement> elList = resource.getAssociatedResult();
+		List<TridasElement> elList = null;
+		try{
+			elList = resource.getAssociatedResult();
+		} catch (Exception ex)
+		{
+			log.error("LeAnns bug! "+ ex.getLocalizedMessage());
+			retryCount++;
+			populateElementCombo();
+		}
 		
+		if(elList==null)
+		{
+			log.error("Null response from getAssociatedResult");
+		}
+		if(elList.size()==0)
+		{
+			log.error("Zero results from getAssociatedResult");
+
+		}
+		
+		retryCount = 0;
 		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
 				TridasComparator.NullBehavior.NULLS_LAST, 
 				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
 		Collections.sort(elList, numSorter);
 		
-		elModel.replaceContents(elList); 	
-    	
+		log.debug("Element combo model previously had " + elModel.size() + " entries in it");
+		
+		elModel = new ArrayListModel<TridasElement>(elList);
+		cboElement.setModel(elModel);
+		    	
+		log.debug("Element combo model *now* has " + elModel.size() + " entries in it");
+		log.debug("Element combo gui has "+cboElement.getItemCount()+ " entries in it");
+		
+		
 		// Pick first in list
-		if(elModel.size()>0) cboElement.setSelectedIndex(0);
+		//if(elModel.size()>0) cboElement.setSelectedIndex(0);
     }
 	
     /**
@@ -777,8 +825,24 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
      */
     private void populateSampleCombo()
     {
+    	if(retryCount>=4) {
+    		Alert.error("Retry error", "Already tried to populate combo 4 times with no success");
+    		retryCount=0;
+    		return;
+    	}
+    	
     	TridasElement el = null;
-    	el = (TridasElement) cboElement.getSelectedItem();
+    	
+    	if (cboElement.getSelectedItem()!=null)
+    	{
+    		el = (TridasElement) cboElement.getSelectedItem();
+    	}
+    	else
+    	{
+    		log.debug("Can't populate sample combo as no element is selected");
+    		return;
+    	}
+    	    	
   	    	
 		// Find all samples for an element 
     	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
@@ -794,11 +858,22 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		
 		if(!dialog.isSuccessful()) 
 		{ 
-			System.out.println("oopsey doopsey.  Error getting samples");
+			log.error("Error getting samples from the search request");
 			return;
 		}
 		
-		List<TridasSample> sampList = resource.getAssociatedResult();
+		List<TridasSample> sampList = null;
+		
+		try{
+			sampList = resource.getAssociatedResult();
+		} catch (Exception e)
+		{
+			log.error("LeAnns bug! "+e.getLocalizedMessage());
+			retryCount++;
+			populateSampleCombo();
+		}
+		
+		retryCount=0;
 		
 		/*TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
 				TridasComparator.NullBehavior.NULLS_LAST, 
@@ -815,6 +890,12 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
     
     private void populateRadiusCombo()
     {
+    	if(retryCount>=4) {
+    		Alert.error("Retry error", "Already tried to populate combo 4 times with no success");
+    		retryCount=0;
+    		return;
+    	}
+    	
     	TridasSample samp = null;
     	samp = (TridasSample) cboSample.getSelectedItem();
   	    	
@@ -832,11 +913,22 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		
 		if(!dialog.isSuccessful()) 
 		{ 
-			System.out.println("oopsey doopsey.  Error getting radii");
+			log.error("Error getting radii from the search request");
 			return;
 		}
 		
-		List<TridasRadius> radiusList = resource.getAssociatedResult();
+		List<TridasRadius> radiusList = null;
+		
+		try{
+			radiusList = resource.getAssociatedResult();
+		} catch (Exception e)
+		{
+			log.error("LeAnns bug! "+e.getLocalizedMessage());
+			retryCount++;
+			populateRadiusCombo();
+		}
+			
+		retryCount=0;
 		
 		/*TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
 				TridasComparator.NullBehavior.NULLS_LAST, 
