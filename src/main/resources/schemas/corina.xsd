@@ -700,7 +700,12 @@
 		% SECURITY GROUP
 		%%%%%%%%%%%%%% -->
 	
-	<xs:element name="securityGroup">		
+	<xs:element name="securityGroup">
+	<xs:annotation>
+			<xs:documentation>
+				A group in the Corina database
+			</xs:documentation>
+		</xs:annotation>		
 		<xs:complexType>
 			<xs:attribute name="id" type="xs:token" use="optional" />
 			<xs:attribute name="name" type="xs:string" use="optional"/>
