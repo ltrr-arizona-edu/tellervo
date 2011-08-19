@@ -27,12 +27,10 @@ import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 public class DeleteUserEvent extends MVCEvent{ // implements ITrackable {
 	private static final long serialVersionUID = 1L;
 	public final String usrid;
-	public final UserGroupAdminModel model;
 
-	public DeleteUserEvent(String argUsrid, UserGroupAdminModel argModel) {
+	public DeleteUserEvent(String argUsrid) {
 		super(UserGroupAdminController.DELETE_USER);
 		usrid = argUsrid;
-		model = argModel;
 	}
 
 //	/**

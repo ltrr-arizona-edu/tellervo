@@ -96,48 +96,19 @@ public class SecurityUserTableModelA extends AbstractTableModel {
 			case 1: return usr.getUsername();
 			case 2: return usr.getFirstName();
 			case 3: return usr.getLastName();
-			case 4: return getGroupsAsString(usr);
+			case 4: 
+				String str = "";
+				for(String groupId:usr.getMemberOves()){
+					str+=mainModel.getGroupById(groupId).getName() + ", ";
+				}
+				if(str.equals("")){
+					return str;
+				}else{
+					return str.substring(0,str.lastIndexOf(","));
+				}
 			case 5: return usr.isIsActive();
 			default: return null;
 		}
-	}
-	
-	public String getGroupsAsString(WSISecurityUser usr)
-	{
-		if(!usr.isSetMemberOf()){
-			return "";
-		}
-		ArrayList<WSISecurityGroup> grps = (ArrayList<WSISecurityGroup>) usr.getMemberOf().getSecurityGroups();
-		String str = "";
-		for(WSISecurityGroup grp : grps)
-		{
-			str+=grp.getName()+"; ";
-		}
-		
-		// Remove last "; " from string
-		if(str.length()>=2) str=str.substring(0, str.length()-2);
-		
-		return str;
-	}
-	
-	public Object getColumnValueForUser(WSISecurityUser usr, int columnIndex) {
-		
-		switch(columnIndex) {
-		case 0: 
-			return usr.getId();
-		case 1:
-			return usr.getUsername();
-		case 2:
-			return usr.getFirstName();
-		case 3:
-			return usr.getLastName();
-		case 4:
-			return getGroupsAsString(usr);
-		case 5:
-			return usr.isIsActive();
-		}
-		
-		return null;
 	}
 
 }

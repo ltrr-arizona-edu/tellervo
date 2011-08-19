@@ -19,12 +19,15 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin.command;
 
+import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.admin.control.DeleteUserEvent;
+import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.admin.view.UserGroupAdminView;
 import edu.cornell.dendro.corina.schema.*;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -36,7 +39,8 @@ public class DeleteUserCommand implements ICommand {
         public void execute(MVCEvent argEvent) {
         	DeleteUserEvent event = (DeleteUserEvent) argEvent;
         	String usrid = event.usrid;
-        	UserGroupAdminView view = event.model.getMainView();
+        	UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
+        	UserGroupAdminView view = mainModel.getMainView();
         	
     		WSIEntity entity = new WSIEntity();
     		entity.setId(usrid);
@@ -53,6 +57,7 @@ public class DeleteUserCommand implements ICommand {
     		{
     			rsrc.getAssociatedResult();
     			JOptionPane.showMessageDialog(view, "User deleted", "Success", JOptionPane.NO_OPTION);
+    			mainModel.removeUserById(usrid);
     		}
     		else{
     			JOptionPane.showMessageDialog(view, "Unable to delete user as their details are referenced by data in the database.\n" +

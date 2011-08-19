@@ -41,10 +41,11 @@ public class SecurityMixTableModel extends AbstractTableModel {
 	
 	private static final long serialVersionUID = -8612040164917147271L;
 	private WSISecurityGroup parentGroup;
-	private ArrayList<WSISecurityGroup> groupList;
-	private ArrayList<WSISecurityUser> userList;	
+	private ArrayList<WSISecurityGroup> groupMemList;
+	private ArrayList<WSISecurityUser> userMemList;	
 	private ArrayList<Object> membersList = new ArrayList<Object>();
 	private HashMap<WSISecurityGroup, ArrayList<WSISecurityGroup>> parentsMap;
+	private UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
 	
     private final String[] columnNames = {
             I18n.getText("dbbrowser.hash"),
@@ -55,30 +56,36 @@ public class SecurityMixTableModel extends AbstractTableModel {
 	
 	public SecurityMixTableModel(WSISecurityGroup argParentGroup){
 		parentGroup = argParentGroup;
-		groupList = new ArrayList<WSISecurityGroup>();
-		userList = new ArrayList<WSISecurityUser>();
-		if(parentGroup.isSetMembers()){
-			if(parentGroup.getMembers().isSetSecurityGroups())
-				groupList = (ArrayList<WSISecurityGroup>) parentGroup.getMembers().getSecurityGroups();	
-			if(parentGroup.getMembers().isSetSecurityUsers())
-				userList = (ArrayList<WSISecurityUser>) parentGroup.getMembers().getSecurityUsers();
+		groupMemList = new ArrayList<WSISecurityGroup>();
+		userMemList = new ArrayList<WSISecurityUser>();
+		parentsMap = new HashMap<WSISecurityGroup, ArrayList<WSISecurityGroup>>();
+		for(String groupId: parentGroup.getGroupMembers()){
+			groupMemList.add(mainModel.getGroupById(groupId));
+		}
+		for(String userId: parentGroup.getUserMembers()){
+			userMemList.add(mainModel.getUserById(userId));
 		}
 		buildParentsMap();
-		membersList.addAll(groupList);
-		membersList.addAll(userList);
+		membersList.addAll(groupMemList);
+		membersList.addAll(userMemList);
 	}
 	
 	
 	private void buildParentsMap(){
-		for(WSISecurityGroup group:groupList){
-        	for(WSISecurityGroup checkParent:groupList){
-    			if(checkParent.getMembers().getSecurityGroups().contains(group)){
-    				if(!parentsMap.containsKey(group)){
-    					parentsMap.put(group, new ArrayList<WSISecurityGroup>());
-    				}
-    				parentsMap.get(group).add(checkParent);
-    			}
-        	}   				    			
+		for(WSISecurityGroup group:mainModel.getGroupList()){
+        	for(String childId: group.getGroupMembers()){
+        		WSISecurityGroup child = mainModel.getGroupById(childId);
+        		if(!parentsMap.containsKey(child)){
+        			parentsMap.put(child, new ArrayList<WSISecurityGroup>());
+        		}
+        		
+        		ArrayList<WSISecurityGroup> parentsList = parentsMap.get(child);
+        		if(!parentsList.contains(group)){
+        			parentsList.add(group);
+    				parentsMap.put(child, parentsList);
+        		}
+    			
+        	}
     	}
 	}
   
@@ -130,8 +137,8 @@ public Object getColumnValueForUser(WSISecurityUser usr, int columnIndex) {
 		case 2: return "";
 		case 3: 
 			String parentStr = "";
-			for(WSISecurityGroup g:usr.getMemberOf().getSecurityGroups()){
-				parentStr += g.getName()+", ";
+			for(String groupId: usr.getMemberOves()){
+				parentStr += mainModel.getGroupById(groupId).getName()+", ";
 			}
 			return parentStr.substring(0, parentStr.lastIndexOf(","));
 		default: return null;

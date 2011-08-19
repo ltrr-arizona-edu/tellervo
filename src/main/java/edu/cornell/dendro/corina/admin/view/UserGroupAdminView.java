@@ -38,9 +38,7 @@ import edu.cornell.dendro.corina.admin.control.ToggleDisabledUsersEvent;
 import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
 import edu.cornell.dendro.corina.admin.model.SecurityMixTableModel;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
-import edu.cornell.dendro.corina.admin.testing.SubmissionTest;
 import edu.cornell.dendro.corina.admin.testing.UserGroupSyncer;
-import edu.cornell.dendro.corina.admin.testing.UserMemberOfWiper;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
@@ -171,23 +169,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         		new UserGroupSyncer();;
         	}
         });
-        
-        btnTestSubmit = new JButton("Test Submit");
-        btnTestSubmit.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent arg0) {
-        		new SubmissionTest();
-        	}
-        });
-        
-        btnWipeUsersGroups = new JButton("Wipe User's Groups");
-        btnWipeUsersGroups.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent arg0) {
-        		new UserMemberOfWiper();
-        	}
-        });
-        getContentPane().add(btnWipeUsersGroups, "flowx,cell 0 1,alignx right");
-        getContentPane().add(btnTestSubmit, "cell 0 1,alignx right");
-        getContentPane().add(btnSync, "cell 0 1,alignx right");
+        getContentPane().add(btnSync, "flowx,cell 0 1,alignx right");
 
         btnOk.setText("Ok");
         getContentPane().add(btnOk, "cell 0 1,alignx right,aligny top");
@@ -279,8 +261,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     protected javax.swing.JTable tblUsers;
     protected javax.swing.JPanel userPanel;
     private JButton btnSync;
-    private JButton btnTestSubmit;
-    private JButton btnWipeUsersGroups;
     private JLabel lblGroups;
     private JLabel lblMembers;
     // End of variables declaration//GEN-END:variables
@@ -301,7 +281,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 					null, options, options[1]);
 
 			if (ret == JOptionPane.YES_OPTION) {
-				new DeleteUserEvent(selectedUser.getId(), mainModel).dispatch();
+				new DeleteUserEvent(selectedUser.getId()).dispatch();
 			}
 		} else if (e.getSource() == this.btnNewUser) {
 			new UserUIView(this, true).setVisible(true);

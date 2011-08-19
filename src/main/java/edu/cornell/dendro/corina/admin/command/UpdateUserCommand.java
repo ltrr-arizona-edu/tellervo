@@ -39,6 +39,8 @@ import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource
 
 public class UpdateUserCommand implements ICommand {
 
+		//Updates the user locally and on the server and does the same for any groups whose "userMembers" property changed.	
+	
 		UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
 		UpdateUserEvent event;
 		WSISecurityUser user;
@@ -49,10 +51,7 @@ public class UpdateUserCommand implements ICommand {
         public void execute(MVCEvent argEvent) {
 
         	event = (UpdateUserEvent) argEvent;
-        	
-        	//this user should have its groups' members set to null in UserUIView
         	user = event.user;
-        	
         	oldMemList = event.oldMembershipList;
         	newMemList = event.newMembershipList;
         	parent = event.parent;
@@ -64,14 +63,14 @@ public class UpdateUserCommand implements ICommand {
 		private void updateGroups() {
   	
 			ArrayList<WSISecurityGroup> changedGroups = new ArrayList<WSISecurityGroup>();
-					
+
 			for(WSISecurityGroup group: mainModel.getGroupList()){
 				if(newMemList.contains(group) && !oldMemList.contains(group)){
-					group.getMembers().getSecurityUsers().add(user);
+					group.getUserMembers().add(user.getId());
 					changedGroups.add(group);
 				}
 				else if(!newMemList.contains(group) && oldMemList.contains(group)){
-					group.getMembers().getSecurityUsers().remove(user);
+					group.getUserMembers().remove(user.getId());
 					changedGroups.add(group);
 				}
 			}	
@@ -107,7 +106,10 @@ public class UpdateUserCommand implements ICommand {
 			
 			if(accdialog.isSuccessful())
 			{
+				//this sets the id assigned by the server.
+				//must happen before groups are updated!
 				mainModel.updateUser(rsrc.getAssociatedResult());
+				
 				parent.dispose();
 			}
 			else{

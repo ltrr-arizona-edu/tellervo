@@ -52,14 +52,17 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
             I18n.getText("admin.ismember"), 
         };
 	
+	@SuppressWarnings("unchecked")
 	public SecurityGroupTableModelB(WSISecurityUser trgetUser){
 		groupList = mainModel.getGroupList();
 		targetUser = trgetUser;
 		oldMemberOfList = new ArrayList<WSISecurityGroup>(); 
 		newMemberOfList = new ArrayList<WSISecurityGroup>();
 		parentsMap = new HashMap<WSISecurityGroup, ArrayList<WSISecurityGroup>>();
-		if(targetUser != null && targetUser.isSetMemberOf()){
-			newMemberOfList = (ArrayList<WSISecurityGroup>) (((ArrayList<WSISecurityGroup>) targetUser.getMemberOf().getSecurityGroups()).clone());
+		if(targetUser != null){
+			for(String groupId: targetUser.getMemberOves()){
+				newMemberOfList.add(mainModel.getGroupById(groupId));
+			}
 			oldMemberOfList = (ArrayList<WSISecurityGroup>) newMemberOfList.clone();
 		}
 		buildParentsMap();
@@ -67,13 +70,18 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
 	
 	private void buildParentsMap(){
 		for(WSISecurityGroup group:groupList){
-        	for(WSISecurityGroup checkParent:groupList){
-    			if(checkParent.isSetMembers() && checkParent.getMembers().getSecurityGroups().contains(group)){
-    				if(!parentsMap.containsKey(group)){
-    					parentsMap.put(group, new ArrayList<WSISecurityGroup>());
-    				}
-    				parentsMap.get(group).add(checkParent);
-    			}
+        	for(String childId: group.getGroupMembers()){
+        		WSISecurityGroup child = mainModel.getGroupById(childId);
+        		if(!parentsMap.containsKey(child)){
+        			parentsMap.put(child, new ArrayList<WSISecurityGroup>());
+        		}
+        		
+        		ArrayList<WSISecurityGroup> parentsList = parentsMap.get(child);
+        		if(!parentsList.contains(group)){
+        			parentsList.add(group);
+    				parentsMap.put(child, parentsList);
+        		}
+    			
         	}
     	}
 	}

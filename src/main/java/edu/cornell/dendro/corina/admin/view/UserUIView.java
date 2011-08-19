@@ -40,7 +40,6 @@ import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelB;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
-import edu.cornell.dendro.corina.schema.WSISecurityUser.MemberOf;
 
 /*
  * UserUI.java
@@ -349,17 +348,12 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 		user.setUsername(txtUsername.getText());
 		user.setIsActive(this.chkEnabled.isSelected());
 		
-		// Get groups
-		ArrayList<WSISecurityGroup> newMemListFull = this.groupsModel.getNewGroupMembership();
-		ArrayList<WSISecurityGroup> newMemListCleared = new ArrayList<WSISecurityGroup>();
-		for(WSISecurityGroup g:newMemListFull){
-			WSISecurityGroup group = (WSISecurityGroup) g.clone();
-			group.setMembers(null);
-			newMemListCleared.add(group);
+		ArrayList<WSISecurityGroup> newMemList = this.groupsModel.getNewGroupMembership();
+		for(WSISecurityGroup g:newMemList){
+			if(!user.getMemberOves().contains(g.getId())){
+				user.getMemberOves().add(g.getId());
+			}
 		}
-		MemberOf memberOf = new MemberOf();
-		memberOf.setSecurityGroups(newMemListCleared);
-		user.setMemberOf(memberOf);
 		
 		if(isNewUser)
 		{
@@ -385,7 +379,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 			//get original group membership list
 			ArrayList<WSISecurityGroup> oldMemList = this.groupsModel.getOrigGroupMembership();
 			// Editing existing user
-			new UpdateUserEvent(user, oldMemList, newMemListFull, this).dispatch();
+			new UpdateUserEvent(user, oldMemList, newMemList, this).dispatch();
 		}
 	}
 

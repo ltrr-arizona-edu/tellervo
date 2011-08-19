@@ -25,6 +25,7 @@ import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
 import edu.cornell.dendro.corina.admin.control.DeleteGroupEvent;
+import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.admin.view.UserGroupAdminView;
 import edu.cornell.dendro.corina.schema.*;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -36,7 +37,8 @@ public class DeleteGroupCommand implements ICommand {
         public void execute(MVCEvent argEvent) {
         	DeleteGroupEvent event = (DeleteGroupEvent) argEvent;
         	String groupid = event.groupid;
-        	UserGroupAdminView view = event.model.getMainView();
+        	UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
+        	UserGroupAdminView view = mainModel.getMainView();
         	
     		WSIEntity entity = new WSIEntity();
     		entity.setId(groupid);
@@ -53,6 +55,7 @@ public class DeleteGroupCommand implements ICommand {
     		{
     			rsrc.getAssociatedResult();
     			JOptionPane.showMessageDialog(view, "Group deleted", "Success", JOptionPane.NO_OPTION);
+    			mainModel.removeGroupById(groupid);
     		}
     		
     		JOptionPane.showMessageDialog(view, "Unable to delete group as the details are referenced by data in the database.\n" +

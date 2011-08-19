@@ -29,9 +29,7 @@ import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
-import edu.cornell.dendro.corina.schema.WSISecurityGroup.Members;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
-import edu.cornell.dendro.corina.schema.WSISecurityUser.MemberOf;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityGroupEntityResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
@@ -47,16 +45,14 @@ public class UserGroupSyncer extends JDialog {
         ArrayList<WSISecurityUser> userList = UserGroupAdminModel.getInstance().getUserList();  
 
         for(WSISecurityGroup group:groupList){
-        	ArrayList<WSISecurityUser> membersList = new ArrayList<WSISecurityUser>();
+        	ArrayList<String> membersList = new ArrayList<String>();
         	for(WSISecurityUser user:userList){
-        		if(user.isSetMemberOf() && user.getMemberOf().getSecurityGroups().contains(group)){
-        			membersList.add(user);
+        		if(user.getMemberOves().contains(group.getId())){
+        			membersList.add(user.getId());
         		}
         	}
-    		Members members = new Members();
-    		members.setSecurityUsers(membersList);
-    		group.setMembers(members); 
-    		UserGroupAdminModel.getInstance().updateGroup(group);
+    		
+        	group.getUserMembers().addAll(membersList);
            		
 //    		SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
 //    		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);

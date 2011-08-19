@@ -285,6 +285,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     		return;
     	}
     	
+    	//TODO: make sure these requirements are the same everywhere
     	if(pwdNew.getPassword().length<7)
     	{
     		// Passwords too short
