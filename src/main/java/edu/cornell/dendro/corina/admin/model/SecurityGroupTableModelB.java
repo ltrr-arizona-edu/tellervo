@@ -46,7 +46,7 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
 	
     private final String[] columnNames = {
             I18n.getText("dbbrowser.hash"),
-            I18n.getText("admin.groups"),
+            I18n.getText("admin.group"),
             I18n.getText("admin.description"),
             I18n.getText("admin.parents"),
             I18n.getText("admin.ismember"), 
@@ -164,11 +164,16 @@ public class SecurityGroupTableModelB extends AbstractTableModel {
 		case 0: return grp.getId();
 		case 1: return grp.getName();
 		case 2: return grp.getDescription();
-		case 3: try{
-					return parentsMap.get(grp);
-				}catch(NullPointerException e){
-					return new ArrayList<WSISecurityGroup>();
+		case 3:
+			String parentStr = "";
+			ArrayList<WSISecurityGroup> parentsList = parentsMap.get(grp);
+			if(parentsList!=null){
+				for(WSISecurityGroup parent: parentsList){
+					parentStr += mainModel.getGroupById(parent.getId()).getName()+", ";
 				}
+				return parentStr.substring(0, parentStr.lastIndexOf(","));
+			}
+			return ""; 
 		case 4: 
 			return newMemberOfList.contains(grp);
 		default: return null;

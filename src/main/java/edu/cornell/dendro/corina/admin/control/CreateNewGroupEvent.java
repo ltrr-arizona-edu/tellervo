@@ -23,20 +23,17 @@ import javax.swing.JDialog;
 
 import com.dmurph.mvc.MVCEvent;
 
-import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 //import com.dmurph.mvc.tracking.ITrackable;
-import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 
-public class CreateNewUserEvent extends MVCEvent{ // implements ITrackable {
+public class CreateNewGroupEvent extends MVCEvent{ // implements ITrackable {
 	private static final long serialVersionUID = 1L;
-	public final WSISecurityUser user;
-	public final String password;
+	public final WSISecurityGroup group;
 	public final JDialog parent;
 
-	public CreateNewUserEvent(WSISecurityUser u, String pwd, JDialog prnt) {
-		super(UserGroupAdminController.CREATE_NEW_USER);
-		user = u;
-		password = pwd;
+	public CreateNewGroupEvent(WSISecurityGroup g, JDialog prnt) {
+		super(UserGroupAdminController.CREATE_NEW_GROUP);
+		group = g;
 		parent = prnt;
 	}
 

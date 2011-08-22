@@ -38,11 +38,8 @@ public class EditGroupCommand implements ICommand {
 		public void execute(MVCEvent argEvent) {
         	EditGroupEvent event = (EditGroupEvent) argEvent;
         	int groupSelected = event.groupIndex;
-        	ArrayList<WSISecurityGroup> groupList = (ArrayList<WSISecurityGroup>) Dictionary
-			.getDictionaryAsArrayList("securityGroupDictionary");
-        	SecurityGroupTableModelA groupsModel = new SecurityGroupTableModelA(groupList);
+        	SecurityGroupTableModelA groupsModel = new SecurityGroupTableModelA();
         	JDialog view = event.model.getMainView();
-        	
         	WSISecurityGroup selGroup = groupsModel.getGroupAt(groupSelected);
             GroupUIView userDialog = new GroupUIView(view, true, selGroup);
             userDialog.setVisible(true); 

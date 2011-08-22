@@ -36,7 +36,8 @@ import edu.cornell.dendro.corina.ui.I18n;
  * @author dan
  *
  */
-public class SecurityMixTableModel extends AbstractTableModel {
+
+public class SecurityMixTableModelB extends AbstractTableModel {
 	
 	private static final long serialVersionUID = -8612040164917147271L;
 	private WSISecurityGroup parentGroup;
@@ -53,7 +54,7 @@ public class SecurityMixTableModel extends AbstractTableModel {
             I18n.getText("admin.parents"),
         };
 	
-	public SecurityMixTableModel(WSISecurityGroup argParentGroup){
+	public SecurityMixTableModelB(WSISecurityGroup argParentGroup){
 		parentGroup = argParentGroup;
 		groupMemList = new ArrayList<WSISecurityGroup>();
 		userMemList = new ArrayList<WSISecurityUser>();

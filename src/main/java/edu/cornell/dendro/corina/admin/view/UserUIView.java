@@ -372,7 +372,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 			p2 = null;
 			
 			//TODO: check to be sure handling passwords like this is ok.
-			new CreateNewUserEvent(user, this.txtPassword.getPassword(), this).dispatch();
+			new CreateNewUserEvent(user, new String(this.txtPassword.getPassword()), this).dispatch();
 		}
 		else 
 		{

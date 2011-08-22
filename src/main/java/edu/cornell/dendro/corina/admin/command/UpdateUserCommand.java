@@ -20,7 +20,6 @@
 
 package edu.cornell.dendro.corina.admin.command;
 
-import java.security.MessageDigest;
 import java.util.ArrayList;
 
 import javax.swing.JDialog;
@@ -60,8 +59,30 @@ public class UpdateUserCommand implements ICommand {
         	updateGroups();			
         }
 
+		private void updateUser() {
+			// associate a resource
+	    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, user);
+	    	
+			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(parent, rsrc);
+			rsrc.query();
+			accdialog.setVisible(true);
+			
+			if(accdialog.isSuccessful())
+			{
+				//this sets the id assigned by the server.
+				//must happen before groups are updated!
+				mainModel.updateUser(rsrc.getAssociatedResult());
+				
+				parent.dispose();
+			}
+			else{
+				JOptionPane.showMessageDialog(parent, "Error updating user: " + accdialog.getFailException().
+						getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		
 		private void updateGroups() {
-  	
+		  	
 			ArrayList<WSISecurityGroup> changedGroups = new ArrayList<WSISecurityGroup>();
 
 			for(WSISecurityGroup group: mainModel.getGroupList()){
@@ -94,27 +115,5 @@ public class UpdateUserCommand implements ICommand {
 				}
 			}
 			
-		}
-
-		private void updateUser() {
-			// associate a resource
-	    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, user);
-	    	
-			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(parent, rsrc);
-			rsrc.query();
-			accdialog.setVisible(true);
-			
-			if(accdialog.isSuccessful())
-			{
-				//this sets the id assigned by the server.
-				//must happen before groups are updated!
-				mainModel.updateUser(rsrc.getAssociatedResult());
-				
-				parent.dispose();
-			}
-			else{
-				JOptionPane.showMessageDialog(parent, "Error updating user: " + accdialog.getFailException().
-						getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			}
 		}
 }

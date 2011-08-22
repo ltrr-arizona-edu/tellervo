@@ -48,7 +48,7 @@ public class SecurityUserTableModelA extends AbstractTableModel {
             I18n.getText("admin.user"),
             I18n.getText("admin.firstName"),
             I18n.getText("admin.lastName"),
-            I18n.getText("admin.groups"),
+            I18n.getText("admin.group"),
             I18n.getText("general.enabled"),
         };
 	

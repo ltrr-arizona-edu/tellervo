@@ -29,12 +29,15 @@ import javax.swing.JOptionPane;
 import javax.swing.table.TableRowSorter;
 import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.admin.control.AuthenticateEvent;
+import edu.cornell.dendro.corina.admin.control.CreateNewUserEvent;
 import edu.cornell.dendro.corina.admin.control.DeleteGroupEvent;
 import edu.cornell.dendro.corina.admin.control.DeleteUserEvent;
 import edu.cornell.dendro.corina.admin.control.EditGroupEvent;
 import edu.cornell.dendro.corina.admin.control.EditUserEvent;
 import edu.cornell.dendro.corina.admin.control.OkFinishEvent;
+import edu.cornell.dendro.corina.admin.control.CreateNewGroupEvent;
 import edu.cornell.dendro.corina.admin.control.ToggleDisabledUsersEvent;
+import edu.cornell.dendro.corina.admin.control.UpdateUserEvent;
 import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
 import edu.cornell.dendro.corina.admin.model.SecurityMixTableModel;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
@@ -46,7 +49,10 @@ import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.FlowLayout;
 
 /**
  * GUI class for administering users and groups.  Allows user with the correct
@@ -162,18 +168,63 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         groupPanel.add(btnNewGroup, "cell 4 0,alignx left,aligny top");
         groupPanel.add(btnDeleteGroup, "cell 6 0,alignx left,aligny top");
         getContentPane().setLayout(new MigLayout("", "[571px,grow]", "[405px,grow][25px]"));
-        
-        btnSync = new JButton("Sync");
-        btnSync.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent arg0) {
-        		new UserGroupSyncer();;
-        	}
-        });
-        getContentPane().add(btnSync, "flowx,cell 0 1,alignx right");
 
         btnOk.setText("Ok");
         getContentPane().add(btnOk, "cell 0 1,alignx right,aligny top");
         getContentPane().add(accountsTabPane, "cell 0 0,grow");
+        
+        panel = new JPanel();
+        accountsTabPane.addTab("New tab", null, panel, null);
+        panel.setLayout(new MigLayout("", "[173px][192px][205px][117px]", "[29px][][][][]"));
+        
+        test1 = new JButton("Create User testABC ");
+        panel.add(test1, "cell 0 0,alignx left,aligny top");
+//        test1.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//    			WSISecurityUser user = new WSISecurityUser();
+//    			user.setUsername("testABC");
+//    			user.setFirstName("first");
+//    			user.setLastName("last");
+//    			new CreateNewUserEvent(user, "pwdpwdpwd", new JDialog()).dispatch();
+//    		}
+//    		else if (e.getSource() == this.test3){
+//    			WSISecurityUser user= null;
+//    			WSISecurityGroup group = null;
+//    			for(WSISecurityUser u : mainModel.getUserList()){
+//    				if(u.getUsername().equals("testABC")) user = u;
+//    			}
+//    			for(WSISecurityGroup g : mainModel.getGroupList()){
+//    				if(g.getName().equals("testGroup")) group = g ;
+//    			}
+//    			if(user!=null && group!=null){
+//    				user.getMemberOves().add(group.getId());
+//    				ArrayList<WSISecurityGroup> oldMemList = new ArrayList<WSISecurityGroup>();
+//    				ArrayList<WSISecurityGroup> newMemList = new ArrayList<WSISecurityGroup>();
+//    				newMemList.add(group);
+//    				new UpdateUserEvent(user, oldMemList, newMemList, new JDialog()).dispatch();
+//    			}
+//    		}
+//            }
+//        });
+        
+        test2 = new JButton("Create Group testGroup");
+        panel.add(test2, "cell 0 1,alignx left,aligny top");
+//        test2.addActionListener(new java.awt.event.ActionListener() {
+//        	public void actionPerformed1(java.awt.event.ActionEvent evt){
+//        		WSISecurityGroup group = new WSISecurityGroup();
+//    			group.setName("testGroup");
+//    			group.setDescription("test group");
+//    			new CreateNewGroupEvent(group, new JDialog()).dispatch();
+//        	}
+//        });
+        test3 = new JButton("Add testABC to testGroup");
+        panel.add(test3, "cell 0 2,alignx left,aligny top");
+        
+        test4 = new JButton("Delete testABC");
+        panel.add(test4, "cell 0 3,alignx left,aligny top");
+        
+        test5 = new JButton("Delete testGroup");
+        panel.add(test5, "cell 0 4");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -187,9 +238,8 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         tblUsers.setRowSorter(mainModel.getUsersSorterA());
         
         // Populate groups list
-       	groupList = (ArrayList<WSISecurityGroup>) Dictionary
-			.getDictionaryAsArrayList("securityGroupDictionary");
-    	groupsModel = new SecurityGroupTableModelA(groupList);
+       	groupList = mainModel.getGroupList();
+    	groupsModel = new SecurityGroupTableModelA();
         tblGroups.setModel(groupsModel);
         tblGroups.setRowSorter(new TableRowSorter<SecurityGroupTableModelA>(groupsModel));
          
@@ -228,7 +278,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     	btnNewGroup.setText(I18n.getText("menus.file.new"));
     	btnDeleteGroup.setText(I18n.getText("general.delete"));
     	accountsTabPane.setTitleAt(0, I18n.getText("admin.users"));
-    	accountsTabPane.setTitleAt(1, I18n.getText("admin.groups"));
+    	accountsTabPane.setTitleAt(1, I18n.getText("admin.group"));
     	lblMembers.setText(I18n.getText("admin.members"));
     }
     
@@ -260,9 +310,14 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     protected javax.swing.JTable tblMembers;
     protected javax.swing.JTable tblUsers;
     protected javax.swing.JPanel userPanel;
-    private JButton btnSync;
     private JLabel lblGroups;
     private JLabel lblMembers;
+    private JPanel panel;
+    private JButton test1;
+    private JButton test2;
+    private JButton test3;
+    private JButton test4;
+    private JButton test5;
     // End of variables declaration//GEN-END:variables
 
     public void actionPerformed(ActionEvent e) {

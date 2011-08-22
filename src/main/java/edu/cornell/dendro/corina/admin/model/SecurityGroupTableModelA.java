@@ -36,15 +36,16 @@ public class SecurityGroupTableModelA extends AbstractTableModel {
 	
 	private static final long serialVersionUID = -8612040164917147271L;
 	private ArrayList<WSISecurityGroup> groupList;
+	private UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
 	
     private final String[] columnNames = {
             I18n.getText("dbbrowser.hash"),
-            I18n.getText("admin.groups"),
+            I18n.getText("admin.group"),
             I18n.getText("admin.description"),
         };
 	
-	public SecurityGroupTableModelA(ArrayList<WSISecurityGroup> grpLst){
-		groupList = grpLst;
+	public SecurityGroupTableModelA(){
+		groupList = mainModel.getGroupList();
 	}
 	
 	public int getColumnCount() {

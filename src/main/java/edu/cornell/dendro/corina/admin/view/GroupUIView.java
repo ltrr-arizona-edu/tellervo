@@ -33,12 +33,14 @@ import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.TableRowSorter;
 
-import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
+import edu.cornell.dendro.corina.admin.model.SecurityMixTableModelB;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityGroupEntityResource;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
 
 
 
@@ -53,8 +55,8 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 	private static final long serialVersionUID = 1L;
 	WSISecurityGroup group = new WSISecurityGroup();
 	Boolean isNewGroup = true;
-	private SecurityGroupTableModelA groupsModel;
-	private TableRowSorter<SecurityGroupTableModelA> groupsSorter;
+	private SecurityMixTableModelB groupsModel;
+	private TableRowSorter<SecurityMixTableModelB> groupsSorter;
 	
     /** Creates new form GroupUI 
      * @wbp.parser.constructor*/
@@ -142,6 +144,11 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         btnDoIt.setText("Apply");
 
         btnClose.setText("OK");
+        
+        txtDescription = new JTextField();
+        txtDescription.setColumns(10);
+        
+        JLabel lblDescription = new JLabel("Description:");
 
         GroupLayout layout = new GroupLayout(getContentPane());
         layout.setHorizontalGroup(
@@ -160,10 +167,16 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         							.addGap(64)
         							.addComponent(txtId, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)))
         					.addContainerGap())
-        				.addGroup(layout.createSequentialGroup()
-        					.addComponent(lblGroup)
+        				.addGroup(Alignment.LEADING, layout.createSequentialGroup()
+        					.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        						.addComponent(lblGroup)
+        						.addComponent(lblDescription))
         					.addGap(18)
-        					.addComponent(txtName, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE))))
+        					.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        						.addGroup(layout.createSequentialGroup()
+        							.addComponent(txtDescription, GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
+        							.addContainerGap())
+        						.addComponent(txtName, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)))))
         		.addGroup(layout.createSequentialGroup()
         			.addComponent(chkEnabled)
         			.addContainerGap(336, Short.MAX_VALUE))
@@ -185,9 +198,13 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
         				.addComponent(txtName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         				.addComponent(lblGroup))
+        			.addPreferredGap(ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(txtDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(lblDescription))
         			.addGap(18)
         			.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE)
-        			.addPreferredGap(ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
         			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
         				.addComponent(btnClose)
         				.addComponent(btnDoIt))
@@ -210,6 +227,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
     protected javax.swing.JTable tblGroups;
     protected javax.swing.JTextField txtId;
     protected javax.swing.JTextField txtName;
+    private JTextField txtDescription;
     // End of variables declaration//GEN-END:variables
  
     @SuppressWarnings("unchecked")
@@ -236,14 +254,15 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 	    	if(group.isSetName()) txtName.setText(group.getName());
 	    	if(group.isSetId()) 		  txtId.setText(group.getId());
 	    	if(group.isSetName())  txtName.setText(group.getName());
+	    	if(group.isSetDescription()) txtDescription.setText(group.getDescription());
 	    	if(group.isSetIsActive())  chkEnabled.setSelected(group.isIsActive());
     	}
     	
         // Populate groups list
         ArrayList<WSISecurityGroup> lstofGroups = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
-        groupsModel = new SecurityGroupTableModelA(lstofGroups);
+        groupsModel = new SecurityMixTableModelB(group);
         tblGroups.setModel(groupsModel);
-        groupsSorter = new TableRowSorter<SecurityGroupTableModelA>(groupsModel);
+        groupsSorter = new TableRowSorter<SecurityMixTableModelB>(groupsModel);
         tblGroups.setRowSorter(groupsSorter);
         tblGroups.setEditingColumn(3);
     	
@@ -355,5 +374,4 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 		// TODO Auto-generated method stub
 		
 	}
-    
 }

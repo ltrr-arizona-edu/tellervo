@@ -56,6 +56,10 @@ public class UserGroupAdminModel extends AbstractModel {
 	private ArrayList<WSISecurityGroup> groupList;
 	private ArrayList<WSISecurityUser> userList;
 
+	public void addGroup(WSISecurityGroup group) {
+		getGroupList().add(group);
+	}
+
 	@SuppressWarnings("unchecked")
 	public void addGroups(ArrayList<WSISecurityGroup> newGroups){
 		groupList.addAll((ArrayList<WSISecurityGroup>) newGroups.clone());
@@ -65,20 +69,20 @@ public class UserGroupAdminModel extends AbstractModel {
 		userList.add(user);
 		usersModelA.fireTableDataChanged();
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public void addUsers(ArrayList<WSISecurityUser> newUsers){
 		userList.addAll((ArrayList<WSISecurityUser>) newUsers.clone());
 	}
-	
+
 	public WSISecurityGroup getGroupById(String id){
-		for(WSISecurityGroup g: groupList){
+		for(WSISecurityGroup g: getGroupList()){
 			if(id.equals(g.getId())) return g;
 		}
 		
 		return null;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public ArrayList<WSISecurityGroup> getGroupList() {
         if(groupList==null){
@@ -93,7 +97,7 @@ public class UserGroupAdminModel extends AbstractModel {
 	}
 	
 	public WSISecurityUser getUserById(String id){
-		for(WSISecurityUser u: userList){
+		for(WSISecurityUser u: getUserList()){
 			if(id.equals(u.getId())) return u;
 		}
 		
@@ -123,47 +127,29 @@ public class UserGroupAdminModel extends AbstractModel {
 		}
 		return usersSorter;
 	}
-	
-	public void removeGroups(ArrayList<WSISecurityGroup> groups){
-		for(WSISecurityGroup g:groupList){
-			if(groups.contains(g)){
-				groupList.remove(g);
+
+	public void removeGroupById(String groupid) {
+		for(WSISecurityGroup g:getGroupList()){
+			if(g.getId() == groupid){
+				getGroupList().remove(g);
 			}
 		}
 	}
 	
 	public void removeUserById(String userId){
-		for(WSISecurityUser u:userList){
+		for(WSISecurityUser u:getUserList()){
 			if(u.getId() == userId){
 				userList.remove(u);
 			}
 		}
-	}
-	
-	public void removeUsers(ArrayList<WSISecurityUser> users){
-		for(WSISecurityUser u:userList){
-			if(users.contains(u)){
-				userList.remove(u);
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public void setGroupList(ArrayList<WSISecurityGroup> newList){
-		groupList = (ArrayList<WSISecurityGroup>) newList.clone();
 	}
 
 	public void setMainView(UserGroupAdminView mainView) {
 		this.mainView = mainView;
 	}
 
-	@SuppressWarnings("unchecked")
-	public void setUserList(ArrayList<WSISecurityUser> newList){
-		userList = (ArrayList<WSISecurityUser>) newList.clone();
-	}
-	
 	public void updateGroup(WSISecurityGroup group) {
-		for(WSISecurityGroup g:groupList){
+		for(WSISecurityGroup g:getGroupList()){
 			if(g.getId()==group.getId()){
 				g=(WSISecurityGroup) group.clone();
 				break;
@@ -174,21 +160,13 @@ public class UserGroupAdminModel extends AbstractModel {
 	}
 
 	public void updateUser(WSISecurityUser user) {
-		for(WSISecurityUser u:userList){
+		for(WSISecurityUser u:getUserList()){
 			if(u.getId()==user.getId()){
 				u=(WSISecurityUser) user.clone();
 				break;
 			}
 		}
 		usersModelA.fireTableDataChanged();
-	}
-
-	public void removeGroupById(String groupid) {
-		for(WSISecurityGroup g:groupList){
-			if(g.getId() == groupid){
-				groupList.remove(g);
-			}
-		}
 	}
 	
 }
