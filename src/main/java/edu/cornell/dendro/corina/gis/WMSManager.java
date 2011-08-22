@@ -20,7 +20,10 @@
 package edu.cornell.dendro.corina.gis;
 
 import edu.cornell.dendro.corina.ui.Builder;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.prefs.AddWMSServerDialog;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import edu.cornell.dendro.corina.ui.Alert;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
@@ -38,6 +41,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import com.dmurph.mvc.model.MVCArrayList;
 
 @SuppressWarnings("serial")
 public class WMSManager extends JFrame {
@@ -67,7 +72,12 @@ public class WMSManager extends JFrame {
     @SuppressWarnings("unchecked")
 	public void setupGUI()
     {
-    	serverDetails = Dictionary.getMutableDictionary("wmsServerDictionary");
+    	ArrayList<WSIWmsServer> systemServers = Dictionary.getMutableDictionary("wmsServerDictionary");
+    	ArrayList<WSIWmsServer> personalServers = App.prefs.getWSIWmsServerArrayPref(PrefKey.WMS_PERSONAL_SERVERS);
+    	
+    	serverDetails.addAll(systemServers);
+    	serverDetails.addAll(personalServers);
+    	
 
     	if(serverDetails==null || serverDetails.size()==0)
     	{
@@ -89,18 +99,20 @@ public class WMSManager extends JFrame {
                     return;
                 }
 
-                String server = JOptionPane.showInputDialog("Enter wms server URL");
-                if (server == null || server.length() < 1)
+				WSIWmsServer server = AddWMSServerDialog.showAddWMSServerDialog(null);
+				
+				if(server!=null)
+				{
+					App.prefs.addWSIWmsServerToArrayPref(PrefKey.WMS_PERSONAL_SERVERS, server);
+					App.refreshPreferencesDialog();
+				}
+				else
                 {
                     tabbedPane.setSelectedIndex(previousTabIndex);
                     return;
                 }
 
-                // Respond by adding a new WMSLayerPanel to the tabbed pane.
-                WSIWmsServer newserver = new WSIWmsServer();
-                newserver.setName("New server");
-                newserver.setUrl(server.trim());
-                if (addTab(tabbedPane.getTabCount(), newserver) != null)
+                if (addTab(tabbedPane.getTabCount(), server) != null)
                     tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
             }
         });

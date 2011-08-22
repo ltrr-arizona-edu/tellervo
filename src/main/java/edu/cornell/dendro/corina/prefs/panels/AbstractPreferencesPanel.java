@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.prefs.panels;
 import java.awt.Font;
 
 import javax.swing.Icon;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
@@ -34,7 +35,7 @@ public abstract class AbstractPreferencesPanel extends JPanel {
 	private Icon icon;
 	private String subTitle;
 	private JToggleButton tabButton;
-	
+	private JDialog parent;
 	
 	/**
 	 * 
@@ -42,11 +43,12 @@ public abstract class AbstractPreferencesPanel extends JPanel {
 	 * @param iconfilename
 	 * @param subTitle
 	 */
-	public AbstractPreferencesPanel(String title, String iconfilename, String subTitle)
+	public AbstractPreferencesPanel(String title, String iconfilename, String subTitle, JDialog parent)
 	{
 		this.title = title;
 		this.icon = Builder.getIcon(iconfilename, 48);
 		this.subTitle = subTitle;
+		this.parent = parent;
 		tabButton = new JToggleButton();
 		tabButton.setFont(new Font("Dialog", Font.PLAIN, 10));
 		tabButton.setText(title);

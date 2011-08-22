@@ -31,6 +31,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
@@ -80,10 +81,11 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	/**
 	 * Create the panel.
 	 */
-	public HardwarePrefsPanel()  {
+	public HardwarePrefsPanel(final JDialog parent)  {
 		super(I18n.getText("preferences.hardware"), 
 				"hardware.png", 
-				"Set measuring platform and barcode scanner preferences");
+				"Set measuring platform and barcode scanner preferences",
+				parent);
 		
 		setLayout(new MigLayout("", "[grow]", "[][][grow]"));
 		

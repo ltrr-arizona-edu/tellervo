@@ -27,6 +27,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
@@ -51,10 +52,11 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 	/**
 	 * Create the panel.
 	 */
-	public AppearancePrefsPanel() {
+	public AppearancePrefsPanel(final JDialog parent) {
 		super(I18n.getText("preferences.appearance"), 
 				"appearance.png", 
-				"Change how your Corina interface should appear");
+				"Change how your Corina interface should appear",
+				parent);
 		setLayout(new MigLayout("", "[450px,grow,fill][grow]", "[147.00px,fill][fill][grow,fill]"));
 		
 		JPanel panelEditor = new JPanel();

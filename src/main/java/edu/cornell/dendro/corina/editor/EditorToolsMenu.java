@@ -66,14 +66,14 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	private Sample sample;
 	private Editor editor;
 	
-	private JMenuItem truncate;
-	private JMenuItem reverseMenu;
-	private JMenuItem reconcile;
-	private JMenuItem indexMenu;
-	private JMenuItem sumMenuItem;
-	private JMenuItem modifySum;
-	private JMenuItem redate;
-	private JMenuItem crossAgainst;
+	private JMenuItem truncate = new JMenuItem();
+	private JMenuItem reverseMenu = new JMenuItem();
+	private JMenuItem reconcile = new JMenuItem();
+	private JMenuItem indexMenu = new JMenuItem();
+	private JMenuItem sumMenuItem = new JMenuItem();
+	private JMenuItem modifySum = new JMenuItem();
+	private JMenuItem redate = new JMenuItem();
+	private JMenuItem crossAgainst = new JMenuItem();
 	private JMenu crossMenu;
 	
 	public EditorToolsMenu(Sample s, Editor e) {

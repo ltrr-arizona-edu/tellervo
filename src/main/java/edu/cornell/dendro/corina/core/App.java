@@ -319,6 +319,11 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
 		prefsDialog.setVisible(true);
 	}
 	
+	public static void refreshPreferencesDialog()
+	{
+		prefsDialog.refreshPages();
+	}
+	
 	public static void runWizard()
 	{
 		new WizardDialog(prefsDialog);

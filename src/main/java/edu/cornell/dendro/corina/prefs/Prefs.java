@@ -33,9 +33,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -61,6 +65,7 @@ import edu.cornell.dendro.corina.core.AbstractSubsystem;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.BugReport;
 import edu.cornell.dendro.corina.util.JDisclosureTriangle;
@@ -149,6 +154,8 @@ public class Prefs extends AbstractSubsystem {
 		PROXY_PORT_HTTPS("corina.proxy.https_port"),
 		PROXY_HTTPS("corina.proxy.https"),
 		PROXY_HTTP("corina.proxy.http"),
+		
+		WMS_PERSONAL_SERVERS("corina.wms.personalservers"),
 		
 		GRAPH_DEFAULT_AGENT("corina.graph.defaultagent"),
 				
@@ -607,6 +614,67 @@ public class Prefs extends AbstractSubsystem {
 	public void setBooleanPref(PrefKey key, boolean value) {
 		setPref(key, Boolean.toString(value));
 	}
+	
+	
+	public void removeWSIWmsServerFromArray(PrefKey key, WSIWmsServer server)
+	{
+		ArrayList<WSIWmsServer> servers = getWSIWmsServerArrayPref(key);
+		
+		servers.remove(server);
+		
+		setWSIWmsServerArrayPref(key, servers);
+	
+	}
+	
+	public void addWSIWmsServerToArrayPref(PrefKey key, WSIWmsServer server)
+	{
+		ArrayList<WSIWmsServer> servers = getWSIWmsServerArrayPref(key);
+		
+		if(servers == null) servers = new ArrayList<WSIWmsServer>();
+		
+		servers.add(server);
+		
+		setWSIWmsServerArrayPref(key, servers);
+	}
+	
+	public void setWSIWmsServerArrayPref(PrefKey key, ArrayList<WSIWmsServer> arr)
+	{
+		String str = "";
+		
+		for(WSIWmsServer server : arr)
+		{
+			str += server.getName()+"="+server.getUrl()+":::";
+		}
+		
+		setPref(key, str);
+
+	}
+	
+	public ArrayList<WSIWmsServer> getWSIWmsServerArrayPref(PrefKey key)
+	{
+		ArrayList<WSIWmsServer> servers = new ArrayList<WSIWmsServer>();
+		String str = getPref(key, "");
+		
+		String[] pairs = str.split(":::");
+		
+		for(String pair : pairs)
+		{
+			String[] pair2 = pair.split("=");
+			
+			if(pair2.length!=2) continue;
+			
+			WSIWmsServer server = new WSIWmsServer();
+			server.setName(pair2[0]);
+			server.setUrl(pair2[1]);
+			servers.add(server);
+			
+		}
+		
+		return servers;
+		
+		
+	}
+	
 	
 	/**
 	 * Set the value of a preference to the specified color

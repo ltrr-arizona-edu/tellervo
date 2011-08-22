@@ -79,11 +79,11 @@ public class PreferencesDialog extends JDialog {
 	public PreferencesDialog() {
 	
 		// Define the pages of the preferences panels
-		registerPreferencesPage(new NetworkPrefsPanel());
-		registerPreferencesPage(new HardwarePrefsPanel());
-		registerPreferencesPage(new StatsPrefsPanel());
-		registerPreferencesPage(new AppearancePrefsPanel());
-		registerPreferencesPage(new MappingPrefsPanel());
+		registerPreferencesPage(new NetworkPrefsPanel(this));
+		registerPreferencesPage(new HardwarePrefsPanel(this));
+		registerPreferencesPage(new StatsPrefsPanel(this));
+		registerPreferencesPage(new AppearancePrefsPanel(this));
+		registerPreferencesPage(new MappingPrefsPanel(this));
 
 		
 		setIconImage(Builder.getApplicationIcon());
@@ -280,6 +280,17 @@ public class PreferencesDialog extends JDialog {
 
 		return null;
 		
+	}
+	
+	/**
+	 * Refresh all preferences panels
+	 */
+	public void refreshPages()
+	{
+		for(AbstractPreferencesPanel page : pageList)
+		{
+			page.refresh();
+		}
 	}
 	
 	void showHardPrefsPanel()

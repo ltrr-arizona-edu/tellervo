@@ -24,19 +24,51 @@ import java.util.ArrayList;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
 
+/**
+ * Table of WMS servers.  The table is made up of two lists: system servers and personal servers.  
+ * The system servers are derived from the system dictionary, while the personal are unique to 
+ * the current user.
+ * 
+ * @author pwb48
+ *
+ */
 public class WMSTableModel implements TableModel {
 
-	ArrayList<WSIWmsServer> servers = new ArrayList<WSIWmsServer>();
+	private final static Logger log = LoggerFactory.getLogger(WMSTableModel.class);
+
+	ArrayList<WSIWmsServer> personalServers = new ArrayList<WSIWmsServer>();
 	ArrayList<WSIWmsServer> systemServers = new ArrayList<WSIWmsServer>();
 	
-	@SuppressWarnings("unchecked")
 	public WMSTableModel()
 	{
+
+	}
+	
+	/**
+	 * Set the system servers from the system dictionary
+	 */
+	@SuppressWarnings("unchecked")
+	public void setSystemServers()
+	{
 		systemServers = Dictionary.getMutableDictionary("wmsServerDictionary");
-		servers.addAll(systemServers);
+	}
+	
+	/**
+	 * Set the personal servers to those specified.  Notes this will delete
+	 * any existing servers in the table. 
+	 * 
+	 * @param servers
+	 */
+	public void setPersonalServers(ArrayList<WSIWmsServer> servers)
+	{
+		personalServers = servers;
 	}
 	
 	@Override
@@ -52,7 +84,7 @@ public class WMSTableModel implements TableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 2;
+		return 3;
 	}
 
 	@Override
@@ -60,6 +92,10 @@ public class WMSTableModel implements TableModel {
 		if(columnIndex==0)
 		{
 			return "Name";
+		}
+		else if (columnIndex==1)
+		{
+			return "Type";
 		}
 		else
 		{
@@ -69,16 +105,48 @@ public class WMSTableModel implements TableModel {
 
 	@Override
 	public int getRowCount() {
-		return servers.size();
+		return personalServers.size()+systemServers.size();
 	}
 
+	public WSIWmsServer getServerFromRow(int row)
+	{
+		ArrayList<WSIWmsServer> combinedServers = new ArrayList<WSIWmsServer>();
+		combinedServers.addAll(systemServers);
+		combinedServers.addAll(personalServers);
+		
+		if(row>combinedServers.size() || row<0) return null;
+		
+		try{
+		return combinedServers.get(row);
+		} catch (Exception e)
+		{
+			log.error("Trying to get index "+row+" from servers when available servers = "+combinedServers.size());
+		}
+		
+		return null;
+	}
+	
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		WSIWmsServer server = servers.get(rowIndex);
+		WSIWmsServer server = getServerFromRow(rowIndex);
+		
+		if(server==null) return null;
+		
 		if(columnIndex==0)
 		{
 			return server.getName();
 			
+		}
+		else if (columnIndex==1)
+		{
+			if(rowIndex<systemServers.size())
+			{
+				return "System";
+			}
+			else
+			{
+				return "Personal";
+			}
 		}
 		else
 		{
@@ -86,11 +154,33 @@ public class WMSTableModel implements TableModel {
 		}
 	}
 
+	public boolean isRowEditable(int rowIndex)
+	{
+		WSIWmsServer server = getServerFromRow(rowIndex);
+		
+		if(server==null) return false;
+		
+		if(getValueAt(rowIndex,1).equals("Personal"))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 
-		WSIWmsServer server = servers.get(rowIndex);
+		//WSIWmsServer server = getServerFromRow(rowIndex);
 		
+		/*if(rowIndex<systemServers.size()) return false;
+		
+		if(columnIndex==1) return false;*/
+		
+		return false;
+		
+		
+		/*
 		for(WSIWmsServer sysser : this.systemServers)
 		{
 			if(server.equals(sysser))
@@ -99,7 +189,7 @@ public class WMSTableModel implements TableModel {
 			}
 		}
 		
-		return true;
+		return true;*/
 	}
 
 	@Override
@@ -110,7 +200,9 @@ public class WMSTableModel implements TableModel {
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		WSIWmsServer server = servers.get(rowIndex);
+		WSIWmsServer server = getServerFromRow(rowIndex);
+			
+		if(server==null) return;
 		
 		if(columnIndex==0)
 		{
@@ -123,10 +215,34 @@ public class WMSTableModel implements TableModel {
 
 	}
 	
-	public void addServer(WSIWmsServer server)
+	/**
+	 * Add a personal server to the table.
+	 * 
+	 * @param server
+	 */
+	public void addPersonalServer(WSIWmsServer server)
 	{
-		this.servers.add(server);
+		this.personalServers.add(server);
 		
+		
+	}
+	
+	/**
+	 * Remove row from table.  This will only remove
+	 * personal servers, not system servers.
+	 * 
+	 * @param row
+	 */
+	public void removeRow(int row)
+	{
+		WSIWmsServer server = getServerFromRow(row);
+		
+		try{
+		personalServers.remove(server);
+		} catch (Exception e)
+		{
+			
+		}
 		
 	}
 

@@ -26,18 +26,22 @@ import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.gis.GrfxWarning;
 import edu.cornell.dendro.corina.gis.WMSTableModel;
+import edu.cornell.dendro.corina.prefs.AddWMSServerDialog;
 import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.schema.WSIWmsServer;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -59,11 +63,13 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 	 * Create the panel.
 	 */
 	@SuppressWarnings("unchecked")
-	public MappingPrefsPanel() {
-		
+	public MappingPrefsPanel(final JDialog parent) {
+				
 		super(I18n.getText("preferences.mapping"), 
 				"map.png", 
-				"Manage the Web Mapping Services available within Corina");
+				"Manage the Web Mapping Services available within Corina",
+				parent);
+		
 		
 		serverDetails = Dictionary.getMutableDictionary("wmsServerDictionary");
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -78,6 +84,24 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 		panelWMS.add(lblMappingRequiresWeb, "cell 0 0 2 1");
 		
 		btnRemove = new JButton("Remove");
+		
+		btnRemove.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				WSIWmsServer server = wmsModel.getServerFromRow(tblWMS.getSelectedRow());
+				
+				if(server==null) return;
+				
+				App.prefs.removeWSIWmsServerFromArray(PrefKey.WMS_PERSONAL_SERVERS, server);
+				populateWMSTable();
+				
+				
+			}
+			
+		});
+		
 		panelWMS.add(btnRemove, "cell 2 0,alignx right");
 		
 		btnAdd = new JButton("Add");
@@ -86,6 +110,13 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				WSIWmsServer server = AddWMSServerDialog.showAddWMSServerDialog(parent);
+				
+				if(server!=null)
+				{
+					App.prefs.addWSIWmsServerToArrayPref(PrefKey.WMS_PERSONAL_SERVERS, server);
+					populateWMSTable();
+				}
 				
 				
 			}
@@ -107,29 +138,24 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 		// Enable/Disable mapping
 		setMappingEnabled(!App.prefs.getBooleanPref(PrefKey.OPENGL_FAILED, false));
 		populateWMSTable();
+		
+		tblWMS.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+					btnRemove.setEnabled(wmsModel.isRowEditable(tblWMS.getSelectedRow()));
+			}
+			
+		});
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private void populateWMSTable() {
-		ArrayList<WSIWmsServer> serverDetails = Dictionary
-				.getMutableDictionary("wmsServerDictionary");
+		ArrayList<WSIWmsServer> personalServers = App.prefs.getWSIWmsServerArrayPref(PrefKey.WMS_PERSONAL_SERVERS);
 		wmsModel = new WMSTableModel();
-		
-		/*if (serverDetails == null || serverDetails.size() == 0) {
-			setMappingEnabled(false);	
-			return;
-		}
-		else
-		{
-			setMappingEnabled(true);			
-		}*/
-		
-		for(WSIWmsServer server : serverDetails)
-		{
-			wmsModel.addServer(server);
-		}
-		
+		wmsModel.setSystemServers();
+		wmsModel.setPersonalServers(personalServers);
+				
 		tblWMS.setModel(wmsModel);
 
 	}
@@ -156,7 +182,7 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 		{
 			populateWMSTable();
 			// Show message and buttons depending on WS status
-			Boolean wsDisabled = App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, true);
+			Boolean wsDisabled = App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false);
 			lblMappingRequiresWeb.setVisible(wsDisabled);
 			btnAdd.setEnabled(!wsDisabled);
 			btnRemove.setEnabled(!wsDisabled);

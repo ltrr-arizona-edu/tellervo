@@ -23,6 +23,7 @@ import java.awt.Color;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -53,10 +54,11 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 	/**
 	 * Create the panel.
 	 */
-	public StatsPrefsPanel() {
+	public StatsPrefsPanel(final JDialog parent) {
 		super(I18n.getText("preferences.statistics"), 
 				"chart.png", 
-				"Set preferences for the display and handling of statistics");
+				"Set preferences for the display and handling of statistics",
+				parent);
 		
 		setLayout(new MigLayout("", "[225.00,grow][grow]", "[][grow]"));
 		

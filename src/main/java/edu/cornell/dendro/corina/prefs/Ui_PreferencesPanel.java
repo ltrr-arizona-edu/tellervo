@@ -592,7 +592,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
         );
         panelHardwarePrefsHolder.setLayout(new BorderLayout(0, 0));
         
-        hpp = new HardwarePrefsPanel();
+        hpp = new HardwarePrefsPanel(null);
         panelHardwarePrefsHolder.add(hpp);
         panelHardware.setLayout(gl_panelHardware);
 

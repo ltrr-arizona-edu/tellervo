@@ -28,6 +28,7 @@ import java.awt.event.ItemListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -64,10 +65,11 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	/**
 	 * Create the panel.
 	 */
-	public NetworkPrefsPanel() {
+	public NetworkPrefsPanel(final JDialog parent) {
 		super(I18n.getText("preferences.network"), 
 				"networksettings.png", 
-				"Webservice network connection preferences");
+				"Webservice network connection preferences",
+				parent);
 		
 		setLayout(new MigLayout("", "[grow]", "[115.00px][188.00px][grow]"));
 		
