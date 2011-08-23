@@ -24,25 +24,36 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
+import gov.nasa.worldwind.examples.LayerPanel;
 import gov.nasa.worldwind.layers.MarkerLayer;
 
 public class GISFrame extends JFrame {
 
 	private static final long serialVersionUID = -451333846688316647L;
 	protected GISPanel wwMapPanel;
+	protected JSplitPane splitPane;
+	protected LayerPanel layerPanel;
+	private final Boolean isMiniMap;
 	
 	/**
 	 * Simple constructor with all sites shown on map
 	 */
-	public GISFrame()
+	public GISFrame(Boolean isMiniMap)
 	{
+		this.isMiniMap = isMiniMap;
+		
 		setupGui(TridasMarkerLayerBuilder.getMarkerLayerForAllSites());
+		
+		//setupGui(KMLMarkerLayerBuilder.createLayerFromKMZ("/tmp/tree-ring-records.kmz"));
+		//setupGui(ITRDBMarkerLayerBuilder.createITRDBLayer());
 		setupMenus();
 	}
 	
@@ -51,18 +62,36 @@ public class GISFrame extends JFrame {
 	 * 
 	 * @param layer
 	 */
-	public GISFrame(MarkerLayer layer)
+	public GISFrame(MarkerLayer layer, Boolean isMiniMap)
 	{
+		this.isMiniMap = isMiniMap;
+	
 		setupGui(layer);
 		setupMenus();
 	}
 	
+	
 	private void setupGui(MarkerLayer layer)
 	{
 		wwMapPanel = new GISPanel(new Dimension(300,300),true, layer);
+		//managerPanel = new GISManagerPanel(wwMapPanel);
 		
-		add(wwMapPanel, BorderLayout.CENTER);
+		wwMapPanel.setIsMiniMap(isMiniMap);
+		
+		if(!wwMapPanel.isMiniMap())
+		{
+            layerPanel = new LayerPanel(wwMapPanel.getWwd(), null);
+			splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+					layerPanel, wwMapPanel);
+			add(splitPane, BorderLayout.CENTER);
+		}
+		else
+		{
+			add(wwMapPanel, BorderLayout.CENTER);
+		}
+
 		pack();
+
 		int state = getExtendedState(); 
 		// Set the maximized bits 
 		state |= JFrame.MAXIMIZED_BOTH; 
@@ -92,6 +121,10 @@ public class GISFrame extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
+		
+
+		
+		
 		
 	}
 	

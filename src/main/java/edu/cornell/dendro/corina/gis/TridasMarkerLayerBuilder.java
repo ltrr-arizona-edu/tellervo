@@ -144,6 +144,7 @@ public class TridasMarkerLayerBuilder {
 	}
 	
 
+
 	
 	private BasicMarkerAttributes getMarkerAttributesForEntity(Class<? extends ITridas> clazz)
 	{
@@ -179,6 +180,18 @@ public class TridasMarkerLayerBuilder {
 		builder.setName("All objects in database");
 		
         return builder.getMarkerLayer();
+	}
+	
+	
+	public static MarkerLayer getMarkerLayerForITRDBSites()
+	{
+		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
+		builder.loadAllSiteObjectMarkers();
+		builder.setName("All objects in database");
+		
+        return builder.getMarkerLayer();
+		
+		
 	}
 	
 	public static MarkerLayer getMarkerLayerForLatLong(Double lat, Double lon)

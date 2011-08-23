@@ -250,7 +250,7 @@ public class AdminMenu extends JMenu {
 	
 	public static void showMap(){
 				
-		GISFrame map = new GISFrame();
+		GISFrame map = new GISFrame(false);
 		map.setVisible(true);
     
 		

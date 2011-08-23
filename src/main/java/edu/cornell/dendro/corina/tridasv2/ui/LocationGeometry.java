@@ -338,7 +338,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 			
 			map = new GISFrame(TridasMarkerLayerBuilder.getMarkerLayerForLatLong(
 							(Double)this.spnDDLat.getValue(),
-							(Double)this.spnDDLong.getValue()));
+							(Double)this.spnDDLong.getValue()), true);
 			
 			map.setVisible(true);
 

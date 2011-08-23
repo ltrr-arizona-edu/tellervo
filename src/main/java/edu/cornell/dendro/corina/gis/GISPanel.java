@@ -30,9 +30,17 @@ import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.examples.ApplicationTemplate;
 import gov.nasa.worldwind.examples.ClickAndGoSelectListener;
+import gov.nasa.worldwind.examples.util.LayerManagerLayer;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.geom.Vec4;
+import gov.nasa.worldwind.layers.CompassLayer;
+import gov.nasa.worldwind.layers.Layer;
+import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.layers.ScalebarLayer;
+import gov.nasa.worldwind.layers.ViewControlsLayer;
+import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.pick.PickedObject;
 import gov.nasa.worldwind.util.Logging;
@@ -65,9 +73,20 @@ public class GISPanel extends JPanel implements SelectListener{
         protected TridasAnnotation annotation;
         protected Boolean isGrfxRetest= false;
         protected Boolean failedRetest;
+        protected ViewControlsLayer viewControlsLayer;
         private ArrayList<String> visibleLayers = new ArrayList<String>();
-
+        protected Boolean isMiniMap = false;
         
+        
+        public Boolean isMiniMap()
+        {
+        	return isMiniMap;
+        }
+        
+        public void setIsMiniMap(Boolean b)
+        {
+        	isMiniMap = b;
+        }
         
         public GISPanel(Dimension canvasSize, boolean includeStatusBar, MarkerLayer ly)
         {
@@ -88,6 +107,43 @@ public class GISPanel extends JPanel implements SelectListener{
             ApplicationTemplate.insertBeforePlacenames(this.getWwd(), this.annotationLayer);
 
         	this.getWwd().addSelectListener(this);
+        	
+        	
+            // Find ViewControls layer and keep reference to it
+            for (Layer layer : this.getWwd().getModel().getLayers())
+            {
+                if (layer instanceof ViewControlsLayer)
+                {
+                    viewControlsLayer = (ViewControlsLayer) layer;
+                    
+                }
+            }
+            
+            // Create and install the view controls layer and register a controller for it with the World Window.
+            ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
+            viewControlsLayer.setPosition(AVKey.NORTHEAST);
+            ApplicationTemplate.insertBeforeCompass(getWwd(), viewControlsLayer);
+            viewControlsLayer.setLayout(AVKey.VERTICAL);
+            this.getWwd().addSelectListener(new ViewControlsSelectListener(this.getWwd(), viewControlsLayer));
+            
+            CompassLayer compass = (CompassLayer) this.getWwd().getModel().getLayers().getLayerByName("Compass");
+            compass.setPosition(AVKey.SOUTHEAST);
+            compass.setLocationOffset(new Vec4(0, 20));
+            
+            WorldMapLayer overview = (WorldMapLayer) this.getWwd().getModel().getLayers().getLayerByName("World Map");
+            overview.setPosition(AVKey.SOUTHWEST);
+            overview.setResizeBehavior(AVKey.RESIZE_STRETCH);
+            
+            ScalebarLayer scale = (ScalebarLayer) this.getWwd().getModel().getLayers().getLayerByName("Scale bar");
+            
+
+        	overview.setEnabled(isMiniMap);
+        	compass.setEnabled(isMiniMap);
+        	scale.setEnabled(isMiniMap);
+            	
+            
+            
+        	
         }
 
         public Boolean isGrfxRetest()
@@ -163,11 +219,14 @@ public class GISPanel extends JPanel implements SelectListener{
             
             // Add the layer manager layer to the model layer list
             
-            CorinaLayerManagerLayer layermanager = new CorinaLayerManagerLayer(getWwd(), visibleLayers);
-            layermanager.setName("Show/hide layer list");
-            layermanager.setMinimized(true);
-            getWwd().getModel().getLayers().add(layermanager);
-            
+            if(isMiniMap)
+            {
+	            CorinaLayerManagerLayer layermanager = new CorinaLayerManagerLayer(getWwd(), visibleLayers);
+	            layermanager.setName("Show/hide layer list");
+	            layermanager.setMinimized(true);
+	            layermanager.setPosition(AVKey.NORTHWEST);
+	            getWwd().getModel().getLayers().add(layermanager);
+            }
 
             
         }

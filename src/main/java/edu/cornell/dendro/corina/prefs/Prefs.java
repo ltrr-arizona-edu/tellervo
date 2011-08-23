@@ -33,13 +33,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -205,8 +202,7 @@ public class Prefs extends AbstractSubsystem {
 	 * these defaults to allow the user to "reset" any changes they may have
 	 * made through the Appearance Panel.
 	 */
-	@SuppressWarnings("unchecked")
-	private final Hashtable UIDEFAULTS = new Hashtable(); // (Hashtable)
+	private final Hashtable<Object, Object> UIDEFAULTS = new Hashtable<Object, Object>(); // (Hashtable)
 															// UIManager.getDefaults().clone();
 
 	public String getName() {
@@ -309,12 +305,10 @@ public class Prefs extends AbstractSubsystem {
 		super.finalize();
 	}
 
-	@SuppressWarnings("unchecked")
-	public Hashtable getUIDefaults() {
+	public Hashtable<Object, Object> getUIDefaults() {
 		return UIDEFAULTS;
 	}
 
-	@SuppressWarnings("unchecked")
 	private void initUIDefaults() {
 		// UIDEFAULTS.putAll(UIManager.getDefaults());
 		UIDefaults defaults = UIManager.getDefaults();
@@ -322,7 +316,7 @@ public class Prefs extends AbstractSubsystem {
 		// Java 1.2, UIDefaults is "special"... the Iterator
 		// returned by UIDefaults keySet object does not return any
 		// keys, and therefore Enumeration must be used instead - aaron
-		Enumeration e = defaults.keys();
+		Enumeration<?> e = defaults.keys();
 
 		while (e.hasMoreElements()) {
 			Object key = e.nextElement();
@@ -417,12 +411,12 @@ public class Prefs extends AbstractSubsystem {
 	/**
 	 * Loads any saved uidefaults preferences and installs them
 	 */
-	@SuppressWarnings("unchecked")
 	private synchronized void installUIDefaultsPrefs() {
-		Iterator it = prefs.entrySet().iterator();
+		Iterator<?> it = prefs.entrySet().iterator();
 		UIDefaults uidefaults = UIManager.getDefaults();
 		log.debug("iterating prefs");
 		while (it.hasNext()) {
+			@SuppressWarnings("rawtypes")
 			Map.Entry entry = (Map.Entry) it.next();
 			String prefskey = entry.getKey().toString();
 			if (!prefskey.startsWith("uidefaults.")
@@ -435,8 +429,7 @@ public class Prefs extends AbstractSubsystem {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void installUIDefault(Class type, String prefskey, String uikey) {
+	private void installUIDefault(Class<? extends Object> type, String prefskey, String uikey) {
 		Object decoded = null;
 		String pref = prefs.getProperty(prefskey);
 		if (pref == null) {

@@ -133,7 +133,7 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
 			App.prefs.setBooleanPref(PrefKey.OPENGL_FAILED, false);
 			if(mapPanel==null)
 			{
-				final GISFrame map = new GISFrame();
+				final GISFrame map = new GISFrame(true);
 				map.setVisible(true);
 				
 	            map.wwMapPanel.getWwd().addRenderingExceptionListener(new RenderingExceptionListener()
