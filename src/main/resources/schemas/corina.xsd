@@ -396,6 +396,7 @@
 				<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 
                 <xs:element ref="objectTypeDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="elementTypeDictionary" minOccurs="0" maxOccurs="1"/>

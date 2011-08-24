@@ -46,6 +46,7 @@ import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import javax.swing.JButton;
@@ -248,6 +249,10 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     			}
     			if(group != null){
     				new DeleteGroupEvent(group.getId()).dispatch();
+    			}
+    			else
+    			{
+    				Alert.error("Error", "testGroup not found");
     			}
         	}
         });

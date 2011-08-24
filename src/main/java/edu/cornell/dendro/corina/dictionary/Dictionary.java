@@ -69,9 +69,19 @@ public class Dictionary extends CorinaResource {
 			XmlType type;
 			
 			// ignore things without an xml root element
-			if((dict = o.getClass().getAnnotation(XmlRootElement.class)) == null ||
-			   (type = o.getClass().getAnnotation(XmlType.class)) == null)
+			if((dict = o.getClass().getAnnotation(XmlRootElement.class)) == null )
+			{
+				log.error("Ignoring dictionary entry with no xml root element");
 				continue;
+			}
+			
+			if((type = o.getClass().getAnnotation(XmlType.class)) == null)
+			{
+				log.error("Ignoring dictionary entry with no xml type");
+				continue;
+
+			}
+				
 
 			// Dictionary has more than one element per entry??
 			if(type.propOrder().length != 1) {
@@ -111,6 +121,8 @@ public class Dictionary extends CorinaResource {
 				log.error("Dictionary " + dict.name() + "/" + fieldName + " is null");
 				continue;				
 			}
+			
+			log.debug("Registering dictionary "+dict.name()+" with "+dictionaryList.size()+ " entries");
 			
 			
 			registerDictionary(dict.name(), dictionaryList);

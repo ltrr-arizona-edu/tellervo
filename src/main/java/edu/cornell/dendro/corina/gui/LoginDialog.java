@@ -605,6 +605,9 @@ public class LoginDialog extends JDialog {
 					if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
 						// yay! we've authenticated!
 						setCursor(Cursor.getDefaultCursor());
+						
+						App.currentUser = authenticator.getAuthenticatedUser();
+						
 						if(authenticationNotifier != null) {
 							authenticationNotifier.setSuccess(true);
 							authenticationNotifier.stop();

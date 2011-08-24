@@ -226,7 +226,27 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     // Get the current users details from the dictionary
     isAdmin=false;
     if (appmodel.isLoggedIn()){
-    	List<?> dictionary = (List<?>) Dictionary.getDictionary("securityUserDictionary");
+    	
+    	if(currentUser==null){
+    		log.error("Current user is null");
+    		
+    		
+    	}
+    	else
+    	{
+    		try{    				  
+				  for(String grpId : currentUser.getMemberOves())
+				  {
+					  if(grpId.equals("1")) isAdmin=true;
+				  }
+			    } catch (Exception e){  }
+    	}
+    	
+    	
+    	
+    	
+    	
+    	/*List<?> dictionary = (List<?>) Dictionary.getDictionary("securityUserDictionary");
 		List<WSISecurityUser> users = (List<WSISecurityUser>) ListUtil.subListOfType(dictionary, WSISecurityUser.class);
 		
     	for(WSISecurityUser su: users){
@@ -250,7 +270,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     			if(su==null) log.warn("su is null");
     			if(su.getUsername()==null) log.warn("su.getusername is null");
     		}
-    	}
+    	}*/
     }
     
     // Cache the TRiDaS objects 

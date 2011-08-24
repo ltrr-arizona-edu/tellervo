@@ -704,10 +704,17 @@
 						<configuration>
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
-									classpathref="maven.plugin.classpath"/>
-								<zip destfile="${project.build.directory}/Binaries/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="true">
-									<zipfileset dir="Native/Libraries/macosx-universal/" includes="*.jnilib" prefix="${project.build.finalName}/Corina.app" />
-								</zip>
+									classpathref="maven.plugin.classpath"/>	
+								<trycatch>
+									<try>
+										<zip destfile="${project.build.directory}/Binaries/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="true">
+											<zipfileset dir="Native/Libraries/macosx-universal/" includes="*.jnilib" prefix="${project.build.finalName}/Corina.app" />
+										</zip>
+									</try>
+									<catch>
+										<echo message="Unable to add native libraries to MacOSX binary"/>
+									</catch>
+								</trycatch>
 							</tasks>
 						</configuration>
 						<goals>

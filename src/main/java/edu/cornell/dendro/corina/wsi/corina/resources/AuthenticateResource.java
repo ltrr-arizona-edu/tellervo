@@ -32,6 +32,7 @@ import edu.cornell.dendro.corina.schema.WSIAuthenticate;
 import edu.cornell.dendro.corina.schema.WSINonce;
 import edu.cornell.dendro.corina.schema.WSIRequest;
 import edu.cornell.dendro.corina.schema.WSIRootElement;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.util.StringUtils;
 import edu.cornell.dendro.corina.wsi.ResourceException;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResource;
@@ -46,6 +47,7 @@ public class AuthenticateResource extends CorinaResource {
 	private String hash;
 	private String srvNonce;
 	private String seq;
+	private WSISecurityUser user;
 	
 	/** 
 	 * Constructor that provides an authenticate resource intended for actually logging in
@@ -160,7 +162,18 @@ public class AuthenticateResource extends CorinaResource {
 		}
 		
 		// if we got here, things are all good -> go!
+		
+		try{
+			user = (WSISecurityUser) object.getContent().getSqlsAndObjectsAndElements().get(0);
+		} catch (Exception e){}
+		
 		return true;
+	}
+	
+	
+	public WSISecurityUser getAuthenticatedUser()
+	{
+		return user;
 	}
 
 }

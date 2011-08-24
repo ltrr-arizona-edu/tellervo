@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.admin.control;
 import com.dmurph.mvc.MVCEvent;
 
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
+import edu.cornell.dendro.corina.ui.Alert;
 //import com.dmurph.mvc.tracking.ITrackable;
 
 public class DeleteGroupEvent extends MVCEvent{ // implements ITrackable {
@@ -30,6 +31,11 @@ public class DeleteGroupEvent extends MVCEvent{ // implements ITrackable {
 
 	public DeleteGroupEvent(String argGroupid) {
 		super(UserGroupAdminController.DELETE_GROUP);
+		
+		if(argGroupid==null)
+		{
+			Alert.error("Error", "ID cannot be null when deleting groups");
+		}
 		groupid = argGroupid;
 	}
 

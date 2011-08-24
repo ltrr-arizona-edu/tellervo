@@ -62,8 +62,8 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 	/**
 	 * Create the panel.
 	 */
-	@SuppressWarnings("unchecked")
-	public MappingPrefsPanel(final JDialog parent) {
+	public 
+	MappingPrefsPanel(final JDialog parent) {
 				
 		super(I18n.getText("preferences.mapping"), 
 				"map.png", 
