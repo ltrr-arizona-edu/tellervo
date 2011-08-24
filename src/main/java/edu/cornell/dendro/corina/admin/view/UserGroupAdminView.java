@@ -178,52 +178,79 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         panel.setLayout(new MigLayout("", "[173px][192px][205px][117px]", "[29px][][][][]"));
         
         test1 = new JButton("Create User testABC ");
+        test1.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		WSISecurityUser user = new WSISecurityUser();
+    			user.setUsername("testABC");
+    			user.setFirstName("first");
+    			user.setLastName("last");
+    			user.setMemberOves(null);
+    			user.setIsActive(true);
+    			new CreateNewUserEvent(user, "pwdpwdpwd", new JDialog()).dispatch();
+        	}
+        });
         panel.add(test1, "cell 0 0,alignx left,aligny top");
-//        test1.addActionListener(new java.awt.event.ActionListener() {
-//            public void actionPerformed(java.awt.event.ActionEvent evt) {
-//    			WSISecurityUser user = new WSISecurityUser();
-//    			user.setUsername("testABC");
-//    			user.setFirstName("first");
-//    			user.setLastName("last");
-//    			new CreateNewUserEvent(user, "pwdpwdpwd", new JDialog()).dispatch();
-//    		}
-//    		else if (e.getSource() == this.test3){
-//    			WSISecurityUser user= null;
-//    			WSISecurityGroup group = null;
-//    			for(WSISecurityUser u : mainModel.getUserList()){
-//    				if(u.getUsername().equals("testABC")) user = u;
-//    			}
-//    			for(WSISecurityGroup g : mainModel.getGroupList()){
-//    				if(g.getName().equals("testGroup")) group = g ;
-//    			}
-//    			if(user!=null && group!=null){
-//    				user.getMemberOves().add(group.getId());
-//    				ArrayList<WSISecurityGroup> oldMemList = new ArrayList<WSISecurityGroup>();
-//    				ArrayList<WSISecurityGroup> newMemList = new ArrayList<WSISecurityGroup>();
-//    				newMemList.add(group);
-//    				new UpdateUserEvent(user, oldMemList, newMemList, new JDialog()).dispatch();
-//    			}
-//    		}
-//            }
-//        });
+        
         
         test2 = new JButton("Create Group testGroup");
+        test2.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		WSISecurityGroup group = new WSISecurityGroup();
+    			group.setName("testGroup");
+    			group.setDescription("test group");
+    			new CreateNewGroupEvent(group, new JDialog()).dispatch();
+        	}
+        });
         panel.add(test2, "cell 0 1,alignx left,aligny top");
-//        test2.addActionListener(new java.awt.event.ActionListener() {
-//        	public void actionPerformed1(java.awt.event.ActionEvent evt){
-//        		WSISecurityGroup group = new WSISecurityGroup();
-//    			group.setName("testGroup");
-//    			group.setDescription("test group");
-//    			new CreateNewGroupEvent(group, new JDialog()).dispatch();
-//        	}
-//        });
+        
         test3 = new JButton("Add testABC to testGroup");
+        test3.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		WSISecurityUser user= null;
+    			WSISecurityGroup group = null;
+    			for(WSISecurityUser u : mainModel.getUserList()){
+    				if(u.getUsername().equals("testABC")) user = u;
+    			}
+    			for(WSISecurityGroup g : mainModel.getGroupList()){
+    				if(g.getName().equals("testGroup")) group = g ;
+    			}
+    			if(user!=null && group!=null){
+    				user.getMemberOves().add(group.getId());
+    				ArrayList<WSISecurityGroup> oldMemList = new ArrayList<WSISecurityGroup>();
+    				ArrayList<WSISecurityGroup> newMemList = new ArrayList<WSISecurityGroup>();
+    				newMemList.add(group);
+    				new UpdateUserEvent(user, oldMemList, newMemList, new JDialog()).dispatch();
+    			}
+        	}
+        });
         panel.add(test3, "cell 0 2,alignx left,aligny top");
         
         test4 = new JButton("Delete testABC");
+        test4.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		WSISecurityUser user= null;
+    			for(WSISecurityUser u : mainModel.getUserList()){
+    				if(u.getUsername().equals("testABC")) user = u;
+    			}
+    			if(user!=null){
+    					new DeleteUserEvent(user.getId()).dispatch();
+    			}
+        	}
+        });
         panel.add(test4, "cell 0 3,alignx left,aligny top");
         
         test5 = new JButton("Delete testGroup");
+        test5.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		WSISecurityGroup group= null;
+    			for(WSISecurityGroup g : mainModel.getGroupList()){
+    				if(g.getName().equals("testGroup")) group = g;
+    			}
+    			if(group != null){
+    				new DeleteGroupEvent(group.getId()).dispatch();
+    			}
+        	}
+        });
         panel.add(test5, "cell 0 4");
 
         pack();
@@ -360,7 +387,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 					null, options, options[1]);
 
 			if (ret == JOptionPane.YES_OPTION) {
-				new DeleteGroupEvent(selectedGroup.getId(), mainModel).dispatch();
+				new DeleteGroupEvent(selectedGroup.getId()).dispatch();
 			}
 		}
 	}

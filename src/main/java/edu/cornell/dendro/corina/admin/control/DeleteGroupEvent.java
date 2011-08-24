@@ -28,7 +28,7 @@ public class DeleteGroupEvent extends MVCEvent{ // implements ITrackable {
 	private static final long serialVersionUID = 1L;
 	public final String groupid;
 
-	public DeleteGroupEvent(String argGroupid, UserGroupAdminModel argModel) {
+	public DeleteGroupEvent(String argGroupid) {
 		super(UserGroupAdminController.DELETE_GROUP);
 		groupid = argGroupid;
 	}

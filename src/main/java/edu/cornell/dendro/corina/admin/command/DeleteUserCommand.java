@@ -19,8 +19,6 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin.command;
 
-import java.util.ArrayList;
-
 import javax.swing.JOptionPane;
 
 import com.dmurph.mvc.MVCEvent;
@@ -55,7 +53,7 @@ public class DeleteUserCommand implements ICommand {
     		
     		if(accdialog.isSuccessful())
     		{
-    			rsrc.getAssociatedResult();
+    			//rsrc.getAssociatedResult();
     			JOptionPane.showMessageDialog(view, "User deleted", "Success", JOptionPane.NO_OPTION);
     			mainModel.removeUserById(usrid);
     		}
