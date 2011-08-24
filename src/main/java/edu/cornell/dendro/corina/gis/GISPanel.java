@@ -110,14 +110,13 @@ public class GISPanel extends JPanel implements SelectListener{
         	
         	
             // Find ViewControls layer and keep reference to it
-            for (Layer layer : this.getWwd().getModel().getLayers())
+            /*for (Layer layer : this.getWwd().getModel().getLayers())
             {
                 if (layer instanceof ViewControlsLayer)
                 {
-                    viewControlsLayer = (ViewControlsLayer) layer;
-                    
+                    viewControlsLayer = (ViewControlsLayer) layer;                 
                 }
-            }
+            }*/
             
             // Create and install the view controls layer and register a controller for it with the World Window.
             ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
@@ -140,10 +139,7 @@ public class GISPanel extends JPanel implements SelectListener{
         	overview.setEnabled(isMiniMap);
         	compass.setEnabled(isMiniMap);
         	scale.setEnabled(isMiniMap);
-            	
-            
-            
-        	
+
         }
 
         public Boolean isGrfxRetest()

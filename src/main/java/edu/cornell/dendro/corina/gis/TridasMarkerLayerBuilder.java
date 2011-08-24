@@ -183,16 +183,6 @@ public class TridasMarkerLayerBuilder {
 	}
 	
 	
-	public static MarkerLayer getMarkerLayerForITRDBSites()
-	{
-		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
-		builder.loadAllSiteObjectMarkers();
-		builder.setName("All objects in database");
-		
-        return builder.getMarkerLayer();
-		
-		
-	}
 	
 	public static MarkerLayer getMarkerLayerForLatLong(Double lat, Double lon)
 	{

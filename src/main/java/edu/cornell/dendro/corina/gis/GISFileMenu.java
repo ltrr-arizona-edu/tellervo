@@ -20,6 +20,7 @@
 package edu.cornell.dendro.corina.gis;
 
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.menus.FileMenu;
@@ -34,6 +35,7 @@ public class GISFileMenu extends FileMenu {
 	
 	public GISFileMenu(GISFrame f) {
 		super(f);
+		
 	}
 	
 	@Override

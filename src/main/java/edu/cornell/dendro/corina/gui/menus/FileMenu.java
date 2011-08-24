@@ -39,6 +39,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
@@ -111,7 +112,7 @@ public class FileMenu extends JMenu {
 	
 	public FileMenu(JFrame f) {
 		super(I18n.getText("menus.file"));
-
+		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		this.f = f;
 
 		addNewOpenMenus();

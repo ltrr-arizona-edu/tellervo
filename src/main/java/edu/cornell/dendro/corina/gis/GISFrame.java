@@ -19,32 +19,36 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.gis;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-
-import edu.cornell.dendro.corina.gui.menus.EditMenu;
 import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
-import gov.nasa.worldwind.examples.LayerPanel;
 import gov.nasa.worldwind.layers.MarkerLayer;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
 public class GISFrame extends JFrame {
 
 	private static final long serialVersionUID = -451333846688316647L;
 	protected GISPanel wwMapPanel;
 	protected JSplitPane splitPane;
-	protected LayerPanel layerPanel;
+	protected CorinaLayerPanel layerPanel;
 	private final Boolean isMiniMap;
 	
 	/**
 	 * Simple constructor with all sites shown on map
+	 * @wbp.parser.constructor
 	 */
 	public GISFrame(Boolean isMiniMap)
 	{
@@ -80,14 +84,35 @@ public class GISFrame extends JFrame {
 		
 		if(!wwMapPanel.isMiniMap())
 		{
-            layerPanel = new LayerPanel(wwMapPanel.getWwd(), null);
+			JPanel container = new JPanel();
+			container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+            layerPanel = new CorinaLayerPanel(wwMapPanel.getWwd(), null);
+            
+            JButton addLayer = new JButton("Add layer");
+            final JFrame glue = this;
+            
+            addLayer.addActionListener(new ActionListener(){
+
+            
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					AddGISDataDialog dialog = new AddGISDataDialog(wwMapPanel, glue);
+					dialog.setVisible(true);
+					
+				}
+            	
+            });
+            container.add(layerPanel);
+            container.add(addLayer);
+            
+            
 			splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-					layerPanel, wwMapPanel);
-			add(splitPane, BorderLayout.CENTER);
+					container, wwMapPanel);
+			getContentPane().add(splitPane, BorderLayout.CENTER);
 		}
 		else
 		{
-			add(wwMapPanel, BorderLayout.CENTER);
+			getContentPane().add(wwMapPanel, BorderLayout.CENTER);
 		}
 
 		pack();
@@ -108,7 +133,7 @@ public class GISFrame extends JFrame {
         	{      	
 	        	CorinaGazetteerPanel gazPanel = new CorinaGazetteerPanel(wwMapPanel.getWwd(), null);
 	        	
-				this.add(gazPanel,   //use default yahoo service
+				getContentPane().add(gazPanel,   //use default yahoo service
 				        BorderLayout.SOUTH);
         	}
 		} catch (IllegalAccessException e) {
@@ -135,7 +160,7 @@ public class GISFrame extends JFrame {
         
 		menuBar.add(new GISFileMenu(this));
 
-		menuBar.add(new EditMenu(this));
+		menuBar.add(new GISEditMenu(this));
 		
 		menuBar.add(new GISViewMenu(wwMapPanel.getWwd(), wwMapPanel.getVisibleLayers()));
 	

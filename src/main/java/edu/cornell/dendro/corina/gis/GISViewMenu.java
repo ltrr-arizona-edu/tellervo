@@ -35,6 +35,7 @@ import java.util.ArrayList;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 
@@ -67,8 +68,9 @@ public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 	public GISViewMenu(WorldWindowGLCanvas wwd, ArrayList<String> visibleLayers)
 	{
         super(I18n.getText("menus.view"));
-        
+        JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         this.wwd = wwd;
+        
 
         
 		addLayersMenu();
