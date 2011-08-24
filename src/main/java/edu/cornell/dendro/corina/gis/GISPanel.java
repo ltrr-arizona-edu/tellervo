@@ -165,6 +165,12 @@ public class GISPanel extends JPanel implements SelectListener{
  
         public void addLayer(MarkerLayer layer)
         {
+        	ApplicationTemplate.insertBeforePlacenames(this.getWwd(), layer);
+        	visibleLayers.add(layer.getName());
+        }
+        
+        public void addLayer(Layer layer)
+        {
         	ApplicationTemplate.insertBeforeCompass(this.getWwd(), layer);
         	visibleLayers.add(layer.getName());
         }

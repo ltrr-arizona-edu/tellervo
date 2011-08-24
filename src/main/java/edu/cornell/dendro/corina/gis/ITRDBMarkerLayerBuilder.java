@@ -255,7 +255,7 @@ public class ITRDBMarkerLayerBuilder {
 	 */
 	private void processFeature(Feature parentFeature, Feature feature) {
 		
-		log.debug("Processing feature");
+		//log.debug("Processing feature");
 		
 		if (feature instanceof Document) {
 			processDocument(parentFeature, (Document) feature);
@@ -310,7 +310,7 @@ public class ITRDBMarkerLayerBuilder {
 	 * @param placemark
 	 */
 	private void processPlacemark(Feature parentFeature, Placemark placemark) {
-		log.debug("Placemark " + placemark.getName());
+		//log.debug("Placemark " + placemark.getName());
 		
 		Point point = (Point) placemark.getGeometry();
 		List<Coordinate> coordinates = point.getCoordinates();

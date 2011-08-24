@@ -32,7 +32,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -89,14 +88,14 @@ public class GISFrame extends JFrame {
             layerPanel = new CorinaLayerPanel(wwMapPanel.getWwd(), null);
             
             JButton addLayer = new JButton("Add layer");
-            final JFrame glue = this;
+            final GISFrame glue = this;
             
             addLayer.addActionListener(new ActionListener(){
 
             
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					AddGISDataDialog dialog = new AddGISDataDialog(wwMapPanel, glue);
+					AddGISDataDialog dialog = new AddGISDataDialog(glue);
 					dialog.setVisible(true);
 					
 				}

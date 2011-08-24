@@ -153,6 +153,7 @@ public class CorinaLayerPanel extends JPanel
             jcb.setSelected(action.selected);
             
             
+            // These layers go into the Control Panel
         	if(layer instanceof CompassLayer ||
         	   layer instanceof WorldMapLayer || 
         	   layer instanceof ScalebarLayer ||
@@ -162,10 +163,20 @@ public class CorinaLayerPanel extends JPanel
         	{
         		this.controlsPanel.add(jcb);
         	}
+        	
+        	// This is ignored
+        	else if (layer.getName().equals("Popup information"))
+        	{
+        		return;
+        	}
+        	
+        	// These are all data marker layers
         	else if (layer instanceof MarkerLayer)
         	{
         		this.layersPanel.add(jcb);
         	}
+        	
+        	// These are other background layers
         	else
         	{
         		this.backgroundPanel.add(jcb);
@@ -187,9 +198,20 @@ public class CorinaLayerPanel extends JPanel
     {
         // Replace all the layer names in the layers panel with the names of the current layers.
         this.layersPanel.removeAll();
+        this.controlsPanel.removeAll();
+        this.backgroundPanel.removeAll();
+        
         this.fill(wwd);
+        
         this.westPanel.revalidate();
         this.westPanel.repaint();
+        
+        this.secondPanel.revalidate();
+        this.secondPanel.repaint();
+        
+        this.thirdPanel.revalidate();
+        this.thirdPanel.repaint();
+        
     }
 
     @Override
