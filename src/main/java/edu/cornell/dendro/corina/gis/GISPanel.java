@@ -43,6 +43,8 @@ import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.pick.PickedObject;
+import gov.nasa.worldwind.render.GlobeAnnotation;
+import gov.nasa.worldwind.render.markers.Marker;
 import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.StatusBar;
 
@@ -68,9 +70,9 @@ public class GISPanel extends JPanel implements SelectListener{
 	private static final long serialVersionUID = 6769486491009238118L;
 		protected WorldWindowGLCanvas wwd;
         protected StatusBar statusBar;
-        protected TridasMarker selectedMarker;
+        protected Marker selectedMarker;
         protected RenderableLayer annotationLayer;
-        protected TridasAnnotation annotation;
+        protected GlobeAnnotation annotation;
         protected Boolean isGrfxRetest= false;
         protected Boolean failedRetest;
         protected ViewControlsLayer viewControlsLayer;
@@ -106,17 +108,7 @@ public class GISPanel extends JPanel implements SelectListener{
             ApplicationTemplate.insertBeforePlacenames(this.getWwd(), this.annotationLayer);
 
         	this.getWwd().addSelectListener(this);
-        	
-        	
-            // Find ViewControls layer and keep reference to it
-            /*for (Layer layer : this.getWwd().getModel().getLayers())
-            {
-                if (layer instanceof ViewControlsLayer)
-                {
-                    viewControlsLayer = (ViewControlsLayer) layer;                 
-                }
-            }*/
-            
+        	            
             // Create and install the view controls layer and register a controller for it with the World Window.
             ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
             viewControlsLayer.setPosition(AVKey.NORTHEAST);
@@ -248,31 +240,23 @@ public class GISPanel extends JPanel implements SelectListener{
 
             PickedObject topPickedObject = e.getTopPickedObject();
 
-           /* if (e.getEventAction() == SelectEvent.LEFT_PRESS)
-            {
-                if (topPickedObject != null && topPickedObject.getObject() instanceof TridasMarker)
-                {
-                	TridasMarker selected = (TridasMarker) topPickedObject.getObject();
-                    this.highlight(selected);
-                }
-                else
-                {
-                    this.highlight(null);
-                }
-            }*/
             if (e.getEventAction() == SelectEvent.LEFT_PRESS)
             {
-                if (topPickedObject != null && topPickedObject.getObject() instanceof TridasMarker)
+                if (topPickedObject != null && topPickedObject.getObject() instanceof Marker)
                 {
-                	TridasMarker selected = (TridasMarker) topPickedObject.getObject();
+                	Marker selected = (Marker) topPickedObject.getObject();
                     this.highlight(selected);
                     this.openResource(selected);
+                }
+                else if (topPickedObject != null && topPickedObject.getObject() instanceof ITRDBMarker)
+                {
+                	
                 }
             }
 
         }
         
-        public void highlight(TridasMarker marker)
+        public void highlight(Marker marker)
         {
             if (this.selectedMarker == marker)
                 return;
@@ -298,12 +282,12 @@ public class GISPanel extends JPanel implements SelectListener{
             content.detach();
         }
         
-        protected void openResource(TridasMarker marker)
+        protected void openResource(Marker marker)
         {
             if (marker == null)
                 return;
 
-            ContentAnnotation content = this.createContent(marker.getPosition(), marker.getEntity());
+            ContentAnnotation content = this.createContent(marker);
 
             if (content != null)
             {
@@ -311,12 +295,24 @@ public class GISPanel extends JPanel implements SelectListener{
             }
         }
         
-        protected ContentAnnotation createContent(Position position, ITridas entity)
+        protected ContentAnnotation createContent(Marker marker)
         {
-            return createContentAnnotation(this, position, entity);
+        	Position position = marker.getPosition();
+        	
+        	if(marker instanceof TridasMarker)
+        	{
+        		return createTridasAnnotation(this, position, "Title", ((TridasMarker) marker).getEntity());
+        	}
+        	else if (marker instanceof ITRDBMarker)
+        	{
+        		return createITRDBAnnotation(this, position, "Title", ((ITRDBMarker) marker));
+        	}
+        	
+        	return null;
+            
         }
-        
-        public static ContentAnnotation createContentAnnotation(GISPanel mapPanel, Position position, ITridas entity)
+
+        public static ContentAnnotation createITRDBAnnotation(GISPanel mapPanel, Position position, String title, ITRDBMarker marker)
         {
             if (mapPanel == null)
             {
@@ -332,52 +328,56 @@ public class GISPanel extends JPanel implements SelectListener{
                 throw new IllegalArgumentException(message);
             }
 
+            if (title == null)
+            {
+                String message = Logging.getMessage("nullValue.StringIsNull");
+                Logging.logger().severe(message);
+                throw new IllegalArgumentException(message);
+            }
 
-            return createTridasAnnotation(mapPanel, position, "blah", entity);
-
-           
+        	
+			return null;
+        	
         }
         
-        public static ContentAnnotation createTridasAnnotation(GISPanel mapPanel, Position position, String title,
-                ITridas entity)
+        public static ContentAnnotation createTridasAnnotation(GISPanel mapPanel, Position position, String title, ITridas entity)
+        {
+            if (mapPanel == null)
             {
-                if (mapPanel == null)
-                {
-                    String message = "AppFrameIsNull";
-                    Logging.logger().severe(message);
-                    throw new IllegalArgumentException(message);
-                }
-
-                if (position == null)
-                {
-                    String message = Logging.getMessage("nullValue.PositionIsNull");
-                    Logging.logger().severe(message);
-                    throw new IllegalArgumentException(message);
-                }
-
-                if (title == null)
-                {
-                    String message = Logging.getMessage("nullValue.StringIsNull");
-                    Logging.logger().severe(message);
-                    throw new IllegalArgumentException(message);
-                }
-
-                if (entity == null)
-                {
-                    String message = Logging.getMessage("nullValue.SourceIsNull");
-                    Logging.logger().severe(message);
-                    throw new IllegalArgumentException(message);
-                }
-
-                TridasAnnotation annotation = new TridasAnnotation(position, entity);
-                annotation.setAlwaysOnTop(true);
-                
-
-                TridasAnnotationController controller = new TridasAnnotationController(mapPanel.getWwd(), annotation, entity);
-
-                
-                return new TridasContentAnnotation(mapPanel, annotation, controller, entity);
+                String message = "AppFrameIsNull";
+                Logging.logger().severe(message);
+                throw new IllegalArgumentException(message);
             }
+
+            if (position == null)
+            {
+                String message = Logging.getMessage("nullValue.PositionIsNull");
+                Logging.logger().severe(message);
+                throw new IllegalArgumentException(message);
+            }
+
+            if (title == null)
+            {
+                String message = Logging.getMessage("nullValue.StringIsNull");
+                Logging.logger().severe(message);
+                throw new IllegalArgumentException(message);
+            }
+
+            if (entity == null)
+            {
+                String message = Logging.getMessage("nullValue.SourceIsNull");
+                Logging.logger().severe(message);
+                throw new IllegalArgumentException(message);
+            }
+
+            TridasAnnotation annotation = new TridasAnnotation(position, entity);
+            annotation.setAlwaysOnTop(true);
+
+            TridasAnnotationController controller = new TridasAnnotationController(mapPanel.getWwd(), annotation, entity);
+
+            
+            return new TridasContentAnnotation(mapPanel, annotation, controller, entity);
+        }
         
 
         protected RenderableLayer getAnnotationLayer()

@@ -3,6 +3,9 @@ package edu.cornell.dendro.corina.gis;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +18,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.stream.XMLStreamException;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +29,10 @@ import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 
-import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.CorinaCodePanel;
 import edu.cornell.dendro.corina.gui.TridasSelectEvent;
 import edu.cornell.dendro.corina.gui.TridasSelectListener;
-import edu.cornell.dendro.corina.gui.TridasSelectEvent.TridasSelectType;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
@@ -39,8 +43,12 @@ import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceProperties;
 import edu.cornell.dendro.corina.wsi.corina.SearchParameters;
 import edu.cornell.dendro.corina.wsi.corina.resources.EntitySearchResource;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.layers.Layer;
+import gov.nasa.worldwind.ogc.kml.KMLAbstractFeature;
+import gov.nasa.worldwind.ogc.kml.KMLRoot;
 import gov.nasa.worldwind.util.WWIO;
+import gov.nasa.worldwind.util.WWUtil;
 
 public class AddGISDataDialog extends JDialog implements ActionListener, TridasSelectListener{
 
@@ -58,7 +66,8 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 		CORINA_ENTITY("Corina entity from database"),
 		ELEMENTS_FOR_OBJECT("Elements from an object"),
 		ITRDB_SITES("All ITRDB sites"),
-		SHAPEFILE("ESRI Shapefile");
+		SHAPEFILE("ESRI Shapefile"),
+		KML("Google Earth KML/KMZ file");
 		
 		private String name;
 		
@@ -152,7 +161,9 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 	private void setGUIForAddType()
 	{
 		AddLayerType selectedType = (AddLayerType) cboAddType.getSelectedItem();
-		if(selectedType.equals(AddLayerType.SHAPEFILE))
+		if(selectedType.equals(AddLayerType.SHAPEFILE) ||
+		   selectedType.equals(AddLayerType.KML)
+			)
 		{
 			btnAdd.setText("Browse");
 		}
@@ -198,6 +209,11 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 				codePanel.processLabCode();
 				
 			}
+			else if (cboAddType.getSelectedItem().equals(AddLayerType.KML))
+			{
+				 Boolean success = addKMLFile();
+				 if(success) dispose();
+			}
 			
 
 			
@@ -234,6 +250,25 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 		} finally {
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
+	}
+	
+	private Boolean addKMLFile()
+	{
+        final JFileChooser fileChooser = new JFileChooser();
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Google Earth (*.kml; *.kmz)", "kml", "kmz"));
+
+        int status = fileChooser.showOpenDialog(wwMapPanel);
+        if (status == JFileChooser.APPROVE_OPTION)
+        {
+        	wwMapPanel.getWwd().setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            new KMLWorkerThread(fileChooser.getSelectedFile(), parent).start();
+            return true;
+        }
+        else
+        {
+        	return false;
+        }
+
 	}
 	
 	
@@ -359,6 +394,83 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 		
 	}
 
+    /** A <code>Thread</code> that loads a KML file and displays it in an <code>AppFrame</code>. */
+    public static class KMLWorkerThread extends Thread
+    {
+        /** Indicates the source of the KML file loaded by this thread. Initialized during construction. */
+        protected Object kmlSource;
+        /** Indicates the <code>AppFrame</code> the KML file content is displayed in. Initialized during construction. */
+        protected GISFrame gisFrame;
+
+        /**
+         * Creates a new worker thread from a specified <code>kmlSource</code> and <code>appFrame</code>.
+         *
+         * @param kmlSource the source of the KML file to load. May be a {@link File}, a {@link URL}, or an {@link
+         *                  java.io.InputStream}, or a {@link String} identifying a file path or URL.
+         * @param gisFrame  the <code>AppFrame</code> in which to display the KML source.
+         */
+        public KMLWorkerThread(Object kmlSource, GISFrame gisFrame)
+        {
+            this.kmlSource = kmlSource;
+            this.gisFrame = gisFrame;
+        }
+
+        /**
+         * Loads this worker thread's KML source into a new <code>{@link gov.nasa.worldwind.ogc.kml.KMLRoot}</code>,
+         * then adds the new <code>KMLRoot</code> to this worker thread's <code>AppFrame</code>. The
+         * <code>KMLRoot</code>'s <code>AVKey.DISPLAY_NAME</code> field contains a display name created from either the
+         * KML source or the KML root feature name.
+         * <p/>
+         * If loading the KML source fails, this prints the exception and its stack trace to the standard error stream,
+         * but otherwise does nothing.
+         */
+        public void run()
+        {
+            try
+            {
+                KMLRoot kmlRoot = this.parse();
+
+                // Set the document's display name
+                kmlRoot.setField(AVKey.DISPLAY_NAME, formName(this.kmlSource, kmlRoot));
+
+                // Schedule a task on the EDT to add the parsed document to a layer
+                final KMLRoot finalKMLRoot = kmlRoot;
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        gisFrame.addKMLLayer(finalKMLRoot);
+                        gisFrame.layerPanel.update(gisFrame.wwMapPanel.getWwd());
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            finally
+            {
+            	gisFrame.wwMapPanel.getWwd().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        }
+
+        /**
+         * Parse the KML document.
+         *
+         * @return The parsed document.
+         *
+         * @throws IOException        if the document cannot be read.
+         * @throws XMLStreamException if document cannot be parsed.
+         */
+        protected KMLRoot parse() throws IOException, XMLStreamException
+        {
+            // KMLRoot.createAndParse will attempt to parse the document using a namespace aware parser, but if that
+            // fails due to a parsing error it will try again using a namespace unaware parser. Note that this second
+            // step may require the document to be read from the network again if the kmlSource is a stream.
+            return KMLRoot.createAndParse(this.kmlSource);
+        }
+    }
+	
 	
     public static class ShapefileWorkerThread extends Thread
     {
@@ -441,5 +553,23 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
         }
     }
 
+    protected static String formName(Object kmlSource, KMLRoot kmlRoot)
+    {
+        KMLAbstractFeature rootFeature = kmlRoot.getFeature();
+
+        if (rootFeature != null && !WWUtil.isEmpty(rootFeature.getName()))
+            return rootFeature.getName();
+
+        if (kmlSource instanceof File)
+            return ((File) kmlSource).getName();
+
+        if (kmlSource instanceof URL)
+            return ((URL) kmlSource).getPath();
+
+        if (kmlSource instanceof String && WWIO.makeURL((String) kmlSource) != null)
+            return WWIO.makeURL((String) kmlSource).getPath();
+
+        return "KML Layer";
+    }
     
 }

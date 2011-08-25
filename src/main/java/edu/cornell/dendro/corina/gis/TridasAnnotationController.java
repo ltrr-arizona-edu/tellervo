@@ -44,14 +44,14 @@ public class TridasAnnotationController extends AbstractTridasAnnotationControll
 	private Cursor normalCursor = Cursor.getDefaultCursor();
     private ITridas entity;
 
-    public TridasAnnotationController(WorldWindow worldWindow, TridasAnnotation annotation, ITridas entity)
+    public TridasAnnotationController(WorldWindow worldWindow, CorinaAnnotation annotation, ITridas entity)
     {
         super(worldWindow, annotation);
 
         this.setEntity(entity);
     }
 
-    public TridasAnnotationController(WorldWindow worldWindow, TridasAnnotation annotation)
+    public TridasAnnotationController(WorldWindow worldWindow, CorinaAnnotation annotation)
     {
         this(worldWindow, annotation, null);
     }

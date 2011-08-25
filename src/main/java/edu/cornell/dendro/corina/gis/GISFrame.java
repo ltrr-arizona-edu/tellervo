@@ -23,7 +23,11 @@ import edu.cornell.dendro.corina.gui.menus.HelpMenu;
 import edu.cornell.dendro.corina.gui.menus.WindowMenu;
 import edu.cornell.dendro.corina.platform.Platform;
 import edu.cornell.dendro.corina.ui.Builder;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.layers.MarkerLayer;
+import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.ogc.kml.KMLRoot;
+import gov.nasa.worldwind.ogc.kml.impl.KMLController;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -173,5 +177,58 @@ public class GISFrame extends JFrame {
 
 	}
 	
+    /**
+     * Adds the specified <code>kmlRoot</code> to this app frame's <code>WorldWindow</code> as a new
+     * <code>Layer</code>, and adds a new <code>KMLLayerTreeNode</code> for the <code>kmlRoot</code> to this app
+     * frame's on-screen layer tree.
+     * <p/>
+     * This expects the <code>kmlRoot</code>'s <code>AVKey.DISPLAY_NAME</code> field to contain a display name
+     * suitable for use as a layer name.
+     *
+     * @param kmlRoot the KMLRoot to add a new layer for.
+     */
+    protected void addKMLLayer(KMLRoot kmlRoot)
+    {
+        // Create a KMLController to adapt the KMLRoot to the World Wind renderable interface.
+        KMLController kmlController = new KMLController(kmlRoot);
 
+        // Adds a new layer containing the KMLRoot to the end of the WorldWindow's layer list. This
+        // retrieves the layer name from the KMLRoot's DISPLAY_NAME field.
+        RenderableLayer layer = new RenderableLayer();
+        layer.setName((String) kmlRoot.getField(AVKey.DISPLAY_NAME));
+        layer.addRenderable(kmlController);
+        wwMapPanel.getWwd().getModel().getLayers().add(layer);
+
+        // Adds a new layer tree node for the KMLRoot to the on-screen layer tree, and makes the new node visible
+        // in the tree. This also expands any tree paths that represent open KML containers or open KML network
+        // links.
+        /*KMLLayerTreeNode layerNode = new KMLLayerTreeNode(layer, kmlRoot);
+        this.layerTree.getModel().addLayer(layerNode);
+        this.layerTree.makeVisible(layerNode.getPath());
+        layerNode.expandOpenContainers(this.layerTree);*/
+
+        // Listens to refresh property change events from KML network link nodes. Upon receiving such an event this
+        // expands any tree paths that represent open KML containers. When a KML network link refreshes, its tree
+        // node replaces its children with new nodes created form the refreshed content, then sends a refresh
+        // property change event through the layer tree. By expanding open containers after a network link refresh,
+        // we ensure that the network link tree view appearance is consistent with the KML specification.
+        /*layerNode.addPropertyChangeListener(AVKey.RETRIEVAL_STATE_SUCCESSFUL, new PropertyChangeListener()
+        {
+            public void propertyChange(final PropertyChangeEvent event)
+            {
+                if (event.getSource() instanceof KMLNetworkLinkTreeNode)
+                {
+                    // Manipulate the tree on the EDT.
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            ((KMLNetworkLinkTreeNode) event.getSource()).expandOpenContainers(layerTree);
+                            getWwd().redraw();
+                        }
+                    });
+                }
+            }
+        });*/
+    }
 }
