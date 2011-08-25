@@ -9,11 +9,13 @@ All Rights Reserved.
 */
 
 
+import edu.cornell.dendro.corina.ui.Builder;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.layers.*;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -51,7 +53,7 @@ public class CorinaLayerPanel extends JPanel
      */
     public CorinaLayerPanel(WorldWindow wwd)
     {
-        this.makePanel(wwd, new Dimension(200, 400));
+        this.makePanel(wwd, null);
     }
 
     /**
@@ -146,7 +148,8 @@ public class CorinaLayerPanel extends JPanel
     protected void fill(WorldWindow wwd)
     {
         // Fill the layers panel with the titles of all layers in the world window's current model.
-        for (Layer layer : wwd.getModel().getLayers())
+    	LayerList layers = wwd.getModel().getLayers();
+        for (Layer layer : layers)
         {        	
             LayerAction action = new LayerAction(layer, wwd, layer.isEnabled());
             JCheckBox jcb = new JCheckBox(action);
@@ -167,7 +170,7 @@ public class CorinaLayerPanel extends JPanel
         	// This is ignored
         	else if (layer.getName().equals("Popup information"))
         	{
-        		return;
+        		continue;
         	}
         	
         	// These are all data marker layers

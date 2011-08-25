@@ -74,7 +74,6 @@ public class GISPanel extends JPanel implements SelectListener{
         protected Boolean isGrfxRetest= false;
         protected Boolean failedRetest;
         protected ViewControlsLayer viewControlsLayer;
-        private ArrayList<String> visibleLayers = new ArrayList<String>();
         protected Boolean isMiniMap = false;
         
         
@@ -156,23 +155,16 @@ public class GISPanel extends JPanel implements SelectListener{
         {
         	this.isGrfxRetest = b;
         }
-        
-        public ArrayList<String> getVisibleLayers()
-        {
-        	return visibleLayers;
-        }
-        
+
  
         public void addLayer(MarkerLayer layer)
         {
         	ApplicationTemplate.insertBeforePlacenames(this.getWwd(), layer);
-        	visibleLayers.add(layer.getName());
         }
         
         public void addLayer(Layer layer)
         {
         	ApplicationTemplate.insertBeforeCompass(this.getWwd(), layer);
-        	visibleLayers.add(layer.getName());
         }
         
         private void failedReq()
@@ -223,7 +215,7 @@ public class GISPanel extends JPanel implements SelectListener{
             
             if(isMiniMap)
             {
-	            CorinaLayerManagerLayer layermanager = new CorinaLayerManagerLayer(getWwd(), visibleLayers);
+	            CorinaLayerManagerLayer layermanager = new CorinaLayerManagerLayer(getWwd(), getWwd().getModel().getLayers());
 	            layermanager.setName("Show/hide layer list");
 	            layermanager.setMinimized(true);
 	            layermanager.setPosition(AVKey.NORTHWEST);

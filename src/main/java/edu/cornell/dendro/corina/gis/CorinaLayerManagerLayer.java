@@ -63,7 +63,7 @@ public class CorinaLayerManagerLayer extends RenderableLayer implements SelectLi
     private String position = AVKey.SOUTHWEST; // TODO: make configurable
     private Vec4 locationCenter = null;
     private Vec4 locationOffset = null;
-    private ArrayList<String> visibleLayerNames;
+    private ArrayList<String> visibleLayerNames = new ArrayList<String>();
     
     // Dragging
     private boolean componentDragEnabled = true;
@@ -77,7 +77,7 @@ public class CorinaLayerManagerLayer extends RenderableLayer implements SelectLi
     protected Color dragColor = Color.RED;
     
 
-    public CorinaLayerManagerLayer(WorldWindow wwd, ArrayList<String> visibleLayers)
+    public CorinaLayerManagerLayer(WorldWindow wwd, LayerList visibleLayers)
     {
         if (wwd == null)
         {
@@ -87,7 +87,12 @@ public class CorinaLayerManagerLayer extends RenderableLayer implements SelectLi
         }
 
         this.wwd = wwd;
-        this.visibleLayerNames = visibleLayers;
+        
+        for(Layer layer : visibleLayers)
+        {
+        	this.visibleLayerNames.add(layer.getName());
+        }
+        
         this.initialize();
     }
 

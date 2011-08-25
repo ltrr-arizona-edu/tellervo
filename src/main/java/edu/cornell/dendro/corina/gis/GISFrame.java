@@ -85,7 +85,7 @@ public class GISFrame extends JFrame {
 		{
 			JPanel container = new JPanel();
 			container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-            layerPanel = new CorinaLayerPanel(wwMapPanel.getWwd(), null);
+            layerPanel = new CorinaLayerPanel(wwMapPanel.getWwd());
             
             JButton addLayer = new JButton("Add layer");
             final GISFrame glue = this;
@@ -161,7 +161,7 @@ public class GISFrame extends JFrame {
 
 		menuBar.add(new GISEditMenu(this));
 		
-		menuBar.add(new GISViewMenu(wwMapPanel.getWwd(), wwMapPanel.getVisibleLayers()));
+		menuBar.add(new GISViewMenu(wwMapPanel.getWwd()));
 	
 		if (Platform.isMac())
 			menuBar.add(new WindowMenu(this));

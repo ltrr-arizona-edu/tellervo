@@ -24,6 +24,7 @@ import edu.cornell.dendro.corina.core.AppModel;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
+import gov.nasa.worldwind.layers.LayerList;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -65,7 +66,7 @@ public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 	};
 	
 	
-	public GISViewMenu(WorldWindowGLCanvas wwd, ArrayList<String> visibleLayers)
+	public GISViewMenu(WorldWindowGLCanvas wwd)
 	{
         super(I18n.getText("menus.view"));
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);

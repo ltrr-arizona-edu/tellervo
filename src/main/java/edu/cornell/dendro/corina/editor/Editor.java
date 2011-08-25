@@ -497,7 +497,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		
 		try{
 			// First try to add a pin for the TridasElement itself
-			editorViewMenu = new GISViewMenu(wwMapPanel.getWwd(), wwMapPanel.getVisibleLayers());	
+			editorViewMenu = new GISViewMenu(wwMapPanel.getWwd());	
 			builder.addMarkerForTridasElement(elem);	
 			
 			// If no pin added for TridasElement, try TridasObject instead

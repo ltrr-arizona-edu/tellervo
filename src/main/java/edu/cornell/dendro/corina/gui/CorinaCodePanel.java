@@ -116,6 +116,11 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		setup();
 	}
 
+	public String getText()
+	{
+		return textField.getText();
+	}
+	
 	/**
 	 * Set the object list mode for this widget.  Should be one
 	 * of all, populated or populated_first.  
