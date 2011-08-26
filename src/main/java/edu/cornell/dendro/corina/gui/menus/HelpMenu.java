@@ -49,6 +49,7 @@ import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.Help;
 import edu.cornell.dendro.corina.platform.Platform;
+import edu.cornell.dendro.corina.setupwizard.SetupWizard;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.CorinaAction;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -71,7 +72,7 @@ public class HelpMenu extends JMenu {
 	super(I18n.getText("menus.help"));
 
 	    addHelpMenu();
-	    //addSetupWizardMenu();
+	    addSetupWizardMenu();
         addSeparator();
         addSystemInfoMenu();
         addErrorLogMenu();
@@ -86,7 +87,24 @@ public class HelpMenu extends JMenu {
     
 
     
-    /**
+    private void addSetupWizardMenu() {
+    	JMenuItem helpWizard = Builder.makeMenuItem("menus.help.setupWizard", true, "wizard.png");
+
+    	helpWizard.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				SetupWizard.launchWizard();
+				
+			}
+		});
+		
+		add(helpWizard);
+		
+	}
+
+
+
+
+	/**
        Add the "Corina Help" menuitem.
     */
     protected void addHelpMenu() {

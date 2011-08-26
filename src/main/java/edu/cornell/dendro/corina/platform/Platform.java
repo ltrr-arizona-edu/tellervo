@@ -59,7 +59,7 @@ public class Platform extends AbstractSubsystem {
 		}
 		else
 		{
-			System.out.println("This OS is not supported by the Java6 Desktop API!");
+			log.error("This OS is not supported by the Java6 Desktop API!");
 		}
 		
 		//method from TN2042, http://developer.apple.com/technotes/tn/tn2042.html

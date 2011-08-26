@@ -87,7 +87,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				"Set measuring platform and barcode scanner preferences",
 				parent);
 		
-		setLayout(new MigLayout("", "[grow]", "[][][grow]"));
+		setLayout(new MigLayout("", "[grow,fill]", "[][][grow]"));
 		
 		panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Measuring Platform", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
@@ -104,6 +104,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     			PrefKey.SERIAL_DEVICE, 
     			App.prefs.getPref(PrefKey.SERIAL_DEVICE, "[none]"), 
     			SerialDeviceSelector.getAvailableDevicesNames());
+	
     	cboPlatformType.addItemListener(new ItemListener(){
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
@@ -123,6 +124,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		cboDatabits = new JComboBox();
 		cboDatabits.setModel(new DefaultComboBoxModel(new String[] {}));
 		panel.add(cboDatabits, "cell 3 1,alignx left");
+		
 		new FormatWrapper(cboDatabits, 
 				PrefKey.SERIAL_DATABITS, 
 				App.prefs.getPref(PrefKey.SERIAL_DATABITS, "8"), 
@@ -133,16 +135,19 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		cboBaud = new JComboBox();
 		cboBaud.setModel(new DefaultComboBoxModel(new String[] {}));
 		panel.add(cboBaud, "cell 1 2,alignx left");
-    	new FormatWrapper(cboBaud, 
+		
+		new FormatWrapper(cboBaud, 
     			PrefKey.SERIAL_BAUD, 
     			App.prefs.getPref(PrefKey.SERIAL_BAUD, "9600"), 
     			BaudRate.allValuesAsArray());
+
 		
 		lblFlowControl = new JLabel("Handshaking / Flow control:");
 		panel.add(lblFlowControl, "cell 2 2,alignx trailing");
 		cboFlowControl = new JComboBox();
 		cboFlowControl.setModel(new DefaultComboBoxModel(new String[] {}));
 		panel.add(cboFlowControl, "cell 3 2,alignx left");
+		
 		new FormatWrapper(cboFlowControl, 
 				PrefKey.SERIAL_FLOWCONTROL, 
 				App.prefs.getPref(PrefKey.SERIAL_FLOWCONTROL, "None"), 
@@ -153,33 +158,33 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		cboParity = new JComboBox();
 		cboParity.setModel(new DefaultComboBoxModel(new String[] {}));
 		panel.add(cboParity, "cell 1 3,alignx left");
+		
     	new FormatWrapper(cboParity, 
     			PrefKey.SERIAL_PARITY, 
     			App.prefs.getPref(PrefKey.SERIAL_PARITY, "None"), 
     			PortParity.allValuesAsArray());
 		
-		
 		lblLineFeed = new JLabel("Line feed:");
 		panel.add(lblLineFeed, "cell 2 3,alignx trailing");
 		cboLineFeed = new JComboBox();
 		panel.add(cboLineFeed, "cell 3 3,alignx left");
+		
 		new FormatWrapper(cboLineFeed, 
 				PrefKey.SERIAL_LINEFEED, 
 				App.prefs.getPref(PrefKey.SERIAL_LINEFEED, "CR"), 
 				LineFeed.allValuesAsArray());
-		
 		
     	lblStopBits = new JLabel("Stop bits:");
     	panel.add(lblStopBits, "cell 0 4,alignx trailing");
     	cboStopbits = new JComboBox();
     	cboStopbits.setModel(new DefaultComboBoxModel(new String[] {}));
     	panel.add(cboStopbits, "cell 1 4,alignx left");	
+    	
     	new FormatWrapper(cboStopbits, 
     			PrefKey.SERIAL_STOPBITS, 
     			App.prefs.getPref(PrefKey.SERIAL_STOPBITS, "2"), 
     			StopBits.allValuesAsArray());
-		
-
+    	
 		panelBarcode = new JPanel();
 		panelBarcode.setBorder(new TitledBorder(null, "Barcode scanner", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panelBarcode, "cell 0 1,grow");
@@ -228,6 +233,19 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     	setGuiEnabledByPlatformType();
 	}
 
+	
+	public void setBackgroundColor(Color col)
+	{
+		this.setBackground(col);
+		this.panel.setBackground(col);
+		this.panelBarcode.setBackground(col);
+	}
+	
+	public void setBarcodePanelVisible(Boolean b)
+	{
+		this.panelBarcode.setVisible(b);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void setupCOMPort()
 	{

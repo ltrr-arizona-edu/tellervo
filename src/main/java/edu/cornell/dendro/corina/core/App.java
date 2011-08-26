@@ -46,6 +46,7 @@ import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import edu.cornell.dendro.corina.setupwizard.SetupWizard;
 import edu.cornell.dendro.corina.tridasv2.TridasObjectList;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ListUtil;
@@ -92,13 +93,13 @@ public class App{
   private static ProxyManager proxies; // for handling our proxies
 
 
-public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
-    // throwing an error instead of simply ignoring it
-    // will point out bad design and/or bugs
-	if (initialized) throw new IllegalStateException("AppContext already initialized.");
+
+public static synchronized void init() {
 	
 	App.platform = new Platform();
     App.platform.init();
+    prefs = new Prefs();
+    prefs.init();
 	
     log.debug("initializing App");
     
@@ -108,8 +109,17 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     logviewer.setVisible(false);
     
     SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
+}
+
+
+public static synchronized void init(ProgressMeter meter, LoginSplash splash) 
+{
+    App.init();
     
-    
+    // throwing an error instead of simply ignoring it
+    // will point out bad design and/or bugs
+	if (initialized) throw new IllegalStateException("AppContext already initialized.");
+	
     if (meter != null) {
       meter.setMaximum(10);
       meter.setProgress(0);
@@ -137,12 +147,13 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
     	meter.setProgress(2);
       meter.setNote(I18n.getText("login.initPreferences"));
     }
-    prefs = new Prefs();
-    prefs.init();
+
     prefsDialog = new PreferencesDialog();
     
+    // If it's the first run then hide splash and show setup wizard
     if (isFirstRun) {
-    	runWizard();
+    	splash.setVisible(false);
+    	SetupWizard.launchWizard();
     }
     
     
@@ -175,30 +186,45 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash) {
         	meter.setNote(I18n.getText("login.loggingIn"));
         }
         
-    	//splash.addLoginPanel(); ... in the future...
-    	LoginDialog dlg = new LoginDialog();
-    	
-    	try {
-    		// don't log in when in debug mode
-    		if(DEBUGGING)
-    			throw new UserCancelledException();
-    		dlg.doLogin(null, false);
-    		
-    		appmodel.setNetworkStatus(NetworkStatus.ONLINE);  		
-    		
-       	} catch (UserCancelledException uce) {
-    		// we default to not being logged in...
-    	}
-       	
-		// Grab username either from prefs or directly from dialog
-		if(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, null)!=null)
-		{
-			username= App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, null);
-		}
-		else
-		{
-			username=dlg.getUsername().toString();
-		}
+        if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
+        {
+        	// Webservice is disabled so don't bother trying to log in
+        }
+        else
+        {
+	        // If we are not automatically logging in hide the splash
+	        // because we are about to display a login dialog
+	        if(!App.prefs.getBooleanPref(PrefKey.AUTO_LOGIN, false))
+	        {
+	        	splash.setVisible(false);
+	        }
+	        	
+	        
+	    	//splash.addLoginPanel(); ... in the future...
+	    	LoginDialog dlg = new LoginDialog();
+	    	
+	    	try {
+	    		// don't log in when in debug mode
+	    		if(DEBUGGING)
+	    			throw new UserCancelledException();
+	    		dlg.doLogin(null, false);
+	    		
+	    		appmodel.setNetworkStatus(NetworkStatus.ONLINE);  		
+	    		
+	       	} catch (UserCancelledException uce) {
+	    		// we default to not being logged in...
+	    	}
+	       	
+			// Grab username either from prefs or directly from dialog
+			if(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, null)!=null)
+			{
+				username= App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, null);
+			}
+			else
+			{
+				username=dlg.getUsername().toString();
+			}
+        }
 
     }
     

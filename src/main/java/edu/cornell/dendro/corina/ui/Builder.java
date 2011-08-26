@@ -278,6 +278,27 @@ public class Builder {
 		
 	}	
 	
+	public static Icon getImageAsIcon(String name)
+	{
+		
+		StringBuffer urlBuffer = new StringBuffer();	
+		urlBuffer.append(RESOURCE_PACKAGE_PREFIX);
+		urlBuffer.append(IMAGES);
+		urlBuffer.append('/');	
+		urlBuffer.append(name);
+				
+		java.net.URL url = cl.getResource(urlBuffer.toString());
+				
+		if (url != null)
+		{
+			return new ImageIcon(url);
+		}
+		else
+		{
+			log.warn("Unabled to find file "+name+".");
+			return null;
+		}
+	}
 	
 	
 	public static com.lowagie.text.Image getITextImageIcon(String name){

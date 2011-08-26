@@ -62,6 +62,10 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	private JCheckBox chkDisableWS;
 	private JButton btnForceDictionaryReload;
 	private String originalURL;
+	private JPanel wsPanel;
+	private JPanel proxyPanel;
+	private MigLayout layout;
+	
 	/**
 	 * Create the panel.
 	 */
@@ -71,15 +75,17 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 				"Webservice network connection preferences",
 				parent);
 		
-		setLayout(new MigLayout("", "[grow]", "[115.00px][188.00px][grow]"));
+		layout = new MigLayout("", "[grow,fill]", "[][][grow]");
 		
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "Web service", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		add(panel, "cell 0 0,grow");
-		panel.setLayout(new MigLayout("", "[100px:100px:100px][grow]", "[][15px][][]"));
+		setLayout(layout);
+		
+		wsPanel = new JPanel();
+		wsPanel.setBorder(new TitledBorder(null, "Web service", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+		add(wsPanel, "cell 0 0,grow, hidemode 2");
+		wsPanel.setLayout(new MigLayout("", "[100px:100px:100px][grow]", "[][15px][][]"));
 		
 		chkDisableWS = new JCheckBox("Disable web service integration and work offline");
-		panel.add(chkDisableWS, "cell 1 0");
+		wsPanel.add(chkDisableWS, "cell 1 0");
 		chkDisableWS.addActionListener(new ActionListener(){
 
 			@Override
@@ -90,28 +96,28 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		});
 		
 		JLabel lblWebservice = new JLabel("URL:");
-		panel.add(lblWebservice, "cell 0 1,alignx trailing,aligny center");
+		wsPanel.add(lblWebservice, "cell 0 1,alignx trailing,aligny center");
 		
 		txtWSURL = new JTextField();
-		panel.add(txtWSURL, "cell 1 1,growx");
+		wsPanel.add(txtWSURL, "cell 1 1,growx");
 		txtWSURL.setColumns(10);
 		
 		btnForceDictionaryReload = new JButton("Force Dictionary Reload");
-		panel.add(btnForceDictionaryReload, "cell 1 2,alignx right");
+		wsPanel.add(btnForceDictionaryReload, "cell 1 2,alignx right");
 		
-		JPanel panelNetworkConnection = new JPanel();
-		panelNetworkConnection.setBorder(new TitledBorder(null, "Network Connection", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		add(panelNetworkConnection, "cell 0 1,grow");
-		panelNetworkConnection.setLayout(new MigLayout("", "[100px:100px:100px][grow][][]", "[][][][][]"));
+		proxyPanel = new JPanel();
+		proxyPanel.setBorder(new TitledBorder(null, "Network Connection", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+		add(proxyPanel, "cell 0 1,grow, hidemode 2");
+		proxyPanel.setLayout(new MigLayout("", "[100px:100px:100px][grow][][]", "[][][][][]"));
 		
 		btnDefaultProxy = new JRadioButton("Use system default proxy settings");
-		panelNetworkConnection.add(btnDefaultProxy, "cell 1 0 3 1");
+		proxyPanel.add(btnDefaultProxy, "cell 1 0 3 1");
 		
 		btnNoProxy = new JRadioButton("Direct connection");
-		panelNetworkConnection.add(btnNoProxy, "cell 1 1 3 1");
+		proxyPanel.add(btnNoProxy, "cell 1 1 3 1");
 		
 		btnManualProxy = new JRadioButton("Use manual proxy settings");
-		panelNetworkConnection.add(btnManualProxy, "cell 1 2 3 1");
+		proxyPanel.add(btnManualProxy, "cell 1 2 3 1");
 		
 		ButtonGroup group = new ButtonGroup();
 		group.add(btnDefaultProxy);
@@ -119,37 +125,60 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		group.add(btnNoProxy);
 				
 		lblHttpProxy = new JLabel("HTTP Proxy:");
-		panelNetworkConnection.add(lblHttpProxy, "cell 0 3,alignx trailing");
+		proxyPanel.add(lblHttpProxy, "cell 0 3,alignx trailing");
 		
 		txtHTTPProxyUrl = new JTextField();
-		panelNetworkConnection.add(txtHTTPProxyUrl, "cell 1 3,growx");
+		proxyPanel.add(txtHTTPProxyUrl, "cell 1 3,growx");
 		txtHTTPProxyUrl.setColumns(10);
 		
 		lblHTTPPort = new JLabel("Port:");
-		panelNetworkConnection.add(lblHTTPPort, "cell 2 3");
+		proxyPanel.add(lblHTTPPort, "cell 2 3");
 		
 		spnHTTPProxyPort = new JSpinner();
 		spnHTTPProxyPort.setModel(new SpinnerNumberModel(80, 0, 65535, 1));
-		panelNetworkConnection.add(spnHTTPProxyPort, "cell 3 3");
+		proxyPanel.add(spnHTTPProxyPort, "cell 3 3");
 		
 		lblHttpsProxy = new JLabel("HTTPS Proxy:");
-		panelNetworkConnection.add(lblHttpsProxy, "cell 0 4,alignx trailing");
+		proxyPanel.add(lblHttpsProxy, "cell 0 4,alignx trailing");
 		
 		txtHTTPSProxyUrl = new JTextField();
-		panelNetworkConnection.add(txtHTTPSProxyUrl, "cell 1 4,growx");
+		proxyPanel.add(txtHTTPSProxyUrl, "cell 1 4,growx");
 		txtHTTPSProxyUrl.setColumns(10);
 		
 		lblHTTPSPort = new JLabel("Port:");
-		panelNetworkConnection.add(lblHTTPSPort, "cell 2 4");
+		proxyPanel.add(lblHTTPSPort, "cell 2 4");
 		
 		spnHTTPSProxyPort = new JSpinner();
 		spnHTTPSProxyPort.setModel(new SpinnerNumberModel(80, 0, 65535, 1));
-		panelNetworkConnection.add(spnHTTPSProxyPort, "cell 3 4");
+		proxyPanel.add(spnHTTPSProxyPort, "cell 3 4");
 
 		linkToPrefs();
 		pingComponents();
 	}
 
+	public void setBackgroundColor(Color col)
+	{
+		this.setBackground(col);
+		this.wsPanel.setBackground(col);
+		this.proxyPanel.setBackground(col);
+	}
+	
+	public void setWebservicePanelVisible(Boolean b)
+	{
+		this.wsPanel.setVisible(b);
+		
+	}
+	
+	public void setProxyPanelVisible(Boolean b)
+	{
+		this.proxyPanel.setVisible(b);
+	}
+	
+	public void setWebservicePanelToSimple(Boolean b)
+	{
+		btnForceDictionaryReload.setVisible(!b);
+	}
+	
 	private void pingComponents()
 	{
 		txtWSURL.setEnabled(!chkDisableWS.isSelected());
