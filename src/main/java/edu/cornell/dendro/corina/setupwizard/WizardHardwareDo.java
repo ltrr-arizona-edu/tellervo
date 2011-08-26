@@ -12,9 +12,10 @@ public class WizardHardwareDo extends AbstractWizardPanel {
 	public WizardHardwareDo() {
 		super("Measuring platform configuration", 
 				"Use the form below to configure and test your measuring platform.  " +
-				"You can also specify whether you'd like to enable support for a barcode " +
-				"scanner.  You can change any of these options at a later date by opening " +
-				"the preferences dialog.");
+				"Some measuring platforms have fixed settings in which case the " +
+				"port settings will be set automatically, but others can be changed in the " +
+				"hardware and must be set explicitly here. Use the 'Test Connection' button " +
+				"to make sure that Corina can successfully communicate with your platform.");
 		
 		setLayout(new MigLayout("", "[100px,grow]", "[][120px,grow]"));
 				

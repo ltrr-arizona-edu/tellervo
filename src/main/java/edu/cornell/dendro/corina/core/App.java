@@ -156,6 +156,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
     	SetupWizard.launchWizard();
     }
     
+    splash.setVisible(true);
     
     // set up our proxies before we try to do anything online
     if (meter != null){
@@ -227,6 +228,8 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
         }
 
     }
+    
+    splash.setVisible(true);
     
     if (meter != null) {
     	meter.setProgress(7);
