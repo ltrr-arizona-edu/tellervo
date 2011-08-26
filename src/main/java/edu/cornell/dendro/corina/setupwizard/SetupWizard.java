@@ -81,14 +81,31 @@ public class SetupWizard extends JDialog implements ActionListener{
 		pages.add(new WizardWelcome());
 		pages.add(new WizardProxy());
 		pages.add(new WizardServer());
-		pages.add(new WizardHardware1());
-		pages.add(new WizardHardware2());
+		pages.add(new WizardHardwareAsk());
+		pages.add(new WizardHardwareDo());
 		pages.add(new WizardFinish());
 		
 		JDialog dialog = new SetupWizard(null, pages);
 		
 		dialog.setVisible(true);
 		
+	}
+	
+	public static void launchFirstRunWizard()
+	{
+		App.init();
+
+		ArrayList<AbstractWizardPanel> pages = new ArrayList<AbstractWizardPanel>();
+		pages.add(new WizardFirstRunWelcome());
+		pages.add(new WizardProxy());
+		pages.add(new WizardServer());
+		pages.add(new WizardHardwareAsk());
+		pages.add(new WizardHardwareDo());
+		pages.add(new WizardFinish());
+		
+		JDialog dialog = new SetupWizard(null, pages);
+		
+		dialog.setVisible(true);
 	}
 	
 	private void setupGui()

@@ -7,14 +7,14 @@ import javax.swing.JRadioButton;
 
 import net.miginfocom.swing.MigLayout;
 
-public class WizardHardware1 extends AbstractWizardPanel implements ActionListener{
+public class WizardHardwareAsk extends AbstractWizardPanel implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	private JRadioButton radYes; 
 	private JRadioButton radNo;
 	
 	
-	public WizardHardware1() {
+	public WizardHardwareAsk() {
 		super("Setting up measuring platform", 
 		"Corina supports a variety of dendro measuring platforms. " +
 		" Would you like to configure a platform now?");
@@ -47,11 +47,11 @@ public class WizardHardware1 extends AbstractWizardPanel implements ActionListen
 	public void actionPerformed(ActionEvent arg0) {
 		if(radYes.isSelected())
 		{
-			this.setPageClassToEnableOrDisable(WizardHardware2.class, true);
+			this.setPageClassToEnableOrDisable(WizardHardwareDo.class, true);
 		}
 		else
 		{
-			this.setPageClassToEnableOrDisable(WizardHardware2.class, false);	
+			this.setPageClassToEnableOrDisable(WizardHardwareDo.class, false);	
 		}
 		
 	}

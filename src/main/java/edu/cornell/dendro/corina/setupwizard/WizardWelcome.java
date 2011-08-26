@@ -10,12 +10,10 @@ public class WizardWelcome extends AbstractWizardPanel {
 	 * Create the panel.
 	 */
 	public WizardWelcome() {
-		super("Welcome to Corina", 
+		super("Welcome to the Corina setup wizard", 
 				"This wizard will take you through the steps that are " +
-				"necessary to configure Corina.  You may close this wizard at " +
-				"any time and configure Corina manually in the preferences windows, " +
-				"but until the Corina server details are supplied the majority of " +
-				"functions will be unavailable to you.");
+				"necessary to configure Corina.  The wizard will automatically " +
+				"use settings that you have previously configured.");
 		
 		
 

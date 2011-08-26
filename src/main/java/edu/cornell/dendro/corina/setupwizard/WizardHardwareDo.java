@@ -5,11 +5,11 @@ import java.awt.Color;
 import net.miginfocom.swing.MigLayout;
 import edu.cornell.dendro.corina.prefs.panels.HardwarePrefsPanel;
 
-public class WizardHardware2 extends AbstractWizardPanel {
+public class WizardHardwareDo extends AbstractWizardPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public WizardHardware2() {
+	public WizardHardwareDo() {
 		super("Measuring platform configuration", 
 				"Use the form below to configure and test your measuring platform.  " +
 				"You can also specify whether you'd like to enable support for a barcode " +
