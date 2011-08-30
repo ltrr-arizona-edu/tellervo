@@ -131,69 +131,69 @@
 \indexentry{Universally Unique Identifiers (UUID)|hyperpage}{74}
 \indexentry{Barcodes!Specifications|hyperpage}{74}
 \indexentry{Systems architecture|)hyperpage}{74}
-\indexentry{File formats|(hyperpage}{77}
-\indexentry{File formats!Belfast Apple|(hyperpage}{77}
-\indexentry{File formats!Belfast Apple|)hyperpage}{78}
-\indexentry{File formats!Belfast Archive|(hyperpage}{79}
-\indexentry{File formats!Belfast Archive|)hyperpage}{80}
-\indexentry{File formats!Besan\c{c}on|(hyperpage}{81}
-\indexentry{File formats!SYLPHE|see{Besan\c{c}on}}{81}
-\indexentry{File formats!Besan\c{c}on|)hyperpage}{82}
-\indexentry{File formats!CATRAS|(hyperpage}{83}
-\indexentry{File formats!CATRAS|)hyperpage}{85}
-\indexentry{File formats!CSV|(hyperpage}{87}
-\indexentry{File formats!Comma Separated Values|see{CSV}}{87}
-\indexentry{File formats!CSV|)hyperpage}{88}
-\indexentry{File formats!Corina Legacy|(hyperpage}{89}
-\indexentry{File formats!Corina Legacy|)hyperpage}{91}
-\indexentry{File formats!DendroDB|(hyperpage}{93}
-\indexentry{File formats!DendroDB|)hyperpage}{94}
-\indexentry{File formats!Heidelberg|(hyperpage}{95}
-\indexentry{File formats!TSAP|see{Heidelberg}}{95}
-\indexentry{File formats!FH|see{Heidelberg}}{95}
-\indexentry{File formats!Heidelberg|)hyperpage}{98}
-\indexentry{File formats!Microsoft Excel 97/2000/XP|(hyperpage}{99}
-\indexentry{File formats!Binary Interchange Format|see{Microsoft Excel 97/2000/XP}}{99}
-\indexentry{File formats!Microsoft Excel 97/2000/XP|)hyperpage}{100}
-\indexentry{File formats!Microsoft Excel 2007|(hyperpage}{101}
-\indexentry{File formats!Office Open XML Spreadsheet|see{Microsoft Excel 2007}}{101}
-\indexentry{File formats!OOXML|see{Microsoft Excel 2007}}{101}
-\indexentry{File formats!OpenXML Spreadsheet|see{Microsoft Excel 2007}}{101}
-\indexentry{File formats!Microsoft Excel 2007|)hyperpage}{101}
-\indexentry{File formats!Nottingham|(hyperpage}{103}
-\indexentry{File formats!Nottingham|)hyperpage}{104}
-\indexentry{File formats!ODF Spreadsheet|(hyperpage}{105}
-\indexentry{File formats!OpenDocument Format|see{ODF Spreadsheet}}{105}
-\indexentry{File formats!OpenOffice.org Format|see{ODF Spreadsheet}}{105}
-\indexentry{File formats!ODF Spreadsheet|)hyperpage}{105}
-\indexentry{File formats!Oxford|(hyperpage}{107}
-\indexentry{File formats!Oxford|)hyperpage}{109}
-\indexentry{File formats!PAST4|(hyperpage}{111}
-\indexentry{File formats!PAST4|)hyperpage}{114}
-\indexentry{File formats!Sheffield|(hyperpage}{115}
-\indexentry{File formats!D Format|see{Sheffield}}{115}
-\indexentry{File formats!Sheffield|)hyperpage}{117}
-\indexentry{File formats!Topham|(hyperpage}{119}
-\indexentry{File formats!TRiDaS|(hyperpage}{121}
-\indexentry{TRiDaS|(hyperpage}{121}
-\indexentry{TRiDaS|)hyperpage}{124}
-\indexentry{File formats!TRiDaS|)hyperpage}{124}
-\indexentry{File formats!TRIMS|(hyperpage}{125}
-\indexentry{File formats!TRIMS|)hyperpage}{125}
-\indexentry{File formats!Tucson|(hyperpage}{127}
-\indexentry{File formats!RWL|see{Tucson}}{127}
-\indexentry{File formats!CRN|see{Tucson}}{127}
-\indexentry{File formats!Decadal|see{Tucson}}{127}
-\indexentry{File formats!TSF|see{Tucson}}{127}
-\indexentry{File formats!Time series format|see{Tucson}}{127}
-\indexentry{File formats!ITRDB|see{Tucson}}{127}
-\indexentry{File formats!Tucson|)hyperpage}{130}
-\indexentry{File formats!Tucson Compact|(hyperpage}{131}
-\indexentry{File formats!Tucson Compact|)hyperpage}{132}
-\indexentry{File formats!VFormat|(hyperpage}{133}
-\indexentry{File formats!OJ Format|see{VFormat}}{133}
-\indexentry{File formats!VFormat|)hyperpage}{135}
-\indexentry{File formats!WinDENDRO|(hyperpage}{137}
-\indexentry{File formats!WinDENDRO|)hyperpage}{139}
-\indexentry{File formats|)hyperpage}{139}
-\indexentry{License|hyperpage}{141}
+\indexentry{File formats|(hyperpage}{79}
+\indexentry{File formats!Belfast Apple|(hyperpage}{79}
+\indexentry{File formats!Belfast Apple|)hyperpage}{80}
+\indexentry{File formats!Belfast Archive|(hyperpage}{81}
+\indexentry{File formats!Belfast Archive|)hyperpage}{82}
+\indexentry{File formats!Besan\c{c}on|(hyperpage}{83}
+\indexentry{File formats!SYLPHE|see{Besan\c{c}on}}{83}
+\indexentry{File formats!Besan\c{c}on|)hyperpage}{84}
+\indexentry{File formats!CATRAS|(hyperpage}{85}
+\indexentry{File formats!CATRAS|)hyperpage}{87}
+\indexentry{File formats!CSV|(hyperpage}{89}
+\indexentry{File formats!Comma Separated Values|see{CSV}}{89}
+\indexentry{File formats!CSV|)hyperpage}{90}
+\indexentry{File formats!Corina Legacy|(hyperpage}{91}
+\indexentry{File formats!Corina Legacy|)hyperpage}{93}
+\indexentry{File formats!DendroDB|(hyperpage}{95}
+\indexentry{File formats!DendroDB|)hyperpage}{96}
+\indexentry{File formats!Heidelberg|(hyperpage}{97}
+\indexentry{File formats!TSAP|see{Heidelberg}}{97}
+\indexentry{File formats!FH|see{Heidelberg}}{97}
+\indexentry{File formats!Heidelberg|)hyperpage}{100}
+\indexentry{File formats!Microsoft Excel 97/2000/XP|(hyperpage}{101}
+\indexentry{File formats!Binary Interchange Format|see{Microsoft Excel 97/2000/XP}}{101}
+\indexentry{File formats!Microsoft Excel 97/2000/XP|)hyperpage}{102}
+\indexentry{File formats!Microsoft Excel 2007|(hyperpage}{103}
+\indexentry{File formats!Office Open XML Spreadsheet|see{Microsoft Excel 2007}}{103}
+\indexentry{File formats!OOXML|see{Microsoft Excel 2007}}{103}
+\indexentry{File formats!OpenXML Spreadsheet|see{Microsoft Excel 2007}}{103}
+\indexentry{File formats!Microsoft Excel 2007|)hyperpage}{103}
+\indexentry{File formats!Nottingham|(hyperpage}{105}
+\indexentry{File formats!Nottingham|)hyperpage}{106}
+\indexentry{File formats!ODF Spreadsheet|(hyperpage}{107}
+\indexentry{File formats!OpenDocument Format|see{ODF Spreadsheet}}{107}
+\indexentry{File formats!OpenOffice.org Format|see{ODF Spreadsheet}}{107}
+\indexentry{File formats!ODF Spreadsheet|)hyperpage}{107}
+\indexentry{File formats!Oxford|(hyperpage}{109}
+\indexentry{File formats!Oxford|)hyperpage}{111}
+\indexentry{File formats!PAST4|(hyperpage}{113}
+\indexentry{File formats!PAST4|)hyperpage}{116}
+\indexentry{File formats!Sheffield|(hyperpage}{117}
+\indexentry{File formats!D Format|see{Sheffield}}{117}
+\indexentry{File formats!Sheffield|)hyperpage}{119}
+\indexentry{File formats!Topham|(hyperpage}{121}
+\indexentry{File formats!TRiDaS|(hyperpage}{123}
+\indexentry{TRiDaS|(hyperpage}{123}
+\indexentry{TRiDaS|)hyperpage}{126}
+\indexentry{File formats!TRiDaS|)hyperpage}{126}
+\indexentry{File formats!TRIMS|(hyperpage}{127}
+\indexentry{File formats!TRIMS|)hyperpage}{127}
+\indexentry{File formats!Tucson|(hyperpage}{129}
+\indexentry{File formats!RWL|see{Tucson}}{129}
+\indexentry{File formats!CRN|see{Tucson}}{129}
+\indexentry{File formats!Decadal|see{Tucson}}{129}
+\indexentry{File formats!TSF|see{Tucson}}{129}
+\indexentry{File formats!Time series format|see{Tucson}}{129}
+\indexentry{File formats!ITRDB|see{Tucson}}{129}
+\indexentry{File formats!Tucson|)hyperpage}{132}
+\indexentry{File formats!Tucson Compact|(hyperpage}{133}
+\indexentry{File formats!Tucson Compact|)hyperpage}{134}
+\indexentry{File formats!VFormat|(hyperpage}{135}
+\indexentry{File formats!OJ Format|see{VFormat}}{135}
+\indexentry{File formats!VFormat|)hyperpage}{137}
+\indexentry{File formats!WinDENDRO|(hyperpage}{139}
+\indexentry{File formats!WinDENDRO|)hyperpage}{141}
+\indexentry{File formats|)hyperpage}{141}
+\indexentry{License|hyperpage}{143}

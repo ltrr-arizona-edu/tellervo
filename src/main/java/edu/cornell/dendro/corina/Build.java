@@ -103,7 +103,7 @@ public class Build {
     }
 
     /** Version string. */
-    public final static String VERSION = "2.12"; // beta
+    public final static String VERSION = Build.class.getPackage().getImplementationVersion(); // beta
 
     /** Year (for copyright). */
     public final static String YEAR = "2001-2011";

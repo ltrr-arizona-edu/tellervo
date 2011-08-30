@@ -74,7 +74,7 @@
 				Dendrochronology</organization>
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
 			<roles>
-				<role>Student developer</role>
+				<role>Inactive developer</role>
 			</roles>			
 		</developer>
 		<developer>
@@ -110,12 +110,14 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:svn:svn+ssh://dendro.cornell.edu/home/svn/corina/branches/dev</connection>
+		<connection>scm:svn:http://dendro.cornell.edu/svn/corina/branches/dev/</connection>
 		<developerConnection>scm:svn:svn+ssh://dendro.cornell.edu/home/svn/corina/branches/dev</developerConnection>
 		<url>http://dendro.cornell.edu/corina</url>
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>HH:mm dd-MMM-yyyy</maven.build.timestamp.format>
+    	<timestamp>${maven.build.timestamp}</timestamp>
 	</properties>
 
 	<!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml
@@ -325,7 +327,7 @@
 		<resources>
 		  	<resource>
 		  		<directory>src/main/resources</directory>
-		  		<filtering>false</filtering>
+		  		<filtering>true</filtering>
 		  	</resource>
 		    <resource>
 		  		<directory>Native/BuildResources/</directory>
@@ -420,7 +422,7 @@
 	        <groupId>org.apache.maven.plugins</groupId>
 	        <artifactId>maven-resources-plugin</artifactId>
 	        <version>2.5</version>
-	      </plugin>
+	      </plugin> 
 
 			<!-- Reconfigure "clean" in Maven not to delete target directory -->
 			<plugin>
@@ -468,6 +470,18 @@
 			</plugin>
 			-->
 			
+			<plugin>
+		      <groupId>org.apache.maven.plugins</groupId>
+		      <artifactId>maven-jar-plugin</artifactId>
+		      <configuration>
+		        <archive>
+		          <manifest>
+		            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+		          </manifest>
+		        </archive>
+		      </configuration>
+		    </plugin>
+						
 			<plugin>
 			  <groupId>org.apache.maven.plugins</groupId>
 			  <artifactId>maven-source-plugin</artifactId>
@@ -677,6 +691,21 @@
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
+
+		          <execution>
+		            <phase>package</phase>
+		            <configuration>
+		              <tasks>
+							<exec outputproperty="revisionnum" executable="svnversion"/>
+		              </tasks>
+		            </configuration>
+		            <goals>
+		              <goal>run</goal>
+		            </goals>
+		          </execution>
+				
+				
+				
 					<!-- Delete the duplicate TRiDaS and GML 
 					classes produced by JAXB when creating the Corina classes. -->
 					<execution>

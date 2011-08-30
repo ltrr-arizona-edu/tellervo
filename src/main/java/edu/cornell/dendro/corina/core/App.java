@@ -152,11 +152,17 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
     
     // If it's the first run then hide splash and show setup wizard
     if (isFirstRun) {
-    	splash.setVisible(false);
+    	if(splash!=null)
+    	{
+    		splash.setVisible(false);
+    	}
     	SetupWizard.launchWizard();
     }
     
-    splash.setVisible(true);
+    if(splash!=null)
+    {
+    	splash.setVisible(true);
+    }
     
     // set up our proxies before we try to do anything online
     if (meter != null){
@@ -229,7 +235,10 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
 
     }
     
-    splash.setVisible(true);
+    if(splash!=null)
+    {
+    	splash.setVisible(true);
+    }
     
     if (meter != null) {
     	meter.setProgress(7);
