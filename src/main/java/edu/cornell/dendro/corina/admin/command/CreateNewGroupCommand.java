@@ -54,6 +54,7 @@ public class CreateNewGroupCommand implements ICommand {
 			
 			if(accdialog.isSuccessful())
 			{
+				group.setId(rsrc.getAssociatedResult().getId());
 				mainModel.addGroup(group);
 				parent.dispose();
 			}

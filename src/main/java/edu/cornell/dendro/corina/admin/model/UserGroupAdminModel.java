@@ -21,6 +21,8 @@ package edu.cornell.dendro.corina.admin.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JDialog;
 import javax.swing.JTable;
@@ -83,6 +85,14 @@ public class UserGroupAdminModel extends AbstractModel {
 		return null;
 	}
 	
+	public WSISecurityGroup getGroupById(GroupNode groupId){
+		for(WSISecurityGroup g: getGroupList()){
+			if(groupId.getId().equals(g.getId())) return g;
+		}
+		
+		return null;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public ArrayList<WSISecurityGroup> getGroupList() {
         if(groupList==null){
@@ -96,11 +106,34 @@ public class UserGroupAdminModel extends AbstractModel {
 		return mainView;
 	}
 	
+	public ArrayList<WSISecurityGroup> getParentGroups() {
+		ArrayList<WSISecurityGroup> parentGroups = new ArrayList<WSISecurityGroup>();
+		Set<String> childIds = new HashSet<String>();
+		for(WSISecurityGroup g:getGroupList()){
+			for(String childId: g.getGroupMembers()){
+				childIds.add(childId);
+			}
+		}
+		for(WSISecurityGroup g:getGroupList()){
+			if(!childIds.contains(g.getId()))
+				parentGroups.add(g);
+		}
+		
+		return parentGroups;
+	}
+	
 	public WSISecurityUser getUserById(String id){
 		for(WSISecurityUser u: getUserList()){
 			if(id.equals(u.getId())) return u;
 		}
 		
+		return null;
+	}
+	
+	public WSISecurityUser getUserById(UserNode userId){
+		for(WSISecurityUser u: getUserList()){
+			if(userId.getId().equals(u.getId())) return u;
+		}
 		return null;
 	}
 	
@@ -120,14 +153,14 @@ public class UserGroupAdminModel extends AbstractModel {
 		
 		return usersModelA;
 	}
-	
+
 	public TableRowSorter<SecurityUserTableModelA> getUsersSorterA() {
 		if(usersSorter==null){
 			usersSorter = new TableRowSorter<SecurityUserTableModelA>(getUsersModelA());
 		}
 		return usersSorter;
 	}
-
+	
 	public void removeGroupById(String groupid) {
 		for(WSISecurityGroup g:getGroupList()){
 			if(g.getId() == groupid){
@@ -135,7 +168,7 @@ public class UserGroupAdminModel extends AbstractModel {
 			}
 		}
 	}
-	
+
 	public void removeUserById(String userId){
 		for(WSISecurityUser u:getUserList()){
 			if(u.getId() == userId){

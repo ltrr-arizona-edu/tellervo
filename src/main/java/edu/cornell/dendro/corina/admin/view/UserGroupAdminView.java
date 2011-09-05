@@ -27,22 +27,11 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableRowSorter;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import net.miginfocom.swing.MigLayout;
-import edu.cornell.dendro.corina.admin.control.AuthenticateEvent;
-import edu.cornell.dendro.corina.admin.control.CreateNewUserEvent;
-import edu.cornell.dendro.corina.admin.control.DeleteGroupEvent;
-import edu.cornell.dendro.corina.admin.control.DeleteUserEvent;
-import edu.cornell.dendro.corina.admin.control.EditGroupEvent;
-import edu.cornell.dendro.corina.admin.control.EditUserEvent;
-import edu.cornell.dendro.corina.admin.control.OkFinishEvent;
-import edu.cornell.dendro.corina.admin.control.CreateNewGroupEvent;
-import edu.cornell.dendro.corina.admin.control.ToggleDisabledUsersEvent;
-import edu.cornell.dendro.corina.admin.control.UpdateUserEvent;
-import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
-import edu.cornell.dendro.corina.admin.model.SecurityMixTableModel;
-import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
-import edu.cornell.dendro.corina.admin.testing.UserGroupSyncer;
-import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.admin.control.*;
+import edu.cornell.dendro.corina.admin.model.*;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
@@ -53,7 +42,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.FlowLayout;
 
 /**
  * GUI class for administering users and groups.  Allows user with the correct
@@ -257,6 +245,13 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         	}
         });
         panel.add(test5, "cell 0 4");
+        
+        panel_1 = new JPanel();
+        accountsTabPane.addTab("New tab", null, panel_1, null);
+                
+        tree_1 = buildTree();
+
+        panel_1.add(tree_1);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -293,12 +288,39 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         btnDeleteGroup.addActionListener(this);
         btnNewGroup.addActionListener(this);
         btnEditGroup.addActionListener(this);        
-            
+               
         this.chkShowDisabledUsers.setSelected(true);
         new ToggleDisabledUsersEvent(true, mainModel).dispatch();   
     }
+	
+	public UserGroupTree buildTree() {
+    	DefaultMutableTreeNode root = new DefaultMutableTreeNode("All");
+    	for(WSISecurityGroup parent: mainModel.getParentGroups()){
+    		MyNode groupRoot = new MyNode(new GroupNode(parent.getId()));
+    		groupRoot = addMembersRecurse(groupRoot);
+    		root.add(groupRoot);
+    	}
+    	return new UserGroupTree(root);
+	}
     
-    private void internationlizeComponents()
+    private MyNode addMembersRecurse(MyNode parent){
+    	GroupNode parentId = (GroupNode) parent.getUserObject();
+    	WSISecurityGroup group = mainModel.getGroupById(parentId);
+    	for(String childIdStr: group.getGroupMembers()){
+    		GroupNode childId = new GroupNode(childIdStr);
+    		MyNode childNode = new MyNode(childId);
+    		childNode = addMembersRecurse(childNode);
+    		parent.add(childNode);
+    	}
+    	
+    	for(String childIdStr: group.getUserMembers()){
+    		MyNode childNode = new MyNode(new UserNode(childIdStr));
+    		parent.add(childNode);
+    	}
+    	return parent;
+    }
+
+	private void internationlizeComponents()
     {
     	this.setTitle(I18n.getText("admin.usersAndGroups"));
     	chkShowDisabledUsers.setText(I18n.getText("admin.showDisabledAccounts"));
@@ -350,6 +372,8 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     private JButton test3;
     private JButton test4;
     private JButton test5;
+    private JPanel panel_1;
+    private UserGroupTree tree_1;
     // End of variables declaration//GEN-END:variables
 
     public void actionPerformed(ActionEvent e) {
@@ -445,4 +469,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 			}
 		}
 	}
+	
+	
 }
