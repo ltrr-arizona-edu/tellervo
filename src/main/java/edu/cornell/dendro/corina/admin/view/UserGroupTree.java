@@ -36,199 +36,168 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import edu.cornell.dendro.corina.admin.model.GroupNode;
 import edu.cornell.dendro.corina.admin.model.MyNode;
-import edu.cornell.dendro.corina.admin.model.UserNode;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
+import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
-public class UserGroupTree extends JTree implements TreeSelectionListener, DragGestureListener, DropTargetListener, DragSourceListener {
-		
-	/**
-	 * 
-	 */
+public class UserGroupTree extends JTree implements TreeSelectionListener,
+		DragGestureListener, DropTargetListener, DragSourceListener {
+
 	private static final long serialVersionUID = 1L;
 	private TreePath SelectedTreePath = null;
 	private MyNode SelectedNode = null;
 	private DragSource dragSource = null;
-	
-	public UserGroupTree(){
-		
-		addTreeSelectionListener(this);
-	    dragSource = DragSource.getDefaultDragSource();
-	    DragGestureRecognizer dgr = dragSource.createDefaultDragGestureRecognizer(
-	        this, DnDConstants.ACTION_MOVE, this                              
-	      );
-	    
-	    dgr.setSourceActions(dgr.getSourceActions() & ~InputEvent.BUTTON3_MASK);
-	}
-	
+
+	/**
+	 * An extension of JTree that allows for dragging and dropping nodes
+	 * 
+	 * @param root
+	 *            the root node of the tree
+	 * */
 	public UserGroupTree(TreeNode root) {
 		super(root);
+		addTreeSelectionListener(this);
+		dragSource = DragSource.getDefaultDragSource();
+		DragGestureRecognizer dgr = dragSource
+				.createDefaultDragGestureRecognizer(this,
+						DnDConstants.ACTION_MOVE, this);
+
+		// block the right mouse button
+		dgr.setSourceActions(dgr.getSourceActions() & ~InputEvent.BUTTON3_MASK);
+
+		// not sure why, but this needs to be here:
+		new DropTarget(this, this);
 	}
 
 	/** DragGestureListener interface method */
-	  public void dragGestureRecognized(DragGestureEvent e) {
-		System.out.println("drag recognized");
-	    //Get the selected node
-	    MyNode dragNode = getSelectedNode();
-	    if (dragNode != null) {
+	public void dragGestureRecognized(DragGestureEvent e) {
+		MyNode dragNode = getSelectedNode();
+		if (dragNode != null) {
+			Cursor cursor = DragSource.DefaultMoveNoDrop;
+			dragSource.startDrag(e, cursor, dragNode, this);
+		}
+	}
 
-	      //Get the Transferable Object
-	      Transferable transferable = (Transferable) dragNode.getUserObject();
+	public MyNode getSelectedNode() {
+		return SelectedNode;
+	}
 
-	      //Select the appropriate cursor;
-	      Cursor cursor = DragSource.DefaultMoveNoDrop;	   
-	      dragSource.startDrag(e, cursor, transferable, this);
-	    }
-	  }
+	public void dragDropEnd(DragSourceDropEvent dsde) {	}
 
-	  public MyNode getSelectedNode() {
-		    return SelectedNode;
-	  }
-	  
-	  /** DragSourceListener interface method */
-	  public void dragDropEnd(DragSourceDropEvent dsde) {
-	  }
+	public void dragEnter(DragSourceDragEvent dsde) { }
 
-	  /** DragSourceListener interface method */
-	  public void dragEnter(DragSourceDragEvent dsde) {
-	  }
+	public void dragOver(DragSourceDragEvent dsde) { }
 
-	  /** DragSourceListener interface method */
-	  public void dragOver(DragSourceDragEvent dsde) {
-	  }
+	public void dropActionChanged(DragSourceDragEvent dsde) { }
 
-	  /** DragSourceListener interface method */
-	  public void dropActionChanged(DragSourceDragEvent dsde) {
-	  }
+	public void dragExit(DragSourceEvent dsde) { }
 
-	  /** DragSourceListener interface method */
-	  public void dragExit(DragSourceEvent dsde) {
-	  }
-	  
-	  /** DropTargetListener interface method - What we do when drag is released */
-	  public void drop(DropTargetDropEvent e) {
-	    try {
-	      Transferable tr = e.getTransferable();
+	public void drop(DropTargetDropEvent e) {
+		try {
+			//actually gets a MyNode object
+			Transferable dropNode = e.getTransferable();
 
-	      //can only drop into groups
-	      if (!tr.isDataFlavorSupported(GroupNode.ID_FLAVOR)){
-	    	  e.rejectDrop();
-	    	  return;
-	      }
+			// can only drop into groups
+			if (!((MyNode) dropNode).getType().equals(MyNode.Type.GROUP)) {
+				e.rejectDrop();
+				return;
+			}
 
-	      Object child = tr.getTransferData(UserNode.ID_FLAVOR);
+			// get new parent node
+			Point loc = e.getLocation();
+			TreePath destinationPath = getPathForLocation(loc.x, loc.y);
 
-	      //get new parent node
-	      Point loc = e.getLocation();
-	      TreePath destinationPath = getPathForLocation(loc.x, loc.y);
+			//check if it's a valid drop
+			if(testDropTarget(destinationPath, SelectedTreePath)){
+				
+				Object childData = dropNode.getTransferData(null);
+				
+				MyNode newParent = (MyNode) destinationPath.getLastPathComponent();
+				MyNode oldParent = (MyNode) getSelectedNode().getParent();
+				MyNode newChild = new MyNode(childData);
+	
+				try {
+					newParent.add(newChild);
+					oldParent.remove(getSelectedNode());
+					e.acceptDrop(DnDConstants.ACTION_MOVE);
+				} catch (java.lang.IllegalStateException ils) {
+					e.rejectDrop();
+				}
+	
+				e.getDropTargetContext().dropComplete(true);
+	
+				// expand nodes appropriately - this probably isnt the best way...
+				DefaultTreeModel model = (DefaultTreeModel) getModel();
+				model.reload(oldParent);
+				model.reload(newParent);
+				TreePath parentPath = new TreePath(newParent.getPath());
+				expandPath(parentPath);
+			}
+			else{
+				e.rejectDrop();
+			}
+			
+		} catch (IOException io) {
+			e.rejectDrop();
+		} catch (UnsupportedFlavorException ufe) {
+			e.rejectDrop();
+		}
+		
+	} // end of method
 
-	      final String msg = testDropTarget(destinationPath, SelectedTreePath);
-	      if (msg != null) {
-	        e.rejectDrop();
-	        return;
-	      }
+	/** DropTaregetListener interface method */
+	public void dragEnter(DropTargetDragEvent e) {
+	}
 
-	      MyNode newParent = (MyNode) destinationPath.getLastPathComponent();
+	/** DropTaregetListener interface method */
+	public void dragExit(DropTargetEvent e) {
+	}
 
-	      //get old parent node
-	      MyNode oldParent = (MyNode) getSelectedNode().getParent();
+	/** DropTaregetListener interface method */
+	public void dragOver(DropTargetDragEvent e) {
+		// set cursor location. Needed in setCursor method
+		Point cursorLocationBis = e.getLocation();
+		TreePath destinationPath = getPathForLocation(cursorLocationBis.x,
+				cursorLocationBis.y);
 
-	      //make new child node
-	      MyNode newChild = new MyNode(child);
+		// if destination path is okay accept drop...
+		if (testDropTarget(destinationPath, SelectedTreePath)) {
+			e.acceptDrag(DnDConstants.ACTION_MOVE);
+		}
+		// ...otherwise reject drop
+		else {
+			e.rejectDrag();
+		}
+	}
 
-	      try {
-	        newParent.add(newChild);
-	        oldParent.remove(getSelectedNode());
-	        e.acceptDrop (DnDConstants.ACTION_MOVE);
-	      }
-	      catch (java.lang.IllegalStateException ils) {
-	        e.rejectDrop();
-	      }
+	/** DropTaregetListener interface method */
+	public void dropActionChanged(DropTargetDragEvent e) {
+	}
 
-	      e.getDropTargetContext().dropComplete(true);
+	/** TreeSelectionListener - sets selected node */
+	public void valueChanged(TreeSelectionEvent evt) {
+		SelectedTreePath = evt.getNewLeadSelectionPath();
+		if (SelectedTreePath == null) {
+			SelectedNode = null;
+			return;
+		}
+		SelectedNode = (MyNode) SelectedTreePath.getLastPathComponent();
+	}
 
-	      //expand nodes appropriately - this probably isnt the best way...
-	      DefaultTreeModel model = (DefaultTreeModel) getModel();
-	      model.reload(oldParent);
-	      model.reload(newParent);
-	      TreePath parentPath = new TreePath(newParent.getPath());
-	      expandPath(parentPath);
-	    }
-	    catch (IOException io) { e.rejectDrop(); }
-	    catch (UnsupportedFlavorException ufe) {e.rejectDrop();}
-	  } //end of method
+	private boolean testDropTarget(TreePath destination, TreePath beingDropped) {
 
+		if (destination == null)
+			return false;
 
-	  /** DropTaregetListener interface method */
-	  public void dragEnter(DropTargetDragEvent e) {
-	  }
+		MyNode droppedOn = (MyNode) destination.getLastPathComponent();
 
-	  /** DropTaregetListener interface method */
-	  public void dragExit(DropTargetEvent e) { 
-	  }
-
-	  /** DropTaregetListener interface method */
-	  public void dragOver(DropTargetDragEvent e) {
-	    //set cursor location. Needed in setCursor method
-	    Point cursorLocationBis = e.getLocation();
-	        TreePath destinationPath = 
-	      getPathForLocation(cursorLocationBis.x, cursorLocationBis.y);
-
-	    // if destination path is okay accept drop...
-	    if (testDropTarget(destinationPath, SelectedTreePath) == null){
-	    	e.acceptDrag(DnDConstants.ACTION_MOVE ) ;
-	    }
-	    // ...otherwise reject drop
-	    else {
-	    	e.rejectDrag() ;
-	    }
-	  }
-
-	  /** DropTaregetListener interface method */
-	  public void dropActionChanged(DropTargetDragEvent e) {
-	  }
-
-
-	  /** TreeSelectionListener - sets selected node */
-	  public void valueChanged(TreeSelectionEvent evt) {
-	    SelectedTreePath = evt.getNewLeadSelectionPath();
-	    if (SelectedTreePath == null) {
-	      SelectedNode = null;
-	      return;
-	    }
-	    SelectedNode = (MyNode)SelectedTreePath.getLastPathComponent();
-	  }
-
-	  /** Convenience method to test whether drop location is valid
-	  @param destination The destination path 
-	  @param dropper The path for the node to be dropped
-	  @return null if no problems, otherwise an explanation
-	  */
-	  private String testDropTarget(TreePath destination, TreePath dropper) {
-	    //Typical Tests for dropping
-	 
-	    //Test 1.
-	    boolean destinationPathIsNull = destination == null;
-	    if (destinationPathIsNull) 
-	      return "Invalid drop location.";
-
-	    //Test 2.
-	    MyNode node = (MyNode) destination.getLastPathComponent();
-	    if ( !node.getAllowsChildren() )
-	      return "This node does not allow children";
-
-	    if (destination.equals(dropper))
-	      return "Destination cannot be same as source";
-
-	    //Test 3.
-	    if ( dropper.isDescendant(destination)) 
-	       return "Destination node cannot be a descendant.";
-
-	    //Test 4.
-	    if ( dropper.getParentPath().equals(destination)) 
-	       return "Destination node cannot be a parent.";
-
-	    return null;
-	  }
+		if (!droppedOn.getAllowsChildren() || destination.equals(beingDropped)
+				|| beingDropped.isDescendant(destination)
+				|| beingDropped.getParentPath().equals(destination)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 }

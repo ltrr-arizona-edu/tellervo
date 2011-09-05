@@ -20,50 +20,82 @@
  ******************************************************************************/
 
 package edu.cornell.dendro.corina.admin.model;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
 @SuppressWarnings("serial")
 	// a node in the tree - represents either a user or a group
-public class MyNode extends DefaultMutableTreeNode{
+public class MyNode extends DefaultMutableTreeNode implements Transferable{
 	
-	private UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
-
-	public MyNode(Object userObject){
-		super(userObject);
+	//use types instead of flavors for simplicity
+	public DataFlavor FLAVOR = null;
+	private static DataFlavor flavors[] = {null};
+	
+	public static enum Type {USER, GROUP};
+	private Type type;
+	
+	public MyNode(WSISecurityUser user){
+		super(user);
+		type = Type.USER;
 	}
 	
-	//retrieves the actual user or group object from the id.
-	public Object getFullEntity(){
-		if(userObject instanceof UserNode){
-			return mainModel.getUserById(((UserNode)userObject).getId());
-		}
-		else if(userObject instanceof GroupNode){
-			return mainModel.getGroupById(((GroupNode)userObject).getId());
-		}
-		//this should never happen
-		else{
-			return null;
-		}
-		
+	public MyNode(WSISecurityGroup group){
+		super(group);
+		type = Type.GROUP;
+	}
+	
+	public MyNode(Object data){
+		super(data);
+		if(data instanceof WSISecurityUser)
+			type = Type.USER;
+		else if(data instanceof WSISecurityGroup)
+			type = Type.GROUP;
+	}
+	
+	public Object getData(){
+		return userObject;
 	}
 	
 	public boolean getAllowsChildren(){
-		return userObject instanceof GroupNode;
+		return type.equals(Type.GROUP);
+	}
+	
+	public Type getType(){
+		return type;
 	}
 	
 	@Override
 	public String toString(){
-		if(this.userObject instanceof GroupNode){
-			String gId = ((GroupNode) userObject).getId();
-			return mainModel.getGroupById(gId).getName();
+		if(type.equals(Type.GROUP)){
+			return ((WSISecurityGroup) userObject).getName();
 		}
-		if(this.userObject instanceof UserNode){
-			String uId = ((UserNode) userObject).getId();
-			WSISecurityUser u = mainModel.getUserById(uId);
+		else if(type.equals(Type.USER)){
+			WSISecurityUser u = ((WSISecurityUser) userObject);
 			return u.getFirstName() +" " + u.getLastName();
 		}
 		return "Invalid MyNode type";
 	}
 
+	/** simplified version of getTranferData method which ignores flavor */
+	public Object getTransferData(DataFlavor flavor)
+			throws UnsupportedFlavorException, IOException {
+		return this;
+	}
+
+	@Override
+	public DataFlavor[] getTransferDataFlavors() {
+		return flavors;
+	}
+
+	@Override
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
+		return true;
+	}
 }

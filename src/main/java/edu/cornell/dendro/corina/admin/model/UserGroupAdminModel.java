@@ -85,14 +85,6 @@ public class UserGroupAdminModel extends AbstractModel {
 		return null;
 	}
 	
-	public WSISecurityGroup getGroupById(GroupNode groupId){
-		for(WSISecurityGroup g: getGroupList()){
-			if(groupId.getId().equals(g.getId())) return g;
-		}
-		
-		return null;
-	}
-	
 	@SuppressWarnings("unchecked")
 	public ArrayList<WSISecurityGroup> getGroupList() {
         if(groupList==null){
@@ -127,13 +119,6 @@ public class UserGroupAdminModel extends AbstractModel {
 			if(id.equals(u.getId())) return u;
 		}
 		
-		return null;
-	}
-	
-	public WSISecurityUser getUserById(UserNode userId){
-		for(WSISecurityUser u: getUserList()){
-			if(userId.getId().equals(u.getId())) return u;
-		}
 		return null;
 	}
 	

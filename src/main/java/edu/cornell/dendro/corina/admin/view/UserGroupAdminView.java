@@ -296,25 +296,30 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 	public UserGroupTree buildTree() {
     	DefaultMutableTreeNode root = new DefaultMutableTreeNode("All");
     	for(WSISecurityGroup parent: mainModel.getParentGroups()){
-    		MyNode groupRoot = new MyNode(new GroupNode(parent.getId()));
-    		groupRoot = addMembersRecurse(groupRoot);
+    		MyNode groupRoot = addMembersRecurse(new MyNode(parent));
     		root.add(groupRoot);
     	}
     	return new UserGroupTree(root);
 	}
     
+	/** recursively adds children nodes
+	 * 
+	 * @param parent a group node
+	 * */
     private MyNode addMembersRecurse(MyNode parent){
-    	GroupNode parentId = (GroupNode) parent.getUserObject();
-    	WSISecurityGroup group = mainModel.getGroupById(parentId);
-    	for(String childIdStr: group.getGroupMembers()){
-    		GroupNode childId = new GroupNode(childIdStr);
-    		MyNode childNode = new MyNode(childId);
-    		childNode = addMembersRecurse(childNode);
+    	//check it's a group node
+    	if(!parent.getType().equals(MyNode.Type.GROUP)) return null;
+    	
+    	WSISecurityGroup group = (WSISecurityGroup) parent.getUserObject();
+    	for(String childId: group.getGroupMembers()){
+    		WSISecurityGroup child = mainModel.getGroupById(childId);
+    		MyNode childNode = addMembersRecurse(new MyNode(child));
     		parent.add(childNode);
     	}
     	
-    	for(String childIdStr: group.getUserMembers()){
-    		MyNode childNode = new MyNode(new UserNode(childIdStr));
+    	for(String childId: group.getUserMembers()){
+    		WSISecurityUser child = mainModel.getUserById(childId);
+    		MyNode childNode = new MyNode(child);
     		parent.add(childNode);
     	}
     	return parent;
