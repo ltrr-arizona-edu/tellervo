@@ -37,6 +37,8 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import edu.cornell.dendro.corina.admin.model.MyNode;
+import edu.cornell.dendro.corina.admin.model.TransferableGroup;
+import edu.cornell.dendro.corina.admin.model.TransferableUser;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
@@ -74,8 +76,9 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 	public void dragGestureRecognized(DragGestureEvent e) {
 		MyNode dragNode = getSelectedNode();
 		if (dragNode != null) {
+	        Transferable transferable = (Transferable) dragNode.getUserObject();
 			Cursor cursor = DragSource.DefaultMoveNoDrop;
-			dragSource.startDrag(e, cursor, dragNode, this);
+			dragSource.startDrag(e, cursor, transferable, this);
 		}
 	}
 
@@ -95,28 +98,33 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 
 	public void drop(DropTargetDropEvent e) {
 		try {
-			//actually gets a MyNode object
-			Transferable dropNode = e.getTransferable();
-
+			Transferable tr = e.getTransferable();		
+			
+			// get new parent node
+			Point loc = e.getLocation();
+			TreePath destinationPath = getPathForLocation(loc.x, loc.y);
+			MyNode newParent = ((MyNode) destinationPath.getLastPathComponent());
+			
 			// can only drop into groups
-			if (!((MyNode) dropNode).getType().equals(MyNode.Type.GROUP)) {
+			if (!newParent.getType().equals(MyNode.Type.GROUP)) {
 				e.rejectDrop();
 				return;
 			}
 
-			// get new parent node
-			Point loc = e.getLocation();
-			TreePath destinationPath = getPathForLocation(loc.x, loc.y);
-
 			//check if it's a valid drop
 			if(testDropTarget(destinationPath, SelectedTreePath)){
 				
-				Object childData = dropNode.getTransferData(null);
-				
-				MyNode newParent = (MyNode) destinationPath.getLastPathComponent();
+				Object childData = tr.getTransferData(tr.getTransferDataFlavors()[0]);
+				MyNode newChild = null;
 				MyNode oldParent = (MyNode) getSelectedNode().getParent();
-				MyNode newChild = new MyNode(childData);
-	
+				
+				if(childData instanceof WSISecurityUser){
+					newChild = new MyNode(new TransferableUser((WSISecurityUser) childData));
+				}
+				else if(childData instanceof WSISecurityGroup){
+					newChild = new MyNode(new TransferableGroup((WSISecurityGroup) childData));
+				}
+				
 				try {
 					newParent.add(newChild);
 					oldParent.remove(getSelectedNode());

@@ -20,10 +20,6 @@
  ******************************************************************************/
 
 package edu.cornell.dendro.corina.admin.model;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -31,32 +27,21 @@ import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
 @SuppressWarnings("serial")
-	// a node in the tree - represents either a user or a group
-public class MyNode extends DefaultMutableTreeNode implements Transferable{
-	
-	//use types instead of flavors for simplicity
-	public DataFlavor FLAVOR = null;
-	private static DataFlavor flavors[] = {null};
+/** a node in the tree - represents either a user or a group */
+
+public class MyNode extends DefaultMutableTreeNode{
 	
 	public static enum Type {USER, GROUP};
 	private Type type;
 	
-	public MyNode(WSISecurityUser user){
+	public MyNode(TransferableUser user){
 		super(user);
 		type = Type.USER;
 	}
 	
-	public MyNode(WSISecurityGroup group){
+	public MyNode(TransferableGroup group){
 		super(group);
 		type = Type.GROUP;
-	}
-	
-	public MyNode(Object data){
-		super(data);
-		if(data instanceof WSISecurityUser)
-			type = Type.USER;
-		else if(data instanceof WSISecurityGroup)
-			type = Type.GROUP;
 	}
 	
 	public Object getData(){
@@ -74,28 +59,14 @@ public class MyNode extends DefaultMutableTreeNode implements Transferable{
 	@Override
 	public String toString(){
 		if(type.equals(Type.GROUP)){
-			return ((WSISecurityGroup) userObject).getName();
+			return ((TransferableGroup) userObject).getGroup().getName();
 		}
 		else if(type.equals(Type.USER)){
-			WSISecurityUser u = ((WSISecurityUser) userObject);
+			WSISecurityUser u = ((TransferableUser) userObject).getUser();
 			return u.getFirstName() +" " + u.getLastName();
 		}
-		return "Invalid MyNode type";
-	}
-
-	/** simplified version of getTranferData method which ignores flavor */
-	public Object getTransferData(DataFlavor flavor)
-			throws UnsupportedFlavorException, IOException {
-		return this;
-	}
-
-	@Override
-	public DataFlavor[] getTransferDataFlavors() {
-		return flavors;
-	}
-
-	@Override
-	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return true;
+		else{
+			return "Invalid MyNode type";
+		}
 	}
 }

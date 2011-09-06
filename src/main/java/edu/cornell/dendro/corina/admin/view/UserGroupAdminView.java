@@ -42,6 +42,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.tree.TreeNode;
 
 /**
  * GUI class for administering users and groups.  Allows user with the correct
@@ -248,10 +250,13 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         
         panel_1 = new JPanel();
         accountsTabPane.addTab("New tab", null, panel_1, null);
-                
-        tree_1 = buildTree();
-
-        panel_1.add(tree_1);
+        panel_1.setLayout(new MigLayout("", "[grow][][][][][][][][][grow]", "[grow][][][][][][grow]"));
+        
+        scrollPane = new JScrollPane();
+        panel_1.add(scrollPane, "cell 0 0 10 7,grow");
+        
+        tree = buildTree();
+        scrollPane.setColumnHeaderView(tree);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -288,15 +293,19 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         btnDeleteGroup.addActionListener(this);
         btnNewGroup.addActionListener(this);
         btnEditGroup.addActionListener(this);        
+        
+        tree = buildTree();
                
         this.chkShowDisabledUsers.setSelected(true);
         new ToggleDisabledUsersEvent(true, mainModel).dispatch();   
     }
 	
 	public UserGroupTree buildTree() {
-    	DefaultMutableTreeNode root = new DefaultMutableTreeNode("All");
+		WSISecurityGroup dummyRoot = new WSISecurityGroup();
+		dummyRoot.setName("All");
+    	MyNode root = new MyNode(new TransferableGroup(dummyRoot));
     	for(WSISecurityGroup parent: mainModel.getParentGroups()){
-    		MyNode groupRoot = addMembersRecurse(new MyNode(parent));
+    		MyNode groupRoot = addMembersRecurse(new MyNode(new TransferableGroup(parent)));
     		root.add(groupRoot);
     	}
     	return new UserGroupTree(root);
@@ -310,16 +319,16 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     	//check it's a group node
     	if(!parent.getType().equals(MyNode.Type.GROUP)) return null;
     	
-    	WSISecurityGroup group = (WSISecurityGroup) parent.getUserObject();
+    	WSISecurityGroup group = ((TransferableGroup) parent.getUserObject()).getGroup();
     	for(String childId: group.getGroupMembers()){
     		WSISecurityGroup child = mainModel.getGroupById(childId);
-    		MyNode childNode = addMembersRecurse(new MyNode(child));
+    		MyNode childNode = addMembersRecurse(new MyNode(new TransferableGroup(child)));
     		parent.add(childNode);
     	}
     	
     	for(String childId: group.getUserMembers()){
     		WSISecurityUser child = mainModel.getUserById(childId);
-    		MyNode childNode = new MyNode(child);
+    		MyNode childNode = new MyNode(new TransferableUser(child));
     		parent.add(childNode);
     	}
     	return parent;
@@ -378,7 +387,8 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     private JButton test4;
     private JButton test5;
     private JPanel panel_1;
-    private UserGroupTree tree_1;
+    private JScrollPane scrollPane;
+    private UserGroupTree tree;
     // End of variables declaration//GEN-END:variables
 
     public void actionPerformed(ActionEvent e) {
