@@ -256,7 +256,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         panel_1.add(scrollPane, "cell 0 0 10 7,grow");
         
         tree = buildTree();
-        scrollPane.setColumnHeaderView(tree);
+        scrollPane.setViewportView(tree);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -304,6 +304,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 		WSISecurityGroup dummyRoot = new WSISecurityGroup();
 		dummyRoot.setName("All");
     	MyNode root = new MyNode(new TransferableGroup(dummyRoot));
+    	root.setRestrictedChildType(MyNode.Type.USER); //this prevents user nodes from being dropped in the group root node "All"
     	for(WSISecurityGroup parent: mainModel.getParentGroups()){
     		MyNode groupRoot = addMembersRecurse(new MyNode(new TransferableGroup(parent)));
     		root.add(groupRoot);

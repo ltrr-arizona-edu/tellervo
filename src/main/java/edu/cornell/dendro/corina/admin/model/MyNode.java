@@ -21,7 +21,10 @@
 
 package edu.cornell.dendro.corina.admin.model;
 
+import java.util.ArrayList;
+
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
@@ -33,6 +36,8 @@ public class MyNode extends DefaultMutableTreeNode{
 	
 	public static enum Type {USER, GROUP};
 	private Type type;
+	private ArrayList<Type> restrictedChildTypes = new ArrayList<Type>(); //null means it accepts anything
+	private DefaultMutableTreeNode child;
 	
 	public MyNode(TransferableUser user){
 		super(user);
@@ -50,6 +55,15 @@ public class MyNode extends DefaultMutableTreeNode{
 	
 	public boolean getAllowsChildren(){
 		return type.equals(Type.GROUP);
+	}
+	
+	public ArrayList<Type> getRestrictedChildTypes(){
+		return restrictedChildTypes;
+	}
+	
+	//used only by the All node (so it only takes groups)
+	public void setRestrictedChildType(MyNode.Type allowedType){
+		restrictedChildTypes.add(allowedType);
 	}
 	
 	public Type getType(){

@@ -115,19 +115,12 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 			if(testDropTarget(destinationPath, SelectedTreePath)){
 				
 				Object childData = tr.getTransferData(tr.getTransferDataFlavors()[0]);
-				MyNode newChild = null;
+				MyNode newChild = (MyNode) getSelectedNode();
 				MyNode oldParent = (MyNode) getSelectedNode().getParent();
 				
-				if(childData instanceof WSISecurityUser){
-					newChild = new MyNode(new TransferableUser((WSISecurityUser) childData));
-				}
-				else if(childData instanceof WSISecurityGroup){
-					newChild = new MyNode(new TransferableGroup((WSISecurityGroup) childData));
-				}
-				
 				try {
-					newParent.add(newChild);
 					oldParent.remove(getSelectedNode());
+					newParent.add(newChild);
 					e.acceptDrop(DnDConstants.ACTION_MOVE);
 				} catch (java.lang.IllegalStateException ils) {
 					e.rejectDrop();
@@ -193,16 +186,18 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 		SelectedNode = (MyNode) SelectedTreePath.getLastPathComponent();
 	}
 
-	private boolean testDropTarget(TreePath destination, TreePath beingDropped) {
+	private boolean testDropTarget(TreePath destination, TreePath beingDroppedPath) {
 
 		if (destination == null)
 			return false;
 
 		MyNode droppedOn = (MyNode) destination.getLastPathComponent();
+		MyNode beingDropped = (MyNode) beingDroppedPath.getLastPathComponent();
 
-		if (!droppedOn.getAllowsChildren() || destination.equals(beingDropped)
-				|| beingDropped.isDescendant(destination)
-				|| beingDropped.getParentPath().equals(destination)) {
+		if (!droppedOn.getAllowsChildren() || destination.equals(beingDroppedPath)
+				|| beingDroppedPath.isDescendant(destination)
+				|| beingDroppedPath.getParentPath().equals(destination)
+				|| droppedOn.getRestrictedChildTypes().contains(beingDropped.getType())) {
 			return false;
 		} else {
 			return true;
