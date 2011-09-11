@@ -25,15 +25,19 @@ import java.util.ArrayList;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import com.dmurph.mvc.IllegalThreadException;
+import com.dmurph.mvc.IncorrectThreadException;
+import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
+
+import edu.cornell.dendro.corina.admin.control.UpdateGroupEvent;
 import edu.cornell.dendro.corina.admin.control.UpdateUserEvent;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
-import edu.cornell.dendro.corina.wsi.corina.resources.SecurityGroupEntityResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityUserEntityResource;
 
 public class UpdateUserCommand implements ICommand {
@@ -96,23 +100,20 @@ public class UpdateUserCommand implements ICommand {
 				}
 			}	
 			
+			try {
+			        MVC.splitOff(); // so other mvc events can execute
+			} catch (IllegalThreadException e) {
+			        // this means that the thread that called splitOff() was not an MVC thread, and the next event's won't be blocked anyways.
+			        e.printStackTrace();
+			} catch (IncorrectThreadException e) {
+			        // this means that this MVC thread is not the main thread, it was already splitOff() previously
+			        e.printStackTrace();
+			}
+
 			for(WSISecurityGroup group: changedGroups){
-				// associate a resource
-		    	SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
-		    	
-				CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(parent, rsrc);
-				rsrc.query();
-				accdialog.setVisible(true);
-				
-				if(accdialog.isSuccessful())
-				{
-					mainModel.updateGroup(rsrc.getAssociatedResult());
-					parent.dispose();
-				}
-				else{
-					JOptionPane.showMessageDialog(parent, "Error updating group: " + accdialog.getFailException().
-							getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				}
+
+				new UpdateGroupEvent(group, parent).dispatch();
+			
 			}
 			
 		}

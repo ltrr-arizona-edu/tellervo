@@ -34,6 +34,7 @@ import edu.cornell.dendro.corina.admin.command.DeleteUserCommand;
 import edu.cornell.dendro.corina.admin.command.EditGroupCommand;
 import edu.cornell.dendro.corina.admin.command.EditUserCommand;
 import edu.cornell.dendro.corina.admin.command.ToggleDisabledUsersCommand;
+import edu.cornell.dendro.corina.admin.command.UpdateGroupCommand;
 import edu.cornell.dendro.corina.admin.command.UpdateUserCommand;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.admin.view.UserGroupAdminView;
@@ -52,6 +53,7 @@ public class UserGroupAdminController extends FrontController {
 		public static final String CREATE_NEW_USER = "UGA_CREATE_NEW_USER";
 		public static final String UPDATE_USER = "UGA_UPDATE_USER";
 		public static final String CREATE_NEW_GROUP = "UGA_CREATE_GROUP";
+		public static final String UPDATE_GROUP = "UGA_UPDATE_GROUP";
         
         public UserGroupAdminController(){
                 registerCommand(DISPLAY_UGA, "display");
@@ -64,6 +66,7 @@ public class UserGroupAdminController extends FrontController {
                 registerCommand(OK_FINISH, "finish");
                 registerCommand(CREATE_NEW_USER, CreateNewUserCommand.class);
                 registerCommand(UPDATE_USER, UpdateUserCommand.class);
+                registerCommand(UPDATE_GROUP, UpdateGroupCommand.class);
                 registerCommand(CREATE_NEW_GROUP, CreateNewGroupCommand.class);
         }
         

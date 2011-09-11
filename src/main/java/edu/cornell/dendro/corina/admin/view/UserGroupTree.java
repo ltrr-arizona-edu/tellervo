@@ -28,7 +28,9 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.InputEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import javax.swing.JDialog;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -36,6 +38,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import edu.cornell.dendro.corina.admin.control.UpdateUserEvent;
 import edu.cornell.dendro.corina.admin.model.MyNode;
 import edu.cornell.dendro.corina.admin.model.TransferableGroup;
 import edu.cornell.dendro.corina.admin.model.TransferableUser;
@@ -97,55 +100,53 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 	public void dragExit(DragSourceEvent dsde) { }
 
 	public void drop(DropTargetDropEvent e) {
-		try {
-			Transferable tr = e.getTransferable();		
+		
+		// get new parent node
+		Point loc = e.getLocation();
+		TreePath destinationPath = getPathForLocation(loc.x, loc.y);
+		MyNode newParent = ((MyNode) destinationPath.getLastPathComponent());
+
+		//check if it's a valid drop
+		if(testDropTarget(destinationPath, SelectedTreePath)){
 			
-			// get new parent node
-			Point loc = e.getLocation();
-			TreePath destinationPath = getPathForLocation(loc.x, loc.y);
-			MyNode newParent = ((MyNode) destinationPath.getLastPathComponent());
+			MyNode newChild = (MyNode) getSelectedNode();
+			MyNode oldParent = (MyNode) getSelectedNode().getParent();
 			
-			// can only drop into groups
-			if (!newParent.getType().equals(MyNode.Type.GROUP)) {
+			try {
+				//TODO: add a check so if the request fails, the tree doesn't change
+				//makeChange(newChild, newParent, oldParent);
+				oldParent.remove(getSelectedNode());
+				newParent.add(newChild);
+				e.acceptDrop(DnDConstants.ACTION_MOVE);
+			} catch (java.lang.IllegalStateException ils) {
 				e.rejectDrop();
-				return;
 			}
 
-			//check if it's a valid drop
-			if(testDropTarget(destinationPath, SelectedTreePath)){
-				
-				Object childData = tr.getTransferData(tr.getTransferDataFlavors()[0]);
-				MyNode newChild = (MyNode) getSelectedNode();
-				MyNode oldParent = (MyNode) getSelectedNode().getParent();
-				
-				try {
-					oldParent.remove(getSelectedNode());
-					newParent.add(newChild);
-					e.acceptDrop(DnDConstants.ACTION_MOVE);
-				} catch (java.lang.IllegalStateException ils) {
-					e.rejectDrop();
-				}
-	
-				e.getDropTargetContext().dropComplete(true);
-	
-				// expand nodes appropriately - this probably isnt the best way...
-				DefaultTreeModel model = (DefaultTreeModel) getModel();
-				model.reload(oldParent);
-				model.reload(newParent);
-				TreePath parentPath = new TreePath(newParent.getPath());
-				expandPath(parentPath);
-			}
-			else{
-				e.rejectDrop();
-			}
-			
-		} catch (IOException io) {
-			e.rejectDrop();
-		} catch (UnsupportedFlavorException ufe) {
+			e.getDropTargetContext().dropComplete(true);
+
+			// expand nodes appropriately - this probably isnt the best way...
+			DefaultTreeModel model = (DefaultTreeModel) getModel();
+			model.reload(oldParent);
+			model.reload(newParent);
+			TreePath parentPath = new TreePath(newParent.getPath());
+			expandPath(parentPath);
+		}
+		else{
 			e.rejectDrop();
 		}
 		
-	} // end of method
+	}
+
+	//sends the command to update the user/group structure after a drop
+	private void makeChange(MyNode newChild, MyNode newParent, MyNode oldParent) {
+		if(newChild.getType().equals(MyNode.Type.USER)){
+			ArrayList<WSISecurityGroup> oldMemList = new ArrayList<WSISecurityGroup>();
+			ArrayList<WSISecurityGroup> newMemList = new ArrayList<WSISecurityGroup>();
+			oldMemList.add(((TransferableGroup) oldParent.getData()).getGroup());
+			newMemList.add(((TransferableGroup) newParent.getData()).getGroup());
+			new UpdateUserEvent(((TransferableUser) newChild.getData()).getUser(), oldMemList, newMemList, new JDialog()).dispatch();
+		}
+	}
 
 	/** DropTaregetListener interface method */
 	public void dragEnter(DropTargetDragEvent e) {

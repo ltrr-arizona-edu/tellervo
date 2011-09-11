@@ -192,6 +192,24 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     			new CreateNewGroupEvent(group, new JDialog()).dispatch();
         	}
         });
+        
+        btnClearAllPlacements = new JButton("Clear all placements");
+        btnClearAllPlacements.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		for(WSISecurityUser u:mainModel.getUserList()){
+        			if(u.getMemberOves()!=null && !u.getMemberOves().isEmpty()){
+	        			ArrayList<WSISecurityGroup> oldMemList = new ArrayList<WSISecurityGroup>();
+	        			for(String memId : u.getMemberOves()){
+	        				oldMemList.add(mainModel.getGroupById(memId));
+	        			}
+	        			u.setMemberOves(null);
+	        			new UpdateUserEvent(u, oldMemList, new ArrayList<WSISecurityGroup>(), new JDialog()).dispatch();
+	        			break;
+        			}
+        		}
+        	}
+        });
+        panel.add(btnClearAllPlacements, "cell 1 0");
         panel.add(test2, "cell 0 1,alignx left,aligny top");
         
         test3 = new JButton("Add testABC to testGroup");
@@ -390,6 +408,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     private JPanel panel_1;
     private JScrollPane scrollPane;
     private UserGroupTree tree;
+    private JButton btnClearAllPlacements;
     // End of variables declaration//GEN-END:variables
 
     public void actionPerformed(ActionEvent e) {
