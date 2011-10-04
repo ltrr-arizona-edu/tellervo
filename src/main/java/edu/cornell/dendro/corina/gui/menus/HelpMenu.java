@@ -74,9 +74,9 @@ public class HelpMenu extends JMenu {
 	    addHelpMenu();
 	    addSetupWizardMenu();
         addSeparator();
-        addSystemInfoMenu();
         addErrorLogMenu();
-        
+        addSeparator();
+        addSystemInfoMenu();
 		if (!Platform.isMac()) {
 		    addSeparator();
 		    addAboutMenu();
@@ -146,14 +146,14 @@ public class HelpMenu extends JMenu {
 			}
         	
         });
+        logviewer.setIcon(Builder.getIcon("bug.png", 22));
         add(logviewer);
     	
     	//add(Builder.makeMenuItem("menus.help.error_log", "edu.cornell.dendro.corina.gui.Log4JViewer.showLogViewer()", "log.png"));
+        add(Builder.makeMenuItem("menus.help.error_ws", "edu.cornell.dendro.corina.wsi.TransactionDebug.forceGenerateWSBug()", "bugreport.png"));
 
         debugMenu = Builder.makeMenuItem("menus.help.xml_debug", "edu.cornell.dendro.corina.gui.XMLDebugView.showDialog()", "networksettings.png");
         add(debugMenu);
-        addSeparator();
-        add(Builder.makeMenuItem("menus.help.error_ws", "edu.cornell.dendro.corina.wsi.TransactionDebug.forceGenerateWSBug()", "mail_send.png"));
         
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.DebugInstantiator.showMe()"));
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.newui.NewJFrame1.main()"));
@@ -165,6 +165,7 @@ public class HelpMenu extends JMenu {
     protected void addAboutMenu() {
       JMenuItem menuitem = Builder.makeMenuItem("menus.about");
       menuitem.setAction(ABOUT_ACTION);
+      menuitem.setIcon(Builder.getIcon("info.png", 22));
       add(menuitem);
     }
     

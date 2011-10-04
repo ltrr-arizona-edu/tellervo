@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/edu/cornell/dendro/cpgdb/*|**/edu/cornell/dendro/webservice/*" kind="src" output="target/classes" path="src/main/java"/>
+	<classpathentry excluding="**/edu/cornell/dendro/cpgdb/*|**/edu/cornell/dendro/webservice/*" kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="corina/Native/Libraries/linux-i586"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" path="src/main/generated"/>
 	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources"/>
 	<classpathentry excluding="**" kind="src" output="target/classes" path="Native/BuildResources"/>

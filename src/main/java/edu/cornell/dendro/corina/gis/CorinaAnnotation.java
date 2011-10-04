@@ -34,7 +34,7 @@ import javax.media.opengl.GL;
 
 public class CorinaAnnotation extends GlobeAnnotation implements ActionListener{
 
-    protected ImageAnnotation busyImage;
+    protected ImageAnnotation busyImage = new BusyImage(BUSY_IMAGE_PATH);
 
     protected static final String CLOSE_IMAGE_PATH = "Icons/16x16/cancel.png";
     protected static final String SEARCHFORSERIES_IMAGE_PATH = "Icons/searchforseries.png";
@@ -57,7 +57,7 @@ public class CorinaAnnotation extends GlobeAnnotation implements ActionListener{
 	public CorinaAnnotation(Position position)
 	{
 		super("", position);
-
+	
         this.setBusy(false);
 	}
 	

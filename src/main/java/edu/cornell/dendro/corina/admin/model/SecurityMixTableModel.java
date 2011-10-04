@@ -48,7 +48,7 @@ public class SecurityMixTableModel extends AbstractTableModel {
 	
     private final String[] columnNames = {
             I18n.getText("dbbrowser.hash"),
-            I18n.getText("admin.member"),
+            I18n.getText("admin.user"),
             I18n.getText("admin.description"),
             I18n.getText("admin.parents"),
         };

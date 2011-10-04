@@ -16,6 +16,9 @@ import gov.nasa.worldwind.layers.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -29,7 +32,8 @@ import java.awt.event.*;
  */
 public class CorinaLayerPanel extends JPanel
 {
-    protected JPanel layersPanel;
+	private static final long serialVersionUID = 1L;
+	protected JPanel layersPanel;
     protected JPanel westPanel;
     protected JScrollPane scrollPane;
     protected Font defaultFont;
@@ -44,6 +48,7 @@ public class CorinaLayerPanel extends JPanel
     private JSplitPane splitPane;
     private JSplitPane splitPane_1;
     private JButton btnAddData;
+	private final static Logger log = LoggerFactory.getLogger(CorinaLayerPanel.class);
 
     /**
      * Create a panel with the default size.
@@ -147,8 +152,17 @@ public class CorinaLayerPanel extends JPanel
 
     protected void fill(WorldWindow wwd)
     {
+    	
+    	LayerList layers = null;
+    	try{
+    		layers = wwd.getModel().getLayers();
+    	} catch (NullPointerException e)
+    	{	
+    		log.debug("No layers in current WWJ map model");
+    	}
+    	
         // Fill the layers panel with the titles of all layers in the world window's current model.
-    	LayerList layers = wwd.getModel().getLayers();
+
         for (Layer layer : layers)
         {        	
             LayerAction action = new LayerAction(layer, wwd, layer.isEnabled());

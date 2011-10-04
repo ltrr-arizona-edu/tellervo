@@ -365,7 +365,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     	btnNewGroup.setText(I18n.getText("menus.file.new"));
     	btnDeleteGroup.setText(I18n.getText("general.delete"));
     	accountsTabPane.setTitleAt(0, I18n.getText("admin.users"));
-    	accountsTabPane.setTitleAt(1, I18n.getText("admin.group"));
+    	accountsTabPane.setTitleAt(1, I18n.getText("admin.groups"));
     	lblMembers.setText(I18n.getText("admin.members"));
     }
     
