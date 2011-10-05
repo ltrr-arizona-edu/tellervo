@@ -174,7 +174,8 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
            			  String sampcode = null;
            			  
            			  // Remove the "C-" from beginning if present
-           			  if (text.substring(0, 2).compareToIgnoreCase("C-")==0) text = text.substring(2, text.length());
+           			  String prefix = App.getLabCodePrefix();
+           			  if (text.substring(0, prefix.length()).compareToIgnoreCase(prefix)==0) text = text.substring(prefix.length(), text.length());
            			  
            			  // Explode based on '-' delimiter
            			  strarray = text.split("-");

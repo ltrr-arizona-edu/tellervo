@@ -227,7 +227,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
     protected javax.swing.JTable tblGroups;
     protected javax.swing.JTextField txtId;
     protected javax.swing.JTextField txtName;
-    private JTextField txtDescription;
+    protected JTextField txtDescription;
     // End of variables declaration//GEN-END:variables
  
     @SuppressWarnings("unchecked")
@@ -287,6 +287,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 	{
 		group.setName(txtName.getText());
 		group.setIsActive(this.chkEnabled.isSelected());
+		group.setDescription(this.txtDescription.getText());
 		
 		
 		if(isNewGroup)

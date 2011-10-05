@@ -22,6 +22,7 @@ package edu.cornell.dendro.corina.gui.cross;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.ui.I18n;
 
 
@@ -494,7 +495,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
 
         lblSecondary.setText("Reference series (fixed):");
 
-        cboFloating.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "C-ABC-1-A" }));
+        cboFloating.setModel(new javax.swing.DefaultComboBoxModel(new String[] { App.getLabCodePrefix()+"ABC-1-A" }));
 
         cboReference.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "My Master Chronology" }));
         cboReference.setMinimumSize(new java.awt.Dimension(131, 27));

@@ -265,6 +265,11 @@ public class CorinaResourceAccessDialog extends JDialog implements ResourceEvent
 		super.setVisible(visible);
 	}
 	
+	public void hideDialog()
+	{
+		super.setVisible(false);
+	}
+	
 	public void dispose() {
 		myResource.removeResourceEventListener(this);
 		if(parent != null)

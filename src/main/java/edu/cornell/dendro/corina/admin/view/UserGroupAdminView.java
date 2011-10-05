@@ -100,7 +100,9 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         tblGroups = new javax.swing.JTable();
         btnEditGroup = new javax.swing.JButton();
         btnNewGroup = new javax.swing.JButton();
+        btnNewGroup.setEnabled(false);
         btnDeleteGroup = new javax.swing.JButton();
+        btnDeleteGroup.setEnabled(false);
         scrollMembers = new javax.swing.JScrollPane();
         tblMembers = new javax.swing.JTable();
         btnOk = new javax.swing.JButton();
@@ -164,9 +166,9 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         getContentPane().add(btnOk, "cell 0 1,alignx right,aligny top");
         getContentPane().add(accountsTabPane, "cell 0 0,grow");
         
-        panel = new JPanel();
-        accountsTabPane.addTab("New tab", null, panel, null);
-        panel.setLayout(new MigLayout("", "[173px][192px][205px][117px]", "[29px][][][][]"));
+        debugPanel = new JPanel();
+        //accountsTabPane.addTab("Debug tab", null, debugPanel, null);
+        debugPanel.setLayout(new MigLayout("", "[173px][192px][205px][117px]", "[29px][][][][]"));
         
         test1 = new JButton("Create User testABC ");
         test1.addActionListener(new ActionListener() {
@@ -180,7 +182,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     			new CreateNewUserEvent(user, "pwdpwdpwd", new JDialog()).dispatch();
         	}
         });
-        panel.add(test1, "cell 0 0,alignx left,aligny top");
+        debugPanel.add(test1, "cell 0 0,alignx left,aligny top");
         
         
         test2 = new JButton("Create Group testGroup");
@@ -209,8 +211,8 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         		}
         	}
         });
-        panel.add(btnClearAllPlacements, "cell 1 0");
-        panel.add(test2, "cell 0 1,alignx left,aligny top");
+        debugPanel.add(btnClearAllPlacements, "cell 1 0");
+        debugPanel.add(test2, "cell 0 1,alignx left,aligny top");
         
         test3 = new JButton("Add testABC to testGroup");
         test3.addActionListener(new ActionListener() {
@@ -232,7 +234,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     			}
         	}
         });
-        panel.add(test3, "cell 0 2,alignx left,aligny top");
+        debugPanel.add(test3, "cell 0 2,alignx left,aligny top");
         
         test4 = new JButton("Delete testABC");
         test4.addActionListener(new ActionListener() {
@@ -246,7 +248,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     			}
         	}
         });
-        panel.add(test4, "cell 0 3,alignx left,aligny top");
+        debugPanel.add(test4, "cell 0 3,alignx left,aligny top");
         
         test5 = new JButton("Delete testGroup");
         test5.addActionListener(new ActionListener() {
@@ -264,14 +266,14 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     			}
         	}
         });
-        panel.add(test5, "cell 0 4");
+        debugPanel.add(test5, "cell 0 4");
         
-        panel_1 = new JPanel();
-        accountsTabPane.addTab("New tab", null, panel_1, null);
-        panel_1.setLayout(new MigLayout("", "[grow][][][][][][][][][grow]", "[grow][][][][][][grow]"));
+        treeviewPanel = new JPanel();
+        accountsTabPane.addTab("Tree view", null, treeviewPanel, null);
+        treeviewPanel.setLayout(new MigLayout("", "[grow][][][][][][][][][grow]", "[grow][][][][][][grow]"));
         
         scrollPane = new JScrollPane();
-        panel_1.add(scrollPane, "cell 0 0 10 7,grow");
+        treeviewPanel.add(scrollPane, "cell 0 0 10 7,grow");
         
         tree = buildTree();
         scrollPane.setViewportView(tree);
@@ -399,13 +401,13 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     protected javax.swing.JPanel userPanel;
     private JLabel lblGroups;
     private JLabel lblMembers;
-    private JPanel panel;
+    private JPanel debugPanel;
     private JButton test1;
     private JButton test2;
     private JButton test3;
     private JButton test4;
     private JButton test5;
-    private JPanel panel_1;
+    private JPanel treeviewPanel;
     private JScrollPane scrollPane;
     private UserGroupTree tree;
     private JButton btnClearAllPlacements;

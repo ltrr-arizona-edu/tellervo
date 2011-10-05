@@ -50,6 +50,7 @@ import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasSapwood;
 import org.tridas.schema.TridasWoodCompleteness;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.editor.EditorFactory.BarcodeDialogResult;
 import edu.cornell.dendro.corina.sample.Sample;
@@ -126,7 +127,7 @@ public class LegacySampleExtractor {
         // Site code, Three digits representing number of specimens in this sum
         patterns[5]  = Pattern.compile("([a-zA-Z]{3})[000|111|222|333|444|555|666|777|888|999]\\.");
         // Modern Corina TRiDaS code C-ABC-1-A-A-A 
-        patterns[6]  = Pattern.compile("C-([a-zA-Z]{3})-([0-9]*)-([a-zA-Z]{1})-([a-zA-Z]{1})-([a-zA-Z]{1})\\.");
+        patterns[6]  = Pattern.compile(App.getLabCodePrefix()+"([a-zA-Z]{3})-([0-9]*)-([a-zA-Z]{1})-([a-zA-Z]{1})-([a-zA-Z]{1})\\.");
         
         for(int i = 0; i < patterns.length; i++) {
         	Matcher matcher = patterns[i].matcher(basename);

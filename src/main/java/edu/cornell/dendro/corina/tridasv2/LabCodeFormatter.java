@@ -22,6 +22,7 @@
 
 import java.util.List;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 
 /**
@@ -45,11 +46,11 @@ public class LabCodeFormatter {
 	private String unavailableValue;
 	private String codeFormat;
 	
-	private final static LabCodeFormatter cornellLabCodeFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%");
-	private final static LabCodeFormatter cornellSeriesPrefixFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%");
-	private final static LabCodeFormatter cornellRadiusPrefixFormatter = new LabCodeFormatter("C-%SITE%-%ELEMENT%-%SAMPLE%");
-	private final static LabCodeFormatter cornellSamplePrefixFormatter = new LabCodeFormatter("C-%SITES%-%ELEMENT%");
-	private final static LabCodeFormatter cornellElementPrefixFormatter = new LabCodeFormatter("C-%SITES%");
+	private final static LabCodeFormatter cornellLabCodeFormatter = new LabCodeFormatter(App.getLabCodePrefix()+"%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%");
+	private final static LabCodeFormatter cornellSeriesPrefixFormatter = new LabCodeFormatter(App.getLabCodePrefix()+"%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%");
+	private final static LabCodeFormatter cornellRadiusPrefixFormatter = new LabCodeFormatter(App.getLabCodePrefix()+"%SITE%-%ELEMENT%-%SAMPLE%");
+	private final static LabCodeFormatter cornellSamplePrefixFormatter = new LabCodeFormatter(App.getLabCodePrefix()+"%SITES%-%ELEMENT%");
+	private final static LabCodeFormatter cornellElementPrefixFormatter = new LabCodeFormatter(App.getLabCodePrefix()+"%SITES%");
 
 	
 	public static LabCodeFormatter getDefaultFormatter() {

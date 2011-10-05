@@ -287,11 +287,6 @@
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.tridas</groupId>
-			<artifactId>dendrofileio</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout</artifactId>
 			<version>3.7.4</version>
@@ -314,10 +309,26 @@
 			<scope>test</scope>
 		</dependency>
 
+		 
 		<dependency>
 			<groupId>de.micromata.jak</groupId>
 			<artifactId>JavaAPIforKml</artifactId>
-			<version>2.2.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jaxb-impl</artifactId>
+					<groupId>com.sun.xml.bind</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jaxb-xjc</artifactId>
+					<groupId>com.sun.xml.bind</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.tridas</groupId>
+			<artifactId>tricycle</artifactId>
+			<version>0.2.7-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -1003,4 +1014,13 @@
 	</pluginRepositories>
 
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>de.micromata.jak</groupId>
+				<artifactId>JavaAPIforKml</artifactId>
+				<version>2.2.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

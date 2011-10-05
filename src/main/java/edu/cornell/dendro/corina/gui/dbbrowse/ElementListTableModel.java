@@ -17,6 +17,7 @@ import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasMeasurementSeries;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.BaseSample;
 import edu.cornell.dendro.corina.sample.Element;
@@ -54,7 +55,7 @@ public class ElementListTableModel extends AbstractTableModel {
 		table.setShowVerticalLines(true);
 		table.setGridColor(Color.lightGray);
 		
-		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX-Xx-Xx"));
+		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth(App.getLabCodePrefix()+"-XXX-XX-XX-Xx-Xx"));
 		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("Version"));
 		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("George W Bush"));
 		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("DirectX"));

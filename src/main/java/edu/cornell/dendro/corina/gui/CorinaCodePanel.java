@@ -223,9 +223,10 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 		if(labcodestr.length()==0) return;
 				  
 		// Remove the "C-" from beginning if present
+		String prefix = App.getLabCodePrefix();
 		if(labcodestr.length()>2)
 		{
-			if (labcodestr.substring(0, 2).compareToIgnoreCase("C-")==0) labcodestr = labcodestr.substring(2, labcodestr.length());
+			if (labcodestr.substring(0, prefix.length()).compareToIgnoreCase(prefix)==0) labcodestr = labcodestr.substring(prefix.length(), labcodestr.length());
 		}
 		  
 		// Explode based on '-' delimiter

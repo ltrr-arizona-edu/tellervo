@@ -47,6 +47,7 @@ import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasInterpretation;
 
 import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.Editor;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.io.Metadata;
@@ -346,7 +347,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
                 lblCrossdateName = new javax.swing.JLabel();
                 panel.add(lblCrossdateName, "cell 1 0");
                 
-                        lblCrossdateName.setText("C-XXX-XX-X-X-X (1234-2345)");
+                        lblCrossdateName.setText(App.getLabCodePrefix()+"XXX-XX-X-X-X (1234-2345)");
                 jLabel6 = new javax.swing.JLabel();
                 panel.add(jLabel6, "cell 0 1");
                 
@@ -365,7 +366,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
                                 lblMasterSampleName = new javax.swing.JLabel();
                                 panel.add(lblMasterSampleName, "cell 1 2");
                                 
-                                        lblMasterSampleName.setText("C-XXX-XX-X-X-X (9876-5432)");
+                                        lblMasterSampleName.setText(App.getLabCodePrefix()+"XXX-XX-X-X-X (9876-5432)");
                                         jSeparator1 = new javax.swing.JSeparator();
                                         panel.add(jSeparator1, "cell 0 7");
                                         

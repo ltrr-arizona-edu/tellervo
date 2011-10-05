@@ -416,6 +416,7 @@
                 <xs:element ref="securityUserDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="securityGroupDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="boxDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="configurationDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="wmsServerDictionary" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:choice>
@@ -586,6 +587,14 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<xs:element name="configurationDictionary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="configuration" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
 	<xs:element name="wmsServerDictionary">
 		<xs:complexType>
 			<xs:sequence>
@@ -673,6 +682,24 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
+	<!--
+		%%%%%%%%%%%%%%%%%
+		%  CONFIGURATION
+		%%%%%%%%%%%%%%%%% -->
+	<xs:element name="configuration">
+		<xs:annotation>
+			<xs:documentation>
+				An extensible configuration entry of the type key-value
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="key" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>	
+			
+		</xs:complexType>
+	</xs:element>
+	
 	
 	<!--
 		%%%%%%%%%%%%%%

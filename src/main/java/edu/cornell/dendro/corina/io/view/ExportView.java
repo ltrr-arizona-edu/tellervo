@@ -47,6 +47,7 @@ import edu.cornell.dendro.corina.io.model.ExportModel;
 import edu.cornell.dendro.corina.io.model.ConvertModel.WriterObject;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import javax.swing.DefaultComboBoxModel;
 
 /**
  * @author Daniel
@@ -182,6 +183,7 @@ public class ExportView extends JFrame {
 		panelAdv.add(lblGrouping, "cell 0 1");
 		
 		groupings = new JComboBox(groupingNames);
+		groupings.setModel(new DefaultComboBoxModel(new String[] {"Separate files for each series", "Single packed file if possible"}));
 		panelAdv.add(groupings, "cell 1 1");
 		
 		JLabel lblNaming = new JLabel(I18n.getText("io.convert.lblNaming"));
@@ -231,7 +233,7 @@ public class ExportView extends JFrame {
 				else {
 					name = new UUIDNamingConvention();
 				}
-				ExportEvent evt = new ExportEvent(model, charset.getSelectedItem().toString(), format.getSelectedItem().toString(), name, groupings.getSelectedIndex() == 0);
+				ExportEvent evt = new ExportEvent(model, charset.getSelectedItem().toString(), format.getSelectedItem().toString(), name, groupings.getSelectedIndex() == 1);
 				evt.dispatch();
 			}
 		});

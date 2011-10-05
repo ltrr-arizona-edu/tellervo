@@ -21,6 +21,7 @@
 package edu.cornell.dendro.corina.core;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.media.opengl.GLException;
@@ -44,6 +45,7 @@ import edu.cornell.dendro.corina.prefs.Prefs;
 import edu.cornell.dendro.corina.prefs.WizardDialog;
 import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
+import edu.cornell.dendro.corina.schema.WSIConfiguration;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.setupwizard.SetupWizard;
@@ -426,5 +428,35 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
 		return proxies;
 	}
 
-
+	public static String getLabAcronym(){
+		
+		try{
+			ArrayList<WSIConfiguration> configDic = (ArrayList<WSIConfiguration>) App.dictionary.getDictionaryAsArrayList("configurationDictionary");
+					
+			for(WSIConfiguration conf : configDic )
+			{
+				if(conf.getKey().equals("lab.acronym")) return conf.getValue();
+			}
+		} catch (Exception e){ }
+		
+		log.error("Unable to determine lab acronym from dictionary");
+		return "";
+		
+	}
+	
+	public static String getLabCodePrefix(){
+		
+		String acronym = App.getLabAcronym();
+		
+		if(acronym!=null)
+		{
+			if(acronym.length()>0) 
+			{
+				return acronym+"-";
+			}
+		}
+		
+		return "";
+		
+	}
 }

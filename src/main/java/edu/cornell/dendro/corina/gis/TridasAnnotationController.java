@@ -80,7 +80,7 @@ public class TridasAnnotationController extends AbstractTridasAnnotationControll
         	this.setCursor(busyCursor);
 			DBBrowser browser = new DBBrowser(new Frame(), true);
 			Boolean success = browser.doSearchForAssociatedSeries(entity);
-			browser.setVisible(true);
+			browser.setVisible(success);
 			this.setCursor(normalCursor);
 			
 			if(success==false) {

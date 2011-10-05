@@ -37,6 +37,7 @@ import javax.swing.text.JTextComponent;
 
 import org.tridas.interfaces.ITridasDerivedSeries;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.io.Metadata;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
@@ -84,7 +85,7 @@ public class NameVersionJustificationPanel extends JPanel {
 		// Create name components
 		JLabel l = new JLabel(I18n.getText("general.seriesCode")+":");
 
-		JLabel prefix = new JLabel("C-XXX-X-X-X-");
+		JLabel prefix = new JLabel(App.getLabCodePrefix()+"XXX-X-X-X-");
 
 		// make the prefix more relevant if we have a labcode
 		if (sample.hasMeta(Metadata.LABCODE)) {

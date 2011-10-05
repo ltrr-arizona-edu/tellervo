@@ -38,11 +38,16 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.dictionary.Dictionary;
+import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.RadioButtonWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.SpinnerWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
 public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 
@@ -103,6 +108,24 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		txtWSURL.setColumns(10);
 		
 		btnForceDictionaryReload = new JButton("Force Dictionary Reload");
+
+		btnForceDictionaryReload.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				App.dictionary = new Dictionary();
+				CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(parent, App.dictionary);
+				App.dictionary.query();
+				dlg.setVisible(true);
+				
+				if(!dlg.isSuccessful()) {
+					// Dictionary reload failed
+					new Bug(dlg.getFailException());
+				}
+			}
+			
+		});
 		wsPanel.add(btnForceDictionaryReload, "cell 1 2,alignx right");
 		
 		proxyPanel = new JPanel();

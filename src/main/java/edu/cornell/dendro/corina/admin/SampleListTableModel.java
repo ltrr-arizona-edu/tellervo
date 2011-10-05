@@ -30,6 +30,7 @@ import javax.swing.table.AbstractTableModel;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasSample;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.tridasv2.LabCodeFormatter;
 
@@ -63,7 +64,7 @@ public class SampleListTableModel extends AbstractTableModel {
 		table.setShowVerticalLines(true);
 		table.setGridColor(Color.lightGray);
 		
-		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth("C-XXX-XX-XX"));
+		table.getColumnModel().getColumn(0).setPreferredWidth(fm.stringWidth(App.getLabCodePrefix()+"XXX-XX-XX"));
 		table.getColumnModel().getColumn(1).setPreferredWidth(fm.stringWidth("2009-9999"));
 		table.getColumnModel().getColumn(2).setPreferredWidth(fm.stringWidth("Perm. Location"));
 		table.getColumnModel().getColumn(3).setPreferredWidth(fm.stringWidth("Curr. Location"));

@@ -112,7 +112,14 @@ public class ConvertCommand implements ICommand {
 				dialogModel.setStatusString(I18n.getText("io.convert.dialogStatus",project.getTitle()));
 				
 				AbstractDendroCollectionWriter writer = TridasIO.getFileWriter(argFormat);
-				String labCode = LabCodeFormatter.getDefaultFormatter().format(model.getLabCodes()[i]).toString();
+				
+				String labCode = "Combined";
+				try{
+				    labCode = LabCodeFormatter.getDefaultFormatter().format(model.getLabCodes()[i]).toString();
+
+				} catch (Exception e){
+					
+				}
 				
 				if (argNaming instanceof NumericalNamingConvention) {
 					((NumericalNamingConvention) argNaming).setBaseFilename(labCode);
