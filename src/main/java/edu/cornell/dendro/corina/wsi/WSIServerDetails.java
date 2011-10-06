@@ -24,8 +24,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Enumeration;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -54,6 +56,7 @@ public class WSIServerDetails {
 	 */
 	public enum WSIServerStatus
 	{
+		NO_CONNECTION,
 		MALFORMED_URL,
 		URL_NOT_RESPONDING,
 		URL_NOT_CORINA_WS,
@@ -70,20 +73,44 @@ public class WSIServerDetails {
 	private String revision = "";
 	private WSIServerStatus status = WSIServerStatus.NOT_CHECKED;
 	private String errMessage= null;
-	
+	private Boolean isNetworkConnected = false;
+
 	public WSIServerDetails()
 	{
 		pingServer();
 	}
 	
 	/**
-	 * Ping the server again to update status
+	 * Ping the server to update status
 	 * 
 	 * @return
 	 */
 	public boolean pingServer()
 	{
-	    
+		// First make sure we have a network connection
+		try{
+		    Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();  
+		    while (interfaces.hasMoreElements()) 
+		    {  
+			     NetworkInterface nic = interfaces.nextElement(); 
+			     if(nic.isLoopback()) continue;
+			     
+			     if(nic.isUp()){
+			    	 log.debug("Network adapter '"+nic.getDisplayName()+"' is up");
+			    	 isNetworkConnected = true;
+			     }
+		    }
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		if(!isNetworkConnected)
+		{
+			status = WSIServerStatus.NO_CONNECTION;
+			return false;
+		}
+		
 		URI                url; 
 	    BufferedReader    dis = null;
 	    DefaultHttpClient client = new DefaultHttpClient();

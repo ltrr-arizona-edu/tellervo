@@ -324,7 +324,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+		<dependency>
+			<groupId>org.tridas</groupId>
+			<artifactId>dendrofileio</artifactId>
+			<version>1.0.4</version>
+		</dependency>
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>tricycle</artifactId>

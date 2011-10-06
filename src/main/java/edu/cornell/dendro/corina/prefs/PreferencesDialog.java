@@ -56,6 +56,7 @@ import edu.cornell.dendro.corina.prefs.panels.StatsPrefsPanel;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.wsi.WSIServerDetails;
+import edu.cornell.dendro.corina.wsi.WSIServerDetails.WSIServerStatus;
 
 public class PreferencesDialog extends JDialog {
 	
@@ -162,9 +163,16 @@ public class PreferencesDialog extends JDialog {
 						{
 							WSIServerDetails serverDetails = new WSIServerDetails();
 							
-							if(!serverDetails.isServerValid())
+							if(serverDetails.getWSIServerStatus()==WSIServerStatus.NO_CONNECTION)
 							{
-								Alert.error("Unvalid Webservice URL", 
+								Alert.error("No network connection", 
+								"You don't appear to have a network connection.  Please check your\n " +
+								"network settings and try again.");
+								return;	
+							}
+							else if(!serverDetails.isServerValid())
+							{
+								Alert.error("Invalid Webservice URL", 
 								"The URL you have entered is not a valid Corina Webservice");
 								return;
 							}
