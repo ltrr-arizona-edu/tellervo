@@ -1,38 +1,6 @@
 \chapter{Measuring samples}
 \index{Sample!Measuring|(}
-Although it is possible to manually enter the ring widths of your samples into Corina, it is normal to automate this process using a measuring platform. Corina supports the most common measuring platforms including Velmex and Lintab.
-
-\section{Configuring measuring platforms}
-\index{Measuring platforms}
-\index{Hardware|see{Measuring platforms}}
-Measuring platforms typically use serial ports to communicate to computers. In recent years computer manufacturers have been phasing out serial ports so you may need to purchase a serial-USB converter. Modern MacOSX, Linux as well as Windows 7 should support most serial-USB adapters out of the box, otherwise you must install the relevant drivers before continuing.  Recent Lintab USB platforms use internal serial-USB converters so are treated in exactly the same way by Corina.
-
-To begin, shut down your computer, attach your platform, then reboot and launch Corina. Next, go to the preferences window and open the hardware tab and you should see an interface that looks like figure \ref{fig:hardwareprefs}.
-
-\begin{figure}[hbtp]
-  \centering
-    \includegraphics[width=0.6\textwidth]{Images/hardwareprefs.png}
-    \caption{The hardware preferences dialog.}
-    \label{fig:hardwareprefs}
-\end{figure}
-
-
-In the type pull down menu, select the type of measuring equipment you are using. Note that this refers to the equipment that the computer is attached to, and not necessarily the measuring platform itself. For instance, Velmex platforms are typically connected through a Metronics digital readout device. Included in this list is the EveIO device which is an open-source device designed for the Cornell Tree-Ring Laboratory. Circuit drawings for this device can be obtained from the Cornell lab to enable Hensen measuring platforms to be used with Corina (and other software).
-
-\info{Standard Lintab platforms use a proprietary communications protocol. Rinntech--the manufacturers of Lintab platforms--claim intellectual property rights over this protocol. During discussions between the Corina development team and Rinntech an agreement was reached whereby the Corina developers agreed not to release details of the protocol. In turn Rinntech has agreed to produce an adapter that can be attached to Lintab platforms so that they communicate with an open ASCII protocol. Users wishing to use Lintab platforms with Corina (or any software not developed by Rinntech) must therefore contact Rinntech and purchase an adapter.}
-
-Next you must choose the port that your platform is connected to from the pull down menu. In Windows this will be a COM port, in Linux and Mac this will be a /dev/xxx port.  Depending on the type of platform you choose, you may also need to set various communication parameters.  If these boxes are enabled, please check the documentation that came with your measuring platform to ensure these values are set correctly.
-
-To check whether your platform is working, click the `Start measuring test' button and attempt to measure a few rings.  Once you are satisfied, click OK on the preferences window and you will be returned to the Corina home screen.
-
-\section{Differences in measuring hardware}
-
-Different measuring platforms have different capabilities.  For instance, some include a physical switch for firing measurement events, others also include switches for resetting measurements to zero.  Some platforms (e.g. Lintab) also continuously report the measurement values to the computer.  So depending on the hardware you use, Corina will present the you with slightly different options.  
-
-Please note that the architecture of Corina is such that providing support for additional measuring platforms is a relatively simple task.  If you have equipment that is not currently supported, please contact the developers to see if it can be included.  
-
-
-\section{Measuring a sample}
+Although it is possible to manually enter the ring widths of your samples into Corina, it is normal to automate this process using a measuring platform. Corina supports the most common measuring platforms including Velmex and Lintab.  For details on how to configure your measuring platform see section \ref{txt:MeasuringPlatformConfig}.
 
 Once your measuring platform has been configured, measuring your first sample is simple.  To start a new measurement go to \menutwo{File}{New} or click the `new' icon on the home screen. A dialog will appear where you can scan your sample's barcode, or press the button to enter metadata for your sample later. Barcodes minimize data entry errors and also speed up the process of measuring your samples. See section \ref{txt:barcode} for more information. Once you have scanned your barcode or pressed the button, you will then be presented with an empty Corina data screen (figure \ref{fig:datascreen}).
 
@@ -45,7 +13,9 @@ Once your measuring platform has been configured, measuring your first sample is
 
 The next step is to fill out the metadata tab. If you have used a barcode, nearly all of this metadata will be filled in for you, otherwise you will need to fill this out yourself. Details about metadata can be found in chapter \ref{txt:metadata}, page \pageref{txt:metadata}.
 
-To begin measuring your sample you can now go to \menutwo{Edit}{Start measuring} or you can press F5. While measuring you should be provided with audible feedback for each ring measured with a more pronounced sound made every 10th ring. If there is a problem communicating with your measuring hardware, check your settings in the preferences dialog. If you still have problems contact the Corina developers by going to \menutwo{Help}{Report bug on last transaction}, making sure you include your email address and any further information.
+To begin measuring your sample you can now go to \menutwo{Edit}{Start measuring} or you can press F5. Depending on the type of platform you have you will have different buttons available at the bottom of the screen.  If you platform accepts requests for measurement data, or accepts requests to zero the measurement then you will have buttons available to do so.  Otherwise you will need to use the hardware buttons on your device to send measurements to Corina.
+
+While measuring you should be provided with audible feedback for each ring measured with a more pronounced sound made every 10th ring. If there is a problem communicating with your measuring hardware, check your settings in the preferences dialog. If you still have problems contact the Corina developers by going to \menutwo{Help}{Report bug on last transaction}, making sure you include your email address and any further relevant information.
 
 
 \index{Ring remarks}

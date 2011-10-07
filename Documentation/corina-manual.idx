@@ -3,123 +3,125 @@
 \indexentry{Installation!Server|hyperpage}{6}
 \indexentry{Virtual appliance|hyperpage}{6}
 \indexentry{Dependencies!Server|hyperpage}{7}
-\indexentry{Measuring platforms|hyperpage}{9}
-\indexentry{Hardware|see{Measuring platforms}}{9}
-\indexentry{Sample!Measuring|(hyperpage}{11}
+\indexentry{Wizard, Setup|hyperpage}{9}
+\indexentry{Sample!Measuring|(hyperpage}{10}
 \indexentry{Ring remarks|hyperpage}{11}
-\indexentry{Sample!Measuring|)hyperpage}{12}
-\indexentry{Sample!Opening|hyperpage}{12}
-\indexentry{Sample!Reconciling|hyperpage}{13}
-\indexentry{Sample!Measuring|(hyperpage}{15}
+\indexentry{Sample!Measuring|)hyperpage}{11}
+\indexentry{Sample!Opening|hyperpage}{11}
+\indexentry{Sample!Reconciling|hyperpage}{12}
+\indexentry{Sample!Measuring|(hyperpage}{13}
+\indexentry{Ring remarks|hyperpage}{14}
+\indexentry{Sample!Reconciling|hyperpage}{14}
+\indexentry{Sample!Measuring|)hyperpage}{14}
 \indexentry{Measuring platforms|hyperpage}{15}
 \indexentry{Hardware|see{Measuring platforms}}{15}
-\indexentry{Ring remarks|hyperpage}{16}
-\indexentry{Sample!Reconciling|hyperpage}{17}
-\indexentry{Sample!Measuring|)hyperpage}{17}
-\indexentry{Metadata|(hyperpage}{19}
-\indexentry{TRiDaS|textbf}{19}
-\indexentry{Sample!Metadata, editing|hyperpage}{21}
-\indexentry{Metadata!Editing|hyperpage}{21}
-\indexentry{Metadata!Bulk entry|hyperpage}{22}
-\indexentry{Metadata!Browsing|hyperpage}{23}
-\indexentry{Laboratory codes|hyperpage}{24}
-\indexentry{Sample codes|see{Laboratory codes}}{24}
-\indexentry{Metadata|)hyperpage}{24}
-\indexentry{Mapping|(hyperpage}{27}
-\indexentry{Mapping!Navigation|hyperpage}{27}
-\indexentry{Web Map Service (WMS)|hyperpage}{29}
-\indexentry{Export!Maps|hyperpage}{30}
-\indexentry{Mapping|)hyperpage}{30}
-\indexentry{File formats|hyperpage}{33}
-\indexentry{Export!Data|hyperpage}{33}
-\indexentry{Naming conventions|hyperpage}{34}
-\indexentry{Character sets|hyperpage}{35}
-\indexentry{Encoding|hyperpage}{35}
-\indexentry{Import|hyperpage}{35}
-\indexentry{Export!Graphs|hyperpage}{37}
-\indexentry{Export!Maps|hyperpage}{37}
-\indexentry{Mapping!Export|see{Export -- Maps}}{37}
-\indexentry{Curation|(hyperpage}{39}
-\indexentry{Workflow|hyperpage}{39}
-\indexentry{Barcodes|hyperpage}{39}
-\indexentry{Labels!Samples|hyperpage}{40}
-\indexentry{Labels!Boxes|hyperpage}{40}
-\indexentry{Boxes|hyperpage}{40}
-\indexentry{Boxes!Creating|hyperpage}{41}
-\indexentry{Boxes!Editing|hyperpage}{41}
-\indexentry{Sample!Assign to box|hyperpage}{41}
-\indexentry{Inventory|hyperpage}{41}
-\indexentry{Boxes!Checking in and out|hyperpage}{43}
-\indexentry{Sample!Locating|hyperpage}{43}
-\indexentry{Curation|)hyperpage}{43}
-\indexentry{Indexing|(hyperpage}{45}
-\indexentry{Indexing!Exponential|hyperpage}{45}
-\indexentry{Expontential index|see{Indexing}}{45}
-\indexentry{Indexing!Polynomial|hyperpage}{46}
-\indexentry{Polynomial index|see{Indexing}}{46}
-\indexentry{Indexing!Horizontal|hyperpage}{46}
-\indexentry{Horizontal index|see{Indexing}}{46}
-\indexentry{Indexing!Floating|hyperpage}{46}
-\indexentry{Floating index|see{Indexing}}{46}
-\indexentry{Indexing!High-pass filter|hyperpage}{46}
-\indexentry{High-pass filter|see{Indexing}}{46}
-\indexentry{Indexing!Cublic spline|hyperpage}{47}
-\indexentry{Cublic spline|see{Indexing}}{47}
-\indexentry{Indexing|textbf}{47}
-\indexentry{Indexing|)hyperpage}{47}
-\indexentry{Crossdating|(hyperpage}{49}
-\indexentry{Crossdating!T-Score|hyperpage}{49}
-\indexentry{T-Score|hyperpage}{49}
-\indexentry{Crossdating!Trend|hyperpage}{50}
-\indexentry{Trend|hyperpage}{50}
-\indexentry{Crossdating!Weiserjahre|hyperpage}{50}
-\indexentry{Weiserjahre|hyperpage}{50}
-\indexentry{Crossdating!R-Value|hyperpage}{51}
-\indexentry{R-Value|hyperpage}{51}
-\indexentry{Crossdating!D-Score|hyperpage}{51}
-\indexentry{D-Score|hyperpage}{51}
-\indexentry{Crossdating!Performing|hyperpage}{51}
-\indexentry{Crossdating!Managing chronologies|hyperpage}{51}
-\indexentry{Chronologies|hyperpage}{51}
-\indexentry{Crossdating|)hyperpage}{51}
-\indexentry{Server!Graphical interface|hyperpage}{53}
-\indexentry{Security|hyperpage}{53}
-\indexentry{Passwords|hyperpage}{53}
-\indexentry{Authentication|hyperpage}{54}
-\indexentry{Encryption|hyperpage}{54}
-\indexentry{Database|hyperpage}{54}
-\indexentry{PostgreSQL|hyperpage}{54}
-\indexentry{PGAdminIII|hyperpage}{54}
-\indexentry{ODBC|hyperpage}{55}
-\indexentry{PSQL|hyperpage}{55}
-\indexentry{Web Map Service (WMS)|hyperpage}{56}
-\indexentry{Mapping!Adding layers|see{Web Map Service(WMS)}}{56}
-\indexentry{Developing|(hyperpage}{61}
-\indexentry{Developing!Desktop client|hyperpage}{61}
-\indexentry{Source code|hyperpage}{61}
-\indexentry{Eclipse|hyperpage}{61}
-\indexentry{Development environment|hyperpage}{61}
-\indexentry{Integrated Development Environment (IDE)|hyperpage}{61}
-\indexentry{Dependencies!Desktop client|hyperpage}{62}
-\indexentry{File formats|hyperpage}{63}
-\indexentry{File formats|hyperpage}{63}
-\indexentry{Developing!Code layout|hyperpage}{64}
-\indexentry{Icons|hyperpage}{64}
-\indexentry{Icons!Ring remarks|hyperpage}{64}
-\indexentry{Translations|hyperpage}{64}
-\indexentry{Logging|hyperpage}{65}
-\indexentry{Preferences|hyperpage}{66}
-\indexentry{Developing!Build script|hyperpage}{66}
-\indexentry{Packaging|hyperpage}{66}
-\indexentry{Packaging!Windows|hyperpage}{67}
-\indexentry{Packaging!MacOSX|hyperpage}{67}
-\indexentry{Packaging!Linux|hyperpage}{67}
-\indexentry{Packaging!Native libraries|hyperpage}{67}
-\indexentry{JAXB|hyperpage}{68}
-\indexentry{Java|hyperpage}{68}
-\indexentry{Developing!Graphical interfaces|hyperpage}{69}
-\indexentry{Documentation|hyperpage}{69}
-\indexentry{Developing|)hyperpage}{70}
+\indexentry{Metadata|(hyperpage}{17}
+\indexentry{TRiDaS|textbf}{17}
+\indexentry{Sample!Metadata, editing|hyperpage}{19}
+\indexentry{Metadata!Editing|hyperpage}{19}
+\indexentry{Metadata!Bulk entry|hyperpage}{20}
+\indexentry{Metadata!Browsing|hyperpage}{21}
+\indexentry{Laboratory codes|hyperpage}{22}
+\indexentry{Sample codes|see{Laboratory codes}}{22}
+\indexentry{Metadata|)hyperpage}{22}
+\indexentry{Mapping|(hyperpage}{25}
+\indexentry{Mapping!Navigation|hyperpage}{26}
+\indexentry{Mapping!Layers|hyperpage}{27}
+\indexentry{Web Map Service (WMS)|hyperpage}{28}
+\indexentry{Mapping!Web Map Service (WMS)|hyperpage}{28}
+\indexentry{Export!Maps|hyperpage}{28}
+\indexentry{Mapping|)hyperpage}{28}
+\indexentry{File formats|hyperpage}{31}
+\indexentry{Export!Data|hyperpage}{31}
+\indexentry{Naming conventions|hyperpage}{32}
+\indexentry{Character sets|hyperpage}{33}
+\indexentry{Encoding|hyperpage}{33}
+\indexentry{Import|hyperpage}{33}
+\indexentry{Export!Graphs|hyperpage}{35}
+\indexentry{Export!Maps|hyperpage}{35}
+\indexentry{Mapping!Export|see{Export -- Maps}}{35}
+\indexentry{Curation|(hyperpage}{37}
+\indexentry{Workflow|hyperpage}{37}
+\indexentry{Barcodes|hyperpage}{37}
+\indexentry{Labels!Samples|hyperpage}{38}
+\indexentry{Labels!Boxes|hyperpage}{38}
+\indexentry{Boxes|hyperpage}{38}
+\indexentry{Boxes!Creating|hyperpage}{39}
+\indexentry{Boxes!Editing|hyperpage}{39}
+\indexentry{Sample!Assign to box|hyperpage}{39}
+\indexentry{Inventory|hyperpage}{39}
+\indexentry{Boxes!Checking in and out|hyperpage}{41}
+\indexentry{Sample!Locating|hyperpage}{41}
+\indexentry{Curation|)hyperpage}{41}
+\indexentry{Indexing|(hyperpage}{43}
+\indexentry{Indexing!Exponential|hyperpage}{43}
+\indexentry{Expontential index|see{Indexing}}{43}
+\indexentry{Indexing!Polynomial|hyperpage}{44}
+\indexentry{Polynomial index|see{Indexing}}{44}
+\indexentry{Indexing!Horizontal|hyperpage}{44}
+\indexentry{Horizontal index|see{Indexing}}{44}
+\indexentry{Indexing!Floating|hyperpage}{44}
+\indexentry{Floating index|see{Indexing}}{44}
+\indexentry{Indexing!High-pass filter|hyperpage}{44}
+\indexentry{High-pass filter|see{Indexing}}{44}
+\indexentry{Indexing!Cublic spline|hyperpage}{45}
+\indexentry{Cublic spline|see{Indexing}}{45}
+\indexentry{Indexing|textbf}{45}
+\indexentry{Indexing|)hyperpage}{45}
+\indexentry{Crossdating|(hyperpage}{47}
+\indexentry{Crossdating!T-Score|hyperpage}{47}
+\indexentry{T-Score|hyperpage}{47}
+\indexentry{Crossdating!Trend|hyperpage}{48}
+\indexentry{Trend|hyperpage}{48}
+\indexentry{Crossdating!Weiserjahre|hyperpage}{48}
+\indexentry{Weiserjahre|hyperpage}{48}
+\indexentry{Crossdating!R-Value|hyperpage}{49}
+\indexentry{R-Value|hyperpage}{49}
+\indexentry{Crossdating!D-Score|hyperpage}{49}
+\indexentry{D-Score|hyperpage}{49}
+\indexentry{Crossdating!Performing|hyperpage}{49}
+\indexentry{Crossdating!Managing chronologies|hyperpage}{49}
+\indexentry{Chronologies|hyperpage}{49}
+\indexentry{Crossdating|)hyperpage}{49}
+\indexentry{Server!Graphical interface|hyperpage}{51}
+\indexentry{Security|hyperpage}{51}
+\indexentry{Passwords|hyperpage}{51}
+\indexentry{Authentication|hyperpage}{52}
+\indexentry{Encryption|hyperpage}{52}
+\indexentry{Database|hyperpage}{52}
+\indexentry{PostgreSQL|hyperpage}{52}
+\indexentry{PGAdminIII|hyperpage}{52}
+\indexentry{ODBC|hyperpage}{53}
+\indexentry{PSQL|hyperpage}{53}
+\indexentry{Web Map Service (WMS)|hyperpage}{54}
+\indexentry{Mapping!Adding layers|see{Web Map Service(WMS)}}{54}
+\indexentry{Developing|(hyperpage}{59}
+\indexentry{Developing!Desktop client|hyperpage}{59}
+\indexentry{Source code|hyperpage}{59}
+\indexentry{Eclipse|hyperpage}{59}
+\indexentry{Development environment|hyperpage}{59}
+\indexentry{Integrated Development Environment (IDE)|hyperpage}{59}
+\indexentry{Dependencies!Desktop client|hyperpage}{60}
+\indexentry{File formats|hyperpage}{61}
+\indexentry{File formats|hyperpage}{61}
+\indexentry{Developing!Code layout|hyperpage}{62}
+\indexentry{Icons|hyperpage}{62}
+\indexentry{Icons!Ring remarks|hyperpage}{62}
+\indexentry{Translations|hyperpage}{62}
+\indexentry{Logging|hyperpage}{63}
+\indexentry{Preferences|hyperpage}{64}
+\indexentry{Developing!Build script|hyperpage}{64}
+\indexentry{Packaging|hyperpage}{64}
+\indexentry{Packaging!Windows|hyperpage}{65}
+\indexentry{Packaging!MacOSX|hyperpage}{65}
+\indexentry{Packaging!Linux|hyperpage}{65}
+\indexentry{Packaging!Native libraries|hyperpage}{65}
+\indexentry{JAXB|hyperpage}{66}
+\indexentry{Java|hyperpage}{66}
+\indexentry{Developing!Graphical interfaces|hyperpage}{67}
+\indexentry{Measuring platforms|hyperpage}{67}
+\indexentry{Documentation|hyperpage}{68}
+\indexentry{Developing|)hyperpage}{69}
 \indexentry{Developing|(hyperpage}{71}
 \indexentry{Developing!Webservice|hyperpage}{71}
 \indexentry{Webservice!Developing|hyperpage}{71}
@@ -127,9 +129,13 @@
 \indexentry{Developing|)hyperpage}{71}
 \indexentry{Systems architecture|(hyperpage}{73}
 \indexentry{Authentication|hyperpage}{73}
+\indexentry{Nonce|hyperpage}{73}
+\indexentry{Hash|hyperpage}{73}
+\indexentry{Cryptography|hyperpage}{73}
 \indexentry{Database!Permissions architecture|hyperpage}{74}
 \indexentry{Universally Unique Identifiers (UUID)|hyperpage}{74}
 \indexentry{Barcodes!Specifications|hyperpage}{74}
+\indexentry{Universally Unique Identifiers (UUID)|hyperpage}{74}
 \indexentry{Systems architecture|)hyperpage}{74}
 \indexentry{File formats|(hyperpage}{79}
 \indexentry{File formats!Belfast Apple|(hyperpage}{79}

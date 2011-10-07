@@ -109,6 +109,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
 				setGuiEnabledByPlatformType();
+				btnTestConnection.setEnabled(isReadyToTestConnection());
 			}
     	});
     	
@@ -196,6 +197,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 		btnTestConnection = new JButton("Test connection");
     	panel.add(btnTestConnection, "cell 0 5 4 1,alignx right");
+    	btnTestConnection.setEnabled(false);
     	btnTestConnection.addActionListener(new ActionListener(){
 
 			@Override
@@ -233,6 +235,23 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     	setGuiEnabledByPlatformType();
 	}
 
+	
+	public Boolean isReadyToTestConnection()
+	{
+		if(cboPort.getModel().getSize()==0) return false;
+		if(cboPort.getSelectedItem()==null) return false;
+		if(cboPort.getSelectedItem().toString().equals("<choose a serial port>")) return false;
+		
+		if(cboPlatformType.getSelectedItem()==null) return false;
+		if(cboPlatformType.getSelectedItem().toString().equals("[none]")) return false;
+		
+		for(String platformname : SerialDeviceSelector.getAvailableDevicesNames())
+		{
+			if(platformname.equals(cboPlatformType.getSelectedItem().toString())) return true;
+		}
+
+		return false;
+	}
 	
 	public void setBackgroundColor(Color col)
 	{
@@ -275,6 +294,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				public void actionPerformed(ActionEvent ae) {
 					App.prefs.setPref(PrefKey.SERIAL_PORT,
 							(String) cboPort.getSelectedItem());
+					btnTestConnection.setEnabled(isReadyToTestConnection());
 				}
 			});
 		}

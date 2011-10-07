@@ -24,6 +24,8 @@ public class WizardHardwareDo extends AbstractWizardPanel {
 		hardwarePanel.setBarcodePanelVisible(false);
 		
 		this.add(hardwarePanel, "cell 0 1,alignx left,aligny top");
+		
+
 	}
 
 }

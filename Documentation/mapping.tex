@@ -7,16 +7,27 @@ There are two ways to map data from your database. First of all, you can see a m
 \begin{figure}[hbtp]
   \label{fig:map}
   \centering
-  \includegraphics[width=0.8\textwidth]{Images/sitemap.png}
+  \includegraphics[width=\textwidth]{Images/sitemap.png}
   \caption{Screenshot showing an example of a site map.}
 \end{figure}
 
 
-You can also see a map of your current series if you have latitude/longitude metadata by clicking on the map tab on the main data screen. 
+You can also see a map of your current series if you have latitude/longitude metadata by clicking on the map tab on the main data screen.  
+\newpage
 
 \section{Navigation}
 \index{Mapping!Navigation}
-You can navigate around your maps using both your mouse and keyboard.
+\begin{figure}[hbtp]
+  \label{fig:wwjcontrols}
+  \centering
+  \includegraphics[width=0.2\textwidth]{Images/wwjcontrols.png}
+  \caption{On-screen navigation controls.}
+\end{figure}
+
+You can navigate around your maps using the on screen controls (figure \ref{fig:wwjcontrols}), by using your mouse and/or your keyboard.  These controls enable you to explore your location information in 3D such as the example of Mount Vesuvius in figure \ref{fig:mappin}.
+
+
+
 
 \subsection{Mouse with scroll wheel}
 
@@ -31,6 +42,7 @@ You can navigate around your maps using both your mouse and keyboard.
 \end{description*}
 
 
+
 \subsection{Single button mouse}
 \begin{description*}
      \item[Pan] Left mouse button click and drag - all directions. L left mouse button click once to center view.
@@ -42,15 +54,12 @@ You can navigate around your maps using both your mouse and keyboard.
      \item[Reset all] R 
 \end{description*}
 
-
-These controls enable you to explore your location information in 3D such as the example of Mount Vesuvius in figure \ref{fig:3dmap}.
-
-\begin{SCfigure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{Images/3dmapexample.png}
-  \caption{Example of 3D mapping in Corina.}
-  \label{fig:3dmap}
-\end{SCfigure}
+%\begin{SCfigure}
+%  \centering
+%  \includegraphics[width=0.8\textwidth]{Images/3dmapexample.png}
+%  \caption{Example of 3D mapping in Corina.}
+%  \label{fig:3dmap}
+%\end{SCfigure}
 
 Another method of navigating around the map is by using the built in gazetteer. You can enter and place name or coordinate information into the box at the bottom of the screen and you will fly to the requested location. 
 
@@ -68,13 +77,32 @@ Each marker on the map represents either a TRiDaS object or element in your Cori
 
 The example above shows the ring marker is of a site in Napoli called Poggiomarino (code name POG). You can see the option for searching for all series in the database associated with this site, and also the option for viewing all the metadata. 
 
-\section{Background map layers}
+\section{Map layers}
 \label{txt:userAddWMS}
-\index{Web Map Service (WMS)}
+\index{Mapping!Layers}
 
-Corina comes ready configured with basic map layers, including high resolution satellite imagery and basic political features. You can turn background layers on and off by going to \menutwo{View}{Layers}.
+Corina comes ready configured with basic map layers, including high resolution satellite imagery and basic political features. You can turn background layers on and off by going to \menutwo{View}{Layers} or using the layer panel at the left of the screen when using `Site map'.
 
 Map layers are downloaded on-the-fly so there is likely to be a delay when you initially visit to a new region. However, up to 2Gb of map data can be cache locally to your hard disk, so on future visits, maps should load quickly.
+
+\subsection{Data layers}
+Data map layers (i.e.\ site and sample locations) are controlled with the layer list on the left of the screen. When viewing series, you will have the option of adding layers containing points for all the other series at the current site, and showing all the sites in the database. 
+
+In the `Site map' you can use the `Add layer' button to add data layers of the following types:
+
+\begin{description}
+ \item[All Corina objects] -- this adds a single layer containing all the objects within the Corina database.
+ \item[Corina entity from database] -- this adds a layer containing the location of one record from the Corina database.  This is specified by labcode e.g. ABC would add a pin for the site ABC, whereas ABC-1 would add a pin for the element ABC-1.
+ \item[Elements from an object] -- this adds a layer containing all the elements for a specified object.  The object is specified by labcode.
+ \item[All ITRDB sites] -- this downloads the location of all sites currently available in the ITRDB database and adds them as a single layer.
+ \item[ESRI Shapefile] -- this enables you to load an ESRI shapefile stored locally on your computer.  Corina supports polygon, polyline and point files, although currently it does not enable you to style this data.  Data for a layer is presented using a random color.
+ \item[Google Earth KML/KMZ file] -- like the ESRI shapefile option this enables you to load spatial data from your computer.
+ \end{description}
+
+
+\subsection{Web Map Service (WMS)}
+\index{Web Map Service (WMS)}
+\index{Mapping!Web Map Service (WMS)}
 
 The mapping system in Corina includes support for remote map servers that use the OGC Web Mapping Service (WMS) standard. If you go to \menuthree{View}{Layers}{Add remote layers}, you will get a dialog with a tab for each WMS server configured for your system. By default this includes the NASA Earth Observation and Jet Propulsion Lab servers.  By ticking layers in this list you can add data layers to your map.
 
@@ -91,9 +119,6 @@ Your system administrator may host a map server specifically for your lab, for i
 
 
 
-
-\section{Data map layers}
-Data map layers (i.e.\ site and sample locations) are controlled with the layer list in the bottom left of the screen. When viewing series, you will have the option of adding layers containing points for all the other series at the current site, and showing all the sites in the database. 
 
 
 \section{Exporting maps}

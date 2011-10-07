@@ -175,7 +175,7 @@ function getIP()
 /**
  * Helper function for altering variables in the webservice config.php file
  * 
- * @param $var - variable to repace
+ * @param $var - variable to replace
  * @param $value - value to replace it with
  */
 function setConfigVariable($var, $value)

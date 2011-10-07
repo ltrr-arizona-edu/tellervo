@@ -4,49 +4,38 @@
 Once you have installed your Corina Desktop application and you have access to a Corina server you are now ready to launch Corina for the first time.
 
 \section{First time launch}
+\index{Wizard, Setup}
+When you launch Corina for the first time you will be presented with a setup wizard (figure \ref{fig:setupwizard}).  Following the wizard to configure the main settings required before you can begin to use Corina.  If you want to re-run this wizard at any time you can do so from the entry in the Help menu. You can also manually edit all these settings from the Corina preferences dialog which can be found in \menutwo{Edit}{Preferences}.
 
-When you launch Corina you will be presented with a dialog (figure \ref{fig:login}) for logging in to your the Corina webservice.
+\begin{figure}[hbtp]
+  \centering
+    \includegraphics[width=0.6\textwidth]{Images/setupwizard.png}
+  \caption{The Corina setup wizard will launch the first time you start Corina.}
+  \label{fig:setupwizard}
+\end{figure}
+
+The pages of the wizard include:
+
+\begin{description}
+ \item[Network connection] -- this configures how your computer accesses the internet.  Most users will be able to use the default `Use system default proxy settings' option here, but if you know that your computer is behind a corporate proxy server you may choose to manually provide the settings.
+ \item[Configuring the Corina server] -- Corina comes in two parts: the Corina desktop client that you are using; and the Corina server which runs the database that stores your data.  If you are working in a lab your systems administrator may have already set up the Corina server and given you the URL to connect to.  Alternatively, you may have already installed the Corina server yourself.  If so the installation program should have given you the URL. If you don't have access to a Corina server yet, you should close this wizard, then go to the Corina website and download it.
+ \item[Measuring platform configuration] -- the next page enables you to configure measuring platform hardware attached to your computer.  Some measuring platforms have fixed settings in which case the port settings will be set automatically, but others can be changed in the hardware and must be set explicitly here. Use the `Test Connection' button to make sure that Corina can successfully communicate with your platform.
+\end{description}
+
+
+Once you have completed the wizard you will be presented with a dialog (figure \ref{fig:login}) for logging in to your Corina server.
 
 \begin{wrapfigure}{r}{0.5\textwidth}
   \begin{center}
     \includegraphics[width=0.48\textwidth]{Images/login.png}
   \end{center}
-  \caption{Corina webservice login dialog.}
+  \caption{Corina server login dialog.}
   \label{fig:login}
 \end{wrapfigure}
 
-You must fill in the `Login to' field with the URL of the Corina webservice that you would like to connect to.  This should have been provided to you by your Corina systems administrator (if you are using a centralized lab database) otherwise if you are using a Corina Virtual Appliance it can be obtained from your Corina command line (see the Virtual Appliance installation instructions on page \pageref{txt:virtualAppliance}).  The username and password are your Corina login credentials (not your system or network credentials) provided to you by your systems administrator.  Details of the default administrator credentials for Virtual Appliance users are also provided on page \pageref{txt:virtualAppliance}.  The dialog gives you the option for saving your username and/or password if you prefer.  We recommend using this feature only on personal machines.  You may choose to cancel the login if you like and Corina will continue to load, however, you will not have access to the Corina database therefore very few functions will be available to you.
+The username and password details requested are your Corina login credentials (not your system or network credentials) provided to you by your systems administrator.  If you are using your own Virtual Appliance server, user details are provided on page \pageref{txt:virtualAppliance}.  The dialog gives you the option for saving your username and/or password if you prefer.  We recommend using this feature only on personal machines.  You may choose to cancel the login if you like and Corina will continue to load, however, you will not have access to the Corina database therefore very few functions will be available to you.
 
 Once you have logged in you will be presented with the Corina home screen.  This contains the main menus for the program as well as three quick-link icons for creating new records, opening existing records and importing existing data files to the database.
-
-
-\section{Configuring measuring platforms}
-\index{Measuring platforms}
-\index{Hardware|see{Measuring platforms}}
-
-Although it is possible to manually enter the ring widths of your samples into Corina, it is normal to automate this process using a measuring platform. Corina supports the most common measuring platforms including Velmex and Lintab.  However, please note that standard Lintab platforms use a proprietary communications protocol. Rinntech--the manufacturers of Lintab platforms--claim intellectual property rights over this protocol. During discussions between the Corina development team and Rinntech an agreement was reached whereby the Corina developers agreed not to release details of the protocol. In turn Rinntech has agreed to produce an adapter that can be attached to Lintab platforms so that they communicate with an open ASCII protocol. Users wishing to use Lintab platforms with Corina (or any software not developed by Rinntech) must therefore contact Rinntech and purchase an adapter.
-
-Measuring platforms typically use serial ports to communicate to computers. In recent years computer manufacturers have been phasing out serial ports so you may need to purchase a serial-USB converter. Modern MacOSX, Linux as well as Windows 7 should support most serial-USB adapters out of the box, otherwise you must install the relevant drivers before continuing.  Recent Lintab USB platforms use internal serial-USB converters so are treated in exactly the same way by Corina.
-
-To begin, shut down your computer, attach your platform, then reboot and launch Corina. Next, go to the preferences window and open the hardware tab and you should see an interface that looks like figure \ref{fig:hardwareprefs}.
-
-\begin{figure}[hbtp]
-  \centering
-    \includegraphics[width=0.6\textwidth]{Images/hardwareprefs.png}
-    \caption{The hardware preferences dialog.}
-    \label{fig:hardwareprefs}
-\end{figure}
-
-In the type pull down menu, select the type of measuring equipment you are using. Note that this refers to the equipment that the computer is attached to, and not necessarily the measuring platform itself. For instance, Velmex platforms are typically connected through a Metronics digital readout device. Included in this list is the EveIO device which is an open-source device designed for the Cornell Tree-Ring Laboratory. Circuit drawings for this device can be obtained from the Cornell lab to enable Hensen measuring platforms to be used with Corina (and other software).
-
-Next you must choose the port that your platform is connected to from the pull down menu. In Windows this will be a COM port, in Linux and Mac this will be a /dev/xxx port.  Depending on the type of platform you choose, you may also need to set various communication parameters.  If these boxes are enabled, please check the documentation that came with your measuring platform to ensure these values are set correctly.
-
-To check whether your platform is working, click the `Start measuring test' button and attempt to measure a few rings.  Once you are satisfied, click OK on the preferences window and you will be returned to the Corina home screen.
-
-Different measuring platforms have different capabilities.  For instance, some include a physical switch for firing measurement events, others also include switches for resetting measurements to zero.  Some platforms (e.g. Lintab) also continuously report the measurement values to the computer.  So depending on the hardware you use, Corina will present the you with slightly different options.  
-
-Please note that the architecture of Corina is such that providing support for additional measuring platforms is a relatively simple task.  If you have equipment that is not currently supported, please contact the developers to see if it can be included.  
-
 
 \section{Measuring a new sample}
 \index{Sample!Measuring|(}

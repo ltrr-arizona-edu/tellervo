@@ -308,6 +308,27 @@ Some interfaces were created using the graphical designed in Netbeans IDE.  Thes
 
 More recently the Google WindowBuilder Pro tool has been used for interface design.  This has the benefit of (usually) being able to parse existing code enabling the modification of existing dialogs.  WindowsBuilder does have its quirks though so make sure you keep up-to-date with new releases.
 
+\section{Supporting measuring platforms}
+\index{Measuring platforms}
+\label{txtSupportingNewMeasuringPlatforms}
+The support for hardware measuring platforms has been designed to be as modular and extensible as possible. Adding support for additional measuring platform types should therefore be quick and painless!  
+
+To begin, you need to extend the abstract class edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.  You can of course also extend the class implementation of another platform if you only need to modify a few settings.  This is the case for both the QC10 and QC1100 devices which extend the GenericASCIIDevice class.  The implementation code is identical for all three, but the derived classes set the port settings to the default values for the two QuadraChek boxes.
+
+There are a number of methods that you will need to override from the base class.  If you use Eclipse to generate the class it will create placeholders for all the relevant methods.  The toString() method enables you to return the name for the device you are implementing, whereas all the is$\ldots$() methods enable Corina to understand the capabilities of the device.  For instance some devices will accept requests to zero the current measurement and/or request the current measurement value, while others will not (instead they rely on hardware buttons on the device itself).  Some devices can have the port settings (such as baud, parity, stopbits etc) altered and the corresponding is$\ldots$Editable() functions indicate whether this is possible.  All user interfaces in Corina are modified in accordance with these methods and show the user only relevant buttons.
+
+The guts of the work in the class are performed in the following methods:
+
+\begin{description}
+ \item[setDefaultPortParams()] -- this method sets all the default port communications parameters.  The abstract class already sets typical values so you only need to override this if they need to change.
+ \item[doInitialize()] -- this method is run when the platform is initialized.  If your platform needs to do any sort of handshaking then this is where this should be done.
+ \item[serialEvent()] -- this method handles any events that are detected from the serial port.  All new data received from the platform is decoded here.  Values and errors are passed on via the fireSerialSampleEvent() method.  Remember that all values should be sent as measurements in microns.  If the platform has the ability to work in different units the UnitMultiplier value must be used to ensure the units set by the user are handled correctly.
+ \item[zeroMeasurement()] -- if your platform responds to requests to zero the measurement value this is where you should implement this.  
+ \item[requestMeasurement()] -- if your platform responds to requests to send the current measurement value then you should implement this functionality here.
+\end{description} 
+
+Once your new class is complete you need to inform Corina that it exists.  To do this you need to register the device in edu.cornell.dendro.corina.hardware.SerialDeviceSelector.  You should then be able to launch Corina and test your new device in the preferences dialog.  The relevant parts of the dialog will be enabled/disabled depending on how you set the corresponding is$\ldots$Editable() methods in your class.  The dialog also includes a seperate test window with a console for debugging the raw data received from the serial port.  
+
 \section{Writing documentation}
 \index{Documentation}
 The documentation in Corina is written in the well established typesetting language {\LaTeXe}.  {\LaTeX} is a great tool for producing high quality documentation with a good structure and style.  Unlike standard WYSIWYG (what you see is what you get) word processing applications like Microsoft Word, {\LaTeX} uses simple plain text code to layout a document so that it is often described as WYSIWYM (what you see is what you mean)!  The style of a {\LaTeX} document is handled separated enabling the author to concentrate on content.  By removing the possibility for authors to tinker with font sizes etc, {\LaTeX} forces you to create clear, well structured documents.  For further details see \url{http://en.wikibooks.org/wiki/LaTeX/}.
