@@ -35,7 +35,7 @@ public abstract class AbstractPreferencesPanel extends JPanel {
 	private Icon icon;
 	private String subTitle;
 	private JToggleButton tabButton;
-	private JDialog parent;
+	protected JDialog parent;
 	
 	/**
 	 * 

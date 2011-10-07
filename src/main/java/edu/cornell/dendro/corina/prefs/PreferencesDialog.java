@@ -161,23 +161,10 @@ public class PreferencesDialog extends JDialog {
 						
 						if(networkPrefsPanel.hasWSURLChanged())
 						{
-							WSIServerDetails serverDetails = new WSIServerDetails();
-							
-							if(serverDetails.getWSIServerStatus()==WSIServerStatus.NO_CONNECTION)
-							{
-								Alert.error("No network connection", 
-								"You don't appear to have a network connection.  Please check your\n " +
-								"network settings and try again.");
-								return;	
-							}
-							else if(!serverDetails.isServerValid())
-							{
-								Alert.error("Invalid Webservice URL", 
-								"The URL you have entered is not a valid Corina Webservice");
-								return;
-							}
-							
-							
+							// First test to see if the WS connection is working
+							Boolean wsok = networkPrefsPanel.testWSConnection(false);
+							if(wsok.equals(false)) return;							
+
 							int n = JOptionPane.showConfirmDialog(
 								    null,
 								    "You will need to restart Corina for the new web service URL to take effect.\n" +
@@ -229,6 +216,9 @@ public class PreferencesDialog extends JDialog {
 	{
 		pageList.add((AbstractPreferencesPanel) page);
 	}
+	
+	
+
 	
 	private void setupPages()
 	{

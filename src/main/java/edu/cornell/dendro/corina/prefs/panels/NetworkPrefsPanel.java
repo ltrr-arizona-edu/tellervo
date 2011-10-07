@@ -45,7 +45,10 @@ import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.RadioButtonWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.SpinnerWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.TextComponentWrapper;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.wsi.WSIServerDetails;
+import edu.cornell.dendro.corina.wsi.WSIServerDetails.WSIServerStatus;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.SeriesSearchResource;
 
@@ -70,6 +73,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	private JPanel wsPanel;
 	private JPanel proxyPanel;
 	private MigLayout layout;
+	private JButton btnTest;
 	
 	/**
 	 * Create the panel.
@@ -104,7 +108,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		wsPanel.add(lblWebservice, "cell 0 1,alignx trailing,aligny center");
 		
 		txtWSURL = new JTextField();
-		wsPanel.add(txtWSURL, "cell 1 1,growx");
+		wsPanel.add(txtWSURL, "flowx,cell 1 1,growx");
 		txtWSURL.setColumns(10);
 		
 		btnForceDictionaryReload = new JButton("Force Dictionary Reload");
@@ -127,6 +131,19 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 			
 		});
 		wsPanel.add(btnForceDictionaryReload, "cell 1 2,alignx right");
+		
+		btnTest = new JButton("Test");
+		btnTest.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				testWSConnection(true);
+				
+			}
+			
+		});
+		
+		wsPanel.add(btnTest, "cell 1 1");
 		
 		proxyPanel = new JPanel();
 		proxyPanel.setBorder(new TitledBorder(null, "Network Connection", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
@@ -206,6 +223,32 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	{
 		txtWSURL.setEnabled(!chkDisableWS.isSelected());
 		btnForceDictionaryReload.setEnabled(!chkDisableWS.isSelected());
+	}
+	
+	public Boolean testWSConnection(Boolean feedbackOnSuccess)
+	{
+		WSIServerDetails serverDetails = new WSIServerDetails();
+		
+		if(serverDetails.getWSIServerStatus()==WSIServerStatus.NO_CONNECTION)
+		{
+			Alert.error("No network connection", 
+			"You don't appear to have a network connection.  Please check your\n " +
+			"network settings and try again.");
+			return false;	
+		}
+		else if(!serverDetails.isServerValid())
+		{
+			Alert.error("Invalid Webservice URL", 
+			"The URL you have entered is not a valid Corina Webservice");
+			return false;
+		}
+		
+		if(feedbackOnSuccess)
+		{
+			Alert.message(parent, "Success", "Webservice connection OK.");
+		}
+		
+		return true;
 	}
 	
 	private void linkToPrefs()

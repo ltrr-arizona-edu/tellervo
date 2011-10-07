@@ -1,9 +1,0 @@
-Package: [[name]]
-Version: [[version]]
-Section: misc
-Priority: optional
-Architecture: all
-Depends: sun-java6-jre
-Maintainer: Peter Brewer <p.brewer@cornell.edu>
-Description: Application for measuring, managing and curating dendrochronology samples
-Distribution: development

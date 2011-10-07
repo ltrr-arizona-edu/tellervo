@@ -10,10 +10,6 @@ if (!isset($argc))
 	die();
 }
 
-$shortopts = "";
-$longopts = array("configure", "reconfigure", "test", "help", "stop", "start", "restart");
-$args = getopt($shortopts,$longopts);
-
 // Static locations of various files 
 $permsfile        = "/usr/share/corina-server/set_database_permission.sql";
 $permstemplate    = "/usr/share/corina-server/set_database_permission.template";
@@ -21,8 +17,8 @@ $logfile          = "/usr/share/corina-server/installation.log";
 $configtemplate   = "/usr/share/corina-server/config.php.template";
 $dbtemplate       = "/usr/share/corina-server/corina_database_template.sql";
 $credentialsFile  = "/usr/share/corina-server/corina_server_credentials";
-$pg_hba_file      = "/etc/postgresql/8.4/main/pg_hba.conf";
-$pg_hba_file_orig = "/etc/postgresql/8.4/main/pg_hba.conf.bak";
+$pg_hba_file      = "/etc/postgresql/9.1/main/pg_hba.conf";
+$pg_hba_file_orig = "/etc/postgresql/9.1/main/pg_hba.conf.bak";
 $configfile       = "/var/www/corina-webservice/config.php";
 
 // Global variables
@@ -34,20 +30,30 @@ $errorsFound = FALSE;
 // Set custom error handler to divert messages to log file
 set_error_handler("myErrorHandler");
 
-// Make sure log file exists
+// Make sure log file exists and make sure it is read and writeable
 exec("touch $logfile > /dev/null");
 exec("chmod a+rw $logfile > /dev/null");
+
+// Long the date of running to the log file
 exec("echo \"Starting Corina server installation\" > ".$logfile); 
 exec("date >> ".$logfile); 
 
+/**
+ * Grab command line arguments either using long or short options
+ */
+ 
+$shortopts = "htrc";
+$longopts = array("help", "test", "reconfigure", "configure", "resetpwd", "start", "stop", "restart");
+$args = getopt($shortopts,$longopts);
+
 // Depending on command line arguments run different functions
-if($args["test"]===false)
+if($args["test"]===false || $args["t"]===false)
 {
 	// Test configuration
 	verifySetup();
 	die();
 }
-else if($args["reconfigure"]===false)
+else if($args["reconfigure"]===false || $args["r"]===false)
 {
 	// Reconfigure server
 	requireRoot();
@@ -57,7 +63,7 @@ else if($args["reconfigure"]===false)
 	printComplete();
 	die();
 }
-else if($args["help"]===false)
+else if($args["help"]===false || $args["h"]===false)
 {
   // Show help documentation
   echo "Useage: corina-server [<option> ...]\n\n";
@@ -66,6 +72,10 @@ else if($args["help"]===false)
   echo "  -t | --test         Run tests on existing setup\n";
   echo "  -r | --reconfigure  Reconfigure the existing configuration\n";
   echo "  -c | --configure    Configure server from scratch\n";
+  echo "       --resetpwd     Reset the PostgreSQL database password\n";
+  echo "       --start        Start the Corina server\n";
+  echo "       --stop         Stop the Corina server\n"; 
+  echo "       --restart      Restart the Corina server\n";   
   echo "\n";
 }
 else if($args["stop"]===false)
@@ -95,6 +105,12 @@ else if($args["restart"]===false)
 	exec("/etc/init.d/apache2 restart");
 	echo "\n";
 }
+else if($args["resetpwd"]===false)
+{
+	requireRoot();
+	setDBUser();
+	echo "\n";
+}
 else
 {
 	// Configure from scratch
@@ -106,6 +122,17 @@ else
 	printComplete();
 	die();
 }
+
+
+die();
+
+/**
+ * END OF SCRIPT BODY
+ */
+
+
+
+
 
 /**
  * Check the user running this script is a superuser
@@ -299,6 +326,7 @@ function setDBUser()
   else
   {
       echo "\nCreating a database user...\n";
+      echo "(We recommend the username to be corina)\n";
       echo "    Username : ";
       $user = fgets(STDIN); 
       echo "\nEnter a new password.  Password should be 8-20 characters, and include numbers, letters, and capitals.\n";

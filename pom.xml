@@ -118,6 +118,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>HH:mm dd-MMM-yyyy</maven.build.timestamp.format>
     	<timestamp>${maven.build.timestamp}</timestamp>
+    	<serverversion>1.0.0</serverversion>
 	</properties>
 
 	<!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml
@@ -620,7 +621,7 @@
 						</fileSet>
 					</additionalResources>
 					<bundleName>Corina</bundleName>
-					<zipFile>${project.build.directory}/Binaries/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>
+					<zipFile>${project.build.directory}/Binaries/Desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>
 					<mainClass>edu.cornell.dendro.corina.gui.Startup</mainClass>
 					<jvmVersion>1.6+</jvmVersion>
 					<iconFile>src/main/resources/Icons/corina-application.icns</iconFile>
@@ -637,19 +638,23 @@
 			</plugin>
 			
 			
-			<!--  Create a Linux Ubuntu debian native installer -->
+			<!--  Create a Linux Ubuntu debian native installers -->
 			<plugin>
 				<artifactId>jdeb</artifactId>
 				<groupId>org.vafer</groupId>
 				<version>0.8</version>
 				<executions>
+				
+					<!-- Desktop Installer -->
 					<execution>
+						<id>deb-desktop-build</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jdeb</goal>
 						</goals>
 						<configuration>
-							<deb>${project.build.directory}/Binaries/${project.version}/Linux/${project.build.finalName}.deb</deb>
+							<deb>${project.build.directory}/Binaries/Desktop/${project.version}/Linux/${project.build.finalName}.deb</deb>
+							<controlDir>Native/BuildResources/LinBuild/DesktopControl/</controlDir>
 							<dataSet>
 								<data>
 									<src>${project.build.directory}/${project.build.finalName}.jar</src>
@@ -669,7 +674,7 @@
 									</mapper>
 								</data>
 								<data>
-									<src>target/classes/LinBuild//corina.desktop</src>
+									<src>target/classes/LinBuild/corina.desktop</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
@@ -692,6 +697,62 @@
 									<mapper>
 										<type>perm</type>
 										<prefix>/usr/share/pixmaps/</prefix>
+									</mapper>
+								</data>
+							</dataSet>
+						</configuration>
+					</execution>
+					
+					<!-- Server installer -->
+					<execution>
+						<id>deb-server-build</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jdeb</goal>
+						</goals>
+						<configuration>	
+							<deb>${project.build.directory}/Binaries/Server/corina-server-${serverversion}.deb</deb>
+							<controlDir>Native/BuildResources/LinBuild/ServerControl/</controlDir>
+							<dataSet>
+								<data>
+									<src>Native/BuildResources/LinBuild/corina-server</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/bin</prefix>
+										<filemode>755</filemode>
+									</mapper>
+								</data>
+								<data>
+									<src>Databases/db-templates</src>
+									<type>directory</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/corina-server</prefix>
+									</mapper>
+								</data>
+								<data>
+									<src>Databases/db-patches</src>
+									<type>directory</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/corina-server</prefix>
+									</mapper>
+								</data>
+								<data>
+									<src>src/main/php/config.php.template</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/corina-server</prefix>
+									</mapper>
+								</data>
+								<data>
+									<src>src/main/php</src>
+									<type>directory</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/var/www/corina-webservice</prefix>
 									</mapper>
 								</data>
 							</dataSet>
@@ -751,7 +812,7 @@
 									classpathref="maven.plugin.classpath"/>	
 								<trycatch>
 									<try>
-										<zip destfile="${project.build.directory}/Binaries/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="true">
+										<zip destfile="${project.build.directory}/Binaries/Desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="true">
 											<zipfileset dir="Native/Libraries/macosx-universal/" includes="*.jnilib" prefix="${project.build.finalName}/Corina.app" />
 										</zip>
 									</try>
@@ -774,8 +835,8 @@
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath"/>
-							      <mkdir dir="${project.build.directory}/Binaries/${project.version}/Windows"/>
-							      <mkdir dir="${project.build.directory}/Binaries/${project.version}/Windows64"/>
+							      <mkdir dir="${project.build.directory}/Binaries/Desktop/${project.version}/Windows"/>
+							      <mkdir dir="${project.build.directory}/Binaries/Desktop/${project.version}/Windows64"/>
 							      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
 							        <arg value="nsis-32bit.nsi"/>  
 							      </exec>  
@@ -796,8 +857,8 @@
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath"/>
-							      <mkdir dir="${project.build.directory}/Binaries/${project.version}/Java"/>
-							      <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/Binaries/${project.version}/Java/${project.build.finalName}.jar" failonerror="false"/>
+							      <mkdir dir="${project.build.directory}/Binaries/Desktop/${project.version}/Java"/>
+							      <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/Binaries/Desktop/${project.version}/Java/${project.build.finalName}.jar" failonerror="false"/>
 							</tasks>
 						</configuration>
 						<goals>

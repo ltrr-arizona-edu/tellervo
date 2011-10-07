@@ -1,0 +1,9 @@
+Package: [[name]]-server
+Version: [[version]]
+Section: misc
+Priority: optional
+Architecture: all
+Depends: apache2, postgresql-9.1-pljava-gcj, postgresql-9.1, postgis, php5, php5-pgsql, php5-curl, php5-mhash, openssh-server
+Maintainer: Peter Brewer <p.brewer@cornell.edu>
+Description: Database and webservice for the Corina dendrochronology desktop application
+Distribution: development
