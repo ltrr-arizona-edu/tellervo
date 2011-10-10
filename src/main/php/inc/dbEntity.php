@@ -2463,6 +2463,71 @@ class boxEntity extends dbEntity
     
 }
 
+class securityGroupEntity extends dbEntity
+{
+	protected $id = NULL;
+    protected $name = NULL;
+    protected $description = NULL;
+    protected $isActive = TRUE;
+    public $userMembers = array();
+    public $groupMembers = array();
+	
+    
+    function __construct()
+    {
+
+    		
+    }
+    
+    
+    function setName($theName)
+    {
+        // Set the current objects precision 
+        $this->name=$theName;
+    }
+    
+    function setDescription($theDescription)
+    {
+        // Set the current objects precision 
+        $this->description=$theDescription;
+    }
+    
+    function setIsActive($theIsActive)
+    {
+        // Set the current objects precision 
+        $this->isActive=$theIsActive;
+        
+    }
+    
+    function setUserMembers($arr)
+    {
+    	$this->userMembers= $arr;
+    }
+    
+    function setGroupMembers($arr)
+    {
+    	$this->groupMembers= $arr;
+    }
+    
+    function getName()
+    {
+    	return $this->name;
+    }
+    
+    function getDescription()
+    {
+    	return $this->description;
+    }
+    
+    function getIsActive()
+    {
+    	return $this->isActive;
+    }
+    
+  
+}
+
+
 class securityUserEntity extends dbEntity
 {
 

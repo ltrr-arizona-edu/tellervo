@@ -119,7 +119,7 @@ class dbHelper
 	    {
 	        $outputvalue = FALSE;
 	    }	
-	    elseif($value==NULL)
+	    elseif($value==NULL || $value== "")
 	    {
 	    	return NULL;
 	    }

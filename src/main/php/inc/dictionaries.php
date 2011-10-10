@@ -68,7 +68,9 @@ class dictionaries
         $xmldata = "";
         
         $dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
-        				  'elementAuthenticity', 'datingType', 'taxon');
+        				  'elementAuthenticity', 'datingType', 'taxon', 'configuration');
+        //$dictItems = array('elementType',  
+        //				  'elementAuthenticity', 'datingType', 'configuration');
        
         
 		// Standard dictionary items
@@ -89,6 +91,9 @@ class dictionaries
                 			FROM tlkpTaxon taxon
 							INNER JOIN tlkpTaxonRank rank on rank.taxonrankid=taxon.taxonrankid";
                 }
+                elseif($item=='configuration')
+                {
+                }
                 else
                 {
                 	// Looking up in tlkp style table
@@ -97,20 +102,31 @@ class dictionaries
                                 
                 $xmldata.= "<".$item."Dictionary>\n";
                 
-                // Run SQL
-                $result = pg_query($dbconn, $sql);
-                while ($row = pg_fetch_array($result))
+                if ($item=='configuration')
                 {
-                	if($item=='taxon')
-                	{
-				    	global $taxonomicAuthorityEdition;
-				    	$xmldata .= "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$row['colid']."\" normal=\"".dbHelper::escapeXMLChars($row['label'])."\"/>\n";    	
-                	}
-                	else
-                	{
-                    	$xmldata.= "<".$item." normalStd=\"Corina\" normalId=\"".$row['id']."\" normal=\"".dbHelper::escapeXMLChars($row['value'])."\"/>\n";
-                	}
+                	global $labname;
+                	global $labacronym;
+                	$xmldata.="<configuration key=\"lab.name\" value=\"$labname\" />\n";
+                	$xmldata.="<configuration key=\"lab.acronym\" value=\"$labacronym\" />\n";
                 }
+                else
+                {
+	                // Run SQL
+	                $result = pg_query($dbconn, $sql);
+	                while ($row = pg_fetch_array($result))
+	                {
+	                	if($item=='taxon')
+	                	{
+					    	global $taxonomicAuthorityEdition;
+					    	$xmldata .= "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$row['colid']."\" normal=\"".dbHelper::escapeXMLChars($row['label'])."\"/>\n";    	
+	                	}
+	                	else
+	                	{
+	                    	$xmldata.= "<".$item." normalStd=\"Corina\" normalId=\"".$row['id']."\" normal=\"".dbHelper::escapeXMLChars($row['value'])."\"/>\n";
+	                	}
+	                }
+                }
+
                 $xmldata.= "</".$item."Dictionary>\n";
             }
         }
@@ -123,6 +139,8 @@ class dictionaries
         
         // More complex dictionary items
         $dictItemsWithClasses = array('securityUser', 'securityGroup', 'readingNote', 'box');
+        //$dictItemsWithClasses = array('securityGroup', 'box');
+        
         
         global $firebug;
         
@@ -172,7 +190,8 @@ class dictionaries
                 	}
   					else if ($item=='securityGroup')
   					{
-  						$xmldata.=$myObj->asXML();
+  						$myObj->setChildParamsFromDB();
+  						$xmldata.=$myObj->asXML("comprehensive");
   					}
                 	else
                 	{ 	   
@@ -194,7 +213,7 @@ class dictionaries
                 unset($myObj);
             }
             
-            // Finally add wmsServer entries
+            // add wmsServer entries
             $xmldata.= "<wmsServerDictionary>\n";
             $sql="select name, url from tlkpwmsserver order by name"; 
             $result = pg_query($dbconn, $sql);

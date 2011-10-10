@@ -226,12 +226,12 @@ class securityUser extends securityUserEntity implements IDBAccessor
             $xml.= "firstName=\"".dbHelper::escapeXMLChars($this->firstName)."\" ";
             $xml.= "lastName=\"".dbHelper::escapeXMLChars($this->lastName)."\" ";
             $xml.= "isActive=\"".dbHelper::formatBool($this->isActive, 'english')."\" ";
-            $xml.= ">";
+            
 
        
-            if ($format=='comprehensive')
-            {
-                $xml.= "\n<memberOf>\n";
+           // if ($format=='comprehensive')
+           // {
+                /*$xml.= "\n<memberOf>\n";
                 foreach($this->groupArray as $groupID)
                 {
                     $group = new securityGroup();
@@ -247,11 +247,27 @@ class securityUser extends securityUserEntity implements IDBAccessor
                     }
 
                 }
-                $xml.= "</memberOf>\n";
+                $xml.= "</memberOf>\n";*/
+            	
+            	// Add memberOf if there are any
+            	if(count($this->groupArray)>0)
+            	{
+	            	$xml.=" memberOf=\"";
+	            	
+	            	foreach($this->groupArray as $groupID)
+	            	{
+	            		$xml.= $groupID ." ";
+	            	}
+	            	
+	            	// Trim off trailing space
+	            	$xml = substr($xml, 0, -1);
+	            	
+	            	$xml.="\"";
+            	}
 
-            }
+            //}
             
-            $xml.= "</securityUser>\n";
+            $xml.= " />\n";
             return $xml;
         }
         else
@@ -346,18 +362,21 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 
                 // Set or unset member groups for this user
                                 
-                if(count($this->groupArray)>0)
-                {
+                //if(count($this->groupArray)>0)
+                //{
                     $sql = "delete from tblsecurityusermembership where securityuserid=".$this->id;
                     $result = pg_query($dbconn, $sql);
 
                     foreach($this->groupArray as $item)
                     {
-                        $sql = "insert into tblsecurityusermembership (securityuserid, securitygroupid) values ('$this->id', '$item')";
-                        $firebug->log($sql, "Group membership SQL"); 
-                        $result = pg_query($dbconn, $sql);
+                    	if($item!="")
+                    	{
+	                        $sql = "insert into tblsecurityusermembership (securityuserid, securitygroupid) values ('$this->id', '$item')";
+	                        $firebug->log($sql, "Group membership SQL"); 
+	                        $result = pg_query($dbconn, $sql);
+                    	}
                     }
-                } 
+                //} 
             }
             else
             {

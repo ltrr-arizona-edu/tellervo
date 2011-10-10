@@ -5,8 +5,7 @@
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
- * This class contains the logic for extracting the meaning from the
- * user request and for storing these requests in parameter classes.
+ * Configuration values to be set by the Administrator of the server
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
@@ -14,18 +13,38 @@
  * *******************************************************************
  */
 
-//************************
-// USER EDITABLE VARIABLES
-//************************
+/**
+ * LAB DETAILS
+ */
+// Laboratory name
+$labname = "%%LABNAME%%";
 
-// Database name
+// Laboratory acronym.  Used as prefix to sample codes e.g. "C" for Cornell becomes C-ABC-1-A
+// Can be left blank
+$labacronym = "%%LABACRONYM%%";
+
+
+/**
+ * POSTGRESQL SETTINGS
+ */
+// PostgreSQL credentials file
+$cdbCredentialsFile = "/usr/share/corina-server/corina_server_credentials";
+
+// Hostname or IP of the server running PostgreSQL
+$hostname = "%%IP%%";
+
+// PostgreSQL Database name e.g. "corina"
 $dbName = "%%DBNAME%%";
 
-// Domain name of the server this software is running on
-$domain = "%%IP%%/corina-webservice/";
+// Port on which PostgreSQL is running (normally "5432")
+$pgport = "5432";
 
-// Base folder for the webservice
-$baseFolder = "/var/www/corina-webservice/";
+
+/**
+ * WEBSERVER SETTINGS
+ */
+// Domain name of the server this software is running on e.g. "dendro.cornell.edu/"
+$domain = "%%IP%%/corina-webservice/";
 
 // Does the server use https?
 $securehttp = FALSE;
@@ -36,89 +55,12 @@ $debugFlag = FALSE;
 // Include timing in debug messages
 $timingFlag = FALSE;
 
-// Version number to be displayed in output headers
-$wsversion = "1.0.0"; 
+// Base folder on the server where the webservice is stored
+$baseFolder = "/var/www/corina-webservice/";
 
-// Path to Corina XSD
-$corinaXSD = $baseFolder."schemas/corina.xsd";
-
-// Web accessible temporary folder
-$tempFolder = $baseFolder."temp/";
-
-// Corina Namespace URL
-$corinaNS = "http://dendro.cornell.edu/schema/corina/1.0";
-
-// TRiDaS Namespace URL
-$tridasNS = "http://www.tridas.org/1.2.2";
-
-// XLink Namespace URL
-$xlinkNS = "http://www.w3.org/1999/xlink";
-
-// TRiDaS Namespace URL
-$gmlNS = "http://www.opengis.net/gml";
-
-// The name and edition of the taxonomic authority used for taxonomy 
-$taxonomicAuthorityEdition = "Catalogue of Life Annual Checklist 2008";
-
-// Timezone of the server this software is running on
+// Timezone of the server this software is running on.  For options see:
+// http://php.net/manual/en/timezones.php
 $serverTimezone = "America/New_York";
-
-// Folder name where the wiki documentation is stored
-$wikiManualBaseUrl = "http://dendro.cornell.edu/corina-manual";
-
-// Page name where main webservice is run from
-$wspage = "webservice.php";
-
-// Page name where mapping service is run from
-$mspage = "mapservice.php";
-
-// Google maps API Key for server
-$gMapAPIKey = "ABQIAAAAs0rCgSUzwBX9znK1mNUjuxQ2hntmN47BkGQDV0OcxMEAjHeRKhS83HleB6295GV1FrzHI7MycgtWZg";
-
-// Postgres credentials file location
-$cdbCredentialsFile = "/usr/share/corina-server/corina_server_credentials";
-
-// Array of known clients and the minimum version that can be used when accessing this webservice
-$corinaClientIdentifiers = array( 
-								array("name" => "Corina WSI", 	
-										"minVersion" => "2.12", 						
-									 ), 
-								array("name" => "Firefox", 		
-										"minVersion" => "1.0", 
-									 ),  
-								array("name" => "Safari",		
-										"minVersion" => "1.0", 
-									 ),
-								array("name" => "Gecko", 		
-										"minVersion" => "1.0", 
-									 )
-								);
-								
-// Only accept known clients								
-$onlyAllowKnownClients = TRUE;
-
-// Default Units for the database (needs to be valid TRiDaS standard units) 
-$dbDefaultUnits = "micrometres";
-
-// Default Units for the webservice to output (needs to be valid TRiDaS standard units)
-$wsDefaultUnits = "micrometres";
-
-//************************
-
-
-
-
-date_default_timezone_set($serverTimezone); // Default time zone 
-
-
-// Base URL of web accessible temporary folder
-if($securehttp===TRUE)
-{
-   $tempFolderURL = "https://".$domain."temp/";
-}
-else
-{
-   $tempFolderURL = "http://".$domain."temp/";
-}
+date_default_timezone_set($serverTimezone); 
 
 ?>

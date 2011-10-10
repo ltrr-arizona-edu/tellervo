@@ -12,13 +12,11 @@
  */
 require_once('inc/sample.php');
 require_once('inc/taxon.php');
+require_once('dbhelper.php');
 
-class securityGroup 
+class securityGroup extends securityGroupEntity implements IDBAccessor
 {
-    var $id = NULL;
-    var $name = NULL;
-    var $description = NULL;
-    var $isActive = TRUE;
+
 
     var $parentXMLTag = "securityGroup"; 
     var $lastErrorMessage = NULL;
@@ -37,24 +35,7 @@ class securityGroup
     /* SETTERS */
     /***********/
     
-    function setName($theName)
-    {
-        // Set the current objects precision 
-        $this->name=$theName;
-    }
-    
-    function setDescription($theDescription)
-    {
-        // Set the current objects precision 
-        $this->description=$theDescription;
-    }
-    
-    function setIsActive($theIsActive)
-    {
-        // Set the current objects precision 
-        $this->isActive=$theIsActive;
-        
-    }
+
 
     function setParamsFromDB($theID)
     {
@@ -100,15 +81,59 @@ class securityGroup
 
     function setChildParamsFromDB()
     {
+        global $dbconn;
+        
+        $this->userMembersArray = array();
+        
+        $sql = "SELECT securityuserid from tblsecurityusermembership where securitygroupid='".$this->id."' order by securityuserid asc";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            // Set parameters from db
+            while ($row = pg_fetch_array($result))
+            {
+                array_push($this->userMembersArray, $row['securityuserid']);
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+        
+        
+        
+        $this->groupMembersArray = array();
+        
+        $sql = "SELECT childsecuritygroupid from tblsecuritygroupmembership where parentsecuritygroupid='".$this->id."' order by childsecuritygroupid asc";
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+            pg_send_query($dbconn, $sql);
+            $result = pg_get_result($dbconn);
+            // Set parameters from db
+            while ($row = pg_fetch_array($result))
+            {
+                array_push($this->groupMembersArray, $row['childsecuritygroupid']);
+            }
+        }
+        else
+        {
+            // Connection bad
+            $this->setErrorMessage("001", "Error connecting to database");
+            return FALSE;
+        }
+        
+        
+        
+
         return TRUE;
     }
     
-    function setErrorMessage($theCode, $theMessage)
-    {
-        // Set the error latest error message and code for this object.
-        $this->lastErrorCode = $theCode;
-        $this->lastErrorMessage = $theMessage;
-    }
+
     
     function setParamsFromParamsClass($paramsClass)
     {
@@ -117,7 +142,9 @@ class securityGroup
         if (isset($paramsClass->name))         $this->setName($paramsClass->name);
         if (isset($paramsClass->description))  $this->setDescription($paramsClass->description);
         if (isset($paramsClass->isActive))     $this->setIsActive($paramsClass->isActive);
-
+        if (isset($paramsClass->userMembers))     $this->userMembers = $paramsClass->userMembers;
+        if (isset($paramsClass->groupMembers))     $this->groupMembers = $paramsClass->groupMembers;
+        
         return true;
     }
 
@@ -128,11 +155,6 @@ class securityGroup
         switch($crudMode)
         {
             case "read":
-                if( (gettype($paramsObj->id)!="integer") && ($paramsObj->id!=NULL) ) 
-                {
-                    $this->setErrorMessage("901","Invalid parameter - 'id' field must be an integer when reading groups.  It is currently a ".gettype($paramsObj->id));
-                    return false;
-                }
                 if(!($paramsObj->id>0) && !($paramsObj->id==NULL))
                 {
                     $this->setErrorMessage("901","Invalid parameter - 'id' field must be a valid positive integer when reading groups.");
@@ -191,7 +213,7 @@ class securityGroup
     /*ACCESSORS*/
     /***********/
 
-    function asXML($mode="all")
+    function asXML($mode="comprehensive")
     {
     	global $firebug;
         $xml = NULL;
@@ -199,22 +221,51 @@ class securityGroup
         // Return a string containing the current object in XML format
         if (!isset($this->lastErrorCode))
         {
-            if(($mode=="all") || ($mode=="begin"))
+            // Only return XML when there are no errors.
+            $xml.= "<securityGroup ";
+            $xml.= "id=\"".$this->id."\" ";
+            $xml.= "name=\"".$this->name."\" ";
+            $xml.= "description=\"".$this->description."\" ";
+            $xml.= "isActive=\"".dbHelper::fromPGtoStringBool($this->isActive)."\" ";
+        
+
+            if($mode=="comprehensive") 
             {
-                // Only return XML when there are no errors.
-                $xml.= "<securityGroup ";
-                $xml.= "id=\"".$this->id."\" ";
-                $xml.= "name=\"".$this->name."\" ";
-                $xml.= "description=\"".$this->description."\" ";
-                $xml.= "isActive=\"".dbHelper::fromPGtoStringBool($this->isActive)."\" ";
-                $xml.= ">";
+                 // Add userMembers if there are any
+            	if(count($this->userMembersArray)>0)
+            	{
+	            	$xml.=" userMembers=\"";
+	            	
+	            	foreach($this->userMembersArray as $id)
+	            	{
+	            		$xml.= $id ." ";
+	            	}
+	            	
+	            	// Trim off trailing space
+	            	$xml = substr($xml, 0, -1);
+	            	
+	            	$xml.="\"";
+            	}
+            	
+                // Add groupMembers if there are any
+            	if(count($this->groupMembersArray)>0)
+            	{
+	            	$xml.=" groupMembers=\"";
+	            	
+	            	foreach($this->groupMembersArray as $id)
+	            	{
+	            		$xml.= $id ." ";
+	            	}
+	            	
+	            	// Trim off trailing space
+	            	$xml = substr($xml, 0, -1);
+	            	
+	            	$xml.="\"";
+            	}
             }
 
-            if(($mode=="all") || ($mode=="end"))
-            {
-                // End XML tag
-                $xml.= "</securityGroup>\n";
-            }
+            // End XML tag
+            $xml.= "/>\n";
 
             return $xml;
         }
@@ -262,6 +313,7 @@ class securityGroup
         // Write the current object to the database
 
         global $dbconn;
+        global $firebug;
         $sql = NULL;
         $sql2 = NULL;
 
@@ -289,9 +341,9 @@ class securityGroup
                 {
                     // New record
                     $sql = "insert into tblsecuritygroup (name, description, isactive) values (";
-                    $sql.= "'".$this->name."', ";
-                    $sql.= "'".$this->description."', ";
-                    $sql.= "'".fromPHPtoPGBool($this->isActive)."'";
+                    $sql.= "'".$this->getName()."', ";
+                    $sql.= "'".$this->getDescription()."', ";
+                    $sql.= "'".dbhelper::formatBool($this->getIsActive(),"pg")."'";
                     $sql.= " )";
                     $sql2 = "select * from tblsecuritygroup where securitygroupid=currval('tblsecuritygroup_securitygroupid_seq')";
                 }
@@ -299,9 +351,10 @@ class securityGroup
                 {
                     // Updating DB
                     $sql = "update tblsecuritygroup set ";
-                    $sql.= "name = '".$this->name."', ";
-                    $sql.= "description = '".$this->description."', ";
-                    $sql.= "isactive = '".fromPHPtoPGBool($this->isActive)."'";
+                    $sql.= "name = '".$this->getName()."', ";
+                    $sql.= "description = '".$this->getDescription()."', ";
+                    $sql.= "isactive = '".dbhelper::formatBool($this->getIsActive(),"pg")."'";
+                    
                     $sql.= " where securitygroupid='".$this->id."'";
                 }
 
@@ -327,6 +380,39 @@ class securityGroup
                         $this->id=$row['securitygroupid'];   
                     }
                 }
+                
+                
+                // Set or unset members for this group                 
+                //if(count($this->userMembers)>0)
+                //{
+                    $sql = "delete from tblsecurityusermembership where securitygroupid=".$this->id;
+                    $result = pg_query($dbconn, $sql);
+
+                    foreach($this->userMembers as $item)
+                    {
+                        $sql = "insert into tblsecurityusermembership (securitygroupid, securityuserid) values ('$this->id', '$item')";
+                        $firebug->log($sql, "Membership SQL"); 
+                        $result = pg_query($dbconn, $sql);
+                    }
+                //} 
+                
+                // Set or unset groups for this group                 
+                if(count($this->groupMembers)>0)
+                {
+                    $sql = "delete from tblsecuritygroupmembership where parentsecuritygroupid=".$this->id;
+                    $result = pg_query($dbconn, $sql);
+
+                    foreach($this->groupMembers as $item)
+                    {
+                    	if($item!="")
+                    	{
+	                        $sql = "insert into tblsecuritygroupmembership (parentsecuritygroupid, childsecuritygroupid) values ('$this->id', '$item')";
+	                        $firebug->log($sql, "membership SQL"); 
+	                        $result = pg_query($dbconn, $sql);
+                    	}
+                    }
+                } 
+                
             }
             else
             {

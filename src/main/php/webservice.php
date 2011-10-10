@@ -12,6 +12,7 @@
  */
 
 require_once("config.php");
+require_once("systemconfig.php");
 require_once("inc/meta.php");
 require_once("inc/auth.php");
 require_once("inc/errors.php");
@@ -94,7 +95,7 @@ if($myMetaHeader->status != "Error")
             case "searchParameters": 			$myObject = new search(); break;
             case "dictionariesParameters": 		$myObject = new dictionaries(); break;
             case "securityUserParameters": 		$myObject = new securityUser(); break;
-            //case "securityGroupParameters":		$myObject = new securityGroup(); break
+            case "securityGroupParameters":		$myObject = new securityGroup(); break;
             case "boxParameters":				$myObject = new box(); break;
             default:
             	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);

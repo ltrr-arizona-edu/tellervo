@@ -314,7 +314,12 @@ class request
 	                	case 'securityuser':
 	                		$newxml = "<root><securityUser id='".$item->getAttribute('id')."'/></root>";
 	                		$myParamObj = new securityUserParameters($newxml);
-                            break;	                            
+                            break;	  
+
+                        case 'securitygroup':
+	                		$newxml = "<root><securityGroup id='".$item->getAttribute('id')."'/></root>";
+	                		$myParamObj = new securityGroupParameters($newxml);
+                            break;	  
                                                         
 	                	default:
 	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);
@@ -369,6 +374,9 @@ class request
             		case "c:securityUser":
             			$myParamObj = new securityUserParameters("<root>".$this->xmlRequestDom->saveXML($item)."</root>");
 						break;
+            		case "c:securityGroup":
+            			$myParamObj = new securityGroupParameters("<root>".$this->xmlRequestDom->saveXML($item)."</root>");
+						break;						
             		case "c:box":
             			$myParamObj = new boxParameters($this->xmlRequestDom->saveXML($item));
             			break;

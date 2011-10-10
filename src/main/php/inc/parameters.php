@@ -179,7 +179,7 @@ class searchParameters implements IParams
 									//'seriesunit'=>							array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									//'seriespower' =>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									'seriesmeasuringdate' =>				array('tbl' => 'vwcomprehensivevm', 'field' => 'birthdate'),
-									//'seriesanalyst' =>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriesanalyst' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'measuredbyid'),
 									//'seriesdendrochronologist' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									'seriescomments' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'comments'),
 
@@ -1343,7 +1343,68 @@ class boxParameters extends boxEntity implements IParams
     }	
 }
     
+
+class securityGroupParameters extends securityGroupEntity implements IParams
+{
+	var $xmlRequestDom = NULL;
     
+    function __construct($xmlrequest, $parentID=NULL)
+    {
+    	global $firebug;
+    	parent::__construct();    	
+    	
+    	// Load the xmlrequest into a local DOM variable
+        if (gettype($xmlrequest)=='box')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();   		
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+     		            		
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+    	global $firebug;
+		global $corinaNS;
+        global $tridasNS;
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+     	
+        foreach($children as $child)
+        {
+			
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   $firebug->log($child->hasAttribute("id"), "has id?");
+		   
+		   if ($child->tagName=='securityGroup')
+		   {
+		   		$firebug->log($child->getAttribute("isActive"), "child");
+		   		if($child->hasAttribute("id")) $this->setID($child->getAttribute("id"), null);
+		   		if($child->hasAttribute("name")) $this->setName($child->getAttribute("name"));
+		   		if($child->hasAttribute("description")) $this->setDescription($child->getAttribute("description"));
+		   		if($child->hasAttribute("isActive")) $this->setIsActive(dbhelper::formatBool($child->getAttribute("isActive"),"php"));
+				if($child->hasAttribute("userMembers")){
+					$groups = explode(" ", trim($child->getAttribute("userMembers")));
+					$this->userMembers  = $groups;
+				}
+
+		   		if($child->hasAttribute("groupMembers")){
+					$groups = explode(" ", trim($child->getAttribute("groupMembers")));
+					$this->groupMembers  = $groups;
+				}
+		   
+		   } 
+		   		   
+        }   
+    }	
+}
     
 class securityUserParameters extends securityUserEntity implements IParams
 {
@@ -1393,7 +1454,12 @@ class securityUserParameters extends securityUserEntity implements IParams
 		   		if($child->hasAttribute("lastName")) $this->setLastname($child->getAttribute("lastName"));
 		   		if($child->hasAttribute("isActive")) $this->setIsActive(dbhelper::formatBool($child->getAttribute("isActive"),"php"));
 		   		if($child->hasAttribute("hashOfPassword")) $this->setPassword($child->getAttribute("hashOfPassword"), "hash");
-		  		 $members = $child->childNodes;
+				if($child->hasAttribute("memberOf")){
+					$groups = explode(" ", trim($child->getAttribute("memberOf")));
+					$this->groupArray  = $groups;
+				}
+
+		   		$members = $child->childNodes;
 
 			   // Set membership of groups but only if user is an admin
 			 	global $myAuth;
