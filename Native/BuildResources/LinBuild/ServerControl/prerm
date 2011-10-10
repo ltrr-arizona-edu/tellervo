@@ -1,0 +1,3 @@
+#!/bin/bash
+rm /usr/share/corina-server/
+rm /var/www/corina-webservice/

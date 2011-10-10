@@ -12,7 +12,13 @@
  */
 
 require_once("config.php");
-require_once("systemconfig.php");
+
+try{
+	require_once("systemconfig.php");
+} catch (Exception $e)
+{
+	trigger_error('704'.'System configuration file missing.  Server administrator needs to run corina-server --reconfigure', E_USER_ERROR);
+}
 require_once("inc/meta.php");
 require_once("inc/auth.php");
 require_once("inc/errors.php");

@@ -6,12 +6,13 @@
  */
 if (!isset($argc))
 {
-	echo "This file should be called from the command line only.";
+	//echo "This file should be called from the command line only.";
+	writeStdErr("This file should be called from the command line only.");
 	die();
 }
 
 // Static locations of various files 
-$wsbase           = "/var/www/corina-webservice/dev-ws/php/";
+$wsbase           = "/var/www/corina-webservice/";
 $folderbase       = "/usr/share/corina-server/";
 $permsfile        = $folderbase."set_database_permission.sql";
 $permstemplate    = $folderbase."set_database_permission.template";
@@ -62,7 +63,7 @@ else if($args["reconfigure"]===false || $args["r"]===false)
 	// Reconfigure server
 	requireRoot();
 	postgresSetup();
-	echo "Generating systems config file...\n";
+	echo "\nGenerating systems config file...\n";
 	include($configfile);
 	include($dbsetupfile);
 	generateSystemsConfig();
@@ -73,7 +74,7 @@ else if($args["reconfigure"]===false || $args["r"]===false)
 }
 else if($args["sysconfig"]===false || $args["s"]===false)
 {
-	echo "Generating systems config file...\n";
+	echo "\nGenerating systems config file...\n";
 	include($configfile);
 	include($dbsetupfile);
 	generateSystemsConfig();
@@ -177,7 +178,9 @@ function emptyLog()
     }
     else
     {
-    	die("Unable to connect to PostgreSQL database.");
+    	writeStdErr("Unable to connect to PostgreSQL database");
+    	die();
+    	//die("Unable to connect to PostgreSQL database.\n\n");
     }
 	
 }
@@ -230,8 +233,10 @@ function generateSystemsConfig()
         } 
     }
     else
-    {
-    	die("Unable to connection PostgreSQL database.");
+    {    
+        writeStdErr("Unable to connect to PostgreSQL database");
+    	die();
+    	//die("Unable to connect to PostgreSQL database.\n\n");
     }
     
 	$sql = "SELECT * from tblsupportedclient";
@@ -250,7 +255,9 @@ function generateSystemsConfig()
     }
     else
     {
-    	die("Unable to connection PostgreSQL database.");
+        writeStdErr("Unable to connect to PostgreSQL database");
+    	die();
+    	//die("Unable to connect to PostgreSQL database.\n\n");
     }
 	
 	fwrite($fh, "\n\n//END OF FILE\n?>");
@@ -301,6 +308,7 @@ function createScriptsFromTemplates()
   $response = fgets(STDIN);
   setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));   
  
+  echo "\n";
   // Back up pg_hba file if it hasn't been already 
   if(!file_exists($pg_hba_file_orig))
   {
@@ -1391,6 +1399,14 @@ class File_SearchReplace
 	public function getBackgroundColors() {
 		return array_keys($this->background_colors);
 	}
+}
+
+
+function writeStdErr($error)
+{
+    $STDOUT = fopen("php://stdout", "w");
+    fwrite($STDOUT, $error);
+    fclose($STDOUT);
 }
 
 ?>
