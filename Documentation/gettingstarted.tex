@@ -1,41 +1,8 @@
 
 \chapter{Getting started}
+\label{txt:gettingstarted}
 
-Once you have installed your Corina Desktop application and you have access to a Corina server you are now ready to launch Corina for the first time.
-
-\section{First time launch}
-\index{Wizard, Setup}
-When you launch Corina for the first time you will be presented with a setup wizard (figure \ref{fig:setupwizard}).  Following the wizard to configure the main settings required before you can begin to use Corina.  If you want to re-run this wizard at any time you can do so from the entry in the Help menu. You can also manually edit all these settings from the Corina preferences dialog which can be found in \menutwo{Edit}{Preferences}.
-
-\begin{figure}[hbtp]
-  \centering
-    \includegraphics[width=0.6\textwidth]{Images/setupwizard.png}
-  \caption{The Corina setup wizard will launch the first time you start Corina.}
-  \label{fig:setupwizard}
-\end{figure}
-
-The pages of the wizard include:
-
-\begin{description}
- \item[Network connection] -- this configures how your computer accesses the internet.  Most users will be able to use the default `Use system default proxy settings' option here, but if you know that your computer is behind a corporate proxy server you may choose to manually provide the settings.
- \item[Configuring the Corina server] -- Corina comes in two parts: the Corina desktop client that you are using; and the Corina server which runs the database that stores your data.  If you are working in a lab your systems administrator may have already set up the Corina server and given you the URL to connect to.  Alternatively, you may have already installed the Corina server yourself.  If so the installation program should have given you the URL. If you don't have access to a Corina server yet, you should close this wizard, then go to the Corina website and download it.
- \item[Measuring platform configuration] -- the next page enables you to configure measuring platform hardware attached to your computer.  Some measuring platforms have fixed settings in which case the port settings will be set automatically, but others can be changed in the hardware and must be set explicitly here. Use the `Test Connection' button to make sure that Corina can successfully communicate with your platform.
-\end{description}
-
-
-Once you have completed the wizard you will be presented with a dialog (figure \ref{fig:login}) for logging in to your Corina server.
-
-\begin{wrapfigure}{r}{0.5\textwidth}
-  \begin{center}
-    \includegraphics[width=0.48\textwidth]{Images/login.png}
-  \end{center}
-  \caption{Corina server login dialog.}
-  \label{fig:login}
-\end{wrapfigure}
-
-The username and password details requested are your Corina login credentials (not your system or network credentials) provided to you by your systems administrator.  If you are using your own Virtual Appliance server, user details are provided on page \pageref{txt:virtualAppliance}.  The dialog gives you the option for saving your username and/or password if you prefer.  We recommend using this feature only on personal machines.  You may choose to cancel the login if you like and Corina will continue to load, however, you will not have access to the Corina database therefore very few functions will be available to you.
-
-Once you have logged in you will be presented with the Corina home screen.  This contains the main menus for the program as well as three quick-link icons for creating new records, opening existing records and importing existing data files to the database.
+Once you have your Corina desktop application installed (see chapter \ref{txt:installation}) and you also have access to a Corina server (either via your lab network administrator or your own on as a Virtual Appliance) you are ready to start using Corina.  Below are some basic instructions for performing common tasks in Corina followed by a number of more in-depth chapters.
 
 \section{Measuring a new sample}
 \index{Sample!Measuring|(}

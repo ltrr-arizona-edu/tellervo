@@ -1,6 +1,6 @@
 
 \chapter{Installation}
-
+\label{txt:installation}
 Corina is made up of two packages; the Corina desktop application and the Corina database server.  Corina was designed primarily for laboratories with multiple users, each running the Corina desktop application on their own computer connecting to a single central server containing the lab's data.  In this situation the Corina server would be run on a separate computer to those running the desktop client, but this need not necessarily be the case.  It is perfectly possible to run both the server and the client on the same computer.  This is likely to be the situation if you simply want to try out Corina, if you don't have a separate server, or if you do not work in a multi-user laboratory.
 
 
@@ -29,8 +29,8 @@ Once you have VirtualBox installed, you will then need to download the Corina se
 
 \begin{enumerate}
  \item Open VirtualBox and go to File, Import Appliance
- \item Press the choose button and locate the virtual appliance file that you downloaded from the website\footnote{Note that the Corina appliance is provided in the open standard format OVA.  You should be able to run the appliance in other Virtual Machine applications (e.g. VMWare, Citrix etc) but the OVA standard is very young and changing fast.  We recommend sticking with VirtualBox until the standard stabilizes.  If you are using an older version of VirtualBox it may expect an OVF rather than OVA file.  The OVA file is a zip file containing several files required by VirtualBox including an OVF file.  If you rename the extension of the OVA file to ZIP then extract the contents to a folder you should then be able to continue.}
- \item Rename the server if you choose, then press the finish button
+ \item Press the choose button and locate the virtual appliance file that you downloaded from the website\footnote{Note that the Corina appliance is provided in the open standard format OVA.  You should be able to run the appliance in other Virtual Machine applications (e.g. VMWare, Citrix etc) but the OVA standard is very young and changing fast.  We recommend sticking with VirtualBox until the standard stabilizes.  If you are using an older version of VirtualBox it may expect an OVF rather than OVA file.  The OVA file is a tar file containing several files required by VirtualBox including an OVF file.  If you rename the extension of the OVA file to tar then extract the contents to a folder using a tools like WinRAR you should then be able to continue.}
+ \item Rename the server if you choose, then press the finish/import button
  \item Once the server is installed, highlight it in the virtual machine list and press the start button
  \item Read and accept the information about how to gain and release control of the keyboard in VirtualBox
  \item The server will boot and eventually present you with a command line login screen.  Log in with the details:
@@ -93,6 +93,43 @@ To install Corina, download the installation file for your operating system from
 
 \item \includegraphics[width=3mm]{Images/java.png} \textbf{Other operating systems} -- Make sure you have Java 6 installed, then download the Corina jar file to your hard disk. You can run Corina from the command line by typing: \code{java -jar corina.jar}
 \end{description}
+
+Once you have installed your Corina Desktop application and you have access to a Corina server you are now ready to launch Corina for the first time.
+
+\subsection{First time launch}
+\index{Wizard, Setup}
+When you launch Corina for the first time you will be presented with a setup wizard (figure \ref{fig:setupwizard}).  Following the wizard to configure the main settings required before you can begin to use Corina.  If you want to re-run this wizard at any time you can do so from the entry in the Help menu. You can also manually edit all these settings from the Corina preferences dialog which can be found in \menutwo{Edit}{Preferences}.
+
+\begin{figure}[hbtp]
+  \centering
+    \includegraphics[width=0.6\textwidth]{Images/setupwizard.png}
+  \caption{The Corina setup wizard will launch the first time you start Corina.}
+  \label{fig:setupwizard}
+\end{figure}
+
+The pages of the wizard include:
+
+\begin{description}
+ \item[Network connection] -- this configures how your computer accesses the internet.  Most users will be able to use the default `Use system default proxy settings' option here, but if you know that your computer is behind a corporate proxy server you may choose to manually provide the settings.
+ \item[Configuring the Corina server] -- Corina comes in two parts: the Corina desktop client that you are using; and the Corina server which runs the database that stores your data.  If you are working in a lab your systems administrator may have already set up the Corina server and given you the URL to connect to.  Alternatively, you may have already installed the Corina server yourself.  If so the installation program should have given you the URL. If you don't have access to a Corina server yet, you should close this wizard, then go to the Corina website and download it.
+ \item[Measuring platform configuration] -- the next page enables you to configure measuring platform hardware attached to your computer.  Some measuring platforms have fixed settings in which case the port settings will be set automatically, but others can be changed in the hardware and must be set explicitly here. Use the `Test Connection' button to make sure that Corina can successfully communicate with your platform.
+\end{description}
+
+
+Once you have completed the wizard you will be presented with a dialog (figure \ref{fig:login}) for logging in to your Corina server.
+
+The username and password details requested are your Corina login credentials (not your system or network credentials) provided to you by your systems administrator.  If you are using your own Virtual Appliance server, the default admin user details are provided in section \ref{txt:passwords}, page \pageref{txt:passwords}.  The dialog gives you the option for saving your username and/or password if you prefer.  We recommend using this feature only on personal machines.  You may choose to cancel the login if you like and Corina will continue to load, however, you will not have access to the Corina database therefore very few functions will be available to you.
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \begin{center}
+    \includegraphics[width=0.48\textwidth]{Images/login.png}
+  \end{center}
+  \caption{Corina server login dialog.}
+  \label{fig:login}
+\end{wrapfigure}
+
+Once you have logged in you will be presented with the Corina home screen.  This contains the main menus for the program as well as three quick-link icons for creating new records, opening existing records and importing existing data files to the database.
+
 
 \subsection{Mapping support}
 \index{Mapping}
