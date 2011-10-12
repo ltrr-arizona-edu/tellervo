@@ -35,19 +35,23 @@ $errorsFound = FALSE;
 // Set custom error handler to divert messages to log file
 set_error_handler("myErrorHandler");
 
-// Make sure log file exists and make sure it is read and writeable
-exec("touch $logfile > /dev/null");
-exec("chmod a+rw $logfile > /dev/null");
 
-// Long the date of running to the log file
-exec("echo \"Starting Corina server installation\" > ".$logfile); 
-exec("date >> ".$logfile); 
+if($_SERVER['USER']=='root')
+{
+	// Make sure log file exists and make sure it is read and writeable
+	exec("touch $logfile > /dev/null");
+	exec("chmod a+rw $logfile > /dev/null");
+	
+	// Log the date of running to the log file
+	exec("echo \"Starting Corina server installation\" > ".$logfile); 
+	exec("date >> ".$logfile); 
+}
 
 /**
  * Grab command line arguments either using long or short options
  */
  
-$shortopts = "htrce";
+$shortopts = "htrces";
 $longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", );
 $args = getopt($shortopts,$longopts);
 
@@ -56,6 +60,7 @@ if($args["test"]===false || $args["t"]===false)
 {
 	// Test configuration
 	verifySetup();
+	printComplete();
 	die();
 }
 else if($args["reconfigure"]===false || $args["r"]===false)
@@ -85,14 +90,14 @@ else if($args["help"]===false || $args["h"]===false)
   // Show help documentation
   echo "Useage: corina-server [<option> ...]\n\n";
   echo "Options:\n";
-  echo "  -h | --help         Show this help\n";
-  echo "  -t | --test         Run tests on existing setup\n";
-  echo "  -r | --reconfigure  Reconfigure the existing configuration\n";
-  echo "  -c | --configure    Configure server from scratch\n";
-  echo "       --resetpwd     Reset the PostgreSQL database password\n";
-  echo "       --start        Start the Corina server\n";
-  echo "       --stop         Stop the Corina server\n"; 
-  echo "       --restart      Restart the Corina server\n";   
+  echo "  -h, --help         Show this help\n";
+  echo "  -t, --test         Run tests on existing setup\n";
+  echo "  -r, --reconfigure  Reconfigure the existing configuration\n";
+  echo "  -c, --configure    Configure server from scratch\n";
+  echo "      --resetpwd     Reset the PostgreSQL database password\n";
+  echo "      --start        Start the Corina server\n";
+  echo "      --stop         Stop the Corina server\n"; 
+  echo "      --restart      Restart the Corina server\n";   
   echo "\n";
 }
 else if($args["stop"]===false)
@@ -145,6 +150,7 @@ else
 	include($configfile);
 	include($dbsetupfile);
 	generateSystemsConfig();
+	include($systemconfig);
 	apacheSetup();
 	verifySetup();
 	printComplete();
@@ -178,9 +184,7 @@ function emptyLog()
     }
     else
     {
-    	writeStdErr("Unable to connect to PostgreSQL database");
-    	die();
-    	//die("Unable to connect to PostgreSQL database.\n\n");
+    	die("Unable to connect to PostgreSQL database.\n\n");
     }
 	
 }
@@ -234,9 +238,7 @@ function generateSystemsConfig()
     }
     else
     {    
-        writeStdErr("Unable to connect to PostgreSQL database");
-    	die();
-    	//die("Unable to connect to PostgreSQL database.\n\n");
+    	die("Unable to connect to PostgreSQL database.\n\n");
     }
     
 	$sql = "SELECT * from tblsupportedclient";
@@ -255,9 +257,7 @@ function generateSystemsConfig()
     }
     else
     {
-        writeStdErr("Unable to connect to PostgreSQL database");
-    	die();
-    	//die("Unable to connect to PostgreSQL database.\n\n");
+    	die("Unable to connect to PostgreSQL database.\n\n");
     }
 	
 	fwrite($fh, "\n\n//END OF FILE\n?>");
@@ -312,7 +312,7 @@ function createScriptsFromTemplates()
   // Back up pg_hba file if it hasn't been already 
   if(!file_exists($pg_hba_file_orig))
   {
-     exec("cp $pg_hba_file $pg_hba_file_orig >> $logfile" );
+     exec("sudo -u postgres sh -c \"cp $pg_hba_file $pg_hba_file_orig >> $logfile\"" );
   }
 
 }
@@ -420,12 +420,13 @@ function postgresSetup()
       setConfigVariable("%%DBNAME%%", "corina");   
       
       // Set pg_hba.conf file entry
-      $pg_hba_str = "local   all         ".trim($user, "\n\r")."                           md5";
-      $command = "sed '1 i\\# ADDED BY CORINA CONFIG SCRIPT\\n$pg_hba_str\n\n' $pg_hba_file_orig > $pg_hba_file";
+      $pg_hba_str = "local        all      ".trim($user, "\n\r")."                  md5\\n".
+                    "host         all      ".trim($user, "\n\r")."   samenet        md5\\n";
+      $command = "sudo -u postgres sh -c \"sed '1 i\\# ADDED BY CORINA CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
       exec($command, $resp);
 
       // Restart postgres
-      echo "Restarting PostgreSQL...";
+      echo "Restarting PostgreSQL...\n";
       exec("/etc/init.d/postgresql restart\n");
    }
 }  
@@ -523,7 +524,10 @@ function apacheSetup()
 function verifySetup()
 {
   global $wsurl;
-  require_once("/var/www/corina-webservice/config.php");
+  global $systemconfig;
+  global $configfile;
+  
+  require("/var/www/corina-webservice/config.php");
 
   echo "\nVerifying Corina server setup...\n";
   
@@ -552,18 +556,7 @@ function verifySetup()
   {
     printResult(FALSE);
   }
-  
-
-	echo "    - Checking Corina schema can be read:               "; 
-	if(fopen($corinaXSD, "r")) 
-	{ 
-	  printResult(TRUE); 
-	} 
-	else 
-	{ 
-	  printResult(FALSE); 
-	} 
-	 
+  	 
 	echo "    - Checking database credentials file can be read:   "; 
 	if(fopen($cdbCredentialsFile, "r")) 
 	{ 
@@ -573,6 +566,45 @@ function verifySetup()
 	{ 
 	  printResult(FALSE); 
 	} 
+	
+	echo "    - Checking systems configuration file is valid:     "; 
+	if(fopen($systemconfig, "r")) 
+	{ 
+	  // If file is less than 10 lines long it hasn't been filled 
+ 	  $lines = count(file($systemconfig));
+	  if($lines>10)
+	  {
+	  	printResult(TRUE);
+	  }
+	  else
+	  {
+	  	printResult(FALSE);
+	  }
+	} 
+	else 
+	{ 
+	  printResult(FALSE); 
+	} 
+	
+	echo "    - Checking webservice configuration file is valid:  "; 
+	if(fopen($configfile, "r")) 
+	{ 
+	  // If file contains a % then the search/replace hasn't worked
+ 	  $contents = file_get_contents($configfile);
+	  if(strpos($contents, "%")===false)
+	  {
+	  	printResult(TRUE);
+	  }
+	  else
+	  {
+	  	printResult(FALSE);
+	  }
+	} 
+	else 
+	{ 
+	  printResult(FALSE); 
+	} 
+	
 	 
 	echo "    - Checking connection to PostgreSQL database:       "; 
 	$contents = str_replace("\n", "=", file_get_contents($cdbCredentialsFile));

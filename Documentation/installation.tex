@@ -43,10 +43,31 @@ To run the Corina server Virtual Appliance, you will first need to download and 
 
 Once you have VirtualBox installed, you will then need to download the Corina server from the Cornell website \url{http://dendro.cornell.edu/corina}.  This package contains a bare-bones Ubuntu Linux server with everything required to run the Corina server installed and ready to use.  As VirtualBox, the entire Ubuntu operating system and Corina server components are all open source there are no license fees to pay.
 
-Open VirtualBox and go to File, Import Appliance, then follow the wizard selecting the Corina server appliance file when prompted.  Once installed you can run your server by highlighting it in the list and pressing start.  The server will boot up in a window alongside your normal operating system and eventually reach a login prompt.  To save on download size and disk space only the essential packages to make the server run have been installed.  This means there is no graphical interface just a command line.  Hopefully this should not be a problem as once set up, the only interaction needed with the Virtual Appliance will be through the normal Corina desktop application.  If you would prefer to use a graphical interface to the server this can be easily installed.  See chapter \ref{txt:servermaintenance} for further details.
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \begin{center}
+    \includegraphics[width=0.48\textwidth]{Images/serverconfig.png}
+  \end{center}
+  \caption{Screenshot of VirtualBox running the Corina server.  The console contains the results of the tests run at the end of the configuration routine.}
+  \label{fig:serverconfig}
+\end{wrapfigure}
 
-Before you can use your server you will need to know the IP address that the server has been assigned by your network.  To do this login at the prompt with the default admin credentials: user -- corina; password -- w3l0v3tr33s.  Once logged in, type \verb|corina --test| and a basic configuration test will be performed.  If all is well, all tests will be passed and it will tell you the URL of your new server.  You will need to set your Corina client to point at this webservice to use your server.
+\begin{enumerate}
+ \item Open VirtualBox and go to File, Import Appliance
+ \item Press the choose button and locate the virtual appliance file that you downloaded from the website
+ \item Rename the server if you choose, then press the finish button
+ \item Once the server is installed, highlight it in the virtual machine list and press the start button
+ \item The server will boot and eventually present you with a command line login screen.  Log in with the details:
+    \begin{description}
+      \item[Username] : corina
+      \item[Password] : w3l0v3tr33s
+    \end{description}
+ \item Start the server configuration by typing: \code{sudo corina-server}
+ \item Answer the questions and the configuration will finish by testing your new server (see figure \ref{fig:serverconfig}). Note the URL of your new Corina webservice as you will need to enter this when you start your Corina desktop client.  If you need to know the URL at a later date you can run the tests again by typing: \code{corina-server --test}
+\end{enumerate}
 
+
+
+To save on download size and disk space only the essential packages to make the server run have been installed.  This means there is no graphical interface just a command line.  Hopefully this should not be a problem as once set up, the only interaction needed with the Virtual Appliance will be through the normal Corina desktop application.  If you would prefer to use a graphical interface to the server this can be easily installed.  See chapter \ref{txt:servermaintenance} for further details.
 
 
 \subsection{Ubuntu native installation}
