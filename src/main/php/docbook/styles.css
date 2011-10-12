@@ -26,23 +26,11 @@ article, book {
 	margin:.5em;
 }
 title, subtitle {
-        font-family: verdana, arial, helvetica, sans-serif;
+	font-family:sans-serif;
 }
 title {
 	font-weight:bolder;
 	margin-bottom:.5em;
-}
-articleinfo>title{
-    background-color : #FFFFFF;
-    font-family: verdana, arial, helvetica, sans-serif;
-    font-size: 1.7em;
-    font-weight: normal;
-    color: #73736c;
-    display : block;
-    margin-bottom : 20px;
-}
-articleinfo>title:before{
-    content: "Corina Documentation : ";
 }
 
 /*
@@ -79,32 +67,32 @@ section, title, sect1, sect2, sect3, sect4, sect5, bibliodiv {
 }
 
 book>title, article>title {
-	font-size:18pt;
+	font-size:xx-large;
 	text-align:center;
 	border-bottom-style:solid;
 }
 
 appendix>title, bibliography>title, chapter>title, colophon>title, dedication>title, glossary>title, part>title, preface>title {
-	font-size:18pt;
+	font-size:xx-large;
 	text-align:center;
 }
 
 section>title, sect1>title, bibliodiv>title {
-	font-size:15pt;
+	font-size:xx-large;
 }
 
 section>section>title, sect2>title {
-	font-size:14pt;
+	font-size:x-large;
 	margin-left:5%;
 }
 
 section>section>section>title, sect3>title {
-	font-size:12pt;;
+	font-size:large;
 	margin-left:7.5%;
 }
 
 section>section>section>section>title, sect4>title {
-	font-size:12pt;
+	font-size:large;
 	margin-left:10%;
 }
 
@@ -172,7 +160,6 @@ formalpara > title:after {
 
 para, formalpara {
 	text-align: justify;
-        font-size : 11pt;
 }
 
 quote:before {
@@ -335,7 +322,8 @@ guibutton {
 link, ulink, email {
 	/* When ulink contains no body text, the url should be rendered
 	 * at this point in the document.  Can't see how to do this with CSS */
-	color:#b31b1b;
+	color:#0000ff;
+	text-decoration:underline;
 }
 
 /*ulink:after {
@@ -395,6 +383,7 @@ blockquote>para:last-child:after {
 
 itemizedlist {
         padding-left: 1em;
+        list-style-type: disc;
 }
 
 listitem+listitem {
@@ -403,6 +392,7 @@ listitem+listitem {
 
 /* 2 deep nested lists */
 itemizedlist itemizedlist {
+        list-style-type: circle;
 }
 
 /* 3 or more deep nested lists */
@@ -412,6 +402,7 @@ itemizedlist itemizedlist itemizedlist {
 
 
 itemizedlist>listitem {
+	display:list-item;
 }
 
 orderedlist {
@@ -429,6 +420,7 @@ orderedlist>listitem {
  */
 calloutlist {
         padding-left: 1em;
+        list-style-type: disc;
 }
 calloutlist>callout {
 	display:list-item;
@@ -441,9 +433,11 @@ calloutlist>callout {
  * and "bullet" are used in T.D.G. example
  */
 itemizedlist[mark="opencircle"], listitem[override="opencircle"] {
+        list-style-type: circle;
 }
 
 itemizedlist[mark="bullet"], listitem[override="bullet"] {
+        list-style-type: disc;
 }
 
 
@@ -548,7 +542,6 @@ thead > row > entry {
 	 * appear to work in combination with display:table-header-group, as
 	 * defined in tables.css) */
 	border-bottom: 2px solid black;
-        border-top: 2px solid black;
 }
 
 thead {
@@ -557,8 +550,6 @@ thead {
 
 entry {
 	padding: .2em;
-        border-top: 1px solid black;
-        border-bottom: 1px solid black;
 }
 
 

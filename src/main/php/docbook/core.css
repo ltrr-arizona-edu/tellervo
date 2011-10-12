@@ -52,7 +52,7 @@ sect1 {
 	display:block;
 }
 
-appendixinfo, area, areaset, areaspec, bibliographyinfo, 
+appendixinfo, area, areaset, areaspec, articleinfo, bibliographyinfo, 
 blockinfo, bookinfo, chapterinfo, colspec, glossaryinfo, indexinfo, indexterm,
 itermset, modespec, objectinfo, partinfo, prefaceinfo, primary, refentryinfo, 
 referenceinfo, refmeta, refsect1info, refsect2info, refsect3info, 
@@ -67,5 +67,4 @@ synopsis {
 	white-space:pre;
 	font-family:monospace;
 	display:block;
-        outline : dashed 1px;
 }
