@@ -133,7 +133,12 @@ class geometry
 		// Override to v3 if not 2 or 3
 		if ($gmlversion!=2 || $gmlversion!=3) $gmlversion=3;
 		
-		$sql = "select st_asgml(".pg_escape_string($gmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";		
+		// PG v8.x 
+		//$sql = "select st_asgml(".pg_escape_string($gmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+		
+		// PG v9.1 
+		$sql = "select st_asgml(".pg_escape_string($gmlversion).", '".pg_escape_string($this->geometry)."'::geometry, 15, 1) as thevalue";
+				
 		return $this->runSQLCalculation($sql);
 	}
 	
@@ -160,13 +165,25 @@ class geometry
 				{
 					case "POINT":
 						// Actual datatype is point so simple
-						$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+						
+						// PG v8.x
+						//$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+						
+						// PG v9.1
+						$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."'::geometry, 15, 1) as thevalue";
+						
 						$kml .= $this->runSQLCalculation($sql);	
 						$firebug->log($kml, "Output KML for point:");
 						return $kml;
 					case "POLYGON":
 						// Data type is polygon so return centroid
-						$sql = "select st_askml(".pg_escape_string($kmlversion).", st_centroid(st_expand('".pg_escape_string($this->geometry)."'::geometry, 0.1))) as thevalue"; 
+						
+						// PG v8.x 
+						//$sql = "select st_askml(".pg_escape_string($kmlversion).", st_centroid(st_expand('".pg_escape_string($this->geometry)."'::geometry, 0.1))) as thevalue";
+
+						// PG v9.1 
+						$sql = "select st_askml(".pg_escape_string($kmlversion).", st_centroid(st_expand('".pg_escape_string($this->geometry)."'::geometry, 0.1)), 15, 1) as thevalue";
+												
 						$kml .= $this->runSQLCalculation($sql);	
 						$firebug->log($kml, "Output KML for centroid of polygon:");
 						return $kml;						
@@ -179,7 +196,12 @@ class geometry
 						// Actual data type is point so can't return what was requested
 						return null;
 					case "POLYGON":
-						$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+						// PG v8.x 
+						//$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+						
+						// PG v9.1 
+						$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."'::geometry, 15, 1) as thevalue";
+												
 						$kml .= $this->runSQLCalculation($sql);	
 						$firebug->log($kml, "Output KML for polygon:");
 						return $kml;						
@@ -195,7 +217,7 @@ class geometry
 
 		// Actual datatype is point so simple
 		$value = $value/20;
-		$sql = "select st_askml(".pg_escape_string($kmlversion).", ST_Buffer('".pg_escape_string($this->geometry)."', ".$value.")) as thevalue";
+		$sql = "select st_askml(".pg_escape_string($kmlversion).", ST_Buffer('".pg_escape_string($this->geometry)."'::geometry, ".$value.")) as thevalue";
 		$kml .= $this->runSQLCalculation($sql);				
 		$firebug->log($kml, "Output KML for point value:");
 		return $kml;
@@ -255,7 +277,14 @@ class geometry
 		    pg_send_query($dbconn, $sql);
 		    $result = pg_get_result($dbconn); 
             $row = pg_fetch_array($result);		
-            return $row['thevalue'];
+            
+            // Unfortunately the PostGIS GML function includes the srsDimension
+            // attribute that is not present in GML-SF.  Until PostGIS supports
+            // this we'll   
+            $value = $row['thevalue'];
+            $value = str_replace("srsDimension=\"2\"", "", $value);
+       
+            return $value;
 		}
 		else
 		{

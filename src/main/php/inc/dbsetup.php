@@ -26,7 +26,8 @@ $username = $myarray[1];
 $password = $myarray[3];
 
 //Set up database connection
-$conn_string = "host=$hostname port=$pgport dbname=$dbName user=".$username." password=".$password;
+$conn_string = "dbname=$dbName user=".$username." password=".$password;
+//$conn_string = "host=$hostname port=$pgport dbname=$dbName user=".$username." password=".$password;
 $dbconn = pg_connect ($conn_string);
 
 //Date format
