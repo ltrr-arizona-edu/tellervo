@@ -446,14 +446,14 @@ function setDBUser()
   $response = fgets(STDIN); 
   if((trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
   {
-       echo "\nPlease provide details of a user with full access to this database...\n";
+       echo "\nPlease provide details of a PostgreSQL user with full access to this database...\n";
        echo "    Username : ";
        $user = fgets(STDIN); 
        $pwd = promptForPwd(FALSE);
   }
   else
   {
-      echo "\nCreating a database user...\n";
+      echo "\nCreating a PostgreSQL database user. Note this is a PostgreSQL system user not a user for accessing Corina\n";
       echo "(We recommend the username to be corina)\n";
       echo "    Username : ";
       $user = fgets(STDIN); 
@@ -707,7 +707,7 @@ function printComplete($forceSuccess=null)
   if($forceSuccess===TRUE)
   {
   	echo "Configuration was successful.  Your Corina webservice is now available at:\n";
-  	echo "    - $wsurl";
+  	echo "    - $wsurl".webservice.php;
   }
   else if ($forceSucess===FALSE)
   {
