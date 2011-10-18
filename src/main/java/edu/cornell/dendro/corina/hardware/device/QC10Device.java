@@ -116,8 +116,12 @@ public class QC10Device extends GenericASCIIDevice {
 	@Override
 	public void zeroMeasurement()
 	{
-		String strZeroDataCommand = "@3";
-		sendRequest(strZeroDataCommand);
+		// Only zero the measurement if we're not measuring cumulatively
+		if(!this.measureCumulatively)
+		{	
+			String strZeroDataCommand = "@3";
+			sendRequest(strZeroDataCommand);
+		}
 	}
 	
 	@Override

@@ -75,9 +75,9 @@ public abstract class AbstractSerialMeasuringDevice
 	protected UnitMultiplier unitMultiplier = UnitMultiplier.ZERO;
 	protected Boolean measureCumulatively = false;
 	
-	/** The previous measurement value. Used in 
+	/** The previous measurement position. Used in 
 	 *  cumulative measurements */
-	private Integer prevMeasurementValue = 0;
+	private Integer prevMeasurementPosition = 0;
 	
 	/** Class that receives the measurements */
 	private MeasurementReceiver receiver;
@@ -94,9 +94,9 @@ public abstract class AbstractSerialMeasuringDevice
 	 * 
 	 * @param val
 	 */
-	public void setPreviousMeasurement(Integer val)
+	public void setPreviousPosition(Integer val)
 	{
-		this.prevMeasurementValue = val;
+		this.prevMeasurementPosition = val;
 	}
 	
 	/**
@@ -104,9 +104,9 @@ public abstract class AbstractSerialMeasuringDevice
 	 * 
 	 * @return
 	 */
-	public Integer getPreviousMeasurement()
+	public Integer getPreviousPosition()
 	{
-		return this.prevMeasurementValue;
+		return this.prevMeasurementPosition;
 	}
 	
 	/**

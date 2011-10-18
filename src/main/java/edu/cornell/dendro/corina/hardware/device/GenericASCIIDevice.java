@@ -136,15 +136,14 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 		    	if(this.measureCumulatively)
 		    	{
 		    		Integer cumValue = intValue;
-		    		intValue = intValue - getPreviousMeasurement();
-		    		setPreviousMeasurement(cumValue);
+		    		intValue = intValue - getPreviousPosition();
+		    		setPreviousPosition(cumValue);
 		    	}
 		    	
 		    	if(intValue>0)
 		    	{	    	
 			    	// Fire event
 			    	fireSerialSampleEvent(this, SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
-			    	setPreviousMeasurement(intValue);
 		    	}
 		    	else
 		    	{

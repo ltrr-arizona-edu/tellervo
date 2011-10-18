@@ -83,7 +83,9 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	private JCheckBox chkMeasureCumulatively;
 	private JButton btnDefaults;
 	private JPanel panel_1;
-
+	private Boolean okToUseDefaults = false;
+	
+	
 	/**
 	 * Create the panel.
 	 */
@@ -118,7 +120,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     	cboPlatformType.addItemListener(new ItemListener(){
 				@Override
 				public void itemStateChanged(ItemEvent arg0) {
-					setGuiEnabledByPlatformType(true);
+					setGuiEnabledByPlatformType(okToUseDefaults);
 					btnTestConnection.setEnabled(isReadyToTestConnection());
 				}
     	});
@@ -268,9 +270,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			
 		});
     	
-    	setGuiEnabledByPlatformType(true);
+    	setGuiEnabledByPlatformType(false);
+    	okToUseDefaults = true;
+    	
 	}
-
 	
 	public Boolean isReadyToTestConnection()
 	{

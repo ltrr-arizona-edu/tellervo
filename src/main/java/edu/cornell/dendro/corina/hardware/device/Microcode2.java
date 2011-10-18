@@ -18,6 +18,7 @@ public class Microcode2 extends GenericASCIIDevice {
 		flowControl = FlowControl.NONE;
 		lineFeed = LineFeed.CRLF;
 		unitMultiplier = UnitMultiplier.TIMES_1000;
+		measureCumulatively = true;
 	}
 	
 	@Override
