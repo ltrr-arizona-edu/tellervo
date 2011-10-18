@@ -54,7 +54,12 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 				measure_one.play();				
 		}
 		
-		lastMeasurement.setText("[Last measurement was " + value +"\u03bc"+"m in year " + y.toString() + "]");		
+		txtLastValue.setText(value+" "+micron());
+		
+		if(super.dev.isMeasureCumulativelyConfigurable())
+		{
+			this.txtLastPosition.setText(super.dev.getPreviousPosition()+" "+micron());
+		}
 	}
 
 

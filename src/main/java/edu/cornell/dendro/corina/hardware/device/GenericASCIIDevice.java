@@ -157,8 +157,12 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 				fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error reading from serial port");
 
 			}   	
-			    	
-			zeroMeasurement();
+			 
+			// Only zero the measurement if we're not measuring cumulatively
+			if(!measureCumulatively)
+			{
+				zeroMeasurement();
+			}
 	
 		}
 	}

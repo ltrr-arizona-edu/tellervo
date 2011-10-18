@@ -60,18 +60,21 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	protected JButton btnReset;
 	protected JButton btnRecord;
 	protected JButton btnQuit;
-	protected JLabel txtCurrentValue;
-	protected JLabel lastMeasurement;
+	protected JLabel txtCurrentPosition;
+	protected JLabel lblLastPosition;
 	protected AbstractSerialMeasuringDevice dev;
 	private JPanel panel;
+	private JLabel lblLastValue;
+	protected JLabel txtLastValue;
+	protected JLabel txtLastPosition;
+	private JLabel lblCurrentPosition;
 	
 	public MeasurePanel(final AbstractSerialMeasuringDevice device) {
 		setBorder(null);
 			
 		dev = device;
-
 		
-		setLayout(new MigLayout("insets 0", "[grow][87.00,grow][146.00px][20.00]", "[][]"));
+		setLayout(new MigLayout("insets 0", "[150px,grow][150,grow][150.00px,grow]", "[][][][]"));
 		
 		measure_one = SoundUtil.getMeasureSound();
 		measure_dec = SoundUtil.getMeasureDecadeSound();
@@ -81,7 +84,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 
 		
 		panel = new JPanel();
-		add(panel, "cell 0 0,grow");
+		add(panel, "cell 0 0 3 1,grow");
 		
 		btnQuit = new JButton(I18n.getText("menus.edit.stop_measuring"));
 		btnQuit.setIcon(Builder.getIcon("stop.png", 22));
@@ -110,19 +113,43 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 						
 					}
 				});
-				
-		txtCurrentValue = new JLabel();
-		txtCurrentValue.setFont(new Font("Synchro LET", Font.BOLD, 20));
-		txtCurrentValue.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtCurrentValue.setText("-");
-		txtCurrentValue.setBackground(Color.WHITE);
-		txtCurrentValue.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		
-		add(txtCurrentValue, "cell 2 0,growx");
+		txtLastPosition = new JLabel();
+		txtLastPosition.setFont(new Font("Synchro LET", Font.BOLD, 20));
+		txtLastPosition.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtLastPosition.setText("-");
+		txtLastPosition.setBackground(Color.WHITE);
+		txtLastPosition.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		add(txtLastPosition, "cell 0 1,growx");
+		
+		txtLastValue = new JLabel();	
+		txtLastValue.setFont(new Font("Synchro LET", Font.BOLD, 20));
+		txtLastValue.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtLastValue.setText("-");
+		txtLastValue.setBackground(Color.WHITE);
+		txtLastValue.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		add(txtLastValue, "cell 1 1,growx");
+		
+		txtCurrentPosition = new JLabel();
+		txtCurrentPosition.setFont(new Font("Synchro LET", Font.BOLD, 20));
+		txtCurrentPosition.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtCurrentPosition.setText("-");
+		txtCurrentPosition.setBackground(Color.WHITE);
+		txtCurrentPosition.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		add(txtCurrentPosition, "cell 2 1,growx");
 		
 		
-		lastMeasurement = new JLabel("[Last measurement: ]");
-		add(lastMeasurement, "cell 0 1 3 1,alignx right,aligny center");
+		lblLastPosition = new JLabel("Last position");
+		lblLastPosition.setFont(new Font("Dialog", Font.BOLD, 8));
+		add(lblLastPosition, "cell 0 2,alignx right,aligny center");
+		
+		lblLastValue = new JLabel("Last measurement");
+		lblLastValue.setFont(new Font("Dialog", Font.BOLD, 8));
+		add(lblLastValue, "cell 1 2,alignx right");
+		
+		lblCurrentPosition = new JLabel("Current position:");
+		lblCurrentPosition.setFont(new Font("Dialog", Font.BOLD, 8));
+		add(lblCurrentPosition, "cell 2 2,alignx right");
 				
 				
 
@@ -140,18 +167,25 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 			// Show/hide data request buttons depending on platform abilities
 			btnRecord.setVisible(dev.isRequestDataCapable());
 			btnReset.setVisible(dev.isRequestDataCapable());
-			txtCurrentValue.setVisible(dev.isCurrentValueCapable());
+			txtCurrentPosition.setVisible(dev.isCurrentValueCapable());
 		}
 		else
 		{
 			btnRecord.setVisible(false);
 			btnReset.setVisible(false);
-			txtCurrentValue.setVisible(false);
+			txtCurrentPosition.setVisible(false);
 		}
+		
+		// Hide any displays that aren't supported
+		txtCurrentPosition.setVisible(device.isCurrentValueCapable());
+		lblCurrentPosition.setVisible(device.isCurrentValueCapable());
+		txtLastPosition.setVisible(device.getMeasureCumulatively());
+		lblLastPosition.setVisible(device.getMeasureCumulatively());
+		
 	}
 		
 	public void receiverUpdateStatus(String status) {
-		lastMeasurement.setText(status);
+		lblLastPosition.setText(status);
 	}
 	
 	protected Boolean checkNewValueIsValid(Integer value)
@@ -162,7 +196,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 			if(measure_error != null)
 				measure_error.play();
 			
-			lastMeasurement.setText("Error: measurement was zero");
+			this.txtLastValue.setText("Err: 0 "+micron());
 
 			return false;
 		}
@@ -174,7 +208,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 			
 			Alert.message("Warning", "This measurement was over 5cm so it will be disregarded!");
 			
-			lastMeasurement.setText("Error: measurement was too big: " + value +"\u03bc"+"m");
+			lblLastPosition.setText("Error: too big: " + value +" "+micron());
 
 			return false;
 			
@@ -187,7 +221,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 			
 			Alert.message("Warning", "This measurement was negative so it will be disregarded!");
 			
-			lastMeasurement.setText("Error: measurement was negative: " + value +"\u03bc"+"m");
+			lblLastPosition.setText("Error: negative: " + value +" " + micron());
 
 			return false;
 			
@@ -212,24 +246,29 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 			displayUnits = NormalTridasUnit.fromValue(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.value().toString()));
 		} catch (Exception e)
 		{
-			log.error("unable to determine preferred units");	
+			//log.error("unable to determine preferred units");	
 		}
 		
 		if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
 		{
-			txtCurrentValue.setText(String.valueOf(value)+" \u03bc"+"m");	
+			txtCurrentPosition.setText(String.valueOf(value)+" "+micron());	
 		}
 		else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 		{
-			txtCurrentValue.setText(String.valueOf(value/10));	
+			txtCurrentPosition.setText(String.valueOf(value/10));	
 		}
 		else
 		{
-			txtCurrentValue.setText(String.valueOf(value));	
+			txtCurrentPosition.setText(String.valueOf(value));	
 
 		}
 	}
 	
+	
+	public static String micron()
+	{
+		return "\u03bc"+"m";
+	}
 	public void setDefaultFocus()
 	{
 		btnRecord.requestFocusInWindow();

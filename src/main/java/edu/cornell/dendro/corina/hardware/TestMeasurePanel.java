@@ -69,7 +69,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	public void startCountdown()
 	{
 		java.util.Timer timer = new java.util.Timer();
-		task = new TimeoutTask(infoLabel, this.lastMeasurement, this);
+		task = new TimeoutTask(infoLabel, this.txtLastValue, this);
 		timer.scheduleAtFixedRate(task, 0, 1000);
 		
 		log.setText(log.getText()+"********************************\n");
@@ -94,7 +94,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 			task.cancel();
 		}
 		
-		lastMeasurement.setText("");
+		txtLastValue.setText("");
 	}
 	
 
@@ -143,7 +143,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		public void run() {
 			if(countdown==1)
 			{
-				lastMeasurement.setText("");
+				txtLastValue.setText("");
 				infoLabel.setText(I18n.getText("preferences.hardware.nodatareceived"));
 				this.cancel();
 				//parent.setVisible(false);
