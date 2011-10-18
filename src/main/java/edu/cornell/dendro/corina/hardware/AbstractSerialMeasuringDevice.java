@@ -228,11 +228,52 @@ public abstract class AbstractSerialMeasuringDevice
 		
 	}
 	
-	
-	public void setPortParamsFromPrefs()
+	/**
+	 * Set the port parameters from the preferences, falling back to defaults for the device if 
+	 * no preference is available
+	 * @throws UnsupportedPortParameterException 
+	 * @throws IOException 
+	 */
+	public void setPortParamsFromPrefs() throws UnsupportedPortParameterException, IOException
 	{
-		String baud = App.prefs.getPref(PrefKey.SERIAL_BAUD, getBaudRate().toString());
-		this.setBaudRate(BaudRate.valueOf(baud));
+		close();
+		// Port
+		
+		
+	    // Baud rate
+		try {
+			BaudRate br = BaudRate.fromInt(Integer.parseInt(App.prefs.getPref(PrefKey.SERIAL_BAUD, getBaudRate().toString())));
+			setBaudRate(br);
+		} catch (Exception e) {
+			throw new UnsupportedPortParameterException("Baud", "?");
+		} 
+		
+		// Parity		
+		PortParity pp = PortParity.fromString(App.prefs.getPref(PrefKey.SERIAL_PARITY, getParity().toString()));
+		setParity(pp);
+
+		// Stop bits
+		StopBits sb = StopBits.fromString(App.prefs.getPref(PrefKey.SERIAL_STOPBITS, getStopBits().toString()));
+		setStopBits(sb);
+
+		// Data bits
+		DataBits db = DataBits.fromString(App.prefs.getPref(PrefKey.SERIAL_DATABITS, getDataBits().toString()));
+		setDataBits(db);
+		
+		// Flow control
+		FlowControl fc = FlowControl.fromString(App.prefs.getPref(PrefKey.SERIAL_FLOWCONTROL, getFlowControl().toString()));
+		setFlowControl(fc);
+		
+		// Line feed
+		LineFeed lf = LineFeed.fromString(App.prefs.getPref(PrefKey.SERIAL_LINEFEED, getLineFeed().toString()));
+		setLineFeed(lf);		
+		
+		// Cumulative
+		Boolean cum = App.prefs.getBooleanPref(PrefKey.SERIAL_MEASURE_CUMULATIVELY, this.getMeasureCumulatively());
+		setMeasureCumulatively(cum);
+		
+		openPort();
+		
 	}
 	
 	/**
@@ -542,14 +583,14 @@ public abstract class AbstractSerialMeasuringDevice
 	 * @param dataBits
 	 */
 	protected void setDataBits(DataBits dataBits) {
-		close();
+		//close();
 		this.dataBits = dataBits;
-		try {
+		/*try {
 			openPort();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	/**
@@ -572,14 +613,26 @@ public abstract class AbstractSerialMeasuringDevice
 	 * @param parity
 	 */
 	protected void setParity(PortParity parity) {
-		close();
+		//close();
 		this.parity = parity;
-		try {
+		/*try {
 			this.openPort(port.getName());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+	}
+	
+	protected void setLineFeed(LineFeed lf){
+		//close();
+		this.lineFeed = lf;
+		/*try{
+			this.openPort(port.getName());
+		}  catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
 	}
 
 	/**
@@ -587,14 +640,14 @@ public abstract class AbstractSerialMeasuringDevice
 	 * @param flowControl
 	 */
 	protected void setFlowControl(FlowControl flowControl) {
-		close();
+		//close();
 		this.flowControl = flowControl;
-		try {
+		/*try {
 			this.openPort(port.getName());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	/**
@@ -809,7 +862,16 @@ public abstract class AbstractSerialMeasuringDevice
 			}
 			
 			return arr.toArray(new String[0]);
+		}
+		
+		public static PortParity fromString(String pp) throws UnsupportedPortParameterException
+		{
+			for(PortParity val : PortParity.values())
+			{
+				if(val.toString().equals(pp)) return val;
+			}
 			
+			throw new UnsupportedPortParameterException("Parity", pp);
 		}
 	}
 	
@@ -829,6 +891,17 @@ public abstract class AbstractSerialMeasuringDevice
 		{
 			br = n; 
 		}
+		
+		public static LineFeed fromString(String pp) throws UnsupportedPortParameterException
+		{
+			for(LineFeed val : LineFeed.values())
+			{
+				if(val.toString().equals(pp)) return val;
+			}
+			
+			throw new UnsupportedPortParameterException("LineFeed", pp);
+		}
+		
 		public int toInt()
 		{
 			return br;
@@ -881,7 +954,7 @@ public abstract class AbstractSerialMeasuringDevice
 
 		private int br;
 		
-		private BaudRate(int n)
+		BaudRate(int n)
 		{
 			br = n; 
 		}
@@ -904,6 +977,19 @@ public abstract class AbstractSerialMeasuringDevice
 			}
 			
 			return arr.toArray(new String[0]);
+		}
+		
+		public static BaudRate fromInt(int i) throws Exception
+		{
+			
+			for(BaudRate val : BaudRate.values())
+			{
+				if (i == val.br)
+				{
+					return val;
+				}
+			}
+			throw new UnsupportedPortParameterException("Baud", i+"");
 		}
 
 	}
@@ -949,6 +1035,16 @@ public abstract class AbstractSerialMeasuringDevice
 			}
 			
 			return arr.toArray(new String[0]);
+		}
+		
+		public static StopBits fromString(String st) throws UnsupportedPortParameterException
+		{
+			for(StopBits val : StopBits.values())
+			{
+				if(st.equals(val.toString())) return val;
+			}
+			
+			throw new UnsupportedPortParameterException("Stopbits", st);
 		}
 	}
 	
@@ -1025,6 +1121,17 @@ public abstract class AbstractSerialMeasuringDevice
 		{
 			br = n; 
 		}
+		
+		public static FlowControl fromString(String pp) throws UnsupportedPortParameterException
+		{
+			for(FlowControl val : FlowControl.values())
+			{
+				if(val.toString().equals(pp)) return val;
+			}
+			
+			throw new UnsupportedPortParameterException("FlowControl", pp);
+		}
+		
 		public int toInt()
 		{
 			return br;
@@ -1061,6 +1168,20 @@ public abstract class AbstractSerialMeasuringDevice
 		{
 			br = n; 
 		}
+		
+		public static DataBits fromString(String st) throws UnsupportedPortParameterException
+		{
+			
+			for(DataBits val : DataBits.values())
+			{
+				if (st.equals(val.toString()))
+				{
+					return val;
+				}
+			}
+			throw new UnsupportedPortParameterException("DataBits", st);
+		}
+		
 		public int toInt()
 		{
 			return br;

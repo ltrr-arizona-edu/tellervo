@@ -47,6 +47,7 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.FlowCont
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.LineFeed;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.PortParity;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits;
+import edu.cornell.dendro.corina.hardware.UnsupportedPortParameterException;
 import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
@@ -97,39 +98,52 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Measuring Platform", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panel, "cell 0 0,grow");
-		panel.setLayout(new MigLayout("", "[][grow][][grow]", "[][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[][grow][][grow]", "[][15:15.00:15.00][][][][][]"));
 		
 		lblPlatformType = new JLabel("Type:");
 		panel.add(lblPlatformType, "cell 0 0,alignx trailing");	
+		
+		panel_1 = new JPanel();
+		panel.add(panel_1, "cell 1 0 3 1,grow");
+		panel_1.setLayout(new MigLayout("", "[32px][94px][147px,grow,fill]", "[25px]"));
 		cboPlatformType = new JComboBox();
-		panel.add(cboPlatformType, "cell 1 0 2 1,alignx left");
-    	
+		panel_1.add(cboPlatformType, "cell 0 0,alignx left,aligny top");
+		
 		// Set up platform types
-    	new FormatWrapper(cboPlatformType, 
-    			PrefKey.SERIAL_DEVICE, 
-    			App.prefs.getPref(PrefKey.SERIAL_DEVICE, "[none]"), 
-    			SerialDeviceSelector.getAvailableDevicesNames());
-	
+		new FormatWrapper(cboPlatformType, 
+				PrefKey.SERIAL_DEVICE, 
+				App.prefs.getPref(PrefKey.SERIAL_DEVICE, "[none]"), 
+				SerialDeviceSelector.getAvailableDevicesNames());
+		
     	cboPlatformType.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				setGuiEnabledByPlatformType(true);
-				btnTestConnection.setEnabled(isReadyToTestConnection());
-			}
+				@Override
+				public void itemStateChanged(ItemEvent arg0) {
+					setGuiEnabledByPlatformType(true);
+					btnTestConnection.setEnabled(isReadyToTestConnection());
+				}
     	});
     	
+    	btnDefaults = new JButton("Default port settings");
+    	panel_1.add(btnDefaults, "cell 1 0,alignx left,aligny top");
+    	btnDefaults.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				setGuiEnabledByPlatformType(true);
+			}
+    	});
 		
 		lblPort = new JLabel("Port:");
-		panel.add(lblPort, "cell 0 1,alignx trailing");
+		panel.add(lblPort, "cell 0 2,alignx trailing");
 		cboPort = new JComboBox();
-		panel.add(cboPort, "cell 1 1,alignx left");
+		panel.add(cboPort, "cell 1 2,alignx left");
 		setupCOMPort();
 		
 		lblDataBits = new JLabel("Data bits / Word length:");
-		panel.add(lblDataBits, "cell 2 1,alignx trailing");
+		panel.add(lblDataBits, "cell 2 2,alignx trailing");
 		cboDatabits = new JComboBox();
 		cboDatabits.setModel(new DefaultComboBoxModel(new String[] {}));
-		panel.add(cboDatabits, "cell 3 1,alignx left");
+		panel.add(cboDatabits, "cell 3 2,alignx left");
 		
 		new FormatWrapper(cboDatabits, 
 				PrefKey.SERIAL_DATABITS, 
@@ -137,10 +151,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				DataBits.allValuesAsArray());
 		
 		lblBaud = new JLabel("Baud:");
-		panel.add(lblBaud, "cell 0 2,alignx trailing");
+		panel.add(lblBaud, "cell 0 3,alignx trailing");
 		cboBaud = new JComboBox();
 		cboBaud.setModel(new DefaultComboBoxModel(new String[] {}));
-		panel.add(cboBaud, "cell 1 2,alignx left");
+		panel.add(cboBaud, "cell 1 3,alignx left");
 		
 		new FormatWrapper(cboBaud, 
     			PrefKey.SERIAL_BAUD, 
@@ -149,10 +163,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 
 		
 		lblFlowControl = new JLabel("Handshaking / Flow control:");
-		panel.add(lblFlowControl, "cell 2 2,alignx trailing");
+		panel.add(lblFlowControl, "cell 2 3,alignx trailing");
 		cboFlowControl = new JComboBox();
 		cboFlowControl.setModel(new DefaultComboBoxModel(new String[] {}));
-		panel.add(cboFlowControl, "cell 3 2,alignx left");
+		panel.add(cboFlowControl, "cell 3 3,alignx left");
 		
 		new FormatWrapper(cboFlowControl, 
 				PrefKey.SERIAL_FLOWCONTROL, 
@@ -160,10 +174,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				FlowControl.allValuesAsArray());
 		
 		lblParity = new JLabel("Parity:");
-		panel.add(lblParity, "cell 0 3,alignx trailing");
+		panel.add(lblParity, "cell 0 4,alignx trailing");
 		cboParity = new JComboBox();
 		cboParity.setModel(new DefaultComboBoxModel(new String[] {}));
-		panel.add(cboParity, "cell 1 3,alignx left");
+		panel.add(cboParity, "cell 1 4,alignx left");
 		
     	new FormatWrapper(cboParity, 
     			PrefKey.SERIAL_PARITY, 
@@ -171,9 +185,9 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     			PortParity.allValuesAsArray());
 		
 		lblLineFeed = new JLabel("Line feed:");
-		panel.add(lblLineFeed, "cell 2 3,alignx trailing");
+		panel.add(lblLineFeed, "cell 2 4,alignx trailing");
 		cboLineFeed = new JComboBox();
-		panel.add(cboLineFeed, "cell 3 3,alignx left");
+		panel.add(cboLineFeed, "cell 3 4,alignx left");
 		
 		new FormatWrapper(cboLineFeed, 
 				PrefKey.SERIAL_LINEFEED, 
@@ -181,10 +195,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				LineFeed.allValuesAsArray());
 		
     	lblStopBits = new JLabel("Stop bits:");
-    	panel.add(lblStopBits, "cell 0 4,alignx trailing");
+    	panel.add(lblStopBits, "cell 0 5,alignx trailing");
     	cboStopbits = new JComboBox();
     	cboStopbits.setModel(new DefaultComboBoxModel(new String[] {}));
-    	panel.add(cboStopbits, "cell 1 4,alignx left");	
+    	panel.add(cboStopbits, "cell 1 5,alignx left");	
     	
     	new FormatWrapper(cboStopbits, 
     			PrefKey.SERIAL_STOPBITS, 
@@ -201,24 +215,17 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		new CheckBoxWrapper(chkDisableBarcodes, "corina.barcodes.disable", false );
 		
 		lblMeasureCumulatively = new JLabel("Measure cumulatively:");
-		panel.add(lblMeasureCumulatively, "cell 2 4,alignx trailing");
+		panel.add(lblMeasureCumulatively, "cell 2 5,alignx trailing");
 		
 		chkMeasureCumulatively = new JCheckBox("");
-		panel.add(chkMeasureCumulatively, "cell 3 4");
+		panel.add(chkMeasureCumulatively, "cell 3 5");
 		new CheckBoxWrapper(chkMeasureCumulatively, PrefKey.SERIAL_MEASURE_CUMULATIVELY, false);
-		
-		panel_1 = new JPanel();
-		panel.add(panel_1, "cell 0 5 4 1,alignx right,growy");
-		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
-		btnDefaults = new JButton("Defaults");
-		panel_1.add(btnDefaults);
 		
 		
 		btnTestConnection = new JButton("Test connection");
-		panel_1.add(btnTestConnection);
-    	btnTestConnection.setEnabled(false);
-    	btnTestConnection.addActionListener(new ActionListener(){
+		panel.add(btnTestConnection, "cell 2 6 2 1,alignx right");
+		btnTestConnection.setEnabled(false);
+		btnTestConnection.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -244,13 +251,22 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
-						
-				PlatformTestDialog testConnDialog = new PlatformTestDialog(device);
 				
-				testConnDialog.setVisible(true);
+				try {
+					device.setPortParamsFromPrefs();
+					PlatformTestDialog testConnDialog = new PlatformTestDialog(device);
+					testConnDialog.setVisible(true);
+				} catch (UnsupportedPortParameterException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			}
-    		
-    	});
+			
+		});
     	
     	setGuiEnabledByPlatformType(true);
 	}
