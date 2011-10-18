@@ -43,6 +43,7 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 		flowControl = FlowControl.NONE;
 		lineFeed = LineFeed.CRLF;
 		unitMultiplier = UnitMultiplier.TIMES_1000;
+		measureCumulatively = false;
 	}
 	
 	@Override
@@ -131,10 +132,19 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 		    	Float fltValue = new Float(strReadBuffer) * unitMultiplier.toFloat();
 		    	Integer intValue = Math.round(fltValue);
 		    	
+		    	// Do calculation if working in cumulative mode
+		    	if(this.measureCumulatively)
+		    	{
+		    		Integer cumValue = intValue;
+		    		intValue = intValue - getPreviousMeasurement();
+		    		setPreviousMeasurement(cumValue);
+		    	}
+		    	
 		    	if(intValue>0)
 		    	{	    	
 			    	// Fire event
 			    	fireSerialSampleEvent(this, SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+			    	setPreviousMeasurement(intValue);
 		    	}
 		    	else
 		    	{
@@ -213,6 +223,11 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 
 	@Override
 	public Boolean isUnitsEditable() {
+		return true;
+	}
+
+	@Override
+	public Boolean isMeasureCumulativelyConfigurable() {
 		return true;
 	}
 

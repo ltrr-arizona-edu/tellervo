@@ -67,7 +67,7 @@ public class ListComboBoxRenderer extends AbstractComboBoxRenderer {
 
 	@Override
 	public ComboBoxItemRenderer getRenderer() {
-		return renderer;
+		return (ComboBoxItemRenderer) renderer;
 	}
 
 	@Override

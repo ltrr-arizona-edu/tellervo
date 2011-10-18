@@ -33,12 +33,12 @@ import javax.swing.JList;
  * @author Lucas Madar
  *
  */
-public class EnumComboBoxItemRenderer extends DefaultListCellRenderer implements ComboBoxItemRenderer {
+public class EnumComboBoxItemRenderer extends DefaultListCellRenderer {
 	private static final long serialVersionUID = 1L;
 
 	public EnumComboBoxItemRenderer() {
-		setHorizontalAlignment(LEFT);
-		setVerticalAlignment(CENTER);
+		setHorizontalAlignment(DefaultListCellRenderer.LEFT);
+		setVerticalAlignment(DefaultListCellRenderer.CENTER);
 	}
 
 	/* (non-Javadoc)

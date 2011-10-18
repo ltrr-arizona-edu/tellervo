@@ -277,4 +277,9 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	public Boolean isUnitsEditable() {
 		return false;
 	}
+
+	@Override
+	public Boolean isMeasureCumulativelyConfigurable() {
+		return false;
+	}
 }

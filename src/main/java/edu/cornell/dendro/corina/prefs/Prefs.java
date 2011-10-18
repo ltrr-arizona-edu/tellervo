@@ -120,6 +120,7 @@ public class Prefs extends AbstractSubsystem {
 		SERIAL_PARITY("corina.port.parity"),
 		SERIAL_LINEFEED("corina.port.linefeed"),
 		SERIAL_STOPBITS("corina.port.stopbits"),
+		SERIAL_MEASURE_CUMULATIVELY("corina.serial.measurecumulatively"),
 		
 		STATS_FORMAT_TSCORE("corina.cross.tscore.format"),
 		STATS_FORMAT_RVALUE("corina.cross.rvalue.format"),

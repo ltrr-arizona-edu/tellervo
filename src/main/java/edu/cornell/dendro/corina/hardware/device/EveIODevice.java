@@ -250,4 +250,9 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 	public Boolean isFlowControlEditable() {
 		return false;
 	}
+
+	@Override
+	public Boolean isMeasureCumulativelyConfigurable() {
+		return false;
+	}
 }

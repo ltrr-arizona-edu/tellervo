@@ -34,9 +34,12 @@ import javax.swing.border.BevelBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.schema.NormalTridasUnit;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.gis.ITRDBMarkerLayerBuilder;
 import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -47,7 +50,8 @@ import edu.cornell.dendro.corina.util.SoundUtil;
 public abstract class MeasurePanel extends JPanel implements MeasurementReceiver {
 
 	private static final long serialVersionUID = 1L;
-	
+	private final static Logger log = LoggerFactory.getLogger(MeasurePanel.class);
+
 	/* audioclips to play... */
 	protected AudioClip measure_one;
 	protected AudioClip measure_dec;
@@ -201,7 +205,15 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	@Override
 	public void receiverUpdateCurrentValue(Integer value) {
 		
-		NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+		//log.debug("New value received from platform : "+value);
+		NormalTridasUnit displayUnits = NormalTridasUnit.MICROMETRES;
+		
+		try{
+			displayUnits = NormalTridasUnit.fromValue(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.value().toString()));
+		} catch (Exception e)
+		{
+			log.error("unable to determine preferred units");	
+		}
 		
 		if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
 		{
@@ -210,6 +222,11 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 		{
 			txtCurrentValue.setText(String.valueOf(value/10));	
+		}
+		else
+		{
+			txtCurrentValue.setText(String.valueOf(value));	
+
 		}
 	}
 	

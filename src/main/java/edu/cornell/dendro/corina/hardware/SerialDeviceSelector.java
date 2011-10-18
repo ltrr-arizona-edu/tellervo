@@ -35,6 +35,7 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits
 import edu.cornell.dendro.corina.hardware.device.EveIODevice;
 import edu.cornell.dendro.corina.hardware.device.GenericASCIIDevice;
 import edu.cornell.dendro.corina.hardware.device.LintabDevice;
+import edu.cornell.dendro.corina.hardware.device.Microcode2;
 import edu.cornell.dendro.corina.hardware.device.QC10Device;
 import edu.cornell.dendro.corina.hardware.device.QC1100;
 import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
@@ -55,6 +56,7 @@ public class SerialDeviceSelector {
 		registerDevice(QC10Device.class);
 		registerDevice(GenericASCIIDevice.class);
 		registerDevice(QC1100.class);
+		registerDevice(Microcode2.class);
 	}
 	
 	/**

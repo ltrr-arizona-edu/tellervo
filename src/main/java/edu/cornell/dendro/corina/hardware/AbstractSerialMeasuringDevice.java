@@ -20,6 +20,8 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.hardware;
 
+import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import gnu.io.CommPort;
@@ -71,6 +73,11 @@ public abstract class AbstractSerialMeasuringDevice
 	protected LineFeed lineFeed = LineFeed.NONE;
 	protected FlowControl flowControl = FlowControl.NONE;
 	protected UnitMultiplier unitMultiplier = UnitMultiplier.ZERO;
+	protected Boolean measureCumulatively = false;
+	
+	/** The previous measurement value. Used in 
+	 *  cumulative measurements */
+	private Integer prevMeasurementValue = 0;
 	
 	/** Class that receives the measurements */
 	private MeasurementReceiver receiver;
@@ -81,6 +88,26 @@ public abstract class AbstractSerialMeasuringDevice
 	/** A thread used to do initialization, if necessary */
 	private Thread initializeThread;
 	
+	/**
+	 * Set the previous measurement value.  This is
+	 * used when measuring in cumulatively mode
+	 * 
+	 * @param val
+	 */
+	public void setPreviousMeasurement(Integer val)
+	{
+		this.prevMeasurementValue = val;
+	}
+	
+	/**
+	 * Get the previous measurement value 
+	 * 
+	 * @return
+	 */
+	public Integer getPreviousMeasurement()
+	{
+		return this.prevMeasurementValue;
+	}
 	
 	/**
 	 * Create a new serial measuring device, but do not open. Typically for 
@@ -199,6 +226,13 @@ public abstract class AbstractSerialMeasuringDevice
 		lineFeed = LineFeed.NONE;
 		unitMultiplier = UnitMultiplier.ZERO;
 		
+	}
+	
+	
+	public void setPortParamsFromPrefs()
+	{
+		String baud = App.prefs.getPref(PrefKey.SERIAL_BAUD, getBaudRate().toString());
+		this.setBaudRate(BaudRate.valueOf(baud));
 	}
 	
 	/**
@@ -585,6 +619,34 @@ public abstract class AbstractSerialMeasuringDevice
 	 * @return
 	 */
 	public abstract Boolean isRequestDataCapable();
+	
+	/**
+	 * Can this hardware be configured to measure cumulatively
+	 * or not
+	 * 
+	 * @return
+	 */
+	public abstract Boolean isMeasureCumulativelyConfigurable();
+	
+	
+	/**
+	 * Set whether this hardware should read cumulatively or not
+	 * 
+	 * @param b
+	 */
+	public void setMeasureCumulatively(Boolean b)
+	{
+		this.measureCumulatively = b;
+	}
+	
+	/**
+	 * Get whether this platform is measuring cumulatively or not 
+	 * @return
+	 */
+	public Boolean getMeasureCumulatively()
+	{
+		return measureCumulatively;
+	}
 	
 	/**
 	 * Does the platform provide current measurement values?  
@@ -1021,6 +1083,7 @@ public abstract class AbstractSerialMeasuringDevice
 		}
 		
 	}
+	
 	
 
 	

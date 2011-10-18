@@ -53,6 +53,7 @@ import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ArrayListModel;
+import java.awt.FlowLayout;
 
 @SuppressWarnings("serial")
 public class HardwarePrefsPanel extends AbstractPreferencesPanel{
@@ -77,6 +78,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	private JButton btnTestConnection;
 	private JLabel lblLineFeed;
 	private JComboBox cboLineFeed;
+	private JLabel lblMeasureCumulatively;
+	private JCheckBox chkMeasureCumulatively;
+	private JButton btnDefaults;
+	private JPanel panel_1;
 
 	/**
 	 * Create the panel.
@@ -92,7 +97,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Measuring Platform", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panel, "cell 0 0,grow");
-		panel.setLayout(new MigLayout("", "[][grow][][grow]", "[][][][][33.00][][]"));
+		panel.setLayout(new MigLayout("", "[][grow][][grow]", "[][][][][][][]"));
 		
 		lblPlatformType = new JLabel("Type:");
 		panel.add(lblPlatformType, "cell 0 0,alignx trailing");	
@@ -108,7 +113,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     	cboPlatformType.addItemListener(new ItemListener(){
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
-				setGuiEnabledByPlatformType();
+				setGuiEnabledByPlatformType(true);
 				btnTestConnection.setEnabled(isReadyToTestConnection());
 			}
     	});
@@ -195,8 +200,23 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		panelBarcode.add(chkDisableBarcodes, "cell 0 0");
 		new CheckBoxWrapper(chkDisableBarcodes, "corina.barcodes.disable", false );
 		
+		lblMeasureCumulatively = new JLabel("Measure cumulatively:");
+		panel.add(lblMeasureCumulatively, "cell 2 4,alignx trailing");
+		
+		chkMeasureCumulatively = new JCheckBox("");
+		panel.add(chkMeasureCumulatively, "cell 3 4");
+		new CheckBoxWrapper(chkMeasureCumulatively, PrefKey.SERIAL_MEASURE_CUMULATIVELY, false);
+		
+		panel_1 = new JPanel();
+		panel.add(panel_1, "cell 0 5 4 1,alignx right,growy");
+		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		btnDefaults = new JButton("Defaults");
+		panel_1.add(btnDefaults);
+		
+		
 		btnTestConnection = new JButton("Test connection");
-    	panel.add(btnTestConnection, "cell 0 5 4 1,alignx right");
+		panel_1.add(btnTestConnection);
     	btnTestConnection.setEnabled(false);
     	btnTestConnection.addActionListener(new ActionListener(){
 
@@ -224,7 +244,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
-				
+						
 				PlatformTestDialog testConnDialog = new PlatformTestDialog(device);
 				
 				testConnDialog.setVisible(true);
@@ -232,7 +252,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     		
     	});
     	
-    	setGuiEnabledByPlatformType();
+    	setGuiEnabledByPlatformType(true);
 	}
 
 	
@@ -305,7 +325,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	 * Enabled/Disable form items depending on the device selected.  Also
 	 * set the selected values to the default for that platform.
 	 */
-	private void setGuiEnabledByPlatformType()
+	private void setGuiEnabledByPlatformType(Boolean useDefaults)
 	{
 		AbstractSerialMeasuringDevice device;
 		
@@ -328,22 +348,35 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		btnTestConnection.setEnabled(true);
 		
 		cboBaud.setEnabled(device.isBaudEditable());
-		cboBaud.setSelectedItem(device.getBaudRate().toString());
-
 		cboParity.setEnabled(device.isParityEditable());
-		cboParity.setSelectedItem(device.getParity().toString());
-		
 		cboFlowControl.setEnabled(device.isFlowControlEditable());
-		cboFlowControl.setSelectedItem(device.getFlowControl().toString());
-
 		cboDatabits.setEnabled(device.isDatabitsEditable());
-		cboDatabits.setSelectedItem(device.getDataBits().toString());
-
 		cboStopbits.setEnabled(device.isStopbitsEditable());
-		cboStopbits.setSelectedItem(device.getStopBits().toString());
-
 		cboLineFeed.setEnabled(device.isLineFeedEditable());
-		cboLineFeed.setSelectedItem(device.getLineFeed().toString());
+		chkMeasureCumulatively.setEnabled(device.isMeasureCumulativelyConfigurable());
+
+		
+		
+		if(useDefaults)
+		{
+			
+			cboBaud.setSelectedItem(device.getBaudRate().toString());
+			cboParity.setSelectedItem(device.getParity().toString());
+			cboFlowControl.setSelectedItem(device.getFlowControl().toString());
+			cboDatabits.setSelectedItem(device.getDataBits().toString());
+			cboStopbits.setSelectedItem(device.getStopBits().toString());
+			cboLineFeed.setSelectedItem(device.getLineFeed().toString());
+			chkMeasureCumulatively.setSelected(device.getMeasureCumulatively());
+		}
+		else
+		{
+			cboBaud.setSelectedItem(App.prefs.getPref(PrefKey.SERIAL_BAUD, 
+					device.getBaudRate().toString()));
+			
+			
+			
+		}
+		
 
 
 	}

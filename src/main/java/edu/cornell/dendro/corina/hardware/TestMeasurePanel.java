@@ -83,6 +83,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		log.setText(log.getText()+"Parity       : "+super.dev.getParity()+"\n");
 		log.setText(log.getText()+"Flow control : "+super.dev.getFlowControl()+"\n");
 		log.setText(log.getText()+"Line feed    : "+super.dev.getLineFeed()+"\n");
+		log.setText(log.getText()+"Cumulative   : "+super.dev.getMeasureCumulatively()+"\n");
 		log.setText(log.getText()+"********************************\n");
 	}
 	
@@ -111,7 +112,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		}
 				
 		txt.setText(txt.getText()+value+"μm\n");
-		infoLabel.setText("Success!  Data recieved from platform");
+		infoLabel.setText("Success!  Data received from platform");
 	}
 		
 	@Override
