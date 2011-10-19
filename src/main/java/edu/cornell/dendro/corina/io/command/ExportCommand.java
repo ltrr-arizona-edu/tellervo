@@ -89,9 +89,9 @@ public class ExportCommand implements ICommand {
 		// Create a list of projects 
 		ArrayList<TridasProject> projList = new ArrayList<TridasProject>();
 		ArrayList<LabCode> labCodeList = new ArrayList<LabCode>();
-		TridasProject project = null;
+		TridasProject project = defaults.getProjectWithDefaults();
 		for (Sample s : samples){
-			if(!event.grouped || project == null){
+			if(!event.grouped){
 				// User wants separate files so create a new project for each sample
 				project = defaults.getProjectWithDefaults();
 			}
@@ -113,7 +113,6 @@ public class ExportCommand implements ICommand {
 				telem.getSamples().add(tsamp);
 				tobj.getElements().clear();
 				tobj.getElements().add(telem);
-				project.getObjects().clear();
 				project.getObjects().add(tobj);
 			}
 			else
@@ -131,7 +130,7 @@ public class ExportCommand implements ICommand {
 		}
 		
 		if(event.grouped) {
-			// Add project to list as there user wants one file for each series
+			
 			projList.add(project);
 			
 			if (samples.size() == 1){

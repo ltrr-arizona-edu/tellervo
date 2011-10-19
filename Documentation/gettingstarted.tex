@@ -19,6 +19,23 @@ The next step is to fill out the metadata tab. If you have used a barcode, nearl
 
 To begin measuring your sample you can now go to \menutwo{Edit}{Start measuring} or you can press F5. While measuring you should be provided with audible feedback for each ring measured with a more pronounced sound made every 10th ring. If there is a problem communicating with your measuring hardware, check your settings in the preferences dialog. If you still have problems contact the Corina developers by going to \menutwo{Help}{Report bug on last transaction}, making sure you include your email address and any further information.
 
+Depending on the measuring platform hardware you have, you will see some variation of the measuring panel in figure \ref{fig:measurepanel}. The left display holds the absolute position of the last ring boundary (for device that measure cumulatively), the middle display holds the last recorded measurement width and the right display holds the current position of the measuring plaform (for devices that report live measurements).  The right-hand display is useful for devices that don't have a physical display such as the Lintab. 
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \begin{center}
+    \includegraphics[width=6cm]{Images/measurepanel.png}
+  \end{center}
+  \caption{Measuring control panel.}
+  \label{fig:measurepanel}
+\end{wrapfigure}
+
+
+Corina supports the measuring of rings both individually and cumulatively.  We feel that it is easier and more accurate to measure rings individually, that is to say the device is reset to zero after each measurement.  If a device accepts requests to reset measurements (e.g.\ Quadra Chek boxes) or if it automatically resets itself to zero after recording a measurement (e.g.\ EVE IO) then this procedure is used by Corina.  In this case the user begins measuring by setting the display to zero, then turns the platform to the end of the ring, then either presses the `measure' button on the hardware device or the `record' button on the screen.
+
+\tip{If your device does not have a physical `measure' button you don't need to use the mouse in Corina to click the `record' button each time.  Use the tab key to ensure the record button is highlighted, then you can use the space bar on your keyboard instead.  This means you don't need to lift your eyes from your microscope to ensure you are clicking the button correctly.}
+
+Certain devices (e.g. Boekler Microcode boxes) do not listen for requests to reset to zero.  In this case to measure each ring individually, you would need to manually reset the reading to zero following each measurement.  This would of course be extremely tedious.  In this situation Corina measures cumulatively from the beginning of the first ring and calculates the ring width based on the previous ring boundary position.  With this method you must be careful not to knock your sample, and you must also take special care when altering radii to navigate around problem structures.  If you do knock your sample, the best way to recover is to reset your platform to zero and press the measure button.  Next, press the `stop measuring button', manually fix the values in the data table, then begin measuring again from where you left off.
+
 
 \index{Ring remarks}
 While you measure your sample you can flag features in a ring by right clicking on any cell in the table and selecting one or more of the standard notes (see figure \ref{fig:ringremarks}).

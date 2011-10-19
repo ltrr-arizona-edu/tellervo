@@ -25,7 +25,7 @@ public class ReconcileMeasurePanel extends MeasurePanel implements MeasurementRe
 			
 		// Hide extra widgets
 		btnQuit.setVisible(false);
-		txtLastValue.setVisible(false);
+		this.setLastValueGuiVisible(false);
 	}
 
 	

@@ -60,21 +60,25 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	protected JButton btnReset;
 	protected JButton btnRecord;
 	protected JButton btnQuit;
-	protected JLabel txtCurrentPosition;
-	protected JLabel lblLastPosition;
+	
+	private JLabel lblCurrentPosition;
+	private JLabel lblLastPosition;
+	private JLabel lblLastValue;
+	
+	private JLabel txtLastValue;
+	private JLabel txtLastPosition;
+	private JLabel txtCurrentPosition;
+	
 	protected AbstractSerialMeasuringDevice dev;
 	private JPanel panel;
-	private JLabel lblLastValue;
-	protected JLabel txtLastValue;
-	protected JLabel txtLastPosition;
-	private JLabel lblCurrentPosition;
-	
+	protected JLabel lblMessage;
+
 	public MeasurePanel(final AbstractSerialMeasuringDevice device) {
 		setBorder(null);
 			
 		dev = device;
 		
-		setLayout(new MigLayout("insets 0", "[150px,grow][150,grow][150.00px,grow]", "[][][][]"));
+		setLayout(new MigLayout("insets 0", "[150px,grow][150,grow][150.00px,grow]", "[][][14.00][][grow,fill]"));
 		
 		measure_one = SoundUtil.getMeasureSound();
 		measure_dec = SoundUtil.getMeasureDecadeSound();
@@ -139,23 +143,23 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		add(txtCurrentPosition, "cell 2 1,growx");
 		
 		
-		lblLastPosition = new JLabel("Last position");
+		lblLastPosition = new JLabel("Previous position");
 		lblLastPosition.setFont(new Font("Dialog", Font.BOLD, 8));
 		add(lblLastPosition, "cell 0 2,alignx right,aligny center");
 		
-		lblLastValue = new JLabel("Last measurement");
+		lblLastValue = new JLabel("Previous measurement");
 		lblLastValue.setFont(new Font("Dialog", Font.BOLD, 8));
 		add(lblLastValue, "cell 1 2,alignx right");
 		
 		lblCurrentPosition = new JLabel("Current position:");
 		lblCurrentPosition.setFont(new Font("Dialog", Font.BOLD, 8));
 		add(lblCurrentPosition, "cell 2 2,alignx right");
-				
-				
-
 		
-		// Set the device to zero to start with
+		lblMessage = new JLabel("");
+		add(lblMessage, "cell 0 3 3 1");
+			
 		
+		// Set the device to zero to start with	
 		if(dev!=null)
 		{
 			dev.setMeasurementReceiver(this);
@@ -177,16 +181,126 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		}
 		
 		// Hide any displays that aren't supported
-		txtCurrentPosition.setVisible(device.isCurrentValueCapable());
-		lblCurrentPosition.setVisible(device.isCurrentValueCapable());
-		txtLastPosition.setVisible(device.getMeasureCumulatively());
-		lblLastPosition.setVisible(device.getMeasureCumulatively());
+		setCurrentPositionGuiVisible(device.isCurrentValueCapable());
+		setLastPositionGuiVisible(device.getMeasureCumulatively());
 		
 	}
+	
+	/**
+	 * Set whether the current position gui should be visible
+	 * 
+	 * @param b
+	 */
+	public void setCurrentPositionGuiVisible(Boolean b)
+	{
+		txtCurrentPosition.setVisible(b);
+		lblCurrentPosition.setVisible(b);
+	}
+	
+	/**
+	 * Set whether the last position gui should be visible
+	 * 
+	 * @param b
+	 */
+	public void setLastPositionGuiVisible(Boolean b)
+	{
+		txtLastPosition.setVisible(b);
+		lblLastPosition.setVisible(b);
+	}
+	
+	/**
+	 * Set whether the last value gui should be visible 
+	 * 
+	 * @param b
+	 */
+	public void setLastValueGuiVisible(Boolean b)
+	{
+		txtLastValue.setVisible(b);
+		lblLastValue.setVisible(b);	
+	}
 		
+	/**
+	 * Set the current position 
+	 * 
+	 * @param i
+	 */
+	public void setCurrentPosition(Integer i)
+	{
+		if(i==null)
+		{
+			txtCurrentPosition.setText("-");
+		}
+		else if (i.equals(0))
+		{
+			txtCurrentPosition.setText("Err: 0 "+micron());
+		}
+		else if (i < 0)
+		{
+			txtCurrentPosition.setText("Err: negative: "+i+" "+micron());
+		}
+		else
+		{
+			txtCurrentPosition.setText(i+" "+micron());
+		}
+	}
+	
+	/**
+	 * Set the last position
+	 * 
+	 * @param i
+	 */
+	public void setLastPosition(Integer i)
+	{
+		if(i==null)
+		{
+			txtLastPosition.setText("-");
+		}
+		else if (i.equals(0))
+		{
+			txtLastPosition.setText("Err: 0 "+micron());
+		}
+		else if (i < 0)
+		{
+			txtLastPosition.setText("Err: negative: "+i+" "+micron());
+		}
+		else
+		{
+			txtLastPosition.setText(i+" "+micron());
+		}
+	}
+	
+	/**
+	 * Set the last value
+	 * 
+	 * @param i
+	 */
+	public void setLastValue(Integer i)
+	{
+		if(i==null)
+		{
+			txtLastValue.setText("-");
+		}
+		else if (i.equals(0))
+		{
+			txtLastValue.setText("Err: 0 "+micron());
+		}
+		else if (i < 0)
+		{
+			txtLastValue.setText("Err: negative: "+i+" "+micron());
+		}
+		else
+		{
+			txtLastValue.setText(i+" "+micron());
+		}
+	}
+	
+	/**
+	 * Update the status message
+	 */
 	public void receiverUpdateStatus(String status) {
-		lblLastPosition.setText(status);
+		lblMessage.setText(status);
 	}
+	
 	
 	protected Boolean checkNewValueIsValid(Integer value)
 	{
@@ -264,17 +378,23 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		}
 	}
 	
-	
+	/**
+	 * Static string to return the micron symbol
+	 * 
+	 * @return
+	 */
 	public static String micron()
 	{
 		return "\u03bc"+"m";
 	}
+	
+	/**
+	 * Set the default focus for the panel
+	 */
 	public void setDefaultFocus()
 	{
 		btnRecord.requestFocusInWindow();
 	}
-	
-
 }
 
 

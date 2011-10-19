@@ -55,10 +55,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		this.txt = txtComCheckLog;
 		this.log = txtLog;
 		this.infoLabel = infoLabel;
-		
-		
-		
-		
+
 		// Hide extra widgets
 		btnQuit.setVisible(false);
 		
@@ -69,7 +66,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	public void startCountdown()
 	{
 		java.util.Timer timer = new java.util.Timer();
-		task = new TimeoutTask(infoLabel, this.txtLastValue, this);
+		task = new TimeoutTask(infoLabel, this.lblMessage, this);
 		timer.scheduleAtFixedRate(task, 0, 1000);
 		
 		log.setText(log.getText()+"********************************\n");
@@ -94,7 +91,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 			task.cancel();
 		}
 		
-		txtLastValue.setText("");
+		setLastValue(null);
 	}
 	
 
@@ -143,8 +140,9 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		public void run() {
 			if(countdown==1)
 			{
-				txtLastValue.setText("");
+				setLastValue(null);
 				infoLabel.setText(I18n.getText("preferences.hardware.nodatareceived"));
+				parent.lblMessage.setText("");
 				this.cancel();
 				//parent.setVisible(false);
 				return;
@@ -152,7 +150,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 			
 			countdown--;
 			
-			label.setText(I18n.getText("preferences.hardware.timeremaining")+": "+countdown);
+			parent.lblMessage.setText(I18n.getText("preferences.hardware.timeremaining")+": "+countdown);
 			
 			
 		}

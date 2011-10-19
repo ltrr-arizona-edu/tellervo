@@ -54,11 +54,11 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 				measure_one.play();				
 		}
 		
-		txtLastValue.setText(value+" "+micron());
+		setLastValue(value);
 		
 		if(super.dev.isMeasureCumulativelyConfigurable())
 		{
-			this.txtLastPosition.setText(super.dev.getPreviousPosition()+" "+micron());
+			setLastPosition(super.dev.getPreviousPosition());
 		}
 	}
 
