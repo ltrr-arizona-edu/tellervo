@@ -619,10 +619,19 @@
 								<include>corina-manual.pdf</include>
 							</includes>
 						</fileSet>
+						<fileSet>
+							<directory>Native/MacBuild</directory>
+							<includes>
+								<include>Corina Drivers.pkg</include>
+							</includes>
+						</fileSet>
 					</additionalResources>
 					<bundleName>Corina</bundleName>
 					<zipFile>${project.build.directory}/Binaries/Desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>
 					<mainClass>edu.cornell.dendro.corina.gui.Startup</mainClass>
+					<vmOptions>
+					 
+					</vmOptions>
 					<jvmVersion>1.5+</jvmVersion>
 					<iconFile>src/main/resources/Icons/corina-application.icns</iconFile>
 					<javaApplicationStub>Native/MacBuild/JavaApplicationStub</javaApplicationStub>
@@ -802,7 +811,9 @@
 							<goal>run</goal>
 						</goals>
 					</execution>
+					
 					<!-- Insert native libraries into MacOSX App file -->
+					<!-- 
 					<execution>
 						<id>AddLibsToMacOSXApp</id>
 						<phase>package</phase>
@@ -813,7 +824,8 @@
 								<trycatch>
 									<try>
 										<zip destfile="${project.build.directory}/Binaries/Desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="true">
-											<zipfileset dir="Native/Libraries/macosx-universal/" includes="*.jnilib" prefix="${project.build.finalName}/Corina.app" />
+											<zipfileset src="${project.build.finalName}/Corina.app" />
+											<zipfileset src="Native/MacBuild/Corina Drivers.pkg"/>
 										</zip>
 									</try>
 									<catch>
@@ -826,6 +838,7 @@
 							<goal>run</goal>
 						</goals>					
 					</execution>
+					-->
 					
 					<!-- Run Makensis to create the windows installers -->
 					<execution>

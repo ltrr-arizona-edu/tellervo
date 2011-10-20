@@ -13,11 +13,11 @@ Corina includes a total of five different algorithms for crossdating:
 \subsection{T-Score}
 \index{Crossdating!T-Score}
 \index{T-Score}
-The t-score is the classic crossdate. Everybody quotes t-scores: if you want to brag about how good a cross is, you tell them your t-score. Unfortunately, every dendro program seems to have a slightly different implementation of tscore, so the numbers you get from Corina might not be exactly comparable to the numbers from other programs. 
+The \textit{t}-score is the classic crossdate. Unfortunately, every dendro program seems to have a slightly different implementation of \textit{t}-score, so the numbers you get from Corina might not be exactly comparable to the numbers from other programs. 
 
-The version Corina uses is based on the algorithms given in \citet{Baillie73}, though with some apparent bugs corrected. In the following equations, $x_{0}, x_{1}, x_{2}, \dots$ are the data of the fixed sample in the overlap, $y_{0}, y_{1}, y_{2}, \dots$ are the data of the moving sample in the overlap, and N is the length of the overlap.
+The version Corina uses is based on the algorithms given in \citet{Baillie73}, though with some apparent bugs corrected (Ken Harris pers. comm.). In the following equations, $x_{0}, x_{1}, x_{2}, \dots$ are the data of the fixed sample in the overlap, $y_{0}, y_{1}, y_{2}, \dots$ are the data of the moving sample in the overlap, and N is the length of the overlap.
 
-The first step is to make each dataset bivariate normal by replacing each value with the mean of the values around it, and then taking its natural logarithm.  The preparation for the T-Score is therefore done as follows and is done to both the fixed and moving series:
+The first step is to make each dataset bivariate normal by replacing each value with the mean of the values around it, and then taking its natural logarithm.  The preparation for the \textit{t}-score is therefore done as follows and is done to both the fixed and moving series:
 
 \begin{itemize}
  \item $x_{i} \leftarrow {x_{i-2} + x_{i} + x_{i+1} + x_{i+2} \over 5}$
@@ -34,9 +34,7 @@ The student's T computation is then done as follows:
  \item $t = r \sqrt{{N-2\over 1-r^{2}}}$
 \end{itemize}
 
-The t-score is called a ``parametric'' algorithm, because it takes into account the magnitudes of the samples.
-
-A t-score is considered statistically significant if it's greater than a certain value. Just what this value is varies with the length of the overlap between the samples: a 500 year overlap can have a t-score of 2.6 and pass, but an overlap of only 15 years would have to be higher, like 3.0.  In reality most dendrochronologists require t-scores to be much higher than this, and would also insist on overlaps of many decades.
+The \textit{t}-score is an explorative statistic.  There is no univerally accepted threshold above which a \textit{t}-score is regarded as  significant, however, \citet{Baillie73} suggest a value of 3.5.  For more information see \citet{wigley1987}.
 
 
 \subsection{Trend}
@@ -51,8 +49,8 @@ If one sample stays the same, and the other increases or decreases, Corina consi
 According to \citet{Huber70}, a trend is significant if:
 
 \begin{enumerate}
-  \item \textbf{$tr > 50\% + {50 \over \sqrt{N}}$} -- For example a pair of samples with a 50-year overlap needs a $50+50\sqrt{50} = 57.1\%$ trend to be significant, but at a 400-year overlap need only a $50 + 50\sqrt{400} = 52.5\%$ trend. In practice, however, this doesn't tend to work terribly well. Using this scheme, there are typically about three times as many ``significant'' trend scores as t-scores, and users want this narrowed down a bit more. So take $\sigma=3$ and use:
-  \item $tr > 50\% + {50\sigma \over \sqrt{N}}$ -- This gives about the same number of significant trend scores as t-scores. 
+  \item \textbf{$tr > 50\% + {50 \over \sqrt{N}}$} -- For example a pair of samples with a 50-year overlap needs a $50+50\sqrt{50} = 57.1\%$ trend to be significant, but at a 400-year overlap need only a $50 + 50\sqrt{400} = 52.5\%$ trend. In practice, however, this doesn't tend to work terribly well. Using this scheme, there are typically about three times as many ``significant'' trend scores as \textit{t}-scores, and users want this narrowed down a bit more. So take $\sigma=3$ and use:
+  \item $tr > 50\% + {50\sigma \over \sqrt{N}}$ -- This gives about the same number of significant trend scores as \textit{t}-scores. 
 
 \end{enumerate}
 
@@ -81,17 +79,6 @@ The R-value is used in the T-Score, the T-score being defined in terms of the r-
 
 An r-value can range from 0.0 (no correlation) to 1.0 (perfect correlation). 
  
-\subsection{D-Score}
-\index{Crossdating!D-Score}
-\index{D-Score}
-
-The D-score (AXE), is a combination of the T-Score and Trend.
-
-\begin{itemize*}
- \item $D = (tr - 50\%) \times t $
-\end{itemize*}
-
-Corina considers 40 to be the threshold for significant AXE. 
 
 \section{Crossdating series}
 \index{Crossdating!Performing}

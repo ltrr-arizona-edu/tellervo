@@ -8,6 +8,7 @@
 \usepackage[encapsulated]{CJK}
 \usepackage{ucs}
 \usepackage[utf8]{inputenc}
+\usepackage{amssymb}
 
 
 \RequirePackage{multicol}
@@ -24,6 +25,7 @@
 \RequirePackage{eso-pic}
 \RequirePackage{listings}
 \RequirePackage[titles]{tocloft}
+
 
 
 \makeindex
@@ -50,10 +52,13 @@
 
 %% Restyle the Table of Contents
 \setlength{\cftbeforechapskip}{2ex}
-\setlength{\cftbeforesecskip}{0.5ex}
+\setlength{\cftbeforesecskip}{0.1ex}
+\setlength{\cftbeforesubsecskip}{0ex}
 \setlength{\cftbeforepartskip}{8ex}
-\setlength{\cftsecnumwidth}{5ex}
+\setlength{\cftsecnumwidth}{8ex}
 \setlength{\cftsecindent}{5ex}
+\setlength{\cftsubsecindent}{15ex}
+\setlength{\cftsubsecnumwidth}{8ex}
 
 \renewcommand{\cftpartfont}{%
  \hfill\Large\scshape\bfseries
