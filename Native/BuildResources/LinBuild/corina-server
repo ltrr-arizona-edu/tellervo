@@ -14,17 +14,23 @@ if (!isset($argc))
 // Static locations of various files 
 $wsbase           = "/var/www/corina-webservice/";
 $folderbase       = "/usr/share/corina-server/";
+$pg_hba_file      = "/etc/postgresql/9.1/main/pg_hba.conf";
+$pg_hba_file_orig = "/etc/postgresql/9.1/main/pg_hba.conf.bak";
+
 $permsfile        = $folderbase."set_database_permission.sql";
 $permstemplate    = $folderbase."set_database_permission.template";
 $logfile          = $folderbase."installation.log";
 $configtemplate   = $folderbase."config.php.template";
 $dbtemplate       = $folderbase."corina_database_template.sql";
 $credentialsFile  = $folderbase."corina_server_credentials";
-$pg_hba_file      = "/etc/postgresql/9.1/main/pg_hba.conf";
-$pg_hba_file_orig = "/etc/postgresql/9.1/main/pg_hba.conf.bak";
+$upgradeScripts   = $folderbase."db-upgrade-patches";
 $configfile       = $wsbase."config.php";
 $dbsetupfile      = $wsbase."inc/dbsetup.php";
 $systemconfig     = $wsbase."systemconfig.php";
+$upgrading        = false;
+$prevMajorVersion = null;
+$prevMinorVersion = null;
+$prevRevision     = null;
 
 // Global variables
 $user = "";
@@ -52,7 +58,7 @@ if($_SERVER['USER']=='root')
  */
  
 $shortopts = "htrces";
-$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", );
+$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "post-install" );
 $args = getopt($shortopts,$longopts);
 
 // Depending on command line arguments run different functions
@@ -99,6 +105,7 @@ else if($args["help"]===false || $args["h"]===false)
   echo "      --stop         Stop the Corina server\n"; 
   echo "      --restart      Restart the Corina server\n";   
   echo "\n";
+  die();
 }
 else if($args["stop"]===false)
 {
@@ -108,6 +115,7 @@ else if($args["stop"]===false)
 	echo "Stopping Apache...\n";
 	exec("/etc/init.d/apache2 stop");
 	echo "\n\n";
+	die();
 }
 else if($args["start"]===false)
 {
@@ -117,6 +125,7 @@ else if($args["start"]===false)
 	echo "Starting Apache...\n";
 	exec("/etc/init.d/apache2 start");
 	echo "\n";
+	die();
 }
 else if($args["restart"]===false)
 {
@@ -126,43 +135,211 @@ else if($args["restart"]===false)
 	echo "Restarting Apache...\n";
 	exec("/etc/init.d/apache2 restart");
 	echo "\n";
+	die();
 }
 else if($args["resetpwd"]===false)
 {
 	requireRoot();
 	setDBUser();
 	echo "\n";
+	die();
 }
 else if($args["emptylog"]===false || $args["e"]===false)
 {
 	requireRoot();
 	include($configfile);
 	include($dbsetupfile);
+	emptyLog();
+	die();
 	
 }
-else
+else if($args["post-install"]===false)
 {
-	// Configure from scratch
+	echo "Doing post-install setup...\n";
+	// Post install run
+
 	requireRoot();
-	createScriptsFromTemplates();
-	postgresSetup();
-	echo "Generating systems config file...\n";
-	include($configfile);
-	include($dbsetupfile);
-	generateSystemsConfig();
-	include($systemconfig);
-	apacheSetup();
-	verifySetup();
-	printComplete();
-	die();
+	
+	// If config files were moved to safety, move them back again
+	if (file_exists($folderbase."config.php.bak")) 
+	{
+		exec("mv ".$folderbase."config.php.bak ".$wsbase);
+	}
+	if (file_exists($folderbase."systemconfig.php.bak")) 
+	{
+		exec("mv ".$folderbase."systemconfig.php.bak ".$wsbase);
+	}
+
+	// Check if this is an upgrade
+	if(file_exists($wsbase."config.php") && file_exists($wsbase."systemconfig.php")) 
+	{
+	    require($configfile);
+     	require($dbsetupfile);	
+	    require($systemconfig);
+		getPreviousVersion()
+		// Run upgrade scripts and die
+		runDBUpgrades();
+		die();
+	}		
+	else
+	{
+		// Else fall through to standard configuration
+		echo "Configure new system...\n";
+	}
 }
 
-
+// Configure from scratch
+requireRoot();
+createScriptsFromTemplates();
+postgresSetup();
+echo "Generating systems config file...\n";
+include($configfile);
+include($dbsetupfile);
+generateSystemsConfig();
+include($systemconfig);
+apacheSetup();
+verifySetup();
+printComplete();
 die();
+
 
 /**
  * END OF SCRIPT BODY
  */
+
+
+/**
+* Run any applicable upgrade scripts
+*/
+function runDBUpgrades()
+{	
+	echo "Upgrading existing Corina database to latest version...\n";
+	// Loop through all upgrade scripts and run any that haven't 
+	// already been run
+	if (is_dir($upgradeScripts)) 
+	{
+	    if ($dh = opendir($upgradeScripts)) 
+	    {
+	        while (($file = readdir($dh)) !== false) 
+		{
+	            if ($file != "." && $file != "..") 
+		    {
+		      	runSQLUpgradeFile($file);
+	            }
+	        }
+	        closedir($dh);
+	    }
+	}
+	
+	global $configfile;
+        global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
+	
+	$f = exec("dpkg-query -W corina-server");
+	
+	if(strpos($f, "No packages found")===TRUE)
+	{
+	 return false;
+	}  
+	
+	// Trim off the 'corina-server' from the beginning
+	$f = str_replace("corina-server", "", $f);
+	
+	// Remove +SNAPSHOT from end
+	$f = str_replace("+SNAPSHOT", "", $f);
+	
+	$sql = "UPDATE tblconfig SET value='$f' where key='wsversion'";
+        $dbconnstatus = pg_connection_status($dbconn);
+	if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+        {
+    	    $result = pg_query($dbconn, $sql);    	
+        }
+        else
+        {
+    	    die("Unable to connect to PostgreSQL database to update the version information\n\n");
+        }
+	
+}
+
+function runSQLUpgradeFile($filename)
+{
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
+		
+	$sql = "SELECT * FROM tblupgradelog WHERE filename = '$filename'";
+	$dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	$result = pg_query($dbconn, $sql);
+    	if(pg_num_rows($result)>=1) return;    	
+    }
+    else
+    {
+    	die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
+    }
+		
+		
+	$sql = file_get_contents($filename);
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	echo "   - Applying patch: $filename\n";   	
+    	$result = pg_query($dbconn, $sql); 
+    	$sql = "INSERT into tblupgradelog filename VALUES ('$filename');";
+	    $result = pg_query($dbconn, $sql);		 	
+    }
+    else
+    {
+    	die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
+    }
+	
+}
+
+
+/**
+* Check if corina-server was previously installed and grab the version number
+*/
+function getPreviousVersion()
+{
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
+	global $prevMajorVersion;
+	global $prevMinorVersion;
+	global $prevRevision;
+	
+		
+	$sql = "SELECT value FROM tblconfig WHERE key='wsversion'";
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	$result = pg_query($dbconn, $sql);    	
+        while ($row = pg_fetch_array($result))
+	  	{
+	     	   $v = explode($row['value'], ".", 3); 		
+	  	} 	
+    }
+    else
+    {
+        echo "   - dbconn failed, so assuming this is a fresh install\n";
+    	return FALSE;
+    }
+    
+    if($v!=null)
+    {
+     	$prevMajorVersion = $v[0];
+		$prevMinorVersion = $v[1];
+		$prevRevision     = $v[2];
+		return TRUE;
+	}
+	
+	echo "   - failed to read version from database so assuming fresh install\n";
+	return FALSE;
+}
 
 
 /**

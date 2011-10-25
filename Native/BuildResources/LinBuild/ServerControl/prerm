@@ -1,3 +1,9 @@
 #!/bin/bash
-rm -rf /usr/share/corina-server/
-rm -rf /var/www/corina-webservice/
+echo "Prerm run ${serverversion}" >> /tmp/install.log
+date '+%R.%S' >> /tmp/install.log
+
+$configfile="/var/www/corina-webservice/config.php"
+if [ -e "$configfile"]
+then
+  echo "config.php exists" >> /tmp/install.log
+fi

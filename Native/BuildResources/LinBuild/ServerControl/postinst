@@ -1,2 +1,13 @@
 #!/bin/bash
-corina-server
+echo "Postinst run ${serverversion}" >> /tmp/install.log
+date '+%R.%S' >> /tmp/install.log
+
+$configfile="/var/www/corina-webservice/config.php"
+if [ -e "$configfile"]
+then
+  echo "config.php exists" >> /tmp/install.log
+fi
+
+
+/usr/bin/corina-server --post-install
+

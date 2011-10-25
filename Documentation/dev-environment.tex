@@ -351,11 +351,11 @@ Making a new release should be a relatively quick and simply process, but there 
  \item Update the splash screen and background graphics.
  \item Check the code in Eclipse and eliminate as many warnings as possible.
  \item Make sure the developers metadata is correct in the pom.xml.  Add any new developers that have joined the project since the last release.
- \item Go ahead and run Maven package, then build the Windows installer and MacOSX dmg packages.
+ \item Run Maven package.
  \item TEST!
- \item Deploy to maven.tridas.org using Maven.
- \item Copy native packages to the \url{http://dendro.cornell.edu/corina} website .
- \item Update the Corina website to include the new release.
+ \item Deploy to maven.tridas.org using by running Maven deploy.
+ \item Copy `/target/Binaries' to the \url{http://dendro.cornell.edu/corina/download/} folder.  The new release will automatically be added to the options for download.
+ \item If this new release should be the recommmended release for internal and/or external uses, alter the download.php page to reflect this.
 \end{itemize}
 
 

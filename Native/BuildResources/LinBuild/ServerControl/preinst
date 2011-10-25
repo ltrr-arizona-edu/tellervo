@@ -1,0 +1,21 @@
+#!/bin/bash
+echo "Preinst run ${serverversion}" >> /tmp/install.log
+date '+%R.%S' >> /tmp/install.log
+
+$configfile="/var/www/corina-webservice/config.php"
+if [ -e "$configfile"]
+then
+  echo "config.php exists" >> /tmp/install.log
+fi
+
+if [ -e "$configfile" ]
+then
+  echo "Backing up original configuration files before upgrade\n"
+  cp /var/www/corina-webservice/config.php /usr/share/corina-server/config.php.bak
+fi
+
+$systemconfig="/var/www/corina-webservice/systemconfig.php"
+if [ -e "$systemconfig" ]
+then
+  cp /var/www/corina-webservice/systemconfig.php /usr/share/corina-server/systemconfig.php.bak
+fi
