@@ -1262,18 +1262,22 @@ class elementEntity extends dbEntity
 	 * @param Double $depth
 	 * @return Boolean
 	 */
-	function setDimensions($units, $height, $width, $depth)
+	function setDimensions($height, $width, $depth)
 	{
-		$this->setDimensionUnits($units);
 		$this->setHeight($height);
 		$this->setWidth($width);
 		$this->setDepth($depth);
 		return true;
 	}
 	
-	function setDimensionUnits($units)
+	function setDimensionUnits($id, $value)
 	{
-		$this->dimensionUnits = $units;
+		if(!isset($this->dimensionUnits))
+		{
+			$this->dimensionUnits = new unit();
+		}
+		
+		return $this->dimensionUnits->setUnit($id, $value);
 	}
 	
 	/**
@@ -1530,9 +1534,18 @@ class elementEntity extends dbEntity
 	 *
 	 * @return Double
 	 */
-	function getDimensionUnits()
+	function getDimensionUnits($asKey=false)
 	{
-		return $this->dimensionUnits;
+		
+	    if($asKey===FALSE)
+            {
+		return $this->dimensionUnits->getValue();	
+            }
+            else
+            {
+		return $this->dimensionUnits->getID();	
+            }
+
 	}
 	
 	/**

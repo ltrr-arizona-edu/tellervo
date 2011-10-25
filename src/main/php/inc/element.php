@@ -109,7 +109,8 @@ class element extends elementEntity implements IDBAccessor
         $this->setFiles($row['file']);    
         
         $this->setShape($row['elementshapeid'], $row['elementshape']);        
-        $this->setDimensions($row['units'],$row['height'], $row['width'], $row['depth']);       
+        $this->setDimensions($row['height'], $row['width'], $row['depth']);       
+        $this->setDimensionUnits($row['unitid'], $row['units']);
         $this->setDiameter($row['diameter']);        
         $this->setAuthenticity($row['elementauthenticity']);
         $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision']);
@@ -244,11 +245,10 @@ class element extends elementEntity implements IDBAccessor
 		if ($paramsClass->taxon->getOriginalTaxon()!=NULL)	$this->taxon->setOriginalTaxon($paramsClass->taxon->getOriginalTaxon());
 		if ($paramsClass->taxon->getCoLID()!=NULL)			$this->taxon->setParamsFromCoL($paramsClass->taxon->getCoLID(), $paramsClass->taxon->getLabel());
 		if ($paramsClass->getShape()!=NULL)					$this->setShape(null, $paramsClass->getShape());
-        if ($paramsClass->hasDimensions())   				$this->setDimensions($paramsClass->getDimensionUnits(), 
-        																		 $paramsClass->getDimension('height'), 
+        if ($paramsClass->hasDimensions())   				$this->setDimensions($paramsClass->getDimension('height'), 
         																		 $paramsClass->getDimension('width'), 
         																		 $paramsClass->getDimension('depth'));
-		if ($paramsClass->getDimensionUnits()!=NULL)		$this->setDimensionUnits($paramsClass->getDimensionUnits());       
+		if ($paramsClass->getDimensionUnits()!=NULL)		$this->setDimensionUnits($paramsClass->getDimensionUnits(true), $paramsClass->getDimensionUnits(false));       
         if ($paramsClass->getDiameter()!=NULL)				$this->setDiameter($paramsClass->getDiameter());
         if ($paramsClass->getAuthenticity()!=NULL)			$this->setAuthenticity($paramsClass->getAuthenticity());
 		if ($paramsClass->hasGeometry())					
@@ -705,7 +705,7 @@ class element extends elementEntity implements IDBAccessor
                         if ($this->getShape()!=NULL)							$sql.= "'".pg_escape_string($this->getShape(true))."', ";
                         if ($this->hasDimensions())								
 	                    {
-	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "'".pg_escape_string($this->getDimensionUnits())."', ";
+	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "'".pg_escape_string($this->getDimensionUnits(true))."', ";
 	                    	if($this->getDimension('height')!=NULL)   			$sql.= "'".pg_escape_string($this->getDimension('height'))."', ";
 	                    	if($this->getDimension('width')!=NULL)    			$sql.= "'".pg_escape_string($this->getDimension('width'))."', ";
 	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "'".pg_escape_string($this->getDimension('depth'))."', ";
@@ -750,7 +750,7 @@ class element extends elementEntity implements IDBAccessor
                         if ($this->getShape()!=NULL)							$sql.= "elementshapeid='".pg_escape_string($this->getShape(true))."', ";
                         if ($this->hasDimensions())								
 	                    {
-	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "units='".pg_escape_string($this->getDimensionUnits())."', ";
+	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "units='".pg_escape_string($this->getDimensionUnits(true))."', ";
 	                    	if($this->getDimension('height')!=NULL)   			$sql.= "height='".pg_escape_string($this->getDimension('height'))."', ";
 	                    	if($this->getDimension('width')!=NULL)    			$sql.= "width='".pg_escape_string($this->getDimension('width'))."', ";
 	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "depth='".pg_escape_string($this->getDimension('depth'))."', ";
