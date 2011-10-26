@@ -417,7 +417,9 @@ class variable extends lookupEntity
 	
 	function setVariable($id, $value)
 	{
-		return $this->setLookupEntity($id, $value);
+		$var = $this->setLookupEntity($id, $value);
+	
+		return $var;
 	}
 }
 

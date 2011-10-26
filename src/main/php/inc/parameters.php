@@ -1180,6 +1180,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   			   		
 		   	case "values":
 		   		
+		   		// In a <values> group tag
 		   		
 		   		$valuetags = $child->childNodes;
 		   		$i = 0;
@@ -1187,14 +1188,47 @@ class measurementParameters extends measurementEntity implements IParams
 		   		foreach($valuetags as $tag)
 		   		{
 		   			if($tag->nodeType != XML_ELEMENT_NODE) continue;
-		   			if($tag->tagName == 'value') 
+		   			
+		   			if($tag->tagName=='variable')
+		   			{		   				
+		   				if($tag->getAttribute("normalTridas")!=NULL)
+		   				{
+		   					$firebug->log($tag->getAttribute("normalTridas"), "Setting measurement variable");
+		   					$this->setVariable(NULL, $tag->getAttribute("normalTridas"));
+		   					$firebug->log($this->getVariable(), "Variable now set to ...");
+		   					continue;
+		   				}
+		   				else
+		   				{
+		   					trigger_error("104"."Only TRiDaS normalised variables are supported by this webservice", E_USER_ERROR);
+		   				}
+		   			}
+		   			else if($tag->tagName=='unit')
+		   			{
+		   				if($tag->getAttribute("normalTridas")!=NULL)
+		   				{
+		   					$this->setUnits(NULL, $tag->getAttribute("normalTridas"));
+		   					continue;
+		   				}
+		   				else
+		   				{
+		   					trigger_error("104"."Only TRiDaS normalised units are supported by this webservice", E_USER_ERROR);
+		   				}		   				
+		   			}
+		   			else if($tag->tagName == 'value') 
 		   			{	
 		   				// Tag is a <value> tag so process
 		   				
-		   				// get the index and value fields
-			   			$index = $tag->getAttribute("index");
+		   				// Check that we know what variable we're dealing with
+		   				if($this->getVariable()==null || $this->getVariable()=='')
+		   				{
+		   					trigger_error("104"."Values 'variable' is missing", E_USER_ERROR);		   		
+		   				}
+		   				
+		   				// get the value fields
 			   			$value = $tag->getAttribute("value");  
-
+			   			
+			   			
 			   			// See if it has child nodes (notes or subvalues)
 			   			$valuechildren = $tag->childNodes;
 		   				$myNotesArray = array();			   			
@@ -1239,33 +1273,61 @@ class measurementParameters extends measurementEntity implements IParams
 			   			}
 
 			   			// Mush all the reading and notes into the ReadingArray
-						$this->readingsArray[$i] = array('value' => unit::unitsConverter($value, $this->getUnits(), "db-default"), 
-	                                                     'wjinc' => NULL, 
-	                                                     'wjdec' => NULL, 
-	                                                     'count' => NULL,
-	                                                     'notesArray' => $myNotesArray);
-		   			}
-		   			else if($tag->tagName=='variable')
-		   			{		   				
-		   				if($tag->getAttribute("normalTridas")!=NULL)
-		   				{
-		   					$this->setVariable(NULL, $tag->getAttribute("normalTridas"));
-		   				}
-		   				else
-		   				{
-		   					trigger_error("104"."Only TRiDaS normalised variables are supported by this webservice", E_USER_ERROR);
-		   				}
-		   			}
-		   			else if($tag->tagName=='unit')
-		   			{
-		   				if($tag->getAttribute("normalTridas")!=NULL)
-		   				{
-		   					$this->setUnits(NULL, $tag->getAttribute("normalTridas"));
-		   				}
-		   				else
-		   				{
-		   					trigger_error("104"."Only TRiDaS normalised units are supported by this webservice", E_USER_ERROR);
-		   				}		   				
+			   			
+			   			// Start by grabbing the readings Array if it exists or creating
+			   			// an empty one if it does not
+			   			if(count($this->readingsArray)>$i)
+			   			{
+			   				// readingsArray already exists
+			   				$readingArrEntry = $this->readingsArray[$i];
+			   			}
+			   			else
+			   			{
+			   				// no entry yet for this year in readingsArray
+			   				// so create a new empty one
+			   				$readingArrEntry = array('value' => NULL, 
+		                                                     'wjinc' => NULL, 
+		                                                     'wjdec' => NULL, 
+			   												 'ewwidth' => NULL,
+			   							   					 'lwwidth' => NULL,
+		                                                     'count' => NULL,
+		                                                     'notesArray' => NULL);
+			   				$this->readingsArray[]= $readingArrEntry;
+			   			}
+	
+			   			$firebug->log($this->getVariable(), "Variable being used");
+			   			$firebug->log($value, "Width value");
+			   			
+			   			
+			   			if($this->getVariable()=="ring width")
+			   			{
+			   				//$firebug->log(unit::unitsConverter($value, $this->getUnits(), "db-default"), "Setting new ring width value");
+			   				$readingArrEntry['value'] = unit::unitsConverter($value, $this->getUnits(), "db-default");
+			   				$readingArrEntry['notesArray'] = $myNotesArray;	
+			   				//$firebug->log($readingArrEntry, "new readingArrEntry is now...");	   				
+			   			}
+			   			else if ($this->getVariable()=="earlywood width")
+			   			{
+			   				$readingArrEntry['ewwidth'] = unit::unitsConverter($value, $this->getUnits(), "db-default");
+			   				$readingArrEntry['notesArray'] = $myNotesArray;	
+			   			}
+		   				else if ($this->getVariable()=="latewood width")
+			   			{
+			   				$readingArrEntry['lwwidth'] = unit::unitsConverter($value, $this->getUnits(), "db-default");
+			   				$readingArrEntry['notesArray'] = $myNotesArray;	
+			   			}	
+			   			else
+			   			{
+			   				$firebug->log("Unknown measurement variable"); 
+			   				die();
+			   				
+			   			}		   			
+			   			
+			   			// Add our new or edited entry to the readingsArray
+			   			//$firebug->log($i, "Inserting details into readingArray at index..."); 
+			   			//$firebug->log($readingArrEntry, "ReadingArray that is being inserted...");
+			   			$this->readingsArray[$i] = $readingArrEntry;
+			   			
 		   			}
 		   			else
 		   			{
@@ -1276,9 +1338,13 @@ class measurementParameters extends measurementEntity implements IParams
 		   			// Increment readingArray counter
 					$i++;
 					
-		   		}		   			
-				break;		   		
+		   		}	
 		   		
+		   		// Reset variable to 'ring width'
+		   		$this->setVariable(NULL, 'ring width');   			
+				break;		   		
+
+				
 
 		   	default:
 		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'series' entity of the XML request. Tag is being ignored", E_USER_NOTICE);

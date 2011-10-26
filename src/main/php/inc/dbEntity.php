@@ -3899,14 +3899,12 @@ class measurementEntity extends dbEntity
 	
 	/**
 	 * Get the variable type
-	 * @todo Work out how we will do early/late wood stuff
 	 *
 	 * @return String
 	 */
 	function getVariable()
 	{
-		return "ring width";
-		//return $this->variable->getValue();
+		return $this->variable->getValue();
 	}
 	
 	function getUnits()

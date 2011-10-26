@@ -232,7 +232,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		
 		// Bodge for setting units by checking if any parents are 'indexes'	
-		//@TODO Should be replaced by extra field in getvmeasurementresult to say the extra query
+		//@TODO Should be replaced by extra field in getvmeasurementresult to save the extra query
 		$sql3 = "select * from cpgdb.findvmparents('".$this->getID()."', true) where op='Index'";
 		$dbconnstatus = pg_connection_status($dbconn);	
 		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -287,6 +287,8 @@ class measurement extends measurementEntity implements IDBAccessor
 					
 					// Get all reading values to array
 					$this->readingsArray[$row['relyear']] = array('value' => unit::unitsConverter($row['reading'], $theUnits, "db-default"),
+																  'ewwidth' => unit::unitsConverter($row['ewwidth'], $theUnits, "db-default"),
+																  'lwwidth' => unit::unitsConverter($row['lwwidth'], $theUnits, "db-default"),
                                                                   'wjinc' => $row['wjinc'], 
                                                                   'wjdec' => $row['wjdec'], 
                                                                   'count' => $row['count'],
@@ -411,6 +413,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		// Value fields
 		if($paramsClass->getUnits()!=NULL)					$this->setUnits(NULL, $paramsClass->getUnits());
 		//if (isset($paramsClass->readingsUnits))        $this->setUnits($paramsClass->readingsUnits);
+		
+
 		if (sizeof($paramsClass->readingsArray)>0)     $this->setReadingsArray($paramsClass->readingsArray);
 		
 		// Corina specific genericFields
@@ -448,6 +452,8 @@ class measurement extends measurementEntity implements IDBAccessor
 	 */
 	function validateRequestParams($paramsObj, $crudMode)
 	{
+		global $firebug;
+		
 		// Check parameters based on crudMode
 		switch($crudMode)
 		{
@@ -472,11 +478,12 @@ class measurement extends measurementEntity implements IDBAccessor
 				}
 				if($paramsObj->readingsArray)
 				{
+					$firebug->log($paramsObj->readingsArray, "Readings Array");
 					foreach ($paramsObj->readingsArray as $reading)
 					{
 						if(!is_numeric($reading['value']))
 						{
-							$this->setErrorMessage("902","Invalid parameter - All your readings must be numbers.");
+							$this->setErrorMessage("902","Invalid parameter - All your readings must be numbers.  You tried to use value '".$reading['value']."'");
 							return false;
 						}
 					}
@@ -1144,7 +1151,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	    											$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
 		
 		$xml .= $this->getPermissionsXML();
-		if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
+		//if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
 		
 		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
 		$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
@@ -1164,7 +1171,10 @@ class measurement extends measurementEntity implements IDBAccessor
 		{
 			$xml.=$this->getValuesXML();
 			
-			if ($this->getMeasurementCount()>1) $xml.=$this->getValuesXML(true);
+			$xml.=$this->getValuesXML("ew");
+			$xml.=$this->getValuesXML("lw");
+			
+			if ($this->getMeasurementCount()>1) $xml.=$this->getValuesXML("wj");
 			$xml.= "</tridas:".$this->getTridasSeriesType().">";
 			return $xml;
 		}
@@ -1195,7 +1205,7 @@ class measurement extends measurementEntity implements IDBAccessor
 				
 			// Include permissions details if requested
 			$xml .= $this->getPermissionsXML();
-			if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
+			//if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
 			
 			if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->isReconciled, "english")."</tridas:genericField>\n";
 			if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\" type=\"xs:boolean\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
@@ -1232,6 +1242,10 @@ class measurement extends measurementEntity implements IDBAccessor
 		else
 		{
 			$xml.=$this->getValuesXML();
+			
+
+			$xml.=$this->getValuesXML("ew");
+			$xml.=$this->getValuesXML("lw");
 			$xml.= "</tridas:".$this->getTridasSeriesType().">";
 			return $xml;
 		}
@@ -1263,8 +1277,12 @@ class measurement extends measurementEntity implements IDBAccessor
 		return $xml;
 	}
 
-
-	private function getValuesXML($wj=false)
+	/**
+	 * 
+	 * Enter description here ...
+	 * @param string $type - either val, wj, ew or lw.  Defaulst to val
+	 */
+	private function getValuesXML($type="val")
 	{
 		global $wsDefaultUnits;
 		
@@ -1273,7 +1291,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			return false;
 		}
 		 
-		if($wj===TRUE && $this->getVMeasurementOp()=='Index')
+		if($type=='wj' && $this->getVMeasurementOp()=='Index')
 		{
 			return false;
 		}
@@ -1302,14 +1320,27 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		
 		// Set variable and units
-		if($wj===TRUE)
+		if($type=='wj')
 		{
 			$xml .="<tridas:variable normalStd=\"Corina\" normal=\"Weiserjahre\"/>\n";
 			$xml.="<tridas:unitless/>\n";
 		}
-		else
+		else if ($type=='val')
 		{
-			$xml .="<tridas:variable normalTridas=\"".$this->getVariable()."\"/>\n";
+			$xml .="<tridas:variable normalTridas=\"ring width\"/>\n";
+			
+		}
+		else if ($type=='ew')
+		{
+			$xml .="<tridas:variable normalTridas=\"earlywood width\"/>\n";
+		}
+		else if ($type=='lw')
+		{
+			$xml .="<tridas:variable normalTridas=\"latewood width\"/>\n";
+		}
+		
+		if($type=='val' || $type=='ew' || $type=='lw')
+		{
 			if( ($this->getUnits()!=NULL) && ($this->getUnits()!=''))
 			{
 				$xml.="<tridas:unit normalTridas=\"$wsDefaultUnits\" />\n";
@@ -1317,42 +1348,53 @@ class measurement extends measurementEntity implements IDBAccessor
 			else
 			{
 				$xml.="<tridas:unitless/>\n";
-			}				
+			}	
 		}
-
-
 
 		// Set the actual value tags
 		foreach($this->readingsArray as $key => $value)
 		{
-			// Calculate absolute year where possible
-			if ($this->dating->getValue()!='Relative')
+			// Only include EW / LW widths if they are present
+			if($type=='ew' || $type=='lw')
 			{
-				if($yearvalue==0)
+				if($value['ewwidth']==null || $value['ewwidth']=='' || 
+				$value['lwwidth']==null || $value['lwwidth']=='')
 				{
-					// If year value is 0 increment to 1 as there is no such year as 0bc/ad
-					$yearvalue = 1;
+					return false;
 				}
 			}
 
-			
 			$xml.="<tridas:value ";
 			 
 			// Add actual value
-			if($wj===TRUE)
+			if($type=='wj')
 			{
 				$xml.= "value=\"".$value['wjinc']."/".$value['wjdec']."\" ";
 			}
-			else
+			else if ($type=='val')
 			{
 				// Current units of values is null if unitless otherwise db-default
 				$currentUnits = null;
 				if($this->getUnits()!=null)	$currentUnits = "db-default";
 				$xml.= "value=\"".unit::unitsConverter($value['value'], $currentUnits, "ws-default")."\" ";
 			}
+			else if ($type=='ew')
+			{
+				// Current units of values is null if unitless otherwise db-default
+				$currentUnits = null;
+				if($this->getUnits()!=null)	$currentUnits = "db-default";
+				$xml.= "value=\"".unit::unitsConverter($value['ewwidth'], $currentUnits, "ws-default")."\" ";
+			}
+			else if ($type=='lw')
+			{
+				// Current units of values is null if unitless otherwise db-default
+				$currentUnits = null;
+				if($this->getUnits()!=null)	$currentUnits = "db-default";
+				$xml.= "value=\"".unit::unitsConverter($value['lwwidth'], $currentUnits, "ws-default")."\" ";
+			}
 			 
 			// Add count if appropriate
-			if(($value['count']!=NULL) && ($wj===FALSE))
+			if(($value['count']!=NULL) && ($type!='wj'))
 			{
 				$xml.= "count=\"".$value['count']."\"";
 			}
@@ -1368,11 +1410,7 @@ class measurement extends measurementEntity implements IDBAccessor
 				}
 			}
 
-			$xml.="</tridas:value>\n";
-
-			// Increment yearvalue for next loop
-			$yearvalue++;
-	
+			$xml.="</tridas:value>\n";	
 		}
 		$xml.="</tridas:values>\n";
 
@@ -1635,7 +1673,11 @@ class measurement extends measurementEntity implements IDBAccessor
 						foreach($this->readingsArray as $key => $value)
 						{
 							// First loop through the readingsArray and create insert statement for tblreading table
-							$insertSQL = "insert into tblreading (measurementid, relyear, reading) values (".pg_escape_string($this->measurementID).", ".pg_escape_string($relyear).", ".pg_escape_string($value['value']).")";
+							$insertSQL = "insert into tblreading (measurementid, relyear, reading, ewwidth, lwwidth) values (".pg_escape_string($this->measurementID).", "
+							.pg_escape_string($relyear).", "
+							.pg_escape_string($value['value']).", "
+							.pg_escape_string($value['ewwidth']).", "
+							.pg_escape_string($value['lwwidth']);
 							$relyear++;
 
 							// Do tblreading inserts
@@ -1781,7 +1823,13 @@ class measurement extends measurementEntity implements IDBAccessor
 						$relyear = 0;
 						foreach($this->readingsArray as $key => $value)
 						{
-							$insertSQL .= "INSERT INTO tblreading (measurementid, relyear, reading) VALUES (".pg_escape_string($this->getMeasurementID()).", ".pg_escape_string($relyear).", ".pg_escape_string($value['value'])."); ";
+							$insertSQL .= "INSERT INTO tblreading (measurementid, relyear, reading, ewwidth, lwwidth) VALUES ("
+							.pg_escape_string($this->getMeasurementID()).", "
+							.pg_escape_string($relyear).", "
+							.pg_escape_string($value['value']).", "
+							.pg_escape_string($value['ewwidth']).", "
+							.pg_escape_string($value['lwwidth'])
+							."); ";
 							$relyear++;
 						}
 					}
