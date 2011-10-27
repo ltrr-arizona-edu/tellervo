@@ -102,10 +102,10 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog {
 
 		// add our first two measurements
 		measurements.add(new AMeasurement(true, 
-				((Number) src.getData().get(yearIndex)).intValue(), 
+				((Number) src.getRingWidthData().get(yearIndex)).intValue(), 
 				"source"));
 		measurements.add(new AMeasurement(true, 
-				((Number) ref.getData().get(yearIndex)).intValue(), 
+				((Number) ref.getRingWidthData().get(yearIndex)).intValue(), 
 				"ref"));
 
 		// calculate our initial value

@@ -413,10 +413,10 @@ public abstract class Cross implements Runnable {
 		// that should be run here. check first:
 		int overlap = getOverlap(); //App.prefs.getIntPref("corina.cross.overlap"
 									// , 15);
-		if (fixed.getData().size() < overlap
-				|| moving.getData().size() < overlap) {
-			String problem = "These samples (n=" + fixed.getData().size()
-					+ ", " + "n=" + moving.getData().size()
+		if (fixed.getRingWidthData().size() < overlap
+				|| moving.getRingWidthData().size() < overlap) {
+			String problem = "These samples (n=" + fixed.getRingWidthData().size()
+					+ ", " + "n=" + moving.getRingWidthData().size()
 					+ ") aren't long enough for "
 					+ "your minimum specified overlap (n=" + overlap + ")";
 			// and say how to fix it!
@@ -424,7 +424,7 @@ public abstract class Cross implements Runnable {
 		}
 
 		// allocate space for data
-		int n = fixed.getData().size() + moving.getData().size() - 1; // was:
+		int n = fixed.getRingWidthData().size() + moving.getRingWidthData().size() - 1; // was:
 																		// ...
 																		// -2*
 																		// getMinimumOverlap
@@ -450,13 +450,13 @@ public abstract class Cross implements Runnable {
 		// equal-sized; split in half (maybe even-odd?).
 
 		// phase 1:
-		for (int i = moving.getData().size() - 1 /* getMinimumOverlap() */; i > 0; i--) {
+		for (int i = moving.getRingWidthData().size() - 1 /* getMinimumOverlap() */; i > 0; i--) {
 			data[done] = compute(0, i);
 			signifigance[done++] = this.getSignifigant();
 		}
 
 		// phase 2:
-		for (int i = 0; i < fixed.getData().size() - 1 /* getMinimumOverlap() */; i++) {
+		for (int i = 0; i < fixed.getRingWidthData().size() - 1 /* getMinimumOverlap() */; i++) {
 			data[done] = compute(i, 0);
 			signifigance[done++] = this.getSignifigant();
 		}

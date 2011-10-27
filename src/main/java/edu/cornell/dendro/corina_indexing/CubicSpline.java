@@ -74,7 +74,7 @@ public class CubicSpline extends IndexFunction {
 
 	// run reinsch's smooth
 	private void smooth() {
-		final List<? extends Number> in = input.getData();
+		final List<? extends Number> in = input.getRingWidthData();
 		// my init stuff
 		int N = in.size();
 		final int n1 = 1, n2 = N;
@@ -192,7 +192,7 @@ public class CubicSpline extends IndexFunction {
 		smooth();
 		
 		// create output
-		int n = input.getData().size();
+		int n = input.getRingWidthData().size();
 		List<Double> output = new ArrayList<Double>(n);
 		
 		// compute curve: since h=1, y[i] = d[i]+c[i]+b[i]+a[i]

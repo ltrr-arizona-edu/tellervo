@@ -48,9 +48,13 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.manip.RedateDialog;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -69,6 +73,7 @@ import edu.cornell.dendro.corina.util.Years;
 public class DecadalModel extends AbstractTableModel {
 	// BUG! -- if the length changes (e.g., truncate), there's a problem
 	// with sums.  ouch.  (<-- what did i mean by this?)
+	private final static Logger log = LoggerFactory.getLogger(DecadalModel.class);
 
 	private Double unitMultiplier = 0.0;
 	
@@ -233,7 +238,14 @@ public class DecadalModel extends AbstractTableModel {
 			if (!s.getRange().contains(y))
 				return null;
 			else
-				return s.getData().get(y.diff(s.getRange().getStart()));
+				if(s.containsSubAnnualData())
+				{
+					log.debug("Earlywood value: " + s.getEarlywoodWidthData().get(y.diff(s.getRange().getStart())));
+					log.debug("Latewood  value: " + s.getLatewoodWidthData().get(y.diff(s.getRange().getStart())));
+				}			
+				return s.getRingWidthData().get(y.diff(s.getRange().getStart()));
+				
+			
 		}
 	}
 
@@ -338,7 +350,7 @@ public class DecadalModel extends AbstractTableModel {
 		final boolean bigger = s.getRange().getEnd().add(+1).equals(
 				getYear(row, col));
 		final Year y = (bigger ? s.getRange().getEnd().add(+1) : getYear(row, col));
-		Number tmp = (bigger ? null : s.getData().get(y.diff(s.getRange().getStart())));
+		Number tmp = (bigger ? null : s.getRingWidthData().get(y.diff(s.getRange().getStart())));
 		if (tmp != null && tmp.toString().length() == 0) {
 			tmp = lastOldVal;
 		} else {
@@ -351,12 +363,12 @@ public class DecadalModel extends AbstractTableModel {
 			if(intValue == null)
 				return;
 			
-			s.getData().add(intValue);
+			s.getRingWidthData().add(intValue);
 			s.setRange(new Range(s.getRange().getStart(), s.getRange().getEnd().add(+1)));
 		} else {
 			if(value.equals(oldVal))
 				return;
-			s.getData().set(y.diff(s.getRange().getStart()), intValue);
+			s.getRingWidthData().set(y.diff(s.getRange().getStart()), intValue);
 		}
 		fireTableCellUpdated(row, col);
 
@@ -383,11 +395,11 @@ public class DecadalModel extends AbstractTableModel {
 				System.out.println("undo, grew=" + grew);
 
 				if (grew) {
-					s.getData().remove(s.getData().size() - 1);
+					s.getRingWidthData().remove(s.getRingWidthData().size() - 1);
 					s.setRange(new Range(s.getRange().getStart(), s.getRange().getEnd()
 							.add(-1)));
 				} else {
-					s.getData().set(y.diff(s.getRange().getStart()), oldVal);
+					s.getRingWidthData().set(y.diff(s.getRange().getStart()), oldVal);
 					// selectYear(y);
 				}
 
@@ -402,11 +414,11 @@ public class DecadalModel extends AbstractTableModel {
 				System.out.println("redo, grew=" + grew);
 
 				if (grew) {
-					s.getData().add(newVal);
+					s.getRingWidthData().add(newVal);
 					s.setRange(new Range(s.getRange().getStart(), s.getRange().getEnd()
 							.add(+1)));
 				} else {
-					s.getData().set(y.diff(s.getRange().getStart()), newVal);
+					s.getRingWidthData().set(y.diff(s.getRange().getStart()), newVal);
 				}
 
 				s.fireSampleDataChanged();

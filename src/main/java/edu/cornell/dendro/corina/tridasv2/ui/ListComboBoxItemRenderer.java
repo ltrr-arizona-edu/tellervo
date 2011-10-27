@@ -36,7 +36,7 @@ import edu.cornell.dendro.corina.schema.WSISecurityUser;
  * @author Lucas Madar
  *
  */
-public class ListComboBoxItemRenderer extends DefaultListCellRenderer {
+public class ListComboBoxItemRenderer extends DefaultListCellRenderer implements ComboBoxItemRenderer {
 	private static final long serialVersionUID = 1L;
 
 	public ListComboBoxItemRenderer() {

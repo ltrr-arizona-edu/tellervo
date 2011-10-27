@@ -566,7 +566,7 @@ public class SamplePrintEditor extends JPanel {
 		if(bits.wantSampleHeader() && !s.isIndexed()) {
 	        // print radius, avg width, but only for non-indexed samples
 	        float radius = s.computeRadius() / 1000f;
-	        float average = radius / s.getData().size();
+	        float average = radius / s.getRingWidthData().size();
 	        DecimalFormat df = new DecimalFormat("0.000"); // to 3 places
 
 	        sb.setLength(0);
@@ -745,7 +745,7 @@ public class SamplePrintEditor extends JPanel {
 			for (int i = 0; i < 10; i++) {
 				sb.append("\t");
 				if (s.getRange().contains(decade.add(i)))
-					sb.append( ((Number) s.getData().get(decade.add(i).diff(
+					sb.append( ((Number) s.getRingWidthData().get(decade.add(i).diff(
 							s.getRange().getStart()))).intValue());
 			}
 			sb.append("\t");
@@ -796,7 +796,7 @@ public class SamplePrintEditor extends JPanel {
 			for (int i = 0; i < 10; i++) {
 				sb.append("\t");
 				if (s.getRange().contains(decade.add(i)))
-					sb.append(s.getData().get(decade.add(i).diff(s.getRange().getStart())));
+					sb.append(s.getRingWidthData().get(decade.add(i).diff(s.getRange().getStart())));
 			}
 
 			sb.append(doubleSpace ? "\n\n" : "\n");
@@ -834,7 +834,7 @@ public class SamplePrintEditor extends JPanel {
 			// loop through years
 			for (int i = 0; i < 10; i++) {
 				if (s.getRange().contains(decade.add(i))) {
-					String val = ((Number) s.getData().get(decade.add(i).diff(s.getRange().getStart()))).toString();
+					String val = ((Number) s.getRingWidthData().get(decade.add(i).diff(s.getRange().getStart()))).toString();
 					for(int j = 0; j < 7 - val.length(); j++)
 						sb.append(" ");
 					sb.append(val);

@@ -73,8 +73,8 @@ public class Truncate {
 	// crop the end
 	int numCropEnd = s.getRange().getEnd().diff(r.getEnd());
 	while (numCropEnd-- > 0) {
-	    int i = s.getData().size()-1;
-	    endData.push(s.getData().remove(i));
+	    int i = s.getRingWidthData().size()-1;
+	    endData.push(s.getRingWidthData().remove(i));
 	    if (s.hasCount())
 		endCount.push(s.getCount().remove(i));
 	    if (s.hasWeiserjahre()) {
@@ -86,7 +86,7 @@ public class Truncate {
 	// crop the start
 	int numCropStart = r.getStart().diff(s.getRange().getStart());
 	while (numCropStart-- > 0) {
-	    startData.push(s.getData().remove(0));
+	    startData.push(s.getRingWidthData().remove(0));
 	    if (s.getCount() != null)
 		startCount.push(s.getCount().remove(0));
 	    if (s.hasWeiserjahre()) {
@@ -113,7 +113,7 @@ public class Truncate {
     public void uncrop() {
 	// end
 	while (!endData.empty()) {
-	    s.getData().add(endData.pop());
+	    s.getRingWidthData().add(endData.pop());
 	    if (s.getCount() != null)
 		s.getCount().add(endCount.pop());
 	    if (s.hasWeiserjahre()) {
@@ -124,7 +124,7 @@ public class Truncate {
 
 	// start
 	while (!startData.empty()) {
-	    s.getData().add(0, startData.pop());
+	    s.getRingWidthData().add(0, startData.pop());
 	    if (s.hasCount())
 		s.getCount().add(0, startCount.pop());
 	    if (s.hasWeiserjahre()) {

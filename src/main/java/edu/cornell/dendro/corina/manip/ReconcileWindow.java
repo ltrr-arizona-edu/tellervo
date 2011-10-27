@@ -407,7 +407,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		Year y = dv1.getSelectedYear();
 		int col = dv1.myTable.getSelectedColumn();
 		int idx = y.diff(s1.getStart());
-		btnRemeasure.setEnabled(col > 0 && col < 11 && idx >= 0 && idx < s1.getData().size() && idx < s2.getData().size());		
+		btnRemeasure.setEnabled(col > 0 && col < 11 && idx >= 0 && idx < s1.getRingWidthData().size() && idx < s2.getRingWidthData().size());		
 	}
 
 	public void reconcileDataChanged(ReconcileDataView dataview) {

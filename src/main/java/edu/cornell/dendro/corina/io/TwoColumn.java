@@ -138,7 +138,7 @@ public class TwoColumn implements Filetype {
             start = Year.DEFAULT;
 
         // hasData
-        s.setData(new ArrayList());
+        s.setRingWidthData(new ArrayList());
         if (hasCount)
             s.setCount(new ArrayList());
 
@@ -183,7 +183,7 @@ public class TwoColumn implements Filetype {
 	    } catch (NumberFormatException nfe) { // not a number
 		throw new WrongFiletypeException();
 	    }
-            s.getData().add(new Integer(Math.round(f)));
+            s.getRingWidthData().add(new Integer(Math.round(f)));
             
             if (hasCount) {
                 int c = Integer.parseInt(tok.nextToken());
@@ -195,7 +195,7 @@ public class TwoColumn implements Filetype {
         s.guessIndexed();
 
         // set range
-        s.setRange(new Range(start, s.getData().size()));
+        s.setRange(new Range(start, s.getRingWidthData().size()));
 
         // return it
         return s;
@@ -240,8 +240,8 @@ public class TwoColumn implements Filetype {
         Year y = s.getRange().getStart();
         boolean hasCount = s.hasCount();
 
-        for (int i=0; i<s.getData().size(); i++) {
-            w.write(y + "\t" + s.getData().get(i));
+        for (int i=0; i<s.getRingWidthData().size(); i++) {
+            w.write(y + "\t" + s.getRingWidthData().get(i));
             if (hasCount)
                 w.write("\t" + s.getCount().get(i));
             w.newLine();

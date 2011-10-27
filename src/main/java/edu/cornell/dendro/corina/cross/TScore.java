@@ -200,8 +200,8 @@ public class TScore extends RValue {
 	 * @return the populated TScoreBundle
 	 */
 	public TScoreBundle compute(int offsetFixed, int offsetMoving, TScoreBundle scores) {
-		int overlap = Math.min(getFixed().getData().size() - offsetFixed,
-				getMoving().getData().size() - offsetMoving);
+		int overlap = Math.min(getFixed().getRingWidthData().size() - offsetFixed,
+				getMoving().getRingWidthData().size() - offsetMoving);
 
 		// already know how to compute r
 		scores.rval = super.compute(offsetFixed, offsetMoving);

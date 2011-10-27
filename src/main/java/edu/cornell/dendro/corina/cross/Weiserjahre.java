@@ -112,7 +112,7 @@ public class Weiserjahre extends Cross {
 	int totalSigs = 0;
 
 	// do magic in here
-	while (i<getFixed().getData().size()-1 && j<getMoving().getData().size()-1) {
+	while (i<getFixed().getRingWidthData().size()-1 && j<getMoving().getRingWidthData().size()-1) {
 
 	    // number of samples: need n>3
 	    int n = (getFixed().getCount().get(i)).intValue();
@@ -140,9 +140,9 @@ public class Weiserjahre extends Cross {
 
 		// compute moving trend
 		int movingTrend = 0;
-		if (((Number) getMoving().getData().get(j-1)).intValue() < ((Number) getMoving().getData().get(j)).intValue())
+		if (((Number) getMoving().getRingWidthData().get(j-1)).intValue() < ((Number) getMoving().getRingWidthData().get(j)).intValue())
 		    movingTrend = +1;
-		else if (((Number) getMoving().getData().get(j-1)).intValue() > ((Number) getMoving().getData().get(j)).intValue())
+		else if (((Number) getMoving().getRingWidthData().get(j-1)).intValue() > ((Number) getMoving().getRingWidthData().get(j)).intValue())
 		    movingTrend = -1;
 
 		// do they match?

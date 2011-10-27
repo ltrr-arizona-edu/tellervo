@@ -246,8 +246,8 @@ public class RValue extends Cross {
 	@Override
 	protected void preamble() {
 		// normalize (while copying to mutable arrays)
-		fixedData = normalize(getFixed().getData());
-		movingData = normalize(getMoving().getData());
+		fixedData = normalize(getFixed().getRingWidthData());
+		movingData = normalize(getMoving().getRingWidthData());
 
 		// compute means (used later by compute())
 		fixedMean = mean(fixedData);

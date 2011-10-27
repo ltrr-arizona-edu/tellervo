@@ -64,7 +64,7 @@ public class HighPass extends IndexFunction {
 	/** Compute the index. */
 	@Override
 	public void index() {
-		output = filter(input.getData(), weights);
+		output = filter(input.getRingWidthData(), weights);
 	}
 
 	// a discrete high-pass filter.

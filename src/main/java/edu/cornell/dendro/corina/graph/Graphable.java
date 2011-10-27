@@ -67,7 +67,7 @@ public interface Graphable {
 
        @return data to graph
     */
-    public List<? extends Number> getData();
+    public List<? extends Number> getRingWidthData();
     // THIS IS WHAT'S HOLDING ME BACK.
     // it's a list because sample holds a list for editing, which forces graphable to take a list,
     // which forces index to use a list, which just sucks everywhere.  i still want to be able

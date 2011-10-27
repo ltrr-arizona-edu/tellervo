@@ -46,7 +46,7 @@ import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.graph.Graphable;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.tridasv2.support.TridasRingWidthWrapper;
+import edu.cornell.dendro.corina.tridasv2.support.TridasWidthValueWrapper;
 import edu.cornell.dendro.corina.tridasv2.support.TridasWeiserjahreWrapper;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -97,72 +97,26 @@ import org.tridas.schema.TridasVariable;
 @SuppressWarnings("serial")
 public class Sample extends BaseSample implements Previewable, Graphable, Indexable {
 
-	private static class SamplePreview extends Preview {
-		SamplePreview(Sample s) {
-			title = s.getMeta("title").toString();
-
-			// range -- toStringWithSpan() does "(a - b, n=c)", i want "a - b (n=c)"
-			items.add(s.getRange() + " (n=" + s.getRange().span() + ")");
-
-			// species
-			if (s.hasMeta("species"))
-				items.add(I18n.getText("species") + ": "
-						+ s.getMeta("species"));
-
-			// format
-			items.add(I18n.getText("format") + ": " + s.getMeta("filetype"));
-
-			// indexed, summed
-			if (s.isIndexed())
-				items.add(I18n.getText("indexed"));
-			if (s.isSummed()) {
-				String summedLine = I18n.getText("summed");
-				if (s.getElements() != null)
-					summedLine += " (" + s.getElements().size() + " "
-							+ I18n.getText("elements") + ")";
-				items.add(summedLine);
-			}
-		}
-	}
-
-	/** The value of a missing ring, 0.  Anything less than or equal
-	 to this value is considered a MR. */
-	public static final int MR = 0;
-
-	// copy each part of source to target.  shallow copy, no events, etc.
-	// used only by editor (paste) -- bad interface!
-	public static void copy(Sample source, Sample target) {
-		// copy our base data
-		BaseSample.copy(source, target);
-
-		target.ringwidths = source.ringwidths;
-		target.weiserjahre = source.weiserjahre;
-		target.elements = source.elements;
-
-		// rebuild the target's tables
-		target.setSeries(target.getSeries(), false);
-	}
-	
 	private boolean metadataChanged = true;
-		
+	
 	/** 
 	 * Data, as a List of Integers. 
 	 * It's not that easy, though;
 	 * We put floats in here occasionally, as well as strings.
 	 */
-	private TridasRingWidthWrapper ringwidths;
+	private TridasWidthValueWrapper ringwidths;
+	private TridasWidthValueWrapper earlywoodWidths;
+	private TridasWidthValueWrapper latewoodWidths;
 	private TridasWeiserjahreWrapper weiserjahre;
 		
 	/** Elements (in a List) that were put into this sum. */
 	private ElementList elements = null;
 	
 	private boolean modified = false;
-
-	// WRITEME: need corresponding setString(), setInteger().
-	// WRITEME: make meta private, eventually.
-	// WRITEME: add lazy-loaders here.
-	// WRITEME: and don't load on construction!
-
+	
+	/** The value of a missing ring, 0.  Anything less than or equal
+	 to this value is considered a MR. */
+	public static final int MR = 0;
 	private Vector<SampleListener> listeners = new Vector<SampleListener>();
 
 	/* FUTURE: */
@@ -174,6 +128,12 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/** A slower hashmap from Standard/Name to values */
 	private HashMap<TridasVariable, TridasValues> otherValuesMap;
 	
+	/** Whether we are using early/late wood measurements*/
+	private Boolean subAnnualMode = false;
+	
+	public final static String CORINA_STD = "Corina";
+	public final static String WEISERJAHRE = "Weiserjahre";
+		
 	/** Default constructor.  Defaults:
 	 <ul>
 	 <li><code>data</code> and <code>count</code> are initialized but empty
@@ -215,6 +175,21 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		metadataChanged = false;		
 	}
 	
+	
+	// copy each part of source to target.  shallow copy, no events, etc.
+	// used only by editor (paste) -- bad interface!
+	public static void copy(Sample source, Sample target) {
+		// copy our base data
+		BaseSample.copy(source, target);
+
+		target.ringwidths = source.ringwidths;
+		target.weiserjahre = source.weiserjahre;
+		target.elements = source.elements;
+
+		// rebuild the target's tables
+		target.setSeries(target.getSeries(), false);
+	}
+	
 	@Override
 	public void setSeries(ITridasSeries series) {
 		setSeries(series, true);
@@ -233,7 +208,17 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		}
 		
 		// make the ring widths wrapper
-		ringwidths = new TridasRingWidthWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH));
+		ringwidths = new TridasWidthValueWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH));
+		
+		// Wrap early/late wood widths if present
+		if(tridasValuesMap.containsKey(NormalTridasVariable.EARLYWOOD_WIDTH)) {
+			earlywoodWidths = new TridasWidthValueWrapper(tridasValuesMap.get(NormalTridasVariable.EARLYWOOD_WIDTH));
+			subAnnualMode = true;
+		}
+		if(tridasValuesMap.containsKey(NormalTridasVariable.LATEWOOD_WIDTH)) {
+			latewoodWidths = new TridasWidthValueWrapper(tridasValuesMap.get(NormalTridasVariable.LATEWOOD_WIDTH));
+			subAnnualMode = true;
+		}
 		
 		// if weiserjahre exists, make the values wrapper for it as well
 		if(otherValuesMap.containsKey(WEISERJAHRE_VARIABLE)) 
@@ -354,8 +339,30 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @param y the year
 	 * @return a TridasValue for the given year
 	 */
-	public TridasValue getValueForYear(Year y) {
+	public TridasValue getRingWidthValueForYear(Year y) {
 		return getValueForYear(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH), y);
+	}
+	
+	/**
+	 * Shortcut for getRemarksForYear(values, year)
+	 * Uses RING_WIDTH variable
+	 * 
+	 * @param y the year
+	 * @return a TridasValue for the given year
+	 */
+	public TridasValue getEarlywoodWidthValueForYear(Year y) {
+		return getValueForYear(tridasValuesMap.get(NormalTridasVariable.EARLYWOOD_WIDTH), y);
+	}
+	
+	/**
+	 * Shortcut for getRemarksForYear(values, year)
+	 * Uses RING_WIDTH variable
+	 * 
+	 * @param y the year
+	 * @return a TridasValue for the given year
+	 */
+	public TridasValue getLatewoodWidthValueForYear(Year y) {
+		return getValueForYear(tridasValuesMap.get(NormalTridasVariable.LATEWOOD_WIDTH), y);
 	}
 
 	/**
@@ -418,7 +425,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	// return 0.0 for indexed sample?  throw ex?)
 	public int computeRadius() {
 		// (apply '+ data)
-		List<Number> data = getData();
+		List<Number> data = getRingWidthData();
 		int n = data.size();
 		int sum = 0;
 		for (int i = 0; i < n; i++)
@@ -449,7 +456,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	public int countRings() {
 		// it's not a sum, so the number of rings is just the length
 		// (if (null count) (length data) ...
-		List<Number> data = getData();
+		List<Number> data = getRingWidthData();
 		
 		if (!hasCount())
 			return data.size();
@@ -510,8 +517,36 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @see Indexable
 	 * @return data to graph, as a List of Integers 
 	 */
-	public List<Number> getData() {
+	public List<Number> getRingWidthData() {
 		return ringwidths.getData();
+	}
+	
+	/** Return the data for a graph
+	 * or the data to index.
+	 * @see Graphable
+	 * @see Indexable
+	 * @return data to graph, as a List of Integers 
+	 */
+	public List<Number> getEarlywoodWidthData() {
+		if(this.subAnnualMode)
+		{
+			return earlywoodWidths.getData();
+		}
+		else return null;
+	}
+	
+	/** Return the data for a graph
+	 * or the data to index.
+	 * @see Graphable
+	 * @see Indexable
+	 * @return data to graph, as a List of Integers 
+	 */
+	public List<Number> getLatewoodWidthData() {
+		if(this.subAnnualMode)
+		{
+			return latewoodWidths.getData();
+		}
+		else return null;
 	}
 
 	/**
@@ -521,6 +556,11 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		return elements;
 	}
 
+	public Boolean containsSubAnnualData()
+	{
+		return subAnnualMode;
+	}
+	
 	/*
 	 // TESTING: single-instance samples (and Sample(String) to become private)
 	 public static Sample getSample(String filename) throws IOException {
@@ -647,7 +687,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 summed indexed formats for tucson.  but he wants it back in,
 	 so we give it to him. */
 	public void guessIndexed() {
-		List<Number> data = getData();
+		List<Number> data = getRingWidthData();
 		setMeta("format", computeRadius() / data.size() > 800 ? "I" : "R");
 	}
 
@@ -779,8 +819,22 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/**
 	 * @param data the data to set
 	 */
-	public void setData(List<Number> data) {
+	public void setRingWidthData(List<Number> data) {
 		ringwidths.setData(data);
+	}
+	
+	/**
+	 * @param data the data to set
+	 */
+	public void setEarlywoodWidthData(List<Number> data) {
+		earlywoodWidths.setData(data);
+	}
+	
+	/**
+	 * @param data the data to set
+	 */
+	public void setLatewoodWidthData(List<Number> data) {
+		latewoodWidths.setData(data);
 	}
 
 	/**
@@ -862,7 +916,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	// make sure data/count/wj are the same size as range.span, and
 	// contain all legit Numbers.  turns nulls/non-numbers into 0's.
 	public void verify() {
-		List<Number> data = getData();
+		List<Number> data = getRingWidthData();
 		int n = getRange().span();
 
 		// what to do if they're the wrong size -- adjust range if the data
@@ -930,8 +984,33 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 			this.setValue(""); // this is XML mandatory, as it's a value string
 		}
 	};
-	public final static String CORINA_STD = "Corina";
-	public final static String WEISERJAHRE = "Weiserjahre";
 
 
+	private static class SamplePreview extends Preview {
+		SamplePreview(Sample s) {
+			title = s.getMeta("title").toString();
+
+			// range -- toStringWithSpan() does "(a - b, n=c)", i want "a - b (n=c)"
+			items.add(s.getRange() + " (n=" + s.getRange().span() + ")");
+
+			// species
+			if (s.hasMeta("species"))
+				items.add(I18n.getText("species") + ": "
+						+ s.getMeta("species"));
+
+			// format
+			items.add(I18n.getText("format") + ": " + s.getMeta("filetype"));
+
+			// indexed, summed
+			if (s.isIndexed())
+				items.add(I18n.getText("indexed"));
+			if (s.isSummed()) {
+				String summedLine = I18n.getText("summed");
+				if (s.getElements() != null)
+					summedLine += " (" + s.getElements().size() + " "
+							+ I18n.getText("elements") + ")";
+				items.add(summedLine);
+			}
+		}
+	}
 }

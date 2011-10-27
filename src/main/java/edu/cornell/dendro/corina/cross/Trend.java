@@ -108,8 +108,8 @@ public class Trend extends Cross {
 
     @Override
 	protected void preamble() {
-	fixedData = makeArray(getFixed().getData());
-	movingData = makeArray(getMoving().getData());
+	fixedData = makeArray(getFixed().getRingWidthData());
+	movingData = makeArray(getMoving().getRingWidthData());
 
 	// Float is (probably at least) 26 bytes, compared with 4
 	// bytes for a float, so for 1000 floats, that's 26K vs 4K in

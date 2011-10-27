@@ -359,7 +359,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		if(!mySample.getRange().contains(y))
 			return;
 
-		TridasValue value = mySample.getValueForYear(y);
+		TridasValue value = mySample.getRingWidthValueForYear(y);
 		
 		Runnable onRemarkChange = new Runnable() {
 			public void run() {
@@ -422,7 +422,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		}
 
 		// insert 0
-		mySample.getData().add(i, val); // new Integer(0));
+		mySample.getRingWidthData().add(i, val); // new Integer(0));
 		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
 				.getEnd().add(+1)));
 		// REFACTOR: by LoD, should be range.extend()
@@ -481,7 +481,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// insert 0, nyears times...
 		for(int j = 0; j < nYears; j++)
-			mySample.getData().add(i, val); // new Integer(0));
+			mySample.getRingWidthData().add(i, val); // new Integer(0));
 		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
 				.getEnd().add(nYears)));
 		// REFACTOR: by LoD, should be range.extend()
@@ -528,7 +528,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		}
 
 		// delete value
-		mySample.getData().remove(i);
+		mySample.getRingWidthData().remove(i);
 		// mySample.range.end = mySample.range.end.add(-1);
 		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
 				.getEnd().add(-1)));
@@ -617,12 +617,12 @@ public class SampleDataView extends JPanel implements SampleListener,
 		if (!mySample.getRange().contains(y)) {
 			mySample.setRange(new Range(mySample.getRange().getStart(),
 					mySample.getRange().getEnd().add(1)));
-			mySample.getData().add(new Integer(0));
+			mySample.getRingWidthData().add(new Integer(0));
 		}
 
 		// set the value
 		int i = y.diff(mySample.getRange().getStart());
-		mySample.getData().set(i, new Integer(x));
+		mySample.getRingWidthData().set(i, new Integer(x));
 		
 		// this is the year we return...
 		Year retYear = y;

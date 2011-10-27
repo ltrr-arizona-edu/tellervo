@@ -65,7 +65,7 @@ public class EnumComboBoxRenderer extends AbstractComboBoxRenderer {
 
 	@Override
 	public ComboBoxItemRenderer getRenderer() {
-		return (ComboBoxItemRenderer) renderer;
+		return renderer;
 	}
 
 	@Override

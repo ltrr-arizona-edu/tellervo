@@ -34,5 +34,5 @@ public interface Indexable {
 	 * 
 	 * @return A list of data for indexing. The calling function must not modify the list.
 	 */
-	public List<? extends Number> getData();
+	public List<? extends Number> getRingWidthData();
 }

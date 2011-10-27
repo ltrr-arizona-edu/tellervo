@@ -522,7 +522,7 @@ public class TruncateDialog extends JDialog {
 			return;
 		}
 
-		if (n1 < 0 || n2 < 0 || (n1 + n2 >= s.getData().size())) {
+		if (n1 < 0 || n2 < 0 || (n1 + n2 >= s.getRingWidthData().size())) {
 			r = null;
 			return;
 		}
@@ -605,7 +605,7 @@ public class TruncateDialog extends JDialog {
 		int n1 = start.diff(s.getRange().getStart());
 		int n2 = s.getRange().getEnd().diff(end);
 
-		if (n1 < 0 || n2 < 0 || (n1 + n2 >= s.getData().size())) {
+		if (n1 < 0 || n2 < 0 || (n1 + n2 >= s.getRingWidthData().size())) {
 			r = null;
 			return;
 		}

@@ -78,14 +78,14 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 		}
 		
 		// no data?  stop.
-		if (g.graph.getData().isEmpty())
+		if (g.graph.getRingWidthData().isEmpty())
 			return;
 
 		// compare g.getClipBounds() to [x,0]..[x+yearSize*data.size(),bottom]
 		tempRect.x = yearWidth
 				* (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset); // REDUNDANT! see x later
 		tempRect.y = 0; // - g.yoffset, IF you're sure there are no negative values (but there are)
-		tempRect.width = yearWidth * (g.graph.getData().size() - 1);
+		tempRect.width = yearWidth * (g.graph.getRingWidthData().size() - 1);
 		tempRect.height = bottom;
 		// TODO: compute top/bottom as min/max?
 		// REFACTOR: will this be obsolete with the start/end stuff below?
@@ -104,7 +104,7 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 		// move to the first point -- THIS IS NOT REALLY A SPECIAL CASE!
 		int value;
 		try {
-			value = yTransform(((Number) g.graph.getData().get(0)).intValue() * g.scale);
+			value = yTransform(((Number) g.graph.getRingWidthData().get(0)).intValue() * g.scale);
 		} catch (ClassCastException cce) {
 			value = yTransform(0); // BAD!  instead: (1) just continue now, and (2) NEXT point is a move-to.
 		}
@@ -124,7 +124,7 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 		 */
 
 		// connect the lines through the rest of the graph
-		int n = g.graph.getData().size(); // THIS is the third time it's called; why not use it above?
+		int n = g.graph.getRingWidthData().size(); // THIS is the third time it's called; why not use it above?
 		for (int i = 1; i < n; i++) {
 			// new x-position for this point
 			x += yearWidth;
@@ -137,7 +137,7 @@ public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {
 
 			// y-position for this point
 			try {
-				value = yTransform(((Number) g.graph.getData().get(i)).intValue() * g.scale);
+				value = yTransform(((Number) g.graph.getRingWidthData().get(i)).intValue() * g.scale);
 			} catch (ClassCastException cce) {
 				value = yTransform(0); // e.g., if it's being edited, it's still a string
 				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.

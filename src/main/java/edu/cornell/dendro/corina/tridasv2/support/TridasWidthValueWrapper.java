@@ -38,7 +38,7 @@ import org.tridas.schema.TridasValues;
  * @author Lucas Madar
  */
 
-public final class TridasRingWidthWrapper {
+public final class TridasWidthValueWrapper {
 	private List<TridasValue> values;
 	private DataWrapper data;
 	private CountWrapper count;
@@ -191,11 +191,15 @@ public final class TridasRingWidthWrapper {
 	 * @param tridasValues
 	 * @param usesCounts
 	 */
-	public TridasRingWidthWrapper(TridasValues tridasValues) {
+	public TridasWidthValueWrapper(TridasValues tridasValues) {
 		// sanity check
-		if(!tridasValues.getVariable().isSetNormalTridas() ||
-				tridasValues.getVariable().getNormalTridas() != NormalTridasVariable.RING_WIDTH) 
-			throw new IllegalArgumentException("RingWidthWrapper only works on Tridas Ring Widths");
+		if(!tridasValues.getVariable().isSetNormalTridas()) 
+				throw new IllegalArgumentException("RingWidthWrapper only works on ring, earlywood or latewood widths");
+		
+		if(tridasValues.getVariable().getNormalTridas() != NormalTridasVariable.RING_WIDTH &&
+		   tridasValues.getVariable().getNormalTridas() != NormalTridasVariable.EARLYWOOD_WIDTH &&
+		   tridasValues.getVariable().getNormalTridas() != NormalTridasVariable.LATEWOOD_WIDTH	)
+			throw new IllegalArgumentException("RingWidthWrapper only works on ring, earlywood or latewood widths");
 		
 		this.values = tridasValues.getValues();
 		

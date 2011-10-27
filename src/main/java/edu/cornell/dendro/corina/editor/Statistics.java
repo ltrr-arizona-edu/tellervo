@@ -125,7 +125,7 @@ public class Statistics extends JLabel implements SampleListener {
 	int i=0;
 
 	// mean sensitivity
-        float m = MeanSensitivity.meanSensitivity(sample.getData());
+        float m = MeanSensitivity.meanSensitivity(sample.getRingWidthData());
         DecimalFormat f = new DecimalFormat("0.000");
 	stat_values[i++] = (Float.isNaN(m) ? NA : f.format(m));
 
@@ -137,7 +137,7 @@ public class Statistics extends JLabel implements SampleListener {
 	// (fall-through on f, radius)
 
 	// avg ring width
-	int years = sample.getData().size();
+	int years = sample.getRingWidthData().size();
 	stat_values[i++] = (sample.isIndexed() ? NA : f.format(radius / years));
 
 	// number of years

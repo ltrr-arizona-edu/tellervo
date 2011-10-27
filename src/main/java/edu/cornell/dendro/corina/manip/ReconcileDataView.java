@@ -180,9 +180,9 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 			warnings.append(newSample.getStart() + " compared to " + reference.getStart());
 			warnings.append(".</font><br><p>");
 		}
-		if(newSample.getData().size() != reference.getData().size()) {
+		if(newSample.getRingWidthData().size() != reference.getRingWidthData().size()) {
 			warnings.append("<font color=red><b>Warning!</b><br>Samples are different lengths - ");
-			warnings.append(newSample.getData().size() + " years compared with " + reference.getData().size());
+			warnings.append(newSample.getRingWidthData().size() + " years compared with " + reference.getRingWidthData().size());
 			warnings.append(".</font><br><p>");
 		}
 
@@ -210,7 +210,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				// just some info
 				NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.name()));
 
-				Number value = newSample.getData().get(idx);
+				Number value = newSample.getRingWidthData().get(idx);
 				if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 				{
 					value = value.intValue()/10;
@@ -218,21 +218,21 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				
 				selectionInfo.append("Primary value : " + value + "<br>");
 				
-				value = reference.getData().get(idx);
+				value = reference.getRingWidthData().get(idx);
 				if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 				{
 					value = value.intValue()/10;
 				}
 				
 				selectionInfo.append("Reference value : " + 
-						((reference.getData().size() > idx) ? value : "<n/a>") + 
+						((reference.getRingWidthData().size() > idx) ? value : "<n/a>") + 
 						"<br><br>");
 			
 				// now, each of the failures
 				if(failures != null) {
 					if(failures.contains(Reconciler.FailureType.THREEPERCENT)) {
 						// calculate min and max
-						float val = ((Number) reference.getData().get(idx)).floatValue();
+						float val = ((Number) reference.getRingWidthData().get(idx)).floatValue();
 						float threepercent = val * 0.03f;
 						String minmax = (int) Math.floor(val - threepercent) + " and " +
 							(int) Math.ceil(val + threepercent);

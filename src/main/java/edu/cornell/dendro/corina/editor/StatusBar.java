@@ -132,13 +132,13 @@ public class StatusBar extends JPanel
 	int i = y.diff(sample.getRange().getStart());
 
 	// bail out if out of range
-	if (i<0 || i>=sample.getData().size()) {
+	if (i<0 || i>=sample.getRingWidthData().size()) {
 		widthLabel.setText(EMPTY);
 	    return;
 	}
 
 	// get ring value 
-	String strRingWidthValue = sample.getData().get(i).toString();
+	String strRingWidthValue = sample.getRingWidthData().get(i).toString();
 /*	if (sample.hasCount())
 	    strRingWidthValue += " [" + sample.getCount().get(i) + "]";
 	if (sample.hasWeiserjahre())

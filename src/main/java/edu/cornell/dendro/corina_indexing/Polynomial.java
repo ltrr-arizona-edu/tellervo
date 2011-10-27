@@ -67,7 +67,7 @@ public class Polynomial extends IndexFunction implements SolverFunction {
 	/** Compute the index. */
 	@Override
 	public void index() {
-		final List<? extends Number> in = input.getData();
+		final List<? extends Number> in = input.getRingWidthData();
 		// init x, y
 		int n = in.size();
 		final List<Double> output = new ArrayList<Double>(n);

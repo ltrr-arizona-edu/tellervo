@@ -97,6 +97,15 @@ public final class Years {
 		return valueOf(yy);
 	}
 	
+	public static Year forRowAndColumnEWLW(int row, int col)
+	{
+		int yy = 20 * row + col;
+		if (yy == 0)
+			return Year.DEFAULT;
+		
+		return valueOf(yy);
+	}
+	
 	// these should cover the range of everything we use
 	private final static int MIN_CACHE_YEAR = -1000;
 	private final static int MAX_CACHE_YEAR = MIN_CACHE_YEAR + 4096;

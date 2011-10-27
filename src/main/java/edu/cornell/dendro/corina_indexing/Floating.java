@@ -83,7 +83,7 @@ public class Floating extends IndexFunction {
 		Arrays.fill(weights, 1);
 
 		// high-pass filter
-		output = HighPass.filter(input.getData(), weights);
+		output = HighPass.filter(input.getRingWidthData(), weights);
 	}
 
 	/* this doesn't give exactly the same results as mecki's, but i

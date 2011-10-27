@@ -84,11 +84,11 @@ public class Reconciler {
 		failureCount = 0;
 		
 		// first, they must be equal in length!
-		if(s1.getData().size() != s2.getData().size())
+		if(s1.getRingWidthData().size() != s2.getRingWidthData().size())
 			failureCount++;
 
 		// compute minimum length, in case they're not equal in length...
-		minLen = Math.min(s1.getData().size(), s2.getData().size());
+		minLen = Math.min(s1.getRingWidthData().size(), s2.getRingWidthData().size());
 
 		check3Percent();
 		checkTrends();		
@@ -132,16 +132,16 @@ public class Reconciler {
 	// check trends
 	private void checkTrends() {
 
-		int w1 = ((Number) s1.getData().get(0)).intValue();
-		int w2 = ((Number) s2.getData().get(0)).intValue();
+		int w1 = ((Number) s1.getRingWidthData().get(0)).intValue();
+		int w2 = ((Number) s2.getRingWidthData().get(0)).intValue();
 		for (int i = 1; i < minLen; i++) {
 			// store widths/"previous"
 			int w1p = w1;
 			int w2p = w2;
 
 			// get next year's widths
-			w1 = ((Number) s1.getData().get(i)).intValue();
-			w2 = ((Number) s2.getData().get(i)).intValue();
+			w1 = ((Number) s1.getRingWidthData().get(i)).intValue();
+			w2 = ((Number) s2.getRingWidthData().get(i)).intValue();
 
 			// compute trends -- possible (desireable) to use cross.Trend here?
 			int trend1 = trend(w1p, w1);
@@ -164,8 +164,8 @@ public class Reconciler {
 
 		for (int i = 0; i < minLen; i++) {
 			// get widths, as floats
-			float w1 = ((Number) s1.getData().get(i)).floatValue();
-			float w2 = ((Number) s2.getData().get(i)).floatValue();
+			float w1 = ((Number) s1.getRingWidthData().get(i)).floatValue();
+			float w2 = ((Number) s2.getRingWidthData().get(i)).floatValue();
 
 			// w_min = minimum(w1, w2); w_max = max.
 			float w_min = Math.min(w1, w2);

@@ -1130,7 +1130,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			// otherwise, get the first point!
 			if(!((gr.graph instanceof Sample) && ((Sample) gr.graph).isIndexed())) {
 				try {
-					grfirstvalue = ((Number) gr.graph.getData().get(0)).intValue();
+					grfirstvalue = ((Number) gr.graph.getRingWidthData().get(0)).intValue();
 				} catch (ClassCastException cce) {
 					grfirstvalue = bottom - (int) (gr.yoffset * unitScale) - (lineHeight / 2);
 				}
@@ -1622,7 +1622,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		}
 		
 		for(Graph g : graphs) {
-			for(Number v : g.graph.getData()) {
+			for(Number v : g.graph.getRingWidthData()) {
 				int val = v.intValue();
 				
 				if(max < val)

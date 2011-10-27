@@ -185,7 +185,7 @@ public class Sum {
 		if (buf.length == 0) {
 			// "skip to step 6" would be nice...
 			result.setRange(new Range()); // default empty range (1001-1000)
-			result.setData(new ArrayList<Number>());
+			result.setRingWidthData(new ArrayList<Number>());
 			result.setCount(new ArrayList<Integer>());
 			result.setWJIncr(new ArrayList<Integer>());
 			result.setWJDecr(new ArrayList<Integer>());
@@ -238,7 +238,7 @@ public class Sum {
 
 				// this year's data; also copy thisData->prevData
 				prevData = thisData;
-				thisData = ((Number) s.getData().get(elemIndex)).intValue();
+				thisData = ((Number) s.getRingWidthData().get(elemIndex)).intValue();
 
 				// add element's data; increment count
 				data[sumIndex] += thisData;
@@ -272,12 +272,12 @@ public class Sum {
 
 		// step 6: set range, and copy array back into (list) result.data
 		result.setRange(range);
-		result.setData(new ArrayList<Number>(n));
+		result.setRingWidthData(new ArrayList<Number>(n));
 		result.setCount(new ArrayList<Integer>(n));
 		result.setWJIncr(new ArrayList<Integer>(n));
 		result.setWJDecr(new ArrayList<Integer>(n));
 		for (int i = 0; i < n; i++) {
-			result.getData().add(new Integer(data[i]));
+			result.getRingWidthData().add(new Integer(data[i]));
 			result.getCount().add(new Integer(count[i]));
 			result.getWJIncr().add(new Integer(incr[i]));
 			result.getWJDecr().add(new Integer(decr[i]));

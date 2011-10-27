@@ -85,7 +85,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	 * @see Graphable
 	 * @return data as a List of Integers 
 	 */
-	public final List<? extends Number> getData() {
+	public final List<? extends Number> getRingWidthData() {
 		return ixFunction.getOutput();
 	}
 
@@ -151,9 +151,9 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 					source.getRange().getStart());
 			int fromEnd = source.getRange().getEnd().diff(target.getRange().getEnd());
 			for (int i = 0; i < fromStart; i++)
-				getData().remove(0);
+				getRingWidthData().remove(0);
 			for (int i = 0; i < fromEnd; i++)
-				getData().remove(getData().size() - 1);
+				getRingWidthData().remove(getRingWidthData().size() - 1);
 		}
 	}
 
@@ -189,8 +189,8 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 	@return &chi;<sup>2</sup> */
 	public final double getChi2() {
 		// not computed yet?
-		if (chi2 < 0 && getData().size() == target.getData().size()) // BUG: not exactly threadsafe here
-			chi2 = computeChi2(getData(), target.getData());
+		if (chi2 < 0 && getRingWidthData().size() == target.getRingWidthData().size()) // BUG: not exactly threadsafe here
+			chi2 = computeChi2(getRingWidthData(), target.getRingWidthData());
 
 		return chi2;
 	}
@@ -223,7 +223,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 
 	public final double getR() {
 		if (r == null) // see getChi2()
-			r = new Double(computeR(getData(), target.getData()));
+			r = new Double(computeR(getRingWidthData(), target.getRingWidthData()));
 		return r.doubleValue();
 	}
 
@@ -271,18 +271,18 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 		// back up the old data
 		if (backup == null) {
 			backup = new ArrayList<Number>();
-			backup.addAll(target.getData());
+			backup.addAll(target.getRingWidthData());
 		}
 		// INEFFICIENT: make a copy of the old data, then overwrite it all.
 		// why not just move the old data, and create a new list for the new stuff?
 		// (well, you only save an O(n) copy, it won't help that much.)
 
 		// target[i] = ind[i] / raw[i] * 1000
-		for (int i = 0; i < getData().size(); i++) {
-			double ind = ((Number) getData().get(i)).doubleValue();
-			double raw = ((Number) target.getData().get(i)).doubleValue();
+		for (int i = 0; i < getRingWidthData().size(); i++) {
+			double ind = ((Number) getRingWidthData().get(i)).doubleValue();
+			double raw = ((Number) target.getRingWidthData().get(i)).doubleValue();
 			double ratio = raw / ind;
-			target.getData().set(i, new Integer((int) Math.round(ratio * 1000)));
+			target.getRingWidthData().set(i, new Integer((int) Math.round(ratio * 1000)));
 		}
 
 		// set modified flag
@@ -303,8 +303,8 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 
 	public final void unapply() {
 		// restore target.data
-		target.setData(new ArrayList<Number>());
-		target.getData().addAll(backup);
+		target.setRingWidthData(new ArrayList<Number>());
+		target.getRingWidthData().addAll(backup);
 
 		// restore meta/format
 		if (oldFormat == null)

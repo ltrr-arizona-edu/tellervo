@@ -194,7 +194,7 @@ public class IndexDialog extends JDialog {
 		// make sure there's data here
 		// BETTER: make this "==0", and have individual indexes throw if they
 		// can't handle size==2, etc.
-		if (sample.getData().size() < 3) {
+		if (sample.getRingWidthData().size() < 3) {
 			Alert.error(I18n.getText("error"), I18n.getText("error.noData"));
 			dispose();
 			return;
@@ -568,7 +568,7 @@ public class IndexDialog extends JDialog {
 	private Graph getDiffGraph(Index index) {		
 		Graphable series = index.getTarget();
 
-		return new Graph(new DiffGraph(series.getData(), index.getData(), series.getStart()));
+		return new Graph(new DiffGraph(series.getRingWidthData(), index.getRingWidthData(), series.getStart()));
 	}
 	
 	private static final class DiffGraph implements Graphable {
@@ -592,7 +592,7 @@ public class IndexDialog extends JDialog {
 			this.output = output;
 		}
 		
-		public List<? extends Number> getData() {
+		public List<? extends Number> getRingWidthData() {
 			return output;
 		}
 

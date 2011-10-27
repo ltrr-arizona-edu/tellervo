@@ -160,7 +160,7 @@ public final class Graph {
     // moved any higher.) -- not true any longer, but this still seems correct.
     public Range getRange() {
         return new Range(graph.getStart().add(xoffset),
-                         graph.getData().size());
+                         graph.getRingWidthData().size());
     }
     // this method smells funny to me now.  how's it used?
     

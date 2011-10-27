@@ -52,10 +52,10 @@ public class Horizontal extends IndexFunction {
 	@Override
 	public void index() {
 		// compute mean; make a flyweight for the list
-		Double mean = new Double(getDatasetMean(input.getData()));
+		Double mean = new Double(getDatasetMean(input.getRingWidthData()));
 
 		// the curve: well, it's flat...
-		int n = input.getData().size();
+		int n = input.getRingWidthData().size();
 		List<Double> output = Collections.nCopies(n, mean);
 		this.output = output;
 	}

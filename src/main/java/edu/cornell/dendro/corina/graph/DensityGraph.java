@@ -41,7 +41,7 @@ public class DensityGraph implements Graphable {
 	}
 	
     @SuppressWarnings("unchecked")
-	public List getData() {
+	public List getRingWidthData() {
         return data;
     }
     

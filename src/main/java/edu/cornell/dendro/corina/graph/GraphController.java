@@ -185,12 +185,12 @@ public class GraphController {
 
 			// now, compute mean of sample[current][y] - sample[i][y]
 
-			List<? extends Number> data = cur.graph.getData();
+			List<? extends Number> data = cur.graph.getRingWidthData();
 			int j = overlap.getStart().diff(range.getStart()); // index into
 																// data[i]
 			double dataScale = cur.scale;
 
-			List<? extends Number> base = ((Graph) graphs.get(grapher.current)).graph.getData();
+			List<? extends Number> base = ((Graph) graphs.get(grapher.current)).graph.getRingWidthData();
 			int k = overlap.getStart().diff(
 					((Graph) graphs.get(grapher.current)).getRange().getStart()); // graph.getStart());
 																				// //

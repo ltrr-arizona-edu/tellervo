@@ -425,15 +425,15 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		try {
 			int inindex = range.getStart().compareTo(sample.getRange().getStart());
 			
-			List tmpData = sample.getData().subList(inindex, inindex + range.span());
+			List tmpData = sample.getRingWidthData().subList(inindex, inindex + range.span());
 			List tmpCount = sample.hasCount() ? null : sample.getCount().subList(inindex, inindex + range.span());
 			Sample tmpSample = new Sample();
 			
 			tmpSample.setRange(range);
-			tmpSample.setData(tmpData);
+			tmpSample.setRingWidthData(tmpData);
 			tmpSample.setCount(tmpCount);
 			
-			int estimatedLength = 10 * tmpSample.getData().size();
+			int estimatedLength = 10 * tmpSample.getRingWidthData().size();
 			PureStringWriter w = new PureStringWriter(estimatedLength);
 			BufferedWriter b = new BufferedWriter(w);
 			new TwoColumn().save(tmpSample, b);

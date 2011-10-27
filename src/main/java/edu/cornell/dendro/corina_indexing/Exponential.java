@@ -83,7 +83,7 @@ public class Exponential extends IndexFunction implements SolverFunction {
 	// if forReal==false, compute chi2, only.
 	// if forReal==true, compute chi2 and put results in data
 	private double compute(boolean forReal) {
-		final List<? extends Number> indata = input.getData();
+		final List<? extends Number> indata = input.getRingWidthData();
 		List<Double> output = null;
 		// init x, y
 		
