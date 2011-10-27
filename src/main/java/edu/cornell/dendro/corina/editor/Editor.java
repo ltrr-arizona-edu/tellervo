@@ -935,4 +935,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	public EditorFileMenu getEditorFileMenu() {
 		return editorFileMenu;
 	}
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

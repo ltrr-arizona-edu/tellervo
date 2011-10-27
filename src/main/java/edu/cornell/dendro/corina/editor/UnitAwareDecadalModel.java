@@ -49,15 +49,15 @@ public class UnitAwareDecadalModel extends DecadalModel {
 		return displayUnits;
 	}
 	
-	public Object getValueAt(int row, int col) {
+	public Object getValueAt(int row, int col) 
+	{
 		
 		Object obj = super.getValueAt(row, col);
 		
 		if(obj==null) {
 			return obj;
 		}
-		
-		
+				
 		if (col==0 || col==11)
 		{
 			// Year or count column so just return
@@ -65,35 +65,98 @@ public class UnitAwareDecadalModel extends DecadalModel {
 		}
 		else
 		{
-			Number val = (((Number) (obj)).intValue());
+			// HANDLE ALL PLAIN NUMBERS
 			
-			if(val!=null) 
+			if(obj instanceof Number)
 			{
-				if (s.getTridasUnits()==null)
-				{
-					// No units so leave values as they are
-				}
+				Number val = (((Number) (obj)).intValue());
 				
-				else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				if(val!=null) 
 				{
-					val = val.intValue() / 10;
-				}
-				else if (displayUnits.equals(NormalTridasUnit.MICROMETRES))
-				{
-					// do nothing as microns is the internal default units
+					if (s.getTridasUnits()==null)
+					{
+						// No units so leave values as they are
+					}
+					
+					else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+					{
+						val = val.intValue() / 10;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.MICROMETRES))
+					{
+						// do nothing as microns is the internal default units
+					}
+					else
+					{
+						System.out.println("Unsupported display units. Ignoring and defaulting to microns");
+					}
+					return val;
+	
 				}
 				else
 				{
-					System.out.println("Unsupported display units. Ignoring and defaulting to microns");
+					return obj;
 				}
-				return val;
+			}
+			
+			// HANDLE EWLW VALUES
+			
+			else if (obj instanceof EWLWValue)
+			{
+				Integer ewval = ((EWLWValue) obj).getEarlywoodValue().intValue();
+				Integer lwval = ((EWLWValue) obj).getLatewoodValue().intValue();
+				String strval = "";
+
+				if (s.getTridasUnits()==null)
+				{
+					// No units so leave values as they are
+					return obj.toString();
+				}
+				
+				if(ewval!=null) 
+				{				
+					if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+					{
+						strval+= ewval / 10;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.MICROMETRES))
+					{
+						// do nothing as microns is the internal default units
+						strval+= ewval;
+					}
+					else
+					{
+						System.out.println("Unsupported display units. Ignoring and defaulting to microns");
+						strval+= ewval;
+					}
+					
+				}
+				
+				strval+="/";
+					
+				if(lwval!=null) 
+				{				
+					if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+					{
+						strval+= lwval / 10;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.MICROMETRES))
+					{
+						// do nothing as microns is the internal default units
+						strval+= lwval;
+					}
+					else
+					{
+						System.out.println("Unsupported display units. Ignoring and defaulting to microns");
+						strval+= lwval;
+					}					
+				}
+				
+				return strval;
 
 			}
-			else
-			{
-				return obj;
-			}
 		}
+		return null;
 	}
 	
 	public void setValueAt(Object value, int row, int col) {

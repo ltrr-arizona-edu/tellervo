@@ -731,4 +731,10 @@ public class ElementsPanel extends JPanel implements SampleListener {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -109,6 +109,7 @@ public class Prefs extends AbstractSubsystem {
 		GRID_HIGHLIGHTCOLOR("corina.grid.hightlightcolor"),
 		DISPLAY_UNITS("corina.displayunits"),
 		BARCODES_DISABLED("corina.barcodes.disable"),
+		MEASUREMENT_VARIABLE("corina.measurement.variable"),
 		
 		/** Boolean indicating whether OpenGL failed on last attempt*/
 		OPENGL_FAILED("opengl.failed"),

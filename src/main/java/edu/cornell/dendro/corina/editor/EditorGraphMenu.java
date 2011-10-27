@@ -130,4 +130,10 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

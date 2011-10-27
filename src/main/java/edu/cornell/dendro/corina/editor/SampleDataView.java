@@ -709,4 +709,10 @@ public class SampleDataView extends JPanel implements SampleListener,
 	public RingAnnotations getRemarksPanel() {
 		return remarksPanel;
 	}
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

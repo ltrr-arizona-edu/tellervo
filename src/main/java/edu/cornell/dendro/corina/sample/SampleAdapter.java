@@ -55,6 +55,11 @@ public class SampleAdapter implements SampleListener {
     public void sampleElementsChanged(SampleEvent e) { }
 	@Override
 	public void sampleDisplayUnitsChanged(SampleEvent e) { }
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
     
 
     // 

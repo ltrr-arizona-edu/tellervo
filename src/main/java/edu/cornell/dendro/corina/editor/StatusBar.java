@@ -56,6 +56,7 @@ import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.gui.ElementsPanel;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.editor.UnitsChooser;
 
 /**
    An emacs-style modeline for an Editor's data table.
@@ -91,10 +92,11 @@ public class StatusBar extends JPanel
 
     // label
     private JLabel widthLabel;
-
+    private JLabel variableChooser;
+    
     // statistics
     private Statistics stats;
-    private UnitsPanel units;
+    private UnitsChooser units;
 
     // optional: table
     private JTable table;
@@ -178,7 +180,8 @@ public class StatusBar extends JPanel
 
     /** Create a new Modeline, for a given data table and sample.
 	@param table data table to watch for selection changes
-	@param sample sample to get data values */
+	@param sample sample to get data values 
+     * @wbp.parser.constructor*/
     public StatusBar(JTable table, Sample sample) {
 	// copy refs
 	this.sample = sample;
@@ -199,7 +202,9 @@ public class StatusBar extends JPanel
 	//stats.setBorder(BorderFactory.createEtchedBorder());
 	
 	// Units 
-	units = new UnitsPanel(sample);
+	units = new UnitsChooser(sample);
+	
+	variableChooser = new VariableChooser(sample);
 	
 	// initial text
 	update();
@@ -210,6 +215,8 @@ public class StatusBar extends JPanel
 	add(Box.createHorizontalStrut(2));
 	// add(icon);
 	// add(Box.createHorizontalStrut(4));
+	add(variableChooser);
+	add(new JLabel("  |  "));
 	add(units);
 	add(new JLabel("  |  "));
 	add(widthLabel);

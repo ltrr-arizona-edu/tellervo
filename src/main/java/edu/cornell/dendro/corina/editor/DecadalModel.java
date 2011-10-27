@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.editor.VariableChooser.MeasurementVariable;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.manip.RedateDialog;
@@ -235,16 +236,30 @@ public class DecadalModel extends AbstractTableModel {
 		} else {
 			// System.out.println("getYear() called (b=" + __b++ + ")");
 			Year y = getYear(row, col); // 479 -- THIS GETS CALLED TOO MANY TIMES!
-			if (!s.getRange().contains(y))
-				return null;
-			else
-				if(s.containsSubAnnualData())
-				{
-					log.debug("Earlywood value: " + s.getEarlywoodWidthData().get(y.diff(s.getRange().getStart())));
-					log.debug("Latewood  value: " + s.getLatewoodWidthData().get(y.diff(s.getRange().getStart())));
-				}			
+			if (!s.getRange().contains(y)) return null;
+			
+			MeasurementVariable var = MeasurementVariable.getPreferredVariable(s);
+
+			if(var.equals(MeasurementVariable.RING_WIDTH))
+			{
 				return s.getRingWidthData().get(y.diff(s.getRange().getStart()));
+			}
+			else if (var.equals(MeasurementVariable.EARLYWOOD_WIDTH))
+			{
+				return s.getEarlywoodWidthData().get(y.diff(s.getRange().getStart()));
+			}
+			else if (var.equals(MeasurementVariable.LATEWOOD_WIDTH))
+			{
+				return s.getLatewoodWidthData().get(y.diff(s.getRange().getStart()));
+			}
+			else if (var.equals(MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH))
+			{
+				return new EWLWValue(s.getEarlywoodWidthData().get(y.diff(s.getRange().getStart())),
+										s.getLatewoodWidthData().get(y.diff(s.getRange().getStart()))); 
+			}
 				
+			return null;
+			
 			
 		}
 	}

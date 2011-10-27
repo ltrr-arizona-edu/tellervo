@@ -47,12 +47,12 @@ import edu.cornell.dendro.corina.ui.I18n;
 */
 
 @SuppressWarnings("serial")
-public class UnitsPanel extends JLabel implements SampleListener {
+public class UnitsChooser extends JLabel implements SampleListener {
     private Sample sample;
     private  Boolean unitless;
     
     
-    public UnitsPanel(Sample s) {
+    public UnitsChooser(Sample s) {
 	this.sample = s;
 	
 	
@@ -199,5 +199,12 @@ public class UnitsPanel extends JLabel implements SampleListener {
 
 	public String[] getStat_values() {
 		return stat_values;
+	}
+
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

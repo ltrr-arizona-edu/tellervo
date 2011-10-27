@@ -308,4 +308,11 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		  crossAgainst.setEnabled(App.isLoggedIn());
 		  crossMenu.setEnabled(App.isLoggedIn());
 	}
+
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

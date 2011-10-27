@@ -251,5 +251,11 @@ public class EditorSumMenu extends JMenu implements SampleListener {
 	public void sampleDisplayUnitsChanged(SampleEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
 	}	
 }

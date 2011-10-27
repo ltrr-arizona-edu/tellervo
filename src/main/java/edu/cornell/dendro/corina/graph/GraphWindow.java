@@ -816,4 +816,10 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

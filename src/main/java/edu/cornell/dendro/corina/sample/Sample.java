@@ -503,6 +503,10 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	public void fireDisplayUnitsChanged(){
 		fireSampleEvent("sampleDisplayUnitsChanged");
 	}
+	
+	public void fireMeasurementVariableChanged(){
+		fireSampleEvent("measurementVariableChanged");
+	}
 
 	/**
 	 * @return the count
@@ -939,7 +943,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	// fire an arbitrary sample event called |method|.  each
 	// fireSampleXYZhappened() method is virtually identical, so their
 	// guts were refactored into here.  this makes adding new events
-	// painless.  (this was taken from a web page -- url?)
+	// painless.  
 	@SuppressWarnings("unchecked")
 	private void fireSampleEvent(String method) {
 		// alert all listeners
