@@ -627,17 +627,6 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// this is the year we return...
 		Year retYear = y;
 
-		// beep! (twice on column 0)
-		/*
-		 * meh.. beeping doesn't do anything on newer computers.
-		 * 
-		 * play a .wav file instead... to be implemented.
-		 * 
-		 *	Toolkit.getDefaultToolkit().beep();
-		 *	if (y.column() == 0)
-		 *		Toolkit.getDefaultToolkit().beep();
-		 */
-
 		// what's the next year?
 		y = y.add(1);
 

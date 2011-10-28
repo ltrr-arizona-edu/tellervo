@@ -55,7 +55,6 @@ import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.editor.VariableChooser.MeasurementVariable;
 import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.manip.RedateDialog;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
@@ -72,14 +71,16 @@ import edu.cornell.dendro.corina.util.Years;
    @version $Id$
 */
 public class DecadalModel extends AbstractTableModel {
-	// BUG! -- if the length changes (e.g., truncate), there's a problem
-	// with sums.  ouch.  (<-- what did i mean by this?)
-	private final static Logger log = LoggerFactory.getLogger(DecadalModel.class);
 
+	private final static Logger log = LoggerFactory.getLogger(DecadalModel.class);
+	private static final long serialVersionUID = 1L;
+	
+	/** I'll have a lot of these.  better to use only one (flyweight).*/
+	protected final static Integer ZERO = Integer.valueOf(0);
+	
+	/** Unit multiplier*/
 	private Double unitMultiplier = 0.0;
 	
-	private static final long serialVersionUID = 1L;
-
 	/** The sample whose data is being displayed. */
 	protected Sample s;
 
@@ -94,8 +95,14 @@ public class DecadalModel extends AbstractTableModel {
 	 @see Year#row() */
 	protected int row_max = -1;
 
-	/** Default constructor.  Not used, but required for
-	 subclassing. */
+	/** Whether editing has been disabled **/
+	private boolean editingOff = false;
+
+	/** oldval from /previous/ edit -- because typing into a cell
+	counts as 2 edits, oldvalue->"", ""->newvalue*/
+	private Number lastOldVal = null;
+	
+	/** Default constructor.  Not used, but required for subclassing. */
 	public DecadalModel() {
 		// to keep subclasses happy
 	}
@@ -107,6 +114,11 @@ public class DecadalModel extends AbstractTableModel {
 		countRows();
 	}
 
+	/**
+	 * Get the sample for this model
+	 * 
+	 * @return
+	 */
 	public Sample getSample() {
 		return s;
 	}
@@ -126,7 +138,7 @@ public class DecadalModel extends AbstractTableModel {
 			return Integer.toString(col - 1);
 	}
 
-	// query the Sample to figure out row_min, row_max
+	/** query the Sample to figure out row_min, row_max */
 	protected void countRows() {
 		row_min = s.getRange().getStart().row();
 		row_max = s.getRange().getEnd().row();
@@ -173,17 +185,9 @@ public class DecadalModel extends AbstractTableModel {
 	 @param row the row in question
 	 @param col the column in question
 	 @return the Year that the (row,col) cell should display */
-	public/* protected */Year getYear(int row, int col) {
+	public Year getYear(int row, int col) {
 		return Years.forRowAndColumn(row + row_min, col - 1);
-		// System.out.println("getYear() called (n=" + __n++ + ")");
-		//return new Year(row + row_min, // offset row by row_min (top row is 0)
-		//		col - 1); // offset col by 1 (left col is year label)
 	}
-
-	// private static int __n=0;
-
-	// i'll have a lot of these.  better to use only one (flyweight).
-	protected final static Integer ZERO = Integer.valueOf(0);
 
 	protected final Integer getMean(int row) {
 		// if no count, just return zero
@@ -218,6 +222,9 @@ public class DecadalModel extends AbstractTableModel {
 		return new Integer(mean);
 	}
 
+	/**
+	 * Get the value of a particular cell
+	 */
 	public Object getValueAt(int row, int col) {
 		if (col == 0) {
 			if (row == 0)
@@ -274,17 +281,21 @@ public class DecadalModel extends AbstractTableModel {
 		return ((col >= 1 && col <= 10) ? Integer.class : String.class);
 	}
 
-	private boolean editingOff = false;
+	/**
+	 * Turn editing on/off
+	 * 
+	 * @param enable
+	 */
 	public void enableEditing(boolean enable) {
 		// if it's true, turn off editingOff
 		editingOff = !enable;
 	}
-	
+
+	/**
+	 * Determine if a particular cell is editable
+	 */
 	@Override
 	public boolean isCellEditable(int row, int col) {
-		// REFACTOR this whole method.  i'd like to see a couple temps, then something simple
-		// like return a||b||c||d;
-		
 		// we're currently in a mode that doesn't allow editing!
 		if(editingOff)
 			return false;
@@ -300,17 +311,21 @@ public class DecadalModel extends AbstractTableModel {
 		// proposed year to edit
 		Year y = getYear(row, col);
 
+		// If the sample contains early/late wood then do not allow editing of whole ring
+		if(s.containsSubAnnualData() && MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.RING_WIDTH))
+			return false;
+		
 		// okay if in range, or one beyond end
 		return (s.getRange().contains(y) || s.getRange().getEnd().add(1).equals(y));
 	}
 
-	// oldval from /previous/ edit -- because typing into a cell
-	// counts as 2 edits, oldvalue->"", ""->newvalue
-	private Number lastOldVal = null;
-
+	/**
+	 * Set the value of a particular cell
+	 */
 	@Override
 	public void setValueAt(Object value, int row, int col) {
-		// new feature: (0,0) redates
+		
+		// Redate series if the cell 0,0 (i.e. cell 1001) is altered 
 		if (row == 0 && col == 0) {
 			// redate
 			try {
@@ -338,30 +353,76 @@ public class DecadalModel extends AbstractTableModel {
 			return;
 		}
 
-		// if we get a String, make it into an Integer
-		// [Q: what else could it be?]
-		Integer intValue;
-		if ((value instanceof String) && ((String) value).length() > 0) {
-			try {
-				intValue = Integer.parseInt((String) value);
-			} catch (NumberFormatException nfe) {
-				return;
-			} catch (Exception e) {
-				new Bug(e);
-				return;
+		// Convert the cell value into one or two Integers depending on type
+		Integer intValue = null;
+		Integer intValue2 = null;
+		if ((value instanceof String) && ((String) value).length() > 0) 
+		{
+			// A string could be;
+			// 1) 44/55 style for EW/LW 
+			// 2) Plain number
+			// 3) Dodgy string
+			
+			String strvalue = ((String)value).trim();
+			if (strvalue.matches("^[0-9]*/[0-9]*"))
+			{
+				// Option 1
+				String[] widthparts = strvalue.split("/");
+				if(widthparts.length!=2) return;
+				
+				try {
+					// Option 2
+					intValue = Integer.parseInt(widthparts[0]);
+					intValue2 = Integer.parseInt(widthparts[1]);
+				} catch (NumberFormatException nfe) {
+					// Option 3
+					return;
+				} catch (Exception e) {
+					new Bug(e);
+					return;
+				}
+				
+			}
+			else
+			{
+				try {
+					// Option 2
+					intValue = Integer.parseInt(strvalue);
+				} catch (NumberFormatException nfe) {
+					// Option 3
+					return;
+				} catch (Exception e) {
+					new Bug(e);
+					return;
+				}
 			}
 		}
-		else if(value instanceof Integer) {
+		else if(value instanceof Integer) 
+		{
 			intValue = (Integer) value;
 		}
 		else if(value == null)
+		{
 			intValue = null;
+		}
+		else if(value instanceof EWLWValue)
+		{
+			intValue = ((EWLWValue) value).getEarlywoodValue().intValue();
+			intValue2 = ((EWLWValue) value).getLatewoodValue().intValue();
+			
+			if(intValue==null || intValue2==null)
+			{
+				log.debug("Ignoring data input value because one or both values of EW/LW is null");
+				return;
+			}
+		}
 		else
+		{
 			return;
-		
-		// at this point, value is an integer! Guaranteed!
+		}
 
-		// if user just typed into end+1, we'll need to increase the size!
+
+		// If the user typed into end+1, we'll need to increase the size of the data model
 		final boolean bigger = s.getRange().getEnd().add(+1).equals(
 				getYear(row, col));
 		final Year y = (bigger ? s.getRange().getEnd().add(+1) : getYear(row, col));
@@ -373,29 +434,84 @@ public class DecadalModel extends AbstractTableModel {
 		}
 		final Number oldVal = tmp;
 
+		
 		if (bigger) {	
-			// no legitimate value just yet, don't change the underlying data model
-			if(intValue == null)
-				return;
+			// Adding extra value to end of <values> 
 			
-			s.getRingWidthData().add(intValue);
+			if(intValue == null) return;
+			
+			if(MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.RING_WIDTH))
+			{
+				s.getRingWidthData().add(intValue);
+			}
+			else if (MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.EARLYWOOD_WIDTH))
+			{
+				s.getEarlywoodWidthData().add(intValue);
+				s.getLatewoodWidthData().add(0);
+				s.recalculateRingWidths();
+			}
+			else if (MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.LATEWOOD_WIDTH))
+			{
+				s.getEarlywoodWidthData().add(0);
+				s.getLatewoodWidthData().add(intValue);
+				s.recalculateRingWidths();
+			}
+			else if (MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH))
+			{
+				s.getEarlywoodWidthData().add(intValue);
+				s.getLatewoodWidthData().add(intValue2);
+				s.recalculateRingWidths();
+			}
+			else
+			{
+				log.error("Unknown measurement variable returned by MeasurementVariable.getPreferredVariable()");
+			}
+			
+			// Reset the range
 			s.setRange(new Range(s.getRange().getStart(), s.getRange().getEnd().add(+1)));
-		} else {
-			if(value.equals(oldVal))
-				return;
-			s.getRingWidthData().set(y.diff(s.getRange().getStart()), intValue);
+		} 
+		else 
+		{
+			// Editing existing <value>
+			if(value.equals(oldVal)) return;
+			
+			if(MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.RING_WIDTH))
+			{
+				s.getRingWidthData().set(y.diff(s.getRange().getStart()), intValue);
+			}
+			else if(MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.EARLYWOOD_WIDTH))
+			{
+				s.getEarlywoodWidthData().set(y.diff(s.getRange().getStart()), intValue);
+				s.recalculateRingWidths();
+			}
+			else if(MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.LATEWOOD_WIDTH))
+			{
+				s.getLatewoodWidthData().set(y.diff(s.getRange().getStart()), intValue);
+				s.recalculateRingWidths();
+			}
+			else if(MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH))
+			{
+				s.getEarlywoodWidthData().set(y.diff(s.getRange().getStart()), intValue);
+				s.getLatewoodWidthData().set(y.diff(s.getRange().getStart()), intValue2);
+				s.recalculateRingWidths();
+			}	
+			
 		}
+		
+		// Tell listeners that table has changed
 		fireTableCellUpdated(row, col);
 
-		// set modified
+		// Mark the series as modified
 		s.setModified();		
+		
+		// Tell listeners that sample data has changed
 		s.fireSampleDataChanged();
-		if (bigger)
-			s.fireSampleRedated();
+		
+		// If the series has had an extra year added warn listeners
+		if (bigger) s.fireSampleRedated();
 
-		// add undo-able
-		if (value == null || value.toString().length() == 0)
-			return; // better to use collapsing undo-edits -- solves both problems
+		// Add undoable
+		if (value == null || value.toString().length() == 0) return; // better to use collapsing undo-edits -- solves both problems
 		
 		final Integer glue = intValue;
 		s.postEdit(new AbstractUndoableEdit() {

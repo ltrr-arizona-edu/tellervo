@@ -44,6 +44,7 @@ import edu.cornell.dendro.corina.Previewable;
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Weiserjahre;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.editor.DecadalModel;
 import edu.cornell.dendro.corina.graph.Graphable;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.tridasv2.support.TridasWidthValueWrapper;
@@ -62,6 +63,8 @@ import java.lang.reflect.Method;
 
 import javax.swing.undo.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasUnit;
@@ -97,6 +100,7 @@ import org.tridas.schema.TridasVariable;
 @SuppressWarnings("serial")
 public class Sample extends BaseSample implements Previewable, Graphable, Indexable {
 
+	private final static Logger log = LoggerFactory.getLogger(Sample.class);
 	private boolean metadataChanged = true;
 	
 	/** 
@@ -537,6 +541,24 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 			return earlywoodWidths.getData();
 		}
 		else return null;
+	}
+	
+	/**
+	 * Updates the whole ring width value.  To be called when early/late
+	 * wood widths are altered.
+	 */
+	public void recalculateRingWidths()
+	{
+		if(earlywoodWidths.getData().size()!=latewoodWidths.getData().size())
+		{
+			log.warn("earlywood and latewood data arrays are different sizes");
+		}
+		
+		for(int i=0; i<earlywoodWidths.getData().size(); i++)
+		{
+			Number wrw = earlywoodWidths.getData().get(i).intValue()+ latewoodWidths.getData().get(i).intValue();
+			this.ringwidths.getData().set(i, wrw);
+		}
 	}
 	
 	/** Return the data for a graph
