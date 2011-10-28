@@ -218,7 +218,7 @@ class searchParameters implements IParams
 				break;
 			}
 	
-			$firebug->log($param->getAttribute("name"), "param name");
+			//$firebug->log($param->getAttribute("name"), "param name");
 			
 			// Use translation array to get the correct table and field names
 			if(isset($translationArray[$param->getAttribute("name")]))
@@ -1020,6 +1020,10 @@ class measurementParameters extends measurementEntity implements IParams
         
         // Extract parameters from the XML request
         $this->setParamsFromXMLRequest();
+        
+        global $firebug;
+        
+        //$firebug->log($this, "State of measurementParameters following construction");
     }
     
     function setParamsFromXMLRequest()
@@ -1193,9 +1197,9 @@ class measurementParameters extends measurementEntity implements IParams
 		   			{		   				
 		   				if($tag->getAttribute("normalTridas")!=NULL)
 		   				{
-		   					$firebug->log($tag->getAttribute("normalTridas"), "Setting measurement variable");
+		   					//$firebug->log($tag->getAttribute("normalTridas"), "Setting measurement variable");
 		   					$this->setVariable(NULL, $tag->getAttribute("normalTridas"));
-		   					$firebug->log($this->getVariable(), "Variable now set to ...");
+		   					//$firebug->log($this->getVariable(), "Variable now set to ...");
 		   					continue;
 		   				}
 		   				else
@@ -1229,47 +1233,49 @@ class measurementParameters extends measurementEntity implements IParams
 			   			$value = $tag->getAttribute("value");  
 			   			
 			   			
-			   			// See if it has child nodes (notes or subvalues)
-			   			$valuechildren = $tag->childNodes;
-		   				$myNotesArray = array();			   			
-			   			foreach($valuechildren as $valuechild)
+			   			// If this is the ring width variable, see if it has child nodes (notes)
+			   			if($this->getVariable()=='ring width')
 			   			{
-			   				if($valuechild->nodeType != XML_ELEMENT_NODE) continue;
-			   				if($valuechild->tagName == 'remark')
-			   				{
-			   					// Create a notes object to hold note
-			   					$currReadingNote = new readingNote();
-			   					
-			   					if($valuechild->hasAttribute("normalTridas"))
-			   					{
-			   						// TRiDaS controlled remark
-			   						$currReadingNote->setControlledVoc(null, "TRiDaS");
-			   						$currReadingNote->setNote($valuechild->getAttribute("normalTridas"));	   						
-			   					}
-			   					else
-			   					{
-				   					// Corina or free text remark
-				   					$currReadingNote->setID($valuechild->getAttribute("normalId"));
-				   					$currReadingNote->setControlledVoc(null, $valuechild->getAttribute("normalStd"));
+				   			$valuechildren = $tag->childNodes;
+			   				$myNotesArray = array();			  			
+				   			foreach($valuechildren as $valuechild)
+				   			{			   				
+				   				if($valuechild->nodeType != XML_ELEMENT_NODE) continue;
+				   				if($valuechild->tagName == 'remark')
+				   				{
+				   					// Create a notes object to hold note
+				   					$currReadingNote = new readingNote();
 				   					
-				   					if($valuechild->hasAttribute("normal"))
+				   					if($valuechild->hasAttribute("normalTridas"))
 				   					{
-				   						$currReadingNote->setNote($valuechild->getAttribute("normal"));
+				   						// TRiDaS controlled remark
+				   						$currReadingNote->setControlledVoc(null, "TRiDaS");
+				   						$currReadingNote->setNote($valuechild->getAttribute("normalTridas"));	   						
 				   					}
 				   					else
-				   					{  		
-				   						$currReadingNote->setNote($valuechild->nodeValue);			
-				   						
+				   					{
+					   					// Corina or free text remark
+					   					$currReadingNote->setID($valuechild->getAttribute("normalId"));
+					   					$currReadingNote->setControlledVoc(null, $valuechild->getAttribute("normalStd"));
+					   					
+					   					if($valuechild->hasAttribute("normal"))
+					   					{
+					   						$currReadingNote->setNote($valuechild->getAttribute("normal"));
+					   					}
+					   					else
+					   					{  		
+					   						$currReadingNote->setNote($valuechild->nodeValue);			
+					   						
+					   					}
 				   					}
-			   					}
-			   					
-			   					// Notes fields common to all types of notes
-			   					$currReadingNote->setInheritedCount($valuechild->getAttribute("inheritedCount"));
-			   					
-			   					// Add notes in a notes array
-			   					array_push($myNotesArray, $currReadingNote);
-			   				}
-			   				
+				   					
+				   					// Notes fields common to all types of notes
+				   					$currReadingNote->setInheritedCount($valuechild->getAttribute("inheritedCount"));
+				   					
+				   					// Add notes in a notes array
+				   					array_push($myNotesArray, $currReadingNote);
+				   				}
+				   			}
 			   			}
 
 			   			// Mush all the reading and notes into the ReadingArray
@@ -1295,8 +1301,8 @@ class measurementParameters extends measurementEntity implements IParams
 			   				$this->readingsArray[]= $readingArrEntry;
 			   			}
 	
-			   			$firebug->log($this->getVariable(), "Variable being used");
-			   			$firebug->log($value, "Width value");
+			   			//$firebug->log($this->getVariable(), "Variable being used");
+			   			//$firebug->log($value, "Width value");
 			   			
 			   			
 			   			if($this->getVariable()=="ring width")
@@ -1309,12 +1315,10 @@ class measurementParameters extends measurementEntity implements IParams
 			   			else if ($this->getVariable()=="earlywood width")
 			   			{
 			   				$readingArrEntry['ewwidth'] = unit::unitsConverter($value, $this->getUnits(), "db-default");
-			   				$readingArrEntry['notesArray'] = $myNotesArray;	
 			   			}
 		   				else if ($this->getVariable()=="latewood width")
 			   			{
 			   				$readingArrEntry['lwwidth'] = unit::unitsConverter($value, $this->getUnits(), "db-default");
-			   				$readingArrEntry['notesArray'] = $myNotesArray;	
 			   			}	
 			   			else
 			   			{
@@ -1341,7 +1345,8 @@ class measurementParameters extends measurementEntity implements IParams
 		   		}	
 		   		
 		   		// Reset variable to 'ring width'
-		   		$this->setVariable(NULL, 'ring width');   			
+		   		$this->setVariable(NULL, 'ring width');   
+		   		//$firebug->log($this->readingsArray, "Readings array in parameters.php");			
 				break;		   		
 
 				

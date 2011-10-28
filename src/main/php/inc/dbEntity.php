@@ -1537,6 +1537,8 @@ class elementEntity extends dbEntity
 	function getDimensionUnits($asKey=false)
 	{
 		
+	    if(!isset($this->dimensionUnits)) return null;
+
 	    if($asKey===FALSE)
             {
 		return $this->dimensionUnits->getValue();	

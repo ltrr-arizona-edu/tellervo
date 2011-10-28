@@ -365,6 +365,8 @@ class measurement extends measurementEntity implements IDBAccessor
 	 */
 	function setParamsFromParamsClass($paramsClass, $auth)
 	{
+		global $firebug;
+		
 		// Alters the parameter values based upon values supplied by the user and passed as a parameters class
 		if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());	
 		if ($paramsClass->getComments()!=NULL)				$this->setComments($paramsClass->getComments());
@@ -414,6 +416,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		if($paramsClass->getUnits()!=NULL)					$this->setUnits(NULL, $paramsClass->getUnits());
 		//if (isset($paramsClass->readingsUnits))        $this->setUnits($paramsClass->readingsUnits);
 		
+		$firebug->log($paramsClass->readingsArray, "Readings array as paramsClass");
 
 		if (sizeof($paramsClass->readingsArray)>0)     $this->setReadingsArray($paramsClass->readingsArray);
 		
@@ -478,7 +481,7 @@ class measurement extends measurementEntity implements IDBAccessor
 				}
 				if($paramsObj->readingsArray)
 				{
-					$firebug->log($paramsObj->readingsArray, "Readings Array");
+					//$firebug->log($paramsObj->readingsArray, "Readings Array");
 					foreach ($paramsObj->readingsArray as $reading)
 					{
 						if(!is_numeric($reading['value']))
@@ -934,7 +937,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	public function asKML()
 	{
 		global $firebug;
-		$firebug->log($this->getSummaryObjectCode(), "Summary object code");
+		//$firebug->log($this->getSummaryObjectCode(), "Summary object code");
 	
 		$kml = "<Placemark>";
 			
@@ -1285,6 +1288,10 @@ class measurement extends measurementEntity implements IDBAccessor
 	private function getValuesXML($type="val")
 	{
 		global $wsDefaultUnits;
+		global $firebug;
+		
+
+	
 		
 		if (!$this->readingsArray)
 		{
@@ -1675,9 +1682,22 @@ class measurement extends measurementEntity implements IDBAccessor
 							// First loop through the readingsArray and create insert statement for tblreading table
 							$insertSQL = "insert into tblreading (measurementid, relyear, reading, ewwidth, lwwidth) values (".pg_escape_string($this->measurementID).", "
 							.pg_escape_string($relyear).", "
-							.pg_escape_string($value['value']).", "
-							.pg_escape_string($value['ewwidth']).", "
-							.pg_escape_string($value['lwwidth']);
+							.pg_escape_string($value['value']).", ";
+							
+							//$firebug->log($value['ewwidth'], "ewwidth");
+							
+							if(   $value['ewwidth']!=null && $value['ewwidth']!='' 
+							   && $value['lwwidth']!=null && $value['lwwidth']!='')
+							{
+								$insertSQL.= pg_escape_string($value['ewwidth']).", "
+											.pg_escape_string($value['lwwidth']);
+							}
+							else
+							{
+								$insertSQL.="null, null";
+							}
+							
+							$insertSQL.=")";
 							$relyear++;
 
 							// Do tblreading inserts
@@ -1729,7 +1749,7 @@ class measurement extends measurementEntity implements IDBAccessor
 							//$this->setParamsFromDB($row['createnewvmeasurement']);
 						}
 					}		
-					$firebug->log($this->dating->getID(), "dating");
+					//$firebug->log($this->dating->getID(), "dating");
 					
 					// This extra SQL query is needed to finish off a crossdate, truncate or redate
 					if(($this->getVMeasurementOp()=='Crossdate') || 
@@ -1822,15 +1842,27 @@ class measurement extends measurementEntity implements IDBAccessor
 						$deleteSQL = "DELETE FROM tblreading WHERE measurementid=".pg_escape_string($this->getMeasurementID())."; ";
 						$relyear = 0;
 						foreach($this->readingsArray as $key => $value)
-						{
+						{				
 							$insertSQL .= "INSERT INTO tblreading (measurementid, relyear, reading, ewwidth, lwwidth) VALUES ("
-							.pg_escape_string($this->getMeasurementID()).", "
+							.pg_escape_string($this->measurementID).", "
 							.pg_escape_string($relyear).", "
-							.pg_escape_string($value['value']).", "
-							.pg_escape_string($value['ewwidth']).", "
-							.pg_escape_string($value['lwwidth'])
-							."); ";
+							.pg_escape_string($value['value']).", ";
+
+							
+							if(   $value['ewwidth']!=null && $value['ewwidth']!='' 
+							   && $value['lwwidth']!=null && $value['lwwidth']!='')
+							{
+								$insertSQL.= pg_escape_string($value['ewwidth']).", "
+											.pg_escape_string($value['lwwidth']);
+							}
+							else
+							{
+								$insertSQL.="NULL, NULL";
+							}
+							
+							$insertSQL.="); ";
 							$relyear++;
+							
 						}
 					}
 

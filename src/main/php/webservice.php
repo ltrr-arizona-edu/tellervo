@@ -114,7 +114,7 @@ if($myMetaHeader->status != "Error")
         // Get the name of the object (minus the Parameters bit)
         $objectType = substr(get_class($paramObj), 0, -10);
 
-        $firebug->log($myObject, "My object");
+        //$firebug->log($myObject, "My object");
         
         // Before doing anything else check the request parameters are valid
         if($myMetaHeader->status != "Error")
@@ -351,7 +351,7 @@ if($myMetaHeader->status != "Error")
             // Update parameters in object
             if($myMetaHeader->status != "Error")
             {
-            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting parameters to new requested values");              	
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting parameters to new requested values");             	
                 $success = $myObject->setParamsFromParamsClass($paramObj, $myAuth);
                 if(!$success)
                 {

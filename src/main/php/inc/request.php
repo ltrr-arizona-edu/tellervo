@@ -401,6 +401,8 @@ class request
             trigger_error("667"."Program bug - unable to determine request mode but shouldn't have got this far!", E_USER_ERROR);
         }
 
+        
+        $firebug->log($myParamObj, "request.php myParamObj");
 
         // Check that at least one parameters object has been extracted from the xml request
         if(sizeof($this->paramObjectsArray)>0)
