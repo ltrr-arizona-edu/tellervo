@@ -46,6 +46,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
@@ -394,9 +395,13 @@ public class SampleDataView extends JPanel implements SampleListener,
 		insertYear(new Integer(Sample.MR), true);
 	}
 
+	/**
+	 * Insert a year into the series
+	 * 
+	 * @param val
+	 * @param selectAndEdit
+	 */
 	public void insertYear(Integer val, boolean selectAndEdit) {
-		// note: ideally this would never be called for isSummed() or
-		// isIndexed() samples, so these checks will be obselete.
 
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
@@ -421,8 +426,18 @@ public class SampleDataView extends JPanel implements SampleListener,
 			return;
 		}
 
-		// insert 0
-		mySample.getRingWidthData().add(i, val); // new Integer(0));
+		// insert value		
+		if(mySample.containsSubAnnualData())
+		{
+			mySample.getEarlywoodWidthData().add(i, val);
+			mySample.getLatewoodWidthData().add(i, val);
+			mySample.recalculateRingWidths();
+		}
+		else
+		{
+			mySample.getRingWidthData().add(i, val); 
+		}
+		
 		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
 				.getEnd().add(+1)));
 		// REFACTOR: by LoD, should be range.extend()
@@ -596,33 +611,60 @@ public class SampleDataView extends JPanel implements SampleListener,
 		initPrefs();
 	}
 
-	// returns the Year that was measured, for graphical display goodness.
-	public Year measured(int x) {
-		/*
-		 * This code inserts the year instead of overwriting values... 
-		 * insertYear(new Integer(x), false);
-		 */
-		
-		// figure out what year we're looking at now -- BREAKS IF EDITING=TRUE
+	/**
+	 * Set whole ring width value programatically
+	 * 
+	 * @param x
+	 * @return
+	 */
+	public Year measured(int x)
+	{
+		return measured(x, null);
+	}
+	
+	/**
+	 * Set value programatically.  The second value is optional.  If one
+	 * value is provided uses it as a whole ring width value, if two are 
+	 * provided it uses them as early/late wood values
+	 * 
+	 * @param firstval
+	 * @param secondval
+	 * @return
+	 */
+	public Year measured(int firstval, Integer secondval)
+	{
 		Year y = ((UnitAwareDecadalModel) myTable.getModel()).getYear(myTable
 				.getSelectedRow(), myTable.getSelectedColumn());
-
-		// beyond the end?  extend.
-		// -- old way:
-		// Year end = mySample.range.getEnd();
-		// if (y.compareTo(end) > 0) {
-		// mySample.range.setEnd(end.add(1));
-		// mySample.data.add(new Integer(0));
-		// }
-		if (!mySample.getRange().contains(y)) {
-			mySample.setRange(new Range(mySample.getRange().getStart(),
-					mySample.getRange().getEnd().add(1)));
-			mySample.getRingWidthData().add(new Integer(0));
-		}
-
-		// set the value
+	
 		int i = y.diff(mySample.getRange().getStart());
-		mySample.getRingWidthData().set(i, new Integer(x));
+		
+		if(secondval==null)
+		{		
+			// Just one value provided, so assuming its whole ring width value
+			
+			if (!mySample.getRange().contains(y)) {
+				mySample.setRange(new Range(mySample.getRange().getStart(),
+						mySample.getRange().getEnd().add(1)));
+				mySample.getRingWidthData().add(new Integer(0));
+			}
+			
+			mySample.getRingWidthData().set(i, new Integer(firstval));
+		}
+		else
+		{
+			// Two values provided, so assuming they are early and late wood
+			
+			if (!mySample.getRange().contains(y)) {
+				mySample.setRange(new Range(mySample.getRange().getStart(),
+						mySample.getRange().getEnd().add(1)));
+				mySample.getEarlywoodWidthData().add(new Integer(0));
+				mySample.getLatewoodWidthData().add(new Integer(0));
+			}
+			
+			mySample.getEarlywoodWidthData().set(i, firstval);
+			mySample.getLatewoodWidthData().set(i, secondval);
+			mySample.recalculateRingWidths();			
+		}
 		
 		// this is the year we return...
 		Year retYear = y;
@@ -648,6 +690,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		
 		return retYear;
 	}
+	
 
 	/**
 	 * Add a cell modifier to the table and repaint

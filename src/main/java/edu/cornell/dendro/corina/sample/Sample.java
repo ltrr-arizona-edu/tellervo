@@ -39,29 +39,16 @@
 
 package edu.cornell.dendro.corina.sample;
 
-import edu.cornell.dendro.corina.Preview;
-import edu.cornell.dendro.corina.Previewable;
-import edu.cornell.dendro.corina.Range;
-import edu.cornell.dendro.corina.Weiserjahre;
-import edu.cornell.dendro.corina.Year;
-import edu.cornell.dendro.corina.editor.DecadalModel;
-import edu.cornell.dendro.corina.graph.Graphable;
-import edu.cornell.dendro.corina.gui.Bug;
-import edu.cornell.dendro.corina.tridasv2.support.TridasWidthValueWrapper;
-import edu.cornell.dendro.corina.tridasv2.support.TridasWeiserjahreWrapper;
-import edu.cornell.dendro.corina.ui.I18n;
-
-import edu.cornell.dendro.corina_indexing.Indexable;
-
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
-import java.util.HashMap;
 
-import java.lang.reflect.Method;
-
-import javax.swing.undo.*;
+import javax.swing.undo.UndoableEdit;
+import javax.swing.undo.UndoableEditSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +63,18 @@ import org.tridas.schema.TridasUnitless;
 import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
 import org.tridas.schema.TridasVariable;
+
+import edu.cornell.dendro.corina.Preview;
+import edu.cornell.dendro.corina.Previewable;
+import edu.cornell.dendro.corina.Range;
+import edu.cornell.dendro.corina.Weiserjahre;
+import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.graph.Graphable;
+import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.tridasv2.support.TridasWeiserjahreWrapper;
+import edu.cornell.dendro.corina.tridasv2.support.TridasWidthValueWrapper;
+import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina_indexing.Indexable;
 
 /**
    Class representing a reading of a dendro sample.
@@ -188,6 +187,8 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 
 		target.ringwidths = source.ringwidths;
 		target.weiserjahre = source.weiserjahre;
+		target.earlywoodWidths = source.earlywoodWidths;
+		target.latewoodWidths = source.latewoodWidths;
 		target.elements = source.elements;
 
 		// rebuild the target's tables
@@ -247,6 +248,11 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @return a representative TridasValues object
 	 */
 	private TridasValues createEmptyRingWidths() {
+		return createEmptyValuesGroup(NormalTridasVariable.RING_WIDTH);
+	}	
+	
+	private TridasValues createEmptyValuesGroup(NormalTridasVariable var)
+	{
 		TridasValues values = new TridasValues();
 		
 		// set default units
@@ -256,14 +262,14 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		
 		// set as ring widths
 		TridasVariable variable = new TridasVariable();
-		variable.setNormalTridas(NormalTridasVariable.RING_WIDTH);
+		variable.setNormalTridas(var);
 		values.setVariable(variable);
 
 		// populate the list of values (empty)
 		values.getValues();
 		
 		return values;
-	}	
+	}
 
 	/**
 	 * Create a default set of TridasValues
@@ -289,7 +295,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	/**
 	 * For quick lookups, find TridasVariables via a map
 	 */
-	private void repopulateValuesMap() {
+	public void repopulateValuesMap() {
 		tridasValuesMap.clear();
 		otherValuesMap.clear();
 		
@@ -529,20 +535,7 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		return ringwidths.getData();
 	}
 	
-	/** Return the data for a graph
-	 * or the data to index.
-	 * @see Graphable
-	 * @see Indexable
-	 * @return data to graph, as a List of Integers 
-	 */
-	public List<Number> getEarlywoodWidthData() {
-		if(this.subAnnualMode)
-		{
-			return earlywoodWidths.getData();
-		}
-		else return null;
-	}
-	
+
 	/**
 	 * Updates the whole ring width value.  To be called when early/late
 	 * wood widths are altered.
@@ -557,8 +550,20 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		for(int i=0; i<earlywoodWidths.getData().size(); i++)
 		{
 			Number wrw = earlywoodWidths.getData().get(i).intValue()+ latewoodWidths.getData().get(i).intValue();
-			this.ringwidths.getData().set(i, wrw);
+			
+			if(ringwidths.getData().size()>i)
+			{
+				// Update if possible
+				ringwidths.getData().set(i, wrw);
+			}
+			else
+			{
+				// If not, add
+				ringwidths.getData().add(wrw);
+			}
 		}
+		
+		repopulateValuesMap();
 	}
 	
 	/** Return the data for a graph
@@ -567,12 +572,28 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	 * @see Indexable
 	 * @return data to graph, as a List of Integers 
 	 */
+	public List<Number> getEarlywoodWidthData() {
+		
+		if(earlywoodWidths==null) return null;
+		if(earlywoodWidths.getData()==null) return null;
+		if(this.subAnnualMode==false) return null;
+		
+		return earlywoodWidths.getData();
+	}
+	
+	
+	/** Return the data for a graph
+	 * or the data to index.
+	 * @see Graphable
+	 * @see Indexable
+	 * @return data to graph, as a List of Integers 
+	 */
 	public List<Number> getLatewoodWidthData() {
-		if(this.subAnnualMode)
-		{
-			return latewoodWidths.getData();
-		}
-		else return null;
+		if(latewoodWidths==null) return null;
+		if(latewoodWidths.getData()==null) return null;
+		if(this.subAnnualMode==false) return null;
+		
+		return latewoodWidths.getData();
 	}
 
 	/**
@@ -585,6 +606,62 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	public Boolean containsSubAnnualData()
 	{
 		return subAnnualMode;
+	}
+	
+	public void setToSubAnnualMode()
+	{
+		subAnnualMode = true;
+		
+		// Scrub any data as we need to start from scratch
+		try{
+			ringwidths.getData().clear();
+			earlywoodWidths.getData().clear();
+			latewoodWidths.getData().clear();
+		} catch (Exception e){}
+		
+		getSeries().getValues().clear();	
+		getSeries().getValues().add(createEmptyValuesGroup(NormalTridasVariable.RING_WIDTH));
+		getSeries().getValues().add(createEmptyValuesGroup(NormalTridasVariable.EARLYWOOD_WIDTH));
+		getSeries().getValues().add(createEmptyValuesGroup(NormalTridasVariable.LATEWOOD_WIDTH));
+		
+		repopulateValuesMap(); 
+		
+		ringwidths = new TridasWidthValueWrapper(tridasValuesMap.get(NormalTridasVariable.RING_WIDTH));
+		earlywoodWidths = new TridasWidthValueWrapper(tridasValuesMap.get(NormalTridasVariable.EARLYWOOD_WIDTH));
+		latewoodWidths = new TridasWidthValueWrapper(tridasValuesMap.get(NormalTridasVariable.LATEWOOD_WIDTH));
+		
+		setRange(new Range());
+		modified = true;
+		
+	}
+	
+	public void setToAnnualMode()
+	{
+		subAnnualMode = false;
+		
+		// Scrub any early/late wood data as it is no longer needed
+		try{
+			earlywoodWidths.getData().clear();
+			latewoodWidths.getData().clear();
+		} catch (Exception e){}
+		
+		// Rescue all data with the exception of early and late wood widths
+		List<TridasValues> valuesgroups = getSeries().getValues();
+		ArrayList<TridasValues> newvaluesgroups = new ArrayList<TridasValues>();
+		for(TridasValues valuesgroup : valuesgroups)
+		{
+			if(valuesgroup.isSetVariable() && valuesgroup.getVariable().isSetNormalTridas())
+			{
+				if((!valuesgroup.getVariable().getNormalTridas().equals(NormalTridasVariable.EARLYWOOD_WIDTH)) &&
+					(!valuesgroup.getVariable().getNormalTridas().equals(NormalTridasVariable.LATEWOOD_WIDTH)))
+				{
+					newvaluesgroups.add(valuesgroup);
+				}
+			}
+		}	
+		getSeries().setValues(newvaluesgroups);	
+		repopulateValuesMap();
+		modified = true;
 	}
 	
 	/*

@@ -45,6 +45,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -53,11 +54,17 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.ButtonGroup;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
+
+import org.tridas.schema.TridasDerivedSeries;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.VariableChooser.MeasurementVariable;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.gui.UserCancelledException;
 import edu.cornell.dendro.corina.gui.menus.EditMenu;
@@ -111,7 +118,14 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	private Sample sample;
 	private Editor editor;
 	private SampleDataView dataView;
-
+	private JMenuItem insert, insertMR, delete;
+	private JMenuItem toggleMeasureMenuItem;
+	private JMenu measureModeMenu;
+	private JMenuItem undoMenu, redoMenu;
+	private JRadioButtonMenuItem btnRingWidth;
+	private JRadioButtonMenuItem btnEWLWWidth;
+	
+	
 	/**
 	 Make a new Edit menu for an Editor.  This stores the parameters,
 	 and adds itself as a SampleListener.
@@ -127,6 +141,26 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		this.editor = editor;
 
 		sample.addSampleListener(this);
+		
+		// Disable measuring fields if this is a derivedSeries
+		if(sample.getSeries() instanceof TridasDerivedSeries)
+		{
+			setMeasuringEnabled(false);
+		}
+		
+		// Set initial state of measuring 
+		if(sample!=null)
+		{
+			if(sample.containsSubAnnualData())
+			{
+				btnEWLWWidth.setSelected(true);
+			}
+			else
+			{
+				btnRingWidth.setSelected(true);
+			}
+		}
+		
 	}
 
 	@Override
@@ -223,28 +257,113 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			addMeasure();
 		}
 
-		/*
-		 // if comm present, start/stop measure
-		 if (false) { // Measure.hasSerialAPI()) {
-		 addSeparator();
-		 measureMenu = new Measure(this).makeMenuItem();
-		 add(measureMenu);
-		 }
-		 */
-
 		addPreferences();
-		// TODO: hit listeners to make initial state right
+		
+
+	}
+	
+	private void setMeasuringEnabled(Boolean b)
+	{
+		if (toggleMeasureMenuItem != null)
+		{
+			toggleMeasureMenuItem.setEnabled(b);
+		}
+		
+		if(measureModeMenu != null)
+		{
+			measureModeMenu.setEnabled(b);
+		}
+		
+		
 	}
 
 	@SuppressWarnings("serial")
 	private void addMeasure() {
-		measureMenu = Builder.makeMenuItem("menus.edit.start_measuring", true, "measure.png");
-		measureMenu.addActionListener(new AbstractAction() {
+		toggleMeasureMenuItem = Builder.makeMenuItem("menus.edit.start_measuring", true, "measure.png");
+		toggleMeasureMenuItem.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				editor.toggleMeasuring();
 			}
 		});
-		add(measureMenu);
+		add(toggleMeasureMenuItem);
+		
+		measureModeMenu = Builder.makeMenu("menus.edit.measuremode");
+		btnRingWidth = new JRadioButtonMenuItem(I18n.getText("menus.edit.measuremode.ringwidth"));
+		btnEWLWWidth = new JRadioButtonMenuItem(I18n.getText("menus.edit.measuremode.ewlwwidth"));
+		
+		ButtonGroup group = new ButtonGroup();
+		group.add(btnRingWidth);
+		group.add(btnEWLWWidth);
+		
+		measureModeMenu.add(btnRingWidth);
+		measureModeMenu.add(btnEWLWWidth);
+		
+
+		btnRingWidth.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (sample.containsSubAnnualData()          && 
+					sample.getEarlywoodWidthData()!=null    &&
+					sample.getLatewoodWidthData()!=null     &&
+				   (sample.getEarlywoodWidthData().size()>0 || 
+				    sample.getLatewoodWidthData().size()>0)    )
+				{
+	
+					int n = JOptionPane.showConfirmDialog(editor, 
+							"Switching to ring width measuring mode " +
+							"will delete any\n"+
+							"early/late wood values.\n\n"+
+							"Are you sure you want to continue?");
+			
+					if(n != JOptionPane.YES_OPTION) 
+					{
+						btnEWLWWidth.setSelected(true);
+						return;
+					}
+				}
+					
+				sample.setToAnnualMode();
+				
+				App.prefs.setPref(PrefKey.MEASUREMENT_VARIABLE, MeasurementVariable.RING_WIDTH.toString());
+				sample.fireMeasurementVariableChanged();		
+				
+			}
+			
+		});
+		
+		btnEWLWWidth.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (sample.getRingWidthData().size()>0)
+				{
+					int n = JOptionPane.showConfirmDialog(editor, 
+							"Switching to early/latewood measuring mode will\n"+"" +
+							"delete any ring width values you have.\n\n"+
+							"Are you sure you want to continue?");
+			
+					if(n != JOptionPane.YES_OPTION) 
+					{
+						btnRingWidth.setSelected(true);
+						return;
+					}
+				}
+					
+				sample.setToSubAnnualMode();
+				
+				App.prefs.setPref(PrefKey.MEASUREMENT_VARIABLE, MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH.toString());
+				sample.fireMeasurementVariableChanged();
+				
+				
+			}
+			
+			
+		});
+		
+		
+		
+		add(measureModeMenu);
 	}
 
 	@SuppressWarnings("serial")
@@ -444,21 +563,26 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			return "";
 		}
 	}
+	
+	// change the text in the menu to match what we're doing
+	public void setMeasuring(boolean measuring) {
+		if (toggleMeasureMenuItem == null)
+			return;
 
-	// menuitems that i'll need refs for
-	private JMenuItem insert, insertMR, delete;
+		if(!measuring)
+			toggleMeasureMenuItem.setText(I18n.getText("menus.edit.start_measuring"));
+		else
+			toggleMeasureMenuItem.setText(I18n.getText("menus.edit.stop_measuring"));
+	}
+	
+	
 
-	private JMenuItem measureMenu;
-
-	private JMenuItem undoMenu, redoMenu;
-
-	//
-	// listener
-	//
 	public void sampleRedated(SampleEvent e) {
 	}
 
 	public void sampleDataChanged(SampleEvent e) {
+
+
 	}
 
 	public void sampleMetadataChanged(SampleEvent e) {
@@ -468,19 +592,8 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		delete.setEnabled(sample.isEditable());
 
 		// measure menu: only if not summed
-		if (measureMenu != null)
-			measureMenu.setEnabled(!sample.isSummed());
-	}
+		this.setMeasuringEnabled(!sample.isSummed());
 
-	// change the text in the menu to match what we're doing
-	public void setMeasuring(boolean measuring) {
-		if (measureMenu == null)
-			return;
-
-		if(!measuring)
-			measureMenu.setText(I18n.getText("menus.edit.start_measuring"));
-		else
-			measureMenu.setText(I18n.getText("menus.edit.stop_measuring"));
 	}
 
 	public void sampleElementsChanged(SampleEvent e) {

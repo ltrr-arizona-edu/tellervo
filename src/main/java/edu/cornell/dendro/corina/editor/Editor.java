@@ -89,6 +89,7 @@ import org.tridas.schema.TridasObject;
 import edu.cornell.dendro.corina.Build;
 import edu.cornell.dendro.corina.Year;
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.VariableChooser.MeasurementVariable;
 import edu.cornell.dendro.corina.gis.GISPanel;
 import edu.cornell.dendro.corina.gis.GISViewMenu;
 import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
@@ -705,7 +706,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		wjTable.repaint();
 	}
 
-	// PrefsListener
+	/**
+	 * Preferences listener
+	 * 
+	 */
 	public void prefChanged(PrefsEvent e) {
 		// strategy: refresh each view i contain
 
@@ -721,11 +725,25 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		setUIFromPrefs();
 	}
 
-	//
-	// for serial-line measure-mode
-	//
+	/**
+	 * Whole ring width value measured by serial device
+	 * 
+	 * @param x
+	 * @return
+	 */
 	public Year measured(int x) {
 		return dataView.measured(x);
+	}
+	
+	/**
+	 * Early/Late wood value measured by serial device
+	 *  
+	 * @param ew
+	 * @param lw
+	 * @return
+	 */
+	public Year measured(int ew, int lw) {
+		return dataView.measured(ew, lw);
 	}
 
 	// printing
@@ -869,6 +887,14 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		getContentPane().validate();
 		getContentPane().repaint();
 		measurePanel.setDefaultFocus();
+		
+		// Change the variable to EW/LW if in sub-annual mode
+		if(sample.containsSubAnnualData())
+		{
+			App.prefs.setPref(PrefKey.MEASUREMENT_VARIABLE, MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH.toString());
+			sample.fireMeasurementVariableChanged();
+		}
+		
 	}
 	
 	public void stopMeasuring() {

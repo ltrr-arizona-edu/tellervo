@@ -165,7 +165,11 @@ public class VariableChooser extends JLabel implements SampleListener {
 
 	@Override
 	public void measurementVariableChanged(SampleEvent e) {	
-		sampleDataChanged(e);
+		// Get preferred variable to start with
+		selectedState = MeasurementVariable.getPreferredVariable(sample);
+			
+		// set initial text
+		setText("Variable: "+selectedState.toString());		
 	}
 
 }

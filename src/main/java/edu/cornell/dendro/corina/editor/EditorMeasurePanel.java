@@ -12,6 +12,7 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.MeasurePanel;
 import edu.cornell.dendro.corina.hardware.MeasurementReceiver;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.DataDirection;
+import edu.cornell.dendro.corina.ui.I18n;
 
 /**
  * @author Lucas Madar
@@ -21,12 +22,14 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 
 	private static final long serialVersionUID = 1L;
 	private Editor editor;
-
+	private Integer cachedValue= null;
 	
 	@SuppressWarnings("serial")
 	public EditorMeasurePanel(Editor myeditor, final AbstractSerialMeasuringDevice device) {
 		super(device);
 		editor = myeditor;
+		
+		lblMessage.setText(I18n.getText("editor.measuring.earlywood"));
 	
 		btnQuit.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
@@ -43,8 +46,31 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 			return;
 		}
 				
-		
-		Year y = editor.measured(value.intValue());
+		Year y = null;
+		if(editor.getSample().containsSubAnnualData())
+		{
+			// Doing early/late wood measurements.  
+			// Data are sent in pairs.  First value is 
+			// cached locally.
+			
+			if (cachedValue==null)
+			{
+				cachedValue = value.intValue();
+				lblMessage.setText(I18n.getText("editor.measuring.latewood"));
+				setLastMeasurementIndicators(value);
+				return;
+			}
+			else
+			{
+				y = editor.measured(cachedValue, value.intValue());
+				cachedValue = null;
+				lblMessage.setText(I18n.getText("editor.measuring.earlywood"));
+			}
+		}
+		else
+		{
+			y = editor.measured(value.intValue());
+		}
 		
 		if(y.column() == 0) {
 			if(measure_dec != null)
@@ -54,6 +80,11 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 				measure_one.play();				
 		}
 		
+		setLastMeasurementIndicators(value);
+	}
+	
+	private void setLastMeasurementIndicators(int value)
+	{
 		setLastValue(value);
 		
 		if(super.dev.isMeasureCumulativelyConfigurable())

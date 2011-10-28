@@ -53,9 +53,11 @@ import org.slf4j.LoggerFactory;
 
 import edu.cornell.dendro.corina.Range;
 import edu.cornell.dendro.corina.Year;
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.editor.VariableChooser.MeasurementVariable;
 import edu.cornell.dendro.corina.gui.Bug;
 import edu.cornell.dendro.corina.manip.RedateDialog;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.Years;
@@ -278,6 +280,13 @@ public class DecadalModel extends AbstractTableModel {
 	 @return the column's class */
 	@Override
 	public Class<?> getColumnClass(int col) {
+		
+		// If we're doing 
+		if(App.prefs.getPref(PrefKey.MEASUREMENT_VARIABLE, MeasurementVariable.RING_WIDTH.toString()).equals(MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH))
+		{
+			return String.class;
+		}
+		
 		return ((col >= 1 && col <= 10) ? Integer.class : String.class);
 	}
 
