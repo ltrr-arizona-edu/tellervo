@@ -46,7 +46,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
@@ -59,6 +58,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasValue;
 
@@ -69,10 +69,12 @@ import edu.cornell.dendro.corina.editor.support.ModifiableTableCellRenderer;
 import edu.cornell.dendro.corina.editor.support.TableCellModifier;
 import edu.cornell.dendro.corina.editor.support.TableCellModifierListener;
 import edu.cornell.dendro.corina.gui.Bug;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.prefs.PrefsEvent;
 import edu.cornell.dendro.corina.prefs.PrefsListener;
-import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
+import edu.cornell.dendro.corina.remarks.AbstractRemark;
 import edu.cornell.dendro.corina.remarks.Remarks;
+import edu.cornell.dendro.corina.remarks.TridasReadingRemark;
 import edu.cornell.dendro.corina.sample.Sample;
 import edu.cornell.dendro.corina.sample.SampleEvent;
 import edu.cornell.dendro.corina.sample.SampleListener;
@@ -323,7 +325,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		JMenuItem insertMR = Builder.makeMenuItem("menus.edit.insert_mr", true, "insertmissingyear.png");
 		insertMR.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				insertMR();
+				insertMissingRing();
 			}
 		});
 
@@ -383,16 +385,20 @@ public class SampleDataView extends JPanel implements SampleListener,
 				myTable.getSelectedColumn());
 	}
 
-	// default is an empty string to type in.
+	/**
+	 * Insert a zero value ring
+	 */
 	public void insertYear() {
 		insertYear(0, true);
 	}
 
-	// use Sample.MR for now.
-	// -- let users change this?
-	// -- add it as "MR", display as a different symbol, and save as "MR"?
-	public void insertMR() {
-		insertYear(new Integer(Sample.MR), true);
+	/**
+	 * Helper function to simultaneously insert a year with a value of zero,
+	 * and also to add a 'missing ring' remark.
+	 */
+	public void insertMissingRing() {
+		TridasReadingRemark remark = new TridasReadingRemark(NormalTridasRemark.MISSING_RING);
+		insertYear(new Integer(Sample.missingRingValue), true, remark);
 	}
 
 	/**
@@ -402,6 +408,17 @@ public class SampleDataView extends JPanel implements SampleListener,
 	 * @param selectAndEdit
 	 */
 	public void insertYear(Integer val, boolean selectAndEdit) {
+		insertYear(val, selectAndEdit, null);
+	}
+	
+	/**
+	 * Insert a year into a series and set in to include a TridasRemark
+	 * 
+	 * @param val
+	 * @param selectAndEdit
+	 * @param remark
+	 */
+	public void insertYear(Integer val, boolean selectAndEdit, AbstractRemark remark) {
 
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
@@ -431,6 +448,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		{
 			mySample.getEarlywoodWidthData().add(i, val);
 			mySample.getLatewoodWidthData().add(i, val);
+			mySample.getRingWidthData().add(i, val); 
 			mySample.recalculateRingWidths();
 		}
 		else
@@ -440,7 +458,14 @@ public class SampleDataView extends JPanel implements SampleListener,
 		
 		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
 				.getEnd().add(+1)));
-		// REFACTOR: by LoD, should be range.extend()
+
+		// Add remark if provided
+		if(remark!=null)
+		{
+			Year y2 = ((UnitAwareDecadalModel) myModel).getYear(row, col);
+			TridasValue value = mySample.getRingWidthValueForYear(y2);
+			remark.overrideRemark(value);
+		}	
 
 		// fire event -- obsolete?
 		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
@@ -517,7 +542,6 @@ public class SampleDataView extends JPanel implements SampleListener,
 		myTable.setColumnSelectionInterval(col, col);
 	}
 	
-	// TODO: insert/delete shouldn't be enabled if the selection isn't a data year, either.
 
 	public void deleteYear() {
 		// make sure it's not indexed or summed
@@ -542,12 +566,23 @@ public class SampleDataView extends JPanel implements SampleListener,
 			return;
 		}
 
-		// delete value
-		mySample.getRingWidthData().remove(i);
-		// mySample.range.end = mySample.range.end.add(-1);
-		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
-				.getEnd().add(-1)));
-
+		if(mySample.containsSubAnnualData())
+		{
+			mySample.getEarlywoodWidthData().remove(i);
+			mySample.getLatewoodWidthData().remove(i);
+			mySample.getRingWidthData().remove(i);
+			mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
+					.getEnd().add(-1)));
+			mySample.recalculateRingWidths();
+		}
+		else
+		{
+			// delete value
+			mySample.getRingWidthData().remove(i);
+			mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
+					.getEnd().add(-1)));
+		}
+		
 		// fire event
 		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
 

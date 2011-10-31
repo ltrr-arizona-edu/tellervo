@@ -79,7 +79,7 @@ public class StandardPlot implements CorinaGraphPlotter {
 	
 	protected boolean validValue(int value) {
 		// if MR, draw a vertical line -- use Sample.MR, for now
-		if (value <= Sample.MR)
+		if (value <= Sample.missingRingValue)
 			return false;
 		return true;
 	}

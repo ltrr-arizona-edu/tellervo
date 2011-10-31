@@ -388,7 +388,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 							editor, I18n.getText("menus.edit.insert_years"),
 							I18n.getText("question.insertHowManyYears"), 2);
 					
-					String labels[] = {I18n.getText("general.blank"), I18n.getText("general.defaultValue") +" ["+Sample.MR+"]", I18n.getText("general.cancel")};
+					String labels[] = {I18n.getText("general.blank"), I18n.getText("general.defaultValue") +" ["+Sample.missingRingValue+"]", I18n.getText("general.cancel")};
 					
 					int ret = JOptionPane.showOptionDialog(
 							editor,
@@ -403,7 +403,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 						dataView.insertYears(0, value);
 						break;
 					case 1:
-						dataView.insertYears(new Integer(Sample.MR), value);
+						dataView.insertYears(new Integer(Sample.missingRingValue), value);
 						break;
 					case 2: // cancel
 						break;
@@ -421,7 +421,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		insertMR = Builder.makeMenuItem("menus.edit.insert_mr", true, "insertmissingyear.png");
 		insertMR.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
-				dataView.insertMR();
+				dataView.insertMissingRing();
 			}
 		});
 		add(insertMR);

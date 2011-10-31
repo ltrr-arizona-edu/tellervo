@@ -118,8 +118,8 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 	private boolean modified = false;
 	
 	/** The value of a missing ring, 0.  Anything less than or equal
-	 to this value is considered a MR. */
-	public static final int MR = 0;
+	 to this value is considered a missing ring */
+	public static final int missingRingValue = 0;
 	private Vector<SampleListener> listeners = new Vector<SampleListener>();
 
 	/* FUTURE: */
