@@ -4,9 +4,34 @@
 
 For basic day-to-day running of the Corina server, you simply need to make sure that the server is running.  All other interaction and managment (creating users, granting permissions, accessing data) is done through the Corina desktop application.  This section, however, outlines a number of aspects of the server that advanced users may find useful.
 
+\section{Backing up and restoring your database}
+\index{Server!Backup}
+\index{Backup}
+As with any computer system it is important for you to back regular backups of your data to guard against hardware (as well as human!) errors. The two main methods for doing this are outlined below:
+
+\subsection{Backup whole Virtual Appliance}
+\label{txt:BackupVA}
+The simplest method is to make a copy of your entire Virtual Appliance, but this does have a number of drawbacks.  The first is that you need to shut down your server before you can make the backup so this is only possible if server `downtime' is not a problem for your lab.  The second drawback is that it makes a copy of your entire server including the whole operating system, therefore each backup takes a lot more space.  
+
+\begin{enumerate*}
+ \item Open VirtualBox
+ \item If you server is running you will need to do a full shutdown.  From the server console type \verb|sudo shutdown now| or alternatively you can close the console window and select `Power off the machine'.  This second method is not recommended though as it is like pulling the power plug from the virtual computer.
+ \item Select your virtual machine in the list on the left and go to \menutwo{File}{Export Appliance}.
+ \item Follow the wizard, specifying a file where you'd like to back the server up to.  Keep in mind that this will contain a complete copy of the server (including operating system) so could be 1Gb or more.
+\end{enumerate*}
+
+\subsection{Restoring a Virtual Appliance backup}
+If you have followed the instructions in section \ref{txt:BackupVA} to backup your Virtual Appliance the steps to restoring your server are very similar to how your initially installed it.  Simply open VirtualBox, then go to \menutwo{File}{Import Appliance} and select the backup file that you made.  Follow the wizard and it should restore your server.  You can restore onto the same computer that was originally running the virtual machine (remember to give it a new name though if this is the case) or alternatively to any other computer with VirtualBox installed.  This method can therefore be used to share entire databases.
+
+
+\subsection{Backup PostgreSQL database}
+The more standard way of backing up your database is to do a dump of the PostgreSQL database itself.  This is a little more involved, so it is only recommended if you are familiar with command line and/or Linux.
+
+\subsection{Restoring a PostgreSQL database}
+
 \section{Extending the Virtual Appliance}
 \index{Server!Graphical interface}
-For those of you that are unfamiliar with Linux, the basic command line prompt is not likely to be very comfortable.  If you are interesting in looking at the server in more detail you may therefore prefer to install a full graphical interface.  Unlike Windows, there are a number of different graphical interfaces (or desktops) to choose from in Linux, the most popular being Gnome and KDE.  To install one of these you need to type one commands listed below.  The first line installs Gnome and the second KDE. Windows users that are new to Linux may find KDE more familiar than Gnome.
+For those of you that are unfamiliar with Linux, the basic command line prompt is not likely to be very comfortable.  If you are interesting in looking at the server in more detail you may therefore prefer to install a full graphical interface.  Unlike Windows, there are a number of different graphical interfaces (or desktops) to choose from in Linux, the most popular being Gnome and KDE.  To install one of these you need to type one of the commands listed below.  The first line installs Gnome and the second KDE. Windows users that are new to Linux may find KDE more familiar, but Apple users may be more at home with Gnome.
 
  \code{sudo apt-get install ubuntu-desktop}
  \code{sudo apt-get install kubuntu-desktop}
@@ -75,7 +100,8 @@ The final, and most advanced method is to use the psql client on your server.  T
 
 \section{Corina server configuration}
 \label{txt:serverConfig}
-
+\subsection{Standard server configuration}
+\index{config.php}
 The Corina server can be configured using the command line tool that is installed on both the Virtual Appliance and native server installs.  It is the same tool that is run at the end of the native server install, but can be run at any time to reconfigure or test your system.  It must be run with superuser privileges therefore \verb|sudo| is required before the command.  For instance to get help on usage type:
 
 \code{sudo corina-server --help}
@@ -101,6 +127,17 @@ Possible options to pass the server are:
 \end{itemize*} 
 
 Figure \ref{fig:serverTerminal} shows an example of asking the server to test the configuration, with all tests passed successfully.
+
+The command line tool stores the majority of settings in the config.php file stored in the base directory of your Corina webservice.  In theory you could make changes direct to this file, but we do not recommend this unless you know exactly what you're doing.
+
+
+\subsection{Advanced server configuration}
+\index{systemconfig.php}
+
+In addition to the standard configuration options offered on the command line there are a number of other options that can be set.  These are not accessible via the command line because as a rule they should only be altered the Corina developers.  They are primarily for use by the developers as an alternative to hard coding values within the server files.  For instance, one such value is the TRiDaS version being used by the server.  This value will only ever need to be changed alongside other substantial changes to the code.  
+
+
+
 
 \section{Managing map services}
 \label{txt:managingmaps}

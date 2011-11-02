@@ -135,7 +135,8 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
 		return false;
 	}
 	
-    @SuppressWarnings("unchecked")
+
+	@SuppressWarnings("rawtypes")
 	@Override
     public Class getColumnClass(int column) {
         switch (column) {

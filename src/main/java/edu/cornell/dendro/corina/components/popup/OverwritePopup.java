@@ -32,7 +32,10 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
+import net.miginfocom.swing.MigLayout;
+import java.awt.FlowLayout;
 
 /**
  * @author Daniel Murphy
@@ -47,6 +50,7 @@ public class OverwritePopup extends JDialog {
 	private JButton btnRename;
 	private JButton btnIgnore;
 	private JCheckBox applyAll;
+	private JLabel lblIcon;
 	
 	public OverwritePopup(Frame argParent, OverwritePopupModel argModel, boolean argModal){
 		super(argParent, argModal);
@@ -55,25 +59,29 @@ public class OverwritePopup extends JDialog {
 		linkModel();
 		addListeners();
 		pack();
+		this.setLocationRelativeTo(null);
 	}
 	
 	private void initGui(){
-		
-		getContentPane().setLayout(new GridLayout(2, 1));
 		setTitle(I18n.getText("popup.overwrite.title"));
+		getContentPane().setLayout(new MigLayout("", "[70.00][312px,grow,fill]", "[38px][grow][34.00,grow,fill][38px]"));
+		
+		lblIcon = new JLabel("");
+		lblIcon.setIcon(Builder.getIcon("question.png", 64));
+		getContentPane().add(lblIcon, "cell 0 0 1 3");
 		
 		JPanel panel_1 = new JPanel();
-		getContentPane().add(panel_1);
+		getContentPane().add(panel_1, "cell 1 0,grow");
 		panel_1.setLayout(new BorderLayout(0, 0));
 		label = new JLabel();
 		panel_1.add(label);
 		
-		applyAll = new JCheckBox(I18n.getText("popup.overwrite.all"));
-		panel_1.add(applyAll, BorderLayout.SOUTH);
+		applyAll = new JCheckBox("Apply to all remaining files?");
+		getContentPane().add(applyAll, "cell 1 2");
 		
 		JPanel panel = new JPanel();
-		getContentPane().add(panel);
-		panel.setLayout(new GridLayout(1, 0, 0, 0));
+		getContentPane().add(panel, "cell 0 3 2 1,grow");
+		panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 		
 		btnOverwrite = new JButton(I18n.getText("popup.overwrite.overwrite"));
 		panel.add(btnOverwrite);

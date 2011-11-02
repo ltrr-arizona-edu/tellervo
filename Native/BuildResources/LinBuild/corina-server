@@ -481,7 +481,7 @@ function createScriptsFromTemplates()
   $response = fgets(STDIN);
   setConfigVariable("%%LABNAME%%", trim($response, "\n\r"));   
 
-  echo "\nPlease enter an code/acronym for your lab e.g. C for Cornell : ";
+  echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
   $response = fgets(STDIN);
   setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));   
  

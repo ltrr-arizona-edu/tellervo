@@ -67,7 +67,7 @@ public class App{
    * Most primitive server version supported by this client should be a three part string
    * e.g 1.1.1
    */
-  public static final String earliestServerVersionSupported = "1.0.0";
+  public static final String earliestServerVersionSupported = "1.0.5";
 
 	
   public static Prefs prefs;
@@ -443,6 +443,23 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
 		return "";
 		
 	}
+	
+	public static String getLabName(){
+		
+		try{
+			ArrayList<WSIConfiguration> configDic = (ArrayList<WSIConfiguration>) App.dictionary.getDictionaryAsArrayList("configurationDictionary");
+					
+			for(WSIConfiguration conf : configDic )
+			{
+				if(conf.getKey().equals("lab.name")) return conf.getValue();
+			}
+		} catch (Exception e){ }
+		
+		log.error("Unable to determine lab name from dictionary");
+		return "";
+		
+	}
+	
 	
 	public static String getLabCodePrefix(){
 		

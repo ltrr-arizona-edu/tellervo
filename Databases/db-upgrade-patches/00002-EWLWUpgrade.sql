@@ -42,3 +42,13 @@ GRANT ALL ON TABLE vwjsonnotedreadingresult TO "Webgroup";
 
 INSERT INTO tlkpmeasurementvariable (measurementvariableid, measurementvariable) values (2, 'earlywood width');
 INSERT INTO tlkpmeasurementvariable (measurementvariableid, measurementvariable) values (3, 'latewood width');
+
+
+
+:
+: Update the the minimum version of the Corina client that this server supports
+:
+BEGIN;
+DELETE FROM tblsupportedclient where client='Corina WSI';
+INSERT INTO tblsupportedclient (client, minversion) VALUES ('Corina WSI', '2.13');
+COMMIT;

@@ -22,11 +22,11 @@ An overview of the development can be seen through the Corina Ohloh pages at \ur
 \index{Eclipse}
 \index{Development environment}
 \index{Integrated Development Environment (IDE)}
-The IDE of choice of the main Corina developers is Eclipse (\url{http://www.eclipse.org}. There are many other IDEs around and there is no reason you can't use them instead.  Either way, the following instructions will hopefully be of use.
+The IDE of choice of the main Corina developers is Eclipse (\url{http://www.eclipse.org}). There are many other IDEs around and there is no reason you can't use them instead.  Either way, the following instructions will hopefully be of use.
 
 We have successfully developed Corina on Mac, Windows and Linux computers over the years.  The methods for setting up are almost identical.  
 
-The first step is to install Eclipse, Sun Java6 JDK, Subversion, Maven and NSIS\footnote{Currently there do not appear to be any readily available binaries for NSIS for MacOSX although you can build this from source.  If you do not have NSIS installed you will get an error when packaging Corina, however, all other aspects of the development environment--including building OSX binaries--should work fine.}.  These are all readily available from their respective websites.  On Ubuntu they can be install from the command line easily as follows:
+The first step is to install Eclipse, Sun Java6 JDK, Subversion, Maven and NSIS\footnote{Currently there do not appear to be any readily available binaries for NSIS for MacOSX although you can build this from source.  If you do not have NSIS installed you will get an error when packaging Corina, however, all other aspects of the development environment (including building OSX binaries) should work fine.}.  These are all readily available from their respective websites.  On Ubuntu they can be install from the command line easily as follows:
 
 \code{sudo apt-get install eclipse subversion sun-java6-jdk maven2 nsis}
 
@@ -50,11 +50,11 @@ In an ideal world, any libraries that your code is dependent on should be availa
 
 In practice, life is not necessarily that simple.  Although Maven assists developers in many ways, it also has its own particular quirks and annoyances.  The main problem is how to handle the situation when the dependencies you need are not available in central repositories.  To solve this you either need to install these jars into your local Maven repository, or make them available in a 3rd party Maven repository.  For the ease of developement we have set up a Maven repository as part of the TRiDaS project which can be browsed at \url{http://maven.tridas.org/}.  This repository is already configured within the Corina project so assuming this repository is still alive, then your Corina project should automatically build.  If not, then you will need to install the few non-standard jars.  These jars will continue to be maintained in the Corina SVN repository and can be installed as follows:
 
-\begin{enumerate}
+\begin{itemize*}
  \item On your command line navigate to the Libraries folder of your Corina source code
  \item On Linux and Mac you can then simply run the MavenInstallCommands script
  \item On Windows you will need to manually run the commands located in this file
-\end{enumerate}
+\end{itemize*}
 
 For the record, Corina currently depends upon the libraries listed in table \ref{tbl:desktopDependencies}.  The table also specifies the licenses that these libraries are made available under.
 
@@ -133,7 +133,7 @@ Subversive & Eclipse Public License - v1.0\\
 \index{Developing!Code layout}
 Corina has been actively developed since 2000, so has seen contributions by many different developers.  Coding practices have also changed in this time so inevitably there are some inconsistencies with how the source code is organized.  For instance, the most recent interfaces have been implemented using the Model-View-Controller (MVC) architecture whereas earlier interfaces contain both domain and user logic in single monolithic classes.  
 
-Perhaps the most important inconsistency to understand is due to the transistion to the TRiDaS data model.  In earlier versions of Corina used the concept of a `Sample\footnote{To avoid confusing the original Corina class named `Sample' will be referred to as `Corina Sample' throughout this documentation.  Within the code all TRiDaS data model classes are prefixed with `Tridas' to help avoid confusion.  The `Sample' class is therefore not at all associated with the `TridasSample' class.}' to represent each data file.  Although large portions of Corina have been refactored to use the TRiDaS data model classes, there are still some places where the Corina Sample remain.  
+Perhaps the most important inconsistency to understand is due to the transistion to the TRiDaS data model.  In earlier versions of Corina used the concept of a `Sample'\footnote{To avoid confusing the original Corina class named `Sample' will be referred to as `Corina Sample' throughout this documentation.  Within the code all TRiDaS data model classes are prefixed with `Tridas' to help avoid confusion.  The `Sample' class is therefore not at all associated with the `TridasSample' class.} to represent each data file.  Although large portions of Corina have been refactored to use the TRiDaS data model classes, there are still some places where the Corina Sample remain.  
 
 \section{Multimedia resources}
 \index{Icons}
@@ -353,7 +353,7 @@ Making a new release should be a relatively quick and simply process, but there 
  \item Make sure the developers metadata is correct in the pom.xml.  Add any new developers that have joined the project since the last release.
  \item Run Maven package.
  \item TEST!
- \item Deploy to maven.tridas.org using by running Maven deploy.
+ \item Deploy to maven.tridas.org by running Maven deploy.
  \item Copy `/target/Binaries' to the \url{http://dendro.cornell.edu/corina/download/} folder.  The new release will automatically be added to the options for download.
  \item If this new release should be the recommmended release for internal and/or external uses, alter the download.php page to reflect this.
 \end{itemize}

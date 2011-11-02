@@ -6,7 +6,7 @@
 \indexentry{Mapping|hyperpage}{9}
 \indexentry{Sample!Measuring|(hyperpage}{11}
 \indexentry{Ring remarks|hyperpage}{12}
-\indexentry{Sample!Measuring|)hyperpage}{12}
+\indexentry{Sample!Measuring|)hyperpage}{13}
 \indexentry{Sample!Opening|hyperpage}{13}
 \indexentry{Sample!Reconciling|hyperpage}{14}
 \indexentry{Measuring platforms|hyperpage}{15}
@@ -77,123 +77,129 @@
 \indexentry{Crossdating!Managing chronologies|hyperpage}{49}
 \indexentry{Chronologies|hyperpage}{49}
 \indexentry{Crossdating|)hyperpage}{49}
-\indexentry{Server!Graphical interface|hyperpage}{51}
-\indexentry{Security|hyperpage}{51}
-\indexentry{Passwords|hyperpage}{51}
+\indexentry{Server!Backup|hyperpage}{51}
+\indexentry{Backup|hyperpage}{51}
+\indexentry{Server!Graphical interface|hyperpage}{52}
+\indexentry{Security|hyperpage}{52}
+\indexentry{Passwords|hyperpage}{52}
 \indexentry{Authentication|hyperpage}{52}
 \indexentry{Encryption|hyperpage}{52}
-\indexentry{Database|hyperpage}{52}
-\indexentry{PostgreSQL|hyperpage}{52}
-\indexentry{PGAdminIII|hyperpage}{52}
+\indexentry{Database|hyperpage}{53}
+\indexentry{PostgreSQL|hyperpage}{53}
+\indexentry{PGAdminIII|hyperpage}{53}
 \indexentry{ODBC|hyperpage}{53}
-\indexentry{PSQL|hyperpage}{53}
-\indexentry{Web Map Service (WMS)|hyperpage}{54}
-\indexentry{Mapping!Adding layers|see{Web Map Service(WMS)}}{54}
-\indexentry{Developing|(hyperpage}{59}
-\indexentry{Developing!Desktop client|hyperpage}{59}
-\indexentry{Source code|hyperpage}{59}
-\indexentry{Eclipse|hyperpage}{59}
-\indexentry{Development environment|hyperpage}{59}
-\indexentry{Integrated Development Environment (IDE)|hyperpage}{59}
-\indexentry{Dependencies!Desktop client|hyperpage}{60}
-\indexentry{File formats|hyperpage}{61}
-\indexentry{File formats|hyperpage}{61}
-\indexentry{Developing!Code layout|hyperpage}{62}
-\indexentry{Icons|hyperpage}{62}
-\indexentry{Icons!Ring remarks|hyperpage}{62}
-\indexentry{Translations|hyperpage}{62}
-\indexentry{Logging|hyperpage}{63}
-\indexentry{Preferences|hyperpage}{64}
-\indexentry{Developing!Build script|hyperpage}{64}
-\indexentry{Packaging|hyperpage}{64}
-\indexentry{Packaging!Windows|hyperpage}{65}
-\indexentry{Packaging!MacOSX|hyperpage}{65}
-\indexentry{Packaging!Linux|hyperpage}{65}
-\indexentry{Packaging!Native libraries|hyperpage}{65}
-\indexentry{JAXB|hyperpage}{66}
-\indexentry{Java|hyperpage}{66}
-\indexentry{Developing!Graphical interfaces|hyperpage}{67}
-\indexentry{Measuring platforms|hyperpage}{67}
-\indexentry{Documentation|hyperpage}{68}
-\indexentry{Developing|)hyperpage}{69}
-\indexentry{Developing|(hyperpage}{71}
-\indexentry{Developing!Webservice|hyperpage}{71}
-\indexentry{Webservice!Developing|hyperpage}{71}
-\indexentry{Packaging!Server|hyperpage}{71}
+\indexentry{PSQL|hyperpage}{54}
+\indexentry{config.php|hyperpage}{54}
+\indexentry{systemconfig.php|hyperpage}{54}
+\indexentry{Web Map Service (WMS)|hyperpage}{55}
+\indexentry{Mapping!Adding layers|see{Web Map Service(WMS)}}{55}
+\indexentry{Developing|(hyperpage}{61}
+\indexentry{Developing!Desktop client|hyperpage}{61}
+\indexentry{Source code|hyperpage}{61}
+\indexentry{Eclipse|hyperpage}{61}
+\indexentry{Development environment|hyperpage}{61}
+\indexentry{Integrated Development Environment (IDE)|hyperpage}{61}
+\indexentry{Dependencies!Desktop client|hyperpage}{62}
+\indexentry{File formats|hyperpage}{63}
+\indexentry{File formats|hyperpage}{63}
+\indexentry{Developing!Code layout|hyperpage}{64}
+\indexentry{Icons|hyperpage}{64}
+\indexentry{Icons!Ring remarks|hyperpage}{64}
+\indexentry{Translations|hyperpage}{64}
+\indexentry{Logging|hyperpage}{65}
+\indexentry{Preferences|hyperpage}{66}
+\indexentry{Developing!Build script|hyperpage}{66}
+\indexentry{Packaging|hyperpage}{66}
+\indexentry{Packaging!Windows|hyperpage}{67}
+\indexentry{Packaging!MacOSX|hyperpage}{67}
+\indexentry{Packaging!Linux|hyperpage}{67}
+\indexentry{Packaging!Native libraries|hyperpage}{67}
+\indexentry{JAXB|hyperpage}{68}
+\indexentry{Java|hyperpage}{68}
+\indexentry{Developing!Graphical interfaces|hyperpage}{69}
+\indexentry{Measuring platforms|hyperpage}{69}
+\indexentry{Documentation|hyperpage}{70}
 \indexentry{Developing|)hyperpage}{71}
-\indexentry{Systems architecture|(hyperpage}{73}
-\indexentry{Authentication|hyperpage}{73}
-\indexentry{Nonce|hyperpage}{73}
-\indexentry{Hash|hyperpage}{73}
-\indexentry{Cryptography|hyperpage}{73}
-\indexentry{Database!Permissions architecture|hyperpage}{74}
-\indexentry{Universally Unique Identifiers (UUID)|hyperpage}{74}
-\indexentry{Barcodes!Specifications|hyperpage}{74}
-\indexentry{Universally Unique Identifiers (UUID)|hyperpage}{74}
-\indexentry{Systems architecture|)hyperpage}{74}
-\indexentry{File formats|(hyperpage}{79}
-\indexentry{File formats!Belfast Apple|(hyperpage}{79}
-\indexentry{File formats!Belfast Apple|)hyperpage}{80}
-\indexentry{File formats!Belfast Archive|(hyperpage}{81}
-\indexentry{File formats!Belfast Archive|)hyperpage}{82}
-\indexentry{File formats!Besan\c{c}on|(hyperpage}{83}
-\indexentry{File formats!SYLPHE|see{Besan\c{c}on}}{83}
-\indexentry{File formats!Besan\c{c}on|)hyperpage}{84}
-\indexentry{File formats!CATRAS|(hyperpage}{85}
-\indexentry{File formats!CATRAS|)hyperpage}{87}
-\indexentry{File formats!CSV|(hyperpage}{89}
-\indexentry{File formats!Comma Separated Values|see{CSV}}{89}
-\indexentry{File formats!CSV|)hyperpage}{90}
-\indexentry{File formats!Corina Legacy|(hyperpage}{91}
-\indexentry{File formats!Corina Legacy|)hyperpage}{93}
-\indexentry{File formats!DendroDB|(hyperpage}{95}
-\indexentry{File formats!DendroDB|)hyperpage}{96}
-\indexentry{File formats!Heidelberg|(hyperpage}{97}
-\indexentry{File formats!TSAP|see{Heidelberg}}{97}
-\indexentry{File formats!FH|see{Heidelberg}}{97}
-\indexentry{File formats!Heidelberg|)hyperpage}{100}
-\indexentry{File formats!Microsoft Excel 97/2000/XP|(hyperpage}{101}
-\indexentry{File formats!Binary Interchange Format|see{Microsoft Excel 97/2000/XP}}{101}
-\indexentry{File formats!Microsoft Excel 97/2000/XP|)hyperpage}{102}
-\indexentry{File formats!Microsoft Excel 2007|(hyperpage}{103}
-\indexentry{File formats!Office Open XML Spreadsheet|see{Microsoft Excel 2007}}{103}
-\indexentry{File formats!OOXML|see{Microsoft Excel 2007}}{103}
-\indexentry{File formats!OpenXML Spreadsheet|see{Microsoft Excel 2007}}{103}
-\indexentry{File formats!Microsoft Excel 2007|)hyperpage}{103}
-\indexentry{File formats!Nottingham|(hyperpage}{105}
-\indexentry{File formats!Nottingham|)hyperpage}{106}
-\indexentry{File formats!ODF Spreadsheet|(hyperpage}{107}
-\indexentry{File formats!OpenDocument Format|see{ODF Spreadsheet}}{107}
-\indexentry{File formats!OpenOffice.org Format|see{ODF Spreadsheet}}{107}
-\indexentry{File formats!ODF Spreadsheet|)hyperpage}{107}
-\indexentry{File formats!Oxford|(hyperpage}{109}
-\indexentry{File formats!Oxford|)hyperpage}{111}
-\indexentry{File formats!PAST4|(hyperpage}{113}
-\indexentry{File formats!PAST4|)hyperpage}{116}
-\indexentry{File formats!Sheffield|(hyperpage}{117}
-\indexentry{File formats!D Format|see{Sheffield}}{117}
-\indexentry{File formats!Sheffield|)hyperpage}{119}
-\indexentry{File formats!Topham|(hyperpage}{121}
-\indexentry{File formats!TRiDaS|(hyperpage}{123}
-\indexentry{TRiDaS|(hyperpage}{123}
-\indexentry{TRiDaS|)hyperpage}{126}
-\indexentry{File formats!TRiDaS|)hyperpage}{126}
-\indexentry{File formats!TRIMS|(hyperpage}{127}
-\indexentry{File formats!TRIMS|)hyperpage}{127}
-\indexentry{File formats!Tucson|(hyperpage}{129}
-\indexentry{File formats!RWL|see{Tucson}}{129}
-\indexentry{File formats!CRN|see{Tucson}}{129}
-\indexentry{File formats!Decadal|see{Tucson}}{129}
-\indexentry{File formats!TSF|see{Tucson}}{129}
-\indexentry{File formats!Time series format|see{Tucson}}{129}
-\indexentry{File formats!ITRDB|see{Tucson}}{129}
-\indexentry{File formats!Tucson|)hyperpage}{132}
-\indexentry{File formats!Tucson Compact|(hyperpage}{133}
-\indexentry{File formats!Tucson Compact|)hyperpage}{134}
-\indexentry{File formats!VFormat|(hyperpage}{135}
-\indexentry{File formats!OJ Format|see{VFormat}}{135}
-\indexentry{File formats!VFormat|)hyperpage}{137}
-\indexentry{File formats!WinDENDRO|(hyperpage}{139}
-\indexentry{File formats!WinDENDRO|)hyperpage}{141}
-\indexentry{File formats|)hyperpage}{141}
-\indexentry{License|hyperpage}{145}
+\indexentry{Developing|(hyperpage}{73}
+\indexentry{Developing!Webservice|hyperpage}{73}
+\indexentry{Webservice!Developing|hyperpage}{73}
+\indexentry{Packaging!Server|hyperpage}{73}
+\indexentry{systemconfig.php|hyperpage}{75}
+\indexentry{config.php|hyperpage}{75}
+\indexentry{Developing|)hyperpage}{76}
+\indexentry{Systems architecture|(hyperpage}{77}
+\indexentry{Authentication|hyperpage}{77}
+\indexentry{Nonce|hyperpage}{77}
+\indexentry{Hash|hyperpage}{77}
+\indexentry{Cryptography|hyperpage}{77}
+\indexentry{Database!Permissions architecture|hyperpage}{78}
+\indexentry{Universally Unique Identifiers (UUID)|hyperpage}{78}
+\indexentry{Barcodes!Specifications|hyperpage}{78}
+\indexentry{Universally Unique Identifiers (UUID)|hyperpage}{78}
+\indexentry{Systems architecture|)hyperpage}{78}
+\indexentry{File formats|(hyperpage}{83}
+\indexentry{File formats!Belfast Apple|(hyperpage}{83}
+\indexentry{File formats!Belfast Apple|)hyperpage}{84}
+\indexentry{File formats!Belfast Archive|(hyperpage}{85}
+\indexentry{File formats!Belfast Archive|)hyperpage}{86}
+\indexentry{File formats!Besan\c{c}on|(hyperpage}{87}
+\indexentry{File formats!SYLPHE|see{Besan\c{c}on}}{87}
+\indexentry{File formats!Besan\c{c}on|)hyperpage}{88}
+\indexentry{File formats!CATRAS|(hyperpage}{89}
+\indexentry{File formats!CATRAS|)hyperpage}{91}
+\indexentry{File formats!CSV|(hyperpage}{93}
+\indexentry{File formats!Comma Separated Values|see{CSV}}{93}
+\indexentry{File formats!CSV|)hyperpage}{94}
+\indexentry{File formats!Corina Legacy|(hyperpage}{95}
+\indexentry{File formats!Corina Legacy|)hyperpage}{97}
+\indexentry{File formats!DendroDB|(hyperpage}{99}
+\indexentry{File formats!DendroDB|)hyperpage}{100}
+\indexentry{File formats!Heidelberg|(hyperpage}{101}
+\indexentry{File formats!TSAP|see{Heidelberg}}{101}
+\indexentry{File formats!FH|see{Heidelberg}}{101}
+\indexentry{File formats!Heidelberg|)hyperpage}{104}
+\indexentry{File formats!Microsoft Excel 97/2000/XP|(hyperpage}{105}
+\indexentry{File formats!Binary Interchange Format|see{Microsoft Excel 97/2000/XP}}{105}
+\indexentry{File formats!Microsoft Excel 97/2000/XP|)hyperpage}{106}
+\indexentry{File formats!Microsoft Excel 2007|(hyperpage}{107}
+\indexentry{File formats!Office Open XML Spreadsheet|see{Microsoft Excel 2007}}{107}
+\indexentry{File formats!OOXML|see{Microsoft Excel 2007}}{107}
+\indexentry{File formats!OpenXML Spreadsheet|see{Microsoft Excel 2007}}{107}
+\indexentry{File formats!Microsoft Excel 2007|)hyperpage}{107}
+\indexentry{File formats!Nottingham|(hyperpage}{109}
+\indexentry{File formats!Nottingham|)hyperpage}{110}
+\indexentry{File formats!ODF Spreadsheet|(hyperpage}{111}
+\indexentry{File formats!OpenDocument Format|see{ODF Spreadsheet}}{111}
+\indexentry{File formats!OpenOffice.org Format|see{ODF Spreadsheet}}{111}
+\indexentry{File formats!ODF Spreadsheet|)hyperpage}{111}
+\indexentry{File formats!Oxford|(hyperpage}{113}
+\indexentry{File formats!Oxford|)hyperpage}{115}
+\indexentry{File formats!PAST4|(hyperpage}{117}
+\indexentry{File formats!PAST4|)hyperpage}{120}
+\indexentry{File formats!Sheffield|(hyperpage}{121}
+\indexentry{File formats!D Format|see{Sheffield}}{121}
+\indexentry{File formats!Sheffield|)hyperpage}{123}
+\indexentry{File formats!Topham|(hyperpage}{125}
+\indexentry{File formats!TRiDaS|(hyperpage}{127}
+\indexentry{TRiDaS|(hyperpage}{127}
+\indexentry{TRiDaS|)hyperpage}{130}
+\indexentry{File formats!TRiDaS|)hyperpage}{130}
+\indexentry{File formats!TRIMS|(hyperpage}{131}
+\indexentry{File formats!TRIMS|)hyperpage}{131}
+\indexentry{File formats!Tucson|(hyperpage}{133}
+\indexentry{File formats!RWL|see{Tucson}}{133}
+\indexentry{File formats!CRN|see{Tucson}}{133}
+\indexentry{File formats!Decadal|see{Tucson}}{133}
+\indexentry{File formats!TSF|see{Tucson}}{133}
+\indexentry{File formats!Time series format|see{Tucson}}{133}
+\indexentry{File formats!ITRDB|see{Tucson}}{133}
+\indexentry{File formats!Tucson|)hyperpage}{136}
+\indexentry{File formats!Tucson Compact|(hyperpage}{137}
+\indexentry{File formats!Tucson Compact|)hyperpage}{138}
+\indexentry{File formats!VFormat|(hyperpage}{139}
+\indexentry{File formats!OJ Format|see{VFormat}}{139}
+\indexentry{File formats!VFormat|)hyperpage}{141}
+\indexentry{File formats!WinDENDRO|(hyperpage}{143}
+\indexentry{File formats!WinDENDRO|)hyperpage}{145}
+\indexentry{File formats|)hyperpage}{145}
+\indexentry{License|hyperpage}{149}

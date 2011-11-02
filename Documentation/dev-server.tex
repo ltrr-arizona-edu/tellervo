@@ -10,6 +10,21 @@ The Corina webservice is written entirely in PHP.  Like the Desktop Client, the 
 
 \section{Webservice }
 
+\subsection{Adding TRiDaS entities to the database}
+
+
+\subsection{Creating new series}
+
+Due to the complications arising from the virtual measurement concept, creating new series in Corina is necessarily more complicated than any other of the TRiDaS entities.  The workflow required to create a new series is illustrated in figure \ref{fig:creatingNewMSeries}.
+
+\begin{figure}[hbtp]
+  \centering
+  \includegraphics[width=\textwidth]{Images/CreatingNewMSeriesWorkflow.pdf}
+  \caption{Illustration of the steps that happen during the creation of a new measurement series. The stages are presented top to bottom in the approximate order in which they are executed.  The majority of the processing is done as a result of the database function createnewvmeasurement() being called by the webservice.}
+  \label{fig:creatingNewMSeries}
+\end{figure}
+
+
 \section{Server package}
 \label{txt:serverPackage}
 \index{Packaging!Server}
@@ -17,7 +32,7 @@ The Ubuntu server package is built by Maven at the same time as the desktop pack
 
 The server packaging is done as a secondary execution of the JDeb plugin.  JDeb is configured in the pom.xml by including all the files that need to be copied along with where in the target file system they should be placed. The database files are installed to `/usr/share/corina-server' and the webservices files to `/var/www/corina-webservice'. 
 
-The metadata for the deb file is included in the control file located in Native/BuildResources/LinBuild/ServerControl.  JDeb makes use of Ubuntu's excellent package management system to handle the dependencies.  Adding or editing dependencies is simply a matter of changing the `depends' attribute control file.  The ServerControl folder also contains a script called postinst which is launched after the installation is complete.  This is used to trigger the interactive script that helps the user configure the Corina server (described further in section \ref{txt:corina-server-script}.  The steps are as follows:  
+The metadata for the deb file is included in the control file located in Native/BuildResources/LinBuild/ServerControl.  JDeb makes use of Ubuntu's excellent package management system to handle the dependencies.  Adding or editing dependencies is simply a matter of changing the `depends' attribute control file.  The ServerControl folder also contains scripts called preinst, postinst and prerm, which are launched before and after installation, and before uninstalling.  The postinst script is used to trigger the interactive script that helps the user configure the Corina server (described further in section \ref{txt:corina-server-script}).  The steps are as follows:  
 
 \begin{itemize*}
  \item Check the user running the script is root as we're doing privileged functions
@@ -34,9 +49,39 @@ The metadata for the deb file is included in the control file located in Native/
 
 At the heart of most of the configuration and control of the Corina server is the corina-server script.  This is a command line PHP script that is launched after installation and can be re-run by the user to make changes to the configuration.
 
+\section{Handling client version dependencies}
+In an ideal world, the API for how clients talk to the Corina server would never change.  Unfortunately, we don't live in the real world and this is not possible.  New features in Corina will require changes to the API, as will changes to TRiDaS.  In anticipation to such changes, the Corina server includes a mechanism for detecting when a client is too old to handle the API that it is using.  In this case the server will refuse to handle the request.  A similar complementary mechanism is in place in the client for instances when a client is attempting to talk to an older server that it no longer supports.  
+
+At the moment, the Corina desktop client is the only known software that talks to the Corina server, but in the future we may have other 3rd party clients making requests.  For example it would be possible to develop a central data repository (much like the ITRDB or perhaps as an extension to the existing ITRDB) that harvests data from multiple labs each running the Corina server. Alternatively, existing 3rd party desktop applications (e.g. TSAP-Win, PAST4 etc) may be extended to enable them to obtain data directly from servers running the Corina server software.  Either way, it is important to include the ability to specify the oldest versions of clients that are able to connect, and also to be able to specify different versions for different types of clients. 
+
+It is also necessary to include the ability to allow or disallow access to the server by unknown client applications.  If a new program is developed by other an it attempts to access the server it could contain bugs (or even malicious code) that interferes with the server.  For a production instance of the server this is obviously undesirable, therefore the systems configuration option `onlyAllowKnownClients' is set to TRUE.  
+
+The minimum versions of each supported client are stored in the database in the table tblsupportedclients.  The `client' field should contain a unique portion of the HTTP\_USER\_AGENT header provided by the client.  
+
+
+\section{Handling server configuration}
+\index{systemconfig.php}
+\index{config.php}
+The Corina server is configured using two main PHP files: config.php and systemconfig.php.  The configuration is split into two primarily because the config.php values are considered to be editable by the server administrator, whereas those in systemconfig.php should normally only be edited by Corina developers.  
+
+If you want to make configuration options editable by the administrator of the Corina server, then these should be implemented within the config.php file.  There is a config.php.template file which is used to construct the config.php file on the users system.  Simply adding hardcoded entries to this file is the simplest way when a default value is appropriate.  If you value of your field needs to be generated either by asking the administrator a question (e.g. name of lab), or dynamically at the time of installation (e.g. IP address of the server) then this template file should contain placeholder values which can then be replaced by the corina-server configuration script.  For instance the config.php.template file contains a placeholder for the hostname of the server like this: \verb|$hostname = "%%IP%%";|.  The value is set by the corina-server script using the function \verb|setConfigVariable($var, $value)|.  Keep in mind though, that during an upgrade, the config.php is maintained and not replaced.  If you make additions to the config.php.template you will also need to make provision for handling changes to the end users existing config.php.
+
+If you want to add new configuration fields that don't need to be edited by the system administrator, these should be handled in the systemconfig.php file.  The systemconfig.php file is automatically generated during installation/upgrade of the server from entries in the database table tblconfig.  This means that any changes to the system configuration can be handled as part of the database upgrade simply by adding new rows or editing existing rows in tblconfig.  Each entry in this table is made available to the webservice as a global variable once the corina-server script has been run.  For instance the row containing key=wsversion and value=1.0.0 is available as the variable \$wsversion within the webservice. 
+
+
+
 \section{Making a new release}
 
-As mentioned in section \ref{txt:serverPackage}, the server package is created at the same time as the desktop binaries as part of the Maven package procedure.  There are, however, a number of steps you need to undertake to make sure this goes 
+As mentioned in section \ref{txt:serverPackage}, the server package is created at the same time as the desktop binaries as part of the Maven package procedure.  There are, however, a number of steps you need to undertake to make sure this goes smoothly.
+
+\begin{itemize}
+ \item Make sure this documentation is up-to-date! 
+ \item Increment the \verb|<serverversion>| tag in the pom.xml file
+ \item If this version of the server needs a particular version of the client then you'll need to set this value in the tblsupportedclients table by including relevant SQL in a 
+
+ \item TEST!  If users are running this as an upgrade, then we need to ensure this goes smoothly.  Although they are told to backup their database before running we should assume they've ignored the warning and that we are altering precious data.
+\end{itemize}
+
 
 
 

@@ -11,11 +11,13 @@ Once your measuring platform has been configured, measuring your first sample is
 \begin{figure}[hbtp]
   \centering
     \includegraphics[width=0.6\textwidth]{Images/datascreen.png}
-    \caption{An empty data window ready to receive measurements.  Note the status bar at the bottom includes buttons for changing the display units and cumulative statistics.}
+    \caption{An empty data window ready to receive measurements.  Note the status bar at the bottom includes buttons for changing the measurement variable, display units and cumulative statistics.  The data table stores ring width values in decadal rows following the standard convention which derives from data entry via punch-cards.  Undated sequences begin in the relative year 1001 for the same reason.}
     \label{fig:datascreen}
 \end{figure}
 
 The next step is to fill out the metadata tab. If you have used a barcode, nearly all of this metadata will be filled in for you, otherwise you will need to fill this out yourself. Details about metadata can be found in chapter \ref{txt:metadata}, page \pageref{txt:metadata}.
+
+Before you begin measuring you need to tell Corina what sort of measurements you are doing: whole ring widths; or early/latewood widths (the default is whole ring widths).  To specify early/latewood widths you need to go to \menuthree{Edit}{Measuring mode\ldots}{Early and latewood widths}.  If you use this menu after you have already measured some rings you will be warned that Corina will delete the data you have already collected.  Once in `early and latewood widths' measuring mode you will be able to choose which data is displayed in the table by clicking the variable box on the status line and choose between: Ring width; Earlywood width; Latewood width; Early/Latewood width.
 
 To begin measuring your sample you can now go to \menutwo{Edit}{Start measuring} or you can press F5. While measuring you should be provided with audible feedback for each ring measured with a more pronounced sound made every 10th ring. If there is a problem communicating with your measuring hardware, check your settings in the preferences dialog. If you still have problems contact the Corina developers by going to \menutwo{Help}{Report bug on last transaction}, making sure you include your email address and any further information.
 
@@ -36,6 +38,7 @@ Corina supports the measuring of rings both individually and cumulatively.  We f
 
 Certain devices (e.g. Boekler Microcode boxes) do not listen for requests to reset to zero.  In this case to measure each ring individually, you would need to manually reset the reading to zero following each measurement.  This would of course be extremely tedious.  In this situation Corina measures cumulatively from the beginning of the first ring and calculates the ring width based on the previous ring boundary position.  With this method you must be careful not to knock your sample, and you must also take special care when altering radii to navigate around problem structures.  If you do knock your sample, the best way to recover is to reset your platform to zero and press the measure button.  Next, press the `stop measuring button', manually fix the values in the data table, then begin measuring again from where you left off.
 
+If you are in `Early and latewood widths' measuring mode the measurements are made and sent to the data table in pairs.  The first measurement should be of the earlywood of the ring, and the next value the latewood measurement.  Whether you are currently measuring early or latewood is indicated as a message at the bottom of the measuring panel.
 
 \index{Ring remarks}
 While you measure your sample you can flag features in a ring by right clicking on any cell in the table and selecting one or more of the standard notes (see figure \ref{fig:ringremarks}).
@@ -58,7 +61,7 @@ Once you have finished measuring your sample, you should then go to \menutwo{Fil
 
 \section{Opening existing data}
 \index{Sample!Opening}
-If you have used traditional dendrochronology software, you are probably used to opening existing dendro data files from your computer.  Corina works in a different way.  All data accessed by Corina is stored within the central Corina database rather than from files.  The database provides many benefits over file based storage, most importantly it means there is a high degree of security and integrity in your data.  
+If you have used traditional dendrochronology software, you are probably used to opening existing dendro data files from your computer.  Corina works in a different way.  All data accessed by Corina is stored within the central Corina database rather than in files.  The database provides many benefits over file based storage, most importantly it means there is a high degree of security and integrity in your data.\footnote{This doesn't mean you don't have to backup your data though!  Whoever is in charge of maintaining your Corina database should make sure regular backups are made--preferably offsite.}
 
 To use data that you have stored in existing data files you must first \emph{import} your data into the Corina database.  This gives you the opportunity to clean-up your data!  For details of how to import your data see chapter \ref{txt:importExport}, page \pageref{txt:importExport}.
 

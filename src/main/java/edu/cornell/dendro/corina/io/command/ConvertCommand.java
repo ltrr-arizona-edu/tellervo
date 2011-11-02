@@ -157,6 +157,15 @@ public class ConvertCommand implements ICommand {
 			log.error("Exception thrown while converting", e);
 			throw new RuntimeException(e);
 		} finally {
+			
+			try{
+				storedConvertProgress.dispose();
+				
+			} catch (Exception e)
+			{
+				log.debug("Exception caught while disposing of progress dialog");
+			}
+			
 			if (storedConvertProgress != null) {
 				storedConvertProgress.setVisible(false);
 			}

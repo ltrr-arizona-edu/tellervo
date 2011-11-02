@@ -190,6 +190,7 @@ public class ExportView extends JFrame {
 		panelAdv.add(lblNaming, "cell 0 2");
 		
 		naming = new JComboBox(namings);
+		naming.setModel(new DefaultComboBoxModel(new String[] {"Labcodes", "Hierachical", "UUID"}));
 		panelAdv.add(naming, "cell 1 2");
 		
 		JLabel lblEncoding = new JLabel(I18n.getText("io.convert.lblEncoding"));

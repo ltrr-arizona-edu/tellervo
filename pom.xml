@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.cornell.dendro</groupId>
 	<artifactId>corina</artifactId>
-	<version>2.12.2-SNAPSHOT</version>
+	<version>2.12.3</version>
 	<name>Corina</name>
 	<description>Dendrochronological collection, curation and management software</description>
 	<licenses>

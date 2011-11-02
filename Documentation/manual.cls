@@ -82,6 +82,8 @@
 \newcommand{\menuthree}[3]{\emph{#1 {\color{dgreen}\MVRightarrow}\ #2 {\color{dgreen}\MVRightarrow}\ #3}}
 \newcommand{\menufour}[4]{\emph{#1 {\color{dgreen}\MVRightarrow}\ #2 {\color{dgreen}\MVRightarrow}\ #3 {\color{dgreen}\MVRightarrow}\ #4}}
 
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
 %% Override some defaults
 \widowpenalty=10000
 \clubpenalty=10000
