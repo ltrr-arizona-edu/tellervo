@@ -160,7 +160,8 @@ public class Prefs extends AbstractSubsystem {
 				
 		FOLDER_DATA("corina.dir.data"),
 		FOLDER_LAST_READ("corina.dir.lastimport"),
-		FOLDER_LAST_SAVE("corina.dir.lastsave");
+		FOLDER_LAST_SAVE("corina.dir.lastsave"),
+		FOLDER_LAST_GPS("corina.dir.lastgps");
 		
 		
 		

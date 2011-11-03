@@ -1,21 +1,27 @@
 #!/bin/bash
-echo "Preinst run ${serverversion}" >> /tmp/install.log
-date '+%R.%S' >> /tmp/install.log
+echo "*******************" >> /var/log/corina-installation.log
+echo "Preinst run ${serverversion} with $1 argument" >> /var/log/corina-installation.log
+date '+%R.%S' >> /var/log/corina-installation.log
+echo "*******************" >> /var/log/corina-installation.log
 
-$configfile="/var/www/corina-webservice/config.php"
-if [ -e "$configfile"]
-then
-  echo "config.php exists" >> /tmp/install.log
-fi
 
-if [ -e "$configfile" ]
+if (( $1 == "install" ));
 then
-  echo "Backing up original configuration files before upgrade\n"
-  cp /var/www/corina-webservice/config.php /usr/share/corina-server/config.php.bak
-fi
 
-$systemconfig="/var/www/corina-webservice/systemconfig.php"
-if [ -e "$systemconfig" ]
+elif (( $1 == "upgrade" ));
 then
-  cp /var/www/corina-webservice/systemconfig.php /usr/share/corina-server/systemconfig.php.bak
+   ## Upgrading so, move aside config.php file so
+   ## so it doesn't get over-written
+   
+   echo "Upgrading Corina server to a new version" >> /var/log/corina-installation.log
+   if [ -e "/var/www/corina-webservice/config.php" ];
+   then
+     echo "Backing up config.php for reinstatement after the upgrade" >> /var/log/corina-installation.log
+     cp /var/www/corina-webservice/config.php /tmp/
+   fi
+
+elif (( $1 == "abort-upgrade" ));
+then
+  
+   
 fi

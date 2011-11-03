@@ -1,9 +1,29 @@
 #!/bin/bash
-echo "Prerm run ${serverversion}" >> /tmp/install.log
-date '+%R.%S' >> /tmp/install.log
+echo "*******************" >> /var/log/corina-installation.log
+echo "Prerm run ${serverversion} with $1 argument" >> /var/log/corina-installation.log
+date '+%R.%S' >> /var/log/corina-installation.log
+echo "*******************" >> /var/log/corina-installation.log
 
-$configfile="/var/www/corina-webservice/config.php"
-if [ -e "$configfile"]
+if (( $1 == "upgrade" ));
 then
-  echo "config.php exists" >> /tmp/install.log
+   ## Upgrading so, move aside config.php file so
+   ## so it doesn't get over-written
+   
+   echo "Upgrading Corina server to a new version" >> /var/log/corina-installation.log
+   if [ -e "/var/www/corina-webservice/config.php" ];
+   then
+     echo "Backing up config.php for reinstatement after the upgrade" >> /var/log/corina-installation.log
+     cp /var/www/corina-webservice/config.php /tmp/
+   fi
+   
+elif (( $1 == "remove" ));
+then
+
+elif (( $1 == "deconfigure" ));
+then
+
+elif (( $1 == "failed-upgrade" ));
+then
+
 fi
+exit 0;         

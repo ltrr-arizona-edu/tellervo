@@ -41,10 +41,12 @@ import net.opengis.gml.schema.Pos;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.spatial.GMLPointSRSHandler;
 
+import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gis.GISFrame;
 import edu.cornell.dendro.corina.gis.GPXParser;
 import edu.cornell.dendro.corina.gis.TridasMarkerLayerBuilder;
 import edu.cornell.dendro.corina.gis.GPXParser.GPXWaypoint;
+import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 
@@ -118,7 +120,7 @@ public class LocationGeometry extends LocationGeometryUI implements
 		
 		pos.getValues().add(Double.valueOf(spnDDLong.getValue().toString()));
 		pos.getValues().add(Double.valueOf(spnDDLat.getValue().toString()));
-		
+				
 		return geometry;
 	}
 	
@@ -308,21 +310,34 @@ public class LocationGeometry extends LocationGeometryUI implements
 	public void actionPerformed(ActionEvent evt) {
 		// TODO Auto-generated method stub
 		if (evt.getSource() == btnGPSBrowse) {
+			
+			File lastFolder = null;
+			try{
+				lastFolder = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_GPS, null));
+			} catch (Exception e){}
+			
+			JFileChooser fc = new JFileChooser(lastFolder);
 			fc.setFileFilter(filter);
+						
 			int returnVal = fc.showOpenDialog(LocationGeometry.this);
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				txtGPSFilename.setText(fc.getSelectedFile().toString());
 				
+				// Remember this folder for next time
+				App.prefs.setPref(PrefKey.FOLDER_LAST_GPS, fc.getSelectedFile().getPath());
+
+				// Parse GPX
 				GPXParser parser = null;
 				try {
+					txtGPSFilename.setText(fc.getSelectedFile().toString());
 					parser = new GPXParser(fc.getSelectedFile().toString());
 				} catch (FileNotFoundException e) {
 					Alert.error("File not found", "File not found");
 				} catch (IOException e) {
 					Alert.error("Error", "Error reading file");
 				}
-								
+				
+				// Grab waypoints from GPX
 				for(GPXWaypoint wpt : parser.getWaypoints())
 				{
 					cboWaypoint.addItem(wpt);
@@ -340,6 +355,10 @@ public class LocationGeometry extends LocationGeometryUI implements
 							(Double)this.spnDDLat.getValue(),
 							(Double)this.spnDDLong.getValue()), true);
 			
+			// Remove modality so we can see map dialog
+			dialog.setModal(false);
+			dialog.setVisible(false);
+			dialog.setVisible(true);
 			map.setVisible(true);
 
 		}

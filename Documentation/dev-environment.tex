@@ -215,7 +215,8 @@ While you develop Maven should automatically build Corina for you in the backgro
 
 \begin{description*}
  \item[clean] - This deletes any previously compiled classes and packages in the target folder.  It should only be necessary to run this occassionally if Maven has got a bit confused.  If this is the case you may also need to force Eclipse to clean too by going to \menutwo{Project}{Clean...}
- \item[package] - This compiles Corina and builds a single executable JAR containing all dependencies (thanks to the maven-shade-plugin) along with native Windows, MacOSX and Linux packages.  These are all placed in structured folders within `target\\Binaries' ready for deploying on a website.  When all is well this should be the only goal you need to run.
+ \item[generate-sources] - Runs JAXB to generated classes representing the entities within the Corina schema (see section \ref{txt:jaxb} for further details).  The classes are also generated for TRiDaS entities, but these are deleted in favour of using those provided by the TridasJLib library.
+ \item[package] - This compiles Corina and builds a single executable JAR containing all dependencies (thanks to the maven-shade-plugin) along with native Windows, MacOSX and Linux packages.  These are all placed in structured folders within `target\\Binaries' ready for deploying on a website.  
  \item[install] - This installs the compiled jar in your local Maven repository. This is normally used when you are building a library that is being used by another program.  It is therefore not necessary for Corina.
  \item[deploy] - This uploads the compiled jar into the maven.tridas.org repository.  Note that you will need to either run this phase from the command line or by setting up a customer run configuration in Eclipse.
 \end{description*}

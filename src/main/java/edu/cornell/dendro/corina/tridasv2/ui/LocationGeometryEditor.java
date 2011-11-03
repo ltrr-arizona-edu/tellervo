@@ -111,8 +111,7 @@ public class LocationGeometryEditor extends AbstractPropertyEditor {
 		dialog.showDialog(editor, geometry);
 		
 		// cancelled...
-		if(geometry==null)
-			return;
+		if(!dialog.hasResults()) return;
 		
 		geometry = dialog.getGeometry();
 		label.setValue(geometry);

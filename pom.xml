@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.cornell.dendro</groupId>
 	<artifactId>corina</artifactId>
-	<version>2.12.3</version>
+	<version>2.12.2-SNAPSHOT</version>
 	<name>Corina</name>
 	<description>Dendrochronological collection, curation and management software</description>
 	<licenses>
@@ -471,7 +471,7 @@
 			</plugin>
 
 			 
-			<plugin>
+			<!-- <plugin>
 			  <groupId>org.apache.maven.plugins</groupId>
 			  <artifactId>maven-javadoc-plugin</artifactId>
 			  <version>2.7</version>
@@ -483,7 +483,7 @@
 			      </goals>
 			    </execution>
 			  </executions>
-			</plugin>
+			</plugin>-->
 			
 			
 			<plugin>
@@ -742,14 +742,6 @@
 								</data>
 								<data>
 									<src>Databases/db-templates</src>
-									<type>directory</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/corina-server</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>Databases/db-patches</src>
 									<type>directory</type>
 									<mapper>
 										<type>perm</type>
