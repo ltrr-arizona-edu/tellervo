@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Daniel Murphy and Peter Brewer
+ * Copyright (C) 2010 Lucas Madar and Peter Brewer
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * Contributors:
- *     Daniel Murphy
+ *     Lucas Madar
  *     Peter Brewer
  ******************************************************************************/
-/**
- * 
- */
+
 package edu.cornell.dendro.cpgdb;
 
 import java.sql.ResultSet;
@@ -34,10 +32,6 @@ import java.util.logging.Logger;
 
 import edu.cornell.dendro.corina_indexing.*;
 
-/**
- * @author Lucas Madar
- *
- */
 public class Indexer extends ReadingResultHolder implements Indexable {
 
 	private final int indexType;
@@ -59,9 +53,12 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 	/**
 	 * @see Indexable
 	 */
-	public List<? extends Number> getData() {
+	@Override
+	public List<? extends Number> getRingWidthData() {
 		return reading;
 	}
+	
+
 
 	@Override
 	public void operate() throws SQLException {
@@ -189,4 +186,6 @@ public class Indexer extends ReadingResultHolder implements Indexable {
 			s.addBatch();
 		}
 	}
+
+
 }

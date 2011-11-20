@@ -3,7 +3,7 @@
 \index{Developing!Webservice}
 \index{Webservice!Developing}
 
-The Corina server is made up of a PHP webservice run by Apache, connecting to a PostGreSQL database.  
+The Corina server is made up of a PHP webservice run by Apache, connecting to a PostgreSQL database.  
 
 The Corina webservice is written entirely in PHP.  Like the Desktop Client, the server is developed with Eclipse so most of the setup steps are identical (see chapter \ref{txt:devDesktop}).  You will, however, probably want to install the PHP development plugin so that you get syntax highlighting etc.  See the Eclipse PDT website (\url{http://www.eclipse.org/pdt/}) for further information.
 
@@ -52,7 +52,11 @@ The Ubuntu server package is built by Maven at the same time as the desktop pack
 
 The server packaging is done as a secondary execution of the JDeb plugin.  JDeb is configured in the pom.xml by including all the files that need to be copied along with where in the target file system they should be placed. The database files are installed to `/usr/share/corina-server' and the webservices files to `/var/www/corina-webservice'. 
 
-The metadata for the deb file is included in the control file located in Native/BuildResources/LinBuild/ServerControl.  JDeb makes use of Ubuntu's excellent package management system to handle the dependencies.  Adding or editing dependencies is simply a matter of changing the `depends' attribute control file.  The ServerControl folder also contains scripts called preinst, postinst and prerm, which are launched before and after installation, and before uninstalling.  The postinst script is used to trigger the interactive script that helps the user configure the Corina server (described further in section \ref{txt:corina-server-script}).  The steps are as follows:  
+The metadata for the deb file is included in the control file located in Native/BuildResources/LinBuild/ServerControl.  JDeb makes use of Ubuntu's excellent package management system to handle the dependencies.  Adding or editing dependencies is simply a matter of changing the `depends' attribute control file.  
+
+The ServerControl folder also contains scripts called preinst, postinst, prerm and postrm, which are launched before and after installation, and before uninstalling.  These files are called with different parameters depending on whether this is part of a fresh install, an upgrade, or an aborted install.  There are a number of rules that the resulting deb package should follow (e.g.\ if a program is configured twice, then the second run should know and understand about previously provided details), the details of which can be found in the Debian Policy Manual\footnote{Debian Policy Manual -- \url{http://www.debian.org/doc/debian-policy/}}, along with information how and when each of the pre and post scripts is run.  Hopefully this side of the server packaging will not need to be touched again, but if you are making changes and are doing anything more than simple tweaks, please consult the Debian policy documentation.
+
+The postinst script is used to trigger the interactive script that helps the user configure the Corina server (described further in section \ref{txt:corina-server-script}).  The steps are as follows:  
 
 \begin{itemize*}
  \item Check the user running the script is root as we're doing privileged functions
@@ -64,19 +68,37 @@ The metadata for the deb file is included in the control file located in Native/
  \item Print test report to screen
 \end{itemize*}
 
+
 \subsection{Corina server script}
 \label{txt:corina-server-script}
 
-At the heart of most of the configuration and control of the Corina server is the corina-server script.  This is a command line PHP script that is launched after installation and can be re-run by the user to make changes to the configuration.
+At the heart of most of the configuration and control of the Corina server is the corina-server script.  This is a command line PHP script that is launched after installation and can be re-run by the user to make changes to the configuration.  Although such a script would normally be written in Bash or similar, we decided to go with PHP because of the requirement to interact with the Corina PostgreSQL database.  
+
+The script isolates the common tasks performed into functions.  It uses the getopt() function to read both long (e.g. --blah) and short (e.g. -b) arguments from the command line.  These depending on the arguments given, the script then calls the relevant functions.
+
+To comply with standard protocols, the script uses the exit() function to return whether the requested task was successful or not.  Returning zero means the script was successful, and returning any other integer means the script failed.  This is important so that the package management system knows when things have gone wrong, and can then attempt to roll back if possible.
+
+The script includes a number of helper functions and classes that you may find useful when modifying the script:
+
+\begin{description}
+ \item[echoTruncatedString(\$str, \$length] -- echos a string to the console but truncates it to \$length if necessary.  If the string is shorter than \$length, then it is padded with spaces.  This is useful to ensure the following text is displayed aligned, e.g. test results.
+ \item[requireRoot()] -- check whether the user running the script has root privileges.
+ \item[checkServiceIsRunning(\$service)] -- checks whether the named service is running on the system.  This is performed by checking whether the provided string is present in the response from the shell command `ps ax'.
+ \item[setConfigVariable(\$var, \$value)] -- does a search and replace for a placeholder variable in the config.php file, replacing with \$value.  Placeholders should be stored in the config.php template as \verb|%%VARIABLENAME%%|.
+ \item[promptForPwd(\$isCreating=TRUE)] -- is an interactive script for getting a password from the user.  It checks that the password
+ is strong and asks for it twice to check for typos. 
+ \item[class Colors] -- can be used to display coloured text on the console.  Useful for highlighting errors and test results.
+
+\end{description}
 
 \section{Handling client version dependencies}
-In an ideal world, the API for how clients talk to the Corina server would never change.  Unfortunately, we don't live in the real world and this is not possible.  New features in Corina will require changes to the API, as will changes to TRiDaS.  In anticipation to such changes, the Corina server includes a mechanism for detecting when a client is too old to handle the API that it is using.  In this case the server will refuse to handle the request.  A similar complementary mechanism is in place in the client for instances when a client is attempting to talk to an older server that it no longer supports.  
+In an ideal world, the API for how clients talk to the Corina server would never change.  Unfortunately, we don't live in an ideal world!  New features in Corina will require changes to the API, as will changes to TRiDaS.  In anticipation to such changes, the Corina server includes a mechanism for detecting when a client is too old to handle the API that it is using.  In this case the server will refuse to handle the request.  A similar complementary mechanism is in place in the client for instances when a client is attempting to talk to an older server that it no longer supports.  
 
 At the moment, the Corina desktop client is the only known software that talks to the Corina server, but in the future we may have other 3rd party clients making requests.  For example it would be possible to develop a central data repository (much like the ITRDB or perhaps as an extension to the existing ITRDB) that harvests data from multiple labs each running the Corina server. Alternatively, existing 3rd party desktop applications (e.g. TSAP-Win, PAST4 etc) may be extended to enable them to obtain data directly from servers running the Corina server software.  Either way, it is important to include the ability to specify the oldest versions of clients that are able to connect, and also to be able to specify different versions for different types of clients. 
 
-It is also necessary to include the ability to allow or disallow access to the server by unknown client applications.  If a new program is developed by other an it attempts to access the server it could contain bugs (or even malicious code) that interferes with the server.  For a production instance of the server this is obviously undesirable, therefore the systems configuration option `onlyAllowKnownClients' is set to TRUE.  
+It is also necessary to include the ability to allow or disallow access to the server by unknown client applications.  If a new program is written by other developers and it attempts to access the server it could contain bugs (or even malicious code\footnote{Keep in mind though that a user with the necessary privileges would need to provide this new program with their credentials for it to make changes to data.}) that interferes with the server.  For a production instance of the server this is obviously undesirable, therefore the systems configuration option `onlyAllowKnownClients' is set to TRUE.  
 
-The minimum versions of each supported client are stored in the database in the table tblsupportedclients.  The `client' field should contain a unique portion of the HTTP\_USER\_AGENT header provided by the client.  
+The minimum versions of each supported client are stored in the database in the table tblsupportedclient.  The `client' field should contain a unique portion of the HTTP\_USER\_AGENT header provided by the client.  
 
 
 \section{Handling server configuration}
@@ -97,9 +119,9 @@ As mentioned in section \ref{txt:serverPackage}, the server package is created a
 \begin{itemize}
  \item Make sure this documentation is up-to-date! 
  \item Increment the \verb|<serverversion>| tag in the pom.xml file
- \item If this version of the server needs a particular version of the client then you'll need to set this value in the tblsupportedclients table by including relevant SQL in a 
-
- \item TEST!  If users are running this as an upgrade, then we need to ensure this goes smoothly.  Although they are told to backup their database before running we should assume they've ignored the warning and that we are altering precious data.
+ \item Make sure that any upgrades that need to be made to the database are included in a new and unique SQL file stored in Databases/db-upgrade-patches.  Each file from this folder is run by the installer unless it has previously been run.  
+ \item If this version of the server needs a particular version of the client then you'll need to set this value in the tblsupportedclient table by including a relevant SQL statement in your db-update-patches script e.g.: \code{UPDATE tblsupportedclient SET minversion='2.13' WHERE client='Corina WSI';}
+ \item TEST!  If users are running this as an upgrade, then we need to ensure this goes smoothly.  Although they are told to backup their database before running we should assume they've ignored the warning and that we are altering precious data. Test both a fresh install and an upgrade from the previous version.
 \end{itemize}
 
 

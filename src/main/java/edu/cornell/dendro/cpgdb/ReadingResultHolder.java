@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Daniel Murphy and Peter Brewer
+ * Copyright (C) 2010 Lucas Madar and Peter Brewer
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * Contributors:
- *     Daniel Murphy
+ *     Lucas Madar
  *     Peter Brewer
  ******************************************************************************/
 /**

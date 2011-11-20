@@ -25,11 +25,40 @@ If you have followed the instructions in section \ref{txt:BackupVA} to backup yo
 
 
 \subsection{Backup PostgreSQL database}
-The more standard way of backing up your database is to do a dump of the PostgreSQL database itself.  This is a little more involved, so it is only recommended if you are familiar with command line and/or Linux.
+The more standard way of backing up your database is to do a dump of the PostgreSQL database itself into a large text file.  This is a little more involved, so it is only recommended if you are familiar with command line and/or Linux.  You can create the file with a command like the one below, but you should read up on pg\_dump so that you understand the possible options that you can use.
+
+\code{pg\_dump -f /folder/and/file/to/make.sql name\_of\_corina\_database}
+
+For example the following line will backup the database called `corina' into a file called backup.sql in the tmp folder.  Keep in mind that the tmp folder is cleaned each time the server is booted.
+
+\code{pg\_dump -f /tmp/backup.sql corina}
+
 
 \subsection{Restoring a PostgreSQL database}
+To restore your database from a backup file you can use the standard PostgreSQL command line tool psql to populate an empty database:
 
-\section{Extending the Virtual Appliance}
+\code{createdb corina\_new}
+\code{psql corina\_new < /tmp/backup.sql}
+
+
+
+\section{Upgrading the server}
+Upgrading the server requires you to type a few commands into the Linux command line.  First of all please ensure that you back up your Virtual Appliance and/or database before continuing.  We will always endeavour to make sure that nothing happens to your database, even if the upgrade fails for some reason (in which case the system should roll back to your previous version again), but things don't always go to plan.
+
+\begin{enumerate}
+ \item Log in to your Corina server console 
+ \item Type the following commands: 
+       \code{cd /tmp} 
+       \code{wget http://url.of.new.server.file} 
+       \code{dpkg --install corina-server-X.X.X.deb}
+\end{enumerate}
+
+The URL of the new file can be obtained from the Corina website.  
+
+It would be possible for us to set up an mechanism which server administrators could opt-in to to upgradie Corina servers automatically.  We may deploy this in the future, but we'd rather keep the process of upgrading as a conscious decision for the foreseeable future, but especially until we are confident that the upgrade process will not compromise your database.
+
+
+\section{Graphical Interface to the Virtual Appliance}
 \index{Server!Graphical interface}
 For those of you that are unfamiliar with Linux, the basic command line prompt is not likely to be very comfortable.  If you are interesting in looking at the server in more detail you may therefore prefer to install a full graphical interface.  Unlike Windows, there are a number of different graphical interfaces (or desktops) to choose from in Linux, the most popular being Gnome and KDE.  To install one of these you need to type one of the commands listed below.  The first line installs Gnome and the second KDE. Windows users that are new to Linux may find KDE more familiar, but Apple users may be more at home with Gnome.
 
@@ -46,9 +75,9 @@ The basic installation of the Corina server includes the standard configuration 
 There are a number of default usernames and passwords setup on your server.  If your server is accessible for the internet we strongly advise you to change these defaults and anyone with knowledge of the Corina server could access and compromise your machine.
 
 \begin{description*}
- \item[System user] - these are the credentials you use to log in to the command prompt in your Corina Virtual Appliance.  By default the user is `corina' and the password is `w3l0v3tr33s'.  To change this log in to the command prompt and type \verb|passwd| and follow the instructions.  There is no way to recover this password if you loose it.
- \item[PostgreSQL database user] - these are the credentials used by the webservice to read and write to the database and are set by the database administrator during the initial configuration of the Corina server. They are also the credentials you will need if you want to directly access the database from a third party tool like PGAdminIII.  You can To reset this password 
- \item[Corina admin user] - these are the admin credentials that you use to log in with in your Corina desktop application.  Be default the user is `admin' and the password is `qu3rcu5'.  To change these open the Corina desktop application, then go to Admin then Change password.
+ \item[System user] - these are the credentials you use to log in to the command prompt in your Corina Virtual Appliance.  By default the user is `corina' and the password is `w3l0v3tr33s'.  To change this log in to the command prompt and type \verb|passwd| and follow the instructions.  There is no easy way to recover this password if you loose it.
+ \item[PostgreSQL database user] - these are the credentials used by the webservice to read and write to the database and are set by the database administrator during the initial configuration of the Corina server. You are only ever likely to need this again if you want to directly access the database from a third party tool like PGAdminIII.  You can reset this password from the Corina Virtual Appliance command prompt by typing \verb|corina-server --reconfigure|
+ \item[Corina admin user] - these are the admin credentials that you use to log in with in your Corina desktop application.  Be default the user is `admin' and the password is `qu3rcu5'.  You should change these the first time you open the Corina desktop application by going to \menutwo{Admin}{Change password}.
 \end{description*}
 
 \subsection{Authentication and encryption}
@@ -71,9 +100,9 @@ Although the Corina database is designed to only be accessed by the Corina deskt
 \index{PGAdminIII}
 One of the easiest ways to access the PostgreSQL database is through the application PGAdminIII.  This is a cross-platform open source application for communicating with PostgreSQL databases.  You can install PGAdminIII on your desktop computer and access the remotely running database using your database user credentials.  
 
-For security reasons by default the Corina database cannot be accessed from computers outside of the Corina server.  The may sound peculiar because the webservice can be accessed from computers anywhere on the web, but the database is actually accessed by the webservice, which is essentially a user running on the same computer as the database.  To access the database \emph{directly} from a remote computer you must therefore open access first.  This is done by adding an entry to the file `/etc/postgresql/8.4/main/pg\_hba.conf'.  My personal command line text editor of choice is vim, but it is a little confusing to the uninitiated.  If you are unfamiliar with command line text editing you are probably best to use pico:
+For security reasons by default the Corina database cannot be accessed from computers outside of the Corina server.  The may sound peculiar because the webservice can be accessed from computers anywhere on the web, but the database is actually accessed by the webservice, which is essentially a user running on the same computer as the database.  To access the database \emph{directly} from a remote computer you must therefore open access first.  This is done by adding an entry to the file `/etc/postgresql/9.1/main/pg\_hba.conf'.  My personal command line text editor of choice is vim, but it is a little confusing to the uninitiated.  If you are unfamiliar with command line text editing you are probably best to use pico:
 
-\code{sudo pico /etc/postgresql/8.4/main/pg\_hba.conf}
+\code{sudo pico /etc/postgresql/9.1/main/pg\_hba.conf}
 
 Scroll down passed all the comments, to the bottom of the file.  Add the following line:
 
@@ -118,6 +147,7 @@ Possible options to pass the server are:
 
 \begin{itemize*}
  \item `\verb|--help|' -- Display a list of the possible options
+ \item `\verb|--version|' -- Display the version of the Corina server webservice and database currently installed
  \item \verb|`--test'| -- Run tests on the current configuration
  \item \verb|`--configure'| -- Configure the Corina server from scratch.  
  \item \verb|`--reconfigure'| -- Reconfigure the Corina server.  This should be done if the database name or user credentials change, or if the IP address of the machine is altered.

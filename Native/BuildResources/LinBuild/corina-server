@@ -6,7 +6,6 @@
  */
 if (!isset($argc))
 {
-	//echo "This file should be called from the command line only.";
 	writeStdErr("This file should be called from the command line only.");
 	exit(1);
 }
@@ -14,9 +13,9 @@ if (!isset($argc))
 // Static locations of various files 
 $wsbase           = "/var/www/corina-webservice/";
 $folderbase       = "/usr/share/corina-server/";
+
 $pg_hba_file      = "/etc/postgresql/9.1/main/pg_hba.conf";
 $pg_hba_file_orig = "/etc/postgresql/9.1/main/pg_hba.conf.bak";
-
 $permsfile        = $folderbase."set_database_permission.sql";
 $permstemplate    = $folderbase."set_database_permission.template";
 $logfile          = "/var/log/corina-installation.log";
@@ -27,10 +26,7 @@ $upgradeScripts   = $folderbase."db-upgrade-patches";
 $configfile       = $wsbase."config.php";
 $dbsetupfile      = $wsbase."inc/dbsetup.php";
 $systemconfig     = $wsbase."systemconfig.php";
-$upgrading        = false;
-$prevMajorVersion = null;
-$prevMinorVersion = null;
-$prevRevision     = null;
+
 
 // Global variables
 $user = "";
@@ -60,15 +56,17 @@ if($_SERVER['USER']=='root')
  */
  
 $shortopts = "htrces";
-$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "post-install" );
+$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version" );
 $args = getopt($shortopts,$longopts);
 
 // Depending on command line arguments run different functions
 if($args["test"]===false || $args["t"]===false)
 {
 	// Test configuration
-	verifySetup();
-	printComplete();
+	include($configfile);
+	include($dbsetupfile);
+	$setupsuccessful = verifySetup();
+	printComplete(setupsuccessful);
 }
 else if($args["reconfigure"]===false || $args["r"]===false)
 {
@@ -81,9 +79,11 @@ else if($args["reconfigure"]===false || $args["r"]===false)
 	apacheSetup();
 	verifySetup();
 	printComplete();
+	exit(0);
 }
 else if($args["sysconfig"]===false || $args["s"]===false)
 {
+	requireRoot();
 	include($configfile);
 	include($dbsetupfile);
 	generateSystemsConfig();
@@ -91,19 +91,8 @@ else if($args["sysconfig"]===false || $args["s"]===false)
 }
 else if($args["help"]===false || $args["h"]===false)
 {
-  // Show help documentation
-  echo "Useage: corina-server [<option> ...]\n\n";
-  echo "Options:\n";
-  echo "  -h, --help         Show this help\n";
-  echo "  -t, --test         Run tests on existing setup\n";
-  echo "  -r, --reconfigure  Reconfigure the existing configuration\n";
-  echo "  -c, --configure    Configure server from scratch\n";
-  echo "      --resetpwd     Reset the PostgreSQL database password\n";
-  echo "      --start        Start the Corina server\n";
-  echo "      --stop         Stop the Corina server\n"; 
-  echo "      --restart      Restart the Corina server\n";   
-  echo "\n";
-  exit(0);
+    // Show help documentation
+  	showHelp();
 }
 else if($args["stop"]===false)
 {
@@ -151,54 +140,182 @@ else if($args["emptylog"]===false || $args["e"]===false)
 	exit(0);
 	
 }
+else if($args["upgrade-db"]===false)
+{
+	requireRoot();
+	include($configfile);
+	include($dbsetupfile);
+	runDBUpgrades();
+	exit(0);
+}
+else if ($args["configure"]===false || $args["c"]===false)
+{
+	// Configure
+	requireRoot();
+	
+	// Check if the server is already configured
+	if( (file_exists($configfile)) && (file_exists($dbsetupfile)) )
+	{
+		// Include config files as they already exist
+		include($configfile);
+		include($dbsetupfile);
+			
+		// Verify if the configuration is already ok
+		if(verifySetup(TRUE)===TRUE)
+		{
+			// setup already done so display and close 
+			echo "Configuration complete\n\n";
+			verifySetup();
+			printComplete();
+			exit(0);
+		}	
+	}
+	
+	// Setup not yet ok so configure from scratch
+	createScriptsFromTemplates();
+	postgresSetup();
+	include($configfile);
+	include($dbsetupfile);
+	generateSystemsConfig();
+	include($systemconfig);
+	runDBUpgrades();
+	apacheSetup();
+	verifySetup();
+	printComplete();
+	exit(0);
+}
+else if ($args["version"]===false)
+{
+	include($configfile);
+	include($dbsetupfile);
+	echo "\n";
+	printTitle();
+	echoTruncatedString("Corina Database", 20);
+	echo " - version ".getCorinaDBVersion()."\n";
+	echo "\n";
+	exit(0);
+}
 
-// Configure from scratch
-requireRoot();
-createScriptsFromTemplates();
-postgresSetup();
-include($configfile);
-include($dbsetupfile);
-generateSystemsConfig();
-include($systemconfig);
-apacheSetup();
-verifySetup();
-printComplete();
 
+showHelp(true);
+exit(1);
 
-die();
 /**
  * END OF SCRIPT BODY
  */
 
+/**
+ * Print the program name and version
+ */
+function printTitle()
+{
+  echoTruncatedString("Corina Server", 20);
+  echo " - version ".getCorinaDPKGVersion()."\n";
+}
+
+/**
+ * Show help information about the script
+ */ 
+function showHelp($forced=false)
+{
+  echo "\n";
+  printTitle();
+  echo "\nUseage: corina-server [<option> ...]\n";
+  echo "Options:\n";
+  echo "  -h, --help         Show this help\n";
+  echo "  -t, --test         Run tests on existing setup\n";
+  echo "  -c, --configure    Configure server\n";
+  echo "  -r, --reconfigure  Reconfigure the server overwriting existing config\n";
+  echo "      --resetpwd     Reset the PostgreSQL database password\n";
+  echo "      --start        Start the Corina server\n";
+  echo "      --stop         Stop the Corina server\n"; 
+  echo "      --restart      Restart the Corina server\n";   
+  echo "      --upgrade-db   Run database upgrade scripts\n";
+  echo "      --version      Show version of Corina server that is installed\n";
+  echo "\n";
+  
+  if(forced) exit(1);
+  
+  exit(0);
+
+}
 
 /**
 * Run any applicable upgrade scripts
 */
 function runDBUpgrades()
 {	
+	global $upgradeScripts;
+	global $logfile;
+	
+	$scriptsRun = 0;
+
 	echo "Upgrading existing Corina database to latest version...\n";
+	
+	exec("echo \"*******************\" >> $logfile");
+    exec("echo \"Upgrading existing Corina database to latest version...\" >> $logfile" );
+    exec("echo \"*******************\" >> $logfile");	
+	
 	// Loop through all upgrade scripts and run any that haven't 
 	// already been run
+
 	if (is_dir($upgradeScripts)) 
 	{
 	    if ($dh = opendir($upgradeScripts)) 
 	    {
 	        while (($file = readdir($dh)) !== false) 
-		{
-	            if ($file != "." && $file != "..") 
-		    {
-		      	runSQLUpgradeFile($file);
-	            }
-	        }
-	        closedir($dh);
-	    }
+			{
+				// Ignore directories and hidden files
+		        if ($file != "." && $file != ".." && strpos($file, ".")!=0) 
+			    {
+			      	$result = runSQLUpgradeFile($file);
+			      	if($result) $scriptsRun++;
+		        }
+		    }
+		    closedir($dh);
+		}
 	}
 	
 	global $configfile;
-        global $systemconfig;
+    global $systemconfig;
 	global $dbsetupfile;
 	global $dbconn;
 	
+	$f = getCorinaDPKGVersion();
+
+	// Remove +SNAPSHOT from end
+	$f = str_replace("+SNAPSHOT", "", $f);
+	
+	$sql = "UPDATE tblconfig SET value='$f' where key='wsversion'";
+        $dbconnstatus = pg_connection_status($dbconn);
+	if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+	    $result = pg_query($dbconn, $sql);    	
+    }
+    else
+    {
+	    die("Unable to connect to PostgreSQL database to update the version information\n\n");
+    }
+    
+    if($scriptsRun==0)
+    {
+    	echo "Database was up-to-date.  No upgrade scripts were run\n";
+    }
+    else
+    {
+    	echo "Database upgrade complete.\n";
+    	echo "Database now at version ".trim($f).".\n";
+    }
+	
+}
+
+/**
+ * Get the version of Corina according to dpkg.  
+ *
+ * @return version
+ */ 
+function getCorinaDPKGVersion()
+{
 	$f = exec("dpkg-query -W corina-server");
 	
 	if(strpos($f, "No packages found")===TRUE)
@@ -209,72 +326,19 @@ function runDBUpgrades()
 	// Trim off the 'corina-server' from the beginning
 	$f = str_replace("corina-server", "", $f);
 	
-	// Remove +SNAPSHOT from end
-	$f = str_replace("+SNAPSHOT", "", $f);
-	
-	$sql = "UPDATE tblconfig SET value='$f' where key='wsversion'";
-        $dbconnstatus = pg_connection_status($dbconn);
-	if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-    	    $result = pg_query($dbconn, $sql);    	
-        }
-        else
-        {
-    	    die("Unable to connect to PostgreSQL database to update the version information\n\n");
-        }
-	
+	return trim($f);
 }
-
-function runSQLUpgradeFile($filename)
-{
-	global $configfile;
-    global $systemconfig;
-	global $dbsetupfile;
-	global $dbconn;
-		
-	$sql = "SELECT * FROM tblupgradelog WHERE filename = '$filename'";
-	$dbconnstatus = pg_connection_status($dbconn);
-    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-    {
-    	$result = pg_query($dbconn, $sql);
-    	if(pg_num_rows($result)>=1) return;    	
-    }
-    else
-    {
-    	die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
-    }
-		
-		
-	$sql = file_get_contents($filename);
-    $dbconnstatus = pg_connection_status($dbconn);
-    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-    {
-    	echo "   - Applying patch: $filename\n";   	
-    	$result = pg_query($dbconn, $sql); 
-    	$sql = "INSERT into tblupgradelog filename VALUES ('$filename');";
-	    $result = pg_query($dbconn, $sql);		 	
-    }
-    else
-    {
-    	die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
-    }
-	
-}
-
 
 /**
-* Check if corina-server was previously installed and grab the version number
+* Get the version of Corina installed from the database.  If the database is not
+* available then returns 'Unknown'
 */
-function getPreviousVersion()
+function getCorinaDBVersion()
 {
 	global $configfile;
     global $systemconfig;
 	global $dbsetupfile;
-	global $dbconn;
-	global $prevMajorVersion;
-	global $prevMinorVersion;
-	global $prevRevision;
-	
+	global $dbconn;	
 		
 	$sql = "SELECT value FROM tblconfig WHERE key='wsversion'";
     $dbconnstatus = pg_connection_status($dbconn);
@@ -283,26 +347,101 @@ function getPreviousVersion()
     	$result = pg_query($dbconn, $sql);    	
         while ($row = pg_fetch_array($result))
 	  	{
-	     	   $v = explode($row['value'], ".", 3); 		
+	     	   return trim($row['value']); 		
 	  	} 	
+    }
+
+	return "Unknown";
+}
+
+
+/**
+* Run the SQL filename provided to upgrade the database
+*
+* Returns true if file was run successfully (or has already been installed) and false if it failed.
+* The entire thing is performed as a transaction so if there is any trouble (including writing
+* to the upgrade log) then the entire upgrade file is rolled back.
+*/
+function runSQLUpgradeFile($filename)
+{
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
+	global $logfile;
+	global $upgradeScripts;
+	$colors = new Colors();
+		
+	$sql = "SELECT * FROM tblupgradelog WHERE filename = '$filename'";
+	$dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	$result = pg_query($dbconn, $sql);
+    	if(pg_num_rows($result)>=1) return true;    	
     }
     else
     {
-        echo "   - dbconn failed, so assuming this is a fresh install\n";
-    	return FALSE;
+    	die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
     }
-    
-    if($v!=null)
-    {
-     	$prevMajorVersion = $v[0];
-		$prevMinorVersion = $v[1];
-		$prevRevision     = $v[2];
-		return TRUE;
-	}
+		
+		
+	$sql = file_get_contents($upgradeScripts."/".$filename);
 	
-	echo "   - failed to read version from database so assuming fresh install\n";
-	return FALSE;
+	exec("echo \"Upgrading database with SQL \n ".escapeshellcmd($sql)."\" >> $logfile");
+	
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	echoTruncatedString("    - Applying patch: $filename...");   	
+    	pg_query($dbconn, "BEGIN WORK"); 
+    	
+    	
+    	$result = pg_query($dbconn, $sql);
+    	
+    	if(!$result)
+    	{
+    		echo $colors->getColoredString("FAILED", "red");
+    		echo "\n\n";
+
+    		exec("echo \"Error running upgrade script '".escapeshellcmd($filename)."'\" >> $logfile");
+    		exec("echo \"".escapeshellcmd($error)."\" >> $logfile" );
+    		pg_query($dbconn, "ROLLBACK");
+    		 
+    		exit(1);
+    	}
+    	else
+    	{
+    		// Database patched successfully    	    		
+    		// Now insert record into upgradelog
+    		$sql = "INSERT into tblupgradelog (filename) VALUES ('$filename');";
+		    $result = pg_query($dbconn, $sql);
+		    
+		    if(!$result)
+	    	{
+	    	    echo $colors->getColoredString("FAILED", "red");
+    			echo "\n\n";
+
+	    		exec("echo \"Unable to add patch name to upgradelog\" >> $logfile");
+	    		exec("echo \"".escapeshellcmd($error)."\" >> $logfile" );
+	    		pg_query($dbconn, "ROLLBACK"); 
+	    		exit(1);
+	    	}	
+
+			// All is well so go ahead and commit the entire thing to the database
+	    	pg_query($dbconn, "COMMIT");  
+	    	echo $colors->getColoredString("PASSED", "green");
+    		echo "\n";   
+		    return true; 	
+    	}
+    }
+    else
+    {
+    	die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
+    }
 }
+
+
+
 
 
 /**
@@ -328,8 +467,6 @@ function emptyLog()
     }
 	
 }
-
-
 
 
 /**
@@ -359,15 +496,15 @@ function generateSystemsConfig()
 	echo "\nGenerating systems config file...\n";
 	
 	// Create the file
-	$fh = fopen($systemconfig, 'w') or exit("Can't create system configuration file");
+	$fh = fopen($systemconfig, 'w') or exit("Can't create system configuration file\n\n");
 	fwrite($fh, "<?php
 /**
-* This configuration file is automatically generated by the corina-server configure
-* script.  Do not make changes to this file!
+* This configuration file is automatically generated by the corina-server 
+* configure script.  Do not make changes to this file!
 * Generated : ".date(DATE_RFC822)."
 */\n\n");
 	
-	$sql = "SELECT * from tblconfig";
+	$sql = "SELECT * FROM tblconfig";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
@@ -383,7 +520,7 @@ function generateSystemsConfig()
     	exit("Unable to connect to PostgreSQL database.\n\n");
     }
     
-	$sql = "SELECT * from tblsupportedclient";
+	$sql = "SELECT * FROM tblsupportedclient";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
@@ -528,7 +665,7 @@ function postgresSetup()
        setDBUser();
 
        // Create credentials file
-       exec("echo \"username=".$user."password=$pwd\" > $credentialsFile"); 
+       exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile"); 
       }
    }
    else
@@ -537,15 +674,10 @@ function postgresSetup()
       setDBUser();
 
       // Write to credentials file
-      exec("echo \"username=".$user."password=$pwd\" > $credentialsFile"); 
-
-      // Create the database and populate from the database template
-      echo "\nCreating database...\n";
-      exec("su - postgres -c \"createdb corina 2>> ".$logfile."\"");
-      exec("su - postgres -c \"psql corina < $dbtemplate 2>> ".$logfile."\"");
+      exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile"); 
 
       // Create db user and set permissions
-      echo "Setting permissions...\n";
+      echo "Setting database permissions...\n";
       $snr = new File_SearchReplace("%%DBUSER%%",
                               trim($user, "\n\r"),
 			      $permsfile,
@@ -561,8 +693,13 @@ function postgresSetup()
       exec("su - postgres -c \"psql --file=/usr/share/corina-server/set_database_permission.sql 2>> ".$logfile."\"");
       setConfigVariable("%%DBNAME%%", "corina");   
       
+      // Create the database and populate from the database template
+      echo "\nCreating database...\n";
+      exec("su - postgres -c \"createdb corina 2>> ".$logfile."\"");
+      exec("su - postgres -c \"psql corina < $dbtemplate 2>> ".$logfile."\"");
+      
       // Set pg_hba.conf file entry
-      $pg_hba_str = "local        all      ".trim($user, "\n\r")."                  md5\\n".
+      $pg_hba_str = "local        all      ".trim($user, "\n\r")."                  trust\\n".
                     "host         all      ".trim($user, "\n\r")."   samenet        md5\\n";
       $command = "sudo -u postgres sh -c \"sed '1 i\\# ADDED BY CORINA CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
       exec($command, $resp);
@@ -661,17 +798,70 @@ function apacheSetup()
 }
 
 /**
+ * Checks whether the config.php file is valid
+ */
+function isConfigPhpValid()
+{
+	global $configfile;
+	if(fopen($configfile, "r")) 
+	{ 
+	  // If file contains a % then the search/replace hasn't worked
+ 	  $contents = file_get_contents($configfile);
+	  if(strpos($contents, "%")===false)
+	  {
+	  	return TRUE;
+	  }
+	  else
+	  {
+	  	return FALSE;
+	  }
+	} 
+	else 
+	{ 
+	  return FALSE; 
+	} 
+
+}
+
+/**
+ * Check whether the systemsconfig.php file is valid
+ */
+function isSysConfigValid()
+{
+  global $systemconfig;
+
+		if(fopen($systemconfig, "r")) 
+		{ 
+		  // If file is less than 10 lines long it hasn't been filled 
+	 	  $lines = count(file($systemconfig));
+		  if($lines>10)
+		  {
+		  	return TRUE;
+		  }
+		  else
+		  {
+		  	return FALSE;
+		  }
+		} 
+		else 
+		{ 
+		  return FALSE; 
+		} 
+}
+
+/**
  * Run checks to see if setup has been successful
  */
-function verifySetup()
+function verifySetup($silent=false)
 {
   global $wsurl;
   global $systemconfig;
   global $configfile;
+  $runningresult = TRUE;
   
   require("/var/www/corina-webservice/config.php");
 
-  echo "\nVerifying Corina server setup...\n";
+  if($silent!=TRUE) echo "\nVerifying Corina server setup...\n";
   
   if($securehttp===TRUE)
   {
@@ -681,74 +871,61 @@ function verifySetup()
   {
     $http = "http://";
   }
-
-        echo "    - Checking Apache is running:                       ";
-        printResult(checkServiceIsRunning("apache2"));
-        echo "    - Checking PostgreSQL is running:                   ";
-        printResult(checkServiceIsRunning("postgres"));
-        
-        echo "    - Checking webservice is accessible:                ";
-        
   $wsurl = $http.$domain;
-  if(fopen($wsurl, "r"))
-  {
-    printResult(TRUE);
-  }
-  else
-  {
-    printResult(FALSE);
-  }
-  	 
-	echo "    - Checking database credentials file can be read:   "; 
-	if(fopen($cdbCredentialsFile, "r")) 
-	{ 
-	  printResult(TRUE); 
-	} 
-	else 
-	{ 
-	  printResult(FALSE); 
-	} 
+  
+
+	if($silent)
+	{
+		if(checkServiceIsRunning("apache2")==FALSE) return FALSE;
+		if(checkServiceIsRunning("postgres")==FALSE) return FALSE;
+		if(!fopen($wsurl, "r")) return FALSE;
+		if(!fopen($cdbCredentialsFile, "r")) return FALSE;
+		if(isSysConfigValid()===FALSE) return FALSE;
+		if(isConfigPhpValid()===FALSE) return FALSE;
+	}
+	else
+	{
+		echoTruncatedString("    - Checking Apache is running:");
+		printResult(checkServiceIsRunning("apache2"));
+		if(checkServiceIsRunning("apache2")===FALSE) $runningresult = FALSE;
+		
+		echoTruncatedString("    - Checking PostgreSQL is running:");
+		printResult(checkServiceIsRunning("postgres"));
+		if(checkServiceIsRunning("postgres")===FALSE) $runningresult = FALSE;
+		
+		echoTruncatedString("    - Checking webservice is accessible:");
+		if(fopen($wsurl, "r"))
+		{
+		    printResult(TRUE);
+		}
+		else
+		{
+		    printResult(FALSE);
+		    $runningresult = FALSE;
+		}
+		
+		echoTruncatedString("    - Checking database credentials file can be read:"); 
+		if(fopen($cdbCredentialsFile, "r")) 
+		{ 
+		  printResult(TRUE); 
+		} 
+		else 
+		{ 
+		  printResult(FALSE); 
+		  $runningresult = FALSE;
+		} 
+		
+		echoTruncatedString("    - Checking systems configuration file is valid:"); 
+		printResult(isSysConfigValid()); 
+		if(isSysConfigValid()===FALSE) $runningresult = FALSE;
+		
+		echoTruncatedString("    - Checking webservice configuration file is valid:"); 
+		printResult(isConfigPhpValid());
+		if(isConfigPhpValid()===FALSE) $runningresult = FALSE;
+	}
 	
-	echo "    - Checking systems configuration file is valid:     "; 
-	if(fopen($systemconfig, "r")) 
-	{ 
-	  // If file is less than 10 lines long it hasn't been filled 
- 	  $lines = count(file($systemconfig));
-	  if($lines>10)
-	  {
-	  	printResult(TRUE);
-	  }
-	  else
-	  {
-	  	printResult(FALSE);
-	  }
-	} 
-	else 
-	{ 
-	  printResult(FALSE); 
-	} 
+	if($silent!=TRUE) echoTruncatedString("    - Checking connection to PostgreSQL database:"); 
 	
-	echo "    - Checking webservice configuration file is valid:  "; 
-	if(fopen($configfile, "r")) 
-	{ 
-	  // If file contains a % then the search/replace hasn't worked
- 	  $contents = file_get_contents($configfile);
-	  if(strpos($contents, "%")===false)
-	  {
-	  	printResult(TRUE);
-	  }
-	  else
-	  {
-	  	printResult(FALSE);
-	  }
-	} 
-	else 
-	{ 
-	  printResult(FALSE); 
-	} 
-	
-	 
-	echo "    - Checking connection to PostgreSQL database:       "; 
 	$contents = str_replace("\n", "=", file_get_contents($cdbCredentialsFile));
 	$myarray = explode("=", $contents, 5);
 	$username = $myarray[1];
@@ -762,16 +939,34 @@ function verifySetup()
 	$sql = "set datestyle to 'ISO'";
 	pg_query($dbconn, $sql);
 
-	if($dbconn===FALSE) 
-	{ 
-	  printResult(FALSE); 
-	} 
-	else 
-	{ 
-	  printResult(TRUE); 
-	} 
-        echo "\n";
-
+	if($silent!=TRUE)
+	{
+		printResult(!$dbconn===FALSE);
+		$runningresult = FALSE;	
+	}
+	else
+	{
+		if($dbconn===FALSE) return FALSE;
+	}
+	
+	// Check that webservice and database versions are in sync
+	if($silent!=TRUE) echoTruncatedString("    - Checking webservice and database versions are in sync:"); 
+	if($silent!=TRUE)
+	{
+		printResult(getCorinaDPKGVersion()==getCorinaDBVersion());
+		if(getCorinaDPKGVersion()!=getCorinaDBVersion())
+		{		
+			//echo "DPKGVersion ='".getCorinaDPKGVersion()."'\n";
+			//echo "DBVersion   ='".getCorinaDBVersion()."'\n";
+			$runningresult = FALSE;
+		}
+	}
+	else
+	{
+		if(getCorinaDPKGVersion()!=getCorinaDBVersion()) return FALSE;
+	}
+	
+	return $runningresult;  
 }
 
 /**
@@ -849,26 +1044,27 @@ function printComplete($forceSuccess=null)
   if($forceSuccess===TRUE)
   {
   	echo "Configuration was successful.  Your Corina webservice is now available at:\n";
-  	echo "    - $wsurl".webservice.php;
+  	echo "    - $wsurl"."webservice.php\n\n";
   	exit(0);
   }
-  else if ($forceSucess===FALSE)
+  else if ($forceSuccess===FALSE)
   {
         echo $colors->getColoredString("Errors occurred during configuration. Check the error log and try again.", "white", "red");
+        echo "\n\n";
         exit(1);
   }
   else if($errorsFound===FALSE)
   {
   	echo "Configuration was successful.  Your Corina webservice is now available at:\n";
-  	echo "    - $wsurl";
-  	exit(1);
+  	echo "    - $wsurl"."webservice.php\n\n";
+  	exit(0);
   }
   else
   { 
         echo $colors->getColoredString("Errors occurred during configuration. Check the error log and try again.", "white", "red");
-        exit(0);
+        echo "\n\n";
+        exit(1);
   }
-  echo "\n\n";
 }
 
 /**
@@ -890,6 +1086,34 @@ function printResult($res)
   }
 
 } 
+
+/**
+ * Echo a string to the console truncated if longer than $length   
+ */
+function echoTruncatedString($str, $length=70)
+{
+  if(strlen($str)>$length-1)
+  {
+  	$str = substr($str, 0, $length-4 )."... ";
+  }
+  else
+  {
+  	$str = str_pad($str, $length);
+  }
+
+  echo $str;
+
+}
+
+/**
+ *  Writes a string to stderr
+ */
+function writeStdErr($error)
+{
+    $STDERR = fopen("php://stderr", "w");
+    fwrite($STDERR, $error);
+    fclose($STDERR);
+}
 
 
 /**
@@ -1579,11 +1803,5 @@ class File_SearchReplace
 }
 
 
-function writeStdErr($error)
-{
-    $STDOUT = fopen("php://stdout", "w");
-    fwrite($STDOUT, $error);
-    fclose($STDOUT);
-}
 
 ?>
