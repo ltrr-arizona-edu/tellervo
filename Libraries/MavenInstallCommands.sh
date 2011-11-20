@@ -14,3 +14,5 @@ mvn install:install-file -DgroupId=org.tridas          -DartifactId=jogl        
 
 # Native JOGL libraries wrapper.  Original repository (maven.iscpif.fr - http://maven.iscpif.fr/snapshots) is currently broken
 mvn install:install-file -DgroupId=fr.iscpif           -DartifactId=jogl-wrapper               -Dversion=1.0	       -Dpackaging=jar -Dfile=jogl-wrapper-1.0.jar
+
+mvn install:install-file -DgroupId=postgresql          -DartifactId=pljava-public              -Dversion=1.4.2         -Dpackaging=jar -Dfile=pljava.jar
