@@ -51,13 +51,21 @@ import javax.swing.SwingUtilities;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.ComplexPresenceAbsence;
+import org.tridas.schema.PresenceAbsence;
+import org.tridas.schema.TridasBark;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
+import org.tridas.schema.TridasHeartwood;
+import org.tridas.schema.TridasLastRingUnderBark;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasPith;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import org.tridas.schema.TridasSapwood;
+import org.tridas.schema.TridasWoodCompleteness;
 import org.tridas.util.TridasObjectEx;
 
 import com.l2fprod.common.propertysheet.Property;
@@ -502,6 +510,34 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	protected void populateNewEntity(EditType type, ITridas entity) {
 
 		entity.setTitle("New " + type.displayTitle);
+		
+		// Autopopulate TridasRadius features for ease of use
+		if(entity instanceof TridasRadius)
+		{
+			TridasWoodCompleteness wc = new TridasWoodCompleteness();
+			
+			TridasPith pith = new TridasPith();
+			pith.setPresence(ComplexPresenceAbsence.UNKNOWN);
+			wc.setPith(pith);
+			
+			TridasHeartwood hw = new TridasHeartwood();
+			hw.setPresence(ComplexPresenceAbsence.UNKNOWN);
+			wc.setHeartwood(hw);
+			
+			TridasSapwood sw = new TridasSapwood();
+			sw.setPresence(ComplexPresenceAbsence.UNKNOWN);
+			TridasLastRingUnderBark lrub = new TridasLastRingUnderBark();
+			lrub.setPresence(PresenceAbsence.UNKNOWN);
+			sw.setLastRingUnderBark(lrub);
+			wc.setSapwood(sw);
+			
+			TridasBark bark = new TridasBark();
+			bark.setPresence(PresenceAbsence.UNKNOWN);
+			wc.setBark(bark);
+			
+			((TridasRadius) entity).setWoodCompleteness(wc);
+		}
+				
 	}
 	
 	private void initPropertiesPanel() {
