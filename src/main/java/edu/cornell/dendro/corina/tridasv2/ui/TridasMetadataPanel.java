@@ -53,6 +53,7 @@ import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -90,7 +91,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.EntityResource;
 @SuppressWarnings("serial")
 public class TridasMetadataPanel extends JPanel implements PropertyChangeListener {
 	/** The sample we're working on */
-	private Sample s;
+	private Sample sample;
 	/** Our property sheet panel (contains table and description) */
 	private PropertySheetPanel propertiesPanel;
 	/** Our properties table */
@@ -107,28 +108,28 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	
 	private TridasEntityListHolder lists;
 	
-	private JPanel topbar;
-	private JPanel bottombar;
+	private JPanel panelTopBar;
+	private JPanel panelBottomBar;
 
 	//// TOP PANEL ITEMS
 	private JLabel topLabel;
-	private EntityListComboBox topChooser;
+	private EntityListComboBox cboTopChooser;
 	private ChoiceComboBoxActionListener topChooserListener;
-	private JButton changeButton;
-	private JButton cancelChangeButton;
+	private JButton btnChange;
+	private JButton btnCancelChange;
 	/** true if combo box is enabled for changing, false otherwise */
 	private boolean changingTop;
 	private static final String CHANGE_STATE = I18n.getText("general.change");
 	private static final String OK_STATE = I18n.getText("general.choose");
 	
 	/** The lock/unlock button for making changes to the currently selected entity */
-	private JToggleButton editEntity;
+	private JToggleButton btnEditEntity;
 	/** Text associated with lock/unlock button */
-	private JLabel editEntityText;
+	private JLabel lblEditEntityText;
 	/** The save button when unlocked */
-	private JButton editEntitySave;
+	private JButton btnEditEntitySave;
 	/** The cancel button when unlocked */
-	private JButton editEntityCancel;
+	private JButton btnEditEntityCancel;
 
 	/**
 	 * Constructor: Wrap around the given sample
@@ -136,7 +137,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @param s
 	 */
 	public TridasMetadataPanel(Sample s) {
-		this.s = s;	
+		this.sample = s;	
 
 		// ensure it has a lab code
 		if(!s.hasMeta(Metadata.LABCODE)) {
@@ -170,9 +171,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		JPanel mainPanel = new JPanel();  
 		mainPanel.setLayout(new BorderLayout());
 		
-		mainPanel.add(topbar, BorderLayout.NORTH);
+		mainPanel.add(panelTopBar, BorderLayout.NORTH);
 		mainPanel.add(propertiesPanel, BorderLayout.CENTER);
-		mainPanel.add(bottombar, BorderLayout.SOUTH);
+		mainPanel.add(panelBottomBar, BorderLayout.SOUTH);
 		
 		add(mainPanel, BorderLayout.CENTER);
 		add(new JScrollPane(buttonBar, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
@@ -211,20 +212,20 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	protected void enableEditing(boolean enabled) {
 		propertiesTable.setEditable(enabled);
 
-		editEntityText.setFont(editEntityText.getFont().deriveFont(Font.BOLD));
-		editEntityText.setText(enabled ? I18n.getText("metadata.currentlyEditingThis") + " " + currentMode.getTitle() 
+		lblEditEntityText.setFont(lblEditEntityText.getFont().deriveFont(Font.BOLD));
+		lblEditEntityText.setText(enabled ? I18n.getText("metadata.currentlyEditingThis") + " " + currentMode.getTitle() 
 				: I18n.getText("metadata.clickLockToEdit") + " " + currentMode.getTitle());
 		
 		if(enabled) {
-			ITridas currentEntity = currentMode.getEntity(s);
+			ITridas currentEntity = currentMode.getEntity(sample);
 			if(currentEntity instanceof ITridasSeries)
 				temporaryEditingEntity = TridasCloner.cloneSeriesRefValues((ITridasSeries) currentEntity, (Class<? extends ITridasSeries>) currentEntity.getClass());
 			else
 				temporaryEditingEntity = TridasCloner.clone(currentEntity, currentEntity.getClass());
 
 			// user chose to edit without choosing 'new', so be nice and make a new one for them
-			if(temporaryEditingEntity == null && topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
-				temporaryEditingEntity = currentMode.newInstance(s);
+			if(temporaryEditingEntity == null && cboTopChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
+				temporaryEditingEntity = currentMode.newInstance(sample);
 				populateNewEntity(currentMode, temporaryEditingEntity);
 			}
 
@@ -235,48 +236,48 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			temporaryEditingEntity = null;
 						
 			// don't display anything if we have nothingk!
-			ITridas entity = currentMode.getEntity(s);
+			ITridas entity = currentMode.getEntity(sample);
 			if(entity != null)
 				propertiesPanel.readFromObject(entity);
 		}
 
 		// disable choosing other stuff while we're editing
 		// but only if something else doesn't disable it first
-		if(topChooser.isEnabled())
-			topChooser.setEnabled(!enabled);
-		changeButton.setEnabled(!enabled);
+		if(cboTopChooser.isEnabled())
+			cboTopChooser.setEnabled(!enabled);
+		btnChange.setEnabled(!enabled);
 		
 		// show/hide our buttons
-		editEntitySave.setEnabled(true);
-		editEntityCancel.setEnabled(true);
-		editEntitySave.setVisible(enabled);
-		editEntityCancel.setVisible(enabled);
+		btnEditEntitySave.setEnabled(true);
+		btnEditEntityCancel.setEnabled(true);
+		btnEditEntitySave.setVisible(enabled);
+		btnEditEntityCancel.setVisible(enabled);
 	}
 	
 	private void initBars() {
-		topbar = new JPanel();
-		bottombar = new JPanel();
-		topbar.setLayout(new BoxLayout(topbar, BoxLayout.X_AXIS));
-		bottombar.setLayout(new BoxLayout(bottombar, BoxLayout.X_AXIS));
+		panelTopBar = new JPanel();
+		panelBottomBar = new JPanel();
+		panelTopBar.setLayout(new BoxLayout(panelTopBar, BoxLayout.X_AXIS));
+		panelBottomBar.setLayout(new BoxLayout(panelBottomBar, BoxLayout.X_AXIS));
 
 		////////// TOP BAR
 		topLabel = new JLabel(I18n.getText("general.initializing"));
-		topChooser = new EntityListComboBox();
-		changeButton = new JButton(CHANGE_STATE);
-		cancelChangeButton = new JButton(I18n.getText("general.revert"));
-		topbar.add(topLabel);
-		topbar.add(Box.createHorizontalStrut(6));
-		topbar.add(topChooser);
-		topbar.add(Box.createHorizontalStrut(6));
-		topbar.add(changeButton);
-		topbar.add(Box.createHorizontalStrut(6));
-		topbar.add(cancelChangeButton);
-		topbar.add(Box.createHorizontalGlue());
-		topbar.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
+		cboTopChooser = new EntityListComboBox();
+		btnChange = new JButton(CHANGE_STATE);
+		btnCancelChange = new JButton(I18n.getText("general.revert"));
+		panelTopBar.add(topLabel);
+		panelTopBar.add(Box.createHorizontalStrut(6));
+		panelTopBar.add(cboTopChooser);
+		panelTopBar.add(Box.createHorizontalStrut(6));
+		panelTopBar.add(btnChange);
+		panelTopBar.add(Box.createHorizontalStrut(6));
+		panelTopBar.add(btnCancelChange);
+		panelTopBar.add(Box.createHorizontalGlue());
+		panelTopBar.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
 		
 		changingTop = false;
-		cancelChangeButton.setVisible(false);
-		changeButton.addActionListener(new ActionListener() {
+		btnCancelChange.setVisible(false);
+		btnChange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(changingTop)
 					chooseButtonPressed();
@@ -286,81 +287,81 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			}
 		});
 		
-		cancelChangeButton.addActionListener(new ActionListener() {
+		btnCancelChange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				changingTop = false;
 				
 				// revert back
 				temporarySelectingEntity = null;
 				// reselect the old thing (this calls topChooser's actionlistener, be careful!)
-				selectInCombo(currentMode.getEntity(s));
+				selectInCombo(currentMode.getEntity(sample));
 				
-				editEntity.setEnabled(!changingTop);
-				topChooser.setEnabled(changingTop);
-				changeButton.setText(changingTop ? OK_STATE : CHANGE_STATE);
-				cancelChangeButton.setVisible(changingTop);
+				btnEditEntity.setEnabled(!changingTop);
+				cboTopChooser.setEnabled(changingTop);
+				btnChange.setText(changingTop ? OK_STATE : CHANGE_STATE);
+				btnCancelChange.setVisible(changingTop);
 			}			
 		});
 		
 
 		topChooserListener = new ChoiceComboBoxActionListener(this);
-		topChooser.addActionListener(topChooserListener);
+		cboTopChooser.addActionListener(topChooserListener);
 		
 		////////// BOTTOM BAR
-		editEntity = new JToggleButton();
-		editEntity.setIcon(scaleIcon20x20((ImageIcon) Builder.getIcon("lock.png", Builder.ICONS, 32)));
-		editEntity.setSelectedIcon(scaleIcon20x20((ImageIcon) Builder.getIcon("unlock.png", Builder.ICONS, 32)));
-		editEntity.setBorderPainted(false);
-		editEntity.setContentAreaFilled(false);
-		editEntity.setFocusable(false);
+		btnEditEntity = new JToggleButton();
+		btnEditEntity.setIcon(scaleIcon20x20((ImageIcon) Builder.getIcon("lock.png", Builder.ICONS, 32)));
+		btnEditEntity.setSelectedIcon(scaleIcon20x20((ImageIcon) Builder.getIcon("unlock.png", Builder.ICONS, 32)));
+		btnEditEntity.setBorderPainted(false);
+		btnEditEntity.setContentAreaFilled(false);
+		btnEditEntity.setFocusable(false);
 		
-		editEntity.addActionListener(new ActionListener() {
+		btnEditEntity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!editEntity.isSelected() && currentMode.hasChanged()) {
+				if(!btnEditEntity.isSelected() && currentMode.hasChanged()) {
 					if(!warnLosingChanges()) {
-						editEntity.setSelected(true);
+						btnEditEntity.setSelected(true);
 						return;
 					}
 					else {
 						currentMode.clearChanged();
 					}
 				}
-				enableEditing(editEntity.isSelected());
+				enableEditing(btnEditEntity.isSelected());
 			}			
 		});
 		
-		bottombar.add(editEntity);
+		panelBottomBar.add(btnEditEntity);
 		
-		editEntityText = new JLabel(I18n.getText("general.initializing").toLowerCase());
-		editEntityText.setLabelFor(editEntity);
-		bottombar.add(editEntityText);
+		lblEditEntityText = new JLabel(I18n.getText("general.initializing").toLowerCase());
+		lblEditEntityText.setLabelFor(btnEditEntity);
+		panelBottomBar.add(lblEditEntityText);
 	
-		editEntitySave = new JButton(I18n.getText("general.saveChanges"));
-		editEntityCancel = new JButton(I18n.getText("general.cancel"));
+		btnEditEntitySave = new JButton(I18n.getText("general.saveChanges"));
+		btnEditEntityCancel = new JButton(I18n.getText("general.cancel"));
 		
 		// don't let an errant enter key fire these buttons!
-		editEntitySave.setDefaultCapable(false);
-		editEntityCancel.setDefaultCapable(false);
+		btnEditEntitySave.setDefaultCapable(false);
+		btnEditEntityCancel.setDefaultCapable(false);
 		
-		editEntitySave.addActionListener(new ActionListener() {
+		btnEditEntitySave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				doSave();
 			}
 		});
 
-		editEntityCancel.addActionListener(new ActionListener() {
+		btnEditEntityCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				currentMode.clearChanged();
-				editEntity.setSelected(false);
+				btnEditEntity.setSelected(false);
 				enableEditing(false);				
 			}
 		});
 
-		bottombar.add(Box.createHorizontalGlue());
-		bottombar.add(editEntitySave);
-		bottombar.add(Box.createHorizontalStrut(6));
-		bottombar.add(editEntityCancel);
-		bottombar.add(Box.createHorizontalStrut(6));
+		panelBottomBar.add(Box.createHorizontalGlue());
+		panelBottomBar.add(btnEditEntitySave);
+		panelBottomBar.add(Box.createHorizontalStrut(6));
+		panelBottomBar.add(btnEditEntityCancel);
+		panelBottomBar.add(Box.createHorizontalStrut(6));
 	}
 
 	/**
@@ -368,10 +369,10 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 */
 	private void chooseOrCancelUIUpdate() {
 		// disable/enable editing
-		editEntity.setEnabled(!changingTop);
-		topChooser.setEnabled(changingTop);
-		changeButton.setText(changingTop ? OK_STATE : CHANGE_STATE);
-		cancelChangeButton.setVisible(changingTop);		
+		btnEditEntity.setEnabled(!changingTop);
+		cboTopChooser.setEnabled(changingTop);
+		btnChange.setText(changingTop ? OK_STATE : CHANGE_STATE);
+		btnCancelChange.setVisible(changingTop);		
 	}
 	
 	/**
@@ -383,7 +384,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// Make sure we populate our combobox with everything from the server
 		populateComboAndSelect(true);
 		
-		if(topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM)
+		if(cboTopChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM)
 			propertiesTable.setWatermarkText(I18n.getText("general.choose").toUpperCase());
 		else
 			propertiesTable.setWatermarkText(I18n.getText("general.preview").toUpperCase());
@@ -408,7 +409,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		//
 		if(temporarySelectingEntity != null && 
 				!(temporarySelectingEntity instanceof TridasObject) &&
-				!(temporarySelectingEntity.equals(currentMode.getEntity(s))) &&
+				!(temporarySelectingEntity.equals(currentMode.getEntity(sample))) &&
 				temporarySelectingEntity.getTitle().contains("(")) {
 			
 			JOptionPane.showMessageDialog(this, I18n.getText("error.legacyEntityProblem"), 
@@ -419,23 +420,48 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		//
 		// END HACK
 		//
+		 
+		//
+		// ANOTHER HACK!!
+		//		
+		// If it's a new object, then ask for a lab code
+		String code = null;
+		if(  (temporarySelectingEntity instanceof TridasObject) && 
+			 (cboTopChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM))
+		{
+			// TODO replace this with an actual field in the metadata table
+			code = JOptionPane.showInputDialog("Please provide a code for this object");	
+			if(code!=null)
+			{				
+				TridasGenericField gf = new TridasGenericField();
+				gf.setName("corina.objectLabCode");
+				gf.setValue(code);
+				gf.setType("xs:string");
+				((TridasObject)temporarySelectingEntity).getGenericFields().add(gf);
+			}
+		}
+		//
+		// END HACK
+		// 
+		
 		
 		propertiesTable.setHasWatermark(false);
 		propertiesTable.setWatermarkText(null);
 		
 		// the user is changing away...
-		if(temporarySelectingEntity != null && !temporarySelectingEntity.equals(currentMode.getEntity(s))) {
-			currentMode.setEntity(s, temporarySelectingEntity);
+		if(temporarySelectingEntity != null && !temporarySelectingEntity.equals(currentMode.getEntity(sample))) 
+		{
+			currentMode.setEntity(sample, temporarySelectingEntity);
 			temporarySelectingEntity = null;
 			
 			// user selected 'new'
-			if(topChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
+			if(cboTopChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM) {
 				flaggedAsNew = true;
 				disableBelowEnableAbove(currentMode);
 				
 				// remove any associated bits BELOW the 'new'
 				for(EditType et = currentMode.next(); et != null; et = et.next())
-					et.setEntity(s, null);
+					et.setEntity(sample, null);
 			}
 			// user chose an existing item
 			else {
@@ -447,14 +473,14 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				
 					// remove any associated bits from the sample
 					for(EditType et = next; et != null; et = et.next())
-						et.setEntity(s, null);
+						et.setEntity(sample, null);
 				}
 			}
 			
 			// we modified the series...
-			s.setModified();
+			sample.setModified();
 			// notify the sample that it changed
-			s.fireSampleMetadataChanged();
+			sample.fireSampleMetadataChanged();
 		}
 		
 		// we're done changing...
@@ -465,7 +491,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 
 		// if it's new, start editing right away
 		if(flaggedAsNew)
-			editEntity.doClick();		
+			btnEditEntity.doClick();		
 	}
 	
 	/**
@@ -474,6 +500,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @param entity the corresponding entity
 	 */
 	protected void populateNewEntity(EditType type, ITridas entity) {
+
 		entity.setTitle("New " + type.displayTitle);
 	}
 	
@@ -501,7 +528,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private boolean warnLosingSelection() {
 		
 		// nothing new has been selected, nothing to lose
-		if(temporarySelectingEntity == null || temporarySelectingEntity.equals(currentMode.getEntity(s)))
+		if(temporarySelectingEntity == null || temporarySelectingEntity.equals(currentMode.getEntity(sample)))
 			return true;
 		
 		int ret = JOptionPane.showConfirmDialog(this, 
@@ -533,7 +560,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		// if nothing actually changed, just ignore it like a cancel
 		if(!currentMode.hasChanged()) {			
-			editEntityCancel.doClick();
+			btnEditEntityCancel.doClick();
 			return;
 		}
 		
@@ -542,12 +569,12 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// are we saving something new?
 		boolean isNew = false;
 		EditType prevMode = currentMode.previous();
-		ITridas parentEntity = (prevMode == null) ? null : prevMode.getEntity(s);
+		ITridas parentEntity = (prevMode == null) ? null : prevMode.getEntity(sample);
 		
 		// logic for saving...
 		if(currentMode == EditType.DERIVED_SERIES || currentMode == EditType.MEASUREMENT_SERIES) {
 			// nice and easy... save the series directly into the sample, that's it!
-			currentMode.setEntity(s, temporaryEditingEntity);
+			currentMode.setEntity(sample, temporaryEditingEntity);
 		}
 		else {
 			// ok, we're saving an entity. save to the server!
@@ -596,7 +623,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			}
 			
 			// take the return value and save it
-			currentMode.setEntity(s, temporaryEditingEntity);
+			currentMode.setEntity(sample, temporaryEditingEntity);
 		}
 
 		// if it was new, re-enable our editing
@@ -625,13 +652,13 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		// on success...
 		currentMode.clearChanged();
-		editEntity.setSelected(false);
+		btnEditEntity.setSelected(false);
 		enableEditing(false);
 		populateComboAndSelect(false);
 		temporaryEditingEntity = null;
 		
-		s.setModified();
-		s.fireSampleMetadataChanged();
+		sample.setModified();
+		sample.fireSampleMetadataChanged();
 	}
 
 	/**
@@ -700,14 +727,14 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			List<ITridas> list;
 			
 			try {
-				list = lists.getChildList(currentMode.previous().getEntity(s), goRemote);
+				list = lists.getChildList(currentMode.previous().getEntity(sample), goRemote);
 			} catch (Exception e) {
 				new Bug(e);
 				list = null;
 			}	
 
 			// get what we already have selected
-			ITridas singleton = mode.getEntity(s);
+			ITridas singleton = mode.getEntity(sample);
 			
 			// stuff in the list? keep it
 			if(list != null && !list.isEmpty()) {
@@ -795,7 +822,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * b) programmatically set something in the combo box (don't load children!)
 	 */
 	private void handleComboSelection(boolean loadChildren) {
-		Object obj = topChooser.getSelectedItem();
+		Object obj = cboTopChooser.getSelectedItem();
 		
 		//fixes bug where combobox is hidden in derived series
 		if(obj == null){
@@ -804,9 +831,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		// if it's new, create a new, empty instance
 		if(obj == EntityListComboBox.NEW_ITEM) {
-			temporarySelectingEntity = currentMode.newInstance(s);
+			temporarySelectingEntity = currentMode.newInstance(sample);
 			populateNewEntity(currentMode, temporarySelectingEntity);
-			
+						
 			if(propertiesTable.hasWatermark())
 				propertiesTable.setWatermarkText("NEW...");
 		}
@@ -851,22 +878,22 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		
 		try {
 			if (entity == null) {
-				topChooser.setSelectedItem(EntityListComboBox.NEW_ITEM);
+				cboTopChooser.setSelectedItem(EntityListComboBox.NEW_ITEM);
 				return;
 			}
 
-			FilterableComboBoxModel model = (FilterableComboBoxModel) topChooser.getModel();
+			FilterableComboBoxModel model = (FilterableComboBoxModel) cboTopChooser.getModel();
 
 			// find it in the list...
 			ITridas listEntity;
 			if ((listEntity = entityInList(entity, model.getElements())) != null) {
-				topChooser.setSelectedItem(listEntity);
+				cboTopChooser.setSelectedItem(listEntity);
 				return;
 			}
 
 			// blech, it wasn't in the list -> add it
 			model.insertElementAt(entity, 2);
-			topChooser.setSelectedItem(entity);
+			cboTopChooser.setSelectedItem(entity);
 		} finally {
 			// deal with the selection
 			handleComboSelection(false);
@@ -883,10 +910,10 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// get the list of stuff that goes in the box
 		List<? extends ITridas> entityList = getEntityList(goRemote);
 		
-		topChooser.setList(entityList);
+		cboTopChooser.setList(entityList);
 
 		// select what we already have, if it exists
-		ITridas selectedEntity = currentMode.getEntity(s);
+		ITridas selectedEntity = currentMode.getEntity(sample);
 		
 		// otherwise, try to choose something nicely
 		if(selectedEntity == null)
@@ -936,13 +963,13 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				alreadyWarned = true;
 			}
 			
-			if(currentMode.isBrandNew(s) 
+			if(currentMode.isBrandNew(sample) 
 			   && !(currentMode == EditType.MEASUREMENT_SERIES 
 					|| currentMode == EditType.DERIVED_SERIES) )  {
 				// if it's brand new and the user has indicated they don't
 				// care about the changes, destroy it; it's useless!
 				// BUT only do this if it's a mid-level entity (don't touch samples!)
-				currentMode.setEntity(s, null);
+				currentMode.setEntity(sample, null);
 			}
 		
 		}
@@ -955,7 +982,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				return;				
 			}
 			
-			cancelChangeButton.doClick();
+			btnCancelChange.doClick();
 		}
 		
 		// clear off any overlay text we might have
@@ -974,17 +1001,17 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 
 		// handle top bar
 		if(currentMode == EditType.DERIVED_SERIES || currentMode == EditType.MEASUREMENT_SERIES) {
-			topChooser.setVisible(false);
-			changeButton.setVisible(false);
-			topLabel.setText(I18n.getText("metadata.for")+ " " + currentMode.getTitle() + " " + s.getMetaString(Metadata.TITLE));
+			cboTopChooser.setVisible(false);
+			btnChange.setVisible(false);
+			topLabel.setText(I18n.getText("metadata.for")+ " " + currentMode.getTitle() + " " + sample.getMetaString(Metadata.TITLE));
 			topLabel.setLabelFor(null);
 		}
 		else {
 			// metadata for a remote object
-			topChooser.setVisible(true);
+			cboTopChooser.setVisible(true);
 			
 			String prefix;
-			LabCode labcode = s.getMeta(Metadata.LABCODE, LabCode.class);
+			LabCode labcode = sample.getMeta(Metadata.LABCODE, LabCode.class);
 			
 			switch(currentMode) {				
 			case ELEMENT:
@@ -1006,17 +1033,17 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			}
 			
 			topLabel.setText(I18n.getText("metadata.for")+ " " + currentMode.getTitle() + prefix);
-			topLabel.setLabelFor(topChooser);
+			topLabel.setLabelFor(cboTopChooser);
 			
-			changeButton.setVisible(true);
-			changeButton.setEnabled(true);
-			topChooser.setEnabled(false);				
+			btnChange.setVisible(true);
+			btnChange.setEnabled(true);
+			cboTopChooser.setEnabled(false);				
 			
 			populateComboAndSelect(false);
 			
 			// if don't have this entity, enable the list by default
-			if(currentMode.getEntity(s) == null)
-				changeButton.doClick();
+			if(currentMode.getEntity(sample) == null)
+				btnChange.doClick();
 		}		
 		
 		// by default, disable editing except on series
@@ -1025,12 +1052,12 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		case MEASUREMENT_SERIES:
 		case DERIVED_SERIES:
 			enableEditing(true);
-			editEntity.setSelected(true);
+			btnEditEntity.setSelected(true);
 			break;
 			
 		default:
 			enableEditing(false);
-			editEntity.setSelected(false);
+			btnEditEntity.setSelected(false);
 			break;
 		}
 	}
@@ -1113,7 +1140,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 */
 
 	public static enum EditType {
-		OBJECT(TridasObject.class, I18n.getText("tridas.object"), "object.png", Metadata.OBJECT),
+		OBJECT(TridasObjectEx.class, I18n.getText("tridas.object"), "object.png", Metadata.OBJECT),
 		ELEMENT(TridasElement.class, I18n.getText("tridas.element"), "element.png", Metadata.ELEMENT),
 		SAMPLE(TridasSample.class, I18n.getText("tridas.sample"), "sample.png", Metadata.SAMPLE),
 		RADIUS(TridasRadius.class, I18n.getText("tridas.radius"), "radius.png", Metadata.RADIUS),

@@ -67,6 +67,7 @@ public class TridasEntityDeriver {
 		
 		Map<String, TridasEntityProperty> fieldMap = new HashMap<String, TridasEntityProperty>();
 		int nChildren = 0;
+				
 		
 		// get any property names and stick them at the head of the list
 		XmlType type = clazz.getAnnotation(XmlType.class);
@@ -84,7 +85,7 @@ public class TridasEntityDeriver {
 				pd.setCategoryPrefix(rootName);
 				fieldMap.put(s, pd);
 			}
-
+		
 			for (Field f : clazz.getDeclaredFields()) {
 				String fieldType = f.getGenericType().toString();
 				TridasEntityProperty pd = fieldMap.get(f.getName());
@@ -216,8 +217,14 @@ public class TridasEntityDeriver {
 		Collections.reverse(classDerivationTree);
 
 		for (Class<?> myClass : classDerivationTree)
+		{
 			buildDerivationList(rootEntityName, myClass, rootEntity, rootEntityName);
 
+		}
+
+		
+		
+		
 		return rootEntity.getChildProperties();
 	}
 	

@@ -4,8 +4,8 @@ echo "Prerm run ${serverversion} with $1 argument" >> /var/log/corina-installati
 date '+%R.%S' >> /var/log/corina-installation.log
 echo "*******************" >> /var/log/corina-installation.log
 
-if (( $1 == "upgrade" ));
-then
+if [ $1 = 'upgrade' ]; then
+
    ## Upgrading so, move aside config.php file so
    ## so it doesn't get over-written
    
@@ -16,14 +16,12 @@ then
      cp /var/www/corina-webservice/config.php /tmp/
    fi
    
-elif (( $1 == "remove" ));
-then
+#elif [ $1 = 'remove' ]; then
 
-elif (( $1 == "deconfigure" ));
-then
+#elif [ $1 = 'deconfigure' ]; then
 
-elif (( $1 == "failed-upgrade" ));
-then
+#elif [ $1 = 'failed-upgrade' ]; then
+
 
 fi
 exit 0;         

@@ -4,15 +4,10 @@ echo "Preinst run ${serverversion} with $1 argument" >> /var/log/corina-installa
 date '+%R.%S' >> /var/log/corina-installation.log
 echo "*******************" >> /var/log/corina-installation.log
 
-
-if (( $1 == "install" ));
-then
-
-elif (( $1 == "upgrade" ));
-then
+if [ $1 = 'upgrade' ]; then
    ## Upgrading so, move aside config.php file so
    ## so it doesn't get over-written
-   
+
    echo "Upgrading Corina server to a new version" >> /var/log/corina-installation.log
    if [ -e "/var/www/corina-webservice/config.php" ];
    then
@@ -20,8 +15,9 @@ then
      cp /var/www/corina-webservice/config.php /tmp/
    fi
 
-elif (( $1 == "abort-upgrade" ));
-then
-  
-   
+#elif [ $1 = 'install' ]; then
+
+#elif [ $1 = 'abort-upgrade' ]; then
+
+
 fi

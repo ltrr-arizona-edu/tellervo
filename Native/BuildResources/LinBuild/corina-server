@@ -400,14 +400,14 @@ function runSQLUpgradeFile($filename)
     	
     	if(!$result)
     	{
-    		echo $colors->getColoredString("FAILED", "red");
+	    	echo $colors->getColoredString("WARNING", "yellow");
     		echo "\n\n";
 
     		exec("echo \"Error running upgrade script '".escapeshellcmd($filename)."'\" >> $logfile");
     		exec("echo \"".escapeshellcmd($error)."\" >> $logfile" );
     		pg_query($dbconn, "ROLLBACK");
     		 
-    		exit(1);
+    		return false;
     	}
     	else
     	{
@@ -418,13 +418,13 @@ function runSQLUpgradeFile($filename)
 		    
 		    if(!$result)
 	    	{
-	    	    echo $colors->getColoredString("FAILED", "red");
+	    	    echo $colors->getColoredString("WARNING", "yellow");
     			echo "\n\n";
 
 	    		exec("echo \"Unable to add patch name to upgradelog\" >> $logfile");
 	    		exec("echo \"".escapeshellcmd($error)."\" >> $logfile" );
 	    		pg_query($dbconn, "ROLLBACK"); 
-	    		exit(1);
+	    		return false;
 	    	}	
 
 			// All is well so go ahead and commit the entire thing to the database
@@ -736,7 +736,7 @@ function setDBUser()
       echo "(We recommend the username to be corina)\n";
       echo "    Username : ";
       $user = fgets(STDIN); 
-      echo "\nEnter a new password.  Password should be 8-20 characters, and include numbers, letters, and capitals.\n";
+      echo "\nEnter a new password.\nPassword should be 8-20 characters, and include numbers, letters, and capitals but no spaces.\n";
       $pwd = promptForPwd();
   }
 }
@@ -751,6 +751,12 @@ function setDBUser()
 function promptForPwd($isCreating=TRUE)
 {
    $pwd1 = prompt_silent("    Password : ");
+   
+   if ((!preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$#", $pwd1) || strpos($pwd1, " ")))
+   {
+     echo "Your password is invalid.  Please try again.\n";
+     return promptForPwd();
+   }
 	
    if($isCreating===TRUE)
    {
@@ -762,14 +768,8 @@ function promptForPwd($isCreating=TRUE)
 	      echo "\nPasswords do not match.  Try again!\n";
 	      return promptForPwd();
 	   }
-	   
-	   if (preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$#", $pwd1))
-	   {
-	     return $pwd1;
-	   } else {
-	     echo "Your password is invalid.  Please try again.\n";
-	     return promptForPwd();
-	   }
+
+	   return $pwd1;
    }
 
    return $pwd1;

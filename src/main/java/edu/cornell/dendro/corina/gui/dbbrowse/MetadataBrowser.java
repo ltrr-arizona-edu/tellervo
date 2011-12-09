@@ -30,13 +30,11 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -178,7 +176,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		propertiesPanel.setRestoreToggleStates(true);
 		propertiesPanel.setToolBarVisible(false);
 		propertiesPanel.setDescriptionVisible(true);
-		propertiesPanel.setMode(PropertySheet.VIEW_AS_CATEGORIES);
+		propertiesPanel.setMode(PropertySheet.VIEW_AS_FLAT_LIST);
 		propertiesPanel.getTable().setRowHeight(24);
 		propertiesPanel.getTable().setRendererFactory(new TridasPropertyRendererFactory());
 		propertiesPanel.getTable().setEditorFactory(new TridasPropertyEditorFactory());

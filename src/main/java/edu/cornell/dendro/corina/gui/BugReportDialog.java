@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
@@ -83,6 +84,19 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 			App.prefs.setPref(PrefKey.PERSONAL_DETAILS_EMAIL, txtEmailAddress.getText());
 			
 			report.setFromEmail(email);
+		}
+		else
+		{
+			int n = JOptionPane.showConfirmDialog(
+				    null,
+				    "If you don't provide your email address, we won't be able to help you\n" +
+				    "with your problem.  We may also need more information to understand\n" +
+				    "what has gone wrong.\n\n" +
+				    "Do you still want to submit the bug report anonymously?",
+				    "Submit anonymously?",
+				    JOptionPane.YES_NO_CANCEL_OPTION);
+			
+			if(n != JOptionPane.YES_OPTION) return;
 		}
 		
 		if(comments != null && comments.length() > 0)

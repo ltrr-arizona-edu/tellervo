@@ -308,7 +308,7 @@ public class BugReport {
 			
 			// add our required parts
 			postEntity.addPart("username", new StringBody(getUserName()));
-			postEntity.addPart("version", new StringBody(Build.VERSION));
+			if(Build.VERSION!=null)	postEntity.addPart("version", new StringBody(Build.VERSION));
 			postEntity.addPart("timestamp", new StringBody(Build.TIMESTAMP));
 			postEntity.addPart("error", new StringBody(toString()));
 			postEntity.addPart("sysinfo", new StringBody(getSystemInfo()));
@@ -349,7 +349,7 @@ public class BugReport {
 			
 			Alert.error("Bug report submitted", "<html>" + result);
 		} catch (Exception e) {
-			Alert.error("Error submitting bug report", "Couldn't submit bug report: " + e.toString());
+			Alert.error("Error submitting bug report", "There was a problem submitting your bug report. \nPlease email the Corina developers directly");
 			return false;
 		}
 		

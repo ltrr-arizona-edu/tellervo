@@ -646,7 +646,7 @@
 			</plugin>
 			
 			
-			<!--  Create a Linux Ubuntu debian native installers -->
+			<!--  Create a Linux Ubuntu debian native installer -->
 			<plugin>
 				<artifactId>jdeb</artifactId>
 				<groupId>org.vafer</groupId>
@@ -690,6 +690,7 @@
 										<filemode>755</filemode>
 									</mapper>
 								</data>
+								<!--  Handling this with Deb dependencies now 
 								<data>
 									<src>Native/Libraries/linux-i586/</src>
 									<type>folder</type>
@@ -699,6 +700,7 @@
 										<filemode>755</filemode>
 									</mapper>
 								</data>
+								-->
 								<data>
 									<src>src/main/resources/Icons/48x48/corina-application.png</src>
 									<type>file</type>

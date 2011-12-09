@@ -4,8 +4,7 @@ echo "Postinst run ${serverversion} with $1 argument" >> /var/log/corina-install
 date '+%R.%S' >> /var/log/corina-installation.log
 echo "*******************" >> /var/log/corina-installation.log
 
-if (( $1 == "upgrade" ));
-then
+if [ $1 = 'upgrade' ]; then
     if [ -e "/tmp/config.php" ]
     then
       echo "Reinstating config.php from previous installation" >> /var/log/corina-installation.log
@@ -16,18 +15,15 @@ then
       /usr/bin/corina-server --test
 	  exit
     fi
-elif (( $1 == "configure" ));
-then
+    
+elif [ $1 = 'configure' ]; then
       echo "Configuring new installation" >> /var/log/corina-installation.log
       /usr/bin/corina-server --configure
       
-elif (( $1 == "abort-upgrade" ));
-then
+#elif [ $1 = 'abort-upgrade' ]; then
 
-elif (( $1 == "abort-remove" ));
-then
+#elif [ $1 = 'abort-remove' ]; then
 
-elif (( $1 == "abort-deconfigure" ));
-then
+#elif [ $1 = 'abort-deconfigure' ]; then
 
 fi
