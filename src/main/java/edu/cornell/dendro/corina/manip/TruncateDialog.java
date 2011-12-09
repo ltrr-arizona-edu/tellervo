@@ -265,7 +265,7 @@ public class TruncateDialog extends JDialog {
 				return true;
 			}
 		} catch (IOException ioe) {
-			Alert.error(I18n.getText("error"), I18n.getText("error.couldNotTrundate") +": " + ioe.toString());
+			Alert.error(I18n.getText("error"), I18n.getText("error.couldNotTruncate") +": " + ioe.toString());
 		}
 		
 		return false;

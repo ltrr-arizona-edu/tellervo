@@ -1500,7 +1500,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			$sql.= "ARRAY[";
 			foreach($this->referencesArray as $value)
 			{
-				$sql.= "'".pg_escape_string($value)."', ";
+				$sql.= "'".pg_escape_string($value)."'::uuid, ";
 			}
 			$sql = substr($sql, 0, -2)."], ";
 		}
