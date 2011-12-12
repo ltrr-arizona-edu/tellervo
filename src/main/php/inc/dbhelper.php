@@ -100,7 +100,7 @@ class dbHelper
 	}
 	
 	/**
-	 * Converts from most English, PHP or PG representations of a boolean into a PHP, English, Presence/Absence or PG boolean.
+	 * Converts from most English, PHP or PG representations of a tristate boolean into a PHP, English, Presence/Absence or PG boolean.
 	 * Default output format is PHP
 	 *
 	 * @param String $value
@@ -119,13 +119,13 @@ class dbHelper
 	    {
 	        $outputvalue = FALSE;
 	    }	
-	    elseif($value==NULL || $value== "")
+	    elseif($value==NULL || $value== "" || (strtolower($value)== 'unknown'))
 	    {
-	    	return NULL;
+	        $outputvalue = NULL;
 	    }
 	    else
 	    {
-			trigger_error("667"."Unable to interpret a boolean from the value provided to formatBool().  Value given was '$value'", E_USER_ERROR);    	
+	        trigger_error("667"."Unable to interpret a boolean from the value provided to formatBool().  Value given was '$value'", E_USER_ERROR);    	
 	    	return 'error';
 	    }
 	    
@@ -135,14 +135,45 @@ class dbHelper
 	    	case "php":
 	    		return $outputvalue;
 	    	case "pg":
-	    		if($outputvalue===TRUE) return 't';
-	    		return 'f';
+	    		if($outputvalue===TRUE) 
+			{
+				return '\'t\'';
+			}	 
+			else if ($outputvalue===FALSE)
+			{
+		    		return '\'f\'';
+			}
+			else
+			{
+				return 'NULL';
+			}
+
 	    	case "english":
-	    		if($outputvalue===TRUE) return 'true';
-	    		return 'false';
+	    		if($outputvalue===TRUE)
+			{
+				return 'true';
+			}
+	    		else if ($outputvalue===FALSE)
+			{
+				return 'false';
+			}
+			else
+			{
+				return "unknown";
+			}
 	    	case "presentabsent":
-	    		if($outputvalue===TRUE) return 'present';
-	    		return 'absent';
+	    		if($outputvalue===TRUE)
+			{
+				return 'present';
+			}
+			else if ($outputvalue===FALSE)
+			{
+	    			return 'absent';
+			}
+			else
+			{
+				return 'unknown';
+			}
 	    	default:
 	    		trigger_error("667"."Invalid format provided in formatBool().  Should be one of php, pg or english but got $format instead", E_USER_ERROR);
 	    		return false;

@@ -482,15 +482,15 @@ class radius extends radiusEntity implements IDBAccessor
                         if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$sql.="'".pg_escape_string($this->getMissingHeartwoodRingsToPithFoundation())."', ";
                         if($this->getSapwood()!=NULL)								$sql.="'".pg_escape_string($this->getSapwood(true))."', ";                     
                         if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="'".pg_escape_string($this->getNumberOfSapwoodRings())."', ";
-                        if($this->getLastRingUnderBark()!=NULL)						$sql.="'".pg_escape_string($this->getLastRingUnderBark())."', ";
+                        if($this->getLastRingUnderBark()!=NULL)						$sql.=pg_escape_string($this->getLastRingUnderBark()).", ";
                         if(dbHelper::formatBool($this->getLastRingUnderBarkPresence(), 'presentabsent')!=NULL)	
-                        															$sql.="'".dbHelper::formatBool($this->getLastRingUnderBarkPresence(),"pg"). "', ";
+                        															$sql.=dbHelper::formatBool($this->getLastRingUnderBarkPresence(),"pg"). ", ";
                         if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="'".pg_escape_string($this->getMissingSapwoodRingsToBark())."', ";
                         if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="'".pg_escape_string($this->getMissingSapwoodRingsToBarkFoundation())."', ";
                         if($this->getNrOfUnmeasuredInnerRings()!=NULL)				$sql.="'".pg_escape_string($this->getNrOfUnmeasuredInnerRings())."', ";
                         if($this->getNrOfUnmeasuredOuterRings()!=NULL)				$sql.="'".pg_escape_string($this->getNrOfUnmeasuredOuterRings())."', ";                        
                         if(dbHelper::formatBool($this->getBarkPresent(), 'presentabsent')!=NULL)
-                        															$sql.="'".dbHelper::formatBool($this->getBarkPresent(),"pg"). "', ";
+                        															$sql.=dbHelper::formatBool($this->getBarkPresent(),"pg"). ", ";
                         if($this->getAzimuth()!=NULL)								$sql.="'".pg_escape_string($this->getAzimuth())."', ";
                         if(isset($this->parentEntityArray[0]))      				$sql.="'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                        
                     // Trim off trailing space and comma
@@ -510,16 +510,16 @@ class radius extends radiusEntity implements IDBAccessor
                         if($this->getMissingHeartwoodRingsToPithFoundation()!=NULL)	$sql.="missingheartwoodringstopithfoundation='".pg_escape_string($this->getMissingHeartwoodRingsToPithFoundation())."', ";
                         if($this->getSapwood()!=NULL)								$sql.="sapwoodid='".pg_escape_string($this->getSapwood(true))."', ";        
                         if($this->getNumberOfSapwoodRings()!=NULL)					$sql.="numberofsapwoodrings='".pg_escape_string($this->getNumberOfSapwoodRings())."', ";
-                        if($this->getLastRingUnderBark()!=NULL)						$sql.="lastringunderbark='".pg_escape_string($this->getLastRingUnderBark())."', ";
+                        if($this->getLastRingUnderBark()!=NULL)						$sql.="lastringunderbark=".pg_escape_string($this->getLastRingUnderBark()).", ";
                         if(dbHelper::formatBool($this->getLastRingUnderBarkPresence()!=NULL, 'presentabsent')!=NULL)
-                        															$sql.="lastringunderbarkpresent='".dbHelper::formatBool($this->getLastRingUnderBarkPresence(),"pg")."', ";
+                        															$sql.="lastringunderbarkpresent=".dbHelper::formatBool($this->getLastRingUnderBarkPresence(),"pg").", ";
                         if($this->getMissingSapwoodRingsToBark()!=NULL)				$sql.="missingsapwoodringstobark='".pg_escape_string($this->getMissingSapwoodRingsToBark())."', ";
                         if($this->getMissingSapwoodRingsToBarkFoundation()!=NULL)	$sql.="missingsapwoodringstobarkfoundation='".pg_escape_string($this->getMissingSapwoodRingsToBarkFoundation())."', ";
                         if($this->getNrOfUnmeasuredInnerRings()!=NULL)				$sql.="nrofunmeasuredinnerrings='".pg_escape_string($this->getNrOfUnmeasuredInnerRings())."', ";
                         if($this->getNrOfUnmeasuredOuterRings()!=NULL)				$sql.="nrofunmeasuredouterrings='".pg_escape_string($this->getNrOfUnmeasuredOuterRings())."', ";
                         
                         if(dbHelper::formatBool($this->getBarkPresent()!=NULL, 'presentabsent')!=NULL)
-                        															$sql.="barkpresent='".dbHelper::formatBool($this->getBarkPresent(),"pg")."', ";
+                        															$sql.="barkpresent=".dbHelper::formatBool($this->getBarkPresent(),"pg").", ";
                         															
                         if($this->getAzimuth()!=NULL)								$sql.="azimuth='".pg_escape_string($this->getAzimuth())."', ";                        
                         if(isset($this->parentEntityArray[0]))      				$sql.="sampleid='".pg_escape_string($this->parentEntityArray[0]->getID())."', ";             
