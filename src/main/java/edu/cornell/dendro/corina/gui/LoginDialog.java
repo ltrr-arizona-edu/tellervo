@@ -73,7 +73,7 @@ public class LoginDialog extends JDialog {
 	private JCheckBox rememberPassword;
 	private JCheckBox autoLogin;
 	private JToggleButton wsurlLock;
-	private JLabel subtitle;	
+	private JLabel subtitle = new JLabel();	
 	private JButton loginButton;
 	private JButton cancelButton;
 	private JLabel lblLoginTo;

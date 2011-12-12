@@ -13,7 +13,7 @@ A web services approach decouples the desktop client from the server so that the
 \index{Nonce}
 \index{Hash}
 \index{Cryptography}
-The authentication mechanism is loosely based around http digest authentication and uses a challenge and response scheme. This makes use of cryptographic hashes (a relatively short digital fingerprint of some data but which cannot be decompiled to retrieve the original data) and nonces (a pseudo-random string used just once). All hashes used in the Corina webservice use the MD5 algorithm. This decision will be periodically reviewed to ensure that MD5 is the most appropriate and secure algorithm to use. Whilst an MD5 hash of a short phrase can be compromised, the length and randomness of the original data means with current cracking techniques this is essentially impossible.
+The authentication mechanism is loosely based around http digest authentication and uses a challenge and response scheme. This makes use of cryptographic hashes (a relatively short digital fingerprint of some data but which cannot be decompiled to retrieve the original data) and nonces (a pseudo-random string used just once). All hashes used in the Corina webservice use the MD5 algorithm. Whilst an MD5 hash of a short phrase can be compromised, the length and randomness of the original data means that using current cracking techniques would require a very substantial amount of processing power e.g.\ supercomputer or large botnet.  Flaws in the MD5 hash are also mitigated by the time-sensitive nature of the Corina nonce, meaning that any attack would need to be successful within a 2 minute window.  New weaknesses in security are, however, revealed on a fairly regular basis so the authentication architecture will be periodically reviewed to ensure that it still meets our needs. 
 
 The first time a client attempts to retrieve data from the webservice (or when the client's credentials are incorrect or have expired) the following events occur:
 
@@ -27,12 +27,12 @@ The first time a client attempts to retrieve data from the webservice (or when t
 
 As the user's password is hashed at all points, even if the communication is hijacked the attacker will not be able to derive the users password. The user's password is also stored in hash form within the database. This also means that system administrators do not have access to the passwords either.
 
-The use of the server nonce within the response means that it will only be valid for a maximum of two minutes. This removes the possibility of a replay attack. 
+The use of the server nonce within the response means that it will only be valid for a maximum of two minutes. This minimizes the possibility of a replay attack. 
 
 
 \section{Database permissions design}
 \index{Database!Permissions architecture}
-The database has a user and group based security scheme at three object levels: site, tree and measurement. A user can be a member of one or more groups, and groups can be members of zero or more other groups. The current implementation allows for one nested level of groups within groups however this could be extended if required. Security is set on a group-by-group basis rather than on a single user to ensure ease of management.
+The database has a user and group based security scheme at three TRiDaS levels: object, element and series. A user can be a member of one or more groups, and groups can be members of zero or more other groups. The current implementation allows for one nested level of groups within groups however this could be extended if required. Security is set on a group-by-group basis rather than on a single user to ensure ease of management.
 
 There are five types of permissions granted: create, read, update, delete and no permission. Each permission is independent of each other with the exception of 'no permission' which overrides all other permissions.
 

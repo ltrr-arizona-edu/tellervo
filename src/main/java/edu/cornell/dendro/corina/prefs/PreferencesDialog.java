@@ -174,11 +174,11 @@ public class PreferencesDialog extends JDialog {
 
 							if(n == JOptionPane.YES_OPTION)
 							{
-								Boolean success = App.restartApplication();
-								if(success==false)
-								{
+								try {
+									App.restartApplication();
+								} catch (Exception e1) {
 									Alert.message("Manual restart required", 
-											"Unable to restart Corina automatically.  Please restart manually!");
+									"Unable to restart Corina automatically.  Please restart manually!");
 								}
 							}
 							else if (n == JOptionPane.CANCEL_OPTION)

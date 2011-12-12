@@ -36,23 +36,37 @@ class auth
    */
   function __construct()
   {
+     global $firebug;
     session_start();  
-    if(isset($_SESSION['initiated']))
-    {
-        // Already logged in
-        $this->securityuserid = $_SESSION['securityuserid'];
-        $this->firstname = $_SESSION['firstname'];
-        $this->lastname = $_SESSION['lastname'];
-        $this->username = $_SESSION['username'];
-        $this->isLoggedIn = TRUE;
-        $this->isAdmin = $this->isAdmin();
-        $this->logIP();
-    }
-    else
-    {
-        // Need to log in 
-        $this->isLoggedIn = FALSE;
-    }
+	if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
+	    $firebug->log("Session has expired");
+	    session_destroy();   // destroy session data in storage
+	    session_unset();     // unset $_SESSION variable for the runtime
+		$this->isLoggedIn = FALSE;
+	}
+	else
+	{
+	    if(isset($_SESSION['initiated']))
+	    {
+		// Already logged in
+		$this->securityuserid = $_SESSION['securityuserid'];
+		$this->firstname = $_SESSION['firstname'];
+		$this->lastname = $_SESSION['lastname'];
+		$this->username = $_SESSION['username'];
+		$this->isLoggedIn = TRUE;
+		$this->isAdmin = $this->isAdmin();
+		$this->logIP();
+	    }
+	    else
+	    {
+		// Need to log in 
+		$this->isLoggedIn = FALSE;
+	    }
+	}
+	$_SESSION['LAST_ACTIVITY'] = time(); // update last activity time stamp
+
+
+
   }
 
   /**
@@ -104,7 +118,6 @@ class auth
             $_SESSION['firstname'] = $row['firstname'];
             $this->firstname = $row['firstname'];
             $_SESSION['lastname'] = $row['lastname'];
-            $this->lastname = $row['lastname'];
             $_SESSION['username'] = $row['username'];
             $this->username = $row['username'];
             
@@ -701,3 +714,4 @@ class auth
 // End of class
 } 
 ?>
+<?php

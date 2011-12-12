@@ -21,6 +21,8 @@
 package edu.cornell.dendro.corina.core;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +71,7 @@ public class App{
    */
   public static final String earliestServerVersionSupported = "1.0.5";
 
-	
+  public static final String SUN_JAVA_COMMAND = "sun.java.command";
   public static Prefs prefs;
   public static Platform platform;
   public static Logging logging;
@@ -374,50 +376,108 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
     if (!initialized) throw new IllegalStateException("AppContext already destroyed.");
   }
 
+    /**
+     * Show the preferences dialog 
+     */
 	public static void showPreferencesDialog()
 	{
 		prefsDialog.setVisible(true);
 	}
 	
+	/**
+	 * Refresh the pages of the preferences dialog
+	 */
 	public static void refreshPreferencesDialog()
 	{
 		prefsDialog.refreshPages();
 	}
 	
+	/**
+	 * Run the setup wizard interface
+	 */
 	public static void runWizard()
 	{
 		new WizardDialog(prefsDialog);
 	}
-  
-	
-	public static boolean restartApplication()
+  	
+	/**
+	 * Restart Corina programmatically
+	 * 
+	 * @throws Exception
+	 */
+	public static void restartApplication() throws Exception
 	{
-	    String javaBin = System.getProperty("java.home") + "/bin/java";
-	    File jarFile;
-	    Sample sample = new Sample();
-	    try{
-	        jarFile = new File
-	        (sample.getClass().getProtectionDomain()
-	        .getCodeSource().getLocation().toURI());
-	    } catch(Exception e) {
-	        return false;
-	    }
+	       try {
+	            // java binary
+	            String java = System.getProperty("java.home") + "/bin/java";
+	            
+	            // Add quotes if necessary
+	            if(java.contains(" "))
+	            {
+	            	java = "\""+java+"\"";
+	            }
+	                    
+	            // vm arguments
+	            List<String> vmArguments = ManagementFactory.getRuntimeMXBean().getInputArguments();
+	            StringBuffer vmArgsOneLine = new StringBuffer();
+	            for (String arg : vmArguments) {
+	                // if it's the agent argument : we ignore it otherwise the
+	                // address of the old application and the new one will be in conflict
+	                if (!arg.contains("-agentlib")) {
+	                    vmArgsOneLine.append(arg);
+	                    vmArgsOneLine.append(" ");
+	                }
+	            }
+	            // init the command to execute, add the vm args
+	            final StringBuffer cmd = new StringBuffer(java + " " + vmArgsOneLine);
 
-	    /* is it a jar file? */
-	    if ( !jarFile.getName().endsWith(".jar") )
-	    return false;   //no, it's a .class probably
+	            // program main and program arguments
+	            String[] mainCommand = System.getProperty(SUN_JAVA_COMMAND).split(" ");
+	            String pathFile = App.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+	            if (pathFile != null && pathFile.endsWith(".exe")) { // EXE wrapper
+	                cmd.append("-jar " + new File(pathFile));
+	            } else if (mainCommand != null && !mainCommand[0].isEmpty()) { // Hotspot VM implementation
+	                // program main is a jar
+	                if (mainCommand[0].endsWith(".jar")) {
+	                    // if it's a jar, add -jar mainJar
+	                    cmd.append("-jar " + new File(mainCommand[0]).getPath());
+	                } else {
+	                    // else it's a .class, add the classpath and mainClass
+	                    cmd.append("-cp \"" + System.getProperty("java.class.path") + "\" " + mainCommand[0]);
+	                }
+	                // finally add program arguments
+	                for (int i = 1; i < mainCommand.length; i++) {
+	                    cmd.append(" ");
+	                    cmd.append(mainCommand[i]);
+	                }
+	            } else { // Non Hotspot VM implementation
+	                cmd.append("-jar " + new File(pathFile));
+	            }
 
-	    String  toExec[] = new String[] { javaBin, "-jar", jarFile.getPath() };
-	    try{
-	        Runtime.getRuntime().exec( toExec );
-	    } catch(Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    }
+	            // execute the command in a shutdown hook, to be sure that all the
+	            // resources have been disposed before restarting the application
+	            Runtime.getRuntime().addShutdownHook(new Thread() {
 
-	    System.exit(0);
-
-	    return true;
+	                @Override
+	                public void run() {
+	                    try {
+	                    	System.out.println("Run command: " +cmd.toString());
+	                        Runtime.getRuntime().exec(cmd.toString());
+	                    }
+	                    catch (IOException e) {
+	                    	log.error("Unable to restart application");
+	                    	e.printStackTrace();
+	                    } 
+	                }
+	            });
+	           
+	            System.exit(0);
+	        }
+	        catch (Exception e) {
+	            // something went wrong
+	            throw new Exception("Error while trying to restart the application", e);
+	        }
+			
 	}
 
 	public static void setProxies(ProxyManager proxies) {
