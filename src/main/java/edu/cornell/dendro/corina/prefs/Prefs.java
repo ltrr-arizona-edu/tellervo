@@ -144,6 +144,7 @@ public class Prefs extends AbstractSubsystem {
 		INDEX_CUBIC_FACTOR("corina.index.cubicfactor"),
 		
 		EXPORT_FORMAT("corina.export.format"),
+		IMPORT_FORMAT("corina.import.format"),
 		
 		/** URL for the Corina webservice */
 		WEBSERVICE_URL("corina.webservice.url"),

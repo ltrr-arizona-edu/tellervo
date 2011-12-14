@@ -736,7 +736,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
     {
     	SiteRenderer rend = new SiteRenderer();
     	rend.setMaximumTitleLength(30);
-    	//cboObject.setRenderer(rend);
+    	cboObject.setRenderer(rend);
     	objModel = new ArrayListModel<TridasObject>(App.tridasObjects.getObjectList());
     	//objModel.setSelectedItem(null);   
     	cboObject.setModel(objModel);
@@ -807,7 +807,10 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
 		Collections.sort(elList, numSorter);
 		
-		log.debug("Element combo model previously had " + elModel.size() + " entries in it");
+		
+		
+		if(elModel!=null) log.debug("Element combo model previously had " + elModel.size() + " entries in it");
+			
 		
 		elModel = new ArrayListModel<TridasElement>(elList);
 		cboElement.setModel(elModel);

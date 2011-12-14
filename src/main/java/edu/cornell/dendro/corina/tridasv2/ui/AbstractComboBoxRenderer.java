@@ -24,11 +24,13 @@ import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import edu.cornell.dendro.corina.tridasv2.ui.support.NotPresent;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ColorUtils;
 
 public abstract class AbstractComboBoxRenderer extends JPanel implements
@@ -73,7 +75,10 @@ public abstract class AbstractComboBoxRenderer extends JPanel implements
             if(isRequired() && (value == null || value instanceof NotPresent)) {
             	Color blend = ColorUtils.blend(table.getSelectionBackground(), Color.red);
             	renderer.setBackground(blend);
-            	super.setBackground(blend);
+            	super.setBackground(blend);          	
+            	JLabel label = new JLabel();
+            	label.setIcon(Builder.getIcon("required.png", 16));
+            	return label;
             }
             else {
             	renderer.setBackground(table.getSelectionBackground());
@@ -87,6 +92,9 @@ public abstract class AbstractComboBoxRenderer extends JPanel implements
             if(isRequired() && (value == null || value instanceof NotPresent)) {
             	renderer.setBackground(Color.red);
             	setBackground(Color.red);
+            	JLabel label = new JLabel();
+            	label.setIcon(Builder.getIcon("required.png", 16));
+            	return label;
             }
             else {
             	setBackground(table.getBackground());

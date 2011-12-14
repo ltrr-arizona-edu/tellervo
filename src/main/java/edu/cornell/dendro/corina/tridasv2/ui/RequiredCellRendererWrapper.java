@@ -23,9 +23,11 @@ package edu.cornell.dendro.corina.tridasv2.ui;
 import java.awt.Color;
 import java.awt.Component;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ColorUtils;
 
 /**
@@ -49,15 +51,24 @@ public class RequiredCellRendererWrapper implements TableCellRenderer {
 		Component c = renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		
 		if(value == null || value.toString() == "") {
-			if(isSelected) {
+			/*if(isSelected) {
+
+				
+				
+				
 				Color blended = ColorUtils.blend(Color.red, c.getBackground());
 				c.setBackground(blended);
 			}
 			else {
 				c.setBackground(Color.red);
-			}
+			}*/
+			
+        	JLabel label = new JLabel();
+        	label.setIcon(Builder.getIcon("required.png", 16));
+        	return label;
 		}
 		
+				
 		return c;
 	}
 

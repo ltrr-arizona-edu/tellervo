@@ -525,14 +525,30 @@ public class FileMenu extends JMenu {
 	public static void importdbwithbarcode(){
 			
 		// Set up file chooser and filters
+		
+		String format = App.prefs.getPref(PrefKey.IMPORT_FORMAT, null);
+	
 		JFileChooser fc = new JFileChooser();
 		for (String readername : TridasIO.getSupportedReadingFormats())
 		{
 			AbstractDendroReaderFileFilter filter = new DendroReaderFileFilter(readername);
 			fc.addChoosableFileFilter(filter);
+			if(filter.getDescription().equals(format))
+			{
+				fc.setFileFilter(filter);
+			}
 		}
+		
+		
+		// Open at last used directory
+		if (App.prefs.getPref(PrefKey.FOLDER_LAST_READ, null) != null) {
+			fc.setCurrentDirectory(new File(App.prefs.getPref(PrefKey.FOLDER_LAST_READ, null)));
+		}
+		
 		int returnVal = fc.showOpenDialog(null);
 			
+
+		
 		// Get details from user
 		String fullFilename = null;
 
@@ -542,6 +558,12 @@ public class FileMenu extends JMenu {
 	        type = fc.getFileFilter().getDescription();
 	        
 	        fullFilename = file.getPath();
+			
+	        // Remember this folder for next time
+			App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
+			
+			// Remember this format for next time
+			App.prefs.setPref(PrefKey.IMPORT_FORMAT, type);
 
 	    } else {
 	    	return;
@@ -580,7 +602,11 @@ public class FileMenu extends JMenu {
 			Alert.error("Error", "No series in file");
 			return;
 		}
-		
+		else if (seriesList.size()!=1)
+		{
+			Alert.error("Error", "Only able to import 'unstacked' files'");
+			return;
+		}
 		TridasMeasurementSeries series = seriesList.get(0);
 		
 		// make dataset ref, based on our series
