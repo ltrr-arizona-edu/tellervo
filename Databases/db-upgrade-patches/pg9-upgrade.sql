@@ -188,3 +188,122 @@ SELECT sqlj.install_jar('file:///usr/share/corina-server/corina-pljava.jar', 'co
 SELECT sqlj.set_classpath('cpgdb', 'corina_jar');
 
 
+CREATE OR REPLACE FUNCTION cpgdb.purgecachetables()
+  RETURNS void AS
+$BODY$BEGIN
+DELETE FROM tblvmeasurementresult;
+DELETE FROM tblvmeasurementmetacache;
+-- tblvmeasurementrelyearreadingnote?
+-- tblvmeasurementreadingnoteresult?
+-- tblvmeasurementreadingresult?
+-- tblvmeasurementderivedcache?
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+
+
+
+
+CREATE OR REPLACE FUNCTION cpgdb.rebuildmetacache()
+  RETURNS void AS
+$BODY$DECLARE
+    uid uuid;
+BEGIN
+-- Empty cache tables first
+PERFORM cpgdb.purgecachetables();
+FOR uid IN SELECT vmeasurementid FROM tblvmeasurement
+    LOOP
+        -- Build metacache on row
+        PERFORM cpgdb.createmetacache(uid);
+    END LOOP;
+RETURN;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+
+
+
+
+CREATE OR REPLACE FUNCTION cpgdb.rebuildmetacacheforobject()
+  RETURNS trigger AS
+$BODY$DECLARE
+  uid uuid;
+BEGIN
+FOR uid IN SELECT vmeasurementid FROM cpgdb.findchildrenof('Object', NEW.objectid)
+  LOOP
+    PERFORM cpgdb.createmetacache(uid);
+  END LOOP;
+RETURN new;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+CREATE TRIGGER update_object_rebuildmetacache
+  AFTER INSERT OR UPDATE
+  ON tblobject
+  FOR EACH ROW
+  EXECUTE PROCEDURE cpgdb.rebuildmetacacheforobject();
+
+
+
+CREATE OR REPLACE FUNCTION cpgdb.rebuildmetacacheforelement()
+  RETURNS trigger AS
+$BODY$DECLARE
+  uid uuid;
+BEGIN
+FOR uid IN SELECT vmeasurementid FROM cpgdb.findchildrenof('Element', NEW.elementid)
+  LOOP
+    PERFORM cpgdb.createmetacache(uid);
+  END LOOP;
+RETURN new;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+CREATE TRIGGER update_element_rebuildmetacache
+  AFTER INSERT OR UPDATE
+  ON tblelement
+  FOR EACH ROW
+  EXECUTE PROCEDURE cpgdb.rebuildmetacacheforelement();
+
+
+
+
+
+CREATE OR REPLACE FUNCTION cpgdb.rebuildmetacacheforsample()
+  RETURNS trigger AS
+$BODY$DECLARE
+  uid uuid;
+BEGIN
+FOR uid IN SELECT vmeasurementid FROM cpgdb.findchildrenof('Sample', NEW.sampleid)
+  LOOP
+    PERFORM cpgdb.createmetacache(uid);
+  END LOOP;
+RETURN new;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+CREATE TRIGGER update_sample_rebuildmetacache
+  AFTER INSERT OR UPDATE
+  ON tblsample
+  FOR EACH ROW
+  EXECUTE PROCEDURE cpgdb.rebuildmetacacheforsample();
+
+
+
+CREATE OR REPLACE FUNCTION cpgdb.rebuildmetacacheforradius()
+  RETURNS trigger AS
+$BODY$DECLARE
+  uid uuid;
+BEGIN
+FOR uid IN SELECT vmeasurementid FROM cpgdb.findchildrenof('Radius', NEW.radiusid)
+  LOOP
+    PERFORM cpgdb.createmetacache(uid);
+  END LOOP;
+RETURN new;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+CREATE TRIGGER update_radius_rebuildmetacache
+  AFTER INSERT OR UPDATE
+  ON tblradius
+  FOR EACH ROW
+  EXECUTE PROCEDURE cpgdb.rebuildmetacacheforradius();
