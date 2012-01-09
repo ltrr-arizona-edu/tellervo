@@ -26,6 +26,7 @@ package edu.cornell.dendro.corina.tridasv2.ui;
 import java.beans.PropertyEditor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Date;
 
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;
@@ -58,6 +59,8 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		
 		// Offer text editing window
 		registerEditor(String.class, MemoEditor.class);
+		
+		registerEditor(org.tridas.schema.Date.class, TridasDateEditor.class);
 	}
 	
 	public synchronized PropertyEditor getEditor(Property property) {

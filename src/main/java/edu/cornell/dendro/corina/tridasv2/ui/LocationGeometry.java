@@ -26,6 +26,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
@@ -337,8 +339,11 @@ public class LocationGeometry extends LocationGeometryUI implements
 					Alert.error("Error", "Error reading file");
 				}
 				
+				ArrayList<GPXWaypoint> wplist = parser.getWaypoints();
+				Collections.sort(wplist);
+				
 				// Grab waypoints from GPX
-				for(GPXWaypoint wpt : parser.getWaypoints())
+				for(GPXWaypoint wpt : wplist)
 				{
 					cboWaypoint.addItem(wpt);
 				}

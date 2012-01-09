@@ -41,7 +41,8 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 	public TridasPropertyRendererFactory() {
 		super();
 		
-		TableCellRenderer myRenderer = new TridasYearDateTimeCellRenderer();
+		TableCellRenderer myRenderer = new TridasYearDateTimeCellRenderer(false);
+		
 		super.registerRenderer(Date.class, myRenderer);
 		super.registerRenderer(DateTime.class, myRenderer);
 		super.registerRenderer(Year.class, myRenderer);

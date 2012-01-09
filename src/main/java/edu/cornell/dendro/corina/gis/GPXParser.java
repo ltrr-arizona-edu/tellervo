@@ -193,7 +193,10 @@ public class GPXParser {
 		@Override
 		public int compareTo(GPXWaypoint o) {
 			
-			return o.toString().compareTo(this.toString());
+			if(this.name==null) return 1;
+			if(o.getName()==null) return 0;
+			
+			return this.toString().compareTo(o.toString());
 
 		}
 	}

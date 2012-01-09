@@ -65,6 +65,7 @@ public class GPXBrowseCommand implements ICommand {
 				Collections.sort(wplist);
 				list.clear();
 				list.addAll(wplist);
+				Collections.sort(list);
 							
 			} catch (FileNotFoundException e) {
 				Alert.error(I18n.getText("error"), I18n.getText("error.fileNotFound"));

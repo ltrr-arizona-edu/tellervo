@@ -232,6 +232,8 @@ public class ImportView extends JFrame{
 	 */
 	public ImportView(File file, String fileType)
 	{
+		if(usingOldImporter(file, fileType)) return;
+		
 		topChooserListener = new ChoiceComboBoxActionListener(this);
 		model = CorinaModelLocator.getInstance().getImportModel();
 		//MVC.showEventMonitor();
@@ -241,6 +243,19 @@ public class ImportView extends JFrame{
 		initLocale();
 		FileSelectedEvent event = new FileSelectedEvent(model, file, fileType);
 		event.dispatch();
+	}
+	
+	/**
+	 * 
+	 * @param file
+	 * @param fileType
+	 * @return
+	 */
+	private Boolean usingOldImporter(File file, String fileType)
+	{
+		
+		
+		return false;
 	}
 	
 	/**

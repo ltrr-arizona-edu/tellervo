@@ -36,7 +36,18 @@ import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 
 public class TridasYearDateTimeCellRenderer extends DefaultCellRenderer {
 	private static final long serialVersionUID = 1L;
-
+	private boolean showPrecision = false;
+		
+	public TridasYearDateTimeCellRenderer()
+	{
+	
+	}
+	
+	public TridasYearDateTimeCellRenderer(boolean showPrecision)
+	{
+		setShowPrecision(showPrecision);
+	}
+	
 	@Override
 	protected String convertToString(Object value) {
 		if(value instanceof Date) {
@@ -44,7 +55,7 @@ public class TridasYearDateTimeCellRenderer extends DefaultCellRenderer {
 			
 			java.util.Date date = dv.getValue().toGregorianCalendar().getTime();
 			String val = SimpleDateFormat.getDateInstance().format(date);
-			if(dv.getCertainty() != null)
+			if(dv.getCertainty() != null && showPrecision)
 				val += " [" + dv.getCertainty().value() + "]";
 			
 			return val;
@@ -54,7 +65,7 @@ public class TridasYearDateTimeCellRenderer extends DefaultCellRenderer {
 			
 			java.util.Date date = dv.getValue().toGregorianCalendar().getTime();
 			String val = SimpleDateFormat.getDateTimeInstance().format(date);
-			if(dv.getCertainty() != null)
+			if(dv.getCertainty() != null && showPrecision)
 				val += " [" + dv.getCertainty().value() + "]";
 			
 			return val;			
@@ -63,12 +74,27 @@ public class TridasYearDateTimeCellRenderer extends DefaultCellRenderer {
 			Year year = (Year) value;
 			
 			String val = year.getValue().toString() + ' ' + year.getSuffix().value();
-			if(year.getCertainty() != null)
+			if(year.getCertainty() != null && showPrecision)
 				val += " [" + year.getCertainty().value() + "]";
 			
 			return val;
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Set whether the Tridas precision should be displayed as well
+	 * 
+	 * @param b
+	 */
+	public void setShowPrecision(boolean b)
+	{
+		showPrecision = b;
+	}
+	
+	public boolean isShowPrecisionEnabled()
+	{
+		return showPrecision;
 	}
 }
