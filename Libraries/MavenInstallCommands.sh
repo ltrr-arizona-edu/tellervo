@@ -19,4 +19,4 @@ mvn install:install-file -DgroupId=fr.iscpif           -DartifactId=jogl-wrapper
 mvn install:install-file -DgroupId=postgresql          -DartifactId=pljava-public              -Dversion=1.4.2         -Dpackaging=jar -Dfile=pljava.jar
 
 # Date picker
-mvn install:install-file -DgroupId=com.michaelbaranov.microba -DartifactId=microba             -Dversion=0.4.4.3       -Dpackaging=jar -Dfile=microba-0.4.4.3.jar
+#mvn install:install-file -DgroupId=com.michaelbaranov.microba -DartifactId=microba             -Dversion=0.4.4.3       -Dpackaging=jar -Dfile=microba-0.4.4.3.jar

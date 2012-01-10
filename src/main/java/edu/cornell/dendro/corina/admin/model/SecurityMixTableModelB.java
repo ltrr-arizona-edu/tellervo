@@ -21,7 +21,6 @@
 package edu.cornell.dendro.corina.admin.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.table.AbstractTableModel;

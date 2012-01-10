@@ -343,7 +343,7 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
                     $sql = "insert into tblsecuritygroup (name, description, isactive) values (";
                     $sql.= "'".$this->getName()."', ";
                     $sql.= "'".$this->getDescription()."', ";
-                    $sql.= "'".dbhelper::formatBool($this->getIsActive(),"pg")."'";
+                    $sql.= dbhelper::formatBool($this->getIsActive(),"pg");
                     $sql.= " )";
                     $sql2 = "select * from tblsecuritygroup where securitygroupid=currval('tblsecuritygroup_securitygroupid_seq')";
                 }
@@ -353,7 +353,7 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
                     $sql = "update tblsecuritygroup set ";
                     $sql.= "name = '".$this->getName()."', ";
                     $sql.= "description = '".$this->getDescription()."', ";
-                    $sql.= "isactive = '".dbhelper::formatBool($this->getIsActive(),"pg")."'";
+                    $sql.= "isactive = ".dbhelper::formatBool($this->getIsActive(),"pg");
                     
                     $sql.= " where securitygroupid='".$this->id."'";
                 }

@@ -319,7 +319,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
                     $sql.= "'".$this->password."', ";
                     $sql.= "'".$this->firstName."', ";
                     $sql.= "'".$this->lastName."', ";
-                    $sql.= "'".dbhelper::formatBool($this->isActive,'pg')."'";
+                    $sql.= dbhelper::formatBool($this->isActive,'pg');
                     $sql.= " )";
                     $sql2 = "select * from tblsecurityuser where securityuserid=currval('tblsecurityuser_securityuserid_seq')";
                 }
@@ -331,8 +331,8 @@ class securityUser extends securityUserEntity implements IDBAccessor
                     $sql.= "password = '".$this->password."', ";
                     $sql.= "firstName = '".$this->firstName."', ";
                     $sql.= "lastName = '".$this->lastName."', ";
-                    $sql.= "isactive = '".dbhelper::formatBool($this->isActive, 'pg')."'";
-                    $sql.= "where securityuserid = '".$this->id."'";
+                    $sql.= "isactive = ".dbhelper::formatBool($this->isActive, 'pg');
+                    $sql.= " where securityuserid = '".$this->id."'";
                 }
 
                 $firebug->log($sql, "User write SQL");
