@@ -160,7 +160,13 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
             	// Round up to integer of 1/1000th mm
             	Float fltValue = new Float(strReadPosition);
             	Integer intValue = Math.round(fltValue);
-                
+            	
+            	// Inverse if reverse measuring mode is on
+            	if(this.getReverseMeasuring())
+            	{
+            		intValue = 0 - intValue;
+            	}
+            	                
 		    	//Only process the data if the add button is set and the reset button is not set.
                 if( strReadBuffer.endsWith(";10") || fireOnNextValue) 
                 {
@@ -281,5 +287,10 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	@Override
 	public Boolean isMeasureCumulativelyConfigurable() {
 		return false;
+	}
+
+	@Override
+	public Boolean isReverseMeasureCapable() {
+		return true;
 	}
 }

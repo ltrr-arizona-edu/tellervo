@@ -255,4 +255,10 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 	public Boolean isMeasureCumulativelyConfigurable() {
 		return false;
 	}
+
+	@Override
+	public Boolean isReverseMeasureCapable() {
+		
+		return false;
+	}
 }

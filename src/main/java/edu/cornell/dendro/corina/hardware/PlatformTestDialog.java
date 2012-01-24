@@ -126,7 +126,7 @@ public class PlatformTestDialog extends JDialog {
 				
 							JPanel panelCapabilities = new JPanel();
 							tabbedPane.addTab("Capabilities", null, panelCapabilities, null);
-							panelCapabilities.setLayout(new MigLayout("", "[][]", "[][][]"));
+							panelCapabilities.setLayout(new MigLayout("", "[][]", "[][][][]"));
 							{
 								JLabel lblZeroFromSoftware = new JLabel("Can be reset to zero from software:");
 								panelCapabilities.add(lblZeroFromSoftware, "cell 0 0");

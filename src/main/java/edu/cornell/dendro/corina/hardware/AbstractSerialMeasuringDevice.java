@@ -74,6 +74,7 @@ public abstract class AbstractSerialMeasuringDevice
 	protected FlowControl flowControl = FlowControl.NONE;
 	protected UnitMultiplier unitMultiplier = UnitMultiplier.ZERO;
 	protected Boolean measureCumulatively = false;
+	protected Boolean measureInReverse = false;
 	
 	/** The previous measurement position. Used in 
 	 *  cumulative measurements */
@@ -681,7 +682,7 @@ public abstract class AbstractSerialMeasuringDevice
 	 */
 	public abstract Boolean isMeasureCumulativelyConfigurable();
 	
-	
+
 	/**
 	 * Set whether this hardware should read cumulatively or not
 	 * 
@@ -700,6 +701,34 @@ public abstract class AbstractSerialMeasuringDevice
 	{
 		return measureCumulatively;
 	}
+	
+	/**
+	 * Whether the hardware can be configured to measure backwards
+	 * 
+	 * @return
+	 */
+	public abstract Boolean isReverseMeasureCapable();
+	
+	/**
+	 * Set whether the hardware is measuring in reverse
+	 * 
+	 * @param b
+	 */
+	public void setReverseMeasuring(Boolean b)
+	{
+		this.measureInReverse = b;
+	}
+	
+	/**
+	 * Get whether the hardware is measuring in reverse
+	 * 
+	 * @return
+	 */
+	public Boolean getReverseMeasuring()
+	{
+		return this.measureInReverse;
+	}
+	
 	
 	/**
 	 * Does the platform provide current measurement values?  

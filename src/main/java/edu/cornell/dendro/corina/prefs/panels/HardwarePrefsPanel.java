@@ -84,6 +84,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	private JButton btnDefaults;
 	private JPanel panel_1;
 	private Boolean okToUseDefaults = false;
+	private JCheckBox chkReverseMeasuring;
+	private JLabel lblReverseMeasuring;
 	
 	
 	/**
@@ -100,7 +102,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Measuring Platform", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panel, "cell 0 0,grow");
-		panel.setLayout(new MigLayout("", "[][grow][][grow]", "[][15:15.00:15.00][][][][][]"));
+		panel.setLayout(new MigLayout("", "[][grow][][grow]", "[][15:15.00:15.00][][][][][][]"));
 		
 		lblPlatformType = new JLabel("Type:");
 		panel.add(lblPlatformType, "cell 0 0,alignx trailing");	
@@ -223,9 +225,16 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		panel.add(chkMeasureCumulatively, "cell 3 5");
 		new CheckBoxWrapper(chkMeasureCumulatively, PrefKey.SERIAL_MEASURE_CUMULATIVELY, false);
 		
+		lblReverseMeasuring = new JLabel("Reverse measuring:");
+		panel.add(lblReverseMeasuring, "cell 2 6,alignx right");
+		
+		chkReverseMeasuring = new JCheckBox("");
+		panel.add(chkReverseMeasuring, "cell 3 6");
+		new CheckBoxWrapper(chkReverseMeasuring, PrefKey.SERIAL_MEASURE_IN_REVERSE, false);
+		
 		
 		btnTestConnection = new JButton("Test connection");
-		panel.add(btnTestConnection, "cell 2 6 2 1,alignx right");
+		panel.add(btnTestConnection, "cell 2 7 2 1,alignx right");
 		btnTestConnection.setEnabled(false);
 		btnTestConnection.addActionListener(new ActionListener(){
 
@@ -360,6 +369,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			cboLineFeed.setEnabled(false);
 			cboPort.setEnabled(false);
 			btnTestConnection.setEnabled(false);
+			chkReverseMeasuring.setEnabled(false);
 			return;
 		} 
 		
@@ -373,7 +383,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		cboStopbits.setEnabled(device.isStopbitsEditable());
 		cboLineFeed.setEnabled(device.isLineFeedEditable());
 		chkMeasureCumulatively.setEnabled(device.isMeasureCumulativelyConfigurable());
-
+		chkReverseMeasuring.setEnabled(device.isReverseMeasureCapable());
 		
 		
 		if(useDefaults)
@@ -386,6 +396,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			cboStopbits.setSelectedItem(device.getStopBits().toString());
 			cboLineFeed.setSelectedItem(device.getLineFeed().toString());
 			chkMeasureCumulatively.setSelected(device.getMeasureCumulatively());
+			chkReverseMeasuring.setSelected(device.getReverseMeasuring());
 		}
 		else
 		{

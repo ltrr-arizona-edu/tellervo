@@ -234,4 +234,9 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 		return true;
 	}
 
+	@Override
+	public Boolean isReverseMeasureCapable() {
+		return false;
+	}
+
 }
