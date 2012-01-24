@@ -74,7 +74,7 @@ public abstract class AbstractSerialMeasuringDevice
 	protected FlowControl flowControl = FlowControl.NONE;
 	protected UnitMultiplier unitMultiplier = UnitMultiplier.ZERO;
 	protected Boolean measureCumulatively = false;
-	protected Boolean measureInReverse = false;
+	protected Boolean measureInReverse = true;
 	
 	/** The previous measurement position. Used in 
 	 *  cumulative measurements */
@@ -272,6 +272,10 @@ public abstract class AbstractSerialMeasuringDevice
 		// Cumulative
 		Boolean cum = App.prefs.getBooleanPref(PrefKey.SERIAL_MEASURE_CUMULATIVELY, this.getMeasureCumulatively());
 		setMeasureCumulatively(cum);
+
+		// Reverse
+		Boolean rev = App.prefs.getBooleanPref(PrefKey.SERIAL_MEASURE_IN_REVERSE, this.getReverseMeasuring());
+		setReverseMeasuring(rev);
 		
 		openPort();
 		
