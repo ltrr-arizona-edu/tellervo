@@ -10,8 +10,10 @@ The Corina webservice is written entirely in PHP.  Like the Desktop Client, the 
 
 \section{Webservice }
 
-\subsection{Adding TRiDaS entities to the database}
+The Corina database is accessed solely through the webservice interface.  A webservice is an interface designed to be accessed by programs that send requests and receive responses.  Corina uses a style of HTTP+POX (Plain Old XML) to send and receive requests via a HTTP POST.  In simple terms the Corina client sends an XML document that describes the request via POST to the Corina server.  The server then reads the XML request, performs the request and then compiles the information that has been requested, finally returning the information to the client as another XML document.  The syntax of the XML document containing the request and response is determined by the Corina XML schema and makes heavy use of the TRiDaS XML schema for describing dendrochronological entities.
 
+
+\subsection{Adding TRiDaS entities to the database}
 
 \subsection{Creating new series}
 
@@ -26,7 +28,7 @@ Due to the complications arising from the virtual measurement concept, creating 
 
 \begin{figure}[hbtp]
   \centering
-  \includegraphics[width=0.8\textwidth]{Images/EditingMSeriesWorkflow.pdf}
+  %\includegraphics[width=0.8\textwidth]{Images/EditingMSeriesWorkflow.pdf}
   \caption{Illustration of the steps that happen during the alteration of an existing measurement series. The stages are presented top to bottom in the approximate order in which they are executed.}
   \label{fig:editingNewMSeries}
 \end{figure}
@@ -40,10 +42,68 @@ Due to the complications arising from the virtual measurement concept, creating 
 
 \begin{figure}[hbtp]
   \centering
-  \includegraphics[width=0.8\textwidth]{Images/EditingDSeriesWorkflow.pdf}
+  %\includegraphics[width=0.8\textwidth]{Images/EditingDSeriesWorkflow.pdf}
   \caption{Illustration of the steps that happen during the alteration of an existing derived series. The stages are presented top to bottom in the approximate order in which they are executed. Note that presently it is not possible to alter the parameters of a derived series.}
   \label{fig:editingNewMSeries}
 \end{figure}
+
+
+
+\subsection{Reading and setting permissions}
+\index{Developing!Permissions}
+\index{Permissions}
+
+
+
+
+\code{
+<request type="create">
+  <permission>
+      <permissionToCreate>true</permissionToCreate>  
+      <permissionToRead>true</permissionToRead>
+      <permissionToUpdate>true</permissionToUpdate>
+      <permissionToDelete>true</permissionToDelete>
+      <entity type="object" id="760a19e2-229c-11e1-8756-03b2aff2fe33"/>
+      <securityGroup id="3"/>
+  </permission>
+</request>
+}
+
+\code{????????
+<request type="read">
+  <permission>
+      <entity type="object" id="760a19e2-229c-11e1-8756-03b2aff2fe33"/>
+      <securityGroup id="3"/>
+  </permission>
+</request>
+}
+
+\code{
+<request type="update">
+  <permission>
+      <permissionToCreate>false</permissionToCreate>  
+      <permissionToRead>false</permissionToRead>
+      <permissionToUpdate>false</permissionToUpdate>
+      <permissionToDelete>false</permissionToDelete>
+      <entity type="object" id="136a70a6-566b-546b-a3ae-c48cb046e4cd"/>
+      <securityUser id="1"/>
+      <securityUser id="3"/>
+  </permission>
+</request>
+}
+
+\code{
+<request type="delete">
+  <permission>
+      <entity type="object" id="136a70a6-566b-546b-a3ae-c48cb046e4cd"/>
+      <securityUser id="1"/>
+  </permission>
+</request>
+}
+
+
+
+
 
 \section{Server package}
 \label{txt:serverPackage}
@@ -67,7 +127,6 @@ The postinst script is used to trigger the interactive script that helps the use
  \item Verify setup by checking Apache and PostgreSQL are running, that the webservice is accessible, the database is accessible and that various configuration files can be read
  \item Print test report to screen
 \end{itemize*}
-
 
 \subsection{Corina server script}
 \label{txt:corina-server-script}

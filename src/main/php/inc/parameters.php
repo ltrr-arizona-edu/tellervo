@@ -261,6 +261,65 @@ class dictionariesParameters implements IParams
     }
 }
 
+class permissionParameters extends permissionEntity implements IParams
+{
+    function __construct($xmlrequest)
+    {    	
+        // Load the xmlrequest into a DOMDocument if it isn't already
+        if (gettype($xmlrequest)=='object')
+        {
+            $this->xmlRequestDom = $xmlrequest;
+        }
+        else
+        {
+    		$this->xmlRequestDom = new DomDocument();
+    		$this->xmlRequestDom->loadXML($xmlrequest);
+        }
+        
+        $this->setParamsFromXMLRequest();
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+    	global $corinaNS;
+        global $tridasNS;
+	
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+        
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+		   switch ($child->tagName)
+		   {
+		   	case "permissionToCreate": 	$this->setCanCreate($child->nodeValue); break;
+		   	case "permissionToRead": 	$this->setCanRead($child->nodeValue); break;
+		   	case "permissionToUpdate": 	$this->setCanUpdate($child->nodeValue); break;
+		   	case "permissionToDelete": 	$this->setCanDelete($child->nodeValue); break;
+		   	
+		   	case "entity":
+		   		$entity = array("type" => $child->getAttribute("type"), "id" => $child->getAttribute("id"));
+		   		array_push($this->entityArray, $entity);		   		
+		   		break;
+		   		
+		   	case "securityGroup":
+		   		array_push($this->securityGroupArray, $child->getAttribute("id"));	
+		   		break;
+		   		
+		   	case "securityUser":
+		   		array_push($this->securityUserArray, $child->getAttribute("id"));	
+		   		break;
+		   		
+		   	default:
+		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'permissions' entity of the XML request", E_USER_NOTICE);
+		   		return;
+		   		
+		   }
+        }
+    }
+}
+
 
 class authenticationParameters implements IParams
 {

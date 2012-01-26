@@ -37,6 +37,16 @@
 			<xs:enumeration value="securityGroup"/>
 		</xs:restriction>
 	</xs:simpleType>
+	
+	<xs:simpleType name="permissionsEntityType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="default"/>
+			<xs:enumeration value="object"/>
+			<xs:enumeration value="element"/>
+			<xs:enumeration value="measurementSeries"/>
+			<xs:enumeration value="derivedSeries"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:simpleType name="corinaRequestType">
 		<xs:restriction base="xs:string">
@@ -74,7 +84,7 @@
 			<xs:enumeration value="Error"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="searchParameterName">
 		<xs:restriction base="xs:string">
 
@@ -317,6 +327,7 @@
 					<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:annotation>
@@ -682,6 +693,38 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
+	<!--
+		%%%%%%%%%%%%%%
+		%  PERMISSION
+		%%%%%%%%%%%%%% -->
+	<xs:element name="permission">
+		<xs:annotation>
+			<xs:documentation>
+				Contains access information for the Corina database  
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="permissionToCreate" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="permissionToRead" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="permissionToUpdate" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="permissionToDelete" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="entity" minOccurs="1" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="type" type="permissionsEntityType" use="required"/>
+						<xs:attribute name="id" type="xs:string" use="optional"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:choice minOccurs="1" maxOccurs="unbounded">
+					<xs:element ref="securityUser"  />
+					<xs:element ref="securityGroup" />	
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="decidedBy" type="xs:string" use="optional"/>
+		</xs:complexType>	
+	</xs:element>
+	
 	
 	<!--
 		%%%%%%%%%%%%%%%%%

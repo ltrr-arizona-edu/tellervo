@@ -22,11 +22,9 @@ package edu.cornell.dendro.corina.gui.hierarchy;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.JWindow;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -38,6 +36,7 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
+import edu.cornell.dendro.corina.admin.view.PermissionByEntityDialog;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.TridasEntityChooser;
 import edu.cornell.dendro.corina.gui.TridasEntityChooser.EntitiesAccepted;
@@ -159,6 +158,15 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	        popup.add(menuItem);
 
 	        popup.addSeparator();   
+	        
+	        menuItem = new JMenuItem("View permissions");
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("permissions");
+	        menuItem.setEnabled(adm);
+	        menuItem.setIcon(Builder.getIcon("trafficlight.png", 16));
+	        popup.add(menuItem);
+	        
+	        popup.addSeparator();  
 	        
         }
         
@@ -288,6 +296,13 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 			mergeEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent(), correctEntity);
 			
 			
+		}
+		
+		else if (e.getActionCommand().equals("permissions"))
+		{
+			ITridas selected = (ITridas) ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent()).getUserObject();
+
+			PermissionByEntityDialog.showDialog(selected);
 		}
 	}
 	

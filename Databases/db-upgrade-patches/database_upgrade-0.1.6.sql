@@ -70,3 +70,9 @@ INSERT INTO tlkpmeasurementvariable (measurementvariableid, measurementvariable)
 DELETE FROM tblsupportedclient where client='Corina WSI';
 INSERT INTO tblsupportedclient (client, minversion) VALUES ('Corina WSI', '2.13');
 
+--
+-- Add unique constraints to security tables
+--
+ALTER TABLE tblsecurityobject ADD CONSTRAINT "uniq-object-group-permission" UNIQUE (objectid, securitygroupid, securitypermissionid);
+ALTER TABLE tblsecurityelement ADD CONSTRAINT "uniq-element-group-permission" UNIQUE (securitygroupid, securitypermissionid, securityelementid)
+

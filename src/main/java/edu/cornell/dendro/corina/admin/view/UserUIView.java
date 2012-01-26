@@ -40,6 +40,13 @@ import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelB;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JPanel;
+import javax.swing.JCheckBox;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 
 /*
  * UserUI.java
@@ -106,20 +113,13 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         lblId = new javax.swing.JLabel();
         txtId = new javax.swing.JTextField();
         lblUser = new javax.swing.JLabel();
-        txtUsername = new javax.swing.JTextField();
         lblName = new javax.swing.JLabel();
-        txtFirstname = new javax.swing.JTextField();
-        txtLastname = new javax.swing.JTextField();
         chkEnabled = new javax.swing.JCheckBox();
         scrollPane = new javax.swing.JScrollPane();
         tblGroups = new javax.swing.JTable();
         btnDoIt = new javax.swing.JButton();
         btnClose = new javax.swing.JButton();
         btnSetPwd = new javax.swing.JButton();
-        txtPassword = new javax.swing.JPasswordField();
-        lblPassword = new javax.swing.JLabel();
-        lblPassword2 = new javax.swing.JLabel();
-        txtPassword2 = new javax.swing.JPasswordField();
 
         jLabel1.setText("jLabel1");
 
@@ -135,7 +135,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 
         lblName.setText("Real name:");
 
-        chkEnabled.setText("Enabled");
+        chkEnabled.setText("Account enabled");
 
         tblGroups.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -171,86 +171,71 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         btnClose.setText("OK");
 
         btnSetPwd.setText("Reset Password");
-
-        lblPassword.setText("Password:");
-
-        lblPassword2.setText("Confirm:");
-
-        GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
-                    .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnSetPwd)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
-                        .addComponent(btnDoIt)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnClose))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblUser)
-                        .addGap(12, 12, 12)
-                        .addComponent(txtUsername, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(lblPassword)
-                            .addComponent(lblPassword2))
-                        .addGap(19, 19, 19)
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(txtPassword2, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
-                            .addComponent(txtPassword, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(lblName)
-                            .addComponent(lblId))
-                        .addGap(14, 14, 14)
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(txtId, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
-                            .addComponent(chkEnabled)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtFirstname, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtLastname, GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)))))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblId)
-                    .addComponent(txtId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chkEnabled)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblName)
-                    .addComponent(txtLastname, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtFirstname, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblUser)
-                    .addComponent(txtUsername, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblPassword))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblPassword2)
-                    .addComponent(txtPassword2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnClose)
-                    .addComponent(btnDoIt)
-                    .addComponent(btnSetPwd))
-                .addContainerGap())
-        );
+        getContentPane().setLayout(new MigLayout("", "[81px][140px,grow][107px][73px]", "[19px][23px][19px][19px][][71px,grow][][][25px]"));
+        
+        panel_1 = new JPanel();
+        getContentPane().add(panel_1, "cell 1 2 3 1,grow");
+        panel_1.setLayout(new MigLayout("", "[79.00px,grow][107px,grow]", "[19px]"));
+        txtFirstname = new javax.swing.JTextField();
+        panel_1.add(txtFirstname, "cell 0 0,growx,aligny top");
+        txtLastname = new javax.swing.JTextField();
+        panel_1.add(txtLastname, "cell 1 0,growx,aligny top");
+        
+        panel_2 = new JPanel();
+        getContentPane().add(panel_2, "cell 1 3 3 1,grow");
+        panel_2.setLayout(new MigLayout("", "[140px,grow][107px][73px]", "[19px]"));
+        txtUsername = new javax.swing.JTextField();
+        panel_2.add(txtUsername, "cell 0 0 3 1,growx,aligny top");
+        
+        lblDefaultPermissions = new JLabel();
+        lblDefaultPermissions.setText("Default permissions:");
+        getContentPane().add(lblDefaultPermissions, "cell 0 4,aligny center");
+        
+        panel = new JPanel();
+        panel.setBorder(null);
+        getContentPane().add(panel, "cell 1 4 3 1,grow");
+        panel.setLayout(new MigLayout("", "[][][][]", "[]"));
+        
+        cbxCreate = new JCheckBox("Create");
+        panel.add(cbxCreate, "flowx,cell 0 0");
+        
+        cbxRead = new JCheckBox("Read");
+        panel.add(cbxRead, "cell 1 0");
+        
+        cbxUpdate = new JCheckBox("Update");
+        panel.add(cbxUpdate, "cell 2 0");
+        
+        chkDelete = new JCheckBox("Delete");
+        panel.add(chkDelete, "cell 3 0");
+        getContentPane().add(scrollPane, "cell 0 5 4 1,grow");
+        lblPassword = new javax.swing.JLabel();
+        
+                lblPassword.setText("Password:");
+                getContentPane().add(lblPassword, "cell 0 6,alignx right,aligny center");
+        
+        panel_3 = new JPanel();
+        getContentPane().add(panel_3, "cell 1 6 3 1,grow");
+        panel_3.setLayout(new MigLayout("", "[140px,grow][107px][73px]", "[19px]"));
+        txtPassword = new javax.swing.JPasswordField();
+        panel_3.add(txtPassword, "cell 0 0 3 1,growx,aligny top");
+        lblPassword2 = new javax.swing.JLabel();
+        
+                lblPassword2.setText("Confirm:");
+                getContentPane().add(lblPassword2, "cell 0 7,alignx right,aligny center");
+        
+        panel_4 = new JPanel();
+        getContentPane().add(panel_4, "cell 1 7 3 1,grow");
+        panel_4.setLayout(new MigLayout("", "[140px,grow][107px][73px]", "[19px]"));
+        txtPassword2 = new javax.swing.JPasswordField();
+        panel_4.add(txtPassword2, "cell 0 0 3 1,growx,aligny top");
+        getContentPane().add(btnSetPwd, "cell 0 8,alignx left,aligny top");
+        getContentPane().add(btnDoIt, "cell 2 8,alignx right,aligny top");
+        getContentPane().add(btnClose, "cell 3 8,alignx left,aligny top");
+        getContentPane().add(lblUser, "cell 0 3,alignx right,aligny center");
+        getContentPane().add(lblName, "cell 0 2,alignx right,aligny center");
+        getContentPane().add(lblId, "cell 0 0,alignx right,aligny center");
+        getContentPane().add(txtId, "cell 1 0 3 1,growx,aligny top");
+        getContentPane().add(chkEnabled, "cell 1 1 3 1,alignx right,aligny top");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -275,6 +260,16 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     protected javax.swing.JPasswordField txtPassword;
     protected javax.swing.JPasswordField txtPassword2;
     protected javax.swing.JTextField txtUsername;
+    private JPanel panel;
+    private JCheckBox cbxRead;
+    private JCheckBox cbxUpdate;
+    private JCheckBox cbxCreate;
+    private JCheckBox chkDelete;
+    private JLabel lblDefaultPermissions;
+    private JPanel panel_1;
+    private JPanel panel_2;
+    private JPanel panel_3;
+    private JPanel panel_4;
     // End of variables declaration//GEN-END:variables
  
 	private void setupGUI()
