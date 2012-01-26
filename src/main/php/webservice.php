@@ -31,7 +31,6 @@ require_once("inc/sample.php");
 require_once("inc/radius.php");
 require_once("inc/measurement.php");
 require_once("inc/box.php");
-require_once("inc/permission.php");
 require_once("inc/authenticate.php");
 require_once("inc/dictionaries.php");
 require_once("inc/search.php");
@@ -104,7 +103,6 @@ if($myMetaHeader->status != "Error")
             case "securityUserParameters": 		$myObject = new securityUser(); break;
             case "securityGroupParameters":		$myObject = new securityGroup(); break;
             case "boxParameters":				$myObject = new box(); break;
-            case "permissionParameters":		$myObject = new permission(); break;
             default:
             	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
             	echo "Object type not supported";
@@ -183,9 +181,6 @@ if($myMetaHeader->status != "Error")
                     $myID = $paramObj->getID();
                     break;
                 case "box":
-                	$myID = null;
-                	break;
-                case "permission":
                 	$myID = null;
                 	break;
                 default:
@@ -327,11 +322,8 @@ if($myMetaHeader->status != "Error")
         {
             if($myMetaHeader->status != "Error")
             {   
-            	// Special case for 
-            	
-            	
-            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Calling setParamsFromDB on ".get_class($myObject));
-            	$success = $myObject->setParamsFromDB($paramObj->getID());	
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Calling setParamsFromDB on ".get_class($myObject));            	         	
+                $success = $myObject->setParamsFromDB($paramObj->getID());
             	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setParamsFromDB on ".get_class($myObject));
             	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Calling setChildParamsFromDB on ".get_class($myObject));             	                 
                 $success2 = $myObject->setChildParamsFromDB();

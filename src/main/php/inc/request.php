@@ -320,10 +320,6 @@ class request
 	                		$newxml = "<root><securityGroup id='".$item->getAttribute('id')."'/></root>";
 	                		$myParamObj = new securityGroupParameters($newxml);
                             break;	  
-                            
-	                	case 'permission':
-	                		$myParamObj = new permissionParameters($this->xmlRequestDom->saveXML($item));
-                            break;	                       
                                                         
 	                	default:
 	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);
@@ -383,9 +379,6 @@ class request
 						break;						
             		case "c:box":
             			$myParamObj = new boxParameters($this->xmlRequestDom->saveXML($item));
-            			break;
-              		case "permission":
-            			$myParamObj = new permissionParameters($this->xmlRequestDom->saveXML($item));
             			break;
             		default:
             			trigger_error("901"."Unknown entity tag &lt;".$item->tagName."&gt; when trying to ".$this->crudMode." a record", E_USER_ERROR);

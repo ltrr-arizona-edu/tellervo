@@ -399,7 +399,7 @@ class auth
             return true;
         }
   	
-        // $theObjectType should be one of object, element, sample, radius, vmeasurement, default, securityUser, securityGroup, permission
+        // $theObjectType should be one of object, element, sample, radius, vmeasurement, default, securityUser, securityGroup
 
         global $dbconn;
 		global $firebug;
@@ -410,12 +410,6 @@ class auth
         if ( ($theObjectType=='dictionaries') || ($theObjectType=='authentication') )
         {
             return true;
-        }
-        
-        // Always DENY access to permission as only admin can do this
-        if( $theObjectType=='permission')
-        {
-        	return false;
         }
 
         // If Object is measurement change it to vmeasurement so that db understands!
