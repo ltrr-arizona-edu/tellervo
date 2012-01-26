@@ -393,16 +393,18 @@ class auth
    */
   public function getPermission($thePermissionType, $theObjectType, $theObjectID)
   {
+        global $dbconn;
+		global $firebug;
+
+
         // If user is admin give them the world
         if ($this->isAdmin)
         {
-            return true;
+            return TRUE;
         }
   	
-        // $theObjectType should be one of object, element, sample, radius, vmeasurement, default, securityUser, securityGroup
+        // $theObjectType should be one of object, element, sample, radius, vmeasurement, default, securityUser, securityGroup, permission
 
-        global $dbconn;
-		global $firebug;
         
 		// Merge should be swapped to update as they are 
 		
@@ -410,6 +412,12 @@ class auth
         if ( ($theObjectType=='dictionaries') || ($theObjectType=='authentication') )
         {
             return true;
+        }
+        
+        // Always DENY access to permission as only admin can do this
+        if( $theObjectType=='permission')
+        {
+        	return false;
         }
 
         // If Object is measurement change it to vmeasurement so that db understands!

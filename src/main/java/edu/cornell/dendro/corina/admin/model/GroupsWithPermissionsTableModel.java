@@ -4,15 +4,24 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.WSIPermission;
+import edu.cornell.dendro.corina.schema.WSIPermission.Entity;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
+import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.PermissionsResource;
 
 public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
+	private final static Logger log = LoggerFactory.getLogger(GroupsWithPermissionsTableModel.class);
+
 	private ArrayList<WSIPermission> groupList;
     private final String[] columnNames = {
             I18n.getText("dbbrowser.hash"),
@@ -90,6 +99,18 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 		return groupList.get(rowIndex);		
 	}
 	
+	@Override
+	public boolean isCellEditable(int row, int col)
+	{
+		if(col>=2 && col <=5)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		WSIPermission permission = getWSIPermissionAt(rowIndex);
     	ArrayList<WSISecurityGroup> groupDictionary = (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary");  
@@ -117,4 +138,43 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 			default: return null;
 		}
 	}
+	
+	@Override
+	public void setValueAt(Object val, int rowIndex, int colIndex)
+	{
+		if(!isCellEditable(rowIndex, colIndex)) return;
+		if(getColumnClass(colIndex)!=Boolean.class) return;
+		
+		WSIPermission permission = getWSIPermissionAt(rowIndex);
+		Boolean oldval = (Boolean) getValueAt(rowIndex, colIndex);
+		
+		switch (colIndex) {
+		case 2: permission.setPermissionToCreate(!oldval); break;
+		case 3: permission.setPermissionToRead(!oldval); break;
+		case 4: permission.setPermissionToUpdate(!oldval); break;
+		case 5: permission.setPermissionToDelete(!oldval); break;
+		}
+		
+		permission.setDecidedBy(null);
+		
+		PermissionsResource resource = new PermissionsResource(permission);
+		
+		// Query db 
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting permissions info");
+			Alert.error("Error", "Error getting permissions info");
+			return;
+		}
+		
+		ArrayList<WSIPermission> res = resource.getAssociatedResult();
+		
+		groupList.set(rowIndex, res.get(0));
+	}
+	
+
 }

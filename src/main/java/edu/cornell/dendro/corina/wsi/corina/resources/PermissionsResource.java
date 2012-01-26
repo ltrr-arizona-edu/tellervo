@@ -53,17 +53,33 @@ public class PermissionsResource extends CorinaAssociatedResource<ArrayList<WSIP
 	/**
 	 * Read constructor
 	 * 
-	 * @param identifier
-	 * @param entityType
-	 * @param queryType
-	 * @param entityClassType
-	 *            Class of the entity
+	 * @param pEntityType
+	 * @param pEntityID
+	 * @param groupOrUser
 	 */
-	public PermissionsResource() {
+	public PermissionsResource(PermissionsEntityType pEntityType, String pEntityID, Object groupOrUser) {
 		super(getXMLName(new WSIPermission()), CorinaRequestType.READ);
 
-		
+		addPermission(pEntityType, pEntityID, groupOrUser);
 
+	}
+	
+	/**
+	 * Read constructor
+	 */
+	public PermissionsResource()
+	{
+		super(getXMLName(new WSIPermission()), CorinaRequestType.READ);
+	}
+	
+	/**
+	 * Write constructor
+	 * 
+	 * @param permission
+	 */
+	public PermissionsResource(WSIPermission permission){
+		super(getXMLName(new WSIPermission()), CorinaRequestType.CREATE);
+		this.perms.add(permission);
 	}
 	
 

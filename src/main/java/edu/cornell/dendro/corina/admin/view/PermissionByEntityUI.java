@@ -1,6 +1,9 @@
 package edu.cornell.dendro.corina.admin.view;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.JDialog;
@@ -48,7 +51,7 @@ import javax.swing.table.TableColumn;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JTabbedPane;
 
-public class PermissionByEntityUI extends JPanel {
+public class PermissionByEntityUI extends JPanel implements MouseListener{
 
 	private static final long serialVersionUID = 1L;
 	private UsersWithPermissionsTableModel userTableModel;
@@ -179,12 +182,63 @@ public class PermissionByEntityUI extends JPanel {
 		tblUserPerms.getColumnModel().getColumn(6).setPreferredWidth(45);
 		tblUserPerms.getColumnModel().getColumn(7).setPreferredWidth(45);
 		tblUserPerms.getColumnModel().getColumn(8).setPreferredWidth(300);
-		
+	
+
 	}
 	
 	public ArrayList<WSIPermission> getUserPermissionsList()
 	{
 		return permsList;
+	}
+
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+		Component comp = e.getComponent();
+	
+	/*	if((e.getClickCount()>1) && (comp instanceof JTable) && 
+			groupTableModel.isCellEditable(tblGroupPerms.getSelectedRow(), tblGroupPerms.getSelectedColumn()))   
+		{
+			groupTableModel.toggleCheckbox(tblGroupPerms.getSelectedRow(), tblGroupPerms.getSelectedColumn());
+		}*/
+		
+
+
+		
+	}
+
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

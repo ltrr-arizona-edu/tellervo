@@ -31,6 +31,7 @@ require_once("inc/sample.php");
 require_once("inc/radius.php");
 require_once("inc/measurement.php");
 require_once("inc/box.php");
+require_once("inc/permission.php");
 require_once("inc/authenticate.php");
 require_once("inc/dictionaries.php");
 require_once("inc/search.php");
@@ -103,6 +104,7 @@ if($myMetaHeader->status != "Error")
             case "securityUserParameters": 		$myObject = new securityUser(); break;
             case "securityGroupParameters":		$myObject = new securityGroup(); break;
             case "boxParameters":				$myObject = new box(); break;
+            case "permissionParameters":		$myObject = new permission(); break;
             default:
             	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
             	echo "Object type not supported";
@@ -183,6 +185,9 @@ if($myMetaHeader->status != "Error")
                 case "box":
                 	$myID = null;
                 	break;
+                case "permission":
+                	$myID = null;
+                	break;
                 default:
                 	$firebug->log($objectType, "Unknown object type");
              
@@ -201,7 +206,8 @@ if($myMetaHeader->status != "Error")
 			$firebug->log("Beginning permissions check...");
 			
 
-            if($myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID)===FALSE)
+	    $hasPermission = $myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID);
+            if($hasPermission!=TRUE)
             {
                 // Permission denied
                 if (($originalObjectType=='object') && ($objectType=='default'))
@@ -245,6 +251,7 @@ if($myMetaHeader->status != "Error")
                 }
             }
             if ($debugFlag===TRUE) $myMetaHeader->setTiming("Permissions check completed");
+           	$firebug->log("Permissions check completed");	
         }
         
         // Merges should only be done by admins
@@ -322,23 +329,35 @@ if($myMetaHeader->status != "Error")
         {
             if($myMetaHeader->status != "Error")
             {   
-            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Calling setParamsFromDB on ".get_class($myObject));            	         	
-                $success = $myObject->setParamsFromDB($paramObj->getID());
-            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setParamsFromDB on ".get_class($myObject));
-            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Calling setChildParamsFromDB on ".get_class($myObject));             	                 
-                $success2 = $myObject->setChildParamsFromDB();
-            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setChildParamsFromDB on ".get_class($myObject));                 
-                if(!($success && $success2))
-                {
-                    if ($myObject->getLastErrorCode()==701)
-                    {
-                        trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
-                    }
-                    else
-                    {
-                        trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_NOTICE);
-                    }
-                }
+		if($objectType=='permission')
+		{
+			// Special case for permissions as we need more than a basic id for looking up
+			$success = $myObject->setParamsFromParamsClass($paramObj, $myAuth);
+			if(!$success)
+			{
+			    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+			}
+		}
+		else
+		{
+			if ($debugFlag===TRUE) $myMetaHeader->setTiming("Calling setParamsFromDB on ".get_class($myObject));
+			$success = $myObject->setParamsFromDB($paramObj->getID());	
+			if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setParamsFromDB on ".get_class($myObject));
+			if ($debugFlag===TRUE) $myMetaHeader->setTiming("Calling setChildParamsFromDB on ".get_class($myObject));             	                 
+			$success2 = $myObject->setChildParamsFromDB();
+			if ($debugFlag===TRUE) $myMetaHeader->setTiming("Completed setChildParamsFromDB on ".get_class($myObject));                 
+			if(!($success && $success2))
+			{
+			    if ($myObject->getLastErrorCode()==701)
+			    {
+				trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+			    }
+			    else
+			    {
+				trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_NOTICE);
+			    }
+			}
+		}
             }
         }
 

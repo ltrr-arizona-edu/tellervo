@@ -233,11 +233,13 @@ class request
         if($this->crudMode=='search')
         {
         	$fragment = $xpath->query("//cor:request[(descendant::cor:searchParams)]");
-	       	
+                $firebug->log($fragment, "XML fragment");
+	
         	foreach ($fragment as $item)
         	{	
         		if($item->nodeType != XML_ELEMENT_NODE) continue;  
         		
+                    $firebug->log($item, "XML item");
 	            $parentID = NULL;
 	            $myParamObj = new searchParameters($this->xmlRequestDom->saveXML($item), $parentID);
 	            array_push($this->paramObjectsArray, $myParamObj);
@@ -250,7 +252,23 @@ class request
         elseif ( ($this->crudMode=='read') || ($this->crudMode=='delete') || ($this->crudMode=='merge'))
         {
         	
-        	if($this->xmlRequestDom->getElementsByTagName("entity")->item(0)!=NULL)
+                if($this->xmlRequestDom->getElementsByTagName("permission")->item(0)!=NULL)
+		{
+
+		   $firebug->log("permission read or delete detected");
+			$fragment = $xpath->query("//c:permission[(descendant::c:entity)]");
+			$firebug->log($fragment, "XML fragment");	
+			
+			foreach ($fragment as $item)
+			{	
+				if($item->nodeType != XML_ELEMENT_NODE) continue;  
+				
+			    $firebug->log($item, "XML item");	
+	           	    $myParamObj = new permissionParameters($this->xmlRequestDom->saveXML($item));
+			    array_push($this->paramObjectsArray, $myParamObj);
+			}
+		}
+        	else if($this->xmlRequestDom->getElementsByTagName("entity")->item(0)!=NULL)
         	{
 	            foreach ($this->xmlRequestDom->getElementsByTagName("entity") as $item)
 	            {
@@ -280,7 +298,7 @@ class request
 	                		$myParamObj = new objectParameters($newxml, $parentID, $mergeWithID);
                             break;	                		
 
-                        case 'element':    
+                        	case 'element':    
 	                		$newxml = "<tridas:element><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:element>";
 	                		$myParamObj = new elementParameters($newxml, $parentID, $mergeWithID);
                             break;	                		
@@ -320,6 +338,7 @@ class request
 	                		$newxml = "<root><securityGroup id='".$item->getAttribute('id')."'/></root>";
 	                		$myParamObj = new securityGroupParameters($newxml);
                             break;	  
+                            
                                                         
 	                	default:
 	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);
@@ -379,6 +398,9 @@ class request
 						break;						
             		case "c:box":
             			$myParamObj = new boxParameters($this->xmlRequestDom->saveXML($item));
+            			break;
+              		case "c:permission":
+            			$myParamObj = new permissionParameters($this->xmlRequestDom->saveXML($item));
             			break;
             		default:
             			trigger_error("901"."Unknown entity tag &lt;".$item->tagName."&gt; when trying to ".$this->crudMode." a record", E_USER_ERROR);

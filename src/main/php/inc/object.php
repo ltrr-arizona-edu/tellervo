@@ -489,7 +489,7 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "'".pg_escape_string($this->getTemporalCoverageFoundation())."', ";
                         if ($this->location->getGeometry()!=NULL)						$sql.= "'".$this->location->getGeometry()."', ";
                         if ($this->location->getComment()!=NULL)						$sql.= "'".pg_escape_string($this->location->getComment())."', ";
-                        if ($this->location->getType()!=NULL)							$sql.= "'".pg_escape_string($this->location->getType())."', ";
+                        if ($this->location->getTypeID()!=NULL)							$sql.= "'".pg_escape_string($this->location->getTypeID())."', ";
                         if ($this->location->getPrecision()!=NULL)						$sql.= "'".pg_escape_string($this->location->getPrecision())."', ";
                         if ($this->location->getAddressLine1()!=NULL)					$sql.= "'".pg_escape_string($this->location->getAddressLine1())."', ";
                         if ($this->location->getAddressLine2()!=NULL)					$sql.= "'".pg_escape_string($this->location->getAddressLine2())."', ";
@@ -519,7 +519,7 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation='".pg_escape_string($this->getTemporalCoverageFoundation())."', ";
                         if ($this->location->getGeometry()!=NULL)						$sql.= "locationgeometry='".$this->location->getGeometry()."', ";
                         if ($this->location->getComment()!=NULL)						$sql.= "locationcomment='".pg_escape_string($this->location->getComment())."', ";
-                        if ($this->location->getType()!=NULL)							$sql.= "locationtypeid='".$this->location->getTypeID()."', ";
+                        if ($this->location->getTypeID()!=NULL)							$sql.= "locationtypeid='".$this->location->getTypeID()."', ";
                         if ($this->location->getPrecision()!=NULL)						$sql.= "locationprecision='".pg_escape_string($this->location->getPrecision())."', ";
                         if ($this->location->getAddressLine1()!=NULL)					$sql.= "locationaddressline1='".pg_escape_string($this->location->getAddressLine1())."', ";
                         if ($this->location->getAddressLine2()!=NULL)					$sql.= "locationaddressline2='".pg_escape_string($this->location->getAddressLine2())."', ";

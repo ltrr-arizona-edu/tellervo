@@ -71,7 +71,7 @@ class geometry
 		   
 		   if($tag->hasAttribute("srsName"))
 		   {
-		   		if($tag->getAttribute("srsName")!="EPSG:4326" && $tag->getAttribute("srsName")!="urn:ogc:def:crs:EPSG::4326")
+		   		if($tag->getAttribute("srsName")!="EPSG:4326")
 		   		{
 		   			trigger_error("104"."This webservice currently only supports GML data supplied in the EPSG:4326 coordinate system", E_USER_ERROR);
 		   			return false;
@@ -303,7 +303,6 @@ class location extends geometry
 	 * @var String
 	 */
 	protected $comment = NULL;	
-	
 	protected $addressline1 = NULL;
 	protected $addressline2 = NULL;
 	protected $cityortown = NULL;
@@ -389,7 +388,10 @@ class location extends geometry
 	function setGeometry($geometry, $type=null, $precision=null)
 	{
 		$this->geometry = $geometry;
-		if($type!=NULL) $this->setType(NULL, $type);
+		global $firebug;
+
+		$firebug->log($type, "Location type:");
+		if($type!=NULL) $this->type->setLocationType(NULL, $type);
 		$this->setPrecision($precision);	
 	}
 		
@@ -399,9 +401,9 @@ class location extends geometry
 	 * @param unknown_type $value
 	 * @return unknown
 	 */
-	function setType($id=NULL, $value=NULL)
+	function setType($value=NULL)
 	{
-		return $this->type->setLocationType($id, $value);
+		return $this->type->setLocationType(NULL, $value);
 	}
 	
 	function setPrecision($value)

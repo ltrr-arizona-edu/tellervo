@@ -2663,6 +2663,111 @@ class securityUserEntity extends dbEntity
     
 }
 
+class permissionEntity extends dbEntity 
+{
+	protected $canCreate = "nullvalue";
+	protected $canRead = "nullvalue";
+	protected $canUpdate = "nullvalue";
+	protected $canDelete = "nullvalue";	
+	public $entityArray = array();
+	public $securityUserArray = array();
+	public $securityGroupArray = array();
+	
+    function __construct()
+    {
+		$this->entityArray = array();
+    	$this->securityUserArray = array();
+    	$this->securityGroupArray = array();
+    }
+	
+	function setCanCreate($bool)
+	{
+		global $firebug;
+		$bool = dbhelper::formatBool($bool);
+
+		if($bool===TRUE)
+		{
+			$this->canCreate = TRUE;
+			return TRUE;
+		}
+		else if ($bool===FALSE)
+		{
+			$this->canCreate = FALSE;
+			return FALSE;
+		}
+		
+		return NULL;
+	}
+	
+	function setCanRead($bool)
+	{
+		$bool = dbhelper::formatBool($bool);
+		if($bool===TRUE)
+		{
+			$this->canRead = TRUE;
+			return TRUE;
+		}
+		else if ($bool===FALSE)
+		{
+			$this->canRead = FALSE;
+			return FALSE;
+		}
+		return NULL;
+	}
+	
+	function setCanUpdate($bool)
+	{
+		$bool = dbhelper::formatBool($bool);
+		if($bool===TRUE)
+		{
+			$this->canUpdate = TRUE;
+			return TRUE;
+		}
+		else if ($bool===FALSE)
+		{
+			$this->canUpdate = FALSE;
+			return FALSE;
+		}
+		return NULL;
+	}
+	
+	function setCanDelete($bool)
+	{
+		$bool = dbhelper::formatBool($bool);
+		if($bool===TRUE)
+		{
+			$this->canDelete = TRUE;
+			return TRUE;
+		}
+		else if ($bool===FALSE)
+		{
+			$this->canDelete = FALSE;
+			return FALSE;
+		}
+		return NULL;
+	}
+	
+	function canCreate()
+	{
+		return $this->canCreate;
+	}
+	
+	function canRead()
+	{
+		return $this->canRead;
+	}
+	
+	function canUpdate()
+	{
+		return $this->canUpdate;
+	}
+	
+	function canDelete()
+	{
+		return $this->canDelete;
+	}
+	
+}
 
 
 /**

@@ -12,7 +12,7 @@
  */
 require_once('dbhelper.php');
 
-class permission extends permissionEntity
+class permission extends permissionEntity implements IDBAccessor
 {
 	protected $thisParamsClass = NULL;
 	
@@ -24,10 +24,6 @@ class permission extends permissionEntity
     {
     }
     
-    function __construct()
-    {
-    	
-    }
 
     /***********/
     /* SETTERS */
@@ -35,12 +31,13 @@ class permission extends permissionEntity
 
     function setParamsFromDBRow($row)
     {
-		return true;
+	return true;
     }
     
     function setParamsFromParamsClass($paramsClass)
     {
-    	$thisParamsClass = $paramsClass;
+    	$this->thisParamsClass = $paramsClass;
+	return TRUE;
     }
     
     function setParamsFromDB($id)
@@ -48,11 +45,88 @@ class permission extends permissionEntity
         return TRUE;
     }
 
+    function setChildParamsFromDB()
+    {
+	return TRUE;
+    }
+
         
     function asXML()
     {
-    	$xml = "<permission>\n";
-    	$xml.= "</permission>\n";    	
+	global $dbconn;
+	global $firebug;
+    	
+	$xml = "";
+	
+	$firebug->log($this->thisParamsClass, "Params class prior to outputting as XML");
+	foreach($this->thisParamsClass->securityUserArray as $user)
+	{
+    	   foreach($this->thisParamsClass->entityArray as $entity)
+    	   {
+		if($entity['type']=='default')
+		{		
+			$sql = "select * from tblsecuritydefault where securityuserid";
+		}
+		else
+		{
+			$sql = "select * from cpgdb.getuserpermissionset('$user', '".$entity['type']."', '".$entity['id']."'::uuid)";
+		}
+	                    
+		pg_send_query($dbconn, $sql);
+	        $result = pg_get_result($dbconn);
+		    if(pg_num_rows($result)==0)
+		    {
+			// No records match
+			trigger_error("903"."No records match the specified permissions request. $sql", E_USER_ERROR);
+			return FALSE;
+		    }
+		    else
+		    {
+			// Set parameters from db
+			$row = pg_fetch_array($result);
+			$xml.= "<permission decidedBy=\"".$row['decidedby']."\">\n";
+			$xml.= "<permissionToCreate>".dbhelper::formatBool($row['cancreate'], "english")."</permissionToCreate>\n";
+			$xml.= "<permissionToRead>".dbhelper::formatBool($row['canread'], "english")."</permissionToRead>\n";
+			$xml.= "<permissionToUpdate>".dbhelper::formatBool($row['canupdate'], "english")."</permissionToUpdate>\n";
+			$xml.= "<permissionToDelete>".dbhelper::formatBool($row['candelete'], "english")."</permissionToDelete>\n";
+	    	        $xml.= "<entity type=\"".$entity['type']."\" id=\"".$entity['id']."\"/>\n";	
+		   	$xml.= "<securityUser id=\"".$user."\"/>\n";
+	    		$xml.= "</permission>\n";    	
+		    }
+  	   }
+	}	
+
+	foreach($this->thisParamsClass->securityGroupArray as $group)
+	{
+    	   foreach($this->thisParamsClass->entityArray as $entity)
+    	   {
+		$sql = "select * from cpgdb.getgrouppermissionset('{".$group."}', '".$entity['type']."', '".$entity['id']."'::uuid)";
+	
+	                    
+		pg_send_query($dbconn, $sql);
+	        $result = pg_get_result($dbconn);
+		    if(pg_num_rows($result)==0)
+		    {
+			// No records match
+			trigger_error("903"."No records match the specified permissions request. $sql", E_USER_ERROR);
+			return FALSE;
+		    }
+		    else
+		    {
+			// Set parameters from db
+			$row = pg_fetch_array($result);
+			$xml.= "<permission decidedBy=\"".$row['decidedby']."\">\n";
+			$xml.= "<permissionToCreate>".dbhelper::formatBool($row['cancreate'], "english")."</permissionToCreate>\n";
+			$xml.= "<permissionToRead>".dbhelper::formatBool($row['canread'], "english")."</permissionToRead>\n";
+			$xml.= "<permissionToUpdate>".dbhelper::formatBool($row['canupdate'], "english")."</permissionToUpdate>\n";
+			$xml.= "<permissionToDelete>".dbhelper::formatBool($row['candelete'], "english")."</permissionToDelete>\n";
+	    	        $xml.= "<entity type=\"".$entity['type']."\" id=\"".$entity['id']."\"/>\n";	
+		   	$xml.= "<securityGroup id=\"".$group."\"/>\n";
+	    		$xml.= "</permission>\n";    	
+		    }
+  	   }
+	}	
+
     	return $xml;
     }
     
@@ -67,28 +141,52 @@ class permission extends permissionEntity
      */
     function writeToDB()
     {
+	$this->deleteFromDB();
+
     	global $dbconn;
+        global $firebug;
+	$firebug->log("Starting permissions write to db");
+	$firebug->log($this->thisParamsClass, "Writing this params class to db");
                 
-    	foreach($thisParamsClass->entityArray as $entity)
+    	foreach($this->thisParamsClass->entityArray as $entity)
     	{
+		$firebug->log($entity, "Permissions being written for this entity");
     		// Entity has to be of a certain type otherwise continue;
-    		if ($entity["type"]!='object' && $entity["type"]!='element' && $entity["type"]!='measurement')
+    		if ($entity["type"]!='object' && $entity["type"]!='element' && $entity["type"]!='measurement' && $entity['type']!='default')
     		{
+			$firebug->log("Unsupported entity for permissions. Ignoring");
     			continue;
     		}
     		
-    		foreach($thisParamsClass->securityUserArray as $user)
+    		foreach($this->thisParamsClass->securityUserArray as $user)
     		{
     			// Directly adding permissions to users is not yet supported
+			$firebug->log("Assigning permissions by user not yet supported");
 				continue;
     		}
     		
-    		foreach($thisParamsClass->securityGroupArray as $group)
+    		foreach($this->thisParamsClass->securityGroupArray as $group)
     		{
-    		    if($thisParamsClass->canCreate!=NULL)
+		    $firebug->log($group, "Permissions being written for this group");
+		    $canCreate = $this->thisParamsClass->canCreate();
+		    $firebug->log($canCreate, "Doing 'create'");
+
+    		    if($this->thisParamsClass->canCreate()===TRUE)
     			{
-    					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
+				$firebug->log("Creating SQL for 'create' permission");
+				
+				if($entity['type']=='default')
+				{
+					$sql = "INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES ";
+    					$sql .=" ('$group','3'); ";
+				}
+				else
+    				{
+					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('".$entity["id"]."','$group','3'); ";
+				}
+
+				$firebug->log($sql, "Permission write sql");
     			        // Run SQL 
 	                    pg_send_query($dbconn, $sql);
 	                    $result = pg_get_result($dbconn);
@@ -98,10 +196,20 @@ class permission extends permissionEntity
 	                        return FALSE;
 	                    }
     			}
-    		    if($thisParamsClass->canRead!=NULL)
+    		    if($this->thisParamsClass->canRead()===TRUE )
     			{
+				if($entity['type']=='default')
+				{
+					$sql = "INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES ";
+    					$sql .=" ('$group','2'); ";
+				}
+				else
+				{
     					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('".$entity["id"]."','$group','2'); ";
+				}
+
+				$firebug->log($sql, "Permission write sql");
     			    	// Run SQL 
 	                    pg_send_query($dbconn, $sql);
 	                    $result = pg_get_result($dbconn);
@@ -111,10 +219,19 @@ class permission extends permissionEntity
 	                        return FALSE;
 	                    }    					
     			}
-    		    if($thisParamsClass->canUpdate!=NULL)
+    		    if($this->thisParamsClass->canUpdate()===TRUE )
     			{
+				if($entity['type']=='default')
+				{
+					$sql = "INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES ";
+    					$sql .=" ('$group','4'); ";
+				}
+				else
+				{
     					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('".$entity["id"]."','$group','4'); ";
+				}
+				$firebug->log($sql, "Permission write sql");
     			    	// Run SQL 
 	                    pg_send_query($dbconn, $sql);
 	                    $result = pg_get_result($dbconn);
@@ -124,10 +241,19 @@ class permission extends permissionEntity
 	                        return FALSE;
 	                    }    					
     			}
-    		    if($thisParamsClass->canDelete!=NULL)
+    		    if($this->thisParamsClass->canDelete()===TRUE)
     			{
+				if($entity['type']=='default')
+				{
+					$sql = "INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES ";
+    					$sql .=" ('$group','5'); ";
+				}
+				else
+				{
     					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('".$entity["id"]."','$group','5'); ";
+				}
+				$firebug->log($sql, "Permission write sql");
     			    	// Run SQL 
 	                    pg_send_query($dbconn, $sql);
 	                    $result = pg_get_result($dbconn);
@@ -139,6 +265,7 @@ class permission extends permissionEntity
     			}    			
     		}
     	}
+	return TRUE;
     }
 
             
@@ -156,13 +283,14 @@ class permission extends permissionEntity
         switch($crudMode)
         {
             case "create":
-                if($paramsObj->entityArray == NULL || count($paramsObj->entityArray<1))
+                if($paramsObj->entityArray == NULL || count($paramsObj->entityArray)<1)
                 {
                     $this->setErrorMessage("902","One or more entities is required when creating a permissions record");
                     return false;
                 }
-                if( ($paramsObj->securityUserArray() == NULL) || count($paramsObj->securityUserArray()<1) && 
-                    ($paramsObj->securityGroupArray() == NULL) || count($paramsObj->securityGroupArray()<1))
+                if( (($paramsObj->securityUserArray == NULL) || count($paramsObj->securityUserArray)<1)   && 
+                    (($paramsObj->securityGroupArray == NULL) || count($paramsObj->securityGroupArray)<1)
+                  )
                   
                 {
                     $this->setErrorMessage("902","One or more security users and groups is required when creating a permissions record");
@@ -175,20 +303,20 @@ class permission extends permissionEntity
      			}
      			return true;
      		case "read":
-             	if ( $paramsObj->canCreate!=NULL && $paramsObj->canRead!=NULL && $paramsObj->canUpdate!=NULL && $paramsObj->canDelete!=NULL)           
+             	if ( $paramsObj->canCreate!='nullvalue' && $paramsObj->canRead!='nullvalue' && $paramsObj->canUpdate!='nullvalue' && $paramsObj->canDelete!='nullvalue')           
      			{
                		$this->setErrorMessage("902","The fields 'create', 'read', 'update' and 'delete' are invalid when reading permissions information.");
                		return false;	
      			}
      			return true;
             case "update":
-                if($paramsObj->entityArray == NULL || count($paramsObj->entityArray<1))
+                if($paramsObj->entityArray == NULL || count($paramsObj->entityArray)<1)
                 {
                     $this->setErrorMessage("902","One or more entities is required when updating a permissions record");
                     return false;
                 }
-                if( ($paramsObj->securityUserArray() == NULL) || count($paramsObj->securityUserArray()<1) && 
-                    ($paramsObj->securityGroupArray() == NULL)|| count($paramsObj->securityGroupArray()<1)
+                if( (($paramsObj->securityUserArray == NULL) || count($paramsObj->securityUserArray)<1)   && 
+                    (($paramsObj->securityGroupArray == NULL) || count($paramsObj->securityGroupArray)<1)
                   )
                 {
                     $this->setErrorMessage("902","One or more security users and groups are required when updating permissions records");
@@ -213,6 +341,44 @@ class permission extends permissionEntity
     }
     
     function deleteFromDB()
+    {
+
+	global $dbconn;
+	global $firebug;
+	$firebug->log("deleteFromDB() called");
+
+	foreach($this->thisParamsClass->securityGroupArray as $group)
+	{
+    	   foreach($this->thisParamsClass->entityArray as $entity)
+    	   {
+		if($entity['type']=='default')
+		{
+			$sql = "DELETE FROM tblsecuritydefault WHERE securitygroupid='$group'";
+		}
+		else
+		{
+			$sql = "DELETE FROM tblsecurity".$entity['type']." WHERE ".$entity['type']."id='".$entity['id']."' AND securitygroupid='$group'";
+		}
+		$firebug->log($sql, "Delete existing permissions records");
+	    pg_send_query($dbconn, $sql);
+	    $result = pg_get_result($dbconn);
+		    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+		    {
+			$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+			return FALSE;
+		    }
+
+		
+	   }
+        }
+
+	
+
+
+        return false;
+    }
+
+    function mergeRecords($id)
     {
         return false;
     }
