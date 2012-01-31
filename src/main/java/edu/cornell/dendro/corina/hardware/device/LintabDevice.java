@@ -166,13 +166,10 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
                 if (strReadBuffer.equals("0;10")) return;
                 
                 // Ignore repeated 'fire' requests
-                String thisFireState = strReadBuffer.substring(strReadBuffer.indexOf(";")+1, strReadBuffer.indexOf(";")+2);
-                log.debug("-------");
-                log.debug("previous State = "+previousFireState);
-                log.debug("current  State = "+thisFireState);
-                          
+                String thisFireState = strReadBuffer.substring(strReadBuffer.indexOf(";")+1, strReadBuffer.indexOf(";")+2);                         
                 if (previousFireState.equals("1") && thisFireState.equals("1")) return;
                 
+                // Keep track of the state of the 'fire' button
                 previousFireState = thisFireState;
                 
             	//Chop the three characters off the right side of the string to leave the number.
