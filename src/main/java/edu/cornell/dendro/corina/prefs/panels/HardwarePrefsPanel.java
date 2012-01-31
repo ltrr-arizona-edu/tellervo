@@ -210,9 +210,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
         JSpinner.NumberEditor editor = (JSpinner.NumberEditor)spnMultiply.getEditor();  
         DecimalFormat format = editor.getFormat();  
         format.setMinimumFractionDigits(2);  
+        format.setMaximumFractionDigits(2);
         editor.getTextField().setHorizontalAlignment(SwingConstants.CENTER);  
-        Dimension d = spnMultiply.getPreferredSize();  
-        d.width = 85;  
+        //Dimension d = spnMultiply.getPreferredSize();  
+        //d.width = 85;  
     	
     	
         new DoubleSpinnerWrapper(spnMultiply, 
@@ -220,7 +221,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
         		App.prefs.getDoublePref(PrefKey.SERIAL_MULTIPLIER, 1.00));
         
         
-    	panel.add(spnMultiply, "cell 3 4,growx");
+    	panel.add(spnMultiply, "cell 3 4,alignx left");
 		
     	lblStopBits = new JLabel("Stop bits:");
     	panel.add(lblStopBits, "cell 0 5,alignx trailing");
@@ -404,6 +405,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			cboPort.setEnabled(false);
 			btnTestConnection.setEnabled(false);
 			chkReverseMeasuring.setEnabled(false);
+			spnMultiply.setEnabled(false);
 			return;
 		} 
 		
@@ -418,10 +420,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		cboLineFeed.setEnabled(device.isLineFeedEditable());
 		chkMeasureCumulatively.setEnabled(device.isMeasureCumulativelyConfigurable());
 		chkReverseMeasuring.setEnabled(device.isReverseMeasureCapable());
-		
 		spnMultiply.setEnabled(device.isCorrectionFactorEditable());	
-		spnMultiply.setValue(device.getCorrectionMultipier());
-		
+				
 		if(useDefaults)
 		{
 			
@@ -433,6 +433,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			cboLineFeed.setSelectedItem(device.getLineFeed().toString());
 			chkMeasureCumulatively.setSelected(device.getMeasureCumulatively());
 			chkReverseMeasuring.setSelected(device.getReverseMeasuring());
+			spnMultiply.setValue(device.getCorrectionMultipier());
 			
 		}
 		else

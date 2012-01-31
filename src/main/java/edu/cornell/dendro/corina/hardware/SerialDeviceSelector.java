@@ -208,7 +208,22 @@ public class SerialDeviceSelector {
 					} catch (Exception e){}
 				}
 				
-				device.setPortParams(portName, baudRate, parity, db, sb, lf, fc);
+				Double mf = null;
+				if(App.prefs.getPref(PrefKey.SERIAL_MULTIPLIER, null)!=null &&
+					device.isCorrectionFactorEditable())
+				{
+					
+					mf = App.prefs.getDoublePref(PrefKey.SERIAL_MULTIPLIER, null);
+				}
+				
+				Boolean reverse = null;
+				if(App.prefs.getPref(PrefKey.SERIAL_MEASURE_IN_REVERSE, null)!=null &&
+					device.isReverseMeasureCapable())
+				{
+					reverse = App.prefs.getBooleanPref(PrefKey.SERIAL_MEASURE_IN_REVERSE, null);
+				}
+				
+				device.setPortParams(portName, baudRate, parity, db, sb, lf, fc, mf, reverse);
 				System.out.println("Overriding default port parameters");
 			}
 			else

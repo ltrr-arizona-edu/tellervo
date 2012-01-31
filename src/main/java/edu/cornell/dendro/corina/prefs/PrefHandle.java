@@ -23,7 +23,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.hardware.device.LintabDevice;
 import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 
 public class PrefHandle<T> {
@@ -31,7 +35,8 @@ public class PrefHandle<T> {
 	protected final String pref;
 	/** The default value of this preference (can be null) */
 	protected final T defaultValue;
-	
+	private final static Logger log = LoggerFactory.getLogger(PrefHandle.class);
+
 	/** The type we use to determine which functions to use for setting */
 	private final HandleType underlyingType;
 	
@@ -41,7 +46,8 @@ public class PrefHandle<T> {
 		BOOLEAN,
 		INTEGER,
 		DIMENSION,
-		FONT
+		FONT,
+		DOUBLE
 	}	
 	
 	public PrefHandle(PrefKey key, Class<T> prefClass, T defaultValue) {
@@ -89,6 +95,8 @@ public class PrefHandle<T> {
 			underlyingType = HandleType.INTEGER;
 		else if(Font.class.isAssignableFrom(prefClass))
 			underlyingType = HandleType.FONT;
+		else if(Double.class.isAssignableFrom(prefClass))
+			underlyingType = HandleType.DOUBLE;
 		else
 			throw new IllegalArgumentException("Not sure how to handle this type: " + prefClass.getName());
 
@@ -144,6 +152,14 @@ public class PrefHandle<T> {
 		case FONT:
 			App.prefs.setFontPref(pref, (Font) value);
 			break;
+			
+		case DOUBLE:
+			App.prefs.setDoublePref(pref, (Double) value);
+			break;
+		
+		default:
+			log.error("Unsupported data type in PrefHandle");
+			
 		}
 	}
 	

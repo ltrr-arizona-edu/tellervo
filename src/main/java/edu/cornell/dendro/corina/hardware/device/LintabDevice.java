@@ -82,7 +82,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 		flowControl = FlowControl.NONE;
 		lineFeed = LineFeed.NONE;
 		unitMultiplier = UnitMultiplier.ZERO;
-		this.correctionFactor = 2.5;
+		this.correctionMultiplier = 2.5;
 	}
 	
 	@Override
@@ -185,7 +185,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
             	}
             	
             	// Apply correction factor
-            	intValue = (int) (intValue * this.correctionFactor);
+            	intValue = (int) (intValue * this.correctionMultiplier);
             	                
 		    	//Only process the data if the add button is set and the reset button is not set.
                 if( strReadBuffer.endsWith(";10") || fireOnNextValue) 

@@ -75,7 +75,7 @@ public abstract class AbstractSerialMeasuringDevice
 	protected UnitMultiplier unitMultiplier = UnitMultiplier.ZERO;
 	protected Boolean measureCumulatively = false;
 	protected Boolean measureInReverse = true;
-	protected Double correctionFactor = 1.0;
+	protected Double correctionMultiplier = 1.0;
 	
 	
 	/** The previous measurement position. Used in 
@@ -120,7 +120,7 @@ public abstract class AbstractSerialMeasuringDevice
 	 */
 	public void setCorrectionMultiplier(Double dbl)
 	{
-		this.correctionFactor = dbl;
+		this.correctionMultiplier = dbl;
 	}
 	
 	/**
@@ -130,7 +130,7 @@ public abstract class AbstractSerialMeasuringDevice
 	 */
 	public Double getCorrectionMultipier()
 	{
-		return this.correctionFactor;
+		return this.correctionMultiplier;
 	}
 	
 	/**
@@ -169,7 +169,8 @@ public abstract class AbstractSerialMeasuringDevice
 	 * @throws IOException
 	 */
 	public void setPortParams(String portName, BaudRate baudRate, PortParity parity,
-			DataBits dataBits, StopBits stopBits, LineFeed lineFeed, FlowControl flowControl)
+			DataBits dataBits, StopBits stopBits, LineFeed lineFeed, FlowControl flowControl, 
+			Double mf, Boolean reverse)
 		throws IOException
 	
 	{
@@ -179,6 +180,8 @@ public abstract class AbstractSerialMeasuringDevice
 		if(stopBits!=null)    this.stopBits = stopBits;
 		if(lineFeed!=null)    this.lineFeed = lineFeed;
 		if(flowControl!=null) this.flowControl = flowControl;
+		if(mf!=null)          this.correctionMultiplier = mf;
+		if(reverse!=null)     this.measureInReverse = reverse;
 		port = openPort(portName);		
 		addSerialSampleIOListener(this);
 	}
@@ -228,7 +231,10 @@ public abstract class AbstractSerialMeasuringDevice
 			isStopbitsEditable() ||
 			isUnitsEditable() ||
 			isLineFeedEditable()||
-			isFlowControlEditable())
+			isFlowControlEditable() ||
+			isCorrectionFactorEditable() ||
+			isReverseMeasureCapable()
+			)
 		{
 			return true;
 		}
