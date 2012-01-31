@@ -75,6 +75,8 @@ public abstract class AbstractSerialMeasuringDevice
 	protected UnitMultiplier unitMultiplier = UnitMultiplier.ZERO;
 	protected Boolean measureCumulatively = false;
 	protected Boolean measureInReverse = true;
+	protected Double correctionFactor = 1.0;
+	
 	
 	/** The previous measurement position. Used in 
 	 *  cumulative measurements */
@@ -108,6 +110,27 @@ public abstract class AbstractSerialMeasuringDevice
 	public Integer getPreviousPosition()
 	{
 		return this.prevMeasurementPosition;
+	}
+	
+	/**
+	 * Set the factor by which the data value should be
+	 * multiplied
+	 * 
+	 * @param dbl
+	 */
+	public void setCorrectionMultiplier(Double dbl)
+	{
+		this.correctionFactor = dbl;
+	}
+	
+	/**
+	 * Get the factor by which data values are multiplied
+	 * 
+	 * @return
+	 */
+	public Double getCorrectionMultipier()
+	{
+		return this.correctionFactor;
 	}
 	
 	/**
@@ -190,6 +213,7 @@ public abstract class AbstractSerialMeasuringDevice
 	public abstract Boolean isUnitsEditable();
 	public abstract Boolean isLineFeedEditable();	
 	public abstract Boolean isFlowControlEditable();
+	public abstract Boolean isCorrectionFactorEditable();
 	
 	/**
 	 * Are one or more of the port settings editable?
@@ -276,6 +300,10 @@ public abstract class AbstractSerialMeasuringDevice
 		// Reverse
 		Boolean rev = App.prefs.getBooleanPref(PrefKey.SERIAL_MEASURE_IN_REVERSE, this.getReverseMeasuring());
 		setReverseMeasuring(rev);
+		
+		// Correction Multiplier
+		Double multiplier = App.prefs.getDoublePref(PrefKey.SERIAL_MULTIPLIER, this.getCorrectionMultipier());
+		setCorrectionMultiplier(multiplier);
 		
 		openPort();
 		

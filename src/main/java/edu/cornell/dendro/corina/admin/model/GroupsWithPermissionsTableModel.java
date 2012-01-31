@@ -176,5 +176,12 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 		groupList.set(rowIndex, res.get(0));
 	}
 	
+	public WSISecurityGroup getSecurityGroupAtRow(int rowind)
+	{
+		WSIPermission perm = getWSIPermissionAt(rowind);
+		
+		return (WSISecurityGroup) perm.getSecurityUsersAndSecurityGroups().get(0);
+	}
+	
 
 }

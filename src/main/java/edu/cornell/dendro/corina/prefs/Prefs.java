@@ -123,6 +123,7 @@ public class Prefs extends AbstractSubsystem {
 		SERIAL_STOPBITS("corina.port.stopbits"),
 		SERIAL_MEASURE_CUMULATIVELY("corina.serial.measurecumulatively"),
 		SERIAL_MEASURE_IN_REVERSE("corina.serial.measurereverse"),
+		SERIAL_MULTIPLIER("corina.serial.multiplier"),
 		
 		STATS_FORMAT_TSCORE("corina.cross.tscore.format"),
 		STATS_FORMAT_RVALUE("corina.cross.rvalue.format"),
@@ -694,6 +695,15 @@ public class Prefs extends AbstractSubsystem {
 	}
 	
 	/**
+	 * Set the value of a preference to the specified double
+	 * @param pref
+	 * @param value
+	 */
+	public void setDoublePref(PrefKey pref, Double value) {
+		setPref(pref, Double.toString(value));
+	}
+	
+	/**
 	 * Set the value of a preference to the specified font
 	 * @param pref
 	 * @param value
@@ -726,6 +736,20 @@ public class Prefs extends AbstractSubsystem {
 			value = deflt;
 		
 		return value;	
+	}
+	
+	public Double getDoublePref(PrefKey key, Double deflt){
+		
+		String value = prefs.getProperty(key.getValue());
+		if (value == null)
+			return deflt;
+		try {
+			return Double.parseDouble(value);
+		} catch (NumberFormatException nfe) {
+			log.warn("Invalid double for preference '" + key.getValue() + "': " + value);
+			return deflt;
+		}
+		
 	}
 	
 	/**
@@ -946,6 +970,33 @@ public class Prefs extends AbstractSubsystem {
 	@Deprecated
 	public void setBooleanPref(String pref, boolean value) {
 		setPref(pref, Boolean.toString(value));
+	}
+	
+	/**
+	 * Set the value of a preference to the specified double
+	 * @param pref
+	 * @param value
+	 */
+	@Deprecated
+	public void setDoublePref(String pref, Double value) {
+		setPref(pref, Double.toString(value));
+	}
+	
+	
+	
+	/**
+	 * Use getPref(PrefKey, ...) instead
+	 * 
+	 * @param pref
+	 * @param deflt
+	 * @return
+	 */
+	@Deprecated
+	public Double getDoublePref(String pref, Double deflt) {
+		String value = prefs.getProperty(pref);
+		if(value == null)
+			return deflt;
+		return Double.parseDouble(value);
 	}
 	
 	/**

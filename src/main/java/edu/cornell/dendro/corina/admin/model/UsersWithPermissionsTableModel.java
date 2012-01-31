@@ -6,6 +6,7 @@ import javax.swing.table.AbstractTableModel;
 
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.WSIPermission;
+import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.I18n;
 
@@ -121,4 +122,12 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
 			default: return null;
 		}
 	}
+	
+	public WSISecurityUser getSecurityUserAtRow(int rowind)
+	{
+		WSIPermission perm = getWSIPermissionAt(rowind);
+		
+		return (WSISecurityUser) perm.getSecurityUsersAndSecurityGroups().get(0);
+	}
+	
 }

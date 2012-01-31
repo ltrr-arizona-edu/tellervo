@@ -238,5 +238,10 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 	public Boolean isReverseMeasureCapable() {
 		return false;
 	}
+	
+	@Override
+	public Boolean isCorrectionFactorEditable() {
+		return false;
+	}
 
 }

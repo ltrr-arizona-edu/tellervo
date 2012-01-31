@@ -69,6 +69,8 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	 */
 	public PermissionByEntityUI(ITridas entity) {
 		
+		
+		
 		setEntity(entity);
 
 
@@ -109,6 +111,8 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		
 		for (WSISecurityUser user : (ArrayList<WSISecurityUser>) Dictionary.getDictionaryAsArrayList("securityUserDictionary"))
 		{
+			if(!user.isIsActive()) continue;
+			
 			resource.addPermission(pEntityType, entity.getIdentifier().getValue(), user);
 		}
 		
@@ -131,6 +135,9 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		
 		permsList = resource.getAssociatedResult();
 		
+		if(tblGroupPerms!=null) tblGroupPerms.repaint();
+		if(tblUserPerms!=null) tblUserPerms.repaint();
+		
 		if(permsList.size()==0)
 		{
 			Alert.error("Error", "No records found");
@@ -149,18 +156,8 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		add(tabbedPane);
 		
-		panel_1 = new JPanel();
-		tabbedPane.addTab("User permissions", null, panel_1, null);
-		panel_1.setLayout(new BorderLayout(0, 0));
-		
-		JScrollPane scrollUser = new JScrollPane();
-		panel_1.add(scrollUser);
-		
-		tblUserPerms = new JTable(userTableModel);
-		scrollUser.setViewportView(tblUserPerms);
-		
 		panel_2 = new JPanel();
-		tabbedPane.addTab("Group permissions", null, panel_2, null);
+		tabbedPane.addTab("Group permissions", Builder.getIcon("edit_group.png", 22), panel_2, null);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
 		JScrollPane scrollGroup = new JScrollPane();
@@ -169,21 +166,35 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		tblGroupPerms = new JTable(groupTableModel);
 		scrollGroup.setViewportView(tblGroupPerms);
 		
-		tblGroupPerms.getColumnModel().getColumn(0).setPreferredWidth(10);
+		tblGroupPerms.getColumnModel().getColumn(0).setPreferredWidth(15);
 		tblGroupPerms.getColumnModel().getColumn(2).setPreferredWidth(45);
 		tblGroupPerms.getColumnModel().getColumn(3).setPreferredWidth(45);
 		tblGroupPerms.getColumnModel().getColumn(4).setPreferredWidth(45);
 		tblGroupPerms.getColumnModel().getColumn(5).setPreferredWidth(45);
 		tblGroupPerms.getColumnModel().getColumn(6).setPreferredWidth(300);
 		
-		tblUserPerms.getColumnModel().getColumn(0).setPreferredWidth(10);
+		panel_1 = new JPanel();
+		tabbedPane.addTab("User permissions", Builder.getIcon("edit_user.png", 22), panel_1, null);
+		panel_1.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane scrollUser = new JScrollPane();
+		panel_1.add(scrollUser);
+		
+		tblUserPerms = new JTable(userTableModel);
+		scrollUser.setViewportView(tblUserPerms);
+		
+		tblUserPerms.getColumnModel().getColumn(0).setPreferredWidth(15);
 		tblUserPerms.getColumnModel().getColumn(4).setPreferredWidth(45);
 		tblUserPerms.getColumnModel().getColumn(5).setPreferredWidth(45);
 		tblUserPerms.getColumnModel().getColumn(6).setPreferredWidth(45);
 		tblUserPerms.getColumnModel().getColumn(7).setPreferredWidth(45);
 		tblUserPerms.getColumnModel().getColumn(8).setPreferredWidth(300);
 	
+		tblGroupPerms.addMouseListener(this);
+		tblUserPerms.addMouseListener(this);
 
+
+		
 	}
 	
 	public ArrayList<WSIPermission> getUserPermissionsList()
@@ -196,16 +207,48 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		
-		Component comp = e.getComponent();
-	
-	/*	if((e.getClickCount()>1) && (comp instanceof JTable) && 
-			groupTableModel.isCellEditable(tblGroupPerms.getSelectedRow(), tblGroupPerms.getSelectedColumn()))   
-		{
-			groupTableModel.toggleCheckbox(tblGroupPerms.getSelectedRow(), tblGroupPerms.getSelectedColumn());
-		}*/
+		// Only worry about double clicks
+		if(e.getClickCount()<2) return;
+			
 		
+		Component comp = e.getComponent();
+		
+		if(comp instanceof JTable)
+		{
+			if(((JTable) comp).getModel() instanceof GroupsWithPermissionsTableModel)
+			{
+				WSISecurityGroup group = ((GroupsWithPermissionsTableModel)((JTable) comp).getModel()).getSecurityGroupAtRow(tblGroupPerms.getSelectedRow());
+				
+				for (WSISecurityGroup grp : (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary"))
+				{
+					if(grp.getId().equals(group.getId()))
+					{
+						group = grp;
+						break;
+					}
+				}
 
+				GroupUIView groupDialog = new GroupUIView(null, true, group);
+				groupDialog.setVisible(true);
+				
+			}
+			else if (((JTable) comp).getModel() instanceof UsersWithPermissionsTableModel)
+			{
+				WSISecurityUser user = ((UsersWithPermissionsTableModel)((JTable) comp).getModel()).getSecurityUserAtRow(tblUserPerms.getSelectedRow());
+				
+				for (WSISecurityUser usr : (ArrayList<WSISecurityUser>) Dictionary.getDictionaryAsArrayList("securityUserDictionary"))
+				{
+					if(usr.getId().equals(user.getId()))
+					{
+						user = usr;
+						break;
+					}
+				}
 
+				UserUIView userDialog = new UserUIView(null, true, user);
+				userDialog.setVisible(true);
+			}
+		}
 		
 	}
 
@@ -230,7 +273,6 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 

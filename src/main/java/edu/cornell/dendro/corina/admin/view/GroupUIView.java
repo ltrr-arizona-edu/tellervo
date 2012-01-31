@@ -37,10 +37,15 @@ import edu.cornell.dendro.corina.admin.model.SecurityMixTableModelB;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityGroupEntityResource;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JPanel;
+import javax.swing.JCheckBox;
+import java.awt.FlowLayout;
 
 
 
@@ -88,15 +93,10 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        lblId = new javax.swing.JLabel();
-        txtId = new javax.swing.JTextField();
         lblGroup = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
-        chkEnabled = new javax.swing.JCheckBox();
         scrollPane = new javax.swing.JScrollPane();
         tblGroups = new javax.swing.JTable();
-        btnDoIt = new javax.swing.JButton();
-        btnClose = new javax.swing.JButton();
 
         jLabel1.setText("jLabel1");
 
@@ -104,13 +104,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        lblId.setText("ID:");
-
-        txtId.setEditable(false);
-
         lblGroup.setText("Group name:");
-
-        chkEnabled.setText("Enabled");
 
         tblGroups.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -140,77 +134,64 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
             }
         });
         scrollPane.setViewportView(tblGroups);
-
-        btnDoIt.setText("Apply");
-
-        btnClose.setText("OK");
         
         txtDescription = new JTextField();
         txtDescription.setColumns(10);
         
         JLabel lblDescription = new JLabel("Description:");
-
-        GroupLayout layout = new GroupLayout(getContentPane());
-        layout.setHorizontalGroup(
-        	layout.createParallelGroup(Alignment.LEADING)
-        		.addGroup(layout.createSequentialGroup()
-        			.addContainerGap()
-        			.addGroup(layout.createParallelGroup(Alignment.TRAILING)
-        				.addGroup(layout.createSequentialGroup()
-        					.addGroup(layout.createParallelGroup(Alignment.TRAILING)
-        						.addGroup(layout.createSequentialGroup()
-        							.addComponent(btnDoIt)
-        							.addPreferredGap(ComponentPlacement.RELATED)
-        							.addComponent(btnClose))
-        						.addGroup(layout.createSequentialGroup()
-        							.addComponent(lblId)
-        							.addGap(64)
-        							.addComponent(txtId, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)))
-        					.addContainerGap())
-        				.addGroup(Alignment.LEADING, layout.createSequentialGroup()
-        					.addGroup(layout.createParallelGroup(Alignment.LEADING)
-        						.addComponent(lblGroup)
-        						.addComponent(lblDescription))
-        					.addGap(18)
-        					.addGroup(layout.createParallelGroup(Alignment.LEADING)
-        						.addGroup(layout.createSequentialGroup()
-        							.addComponent(txtDescription, GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
-        							.addContainerGap())
-        						.addComponent(txtName, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)))))
-        		.addGroup(layout.createSequentialGroup()
-        			.addComponent(chkEnabled)
-        			.addContainerGap(336, Short.MAX_VALUE))
-        		.addGroup(layout.createSequentialGroup()
-        			.addContainerGap()
-        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
-        			.addContainerGap())
-        );
-        layout.setVerticalGroup(
-        	layout.createParallelGroup(Alignment.LEADING)
-        		.addGroup(layout.createSequentialGroup()
-        			.addContainerGap()
-        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-        				.addComponent(lblId)
-        				.addComponent(txtId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-        			.addPreferredGap(ComponentPlacement.RELATED)
-        			.addComponent(chkEnabled)
-        			.addPreferredGap(ComponentPlacement.UNRELATED)
-        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-        				.addComponent(txtName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        				.addComponent(lblGroup))
-        			.addPreferredGap(ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
-        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-        				.addComponent(txtDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        				.addComponent(lblDescription))
-        			.addGap(18)
-        			.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE)
-        			.addPreferredGap(ComponentPlacement.UNRELATED)
-        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-        				.addComponent(btnClose)
-        				.addComponent(btnDoIt))
-        			.addContainerGap())
-        );
-        getContentPane().setLayout(layout);
+        getContentPane().setLayout(new MigLayout("", "[82px][145.00px,grow][154.00px][78px:78.00:78px]", "[23px][19px][19px][grow][][:130.00px:130px,grow][25px]"));
+        chkEnabled = new javax.swing.JCheckBox();
+        
+                chkEnabled.setText("Enabled");
+                getContentPane().add(chkEnabled, "cell 1 0,alignx left,aligny top");
+        
+        lblIcon = new JLabel("");
+        getContentPane().add(lblIcon, "cell 3 0 1 3,alignx center");
+        lblIcon.setIcon(Builder.getIcon("edit_group.png", 64));
+        lblIcon.setSize(70, 70);
+        
+        lblDefaultPermissions = new JLabel("Default Permissions:");
+        getContentPane().add(lblDefaultPermissions, "cell 0 3");
+        
+        panel_1 = new JPanel();
+        getContentPane().add(panel_1, "cell 1 3 3 1,grow");
+        panel_1.setLayout(new MigLayout("", "[][][][]", "[]"));
+        
+        chckbxCreate = new JCheckBox("Create");
+        panel_1.add(chckbxCreate, "cell 0 0");
+        
+        chckbxRead = new JCheckBox("Read");
+        panel_1.add(chckbxRead, "cell 1 0");
+        
+        chckbxUpdate = new JCheckBox("Update");
+        panel_1.add(chckbxUpdate, "cell 2 0");
+        
+        chckbxDelete = new JCheckBox("Delete");
+        panel_1.add(chckbxDelete, "cell 3 0");
+        
+        lblMemberOf = new JLabel("Member of:");
+        getContentPane().add(lblMemberOf, "cell 0 4,alignx right");
+        txtId = new javax.swing.JTextField();
+        
+                txtId.setEditable(false);
+                getContentPane().add(txtId, "cell 0 6 2 1,growx,aligny center");
+        
+        panel = new JPanel();
+        getContentPane().add(panel, "cell 2 6 2 1,alignx right,growy");
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        btnDoIt = new javax.swing.JButton();
+        panel.add(btnDoIt);
+        
+                btnDoIt.setText("Apply");
+                btnClose = new javax.swing.JButton();
+                panel.add(btnClose);
+                
+                        btnClose.setText("OK");
+        getContentPane().add(lblGroup, "cell 0 1,alignx right,aligny center");
+        getContentPane().add(lblDescription, "cell 0 2,alignx right,aligny center");
+        getContentPane().add(txtDescription, "cell 1 2 2 1,growx,aligny center");
+        getContentPane().add(txtName, "cell 1 1 2 1,growx,aligny center");
+        getContentPane().add(scrollPane, "cell 1 4 3 2,grow");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -221,20 +202,27 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
     protected javax.swing.JCheckBox chkEnabled;
     protected javax.swing.JLabel jLabel1;
     protected javax.swing.JLabel jLabel3;
-    protected javax.swing.JLabel lblId;
     protected javax.swing.JLabel lblGroup;
     protected javax.swing.JScrollPane scrollPane;
     protected javax.swing.JTable tblGroups;
     protected javax.swing.JTextField txtId;
     protected javax.swing.JTextField txtName;
     protected JTextField txtDescription;
+    private JPanel panel;
+    private JLabel lblIcon;
+    private JPanel panel_1;
+    private JCheckBox chckbxCreate;
+    private JCheckBox chckbxRead;
+    private JCheckBox chckbxUpdate;
+    private JCheckBox chckbxDelete;
+    private JLabel lblDefaultPermissions;
+    private JLabel lblMemberOf;
     // End of variables declaration//GEN-END:variables
  
     @SuppressWarnings("unchecked")
 	private void setupGUI()
     {
     	this.setLocationRelativeTo(getRootPane());
-    	this.lblId.setVisible(false);
     	this.txtId.setVisible(false);
     	    	
     	this.tblGroups.addMouseListener(this);

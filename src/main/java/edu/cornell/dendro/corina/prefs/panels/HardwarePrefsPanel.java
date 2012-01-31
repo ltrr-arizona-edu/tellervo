@@ -20,11 +20,13 @@
 package edu.cornell.dendro.corina.prefs.panels;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -34,6 +36,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
@@ -50,11 +53,14 @@ import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.StopBits
 import edu.cornell.dendro.corina.hardware.UnsupportedPortParameterException;
 import edu.cornell.dendro.corina.prefs.Prefs.PrefKey;
 import edu.cornell.dendro.corina.prefs.wrappers.CheckBoxWrapper;
+import edu.cornell.dendro.corina.prefs.wrappers.DoubleSpinnerWrapper;
 import edu.cornell.dendro.corina.prefs.wrappers.FormatWrapper;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.util.ArrayListModel;
 import java.awt.FlowLayout;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 @SuppressWarnings("serial")
 public class HardwarePrefsPanel extends AbstractPreferencesPanel{
@@ -86,6 +92,9 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	private Boolean okToUseDefaults = false;
 	private JCheckBox chkReverseMeasuring;
 	private JLabel lblReverseMeasuring;
+	private JSpinner spnMultiply;
+	private JLabel lblCorrectionFactor;
+
 	
 	
 	/**
@@ -187,16 +196,31 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     			PrefKey.SERIAL_PARITY, 
     			App.prefs.getPref(PrefKey.SERIAL_PARITY, "None"), 
     			PortParity.allValuesAsArray());
-		
-		lblLineFeed = new JLabel("Line feed:");
-		panel.add(lblLineFeed, "cell 2 4,alignx trailing");
-		cboLineFeed = new JComboBox();
-		panel.add(cboLineFeed, "cell 3 4,alignx left");
-		
-		new FormatWrapper(cboLineFeed, 
-				PrefKey.SERIAL_LINEFEED, 
-				App.prefs.getPref(PrefKey.SERIAL_LINEFEED, "CR"), 
-				LineFeed.allValuesAsArray());
+    	
+    	lblCorrectionFactor = new JLabel("Data multiplication factor:");
+    	panel.add(lblCorrectionFactor, "cell 2 4,alignx right");
+    	
+    	
+        double min = -1000.00;  
+        double value = 1.00;  
+        double max = 1000.00;  
+        double stepSize = 0.01;  
+        SpinnerNumberModel model = new SpinnerNumberModel(value, min, max, stepSize);  
+        spnMultiply = new JSpinner(model);  
+        JSpinner.NumberEditor editor = (JSpinner.NumberEditor)spnMultiply.getEditor();  
+        DecimalFormat format = editor.getFormat();  
+        format.setMinimumFractionDigits(2);  
+        editor.getTextField().setHorizontalAlignment(SwingConstants.CENTER);  
+        Dimension d = spnMultiply.getPreferredSize();  
+        d.width = 85;  
+    	
+    	
+        new DoubleSpinnerWrapper(spnMultiply, 
+        		PrefKey.SERIAL_MULTIPLIER,
+        		App.prefs.getDoublePref(PrefKey.SERIAL_MULTIPLIER, 1.00));
+        
+        
+    	panel.add(spnMultiply, "cell 3 4,growx");
 		
     	lblStopBits = new JLabel("Stop bits:");
     	panel.add(lblStopBits, "cell 0 5,alignx trailing");
@@ -224,6 +248,16 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		chkMeasureCumulatively = new JCheckBox("");
 		panel.add(chkMeasureCumulatively, "cell 3 5");
 		new CheckBoxWrapper(chkMeasureCumulatively, PrefKey.SERIAL_MEASURE_CUMULATIVELY, false);
+		
+		lblLineFeed = new JLabel("Line feed:");
+		panel.add(lblLineFeed, "cell 0 6,alignx trailing");
+		cboLineFeed = new JComboBox();
+		panel.add(cboLineFeed, "cell 1 6,alignx left");
+		
+		new FormatWrapper(cboLineFeed, 
+				PrefKey.SERIAL_LINEFEED, 
+				App.prefs.getPref(PrefKey.SERIAL_LINEFEED, "CR"), 
+				LineFeed.allValuesAsArray());
 		
 		lblReverseMeasuring = new JLabel("Reverse measuring:");
 		panel.add(lblReverseMeasuring, "cell 2 6,alignx right");
@@ -385,6 +419,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		chkMeasureCumulatively.setEnabled(device.isMeasureCumulativelyConfigurable());
 		chkReverseMeasuring.setEnabled(device.isReverseMeasureCapable());
 		
+		spnMultiply.setEnabled(device.isCorrectionFactorEditable());	
+		spnMultiply.setValue(device.getCorrectionMultipier());
 		
 		if(useDefaults)
 		{
@@ -397,6 +433,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			cboLineFeed.setSelectedItem(device.getLineFeed().toString());
 			chkMeasureCumulatively.setSelected(device.getMeasureCumulatively());
 			chkReverseMeasuring.setSelected(device.getReverseMeasuring());
+			
 		}
 		else
 		{

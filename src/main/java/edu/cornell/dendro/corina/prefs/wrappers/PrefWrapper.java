@@ -134,6 +134,8 @@ public abstract class PrefWrapper<OBJTYPE> {
 			App.prefs.setColorPref(prefName, (Color) prefValue);
 		else if(baseClass == Boolean.class)
 			App.prefs.setBooleanPref(prefName, (Boolean) prefValue);
+		else if(baseClass == Double.class)
+			App.prefs.setDoublePref(prefName, (Double) prefValue);
 		
 		valueModified = false;
 	}
@@ -151,6 +153,8 @@ public abstract class PrefWrapper<OBJTYPE> {
 			prefValue = App.prefs.getColorPref(prefName, (Color) defaultValue);
 		else if(baseClass == Boolean.class)
 			prefValue = App.prefs.getBooleanPref(prefName, (Boolean) defaultValue);
+		else if(baseClass == Double.class)
+			prefValue = App.prefs.getDoublePref(prefName, (Double) defaultValue);
 		else
 			throw new IllegalArgumentException("I don't know how to load a pref for type " + baseClass);
 	}

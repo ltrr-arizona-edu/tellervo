@@ -25,6 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.cornell.dendro.corina.admin.model.GroupsWithPermissionsTableModel;
 import edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice;
 import edu.cornell.dendro.corina.hardware.SerialSampleIOEvent;
 import gnu.io.SerialPortEvent;
@@ -65,8 +69,9 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 
 	private static final int EVE_ENQ = 5;
 	private Boolean fireOnNextValue = false;
-	
-	
+	private String previousFireState = "0";
+	private final static Logger log = LoggerFactory.getLogger(LintabDevice.class);
+
 	@Override
 	public void setDefaultPortParams()
 	{
@@ -77,6 +82,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 		flowControl = FlowControl.NONE;
 		lineFeed = LineFeed.NONE;
 		unitMultiplier = UnitMultiplier.ZERO;
+		this.correctionFactor = 2.5;
 	}
 	
 	@Override
@@ -155,6 +161,20 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 
                 String strReadBuffer = readBuffer.toString();
                 fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, String.valueOf(strReadBuffer), DataDirection.RECEIVED);
+               
+                // Ignore "0;10" data as this is a side-effect of Lintab's hardware button
+                if (strReadBuffer.equals("0;10")) return;
+                
+                // Ignore repeated 'fire' requests
+                String thisFireState = strReadBuffer.substring(strReadBuffer.indexOf(";")+1, strReadBuffer.indexOf(";")+2);
+                log.debug("-------");
+                log.debug("previous State = "+previousFireState);
+                log.debug("current  State = "+thisFireState);
+                          
+                if (previousFireState.equals("1") && thisFireState.equals("1")) return;
+                
+                previousFireState = thisFireState;
+                
             	//Chop the three characters off the right side of the string to leave the number.
             	String strReadPosition = strReadBuffer.substring(0,(strReadBuffer.length())-3);
             	// Round up to integer of 1/1000th mm
@@ -166,6 +186,9 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
             	{
             		intValue = 0 - intValue;
             	}
+            	
+            	// Apply correction factor
+            	intValue = (int) (intValue * this.correctionFactor);
             	                
 		    	//Only process the data if the add button is set and the reset button is not set.
                 if( strReadBuffer.endsWith(";10") || fireOnNextValue) 
@@ -291,6 +314,11 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 
 	@Override
 	public Boolean isReverseMeasureCapable() {
+		return true;
+	}
+	
+	@Override
+	public Boolean isCorrectionFactorEditable() {
 		return true;
 	}
 }

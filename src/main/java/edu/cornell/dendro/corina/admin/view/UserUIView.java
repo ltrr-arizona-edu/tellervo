@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle;
 import javax.swing.table.TableRowSorter;
 
+import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
 import edu.cornell.dendro.corina.admin.SetPasswordUI;
 import edu.cornell.dendro.corina.admin.control.CreateNewUserEvent;
@@ -88,7 +89,6 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     }
     
     private void internationlizeComponents() {
-        lblId.setText(I18n.getText("admin.id")+":");
         lblUser.setText(I18n.getText("login.username")+":");
         lblName.setText(I18n.getText("admin.realName")+":");
         chkEnabled.setText(I18n.getText("general.enabled"));
@@ -110,16 +110,10 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        lblId = new javax.swing.JLabel();
-        txtId = new javax.swing.JTextField();
         lblUser = new javax.swing.JLabel();
         lblName = new javax.swing.JLabel();
-        chkEnabled = new javax.swing.JCheckBox();
-        scrollPane = new javax.swing.JScrollPane();
-        tblGroups = new javax.swing.JTable();
         btnDoIt = new javax.swing.JButton();
         btnClose = new javax.swing.JButton();
-        btnSetPwd = new javax.swing.JButton();
 
         jLabel1.setText("jLabel1");
 
@@ -127,115 +121,89 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        lblId.setText("ID:");
-
-        txtId.setEditable(false);
-
         lblUser.setText("User name:");
 
         lblName.setText("Real name:");
 
-        chkEnabled.setText("Account enabled");
-
-        tblGroups.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "ID", "Group", "Description", "Member"
-            }
-        ) {
-            @SuppressWarnings("unchecked")
-			Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, true
-            };
-
-            @SuppressWarnings("unchecked")
-			public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        scrollPane.setViewportView(tblGroups);
-
         btnDoIt.setText("Apply");
 
         btnClose.setText("OK");
-
-        btnSetPwd.setText("Reset Password");
-        getContentPane().setLayout(new MigLayout("", "[81px][140px,grow][107px][73px]", "[19px][23px][19px][19px][][71px,grow][][][25px]"));
+        getContentPane().setLayout(new MigLayout("", "[81px][140px,grow][107px,grow][73px]", "[][19px][19px][71px,grow][shrink 0][shrink 0][25px]"));
+        chkEnabled = new javax.swing.JCheckBox();
         
-        panel_1 = new JPanel();
-        getContentPane().add(panel_1, "cell 1 2 3 1,grow");
-        panel_1.setLayout(new MigLayout("", "[79.00px,grow][107px,grow]", "[19px]"));
+                chkEnabled.setText("Account enabled");
+                getContentPane().add(chkEnabled, "cell 1 0,alignx left,aligny top");
         txtFirstname = new javax.swing.JTextField();
-        panel_1.add(txtFirstname, "cell 0 0,growx,aligny top");
+        getContentPane().add(txtFirstname, "cell 1 1,growx");
+        
+        lblIcon = new JLabel("");
+        lblIcon.setIcon(Builder.getIcon("edit_user.png", 64));
+        lblIcon.setSize(70, 70);
+        
+        getContentPane().add(lblIcon, "cell 3 0 1 3");
         txtLastname = new javax.swing.JTextField();
-        panel_1.add(txtLastname, "cell 1 0,growx,aligny top");
-        
-        panel_2 = new JPanel();
-        getContentPane().add(panel_2, "cell 1 3 3 1,grow");
-        panel_2.setLayout(new MigLayout("", "[140px,grow][107px][73px]", "[19px]"));
+        getContentPane().add(txtLastname, "cell 2 1,growx");
         txtUsername = new javax.swing.JTextField();
-        panel_2.add(txtUsername, "cell 0 0 3 1,growx,aligny top");
+        getContentPane().add(txtUsername, "cell 1 2 2 1,growx");
         
-        lblDefaultPermissions = new JLabel();
-        lblDefaultPermissions.setText("Default permissions:");
-        getContentPane().add(lblDefaultPermissions, "cell 0 4,aligny center");
+        lblMemberOf = new JLabel("Member of:");
+        getContentPane().add(lblMemberOf, "cell 0 3,alignx right,aligny top");
+        scrollPane = new javax.swing.JScrollPane();
+        getContentPane().add(scrollPane, "cell 1 3 3 1,grow");
+        tblGroups = new javax.swing.JTable();
         
-        panel = new JPanel();
-        panel.setBorder(null);
-        getContentPane().add(panel, "cell 1 4 3 1,grow");
-        panel.setLayout(new MigLayout("", "[][][][]", "[]"));
+                tblGroups.setModel(new javax.swing.table.DefaultTableModel(
+                    new Object [][] {
+                        {null, null, null, null},
+                        {null, null, null, null},
+                        {null, null, null, null}
+                    },
+                    new String [] {
+                        "ID", "Group", "Description", "Member"
+                    }
+                ) {
+                    @SuppressWarnings("unchecked")
+        			Class[] types = new Class [] {
+                        java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
+                    };
+                    boolean[] canEdit = new boolean [] {
+                        false, false, false, true
+                    };
         
-        cbxCreate = new JCheckBox("Create");
-        panel.add(cbxCreate, "flowx,cell 0 0");
+                    @SuppressWarnings("unchecked")
+        			public Class getColumnClass(int columnIndex) {
+                        return types [columnIndex];
+                    }
         
-        cbxRead = new JCheckBox("Read");
-        panel.add(cbxRead, "cell 1 0");
-        
-        cbxUpdate = new JCheckBox("Update");
-        panel.add(cbxUpdate, "cell 2 0");
-        
-        chkDelete = new JCheckBox("Delete");
-        panel.add(chkDelete, "cell 3 0");
-        getContentPane().add(scrollPane, "cell 0 5 4 1,grow");
+                    public boolean isCellEditable(int rowIndex, int columnIndex) {
+                        return canEdit [columnIndex];
+                    }
+                });
+                scrollPane.setViewportView(tblGroups);
         lblPassword = new javax.swing.JLabel();
         
                 lblPassword.setText("Password:");
-                getContentPane().add(lblPassword, "cell 0 6,alignx right,aligny center");
-        
-        panel_3 = new JPanel();
-        getContentPane().add(panel_3, "cell 1 6 3 1,grow");
-        panel_3.setLayout(new MigLayout("", "[140px,grow][107px][73px]", "[19px]"));
+                getContentPane().add(lblPassword, "hidemode 2,cell 0 4,alignx right,aligny center");
         txtPassword = new javax.swing.JPasswordField();
-        panel_3.add(txtPassword, "cell 0 0 3 1,growx,aligny top");
+        getContentPane().add(txtPassword, "cell 1 4 3 1,growx");
         lblPassword2 = new javax.swing.JLabel();
         
                 lblPassword2.setText("Confirm:");
-                getContentPane().add(lblPassword2, "cell 0 7,alignx right,aligny center");
-        
-        panel_4 = new JPanel();
-        getContentPane().add(panel_4, "cell 1 7 3 1,grow");
-        panel_4.setLayout(new MigLayout("", "[140px,grow][107px][73px]", "[19px]"));
+                getContentPane().add(lblPassword2, "hidemode 2,cell 0 5,alignx right,aligny center");
         txtPassword2 = new javax.swing.JPasswordField();
-        panel_4.add(txtPassword2, "cell 0 0 3 1,growx,aligny top");
-        getContentPane().add(btnSetPwd, "cell 0 8,alignx left,aligny top");
-        getContentPane().add(btnDoIt, "cell 2 8,alignx right,aligny top");
-        getContentPane().add(btnClose, "cell 3 8,alignx left,aligny top");
-        getContentPane().add(lblUser, "cell 0 3,alignx right,aligny center");
-        getContentPane().add(lblName, "cell 0 2,alignx right,aligny center");
-        getContentPane().add(lblId, "cell 0 0,alignx right,aligny center");
-        getContentPane().add(txtId, "cell 1 0 3 1,growx,aligny top");
-        getContentPane().add(chkEnabled, "cell 1 1 3 1,alignx right,aligny top");
+        getContentPane().add(txtPassword2, "cell 1 5 3 1,growx");
+        txtId = new javax.swing.JTextField();
+        
+                txtId.setEditable(false);
+                getContentPane().add(txtId, "cell 0 6,growx,aligny top");
+        btnSetPwd = new javax.swing.JButton();
+        
+                btnSetPwd.setText("Reset Password");
+                getContentPane().add(btnSetPwd, "flowx,cell 2 6,alignx left,aligny top");
+        getContentPane().add(btnDoIt, "cell 2 6,alignx right,aligny top");
+        getContentPane().add(btnClose, "cell 3 6,alignx left,aligny top");
+        getContentPane().add(lblUser, "cell 0 2,alignx right,aligny center");
+        getContentPane().add(lblName, "cell 0 1,alignx right,aligny center");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -247,7 +215,6 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     protected javax.swing.JCheckBox chkEnabled;
     protected javax.swing.JLabel jLabel1;
     protected javax.swing.JLabel jLabel3;
-    protected javax.swing.JLabel lblId;
     protected javax.swing.JLabel lblName;
     protected javax.swing.JLabel lblPassword;
     protected javax.swing.JLabel lblPassword2;
@@ -260,22 +227,13 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     protected javax.swing.JPasswordField txtPassword;
     protected javax.swing.JPasswordField txtPassword2;
     protected javax.swing.JTextField txtUsername;
-    private JPanel panel;
-    private JCheckBox cbxRead;
-    private JCheckBox cbxUpdate;
-    private JCheckBox cbxCreate;
-    private JCheckBox chkDelete;
-    private JLabel lblDefaultPermissions;
-    private JPanel panel_1;
-    private JPanel panel_2;
-    private JPanel panel_3;
-    private JPanel panel_4;
+    private JLabel lblIcon;
+    private JLabel lblMemberOf;
     // End of variables declaration//GEN-END:variables
  
 	private void setupGUI()
     {
     	this.setLocationRelativeTo(getRootPane());
-    	this.lblId.setVisible(false);
     	this.txtId.setVisible(false);
     	    	
     	this.tblGroups.addMouseListener(this);
