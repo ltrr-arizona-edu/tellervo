@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.WSIPermission;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
@@ -14,26 +17,58 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 	private ArrayList<WSIPermission> userList;
+	private final static Logger log = LoggerFactory.getLogger(UsersWithPermissionsTableModel.class);
+
     private final String[] columnNames = {
             I18n.getText("dbbrowser.hash"),
             I18n.getText("admin.user"),
-            I18n.getText("admin.firstName"),
-            I18n.getText("admin.lastName"),
             I18n.getText("admin.create"),
             I18n.getText("admin.read"),
             I18n.getText("admin.update"),
-            I18n.getText("admin.delete"), 
+            I18n.getText("admin.delete"),
+            I18n.getText("permission.denied"), 
             I18n.getText("permission.decidedby"),
         };
 	
     
     public UsersWithPermissionsTableModel(ArrayList<WSIPermission> list)
     {
+    	setup(list, true);
+    }
+    
+    public UsersWithPermissionsTableModel(ArrayList<WSIPermission> list, Boolean hideNoAccessUsers)
+    {
+    	setup(list, hideNoAccessUsers);
+    }
+    
+    private void setup(ArrayList<WSIPermission> list, Boolean hideNoAccessUsers)
+    {
     	userList = new ArrayList<WSIPermission>();
     	
     	// Remove any groups from the list as we're not interested in these
     	for(WSIPermission perm : list)
     	{
+    		
+    		log.debug("Permissions: o "+perm.isPermissionToCreate()+", "
+    				+perm.isPermissionToRead()+", "
+    				+perm.isPermissionToUpdate()+", "
+    				+perm.isPermissionToDelete()+", ");
+    		
+    		// If requested, skip over users with no access 
+    		if(perm.isPermissionToCreate()==false && 
+    		   perm.isPermissionToRead()  ==false &&
+    		   perm.isPermissionToUpdate()==false && 
+    		   perm.isPermissionToUpdate()==false &&
+    		   hideNoAccessUsers)
+    		{
+    			continue;
+    		}
+    		else if (perm.isPermissionDenied())
+    		{
+    			continue;
+    		}
+
+    		
     		WSIPermission permclone = (WSIPermission) perm.clone();
     		permclone.getSecurityUsersAndSecurityGroups().clear();
     		
@@ -50,7 +85,6 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
     			userList.add(permclone);
     		}
     	}
-    	
     }
     
 	@Override
@@ -69,11 +103,11 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
 
 	@Override
     public Class<?> getColumnClass(int c) {
-    	if (c==8)
+    	if (c==7)
     	{
     		return String.class;
     	}
-    	else if(c>3)
+    	else if(c>1)
     	{
     		return Boolean.class;
     	} 
@@ -111,14 +145,13 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
     	
 		switch (columnIndex) {
 			case 0: return usr.getId();
-			case 1: return usr.getUsername();
-			case 2: return usr.getFirstName();
-			case 3: return usr.getLastName();
-			case 4: return permission.isPermissionToCreate();
-			case 5: return permission.isPermissionToRead();
-			case 6: return permission.isPermissionToUpdate();
-			case 7: return permission.isPermissionToDelete();
-			case 8: return permission.getDecidedBy();
+			case 1: return usr.getLastName()+", " + usr.getFirstName();
+			case 2: return permission.isPermissionToCreate();
+			case 3: return permission.isPermissionToRead();
+			case 4: return permission.isPermissionToUpdate();
+			case 5: return permission.isPermissionToDelete();
+			case 6: return permission.isPermissionDenied();
+			case 7: return permission.getDecidedBy();
 			default: return null;
 		}
 	}
@@ -130,4 +163,5 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
 		return (WSISecurityUser) perm.getSecurityUsersAndSecurityGroups().get(0);
 	}
 	
+
 }

@@ -2,6 +2,8 @@ package edu.cornell.dendro.corina.admin.view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import edu.cornell.dendro.corina.schema.WSIBox;
 import edu.cornell.dendro.corina.schema.WSIPermission;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
+import edu.cornell.dendro.corina.tridasv2.LabCode;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
@@ -50,6 +53,10 @@ import javax.swing.table.TableColumn;
 
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JTabbedPane;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 public class PermissionByEntityUI extends JPanel implements MouseListener{
 
@@ -61,20 +68,26 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	private ArrayList<WSIPermission> permsList;
 	private JTable tblGroupPerms;
 	private JTabbedPane tabbedPane;
-	private JPanel panel_1;
-	private JPanel panel_2;
+	private JPanel panelUsers;
+	private JPanel panelGroups;
+	private JButton btnEditGroup;
+	private JButton btnRevertToDefault;
+	private JButton btnEditUser;
+	private JPanel panelTitle;
+	private JLabel lblGroupPermissions;
+	private JPanel panelIcon;
+	private JLabel lblIcon;
+	private JTextArea txtDescription;
+	private JLabel lblPermissionsInfoFor;
+	private JTextField txtLabCode;
+	private JButton btnGroupRefresh;
+	private JButton btnUserRefresh;
 
 	/**
 	 * Create the panel.
 	 */
 	public PermissionByEntityUI(ITridas entity) {
-		
-		
-		
 		setEntity(entity);
-
-
-
 	}
 	
 
@@ -145,56 +158,160 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		}
 	}
 	
+	
+	
 	public void setEntity(ITridas entity)
 	{
 		lookupUsersAndGroups(entity);
 		
 		userTableModel = new UsersWithPermissionsTableModel(permsList);
 		groupTableModel = new GroupsWithPermissionsTableModel(permsList);
-		setLayout(new BorderLayout(0, 0));
+		setLayout(new MigLayout("", "[][grow]", "[86px][28.00][328px,grow]"));
+		
+		lblPermissionsInfoFor = new JLabel("Permissions info for:");
+		add(lblPermissionsInfoFor, "cell 0 1,alignx trailing");
+		
+		// TODO : make this code pretty...
+		txtLabCode = new JTextField();	
+		txtLabCode.setText(entity.getTitle());
+		txtLabCode.setFocusable(false);
+		
+		txtLabCode.setEditable(false);
+		add(txtLabCode, "cell 1 1,growx");
+		txtLabCode.setColumns(10);
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		add(tabbedPane);
+		add(tabbedPane, "cell 0 2 2 1,grow");
 		
-		panel_2 = new JPanel();
-		tabbedPane.addTab("Group permissions", Builder.getIcon("edit_group.png", 22), panel_2, null);
-		panel_2.setLayout(new BorderLayout(0, 0));
+		panelGroups = new JPanel();
+		tabbedPane.addTab("Group permissions", Builder.getIcon("edit_group.png", 22), panelGroups, null);
+		panelGroups.setLayout(new MigLayout("", "[648px,grow]", "[381px,grow][]"));
 		
 		JScrollPane scrollGroup = new JScrollPane();
-		panel_2.add(scrollGroup);
+		panelGroups.add(scrollGroup, "cell 0 0,grow");
 		
 		tblGroupPerms = new JTable(groupTableModel);
 		scrollGroup.setViewportView(tblGroupPerms);
 		
+		btnEditGroup = new JButton("View / Edit Group");
+		btnEditGroup.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				editSelectedGroup();
+				
+			}
+		});
+		panelGroups.add(btnEditGroup, "flowx,cell 0 1");
+		
+		btnRevertToDefault = new JButton("Revert to database defaults");
+		btnRevertToDefault.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resetPermissionsForCurrentGroup();
+			}
+			
+		});
+		panelGroups.add(btnRevertToDefault, "cell 0 1");
+		
+		btnGroupRefresh = new JButton("Refresh");
+		btnGroupRefresh.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				groupTableModel.fireTableDataChanged();	
+			}
+			
+		});
+		panelGroups.add(btnGroupRefresh, "cell 0 1");
+		
 		tblGroupPerms.getColumnModel().getColumn(0).setPreferredWidth(15);
+		tblGroupPerms.getColumnModel().getColumn(1).setPreferredWidth(100);
 		tblGroupPerms.getColumnModel().getColumn(2).setPreferredWidth(45);
 		tblGroupPerms.getColumnModel().getColumn(3).setPreferredWidth(45);
 		tblGroupPerms.getColumnModel().getColumn(4).setPreferredWidth(45);
 		tblGroupPerms.getColumnModel().getColumn(5).setPreferredWidth(45);
-		tblGroupPerms.getColumnModel().getColumn(6).setPreferredWidth(300);
+		tblGroupPerms.getColumnModel().getColumn(6).setPreferredWidth(45);
+		tblGroupPerms.getColumnModel().getColumn(7).setPreferredWidth(300);
 		
-		panel_1 = new JPanel();
-		tabbedPane.addTab("User permissions", Builder.getIcon("edit_user.png", 22), panel_1, null);
-		panel_1.setLayout(new BorderLayout(0, 0));
+		panelUsers = new JPanel();
+		tabbedPane.addTab("Users with access", Builder.getIcon("edit_user.png", 22), panelUsers, null);
+		panelUsers.setLayout(new MigLayout("", "[648px,grow]", "[381px,grow][]"));
 		
 		JScrollPane scrollUser = new JScrollPane();
-		panel_1.add(scrollUser);
+		panelUsers.add(scrollUser, "cell 0 0,grow");
 		
 		tblUserPerms = new JTable(userTableModel);
 		scrollUser.setViewportView(tblUserPerms);
 		
+		btnEditUser = new JButton("View / Edit User");
+		btnEditUser.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				editSelectedUser();
+				
+			}
+		});
+		panelUsers.add(btnEditUser, "flowx,cell 0 1");
+		
+		btnUserRefresh = new JButton("Refresh");
+		btnUserRefresh.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				userTableModel.fireTableDataChanged();	
+			}
+			
+		});
+		panelUsers.add(btnUserRefresh, "cell 0 1");
+		
 		tblUserPerms.getColumnModel().getColumn(0).setPreferredWidth(15);
+		tblUserPerms.getColumnModel().getColumn(1).setPreferredWidth(100);
+		tblUserPerms.getColumnModel().getColumn(2).setPreferredWidth(45);
+		tblUserPerms.getColumnModel().getColumn(3).setPreferredWidth(45);
 		tblUserPerms.getColumnModel().getColumn(4).setPreferredWidth(45);
 		tblUserPerms.getColumnModel().getColumn(5).setPreferredWidth(45);
 		tblUserPerms.getColumnModel().getColumn(6).setPreferredWidth(45);
-		tblUserPerms.getColumnModel().getColumn(7).setPreferredWidth(45);
-		tblUserPerms.getColumnModel().getColumn(8).setPreferredWidth(300);
+		tblUserPerms.getColumnModel().getColumn(7).setPreferredWidth(300);
 	
 		tblGroupPerms.addMouseListener(this);
 		tblUserPerms.addMouseListener(this);
-
-
 		
+		panelTitle = new JPanel();
+		add(panelTitle, "cell 0 0 2 1,growx,aligny top");
+		panelTitle.setBackground(Color.WHITE);
+		panelTitle.setLayout(new MigLayout("", "[411.00,grow][]", "[][grow]"));
+		
+		lblGroupPermissions = new JLabel("Access Permissions");
+		lblGroupPermissions.setFont(new Font("Dialog", Font.BOLD, 14));
+		panelTitle.add(lblGroupPermissions, "flowy,cell 0 0");
+		
+		panelIcon = new JPanel();
+		panelIcon.setBackground(Color.WHITE);
+		panelTitle.add(panelIcon, "cell 1 0 1 2,grow");
+		
+		lblIcon = new JLabel();
+		lblIcon.setIcon(Builder.getIcon("trafficlight.png", 64));
+		panelIcon.add(lblIcon);
+		
+		txtDescription = new JTextArea();
+		txtDescription.setBorder(null);
+		txtDescription.setEditable(false);
+		txtDescription.setFocusable(false);
+		txtDescription.setFont(new Font("Dialog", Font.PLAIN, 10));
+		txtDescription.setLineWrap(true);
+		txtDescription.setWrapStyleWord(true);
+		txtDescription.setText("Permissions are set on groups, not users.  You can set: create; read; " +
+				"update; and delete permissions separately.  Permissions are inherited from the default " +
+				"database permissions given to the group (editable in the main group dialog). If you " +
+				"change permissions here you will override the access for the current entity and any " +
+				"child entities in the database. " +
+				"The users tab shows the current list of users who have permission to access this " +
+				"entity in some way.");
+		panelTitle.add(txtDescription, "cell 0 1,grow");
+				
 	}
 	
 	public ArrayList<WSIPermission> getUserPermissionsList()
@@ -203,52 +320,77 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	}
 
 
+	private void editSelectedGroup()
+	{
+				
+		WSISecurityGroup group = groupTableModel.getSecurityGroupAtRow(tblGroupPerms.getSelectedRow());
+		
+		if(group==null) return;
+		
+		for (WSISecurityGroup grp : (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary"))
+		{
+			if(grp.getId().equals(group.getId()))
+			{
+				group = grp;
+				break;
+			}
+		}
 
+		GroupUIView groupDialog = new GroupUIView(null, true, group, groupTableModel.getWSIPermissionAt(tblGroupPerms.getSelectedRow()));
+		groupDialog.setVisible(true);
+	}
+
+	private void editSelectedUser()
+	{
+		WSISecurityUser user = userTableModel.getSecurityUserAtRow(tblUserPerms.getSelectedRow());
+		
+		for (WSISecurityUser usr : (ArrayList<WSISecurityUser>) Dictionary.getDictionaryAsArrayList("securityUserDictionary"))
+		{
+			if(usr.getId().equals(user.getId()))
+			{
+				user = usr;
+				break;
+			}
+		}
+
+		UserUIView userDialog = new UserUIView(null, true, user);
+		userDialog.setVisible(true);
+	}
+	
+	private void resetPermissionsForCurrentGroup()
+	{
+		groupTableModel.setRowToDefaultValues(tblGroupPerms.getSelectedRow());
+		
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		
+		
+		/*
+		 * Disable double clicking to edit for now as it is confusing for the user
+		 * 
+		 * 
+		 
 		// Only worry about double clicks
 		if(e.getClickCount()<2) return;
-			
-		
+		 
 		Component comp = e.getComponent();
 		
 		if(comp instanceof JTable)
 		{
 			if(((JTable) comp).getModel() instanceof GroupsWithPermissionsTableModel)
 			{
-				WSISecurityGroup group = ((GroupsWithPermissionsTableModel)((JTable) comp).getModel()).getSecurityGroupAtRow(tblGroupPerms.getSelectedRow());
-				
-				for (WSISecurityGroup grp : (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary"))
-				{
-					if(grp.getId().equals(group.getId()))
-					{
-						group = grp;
-						break;
-					}
-				}
-
-				GroupUIView groupDialog = new GroupUIView(null, true, group);
-				groupDialog.setVisible(true);
+				editSelectedGroup();
 				
 			}
 			else if (((JTable) comp).getModel() instanceof UsersWithPermissionsTableModel)
 			{
-				WSISecurityUser user = ((UsersWithPermissionsTableModel)((JTable) comp).getModel()).getSecurityUserAtRow(tblUserPerms.getSelectedRow());
-				
-				for (WSISecurityUser usr : (ArrayList<WSISecurityUser>) Dictionary.getDictionaryAsArrayList("securityUserDictionary"))
-				{
-					if(usr.getId().equals(user.getId()))
-					{
-						user = usr;
-						break;
-					}
-				}
-
-				UserUIView userDialog = new UserUIView(null, true, user);
-				userDialog.setVisible(true);
+				editSelectedUser();
 			}
-		}
+		}*/
+		
+		
 		
 	}
 

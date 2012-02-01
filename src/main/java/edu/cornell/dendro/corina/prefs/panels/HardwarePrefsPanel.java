@@ -118,7 +118,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 		panel_1 = new JPanel();
 		panel.add(panel_1, "cell 1 0 3 1,grow");
-		panel_1.setLayout(new MigLayout("", "[32px][94px][147px,grow,fill]", "[25px]"));
+		panel_1.setLayout(new MigLayout("", "[32px][32.00px,grow][147px,fill]", "[25px]"));
 		cboPlatformType = new JComboBox();
 		panel_1.add(cboPlatformType, "cell 0 0,alignx left,aligny top");
 		
@@ -137,7 +137,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     	});
     	
     	btnDefaults = new JButton("Default port settings");
-    	panel_1.add(btnDefaults, "cell 1 0,alignx left,aligny top");
+    	panel_1.add(btnDefaults, "cell 2 0,alignx right,aligny top");
     	btnDefaults.addActionListener(new ActionListener(){
 
 			@Override

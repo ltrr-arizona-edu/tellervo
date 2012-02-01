@@ -36,9 +36,13 @@ import javax.swing.table.TableRowSorter;
 import edu.cornell.dendro.corina.admin.model.SecurityMixTableModelB;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
+import edu.cornell.dendro.corina.schema.PermissionsEntityType;
+import edu.cornell.dendro.corina.schema.WSIPermission;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
+import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.wsi.corina.CorinaResourceAccessDialog;
+import edu.cornell.dendro.corina.wsi.corina.resources.PermissionsResource;
 import edu.cornell.dendro.corina.wsi.corina.resources.SecurityGroupEntityResource;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
@@ -59,6 +63,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
     
 	private static final long serialVersionUID = 1L;
 	WSISecurityGroup group = new WSISecurityGroup();
+	WSIPermission defaultPermissions = null;
 	Boolean isNewGroup = true;
 	private SecurityMixTableModelB groupsModel;
 	private TableRowSorter<SecurityMixTableModelB> groupsSorter;
@@ -80,6 +85,15 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
     	isNewGroup = false;
     	setupGUI();
 
+    }
+    
+    public GroupUIView(JDialog parent, boolean modal, WSISecurityGroup group, WSIPermission perm) {
+        super(parent, modal);
+        this.group = group;
+        this.defaultPermissions = perm;
+        initComponents();
+    	isNewGroup = false;
+    	setupGUI();
     }
     
     /** This method is called from within the constructor to
@@ -155,7 +169,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         
         panel_1 = new JPanel();
         getContentPane().add(panel_1, "cell 1 3 3 1,grow");
-        panel_1.setLayout(new MigLayout("", "[][][][]", "[]"));
+        panel_1.setLayout(new MigLayout("", "[][][][][]", "[]"));
         
         chckbxCreate = new JCheckBox("Create");
         panel_1.add(chckbxCreate, "cell 0 0");
@@ -169,7 +183,21 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         chckbxDelete = new JCheckBox("Delete");
         panel_1.add(chckbxDelete, "cell 3 0");
         
-        lblMemberOf = new JLabel("Member of:");
+        chckbxDenied = new JCheckBox("Denied");
+        
+        chckbxDenied.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				setCheckBoxes();
+			}
+        	
+        });
+        
+        
+        panel_1.add(chckbxDenied, "cell 4 0");
+        
+        lblMemberOf = new JLabel("List of members:");
         getContentPane().add(lblMemberOf, "cell 0 4,alignx right");
         txtId = new javax.swing.JTextField();
         
@@ -194,6 +222,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         getContentPane().add(scrollPane, "cell 1 4 3 2,grow");
 
         pack();
+        setCheckBoxes();
     }// </editor-fold>//GEN-END:initComponents
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -215,15 +244,60 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
     private JCheckBox chckbxRead;
     private JCheckBox chckbxUpdate;
     private JCheckBox chckbxDelete;
+    private JCheckBox chckbxDenied;
     private JLabel lblDefaultPermissions;
     private JLabel lblMemberOf;
+
     // End of variables declaration//GEN-END:variables
  
+    private void setCheckBoxes()
+    {
+    	
+    	if(chckbxDenied.isSelected())
+    	{
+    		chckbxCreate.setSelected(false);
+    		chckbxRead.setSelected(false);
+    		chckbxUpdate.setSelected(false);
+    		chckbxDelete.setSelected(false);
+    	}
+    	
+		chckbxCreate.setEnabled(!chckbxDenied.isSelected());
+		chckbxRead.setEnabled(!chckbxDenied.isSelected());
+		chckbxUpdate.setEnabled(!chckbxDenied.isSelected());
+		chckbxDelete.setEnabled(!chckbxDenied.isSelected());
+		
+    }
+    
+    private void setPermissionsFromWS()
+    {
+		
+		// Query db 
+    	
+		PermissionsResource resource = new PermissionsResource(PermissionsEntityType.DEFAULT,
+				null, group);
+		
+
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			Alert.error("Error", "Error getting permissions info");
+			return;
+		}
+		
+		ArrayList<WSIPermission> list = resource.getAssociatedResult();
+		
+		this.defaultPermissions = list.get(0);
+    }
+    
     @SuppressWarnings("unchecked")
 	private void setupGUI()
     {
     	this.setLocationRelativeTo(getRootPane());
     	this.txtId.setVisible(false);
+    	
     	    	
     	this.tblGroups.addMouseListener(this);
 
@@ -233,17 +307,36 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         	btnDoIt.setText("Create");
         	btnClose.setText("Close");
         	chkEnabled.setSelected(true);
+        	if(defaultPermissions==null) defaultPermissions = new WSIPermission();
     	}
     	else
     	{
         	this.setTitle("Edit group");
         	btnDoIt.setText("Apply");
         	btnClose.setText("Close");
+        	
+        	if(defaultPermissions==null)
+        	{
+        		setPermissionsFromWS();
+        	}
+        	
+        	// Set values of forms according to group
 	    	if(group.isSetName()) txtName.setText(group.getName());
 	    	if(group.isSetId()) 		  txtId.setText(group.getId());
 	    	if(group.isSetName())  txtName.setText(group.getName());
 	    	if(group.isSetDescription()) txtDescription.setText(group.getDescription());
 	    	if(group.isSetIsActive())  chkEnabled.setSelected(group.isIsActive());
+	    	
+	    	//Set values of forms from permissions
+	    	if(defaultPermissions!=null)
+	    	{
+		    	this.chckbxCreate.setSelected(defaultPermissions.isPermissionToCreate());
+		    	this.chckbxRead.setSelected(defaultPermissions.isPermissionToRead());
+		    	this.chckbxUpdate.setSelected(defaultPermissions.isPermissionToUpdate());
+		    	this.chckbxDelete.setSelected(defaultPermissions.isPermissionToDelete());
+		    	this.chckbxDenied.setSelected(defaultPermissions.isPermissionDenied());
+	    	}
+	    	
     	}
     	
         // Populate groups list
@@ -276,7 +369,11 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 		group.setName(txtName.getText());
 		group.setIsActive(this.chkEnabled.isSelected());
 		group.setDescription(this.txtDescription.getText());
-		
+		defaultPermissions.setPermissionDenied(this.chckbxDenied.isSelected());
+		defaultPermissions.setPermissionToCreate(this.chckbxCreate.isSelected());
+		defaultPermissions.setPermissionToRead(this.chckbxRead.isSelected());
+		defaultPermissions.setPermissionToUpdate(this.chckbxUpdate.isSelected());
+		defaultPermissions.setPermissionToDelete(this.chckbxDelete.isSelected());		
 		
 		if(isNewGroup)
 		{
@@ -290,11 +387,14 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 			if(accdialog.isSuccessful())
 			{
 				rsrc.getAssociatedResult();
-				dispose();
+				
 			}
-			
-			JOptionPane.showMessageDialog(this, "Error creating group.  Make sure the groupname is unique." + accdialog.getFailException().
+			else
+			{
+				JOptionPane.showMessageDialog(this, "Error creating group.  Make sure the groupname is unique." + accdialog.getFailException().
 					getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 
 		}
 		else 
@@ -312,12 +412,27 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 			{
 				rsrc.getAssociatedResult();
 			}
-			
-			JOptionPane.showMessageDialog(this, "Error updating group: " + accdialog.getFailException().
-					getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			else
+			{
+				JOptionPane.showMessageDialog(this, "Error updating group: " + accdialog.getFailException().
+						getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 		}
 		
-
+		// Now set the default permissions
+		PermissionsResource resource = new PermissionsResource(defaultPermissions);
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			Alert.error("Error", "Error setting permissions info");
+			return;
+		}
+		
+		dispose();
 	}
 
 	@Override

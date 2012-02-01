@@ -29,7 +29,8 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
             I18n.getText("admin.create"),
             I18n.getText("admin.read"),
             I18n.getText("admin.update"),
-            I18n.getText("admin.delete"), 
+            I18n.getText("admin.delete"),
+            I18n.getText("permission.denied"), 
             I18n.getText("permission.decidedby"),
         };
 	
@@ -75,7 +76,7 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 
 	@Override
     public Class<?> getColumnClass(int c) {
-    	if (c==6)
+    	if (c==7)
     	{
     		return String.class;
     	}
@@ -102,7 +103,25 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 	@Override
 	public boolean isCellEditable(int row, int col)
 	{
+		// Do not allow admin row to be edited
+		if(getValueAt(row, 0).equals("1"))
+		{
+			return false;
+		}
+		
+		
 		if(col>=2 && col <=5)
+		{
+			if(getValueAt(row, 6).equals(true))
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else if (col ==6)
 		{
 			return true;
 		}
@@ -134,9 +153,42 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 			case 3: return permission.isPermissionToRead();
 			case 4: return permission.isPermissionToUpdate();
 			case 5: return permission.isPermissionToDelete();
-			case 6: return permission.getDecidedBy();
+			case 6: return permission.isPermissionDenied();
+			case 7: return permission.getDecidedBy();
 			default: return null;
 		}
+	}
+	
+	public void setRowToDefaultValues(int rowIndex)
+	{
+		WSIPermission permission = getWSIPermissionAt(rowIndex);
+		permission.setPermissionToCreate(false);
+	    permission.setPermissionToRead(false); 
+	    permission.setPermissionToUpdate(false); 
+	    permission.setPermissionToDelete(false); 
+	    permission.setPermissionDenied(false);
+	    permission.setDecidedBy(null);
+		
+	    PermissionsResource resource = new PermissionsResource(permission);
+		
+		// Query db 
+		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting permissions info");
+			Alert.error("Error", "Error getting permissions info");
+			return;
+		}
+		
+		ArrayList<WSIPermission> res = resource.getAssociatedResult();
+		
+		groupList.set(rowIndex, res.get(0));
+		
+		fireTableDataChanged();
+	    
 	}
 	
 	@Override
@@ -153,6 +205,13 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 		case 3: permission.setPermissionToRead(!oldval); break;
 		case 4: permission.setPermissionToUpdate(!oldval); break;
 		case 5: permission.setPermissionToDelete(!oldval); break;
+		case 6: 
+			permission.setPermissionDenied(!oldval);
+			permission.setPermissionToCreate(oldval);
+			permission.setPermissionToRead(oldval);
+			permission.setPermissionToUpdate(oldval);
+			permission.setPermissionToDelete(oldval);
+			break;
 		}
 		
 		permission.setDecidedBy(null);
@@ -174,6 +233,8 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 		ArrayList<WSIPermission> res = resource.getAssociatedResult();
 		
 		groupList.set(rowIndex, res.get(0));
+		
+		fireTableDataChanged();
 	}
 	
 	public WSISecurityGroup getSecurityGroupAtRow(int rowind)

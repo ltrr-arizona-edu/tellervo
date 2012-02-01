@@ -82,12 +82,12 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 		flowControl = FlowControl.NONE;
 		lineFeed = LineFeed.NONE;
 		unitMultiplier = UnitMultiplier.ZERO;
-		this.correctionMultiplier = 2.5;
+		this.correctionMultiplier = 1.0;
 	}
 	
 	@Override
 	public String toString() {
-		return "LINTAB 6 with ASCII adapter";
+		return "LINTAB with ASCII adapter";
 	}
 
 	@Override

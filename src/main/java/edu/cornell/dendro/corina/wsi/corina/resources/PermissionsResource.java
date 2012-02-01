@@ -79,6 +79,8 @@ public class PermissionsResource extends CorinaAssociatedResource<ArrayList<WSIP
 	 */
 	public PermissionsResource(WSIPermission permission){
 		super(getXMLName(new WSIPermission()), CorinaRequestType.CREATE);
+		
+		permission.setDecidedBy(null);		
 		this.perms.add(permission);
 	}
 	
@@ -95,10 +97,18 @@ public class PermissionsResource extends CorinaAssociatedResource<ArrayList<WSIP
 			return;
 		}
 		
+		// Kludge alert!!
+		// Override default null entity ids with a fake 
+		if(pEntityID == null && pEntityType.equals(PermissionsEntityType.DEFAULT))
+		{
+			pEntityID = "ae68d6d2-2294-11e1-9c20-4ffbb19115a7";
+		}
+		
 		WSIPermission perm = new WSIPermission();
 		
 		WSIPermission.Entity entity = new WSIPermission.Entity();
 		entity.setType(pEntityType);
+		
 		entity.setId(pEntityID);
 		
 		ArrayList<WSIPermission.Entity> entities = new ArrayList<WSIPermission.Entity>();

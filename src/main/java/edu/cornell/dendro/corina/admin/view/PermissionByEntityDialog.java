@@ -2,6 +2,8 @@ package edu.cornell.dendro.corina.admin.view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -12,7 +14,7 @@ import org.tridas.interfaces.ITridas;
 
 import edu.cornell.dendro.corina.ui.Builder;
 
-public class PermissionByEntityDialog extends JDialog {
+public class PermissionByEntityDialog extends JDialog implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
@@ -33,6 +35,7 @@ public class PermissionByEntityDialog extends JDialog {
 			{
 				JButton cancelButton = new JButton("Close");
 				cancelButton.setActionCommand("Cancel");
+				cancelButton.addActionListener(this);
 				buttonPane.add(cancelButton);
 			}
 		}
@@ -50,16 +53,27 @@ public class PermissionByEntityDialog extends JDialog {
 		setIconImage(Builder.getApplicationIcon());
 		getContentPane().add(panel);
 		pack();
-		setSize(750, 200);
+		setSize(770, 500);
 		
 		setLocationRelativeTo(null);
 		setVisible(true);
+		
+		
 		
 	}
 	
 	public static void showDialog(ITridas entity)
 	{
-		PermissionByEntityDialog dialog = new PermissionByEntityDialog(entity);
+		new PermissionByEntityDialog(entity);
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent ae) {
+		if(ae.getActionCommand().equals("Cancel"))
+		{
+			dispose();
+		}
 		
 	}
 

@@ -711,6 +711,7 @@
 				<xs:element name="permissionToRead" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="permissionToUpdate" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="permissionToDelete" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="permissionDenied" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="entity" minOccurs="1" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:attribute name="type" type="permissionsEntityType" use="required"/>
