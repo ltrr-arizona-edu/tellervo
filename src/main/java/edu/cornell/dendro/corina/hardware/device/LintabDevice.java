@@ -70,6 +70,8 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	private static final int EVE_ENQ = 5;
 	private Boolean fireOnNextValue = false;
 	private String previousFireState = "0";
+	private Boolean resetting = false;
+	int resetCounter = 0;
 	private final static Logger log = LoggerFactory.getLogger(LintabDevice.class);
 
 	@Override
@@ -174,6 +176,26 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
                 
             	//Chop the three characters off the right side of the string to leave the number.
             	String strReadPosition = strReadBuffer.substring(0,(strReadBuffer.length())-3);
+                
+            	// Check that Lintab has actually reset when we asked.  Sometimes if a hardware
+            	// switch is used quickly, it doesn't hear the reset request
+                if(resetting)
+                {
+                	if(!strReadPosition.equals("0"))
+                	{
+                		log.debug("Platform reset request ignored... retrying (attempt "+resetCounter+")");
+                		zeroMeasurement();
+                		return;
+                	}
+                	else if (resetCounter>10)
+                	{
+                		log.error("Lintab appears to be continually ignoring reset requests!");
+                	}
+
+                	resetRequestTrack(false);
+                	
+                }
+                
             	// Round up to integer of 1/1000th mm
             	Float fltValue = new Float(strReadPosition);
             	Integer intValue = Math.round(fltValue);
@@ -213,6 +235,27 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	}
 	
 	/**
+	 * Lintab boxes sometimes ignore reset requests, so we need to ask several
+	 * times to make sure it is accepted.  This function keeps track of requests, 
+	 * to ensure we don't enter an infinite loop. 
+	 * 
+	 * @param reset
+	 */
+	private void resetRequestTrack(Boolean reset)
+	{
+		if (reset == true)
+		{
+			resetting = true;
+			resetCounter++;
+		}
+		else
+		{
+			resetting = false;
+			resetCounter = 0;
+		}
+	}
+	
+	/**
 	 * Send zero command to LINTAB 6
 	 */
 	@Override
@@ -220,6 +263,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	{
 
 		String strCommand = "RESET";
+		resetRequestTrack(true);
 		this.sendData(strCommand);
 	}
 	
