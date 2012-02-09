@@ -39,7 +39,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import edu.cornell.dendro.corina.admin.control.UpdateUserEvent;
-import edu.cornell.dendro.corina.admin.model.MyNode;
+import edu.cornell.dendro.corina.admin.model.UserGroupNode;
 import edu.cornell.dendro.corina.admin.model.TransferableGroup;
 import edu.cornell.dendro.corina.admin.model.TransferableUser;
 import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
@@ -51,7 +51,7 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 
 	private static final long serialVersionUID = 1L;
 	private TreePath SelectedTreePath = null;
-	private MyNode SelectedNode = null;
+	private UserGroupNode SelectedNode = null;
 	private DragSource dragSource = null;
 
 	/**
@@ -77,15 +77,17 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 
 	/** DragGestureListener interface method */
 	public void dragGestureRecognized(DragGestureEvent e) {
-		MyNode dragNode = getSelectedNode();
+		
+		// Disable for now
+		/*MyNode dragNode = getSelectedNode();
 		if (dragNode != null) {
 	        Transferable transferable = (Transferable) dragNode.getUserObject();
 			Cursor cursor = DragSource.DefaultMoveNoDrop;
 			dragSource.startDrag(e, cursor, transferable, this);
-		}
+		}*/
 	}
 
-	public MyNode getSelectedNode() {
+	public UserGroupNode getSelectedNode() {
 		return SelectedNode;
 	}
 
@@ -104,13 +106,13 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 		// get new parent node
 		Point loc = e.getLocation();
 		TreePath destinationPath = getPathForLocation(loc.x, loc.y);
-		MyNode newParent = ((MyNode) destinationPath.getLastPathComponent());
+		UserGroupNode newParent = ((UserGroupNode) destinationPath.getLastPathComponent());
 
 		//check if it's a valid drop
 		if(testDropTarget(destinationPath, SelectedTreePath)){
 			
-			MyNode newChild = (MyNode) getSelectedNode();
-			MyNode oldParent = (MyNode) getSelectedNode().getParent();
+			UserGroupNode newChild = (UserGroupNode) getSelectedNode();
+			UserGroupNode oldParent = (UserGroupNode) getSelectedNode().getParent();
 			
 			try {
 				//TODO: add a check so if the request fails, the tree doesn't change
@@ -138,8 +140,8 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 	}
 
 	//sends the command to update the user/group structure after a drop
-	private void makeChange(MyNode newChild, MyNode newParent, MyNode oldParent) {
-		if(newChild.getType().equals(MyNode.Type.USER)){
+	private void makeChange(UserGroupNode newChild, UserGroupNode newParent, UserGroupNode oldParent) {
+		if(newChild.getType().equals(UserGroupNode.Type.USER)){
 			ArrayList<WSISecurityGroup> oldMemList = new ArrayList<WSISecurityGroup>();
 			ArrayList<WSISecurityGroup> newMemList = new ArrayList<WSISecurityGroup>();
 			oldMemList.add(((TransferableGroup) oldParent.getData()).getGroup());
@@ -184,7 +186,7 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 			SelectedNode = null;
 			return;
 		}
-		SelectedNode = (MyNode) SelectedTreePath.getLastPathComponent();
+		SelectedNode = (UserGroupNode) SelectedTreePath.getLastPathComponent();
 	}
 
 	private boolean testDropTarget(TreePath destination, TreePath beingDroppedPath) {
@@ -192,8 +194,8 @@ public class UserGroupTree extends JTree implements TreeSelectionListener,
 		if (destination == null)
 			return false;
 
-		MyNode droppedOn = (MyNode) destination.getLastPathComponent();
-		MyNode beingDropped = (MyNode) beingDroppedPath.getLastPathComponent();
+		UserGroupNode droppedOn = (UserGroupNode) destination.getLastPathComponent();
+		UserGroupNode beingDropped = (UserGroupNode) beingDroppedPath.getLastPathComponent();
 
 		if (!droppedOn.getAllowsChildren() || destination.equals(beingDroppedPath)
 				|| beingDroppedPath.isDescendant(destination)

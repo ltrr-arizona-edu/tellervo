@@ -63,6 +63,10 @@ class permission extends permissionEntity implements IDBAccessor
 	{
     	   foreach($this->thisParamsClass->entityArray as $entity)
     	   {
+		if($entity['id']==null)
+		{
+		   $entity['id']=='aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa';
+		}
 		if($entity['type']=='default')
 		{		
 			$sql = "select * from tblsecuritydefault where securityuserid";
@@ -89,6 +93,7 @@ class permission extends permissionEntity implements IDBAccessor
 			$xml.= "<permissionToRead>".dbhelper::formatBool($row['canread'], "english")."</permissionToRead>\n";
 			$xml.= "<permissionToUpdate>".dbhelper::formatBool($row['canupdate'], "english")."</permissionToUpdate>\n";
 			$xml.= "<permissionToDelete>".dbhelper::formatBool($row['candelete'], "english")."</permissionToDelete>\n";
+			$xml.= "<permissionDenied>".dbhelper::formatBool($row['denied'], "english")."</permissionDenied>\n";
 	    	        $xml.= "<entity type=\"".$entity['type']."\" id=\"".$entity['id']."\"/>\n";	
 		   	$xml.= "<securityUser id=\"".$user."\"/>\n";
 	    		$xml.= "</permission>\n";    	
@@ -100,7 +105,18 @@ class permission extends permissionEntity implements IDBAccessor
 	{
     	   foreach($this->thisParamsClass->entityArray as $entity)
     	   {
-		$sql = "select * from cpgdb.getgrouppermissionset('{".$group."}', '".$entity['type']."', '".$entity['id']."'::uuid)";
+
+		if($entity['id']=='')
+		{
+		   $firebug->log("id is null so setting dummy uuid");
+		   $sql = "select * from cpgdb.getgrouppermissionset('{".$group."}', '".$entity['type']."', 'aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa'::uuid)";
+
+		}
+		else
+		{
+		   
+		   $sql = "select * from cpgdb.getgrouppermissionset('{".$group."}', '".$entity['type']."', '".$entity['id']."'::uuid)";
+		}
 	
 	                    
 		pg_send_query($dbconn, $sql);
@@ -120,6 +136,7 @@ class permission extends permissionEntity implements IDBAccessor
 			$xml.= "<permissionToRead>".dbhelper::formatBool($row['canread'], "english")."</permissionToRead>\n";
 			$xml.= "<permissionToUpdate>".dbhelper::formatBool($row['canupdate'], "english")."</permissionToUpdate>\n";
 			$xml.= "<permissionToDelete>".dbhelper::formatBool($row['candelete'], "english")."</permissionToDelete>\n";
+			$xml.= "<permissionDenied>".dbhelper::formatBool($row['denied'], "english")."</permissionDenied>\n";
 	    	        $xml.= "<entity type=\"".$entity['type']."\" id=\"".$entity['id']."\"/>\n";	
 		   	$xml.= "<securityGroup id=\"".$group."\"/>\n";
 	    		$xml.= "</permission>\n";    	
@@ -171,7 +188,7 @@ class permission extends permissionEntity implements IDBAccessor
 		    $canCreate = $this->thisParamsClass->canCreate();
 		    $firebug->log($canCreate, "Doing 'create'");
 
-    		    if($this->thisParamsClass->canCreate()===TRUE)
+    		    if($this->thisParamsClass->canCreate===TRUE)
     			{
 				$firebug->log("Creating SQL for 'create' permission");
 				
@@ -196,7 +213,7 @@ class permission extends permissionEntity implements IDBAccessor
 	                        return FALSE;
 	                    }
     			}
-    		    if($this->thisParamsClass->canRead()===TRUE )
+    		    if($this->thisParamsClass->canRead===TRUE )
     			{
 				if($entity['type']=='default')
 				{
@@ -219,7 +236,7 @@ class permission extends permissionEntity implements IDBAccessor
 	                        return FALSE;
 	                    }    					
     			}
-    		    if($this->thisParamsClass->canUpdate()===TRUE )
+    		    if($this->thisParamsClass->canUpdate===TRUE )
     			{
 				if($entity['type']=='default')
 				{
@@ -241,7 +258,7 @@ class permission extends permissionEntity implements IDBAccessor
 	                        return FALSE;
 	                    }    					
     			}
-    		    if($this->thisParamsClass->canDelete()===TRUE)
+    		    if($this->thisParamsClass->canDelete===TRUE)
     			{
 				if($entity['type']=='default')
 				{
@@ -252,6 +269,28 @@ class permission extends permissionEntity implements IDBAccessor
 				{
     					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('".$entity["id"]."','$group','5'); ";
+				}
+				$firebug->log($sql, "Permission write sql");
+    			    	// Run SQL 
+	                    pg_send_query($dbconn, $sql);
+	                    $result = pg_get_result($dbconn);
+	                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+	                    {
+	                        $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+	                        return FALSE;
+	                    }    					
+    			}    			
+    		    if($this->thisParamsClass->isPermissionDenied()===TRUE)
+    			{
+				if($entity['type']=='default')
+				{
+					$sql = "INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES ";
+    					$sql .=" ('$group','6'); ";
+				}
+				else
+				{
+    					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
+    					$sql .=" ('".$entity["id"]."','$group','6'); ";
 				}
 				$firebug->log($sql, "Permission write sql");
     			    	// Run SQL 
@@ -296,7 +335,7 @@ class permission extends permissionEntity implements IDBAccessor
                     $this->setErrorMessage("902","One or more security users and groups is required when creating a permissions record");
                     return false;
                 }
-     			if ( $paramsObj->canCreate==NULL && $paramsObj->canRead==NULL && $paramsObj->canUpdate==NULL && $paramsObj->canDelete==NULL)           
+     			if ( !isset($paramsObj->canCreate) && !isset($paramsObj->canRead) && !isset($paramsObj->canUpdate) && !isset($paramsObj->canDelete))           
      			{
                		$this->setErrorMessage("902","One or more of the fields 'create', 'read', 'update' and/or 'delete' is required when creating a permissions record");
                		return false;	

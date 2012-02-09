@@ -45,6 +45,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import com.dmurph.mvc.MVC;
+
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.AboutBox;
 import edu.cornell.dendro.corina.gui.Help;
@@ -154,6 +156,9 @@ public class HelpMenu extends JMenu {
 
         debugMenu = Builder.makeMenuItem("menus.help.xml_debug", "edu.cornell.dendro.corina.gui.XMLDebugView.showDialog()", "networksettings.png");
         add(debugMenu);
+        
+
+        add(Builder.makeMenuItem("menus.help.showmvcmonitor", "com.dmurph.mvc.MVC.showEventMonitor()"));
         
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.DebugInstantiator.showMe()"));
         //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.newui.NewJFrame1.main()"));

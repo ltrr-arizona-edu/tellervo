@@ -32,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tridas.io.TridasIO;
 
+import com.dmurph.mvc.MVC;
+
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 import edu.cornell.dendro.corina.core.AppModel.NetworkStatus;
 import edu.cornell.dendro.corina.dictionary.Dictionary;
@@ -113,6 +115,7 @@ public static synchronized void init() {
     logviewer.setVisible(false);
     
     SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
+    
 }
 
 
@@ -350,7 +353,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
 		
 		domain = path;
 	} catch (Exception e) {
-		// TODO Auto-generated catch block
+
 		log.error("Error determining domain base from webservice URL");
 		
 	}

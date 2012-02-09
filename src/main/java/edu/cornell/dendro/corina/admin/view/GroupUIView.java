@@ -25,6 +25,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -38,6 +40,7 @@ import edu.cornell.dendro.corina.dictionary.Dictionary;
 import edu.cornell.dendro.corina.schema.CorinaRequestType;
 import edu.cornell.dendro.corina.schema.PermissionsEntityType;
 import edu.cornell.dendro.corina.schema.WSIPermission;
+import edu.cornell.dendro.corina.schema.WSIPermission.Entity;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
@@ -49,6 +52,10 @@ import javax.swing.JLabel;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.FlowLayout;
 
 
@@ -67,6 +74,8 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 	Boolean isNewGroup = true;
 	private SecurityMixTableModelB groupsModel;
 	private TableRowSorter<SecurityMixTableModelB> groupsSorter;
+	private final static Logger log = LoggerFactory.getLogger(GroupUIView.class);
+
 	
     /** Creates new form GroupUI 
      * @wbp.parser.constructor*/
@@ -153,7 +162,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         txtDescription.setColumns(10);
         
         JLabel lblDescription = new JLabel("Description:");
-        getContentPane().setLayout(new MigLayout("", "[82px][145.00px,grow][154.00px][78px:78.00:78px]", "[23px][19px][19px][grow][][:130.00px:130px,grow][25px]"));
+        getContentPane().setLayout(new MigLayout("", "[82px][145.00px,grow][154.00px][78px:78.00:78px]", "[23px][19px][19px][center][200px,grow,top][25px]"));
         chkEnabled = new javax.swing.JCheckBox();
         
                 chkEnabled.setText("Enabled");
@@ -167,21 +176,21 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         lblDefaultPermissions = new JLabel("Default Permissions:");
         getContentPane().add(lblDefaultPermissions, "cell 0 3");
         
-        panel_1 = new JPanel();
-        getContentPane().add(panel_1, "cell 1 3 3 1,grow");
-        panel_1.setLayout(new MigLayout("", "[][][][][]", "[]"));
+        panelPermissions = new JPanel();
+        getContentPane().add(panelPermissions, "cell 1 3 3 1,grow");
+        panelPermissions.setLayout(new MigLayout("", "[][][][][]", "[]"));
         
         chckbxCreate = new JCheckBox("Create");
-        panel_1.add(chckbxCreate, "cell 0 0");
+        panelPermissions.add(chckbxCreate, "cell 0 0");
         
         chckbxRead = new JCheckBox("Read");
-        panel_1.add(chckbxRead, "cell 1 0");
+        panelPermissions.add(chckbxRead, "cell 1 0");
         
         chckbxUpdate = new JCheckBox("Update");
-        panel_1.add(chckbxUpdate, "cell 2 0");
+        panelPermissions.add(chckbxUpdate, "cell 2 0");
         
         chckbxDelete = new JCheckBox("Delete");
-        panel_1.add(chckbxDelete, "cell 3 0");
+        panelPermissions.add(chckbxDelete, "cell 3 0");
         
         chckbxDenied = new JCheckBox("Denied");
         
@@ -195,17 +204,17 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         });
         
         
-        panel_1.add(chckbxDenied, "cell 4 0");
+        panelPermissions.add(chckbxDenied, "cell 4 0");
         
         lblMemberOf = new JLabel("List of members:");
         getContentPane().add(lblMemberOf, "cell 0 4,alignx right");
         txtId = new javax.swing.JTextField();
         
                 txtId.setEditable(false);
-                getContentPane().add(txtId, "cell 0 6 2 1,growx,aligny center");
+                getContentPane().add(txtId, "cell 0 5 2 1,growx,aligny center");
         
         panel = new JPanel();
-        getContentPane().add(panel, "cell 2 6 2 1,alignx right,growy");
+        getContentPane().add(panel, "cell 2 5 2 1,alignx right,growy");
         panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         btnDoIt = new javax.swing.JButton();
         panel.add(btnDoIt);
@@ -219,7 +228,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         getContentPane().add(lblDescription, "cell 0 2,alignx right,aligny center");
         getContentPane().add(txtDescription, "cell 1 2 2 1,growx,aligny center");
         getContentPane().add(txtName, "cell 1 1 2 1,growx,aligny center");
-        getContentPane().add(scrollPane, "cell 1 4 3 2,grow");
+        getContentPane().add(scrollPane, "cell 1 4 3 1,grow");
 
         pack();
         setCheckBoxes();
@@ -239,7 +248,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
     protected JTextField txtDescription;
     private JPanel panel;
     private JLabel lblIcon;
-    private JPanel panel_1;
+    private JPanel panelPermissions;
     private JCheckBox chckbxCreate;
     private JCheckBox chckbxRead;
     private JCheckBox chckbxUpdate;
@@ -307,7 +316,17 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
         	btnDoIt.setText("Create");
         	btnClose.setText("Close");
         	chkEnabled.setSelected(true);
-        	if(defaultPermissions==null) defaultPermissions = new WSIPermission();
+        	if(defaultPermissions==null) 
+        	{
+        		defaultPermissions = new WSIPermission();
+				
+        		// Set entitiy details for permissions
+				Entity entity = new Entity();
+				entity.setType(PermissionsEntityType.DEFAULT);		
+				ArrayList<Entity> entities = new ArrayList<Entity>();
+				entities.add(entity);
+				defaultPermissions.setEntities(entities);
+        	}
     	}
     	else
     	{
@@ -375,6 +394,11 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 		defaultPermissions.setPermissionToUpdate(this.chckbxUpdate.isSelected());
 		defaultPermissions.setPermissionToDelete(this.chckbxDelete.isSelected());		
 		
+		if(defaultPermissions.isSetEntities()==false)
+		{
+			log.debug("Permissions has no entitie set");
+		}
+		
 		if(isNewGroup)
 		{
 			// associate a resource
@@ -386,8 +410,11 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 			
 			if(accdialog.isSuccessful())
 			{
-				rsrc.getAssociatedResult();
+				WSISecurityGroup res = rsrc.getAssociatedResult();
 				
+				ArrayList<Object> securityUsersAndSecurityGroups = new ArrayList<Object>();
+				securityUsersAndSecurityGroups.add(res);
+				defaultPermissions.setSecurityUsersAndSecurityGroups(securityUsersAndSecurityGroups );
 			}
 			else
 			{

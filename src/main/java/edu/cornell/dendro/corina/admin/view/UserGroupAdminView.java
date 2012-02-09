@@ -20,30 +20,54 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin.view;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.table.TableRowSorter;
-import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.miginfocom.swing.MigLayout;
-import edu.cornell.dendro.corina.admin.control.*;
-import edu.cornell.dendro.corina.admin.model.*;
+import edu.cornell.dendro.corina.admin.control.AuthenticateEvent;
+import edu.cornell.dendro.corina.admin.control.CreateNewGroupEvent;
+import edu.cornell.dendro.corina.admin.control.CreateNewUserEvent;
+import edu.cornell.dendro.corina.admin.control.DeleteGroupEvent;
+import edu.cornell.dendro.corina.admin.control.DeleteUserEvent;
+import edu.cornell.dendro.corina.admin.control.EditGroupEvent;
+import edu.cornell.dendro.corina.admin.control.EditUserEvent;
+import edu.cornell.dendro.corina.admin.control.OkFinishEvent;
+import edu.cornell.dendro.corina.admin.control.ToggleDisabledUsersEvent;
+import edu.cornell.dendro.corina.admin.control.UpdateUserEvent;
+import edu.cornell.dendro.corina.admin.model.SecurityUserTableModelA;
+import edu.cornell.dendro.corina.admin.model.UserGroupNode;
+import edu.cornell.dendro.corina.admin.model.SecurityGroupTableModelA;
+import edu.cornell.dendro.corina.admin.model.SecurityMixTableModel;
+import edu.cornell.dendro.corina.admin.model.TransferableGroup;
+import edu.cornell.dendro.corina.admin.model.TransferableUser;
+import edu.cornell.dendro.corina.admin.model.UserGroupAdminModel;
+import edu.cornell.dendro.corina.admin.model.UserGroupTreeCellRenderer;
 import edu.cornell.dendro.corina.model.CorinaModelLocator;
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 import edu.cornell.dendro.corina.ui.Alert;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.ui.I18n;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.tree.TreeNode;
 
 /**
  * GUI class for administering users and groups.  Allows user with the correct
@@ -60,6 +84,47 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 	private static UserGroupAdminModel mainModel = UserGroupAdminModel.getInstance();
 	private SecurityGroupTableModelA groupsModel;
 	private ArrayList<WSISecurityGroup> groupList;
+    protected javax.swing.JTabbedPane accountsTabPane;
+    protected javax.swing.JButton btnDeleteGroup;
+    protected javax.swing.JButton btnDeleteUser;
+    protected javax.swing.JButton btnEditGroup;
+    protected javax.swing.JButton btnEditUser;
+    protected javax.swing.JButton btnNewGroup;
+    protected javax.swing.JButton btnNewUser;
+    protected javax.swing.JButton btnOk;
+    protected javax.swing.JCheckBox chkShowDisabledUsers;
+    protected javax.swing.JPanel groupPanel;
+    protected javax.swing.JScrollPane scrollGroups;
+    protected javax.swing.JScrollPane scrollMembers;
+    protected javax.swing.JScrollPane scrollUsers;
+    protected javax.swing.JTable tblGroups;
+    protected javax.swing.JTable tblMembers;
+    protected javax.swing.JTable tblUsers;
+    protected javax.swing.JPanel userPanel;
+    private JLabel lblMembers;
+    private JPanel debugPanel;
+    private JButton test1;
+    private JButton test2;
+    private JButton test3;
+    private JButton test4;
+    private JButton test5;
+    private JPanel treeviewPanel;
+    private JScrollPane scrollPane;
+    private UserGroupTree tree;
+    private JButton btnClearAllPlacements;
+    private JSplitPane splitPane;
+    private JPanel panel;
+    private JPanel panel_1;
+    private JPanel panelTitle;
+    private JLabel lblTitle;
+    private JPanel panelIcon;
+    private JLabel lblIcon;
+    private JTextArea txtDescription;
+    private JButton btnRefresh;
+    private JPanel panelButtons;
+	
+	private final static Logger log = LoggerFactory.getLogger(UserGroupAdminView.class);
+
 
     public static void main() {
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -89,6 +154,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 
         accountsTabPane = new javax.swing.JTabbedPane();
         userPanel = new javax.swing.JPanel();
+        
         scrollUsers = new javax.swing.JScrollPane();
         tblUsers = new javax.swing.JTable();
         btnEditUser = new javax.swing.JButton();
@@ -96,16 +162,6 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         btnDeleteUser = new javax.swing.JButton();
         chkShowDisabledUsers = new javax.swing.JCheckBox();
         groupPanel = new javax.swing.JPanel();
-        scrollGroups = new javax.swing.JScrollPane();
-        tblGroups = new javax.swing.JTable();
-        btnEditGroup = new javax.swing.JButton();
-        btnNewGroup = new javax.swing.JButton();
-        btnNewGroup.setEnabled(false);
-        btnDeleteGroup = new javax.swing.JButton();
-        btnDeleteGroup.setEnabled(false);
-        scrollMembers = new javax.swing.JScrollPane();
-        tblMembers = new javax.swing.JTable();
-        btnOk = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -113,15 +169,18 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         scrollUsers.setViewportView(tblUsers);
 
         btnEditUser.setText("Edit");
+        btnEditUser.setIcon(Builder.getIcon("edit.png", 16));
+
         btnEditUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditUser444ActionPerformed(evt);
+                editUserAction(evt);
             }
         });
 
         btnNewUser.setText("New");
-
+        btnNewUser.setIcon(Builder.getIcon("edit_add.png", 16));
         btnDeleteUser.setText("Delete");
+        btnDeleteUser.setIcon(Builder.getIcon("cancel.png", 16));
 
         chkShowDisabledUsers.setSelected(true);
         chkShowDisabledUsers.setText("Show disabled accounts");
@@ -132,39 +191,89 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         });
 
         accountsTabPane.addTab("Users", userPanel);
-        userPanel.setLayout(new MigLayout("", "[197px][126px,grow][61px][6px][65px][6px][81px]", "[25px][335px,grow,fill]"));
-        userPanel.add(scrollUsers, "cell 0 1 7 1,grow");
+        userPanel.setLayout(new MigLayout("hidemode 3", "[236.00px,grow][][][]", "[25px][335px,grow,fill]"));
+        userPanel.add(scrollUsers, "cell 0 1 4 1,grow");
         userPanel.add(chkShowDisabledUsers, "cell 0 0,alignx left,aligny center");
-        userPanel.add(btnEditUser, "cell 2 0,alignx left,aligny top");
-        userPanel.add(btnNewUser, "cell 4 0,alignx left,aligny top");
-        userPanel.add(btnDeleteUser, "cell 6 0,alignx left,aligny top");
-
-        scrollGroups.setViewportView(tblGroups);
-
-        btnEditGroup.setText("Edit");
-        btnNewGroup.setText("New");
-        btnDeleteGroup.setText("Delete");
-        
-        scrollMembers.setViewportView(tblMembers);
+        userPanel.add(btnEditUser, "cell 1 0,alignx left,aligny top");
+        userPanel.add(btnNewUser, "cell 2 0,alignx left,aligny top");
+        userPanel.add(btnDeleteUser, "cell 3 0,alignx center,aligny top");
 
         accountsTabPane.addTab("Groups", groupPanel);
-        groupPanel.setLayout(new MigLayout("", "[183px][140px,grow][61px][6px][65px][6px][81px]", "[25px][127px,grow][][15px][181px,grow]"));
+        groupPanel.setLayout(new BorderLayout(0, 0));
         
-        lblGroups = new JLabel("Groups");
-        groupPanel.add(lblGroups, "cell 0 0");
+        splitPane = new JSplitPane();
+        splitPane.setResizeWeight(1.0);
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setDividerLocation(1.0);
+        groupPanel.add(splitPane);
         
-        lblMembers = new JLabel("Members");
-        groupPanel.add(lblMembers, "cell 0 2");
-        groupPanel.add(scrollMembers, "cell 0 4 7 1,grow");
-        groupPanel.add(scrollGroups, "cell 0 1 7 1,grow");
-        groupPanel.add(btnEditGroup, "cell 2 0,alignx left,aligny top");
-        groupPanel.add(btnNewGroup, "cell 4 0,alignx left,aligny top");
-        groupPanel.add(btnDeleteGroup, "cell 6 0,alignx left,aligny top");
-        getContentPane().setLayout(new MigLayout("", "[571px,grow]", "[405px,grow][25px]"));
-
-        btnOk.setText("Ok");
-        getContentPane().add(btnOk, "cell 0 1,alignx right,aligny top");
-        getContentPane().add(accountsTabPane, "cell 0 0,grow");
+        panel = new JPanel();
+        splitPane.setLeftComponent(panel);
+        panel.setLayout(new MigLayout("", "[79.00px][grow][][][]", "[15px][200px,grow]"));
+        btnEditGroup = new javax.swing.JButton();
+        btnEditGroup.setIcon(Builder.getIcon("edit.png", 16));
+        panel.add(btnEditGroup, "cell 2 0");
+        
+                btnEditGroup.setText("Edit");
+        btnNewGroup = new javax.swing.JButton();
+        btnNewGroup.setIcon(Builder.getIcon("edit_add.png", 16));
+        panel.add(btnNewGroup, "cell 3 0");
+        //btnNewGroup.setEnabled(false);
+        btnNewGroup.setText("New");
+        scrollGroups = new javax.swing.JScrollPane();
+        panel.add(scrollGroups, "cell 0 1 5 1,growx,aligny top");
+        tblGroups = new javax.swing.JTable();
+        
+                scrollGroups.setViewportView(tblGroups);
+                        btnDeleteGroup = new javax.swing.JButton();
+                        btnDeleteGroup.setIcon(Builder.getIcon("cancel.png", 16));
+                       
+                        panel.add(btnDeleteGroup, "cell 4 0");
+                        btnDeleteGroup.setText("Delete");
+        
+        panel_1 = new JPanel();
+        splitPane.setRightComponent(panel_1);
+        panel_1.setMinimumSize(new Dimension(0,0));
+        panel_1.setLayout(new MigLayout("", "[453px,grow]", "[][403px,grow]"));
+        
+        lblMembers = new JLabel("List of members:");
+        panel_1.add(lblMembers, "cell 0 0,alignx left,aligny center");
+        scrollMembers = new javax.swing.JScrollPane();
+        panel_1.add(scrollMembers, "cell 0 1,growx,aligny top");
+        tblMembers = new javax.swing.JTable();
+        
+        scrollMembers.setViewportView(tblMembers);
+        getContentPane().setLayout(new MigLayout("", "[473.00px,grow]", "[102.00][250px,grow][25px]"));
+        
+        panelTitle = new JPanel();
+        panelTitle.setBackground(Color.WHITE);
+        getContentPane().add(panelTitle, "cell 0 0,grow");
+        panelTitle.setLayout(new MigLayout("", "[378.00,grow][]", "[20.00][34.00,grow]"));
+        
+        lblTitle = new JLabel("Users and Groups Admin");
+        lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
+        panelTitle.add(lblTitle, "cell 0 0");
+        
+        panelIcon = new JPanel();
+        panelIcon.setBackground(Color.WHITE);
+        panelTitle.add(panelIcon, "cell 1 0 1 2,grow");
+        panelIcon.setLayout(new BorderLayout(0, 0));
+        
+        lblIcon = new JLabel();
+        lblIcon.setIcon(Builder.getIcon("edit_group.png", 64));
+        panelIcon.add(lblIcon);
+        
+        txtDescription = new JTextArea();
+        txtDescription.setWrapStyleWord(true);
+        txtDescription.setBorder(null);
+        txtDescription.setText("Us the tables below to add, edit and delete users and groups.  You can use the 'tree view' tab to see a hierarchical representation of the groups and users current in the database.");
+        txtDescription.setLineWrap(true);
+        txtDescription.setFont(new Font("Dialog", Font.PLAIN, 10));
+        txtDescription.setFocusable(false);
+        txtDescription.setEditable(false);
+        panelTitle.add(txtDescription, "cell 0 1,grow, wmin 10");
+        getContentPane().add(accountsTabPane, "cell 0 1,grow");
         
         debugPanel = new JPanel();
         //accountsTabPane.addTab("Debug tab", null, debugPanel, null);
@@ -269,14 +378,40 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         debugPanel.add(test5, "cell 0 4");
         
         treeviewPanel = new JPanel();
-        accountsTabPane.addTab("Tree view", null, treeviewPanel, null);
+        accountsTabPane.addTab("Tree view", treeviewPanel);
         treeviewPanel.setLayout(new MigLayout("", "[grow][][][][][][][][][grow]", "[grow][][][][][][grow]"));
         
         scrollPane = new JScrollPane();
         treeviewPanel.add(scrollPane, "cell 0 0 10 7,grow");
         
         tree = buildTree();
+        
+        UserGroupTreeCellRenderer treeRenderer = new UserGroupTreeCellRenderer();
+        tree.setCellRenderer(treeRenderer);
         scrollPane.setViewportView(tree);
+        
+        panelButtons = new JPanel();
+        getContentPane().add(panelButtons, "cell 0 2,growx");
+        panelButtons.setLayout(new MigLayout("", "[89px][54px,grow][]", "[25px]"));
+        
+        btnRefresh = new JButton("Refresh");
+        btnRefresh.setIcon(Builder.getIcon("reload.png", 16));
+        btnRefresh.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				linkModel();
+				groupsModel.fireTableDataChanged();
+				
+			}
+        	
+        });
+        
+        panelButtons.add(btnRefresh, "cell 0 0,alignx left,aligny top");
+                btnOk = new javax.swing.JButton();
+                panelButtons.add(btnOk, "cell 2 0,growx,aligny top");
+                
+                        btnOk.setText("Ok");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -320,41 +455,50 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         new ToggleDisabledUsersEvent(true, mainModel).dispatch();   
     }
 	
+	/**
+	 * Build the tree representation of users and groups
+	 * 
+	 * @return
+	 */
 	public UserGroupTree buildTree() {
 		WSISecurityGroup dummyRoot = new WSISecurityGroup();
 		dummyRoot.setName("All");
-    	MyNode root = new MyNode(new TransferableGroup(dummyRoot));
-    	root.setRestrictedChildType(MyNode.Type.USER); //this prevents user nodes from being dropped in the group root node "All"
+    	UserGroupNode root = new UserGroupNode(new TransferableGroup(dummyRoot));
+    	root.setRestrictedChildType(UserGroupNode.Type.USER); //this prevents user nodes from being dropped in the group root node "All"
     	for(WSISecurityGroup parent: mainModel.getParentGroups()){
-    		MyNode groupRoot = addMembersRecurse(new MyNode(new TransferableGroup(parent)));
+    		UserGroupNode groupRoot = addMembersRecurse(new UserGroupNode(new TransferableGroup(parent)));
     		root.add(groupRoot);
     	}
     	return new UserGroupTree(root);
 	}
     
-	/** recursively adds children nodes
+	/** 
+	 * Recursively add child nodes
 	 * 
 	 * @param parent a group node
 	 * */
-    private MyNode addMembersRecurse(MyNode parent){
+    private UserGroupNode addMembersRecurse(UserGroupNode parent){
     	//check it's a group node
-    	if(!parent.getType().equals(MyNode.Type.GROUP)) return null;
+    	if(!parent.getType().equals(UserGroupNode.Type.GROUP)) return null;
     	
     	WSISecurityGroup group = ((TransferableGroup) parent.getUserObject()).getGroup();
     	for(String childId: group.getGroupMembers()){
     		WSISecurityGroup child = mainModel.getGroupById(childId);
-    		MyNode childNode = addMembersRecurse(new MyNode(new TransferableGroup(child)));
+    		UserGroupNode childNode = addMembersRecurse(new UserGroupNode(new TransferableGroup(child)));
     		parent.add(childNode);
     	}
     	
     	for(String childId: group.getUserMembers()){
     		WSISecurityUser child = mainModel.getUserById(childId);
-    		MyNode childNode = new MyNode(new TransferableUser(child));
+    		UserGroupNode childNode = new UserGroupNode(new TransferableUser(child));
     		parent.add(childNode);
     	}
     	return parent;
     }
 
+    /**
+     * Internationalize the components
+     */
 	private void internationlizeComponents()
     {
     	this.setTitle(I18n.getText("admin.usersAndGroups"));
@@ -372,46 +516,14 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     }
     
   
-    private void btnEditUser444ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditUser444ActionPerformed
+    private void editUserAction(java.awt.event.ActionEvent evt) {
     	editUser();
-    }//GEN-LAST:event_btnEditUser444ActionPerformed
+    }
 
     
-    private void chkShowDisabledUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShowDisabledUsersActionPerformed
+    private void chkShowDisabledUsersActionPerformed(java.awt.event.ActionEvent evt) {
 		new ToggleDisabledUsersEvent(chkShowDisabledUsers.isSelected(), mainModel).dispatch();
-    }//GEN-LAST:event_chkShowDisabledUsersActionPerformed
-
-	// Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JTabbedPane accountsTabPane;
-    protected javax.swing.JButton btnDeleteGroup;
-    protected javax.swing.JButton btnDeleteUser;
-    protected javax.swing.JButton btnEditGroup;
-    protected javax.swing.JButton btnEditUser;
-    protected javax.swing.JButton btnNewGroup;
-    protected javax.swing.JButton btnNewUser;
-    protected javax.swing.JButton btnOk;
-    protected javax.swing.JCheckBox chkShowDisabledUsers;
-    protected javax.swing.JPanel groupPanel;
-    protected javax.swing.JScrollPane scrollGroups;
-    protected javax.swing.JScrollPane scrollMembers;
-    protected javax.swing.JScrollPane scrollUsers;
-    protected javax.swing.JTable tblGroups;
-    protected javax.swing.JTable tblMembers;
-    protected javax.swing.JTable tblUsers;
-    protected javax.swing.JPanel userPanel;
-    private JLabel lblGroups;
-    private JLabel lblMembers;
-    private JPanel debugPanel;
-    private JButton test1;
-    private JButton test2;
-    private JButton test3;
-    private JButton test4;
-    private JButton test5;
-    private JPanel treeviewPanel;
-    private JScrollPane scrollPane;
-    private UserGroupTree tree;
-    private JButton btnClearAllPlacements;
-    // End of variables declaration//GEN-END:variables
+    }
 
     public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.btnOk) {

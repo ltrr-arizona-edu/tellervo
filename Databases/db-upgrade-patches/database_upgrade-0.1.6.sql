@@ -333,3 +333,21 @@ $BODY$
   COST 100;
 ALTER FUNCTION cpgdb.getgrouppermissionset(integer[], character varying, uuid) OWNER TO postgres;
 
+
+ALTER TABLE tblsecuritydefault
+  DROP CONSTRAINT "fkey_securitydefault-securitygroup";
+  
+ALTER TABLE tblsecuritydefault
+  ADD CONSTRAINT "fkey_securitydefault-securitygroup" FOREIGN KEY (securitygroupid)
+      REFERENCES tblsecuritygroup (securitygroupid) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE;
+      
+DROP TRIGGER create_defaultsecurityrecordforgroup ON tblsecuritygroup
+
+DROP FUNCTION "checkGroupIsDeletable"();
+
+CREATE OR REPLACE RULE protectadmin AS
+    ON UPDATE TO tblsecuritygroup
+   WHERE old.securitygroupid = 1 DO INSTEAD NOTHING;
+
+

@@ -91,6 +91,9 @@ public class EntitySaveCommand implements ICommand {
 		
 		if(isNew)
 		{	
+			// This is a new entity, so scrub any existing external identifiers
+			entity.setIdentifier(null);
+			
 			resource = getNewAccessorResource(entity, parentEntity, currentEntityType);
 			log.debug("Creating new resource of type "+currentEntityType.toString());
 		}

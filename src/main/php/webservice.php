@@ -246,7 +246,7 @@ if($myMetaHeader->status != "Error")
                 else
                 {
                     // Standard error message
-                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." ".$objectType." id $myID was denied. ".$myAuth->authFailReason, $defaultErrType);
+                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." ".$objectType." was denied. ".$myAuth->authFailReason, $defaultErrType);
                     break;
                 }
             }

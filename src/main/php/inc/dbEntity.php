@@ -2669,6 +2669,7 @@ class permissionEntity extends dbEntity
 	protected $canRead = "nullvalue";
 	protected $canUpdate = "nullvalue";
 	protected $canDelete = "nullvalue";	
+	protected $permDenied = "nullvalue";	
 	public $entityArray = array();
 	public $securityUserArray = array();
 	public $securityGroupArray = array();
@@ -2747,6 +2748,22 @@ class permissionEntity extends dbEntity
 		return NULL;
 	}
 	
+	function setPermDenied($bool)
+	{
+		$bool = dbhelper::formatBool($bool);
+		if($bool===TRUE)
+		{
+			$this->permDenied = TRUE;
+			return TRUE;
+		}
+		else if ($bool===FALSE)
+		{
+			$this->permDenied = FALSE;
+			return FALSE;
+		}
+		return NULL;
+	}
+	
 	function canCreate()
 	{
 		return $this->canCreate;
@@ -2765,6 +2782,11 @@ class permissionEntity extends dbEntity
 	function canDelete()
 	{
 		return $this->canDelete;
+	}
+	
+	function isPermissionDenied()
+	{
+		return $this->permDenied;
 	}
 	
 }

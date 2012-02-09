@@ -29,6 +29,8 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.tridas.schema.ControlledVoc;
+
 import edu.cornell.dendro.corina.tridasv2.ui.support.NotPresent;
 import edu.cornell.dendro.corina.ui.Builder;
 import edu.cornell.dendro.corina.util.ColorUtils;
@@ -72,7 +74,37 @@ public abstract class AbstractComboBoxRenderer extends JPanel implements
             setForeground(table.getSelectionForeground());
             
             // highlight bad values
-            if(isRequired() && (value == null || value instanceof NotPresent)) {
+            /*if(value instanceof ControlledVoc && value != null)
+            {
+            	JLabel label = new JLabel();
+            	ControlledVoc val = (ControlledVoc) value;
+            	
+            	if(val.isSetNormalStd())
+            	{
+            		
+            		if(!val.getNormalStd().equals("Corina") &&  
+            		   !val.getNormalStd().equals("Catalogue of Life Annual Checklist 2008"))
+            		{
+                    	Color blend = ColorUtils.blend(table.getSelectionBackground(), Color.red);
+                    	renderer.setBackground(blend);
+                    	super.setBackground(blend);          	
+          
+                    	label.setIcon(Builder.getIcon("missingicon.png", 16));
+                    	
+            		}
+                	
+            		if(val.isSetNormal())
+                	{
+                		label.setText(val.getNormal());
+                	}
+                	else
+                	{
+                		label.setText(val.getValue());
+                	}
+            	}
+            	return label;
+            }
+            else*/ if(isRequired() && (value == null || value instanceof NotPresent)) {
             	Color blend = ColorUtils.blend(table.getSelectionBackground(), Color.red);
             	renderer.setBackground(blend);
             	super.setBackground(blend);          	
@@ -89,7 +121,37 @@ public abstract class AbstractComboBoxRenderer extends JPanel implements
             renderer.setForeground(table.getForeground());
 
             // highlight bad values
-            if(isRequired() && (value == null || value instanceof NotPresent)) {
+           /* if(value instanceof ControlledVoc && value != null)
+            {
+            	JLabel label = new JLabel();
+            	ControlledVoc val = (ControlledVoc) value;
+            	
+            	if(val.isSetNormalStd())
+            	{
+            		
+            		if(!val.getNormalStd().equals("Corina") && 
+            		   !val.getNormalStd().equals("Catalogue of Life Annual Checklist 2008"))
+            		{
+                    	Color blend = ColorUtils.blend(table.getSelectionBackground(), Color.red);
+                    	renderer.setBackground(blend);
+                    	super.setBackground(blend);          	
+          
+                    	label.setIcon(Builder.getIcon("missingicon.png", 16));
+                    	
+            		}
+                	
+            		if(val.isSetNormal())
+                	{
+                		label.setText(val.getNormal());
+                	}
+                	else
+                	{
+                		label.setText(val.getValue());
+                	}
+            	}
+            	return label;
+            }
+            else*/ if(isRequired() && (value == null || value instanceof NotPresent)) {
             	renderer.setBackground(Color.red);
             	setBackground(Color.red);
             	JLabel label = new JLabel();

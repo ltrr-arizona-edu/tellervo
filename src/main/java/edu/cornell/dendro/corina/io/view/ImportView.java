@@ -1300,7 +1300,7 @@ public class ImportView extends JFrame{
 			}
 			else if (!currentEntity.getIdentifier().getDomain().equals(App.domain))
 			{
-				log.debug("Different domain - this one is: "+currentEntity.getIdentifier().getDomain());
+				log.debug("Different domain - this one is: "+currentEntity.getIdentifier().getDomain()+ " and not "+App.domain);
 				topChooser.setSelectedItem(ImportEntityListComboBox.NEW_ITEM);
 				return;
 			}

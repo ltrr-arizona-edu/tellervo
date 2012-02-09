@@ -21,6 +21,9 @@ package edu.cornell.dendro.corina.admin.command;
 
 import javax.swing.JOptionPane;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
@@ -33,6 +36,7 @@ import edu.cornell.dendro.corina.wsi.corina.resources.WSIEntityResource;
 
 
 public class DeleteGroupCommand implements ICommand {
+	private final static Logger log = LoggerFactory.getLogger(DeleteGroupCommand.class);
 
         public void execute(MVCEvent argEvent) {
         	DeleteGroupEvent event = (DeleteGroupEvent) argEvent;
@@ -53,13 +57,19 @@ public class DeleteGroupCommand implements ICommand {
     		
     		if(accdialog.isSuccessful())
     		{
-    			rsrc.getAssociatedResult();
+    			try{
     			JOptionPane.showMessageDialog(view, "Group deleted", "Success", JOptionPane.NO_OPTION);
     			mainModel.removeGroupById(groupid);
+    			} catch (Exception e)
+    			{
+    				log.error(e.getLocalizedMessage());
+    			}
     		}
-    		
-    		JOptionPane.showMessageDialog(view, "Unable to delete group as the details are referenced by data in the database.\n" +
+    		else
+    		{
+    			JOptionPane.showMessageDialog(view, "Unable to delete group as the details are referenced by data in the database.\n" +
     				"If the group is no longer active you can disable instead.", "Error", JOptionPane.ERROR_MESSAGE);
+    		}
  
         }
 }

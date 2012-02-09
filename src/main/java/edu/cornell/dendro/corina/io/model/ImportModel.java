@@ -28,11 +28,14 @@ import java.util.Arrays;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 
 import com.dmurph.mvc.model.HashModel;
 
+import edu.cornell.dendro.corina.editor.EditorEditMenu;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 
 public class ImportModel extends HashModel {
@@ -44,7 +47,8 @@ public class ImportModel extends HashModel {
 	public static final String ORIGINAL_FILE = "originalFile";
 	public static final String FILE_TYPE = "fileType";
 	public static final String INVALID_FILE_EXCEPTION = "invalidFileException";
-	
+	private final static Logger log = LoggerFactory.getLogger(ImportModel.class);
+
 	public ImportModel()
 	{
 		registerProperty(ImportModel.TREE_MODEL, PropertyType.READ_WRITE, new TridasRepresentationTreeModel(null));
@@ -184,7 +188,17 @@ public class ImportModel extends HashModel {
 	 */
 	public void appendConversionWarning(ConversionWarning warning)
 	{	
-		ArrayList<ConversionWarning> warnings = new ArrayList<ConversionWarning>(Arrays.asList((ConversionWarning[]) getProperty(ImportModel.CONVERSION_WARNINGS))); 
+		ArrayList<ConversionWarning> warnings = new ArrayList<ConversionWarning>();
+		
+		try{
+			ArrayList<ConversionWarning> existingWarnings = null;
+			existingWarnings = new ArrayList<ConversionWarning>(Arrays.asList((ConversionWarning[]) getProperty(ImportModel.CONVERSION_WARNINGS)));
+			warnings.addAll(existingWarnings);
+		} catch (Exception e)
+		{
+			
+		}
+				
 		warnings.add(warning);
 		setProperty(ImportModel.CONVERSION_WARNINGS, warnings.toArray(new ConversionWarning[0]));
 	}

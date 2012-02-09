@@ -298,6 +298,7 @@ class permissionParameters extends permissionEntity implements IParams
 		   	case "permissionToRead": 	$this->setCanRead($child->nodeValue); break;
 		   	case "permissionToUpdate": 	$this->setCanUpdate($child->nodeValue); break;
 		   	case "permissionToDelete": 	$this->setCanDelete($child->nodeValue); break;
+		   	case "permissionDenied": 	$this->setPermDenied($child->nodeValue); break;
 		   	
 		   	case "entity":
 		   		$entity = array("type" => $child->getAttribute("type"), "id" => $child->getAttribute("id"));

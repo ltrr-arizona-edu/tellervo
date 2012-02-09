@@ -19,6 +19,8 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.io.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.schema.TridasMeasurementSeries;
 
 import com.dmurph.mvc.IllegalThreadException;
@@ -27,9 +29,11 @@ import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
+import edu.cornell.dendro.corina.editor.EditorEditMenu;
 import edu.cornell.dendro.corina.io.control.ImportNodeSelectedEvent;
 
 public class NodeSelectedCommand implements ICommand {
+	private final static Logger log = LoggerFactory.getLogger(NodeSelectedCommand.class);
 
 	@Override
 	public void execute(MVCEvent argEvent) {
@@ -47,7 +51,13 @@ public class NodeSelectedCommand implements ICommand {
 		ImportNodeSelectedEvent event = (ImportNodeSelectedEvent) argEvent;
 		
 		// Update the model to show the selected node
+		try{
 		if(event.getValue()!=null) event.model.setSelectedRow(event.getValue());
+		} catch (Exception e)
+		{
+			log.error(e.getMessage());
+			e.printStackTrace();
+		}
 		
 		// If the node is a series, we also need to update the data table
 		if(event.getValue().getCurrentEntity() instanceof TridasMeasurementSeries)

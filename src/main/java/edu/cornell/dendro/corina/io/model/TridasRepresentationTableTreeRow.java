@@ -201,10 +201,11 @@ public class TridasRepresentationTableTreeRow extends HashModel{
 	public boolean isCurrentEntityNew()
 	{
 		ITridas currentEntity = getCurrentEntity();
+		log.debug("Checking is entity is new or now");
 		
 		if(currentEntity==null)
 		{
-			System.out.println("No entity");
+			log.debug("No entity");
 			return false;
 
 		}
@@ -215,12 +216,12 @@ public class TridasRepresentationTableTreeRow extends HashModel{
 		}
 		else if (!currentEntity.getIdentifier().isSetDomain())
 		{
-			System.out.println("No domain");
+			log.debug("No domain");
 			return true;
 		}
 		else if (!currentEntity.getIdentifier().getDomain().equals(App.domain))
 		{
-			System.out.println("Different domain - this one is: "+currentEntity.getIdentifier().getDomain());
+			log.debug("Different domain - this one is: "+currentEntity.getIdentifier().getDomain()+" and not "+ App.domain);
 			return true;
 		}
 		return false;

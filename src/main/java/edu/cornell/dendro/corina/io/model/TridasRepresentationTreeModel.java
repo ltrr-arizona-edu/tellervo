@@ -27,6 +27,8 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.netbeans.swing.outline.RowModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasElement;
@@ -38,11 +40,14 @@ import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
 import edu.cornell.dendro.corina.core.App;
+import edu.cornell.dendro.corina.editor.EditorEditMenu;
 import edu.cornell.dendro.corina.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 
 public class TridasRepresentationTreeModel extends DefaultTreeModel implements TreeModel, RowModel{
 
 	private static final long serialVersionUID = 1L;
+	private final static Logger log = LoggerFactory.getLogger(TridasRepresentationTreeModel.class);
+
 	//private DefaultMutableTreeNode root;
 	
 	public TridasRepresentationTreeModel(TridasProject project) {
@@ -177,11 +182,13 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
             	}
             	else if (entity instanceof ITridas)
             	{
+            		   		
             		TridasIdentifier id = entity.getIdentifier();
             		if(id==null) return ImportStatus.PENDING;
             		if(!id.isSetDomain()) return ImportStatus.PENDING;
             		if(!id.isSetValue()) return ImportStatus.PENDING;
-            		if(!id.getDomain().equals(App.domain)) return ImportStatus.PENDING;            		
+            		if(!id.getDomain().equals(App.domain)) return ImportStatus.PENDING;            
+            		
             		return ImportStatus.STORED_IN_DATABASE;
             	}
                 return ImportStatus.UNSUPPORTED;

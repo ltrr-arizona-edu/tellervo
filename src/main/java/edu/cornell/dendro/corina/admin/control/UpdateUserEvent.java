@@ -25,11 +25,12 @@ import java.util.ArrayList;
 import javax.swing.JDialog;
 
 import com.dmurph.mvc.MVCEvent;
+import com.dmurph.mvc.tracking.ITrackable;
 
 import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
-public class UpdateUserEvent extends MVCEvent{ // implements ITrackable {
+public class UpdateUserEvent extends MVCEvent implements ITrackable {
 	private static final long serialVersionUID = 1L;
 	public final WSISecurityUser user;
 	public final ArrayList<WSISecurityGroup> oldMembershipList;
@@ -45,37 +46,37 @@ public class UpdateUserEvent extends MVCEvent{ // implements ITrackable {
 		parent = prnt;
 	}
 
-//	/**
-//	 * @see com.dmurph.mvc.tracking.ITrackable#getTrackingAction()
-//	 */
-//	@Override
-//	public String getTrackingAction() {
-//		return "Show";
-//	}
-//
-//	/**
-//	 * @see com.dmurph.mvc.tracking.ITrackable#getTrackingCategory()
-//	 */
-//	@Override
-//	public String getTrackingCategory() {
-//		return "Bulk Import";
-//	}
-//
-//	/**
-//	 * @see com.dmurph.mvc.tracking.ITrackable#getTrackingLabel()
-//	 */
-//	@Override
-//	public String getTrackingLabel() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	/**
-//	 * @see com.dmurph.mvc.tracking.ITrackable#getTrackingValue()
-//	 */
-//	@Override
-//	public Integer getTrackingValue() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	/**
+	 * @see com.dmurph.mvc.tracking.ITrackable#getTrackingAction()
+	 */
+	@Override
+	public String getTrackingAction() {
+		return "Show";
+	}
+
+	/**
+	 * @see com.dmurph.mvc.tracking.ITrackable#getTrackingCategory()
+	 */
+	@Override
+	public String getTrackingCategory() {
+		return "Bulk Import";
+	}
+
+	/**
+	 * @see com.dmurph.mvc.tracking.ITrackable#getTrackingLabel()
+	 */
+	@Override
+	public String getTrackingLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @see com.dmurph.mvc.tracking.ITrackable#getTrackingValue()
+	 */
+	@Override
+	public Integer getTrackingValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

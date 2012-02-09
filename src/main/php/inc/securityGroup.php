@@ -390,9 +390,12 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
 
                     foreach($this->userMembers as $item)
                     {
-                        $sql = "insert into tblsecurityusermembership (securitygroupid, securityuserid) values ('$this->id', '$item')";
-                        $firebug->log($sql, "Membership SQL"); 
-                        $result = pg_query($dbconn, $sql);
+			if($item!="")
+			{
+                        	$sql = "insert into tblsecurityusermembership (securitygroupid, securityuserid) values ('$this->id', '$item')";
+	                        $firebug->log($sql, "Membership SQL"); 
+        	                $result = pg_query($dbconn, $sql);
+			}
                     }
                 //} 
                 
@@ -429,8 +432,11 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
     function deleteFromDB()
     {
         // Delete the record in the database matching the current object's ID
-
+	global $firebug;
         global $dbconn;
+
+
+	$firebug->log($this->id, "Deleting group");
 
         // Check for required parameters
         if($this->id == NULL) 
@@ -446,19 +452,23 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "delete from tblsecuritygroup where securitygroupid=".$this->id;
+                $sql = "delete from tblsecuritygroup where securitygroupid=".$this->id.";";
+		$firebug->log($sql, "Delete SQL");
 
                 // Run SQL command
                 if ($sql)
                 {
+		   $firebug->log("sending sql");
                     // Run SQL 
                     pg_send_query($dbconn, $sql);
                     $result = pg_get_result($dbconn);
-                    if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                    if(pg_result_error($result)!=null)
                     {
+		   	$firebug->log("error");
                         $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
                         return FALSE;
                     }
+			
                 }
             }
             else
@@ -468,6 +478,11 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
                 return FALSE;
             }
         }
+	else
+	{
+		$firebug->log("Not deleting as there is an error already");
+		return false;
+	}
 
         // Return true as write to DB went ok.
         return TRUE;

@@ -24,27 +24,25 @@ package edu.cornell.dendro.corina.admin.model;
 import java.util.ArrayList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
 
-import edu.cornell.dendro.corina.schema.WSISecurityGroup;
 import edu.cornell.dendro.corina.schema.WSISecurityUser;
 
 @SuppressWarnings("serial")
 /** a node in the tree - represents either a user or a group */
 
-public class MyNode extends DefaultMutableTreeNode{
+public class UserGroupNode extends DefaultMutableTreeNode{
 	
 	public static enum Type {USER, GROUP};
 	private Type type;
 	private ArrayList<Type> restrictedChildTypes = new ArrayList<Type>(); //null means it accepts anything
 	private DefaultMutableTreeNode child;
 	
-	public MyNode(TransferableUser user){
+	public UserGroupNode(TransferableUser user){
 		super(user);
 		type = Type.USER;
 	}
 	
-	public MyNode(TransferableGroup group){
+	public UserGroupNode(TransferableGroup group){
 		super(group);
 		type = Type.GROUP;
 	}
@@ -62,7 +60,7 @@ public class MyNode extends DefaultMutableTreeNode{
 	}
 	
 	//used only by the All node (so it only takes groups)
-	public void setRestrictedChildType(MyNode.Type allowedType){
+	public void setRestrictedChildType(UserGroupNode.Type allowedType){
 		restrictedChildTypes.add(allowedType);
 	}
 	
@@ -77,10 +75,10 @@ public class MyNode extends DefaultMutableTreeNode{
 		}
 		else if(type.equals(Type.USER)){
 			WSISecurityUser u = ((TransferableUser) userObject).getUser();
-			return u.getFirstName() +" " + u.getLastName();
+			return  u.getLastName() + ", "+ u.getFirstName() +" [" + u.getUsername()+"]";
 		}
 		else{
-			return "Invalid MyNode type";
+			return "Invalid node type";
 		}
 	}
 }

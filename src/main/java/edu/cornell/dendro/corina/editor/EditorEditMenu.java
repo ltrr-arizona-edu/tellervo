@@ -60,6 +60,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.schema.TridasDerivedSeries;
 
 import edu.cornell.dendro.corina.Range;
@@ -124,7 +126,8 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	private JMenuItem undoMenu, redoMenu;
 	private JRadioButtonMenuItem btnRingWidth;
 	private JRadioButtonMenuItem btnEWLWWidth;
-	
+	private final static Logger log = LoggerFactory.getLogger(EditorEditMenu.class);
+
 	
 	/**
 	 Make a new Edit menu for an Editor.  This stores the parameters,
@@ -151,13 +154,19 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		// Set initial state of measuring 
 		if(sample!=null)
 		{
-			if(sample.containsSubAnnualData())
+			
+			try{
+			if(sample.containsSubAnnualData() && btnEWLWWidth!=null)
 			{
 				btnEWLWWidth.setSelected(true);
 			}
-			else
+			else if (!sample.containsSubAnnualData() && btnRingWidth!=null)
 			{
 				btnRingWidth.setSelected(true);
+			}
+			} catch (Exception e)
+			{
+				log.error(e.getLocalizedMessage());
 			}
 		}
 		

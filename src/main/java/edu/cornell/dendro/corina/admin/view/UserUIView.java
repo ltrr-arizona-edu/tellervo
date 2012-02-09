@@ -20,6 +20,7 @@
  ******************************************************************************/
 package edu.cornell.dendro.corina.admin.view;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -48,6 +49,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JButton;
 
 /*
  * UserUI.java
@@ -92,7 +94,6 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         lblUser.setText(I18n.getText("login.username")+":");
         lblName.setText(I18n.getText("admin.realName")+":");
         chkEnabled.setText(I18n.getText("general.enabled"));
-        btnDoIt.setText(I18n.getText("general.ok"));
         btnClose.setText(I18n.getText("general.close"));
         btnSetPwd.setText(I18n.getText("admin.setPassword"));
         lblPassword.setText(I18n.getText("login.password")+":");
@@ -113,7 +114,6 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         lblUser = new javax.swing.JLabel();
         lblName = new javax.swing.JLabel();
         btnDoIt = new javax.swing.JButton();
-        btnClose = new javax.swing.JButton();
 
         jLabel1.setText("jLabel1");
 
@@ -126,15 +126,11 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         lblName.setText("Real name:");
 
         btnDoIt.setText("Apply");
-
-        btnClose.setText("OK");
-        getContentPane().setLayout(new MigLayout("", "[81px][140px,grow][107px,grow][73px]", "[][19px][19px][71px,grow][shrink 0][shrink 0][25px]"));
-        chkEnabled = new javax.swing.JCheckBox();
         
-                chkEnabled.setText("Account enabled");
-                getContentPane().add(chkEnabled, "cell 1 0,alignx left,aligny top");
+        btnDoIt.setActionCommand("doit");
+        getContentPane().setLayout(new MigLayout("hidemode 3", "[81px][140px,grow][107px,grow][73px]", "[19px][19px][][100px,grow][0px:n,shrink 0][0px:n,shrink 0][25px]"));
         txtFirstname = new javax.swing.JTextField();
-        getContentPane().add(txtFirstname, "cell 1 1,growx");
+        getContentPane().add(txtFirstname, "cell 1 0,growx");
         
         lblIcon = new JLabel("");
         lblIcon.setIcon(Builder.getIcon("edit_user.png", 64));
@@ -142,15 +138,26 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         
         getContentPane().add(lblIcon, "cell 3 0 1 3");
         txtLastname = new javax.swing.JTextField();
-        getContentPane().add(txtLastname, "cell 2 1,growx");
+        getContentPane().add(txtLastname, "cell 2 0,growx");
         txtUsername = new javax.swing.JTextField();
-        getContentPane().add(txtUsername, "cell 1 2 2 1,growx");
+        getContentPane().add(txtUsername, "cell 1 1 2 1,growx");
+        chkEnabled = new javax.swing.JCheckBox();
+        
+                chkEnabled.setText("Account enabled");
+                getContentPane().add(chkEnabled, "cell 1 2,alignx left,aligny top");
+        btnSetPwd = new javax.swing.JButton();
+        btnSetPwd.setIcon(Builder.getIcon("password.png", 16));
+        
+        btnSetPwd.setText("Reset Password");
+        getContentPane().add(btnSetPwd, "cell 2 2,alignx right,aligny top");
         
         lblMemberOf = new JLabel("Member of:");
         getContentPane().add(lblMemberOf, "cell 0 3,alignx right,aligny top");
         scrollPane = new javax.swing.JScrollPane();
+        scrollPane.setBackground(Color.WHITE);
         getContentPane().add(scrollPane, "cell 1 3 3 1,grow");
         tblGroups = new javax.swing.JTable();
+        tblGroups.setBackground(Color.WHITE);
         
                 tblGroups.setModel(new javax.swing.table.DefaultTableModel(
                     new Object [][] {
@@ -196,20 +203,15 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         
                 txtId.setEditable(false);
                 getContentPane().add(txtId, "cell 0 6,growx,aligny top");
-        btnSetPwd = new javax.swing.JButton();
+        getContentPane().add(btnDoIt, "flowx,cell 2 6 2 1,alignx right,aligny top");
+        getContentPane().add(lblUser, "cell 0 1,alignx right,aligny center");
+        getContentPane().add(lblName, "cell 0 0,alignx right,aligny center");
         
-                btnSetPwd.setText("Reset Password");
-                getContentPane().add(btnSetPwd, "flowx,cell 2 6,alignx left,aligny top");
-        getContentPane().add(btnDoIt, "cell 2 6,alignx right,aligny top");
-        getContentPane().add(btnClose, "cell 3 6,alignx left,aligny top");
-        getContentPane().add(lblUser, "cell 0 2,alignx right,aligny center");
-        getContentPane().add(lblName, "cell 0 1,alignx right,aligny center");
+        btnClose = new JButton("Close");
+        getContentPane().add(btnClose, "cell 2 6");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-        
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JButton btnClose;
     protected javax.swing.JButton btnDoIt;
     protected javax.swing.JButton btnSetPwd;
     protected javax.swing.JCheckBox chkEnabled;
@@ -229,6 +231,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     protected javax.swing.JTextField txtUsername;
     private JLabel lblIcon;
     private JLabel lblMemberOf;
+    private JButton btnClose;
     // End of variables declaration//GEN-END:variables
  
 	private void setupGUI()
@@ -242,7 +245,6 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     	{
         	this.setTitle("Create user");
         	btnDoIt.setText("Create");
-        	btnClose.setText("Close");
         	btnSetPwd.setVisible(false);   	
         	chkEnabled.setSelected(true);
     	}
@@ -250,7 +252,6 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     	{
         	this.setTitle("Edit user");
         	btnDoIt.setText("Apply");
-        	btnClose.setText("Close");
         	lblPassword.setVisible(false);
         	txtPassword.setVisible(false);
         	lblPassword2.setVisible(false);
@@ -270,28 +271,18 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         tblGroups.setEditingColumn(4);
     	
     	this.btnDoIt.addActionListener(this);
-    	this.btnClose.addActionListener(this);
     	this.btnSetPwd.addActionListener(this);
     	
     }
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource()==this.btnClose) 
-		{
-			this.dispose();
-		}	
-		else if (e.getSource()==this.btnDoIt)
+		
+		if(e.getActionCommand().equals("doit"))
 		{
 			saveChangesToUser();
 		}
-		else if (e.getSource()==this.btnSetPwd)
-		{
-			SetPasswordUI setPwdDialog = new SetPasswordUI(null, this.user);
-			setPwdDialog.setVisible(true);
-			setPwdDialog.setModal(true);
-			setPwdDialog.setLocationRelativeTo(null);
-		}
+		
 	}
 	
 	private void saveChangesToUser()

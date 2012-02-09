@@ -82,34 +82,35 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	private JTextField txtLabCode;
 	private JButton btnGroupRefresh;
 	private JButton btnUserRefresh;
+	private ITridas theentity;
 
 	/**
 	 * Create the panel.
 	 */
 	public PermissionByEntityUI(ITridas entity) {
+
 		setEntity(entity);
 	}
 	
 
 	
-	private void lookupUsersAndGroups(ITridas entity)
+	private void lookupUsersAndGroups()
 	{
-
 		PermissionsEntityType pEntityType;
 
-		if(entity instanceof TridasObject)
+		if(theentity instanceof TridasObject)
 		{
 			pEntityType = PermissionsEntityType.OBJECT;
 		}
-		else if(entity instanceof TridasElement)
+		else if(theentity instanceof TridasElement)
 		{
 			pEntityType = PermissionsEntityType.ELEMENT;
 		}
-		else if(entity instanceof TridasMeasurementSeries)
+		else if(theentity instanceof TridasMeasurementSeries)
 		{
 			pEntityType = PermissionsEntityType.MEASUREMENT_SERIES;
 		}		
-		else if(entity instanceof TridasDerivedSeries)
+		else if(theentity instanceof TridasDerivedSeries)
 		{
 			pEntityType = PermissionsEntityType.DERIVED_SERIES;
 		}	
@@ -126,12 +127,12 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		{
 			if(!user.isIsActive()) continue;
 			
-			resource.addPermission(pEntityType, entity.getIdentifier().getValue(), user);
+			resource.addPermission(pEntityType, theentity.getIdentifier().getValue(), user);
 		}
 		
 		for (WSISecurityGroup grp : (ArrayList<WSISecurityGroup>) Dictionary.getDictionaryAsArrayList("securityGroupDictionary"))
 		{
-			resource.addPermission(pEntityType, entity.getIdentifier().getValue(), grp);
+			resource.addPermission(pEntityType, theentity.getIdentifier().getValue(), grp);
 		}
 		
 		// Query db 
@@ -162,7 +163,8 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	
 	public void setEntity(ITridas entity)
 	{
-		lookupUsersAndGroups(entity);
+		theentity =entity;
+		lookupUsersAndGroups();
 		
 		userTableModel = new UsersWithPermissionsTableModel(permsList);
 		groupTableModel = new GroupsWithPermissionsTableModel(permsList);
@@ -220,7 +222,9 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				groupTableModel.fireTableDataChanged();	
+				App.dictionary.query();
+				lookupUsersAndGroups();
+				groupTableModel.fireTableDataChanged();
 			}
 			
 		});
@@ -234,6 +238,7 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		tblGroupPerms.getColumnModel().getColumn(5).setPreferredWidth(45);
 		tblGroupPerms.getColumnModel().getColumn(6).setPreferredWidth(45);
 		tblGroupPerms.getColumnModel().getColumn(7).setPreferredWidth(300);
+		
 		
 		panelUsers = new JPanel();
 		tabbedPane.addTab("Users with access", Builder.getIcon("edit_user.png", 22), panelUsers, null);
@@ -261,7 +266,10 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
+				App.dictionary.query();
 				userTableModel.fireTableDataChanged();	
+				groupTableModel.fireTableDataChanged();
 			}
 			
 		});
@@ -310,7 +318,7 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 				"child entities in the database. " +
 				"The users tab shows the current list of users who have permission to access this " +
 				"entity in some way.");
-		panelTitle.add(txtDescription, "cell 0 1,grow");
+		panelTitle.add(txtDescription, "cell 0 1,grow,wmin 10");
 				
 	}
 	

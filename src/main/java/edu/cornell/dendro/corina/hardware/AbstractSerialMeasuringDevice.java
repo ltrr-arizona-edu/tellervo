@@ -425,7 +425,12 @@ public abstract class AbstractSerialMeasuringDevice
 			throw new IOException(I18n.getText("preferences.hardware.portdoesntexist"));
 		}
 		catch (PortInUseException e) {
-			throw new IOException(I18n.getText("preferences.hardware.portinuse", portId.getCurrentOwner()));
+			try{
+				throw new IOException(I18n.getText("preferences.hardware.portinuse", portId.getCurrentOwner()));
+			} catch (Exception e2)
+			{
+				throw new IOException(I18n.getText("preferences.hardware.portinuse", "Unknown"));
+			}
 		}
 		catch (UnsupportedCommOperationException e) {
 			// something is broken??

@@ -429,7 +429,8 @@ class auth
         // Convert PG NULL to a string 'NULL' for SQL insert
         if($theObjectID===NULL)
         {
-            $theObjectID = "NULL";
+            //$theObjectID = "NULL";
+	    $theObjectID = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa";
         }
 
         // If user is not logged in deny!
@@ -504,42 +505,44 @@ class auth
         {
             $result = pg_query($dbconn, $sql);
             $row = pg_fetch_array($result);
+           
+  	    $firebug->log("Permissions are: denied=".$row['denied']." create=".$row['cancreate']."  read=".$row['canread']." update=".$row['canupdate']." delete=".$row['candelete']);
             
-            if($row['denied']===TRUE)
+            if($row['denied']=='t')
             {
                 // Check whether 'denied' over rules.
                 if ($theObjectType=='default')
                 {
-                    $this->authFailReason = "Your default database permissions are: 
-                        denied=".$row['denied']." 
-                        create=".$row['cancreate']."  
-                        read=".$row['canread']." 
-                        update=".$row['canupdate']." 
-                        delete=".$row['candelete'];
+                    $this->authFailReason = "Your default database permissions are set to 'deny'";
+
                 }
                 else
                 {
-                    $this->authFailReason = "Your permissions for ".$theObjectType." id ".$theObjectID." are: 
-                        denied=".$row['denied']." 
-                        create=".$row['cancreate']." 
-                        read=".$row['canread']." 
-                        update=".$row['canupdate']." 
-                        delete=".$row['candelete'];
+                    $this->authFailReason = "Your permissions for ".$theObjectType." id ".$theObjectID." are set to 'deny'"; 
                 }
-                return False;
+                return FALSE;
             }
 
+	    $firebug->log($thePermissionType, "Permission type");
             switch ($thePermissionType)
             {
             case "create":
                 if($row['cancreate']=='t') return true;
+		break;
             case "read":
-                if($row['canread']=='t') return true;
+                if($row['canread']=='t') return TRUE;
+		break;
             case "update":
-                if($row['canupdate']=='t') return true;
+                if($row['canupdate']=='t') return TRUE;
+		break;
             case "delete":
-                if($row['candelete']=='t') return true;
-            default:
+                if($row['candelete']=='t') return TRUE;
+		break;
+	    default:
+		break;
+
+
+		$firebug->log("permissions not granted");
                 // Incorrect permission type specified returning false
                 if ($theObjectType=='default')
                 {
@@ -549,7 +552,7 @@ class auth
                 {
                     $this->authFailReason = "Your permissions for ".$theObjectType." id ".$theObjectID." are: denied=".$row['denied']." create=".$row['cancreate']." read=".$row['canread']." update=".$row['canupdate']." delete=".$row['candelete'];
                 }
-                return False;
+                return FALSE;
             }
         }
   }

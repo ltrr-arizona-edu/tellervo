@@ -31,6 +31,7 @@ import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasValues;
 
 import com.dmurph.mvc.IllegalThreadException;
@@ -113,9 +114,31 @@ public class FileSelectedCommand implements ICommand {
 		}
 		
 		// Add custom Corina warnings for unsupported aspects of TRiDaS
+		
 		try{
+			
+		for(TridasObject ob :TridasUtils.getObjectList(reader.getProjects()[0]))
+		{
+			if(ob.isSetLinkSeries())
+			{
+				event.model.appendConversionWarning(new ConversionWarning(
+						WarningType.IGNORED, 
+						"Corina does not currently support the linkSeries tags in objects"));
+			}
+		}
+			
+		
+	
 		for (TridasMeasurementSeries series: TridasUtils.getMeasurementSeriesFromTridasProject(reader.getProjects()[0]))
 		{
+			if(series.isSetWoodCompleteness())
+			{
+				event.model.appendConversionWarning(new ConversionWarning(
+						WarningType.IGNORED, 
+						"Corina does not support the WoodCompleteness tags in a series, only in the radius"));
+			}
+			
+			
 			if(series.isSetValues())
 			{
 				for(TridasValues values : series.getValues())
