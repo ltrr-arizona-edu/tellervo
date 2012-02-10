@@ -74,7 +74,7 @@ public abstract class AbstractComboBoxRenderer extends JPanel implements
             setForeground(table.getSelectionForeground());
             
             // highlight bad values
-            /*if(value instanceof ControlledVoc && value != null)
+            if(value instanceof ControlledVoc && value != null)
             {
             	JLabel label = new JLabel();
             	ControlledVoc val = (ControlledVoc) value;
@@ -104,7 +104,7 @@ public abstract class AbstractComboBoxRenderer extends JPanel implements
             	}
             	return label;
             }
-            else*/ if(isRequired() && (value == null || value instanceof NotPresent)) {
+            else if(isRequired() && (value == null || value instanceof NotPresent)) {
             	Color blend = ColorUtils.blend(table.getSelectionBackground(), Color.red);
             	renderer.setBackground(blend);
             	super.setBackground(blend);          	
@@ -121,7 +121,7 @@ public abstract class AbstractComboBoxRenderer extends JPanel implements
             renderer.setForeground(table.getForeground());
 
             // highlight bad values
-           /* if(value instanceof ControlledVoc && value != null)
+            if(value instanceof ControlledVoc && value != null)
             {
             	JLabel label = new JLabel();
             	ControlledVoc val = (ControlledVoc) value;
@@ -151,7 +151,7 @@ public abstract class AbstractComboBoxRenderer extends JPanel implements
             	}
             	return label;
             }
-            else*/ if(isRequired() && (value == null || value instanceof NotPresent)) {
+            else if(isRequired() && (value == null || value instanceof NotPresent)) {
             	renderer.setBackground(Color.red);
             	setBackground(Color.red);
             	JLabel label = new JLabel();

@@ -70,6 +70,7 @@ import org.netbeans.swing.outline.OutlineModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.enums.Charsets;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;
@@ -79,6 +80,7 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
 import org.tridas.schema.TridasVariable;
@@ -551,7 +553,16 @@ public class ImportView extends JFrame{
 					updateEntityChooser();		
 					
 					// Enable/disable assign by code button depending on selected entity type
-					btnAssignByCode.setEnabled(modelSelectedEntity.getUserObject() instanceof TridasMeasurementSeries);
+					
+					if((modelSelectedEntity.getUserObject() instanceof TridasMeasurementSeries) || 
+							(modelSelectedEntity.getUserObject() instanceof TridasSample))
+					{
+						btnAssignByCode.setEnabled(true);
+					}
+					else 
+					{
+						btnAssignByCode.setEnabled(false);
+					}
 					
 					
 				}
@@ -874,22 +885,42 @@ public class ImportView extends JFrame{
 	
  private void updateHierarchyByCodeDialog(DefaultMutableTreeNode selectedEntity, JFrame glue)
  {
-	 if(!(selectedEntity.getUserObject() instanceof TridasMeasurementSeries)) return;
 	 
-		ITridas newParent = TridasEntityChooser.showDialog(this, 
-				"Select entity", 
-				TridasRadius.class, 
-				EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR);
-		
-		log.debug("User wants to set hierarchy of "+ 
-				((ITridas) selectedEntity.getUserObject()).getTitle() +
-				" using labcode for " + newParent.getTitle());
-		
+		ITridas newParent = null;
+		if((selectedEntity.getUserObject() instanceof TridasMeasurementSeries))
+		{
+ 
+				newParent = TridasEntityChooser.showDialog(this, 
+						"Select entity", 
+						ITridasSeries.class, 
+						EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR);
+				
+				log.debug("User wants to set hierarchy of "+ 
+						((ITridas) selectedEntity.getUserObject()).getTitle() +
+						" using labcode for " + newParent.getTitle());
+	 	}
+		else if((selectedEntity.getUserObject() instanceof TridasSample))
+		{
+			 
+			newParent = TridasEntityChooser.showDialog(this, 
+					"Select entity", 
+					TridasSample.class, 
+					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
+			
+			log.debug("User wants to set hierarchy of "+ 
+					((ITridas) selectedEntity.getUserObject()).getTitle() +
+					" using labcode for " + newParent.getTitle());
+		}
+	 
+	 	if(newParent==null) return;
+	 
 		ReplaceHierarchyEvent event = new ReplaceHierarchyEvent(model, glue, selectedEntity ,newParent );
 		event.dispatch();
 		
 		ExpandImportTreeEvent e2 = new ExpandImportTreeEvent(true, model.getTreeModel(), treeTable);
 		e2.dispatch();
+
+		return;
  }
 	
 	
@@ -899,7 +930,7 @@ public class ImportView extends JFrame{
 	 */
 	private void updateConversionWarningsTable()
 	{
-		ConversionWarning[] warnings = model.getConversionWarnings();
+		/*ConversionWarning[] warnings = model.getConversionWarnings();
 		if(warnings==null) 
 		{
 			vertSplitPane.setDividerLocation(1.0);
@@ -927,7 +958,7 @@ public class ImportView extends JFrame{
 		col.setMinWidth(width); 
 		col.setPreferredWidth(5000);
 		
-		vertSplitPane.setDividerLocation(0.8);
+		vertSplitPane.setDividerLocation(0.8);*/
 	}
 	
 	

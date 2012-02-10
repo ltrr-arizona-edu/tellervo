@@ -185,5 +185,42 @@ As mentioned in section \ref{txt:serverPackage}, the server package is created a
 
 
 
+\section{Administering the Maven repository}
+The following information is only necessary for the lead-developer and outlines the steps necessary to install and maintain the central Maven repository for Corina.  This Maven repository should provide all other developers with the libraries required to develop Corina and which are bundled in the release packages.
+
+The repository tool that we currently use is Apache Archiva.  Installation is relatively simple:
+
+\begin{enumerate}
+ \item Download the zip bundle from the Apache Archiva website
+ \item Unzip and place on the server in a suitable location (e.g.\ usr/share/apache-archiva)
+ \item Run `sudo bin/archiva start'
+\end{enumerate}
+
+If you have an existing backup of the Archiva database then you can place this in the data folder and you should be good to go.  If not you will need to do the following steps to configure the repository from scratch:
+
+\begin{enumerate}
+ \item Go to `http://www.tridas.org:8080/archiva/' in your web browser and set up the admin account.  If you're setting this up on another domain remember you'll need to change the repository URLs in both the distributionManagement and repositories sections of your pom file
+ \item In the repositories tab you need to configure both releases and snapshot repositories
+ \item Set up users with `Repository Manager' permissions for each user that would like to deploy to the repository.  They will need to configure their .m2/settings.xml file to do this
+ \item Set up the guest user to have `Repository Observer' permissions for each repository.  This means that people can anonymously access artefacts from the repository
+ \item Add the following remote repositories:
+      \begin{description}
+       \item[Geotk] -- Identifier: geotk; URL: http://maven.geotoolkit.org/
+       \item[Geomajas repository for JPedal] -- Identifier: maven.geomajas.org; URL: http://maven.geomajas.org/
+       \item[maven.iscpif.fr] -- Identifier: maven.iscpif.fr; URL: http://maven.iscpif.fr/snapshots/
+       \item[thirdparty.maven.iscpif.fr] -- Identifier: thirdparty.maven.iscpif.fr; URL: http://maven.iscpif.fr/thirdparty/
+      \end{description}
+ \item Add proxy connectors for the above repositories
+
+\end{enumerate}
+
+The remote repositories contain libraries maintained by others that are not (at the time of writing) in the central Maven repositories.  We include them here to ensure they are cached in our repository and so are available to our developers even if these external repositories go down.
+
+It is possible to manually deploy artifacts to the repository using the web interface, but this is slow and tedious.  We normally deploy direct from Eclipse using the maven deploy goal.  
+
+
+
+
+
 
 \index{Developing|)}

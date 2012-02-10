@@ -5,6 +5,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
@@ -53,9 +54,19 @@ public class ReplaceHierarchyCommand implements ICommand {
 		
 		try{
 		 newObject = getNewHierarchy(event);
-		 newElement = newObject.getElements().get(0);
-		 newSample = newElement.getSamples().get(0);
-		 newRadius = newSample.getRadiuses().get(0);
+		 
+		 if(newObject.isSetElements())
+		 {
+			 newElement = newObject.getElements().get(0);
+			 if(newElement.isSetSamples())
+			 {
+				 newSample = newElement.getSamples().get(0);
+				 if(newSample.isSetRadiuses())
+				 {
+					 newRadius = newSample.getRadiuses().get(0);
+				 }
+			 }
+		 }
 		} catch (Exception e)
 		{
 			log.error("Unable to get details of the hierarchy specified");
@@ -64,8 +75,13 @@ public class ReplaceHierarchyCommand implements ICommand {
 		TridasRepresentationTableTreeRow oldrow;
 		TridasRepresentationTableTreeRow newrow;
 		
-		// Start by swapping the Radius
 		
+
+
+		int currentClassDepth = TridasUtils.getDepth(event.currentNode.getUserObject().getClass());
+		
+			
+		// Start by swapping the Radius	
 		DefaultMutableTreeNode oldRadiusNode = (DefaultMutableTreeNode)event.currentNode.getParent();
 		oldrow = new TridasRepresentationTableTreeRow(oldRadiusNode, null);
 		
@@ -151,6 +167,14 @@ public class ReplaceHierarchyCommand implements ICommand {
 		{
 			entity.setType(EntityType.RADIUS);
 		}
+		else if(event.newParent instanceof TridasSample)
+		{
+			entity.setType(EntityType.SAMPLE);
+		}
+		else if(event.newParent instanceof TridasElement)
+		{
+			entity.setType(EntityType.ELEMENT);
+		}		
 		else
 		{
 			log.error("Unsupported new parent type");

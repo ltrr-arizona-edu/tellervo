@@ -46,6 +46,7 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
@@ -57,7 +58,6 @@ import org.tridas.util.TridasObjectEx;
 import edu.cornell.dendro.corina.core.App;
 import edu.cornell.dendro.corina.gui.dbbrowse.SiteRenderer;
 import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel;
-import edu.cornell.dendro.corina.gui.hierarchy.TridasTreeViewPanel.TreeDepth;
 import edu.cornell.dendro.corina.schema.CorinaRequestFormat;
 import edu.cornell.dendro.corina.schema.SearchOperator;
 import edu.cornell.dendro.corina.schema.SearchParameterName;
@@ -224,7 +224,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		else if((entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_ONLY)) || 
 				(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR)))
 		{
-			return getDepth(clazz)<=getDepth(expectedClass);
+			return TridasUtils.getDepth(clazz)<=TridasUtils.getDepth(expectedClass);
 		}
 		
 		return false;
@@ -713,16 +713,16 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 		}
 		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_JUNIOR))
 		{
-			Integer e1 = getDepth((Class<ITridas>) ent.getClass());
-			Integer e2 = getDepth(expectedClass);
+			Integer e1 = TridasUtils.getDepth((Class<ITridas>) ent.getClass());
+			Integer e2 = TridasUtils.getDepth(expectedClass);
 			if(e1==0 || e2==0) return false;
 			return e1.compareTo(e2)>=0;
 			
 		}
 		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR))
 		{
-			Integer e1 = getDepth((Class<ITridas>) ent.getClass());
-			Integer e2 = getDepth(expectedClass);
+			Integer e1 = TridasUtils.getDepth((Class<ITridas>) ent.getClass());
+			Integer e2 = TridasUtils.getDepth(expectedClass);
 			if(e1==0 || e2==0) return false;
 			return e1.compareTo(e2)<=0;
 		}
@@ -947,38 +947,5 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
     }
     
     
-	/** 
-	 * Get the level of the Tridas class as an integer where
-	 * 1=object through to 5=series.  If a class is given that is 
-	 * not in the Tridas hierarchy then 0 is returned.
-	 * 
-	 * @param e1
-	 * @return
-	 */
-	public int getDepth(Class<? extends ITridas> e1)
-	{
-		if(e1==null) return 0;
-		
-		if(e1.equals(TridasObject.class) || e1.equals(TridasObjectEx.class))
-		{
-			return TreeDepth.OBJECT.getDepth();
-		}
-		else if(e1.equals(TridasElement.class) )
-		{
-			return TreeDepth.ELEMENT.getDepth();
-		}
-		else if(e1.equals(TridasSample.class) )
-		{
-			return TreeDepth.SAMPLE.getDepth();
-		}
-		else if(e1.equals(TridasRadius.class) )
-		{
-			return TreeDepth.RADIUS.getDepth();
-		}
-		else if(e1.equals(TridasMeasurementSeries.class) || e1.equals(TridasDerivedSeries.class))
-		{
-			return TreeDepth.SERIES.getDepth();
-		}
-		return 0;
-	}
+
 }

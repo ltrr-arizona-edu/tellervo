@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.util.TridasUtils.TreeDepth;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -145,32 +146,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	}
 
 
-	public static enum TreeDepth {
-		OBJECT(1),
-		ELEMENT(2),
-		SAMPLE(3),
-		RADIUS(4),
-		SERIES(5);
-		
-		private int depth;
-		
-		TreeDepth(int c) {
-			depth = c;
-		}
-		
-		public int getDepth() {
-			return depth;
-		}
-		
-		public static TreeDepth valueOf(int c) {
-			for(TreeDepth depth : values()) {
-				if(depth.getDepth() == c)
-					return depth;
-			}
-			
-			throw new IllegalArgumentException("Invalid type");
-		}
-	}
+
 	
 	/**
 	 * Set whether derived series should be shown in the tree
