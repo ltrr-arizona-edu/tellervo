@@ -431,7 +431,6 @@
 					<dependency>
 						<groupId>org.tridas</groupId>
 						<artifactId>tridasjlib</artifactId>
-						<version>0.3-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
 			</plugin>
