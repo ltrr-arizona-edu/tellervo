@@ -211,10 +211,10 @@ If you have an existing backup of the Archiva database then you can place this i
        \item[thirdparty.maven.iscpif.fr] -- Identifier: thirdparty.maven.iscpif.fr; URL: http://maven.iscpif.fr/thirdparty/
       \end{description}
  \item Add proxy connectors for the above repositories
-
+ \item Run the MavenDeployCommands.sh script to deploy the handful of repositories that we need that are in \emph{no} repositories 
 \end{enumerate}
 
-The remote repositories contain libraries maintained by others that are not (at the time of writing) in the central Maven repositories.  We include them here to ensure they are cached in our repository and so are available to our developers even if these external repositories go down.
+The remote repositories contain libraries maintained by others that are not (at the time of writing) in the central Maven repositories.  We include them here to ensure they are cached in our repository and so are available to our developers even if these external repositories go down.  Our new repository will be populated with these external artefacts when a developer first requests them.  They are retrieved from the external repositories and cached in ours.
 
 It is possible to manually deploy artifacts to the repository using the web interface, but this is slow and tedious.  We normally deploy direct from Eclipse using the maven deploy goal.  
 

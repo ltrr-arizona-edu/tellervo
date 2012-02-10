@@ -20,3 +20,5 @@ mvn install:install-file -DgroupId=postgresql          -DartifactId=pljava-publi
 
 # Date picker
 #mvn install:install-file -DgroupId=com.michaelbaranov.microba -DartifactId=microba             -Dversion=0.4.4.3       -Dpackaging=jar -Dfile=microba-0.4.4.3.jar
+
+mvn install:install-file  -DgroupId=org.jhlabs          	   -DartifactId=jmapprojlib         -Dversion=1.2.0	        -Dpackaging=jar -Dfile=jmapprojlib-1.2.0.jar
